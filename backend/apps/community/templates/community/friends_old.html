@@ -1,0 +1,393 @@
+{% extends "saas_web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "My Friends" %} | Open Linguify{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-person-heart me-2"></i>
+                        {% trans "My Language Learning Friends" %}
+                    </h1>
+                    <p class="text-muted mb-0">{% trans "Connect with your language learning community" %}</p>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <a href="{% url 'community:discover' %}" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>
+                        {% trans "Find More Friends" %}
+                    </a>
+                    <a href="{% url 'community:main' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        {% trans "Back to Community" %}
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center border-primary">
+                        <div class="card-body">
+                            <i class="bi bi-people text-primary" style="font-size: 2.5rem;"></i>
+                            <h4 class="card-title mt-2 text-primary">{{ friends.count }}</h4>
+                            <p class="card-text text-muted">{% trans "Total Friends" %}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-warning">
+                        <div class="card-body">
+                            <i class="bi bi-envelope-heart text-warning" style="font-size: 2.5rem;"></i>
+                            <h4 class="card-title mt-2 text-warning">{{ pending_requests.count }}</h4>
+                            <p class="card-text text-muted">{% trans "Pending Requests" %}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-success">
+                        <div class="card-body">
+                            <i class="bi bi-send text-success" style="font-size: 2.5rem;"></i>
+                            <h4 class="card-title mt-2 text-success">{{ sent_requests.count }}</h4>
+                            <p class="card-text text-muted">{% trans "Sent Requests" %}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-info">
+                        <div class="card-body">
+                            <i class="bi bi-chat-dots text-info" style="font-size: 2.5rem;"></i>
+                            <h4 class="card-title mt-2 text-info">{{ friends.count }}</h4>
+                            <p class="card-text text-muted">{% trans "Active Conversations" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Friend Requests Section -->
+            {% if pending_requests %}
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-envelope-heart me-2"></i>
+                        {% trans "Pending Friend Requests" %}
+                        <span class="badge bg-dark ms-2">{{ pending_requests.count }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for request in pending_requests %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="border rounded p-3">
+                                <div class="d-flex align-items-center">
+                                    <!-- Profile Picture -->
+                                    <div class="me-3">
+                                        {% if request.sender.get_profile_picture_url %}
+                                            <img src="{{ request.sender.get_profile_picture_url }}" 
+                                                 alt="{{ request.sender.username }}" 
+                                                 class="rounded-circle"
+                                                 style="width: 50px; height: 50px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 50px; height: 50px;">
+                                                <i class="bi bi-person text-white"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ request.sender.name|default:request.sender.username }}</h6>
+                                        <small class="text-muted d-block">
+                                            <i class="bi bi-globe me-1"></i>{{ request.sender.get_native_language_display|default:"Not specified" }}
+                                            → {{ request.sender.get_target_language_display|default:"Not specified" }}
+                                        </small>
+                                        <small class="text-muted">{{ request.created_at|timesince }} ago</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-3 d-flex gap-2">
+                                    <button class="btn btn-sm btn-success accept-request" data-request-id="{{ request.id }}">
+                                        <i class="bi bi-check-lg me-1"></i>{% trans "Accept" %}
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger reject-request" data-request-id="{{ request.id }}">
+                                        <i class="bi bi-x-lg me-1"></i>{% trans "Decline" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Friends List -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people me-2"></i>
+                        {% trans "My Language Learning Friends" %}
+                        {% if friends %}
+                            <span class="badge bg-primary ms-2">{{ friends.count }}</span>
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if friends %}
+                        <div class="row">
+                            {% for friend in friends %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card h-100 friend-card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start">
+                                            <!-- Profile Picture -->
+                                            <div class="me-3">
+                                                {% if friend.user.get_profile_picture_url %}
+                                                    <img src="{{ friend.user.get_profile_picture_url }}" 
+                                                         alt="{{ friend.user.username }}" 
+                                                         class="rounded-circle"
+                                                         style="width: 60px; height: 60px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                                         style="width: 60px; height: 60px;">
+                                                        <i class="bi bi-person text-white fs-4"></i>
+                                                    </div>
+                                                {% endif %}
+                                                
+                                                <!-- Online Status -->
+                                                {% if friend.is_online %}
+                                                <span class="position-absolute badge bg-success rounded-pill" 
+                                                      style="top: 45px; left: 45px; width: 12px; height: 12px; padding: 0;"></span>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div class="flex-grow-1">
+                                                <h6 class="card-title mb-1">{{ friend.user.name|default:friend.user.username }}</h6>
+                                                
+                                                <!-- Language Badges -->
+                                                <div class="mb-2">
+                                                    <span class="badge bg-primary">
+                                                        <i class="bi bi-globe me-1"></i>{{ friend.user.get_native_language_display|default:"Not specified" }}
+                                                    </span>
+                                                    <span class="badge bg-success ms-1">
+                                                        <i class="bi bi-book me-1"></i>{{ friend.user.get_target_language_display|default:"Not specified" }}
+                                                    </span>
+                                                </div>
+
+                                                <!-- Bio -->
+                                                {% if friend.bio %}
+                                                <p class="card-text text-muted small mb-2">{{ friend.bio|truncatewords:10 }}</p>
+                                                {% endif %}
+
+                                                <!-- Teaching/Learning Languages -->
+                                                {% if friend.teaching_languages %}
+                                                <small class="text-muted d-block">
+                                                    <i class="bi bi-mortarboard me-1"></i>{% trans "Can teach:" %} 
+                                                    {% for lang in friend.teaching_languages %}{{ lang }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                                                </small>
+                                                {% endif %}
+                                                
+                                                {% if friend.learning_languages %}
+                                                <small class="text-muted d-block">
+                                                    <i class="bi bi-book-half me-1"></i>{% trans "Learning:" %} 
+                                                    {% for lang in friend.learning_languages %}{{ lang }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                                                </small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Action Buttons -->
+                                        <div class="mt-3 d-flex flex-wrap gap-2">
+                                            <button class="btn btn-sm btn-primary start-chat" data-user-id="{{ friend.user.id }}">
+                                                <i class="bi bi-chat-dots me-1"></i>{% trans "Message" %}
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info view-profile" data-user-id="{{ friend.user.id }}">
+                                                <i class="bi bi-person me-1"></i>{% trans "Profile" %}
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary practice-together" data-user-id="{{ friend.user.id }}">
+                                                <i class="bi bi-people me-1"></i>{% trans "Study Together" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-people text-muted" style="font-size: 4rem;"></i>
+                            <h4 class="mt-3">{% trans "No friends yet" %}</h4>
+                            <p class="text-muted">{% trans "Start building your language learning community by finding friends to practice with!" %}</p>
+                            <a href="{% url 'community:discover' %}" class="btn btn-primary mt-3">
+                                <i class="bi bi-search me-1"></i>
+                                {% trans "Discover Language Partners" %}
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.friend-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.125);
+}
+
+.friend-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-color: var(--bs-primary);
+}
+
+.badge {
+    font-weight: normal;
+    font-size: 0.8rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle accept friend request
+    document.querySelectorAll('.accept-request').forEach(button => {
+        button.addEventListener('click', function() {
+            const requestId = this.dataset.requestId;
+            const originalText = this.innerHTML;
+            
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Accepting..." %}';
+            
+            fetch(`/community/api/accept-friend-request/${requestId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.closest('.col-md-6').remove();
+                    // Update pending requests count
+                    const countBadge = document.querySelector('.card-header .badge');
+                    if (countBadge) {
+                        const newCount = parseInt(countBadge.textContent) - 1;
+                        countBadge.textContent = newCount;
+                        if (newCount === 0) {
+                            document.querySelector('.card-header').closest('.card').remove();
+                        }
+                    }
+                    // TODO: Add to friends list or reload page
+                    location.reload();
+                } else {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    alert(data.error || '{% trans "Error accepting friend request" %}');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.innerHTML = originalText;
+                this.disabled = false;
+                alert('{% trans "Error accepting friend request" %}');
+            });
+        });
+    });
+
+    // Handle reject friend request
+    document.querySelectorAll('.reject-request').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!confirm('{% trans "Are you sure you want to decline this friend request?" %}')) {
+                return;
+            }
+            
+            const requestId = this.dataset.requestId;
+            const originalText = this.innerHTML;
+            
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Declining..." %}';
+            
+            fetch(`/community/api/reject-friend-request/${requestId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.closest('.col-md-6').remove();
+                    // Update pending requests count
+                    const countBadge = document.querySelector('.card-header .badge');
+                    if (countBadge) {
+                        const newCount = parseInt(countBadge.textContent) - 1;
+                        countBadge.textContent = newCount;
+                        if (newCount === 0) {
+                            document.querySelector('.card-header').closest('.card').remove();
+                        }
+                    }
+                } else {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    alert(data.error || '{% trans "Error declining friend request" %}');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.innerHTML = originalText;
+                this.disabled = false;
+                alert('{% trans "Error declining friend request" %}');
+            });
+        });
+    });
+
+    // Handle start chat (placeholder)
+    document.querySelectorAll('.start-chat').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            // TODO: Implement messaging functionality
+            alert('{% trans "Messaging feature coming soon!" %}');
+        });
+    });
+
+    // Handle view profile - redirect to main profile page
+    document.querySelectorAll('.view-profile').forEach(button => {
+        button.addEventListener('click', function() {
+            window.location.href = '/profile/';
+        });
+    });
+
+    // Handle practice together (placeholder)
+    document.querySelectorAll('.practice-together').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            // TODO: Implement study session functionality
+            alert('{% trans "Study together feature coming soon!" %}');
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

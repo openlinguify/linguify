@@ -20,11 +20,12 @@ def run_tests():
     test_runner = TestRunner()
     
     # Define test modules for the dynamic system
+    # NOTE: public_web tests moved to portal project
     test_modules = [
-        'tests.test_public_web_dynamic_system',
-        'tests.test_public_web_views',
-        'tests.test_public_web_templatetags',
-        'tests.test_public_web_integration',
+        # 'tests.test_public_web_dynamic_system',  # Moved to portal
+        # 'tests.test_public_web_views',           # Moved to portal
+        # 'tests.test_public_web_templatetags',    # Moved to portal
+        # 'tests.test_public_web_integration',     # Moved to portal
     ]
     
     print("🚀 Running Dynamic App Management System Tests")

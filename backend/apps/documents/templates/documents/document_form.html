@@ -1,0 +1,315 @@
+{% extends 'documents/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block document_content %}
+<div class="documents-dashboard">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1>
+                <i class="bi bi-file-earmark-plus"></i>
+                {% if object %}
+                    Modifier le document
+                {% else %}
+                    Créer un nouveau document
+                {% endif %}
+            </h1>
+            <p class="subtitle">
+                {% if object %}
+                    Modifiez les informations de votre document
+                {% else %}
+                    Remplissez les informations pour créer votre document
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="header-actions">
+            <a href="{% url 'documents:document_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i>
+                Retour aux documents
+            </a>
+        </div>
+    </div>
+    
+    <!-- Form -->
+    <div class="form-content">
+        <form method="post" class="document-form" id="document-form">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <h6><i class="bi bi-exclamation-circle"></i> Erreurs dans le formulaire :</h6>
+                <ul class="mb-0">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>
+                                {% if field != '__all__' %}
+                                    <strong>{{ field }}:</strong>
+                                {% endif %}
+                                {{ error }}
+                            </li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Main Content -->
+                    <div class="form-section">
+                        <h3><i class="bi bi-file-text"></i> Contenu du document</h3>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label required">
+                                <i class="bi bi-type"></i> {{ form.title.label }}
+                            </label>
+                            <input type="text" class="form-control" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" 
+                                   value="{{ form.title.value|default:'' }}" placeholder="Titre de votre document" maxlength="255" required>
+                            {% if form.title.help_text %}
+                            <div class="form-text">{{ form.title.help_text }}</div>
+                            {% endif %}
+                            {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.title.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.content_type.id_for_label }}" class="form-label">
+                                <i class="bi bi-filetype-md"></i> {{ form.content_type.label }}
+                            </label>
+                            <select class="form-select" name="{{ form.content_type.name }}" id="{{ form.content_type.id_for_label }}">
+                                <option value="markdown" {% if form.content_type.value == 'markdown' %}selected{% endif %}>📝 Markdown</option>
+                                <option value="html" {% if form.content_type.value == 'html' %}selected{% endif %}>🌐 HTML</option>
+                                <option value="plaintext" {% if form.content_type.value == 'plaintext' %}selected{% endif %}>📄 Texte simple</option>
+                            </select>
+                            {% if form.content_type.help_text %}
+                            <div class="form-text">{{ form.content_type.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.content.id_for_label }}" class="form-label">
+                                <i class="bi bi-file-earmark-text"></i> {{ form.content.label }}
+                            </label>
+                            
+                            <!-- Content Editor Tabs -->
+                            <div class="editor-tabs">
+                                <ul class="nav nav-tabs" id="editor-tabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="editor-tab" data-bs-toggle="tab" 
+                                                data-bs-target="#editor-pane" type="button" role="tab">
+                                            <i class="bi bi-pencil"></i> Édition
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="preview-tab" data-bs-toggle="tab" 
+                                                data-bs-target="#preview-pane" type="button" role="tab">
+                                            <i class="bi bi-eye"></i> Aperçu
+                                        </button>
+                                    </li>
+                                </ul>
+                                
+                                <div class="tab-content" id="editor-tab-content">
+                                    <div class="tab-pane fade show active" id="editor-pane" role="tabpanel">
+                                        <textarea class="form-control" name="{{ form.content.name }}" id="{{ form.content.id_for_label }}" 
+                                                  rows="15" placeholder="Contenu de votre document...">{{ form.content.value|default:'' }}</textarea>
+                                    </div>
+                                    <div class="tab-pane fade" id="preview-pane" role="tabpanel">
+                                        <div id="content-preview" class="preview-content">
+                                            <p class="text-muted">L'aperçu apparaîtra ici...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if form.content.help_text %}
+                            <div class="form-text">{{ form.content.help_text }}</div>
+                            {% endif %}
+                            {% if form.content.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.content.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Metadata Sidebar -->
+                    <div class="form-section">
+                        <h3><i class="bi bi-gear"></i> Paramètres</h3>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.folder.id_for_label }}" class="form-label">
+                                <i class="bi bi-folder"></i> {{ form.folder.label }}
+                            </label>
+                            <select class="form-select" name="{{ form.folder.name }}" id="{{ form.folder.id_for_label }}">
+                                <option value="">📁 Aucun dossier</option>
+                                {% for folder in form.folder.field.queryset %}
+                                <option value="{{ folder.pk }}" {% if form.folder.value == folder.pk %}selected{% endif %}>
+                                    📂 {{ folder.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.folder.help_text %}
+                            <div class="form-text">{{ form.folder.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.visibility.id_for_label }}" class="form-label">
+                                <i class="bi bi-eye"></i> {{ form.visibility.label }}
+                            </label>
+                            <select class="form-select" name="{{ form.visibility.name }}" id="{{ form.visibility.id_for_label }}">
+                                <option value="private" {% if form.visibility.value == 'private' %}selected{% endif %}>🔒 Privé</option>
+                                <option value="shared" {% if form.visibility.value == 'shared' %}selected{% endif %}>👥 Partagé</option>
+                                <option value="public" {% if form.visibility.value == 'public' %}selected{% endif %}>🌐 Public</option>
+                            </select>
+                            {% if form.visibility.help_text %}
+                            <div class="form-text">{{ form.visibility.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.language.id_for_label }}" class="form-label">
+                                <i class="bi bi-translate"></i> {{ form.language.label }}
+                            </label>
+                            <input type="text" class="form-control" name="{{ form.language.name }}" id="{{ form.language.id_for_label }}" 
+                                   value="{{ form.language.value|default:'' }}" placeholder="ex: fr, en, es..." maxlength="10">
+                            {% if form.language.help_text %}
+                            <div class="form-text">{{ form.language.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.difficulty_level.id_for_label }}" class="form-label">
+                                <i class="bi bi-bar-chart"></i> {{ form.difficulty_level.label }}
+                            </label>
+                            <select class="form-select" name="{{ form.difficulty_level.name }}" id="{{ form.difficulty_level.id_for_label }}">
+                                <option value="">📊 Choisir un niveau</option>
+                                <option value="A1" {% if form.difficulty_level.value == 'A1' %}selected{% endif %}>🟢 A1 - Débutant</option>
+                                <option value="A2" {% if form.difficulty_level.value == 'A2' %}selected{% endif %}>🟡 A2 - Élémentaire</option>
+                                <option value="B1" {% if form.difficulty_level.value == 'B1' %}selected{% endif %}>🟠 B1 - Intermédiaire</option>
+                                <option value="B2" {% if form.difficulty_level.value == 'B2' %}selected{% endif %}>🔴 B2 - Intermédiaire supérieur</option>
+                                <option value="C1" {% if form.difficulty_level.value == 'C1' %}selected{% endif %}>🟣 C1 - Avancé</option>
+                                <option value="C2" {% if form.difficulty_level.value == 'C2' %}selected{% endif %}>⚫ C2 - Maîtrise</option>
+                            </select>
+                            {% if form.difficulty_level.help_text %}
+                            <div class="form-text">{{ form.difficulty_level.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.tags.id_for_label }}" class="form-label">
+                                <i class="bi bi-tags"></i> {{ form.tags.label }}
+                            </label>
+                            <input type="text" class="form-control" name="{{ form.tags.name }}" id="{{ form.tags.id_for_label }}" 
+                                   value="{{ form.tags.value|default:'' }}" placeholder="Séparez les tags par des virgules" maxlength="500">
+                            {% if form.tags.help_text %}
+                            <div class="form-text">{{ form.tags.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="form-section">
+                        <h3><i class="bi bi-lightning"></i> Actions rapides</h3>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary" id="save-draft">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                Sauvegarder comme brouillon
+                            </button>
+                            
+                            {% if object %}
+                            <a href="{% url 'documents:document_editor' object.pk %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil-square"></i>
+                                Éditeur avancé
+                            </a>
+                            {% endif %}
+                            
+                            <button type="button" class="btn btn-outline-info" onclick="autoSave()">
+                                <i class="bi bi-arrow-clockwise"></i>
+                                Sauvegarde automatique
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Templates (if creating new document) -->
+                    {% if not object %}
+                    <div class="form-section">
+                        <h3><i class="bi bi-file-earmark-medical"></i> Modèles</h3>
+                        
+                        <div class="template-list">
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-outline-secondary" onclick="loadTemplate('lesson')">
+                                    <i class="bi bi-book"></i>
+                                    Cours/Leçon
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="loadTemplate('essay')">
+                                    <i class="bi bi-file-text"></i>
+                                    Essai/Article
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="loadTemplate('notes')">
+                                    <i class="bi bi-journal"></i>
+                                    Notes de cours
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="loadTemplate('blank')">
+                                    <i class="bi bi-file-earmark"></i>
+                                    Document vide
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="form-info">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle"></i>
+                            {% if object %}
+                                Dernière modification : {{ object.updated_at|timesince }} ago
+                            {% else %}
+                                Tous les champs marqués d'un * sont obligatoires
+                            {% endif %}
+                        </small>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'documents:document_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg"></i>
+                            Annuler
+                        </a>
+                        
+                        <button type="submit" class="btn btn-primary" id="submit-form">
+                            <i class="bi bi-check-lg"></i>
+                            {% if object %}
+                                Mettre à jour
+                            {% else %}
+                                Créer le document
+                            {% endif %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'documents/css/document_form.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'documents/js/document_form.js' %}"></script>
+{% endblock %}

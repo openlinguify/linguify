@@ -4,7 +4,16 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.core.mail import send_mail
 from django.conf import settings
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
+from django.http import HttpResponseRedirect
+
+def lms_info(request):
+    """Page d'information sur le LMS"""
+    context = {
+        'lms_url': 'http://127.0.0.1:8001' if settings.DEBUG else '/lms/',
+        'is_dev': settings.DEBUG
+    }
+    return render(request, 'core/lms_info.html', context)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

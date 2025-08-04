@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from apps.authentication.storage import CreateProfileDirectories
+from backend.apps.authentication.utils.storage import CreateProfileDirectories
 
 class Command(CreateProfileDirectories):
     """

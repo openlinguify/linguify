@@ -11,7 +11,7 @@ __manifest__ = {
     'name': 'Collaborative Chat',  # Changed from 'Conversation AI' to avoid confusion
     'version': '0.5.0',  # Version indicates development status
     'category': 'Communication',
-    'summary': 'Real-time collaborative chat for learning groups',
+    'summary': 'Chattez en temps réel avec vos amis',
     'description': '''
 Collaborative Chat Module for Open Linguify
 ==========================================
@@ -60,21 +60,24 @@ Usage (when ready):
     # Development status - disabled for production
     'installable': True,  # Set to True when ready for deployment
     'auto_install': True,
-    'application': True,  # Set to True when ready
+    'application': False,  # En développement - pas prêt pour production
     'sequence': 60,  # Lower priority than core apps
     
     # Development roadmap
     'development_status': 'Alpha',  # Alpha -> Beta -> Stable
     'target_release': '2.0.0',  # When this will be included in releases
     
-    # Frontend components (commented out until ready)
-    # 'frontend_components': {
-    #     'main_component': 'CollaborativeChatView',
-    #     'route': '/collaborative-chat',
-    #     'icon': 'MessageCircle',
-    #     'menu_order': 6,
-    #     'sidebar_menu': True,
-    # },
+    'frontend_components': {
+        'main_component': 'CollaborativeChatView',
+        'route': '/chat',
+        'icon': 'bi-chat-dots',
+        'static_icon': '/static/chat/description/icon.png',
+        'menu_order': 6,
+        'sidebar_menu': True,
+        'display_category': 'communication',
+        'category_label': 'Communication',
+        'category_icon': 'bi-chat-dots',
+    },
     
     # API configuration
     'api_endpoints': {

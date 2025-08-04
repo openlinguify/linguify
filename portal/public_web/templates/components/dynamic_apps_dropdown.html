@@ -1,0 +1,9 @@
+{% load i18n %}
+
+{% for app in apps %}
+    <li><a class="dropdown-item" href="{% url 'public_web:dynamic_app_detail' app_slug=app.slug %}">
+        {{ app.name|translate_app_name }}
+    </a></li>
+{% empty %}
+    <li><span class="dropdown-item text-muted">{% trans "No apps available" %}</span></li>
+{% endfor %}

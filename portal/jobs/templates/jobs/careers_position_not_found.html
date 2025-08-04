@@ -1,0 +1,37 @@
+{% extends 'public_web/public_base.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans "Poste non trouvé" %} - {% trans "Carrières" %} - Open Linguify{% endblock %}
+
+{% block content %}
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <div class="max-w-md mx-auto text-center">
+            <svg class="mx-auto h-16 w-16 text-gray-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.464-.881-6.08-2.33C5.92 12.67 6 12.34 6 12s-.08-.67-.08-.67C7.536 10.881 9.66 10 12 10s4.464.881 6.08 2.33z"></path>
+            </svg>
+            
+            <h1 class="text-2xl font-bold text-gray-900 mb-4">
+                {% trans "Poste non trouvé" %}
+            </h1>
+            
+            <p class="text-gray-600 mb-8">
+                {% trans "Le poste que vous recherchez n'existe pas ou n'est plus disponible." %}
+            </p>
+            
+            <div class="space-y-4">
+                <a href="{% url 'public_web:careers:index' %}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    {% trans "Voir tous les postes" %}
+                </a>
+                
+                <div>
+                    <a href="{% url 'public_web:landing' %}" class="text-indigo-600 hover:text-indigo-800">
+                        {% trans "Retour à l'accueil" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

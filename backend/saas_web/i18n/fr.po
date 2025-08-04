@@ -18,7 +18,7 @@ msgstr ""
 
 # Dashboard
 msgid "Dashboard"
-msgstr "Tableau de bord"
+msgstr "Dashboard"
 
 msgid "Welcome back"
 msgstr "Bon retour"
@@ -34,7 +34,7 @@ msgstr "Statistiques"
 
 # App Store
 msgid "App Store"
-msgstr "Boutique d'Apps"
+msgstr "Magasin"
 
 msgid "All Apps"
 msgstr "Toutes les Apps"

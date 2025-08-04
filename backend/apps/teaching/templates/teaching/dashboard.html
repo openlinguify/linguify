@@ -1,0 +1,231 @@
+{% extends "saas_web/base.html" %}
+{% load i18n %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{% trans "Cours Particuliers" %} - Linguify{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'teaching/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="teaching-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-3">
+                    <i class="bi bi-person-video3 me-2"></i>
+                    {% trans "Cours Particuliers" %}
+                </h1>
+                <p class="lead mb-0">
+                    {% trans "Réservez des cours personnalisés avec des enseignants professionnels" %}
+                </p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="#book-lesson" class="btn btn-light btn-lg">
+                    <i class="bi bi-calendar-plus me-2"></i>
+                    {% trans "Réserver un cours" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Upcoming Lessons -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>
+                    <i class="bi bi-calendar-event me-2"></i>
+                    {% trans "Mes prochains cours" %}
+                </h3>
+                <a href="/teaching/lessons/" class="text-decoration-none">
+                    {% trans "Voir tout" %} <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            {% if upcoming_lessons %}
+                <div class="row">
+                    {% for lesson in upcoming_lessons %}
+                    <div class="col-md-6 mb-3">
+                        <div class="lesson-card p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-1">{{ lesson.teacher.full_name }}</h5>
+                                <span class="status-badge status-{{ lesson.status }}">
+                                    {{ lesson.get_status_display }}
+                                </span>
+                            </div>
+                            
+                            <div class="text-muted mb-2">
+                                <i class="bi bi-clock me-2"></i>
+                                {{ lesson.scheduled_datetime|date:"l j F Y \à H:i" }}
+                            </div>
+                            
+                            <div class="text-muted mb-2">
+                                <i class="bi bi-flag me-2"></i>
+                                {{ lesson.language|upper }} - {{ lesson.get_level_display }}
+                            </div>
+                            
+                            {% if lesson.topic %}
+                            <div class="text-muted mb-3">
+                                <i class="bi bi-bookmark me-2"></i>
+                                {{ lesson.topic }}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-success">
+                                    {{ lesson.total_price|floatformat:2 }}€
+                                </span>
+                                
+                                {% if lesson.status == 'confirmed' %}
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="startLesson('{{ lesson.id }}')">
+                                        <i class="bi bi-play-circle"></i> {% trans "Démarrer" %}
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="cancelLesson('{{ lesson.id }}')">
+                                        <i class="bi bi-x-circle"></i> {% trans "Annuler" %}
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-x display-1 text-muted"></i>
+                    <h4 class="mt-3 text-muted">{% trans "Aucun cours prévu" %}</h4>
+                    <p class="text-muted">{% trans "Réservez votre premier cours avec un enseignant professionnel" %}</p>
+                    <a href="#book-lesson" class="btn btn-primary-custom">
+                        {% trans "Réserver maintenant" %}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Available Teachers -->
+        <div class="col-lg-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>
+                    <i class="bi bi-people me-2"></i>
+                    {% trans "Enseignants disponibles" %}
+                </h3>
+            </div>
+
+            {% if available_teachers %}
+                {% for teacher in available_teachers %}
+                <div class="teacher-card p-3 mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-3">
+                            {% if teacher.profile_picture %}
+                                <img src="{{ teacher.profile_picture.url }}" alt="{{ teacher.full_name }}" 
+                                     class="rounded-circle" width="48" height="48">
+                            {% else %}
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" 
+                                     style="width: 48px; height: 48px; color: white;">
+                                    {{ teacher.full_name|first }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ teacher.full_name }}</h6>
+                            <div class="d-flex align-items-center">
+                                <div class="text-warning me-2">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= teacher.average_rating|floatformat:0|add:0 %}
+                                            <i class="bi bi-star-fill"></i>
+                                        {% else %}
+                                            <i class="bi bi-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <small class="text-muted">
+                                    ({{ teacher.total_lessons }} {% trans "cours" %})
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-muted small mb-2">
+                        {% for lang in teacher.teaching_languages.all|slice:":3" %}
+                            <span class="badge bg-light text-dark me-1">{{ lang.language_code|upper }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-success">
+                            {{ teacher.hourly_rate|floatformat:0 }}€/h
+                        </span>
+                        <button class="btn btn-sm btn-primary-custom" 
+                                onclick="bookWithTeacher('{{ teacher.id }}')">
+                            {% trans "Réserver" %}
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="text-center">
+                    <a href="/teaching/teachers/" class="btn btn-outline-primary">
+                        {% trans "Voir tous les enseignants" %}
+                    </a>
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-person-x display-4 text-muted"></i>
+                    <p class="text-muted mt-2">{% trans "Aucun enseignant disponible pour le moment" %}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card border-0 text-center">
+                <div class="card-body">
+                    <i class="bi bi-calendar-check display-4 text-primary"></i>
+                    <h4 class="mt-2">{{ upcoming_lessons|length }}</h4>
+                    <p class="text-muted">{% trans "Cours prévus" %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 text-center">
+                <div class="card-body">
+                    <i class="bi bi-people display-4 text-success"></i>
+                    <h4 class="mt-2">{{ available_teachers|length }}</h4>
+                    <p class="text-muted">{% trans "Enseignants disponibles" %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 text-center">
+                <div class="card-body">
+                    <i class="bi bi-star display-4 text-warning"></i>
+                    <h4 class="mt-2">4.8</h4>
+                    <p class="text-muted">{% trans "Note moyenne" %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 text-center">
+                <div class="card-body">
+                    <i class="bi bi-clock display-4 text-info"></i>
+                    <h4 class="mt-2">24/7</h4>
+                    <p class="text-muted">{% trans "Support disponible" %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'teaching/js/dashboard.js' %}"></script>
+{% endblock %}

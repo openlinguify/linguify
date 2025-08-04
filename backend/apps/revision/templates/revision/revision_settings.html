@@ -1,0 +1,994 @@
+<!-- Revision Tab -->
+<div id="revision" class="tab-content active">
+    <!-- Statistics Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-bar-chart"></i>
+                Statistiques de révision
+            </h3>
+            <div class="section-actions">
+                <button type="button" onclick="loadRevisionStats()" style="margin-right: 8px; padding: 4px 8px; font-size: 12px; background: #007bff; color: white; border: none; border-radius: 4px;">
+                    🔄 Actualiser
+                </button>
+                <button type="button" onclick="testStatsAPI()" style="margin-right: 8px; padding: 4px 8px; font-size: 12px; background: #28a745; color: white; border: none; border-radius: 4px;">
+                    🧪 Test
+                </button>
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-cards">0</div>
+                    <div class="stat-label">Cartes totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="cards-learned">0</div>
+                    <div class="stat-label">Cartes apprises</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="daily-streak">0</div>
+                    <div class="stat-label">Série quotidienne</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="success-rate">0%</div>
+                    <div class="stat-label">Taux de réussite</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Word Statistics Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-translate"></i>
+                Statistiques des mots
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="word_stats">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="show_word_stats" {% if revision_settings.show_word_stats %}checked{% endif %}>
+                        Afficher les statistiques de mots
+                    </label>
+                    <div class="form-help">Voir vos mots connus et à apprendre</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mode d'affichage des statistiques</label>
+                    <select name="stats_display_mode" class="form-control">
+                        <option value="detailed" {% if revision_settings.stats_display_mode == 'detailed' %}selected{% endif %}>Détaillé</option>
+                        <option value="simple" {% if revision_settings.stats_display_mode == 'simple' %}selected{% endif %}>Simple</option>
+                        <option value="compact" {% if revision_settings.stats_display_mode == 'compact' %}selected{% endif %}>Compact</option>
+                    </select>
+                    <div class="form-help">Niveau de détail des statistiques affichées</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="hide_learned_words" {% if revision_settings.hide_learned_words %}checked{% endif %}>
+                        Masquer les mots appris
+                    </label>
+                    <div class="form-help">Ne montrer que les mots encore à apprendre</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="group_by_deck" {% if revision_settings.group_by_deck %}checked{% endif %}>
+                        Grouper par deck
+                    </label>
+                    <div class="form-help">Organiser les statistiques par deck</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+
+            <!-- Word Stats Display -->
+            <div class="word-stats-display" id="word-stats-container" style="margin-top: 24px;">
+                <div class="stats-tabs">
+                    <button class="stats-tab active" data-tab="known">Mots connus</button>
+                    <button class="stats-tab" data-tab="to-learn">À apprendre</button>
+                    <button class="stats-tab" data-tab="summary">Résumé</button>
+                </div>
+                
+                <div class="stats-content">
+                    <div id="known-words" class="tab-pane active">
+                        <div class="loading-spinner">Chargement des mots connus...</div>
+                    </div>
+                    <div id="to-learn-words" class="tab-pane">
+                        <div class="loading-spinner">Chargement des mots à apprendre...</div>
+                    </div>
+                    <div id="summary-stats" class="tab-pane">
+                        <div class="loading-spinner">Chargement du résumé...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Configuration Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-lightning-fill"></i>
+                Configuration rapide
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="form-help">Choisissez un profil de révision prédéfini</div>
+            <div class="preset-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px;">
+                <button type="button" class="preset-btn" data-preset="beginner">
+                    <i class="bi bi-star"></i>
+                    <span>Débutant</span>
+                    <small>10 cartes, 15 min</small>
+                </button>
+                <button type="button" class="preset-btn" data-preset="intermediate">
+                    <i class="bi bi-lightning"></i>
+                    <span>Intermédiaire</span>
+                    <small>20 cartes, 20 min</small>
+                </button>
+                <button type="button" class="preset-btn" data-preset="advanced">
+                    <i class="bi bi-fire"></i>
+                    <span>Avancé</span>
+                    <small>30 cartes, 30 min</small>
+                </button>
+                <button type="button" class="preset-btn" data-preset="intensive">
+                    <i class="bi bi-rocket"></i>
+                    <span>Intensif</span>
+                    <small>50 cartes, 45 min</small>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Learning Settings Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-sliders"></i>
+                Paramètres d'apprentissage
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form id="revision-settings-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="revision">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Mode d'étude par défaut</label>
+                        <select name="default_study_mode" class="form-control">
+                            <option value="spaced">Répétition espacée</option>
+                            <option value="intensive">Révision intensive</option>
+                            <option value="mixed">Mode mixte</option>
+                            <option value="custom">Personnalisé</option>
+                        </select>
+                        <div class="form-help">Algorithme utilisé pour planifier vos révisions</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Difficulté par défaut</label>
+                        <select name="default_difficulty" class="form-control">
+                            <option value="easy">Facile</option>
+                            <option value="normal">Normal</option>
+                            <option value="hard">Difficile</option>
+                            <option value="expert">Expert</option>
+                        </select>
+                        <div class="form-help">Niveau de difficulté pour les nouvelles cartes</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Cartes par session</label>
+                        <div class="range-input">
+                            <input type="range" name="cards_per_session" min="5" max="100" value="20" class="form-range">
+                            <span class="range-value">20</span>
+                        </div>
+                        <div class="form-help">Nombre de cartes à réviser par session</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Durée de session (minutes)</label>
+                        <div class="range-input">
+                            <input type="range" name="default_session_duration" min="5" max="120" value="20" class="form-range">
+                            <span class="range-value">20</span>
+                        </div>
+                        <div class="form-help">Durée recommandée par session</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Révisions pour apprendre</label>
+                        <div class="range-input">
+                            <input type="range" name="required_reviews_to_learn" min="1" max="10" value="3" class="form-range">
+                            <span class="range-value">3</span>
+                        </div>
+                        <div class="form-help">Nombre de révisions correctes nécessaires</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" name="auto_advance" checked>
+                            Passage automatique
+                        </label>
+                        <div class="form-help">Passer automatiquement à la carte suivante</div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Spaced Repetition Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-calendar3"></i>
+                Répétition espacée
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="spaced_repetition">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="spaced_repetition_enabled" checked>
+                        Activer la répétition espacée
+                    </label>
+                    <div class="form-help">Utilise l'algorithme de Leitner pour optimiser la mémorisation</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Intervalle facile (jours)</label>
+                        <input type="number" name="initial_interval_easy" min="1" max="30" value="4" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Intervalle normal (jours)</label>
+                        <input type="number" name="initial_interval_normal" min="1" max="30" value="2" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Intervalle difficile (jours)</label>
+                        <input type="number" name="initial_interval_hard" min="1" max="30" value="1" class="form-control">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notifications Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-bell"></i>
+                Rappels et notifications
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="notifications">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="weekday_reminders" {% if user.weekday_reminders %}checked{% endif %}>
+                        Rappel quotidien
+                    </label>
+                    <div class="form-help">Recevoir un rappel pour réviser quotidiennement</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Heure du rappel</label>
+                        <input type="time" name="reminder_time" value="{{ user.reminder_time|time:'H:i' }}" class="form-control">
+                        <div class="form-help">Heure à laquelle recevoir le rappel</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Fréquence des notifications</label>
+                        <select name="notification_frequency" class="form-control">
+                            <option value="daily">Quotidienne</option>
+                            <option value="weekly">Hebdomadaire</option>
+                            <option value="custom">Personnalisée</option>
+                            <option value="disabled">Désactivée</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Interface Settings Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-palette"></i>
+                Interface et expérience
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="interface">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="enable_animations" checked>
+                        Animations
+                    </label>
+                    <div class="form-help">Effets visuels lors des transitions</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="auto_play_audio">
+                        Audio automatique
+                    </label>
+                    <div class="form-help">Jouer automatiquement les prononciations</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="keyboard_shortcuts_enabled" checked>
+                        Raccourcis clavier
+                    </label>
+                    <div class="form-help">Utiliser les raccourcis pour naviguer</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="show_progress_stats" checked>
+                        Afficher les statistiques de progression
+                    </label>
+                    <div class="form-help">Voir vos statistiques en temps réel pendant l'étude</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styles for revision settings */
+    .stat-card {
+        background: white;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: var(--card-color);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--card-color);
+    }
+
+    .stat-card:nth-child(1) {
+        --card-color: #3b82f6; /* Blue for total cards */
+    }
+
+    .stat-card:nth-child(2) {
+        --card-color: #10b981; /* Green for cards learned */
+    }
+
+    .stat-card:nth-child(3) {
+        --card-color: #f59e0b; /* Orange for daily streak */
+    }
+
+    .stat-card:nth-child(4) {
+        --card-color: #8b5cf6; /* Purple for success rate */
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--card-color);
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .preset-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .preset-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--preset-color);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .preset-btn:hover::before,
+    .preset-btn.active::before {
+        opacity: 1;
+    }
+
+    .preset-btn[data-preset="beginner"] {
+        --preset-color: #22c55e; /* Green for beginner */
+    }
+
+    .preset-btn[data-preset="intermediate"] {
+        --preset-color: #3b82f6; /* Blue for intermediate */
+    }
+
+    .preset-btn[data-preset="advanced"] {
+        --preset-color: #f59e0b; /* Orange for advanced */
+    }
+
+    .preset-btn[data-preset="intensive"] {
+        --preset-color: #ef4444; /* Red for intensive */
+    }
+
+    .preset-btn:hover {
+        border-color: var(--preset-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .preset-btn.active {
+        border-color: var(--preset-color);
+        background: color-mix(in srgb, var(--preset-color) 8%, white);
+    }
+
+    .preset-btn i {
+        font-size: 24px;
+        color: var(--preset-color);
+        margin-bottom: 8px;
+        transition: color 0.2s ease;
+    }
+
+    .preset-btn span {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+    }
+
+    .preset-btn small {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .range-input {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .range-input .form-range {
+        flex: 1;
+    }
+
+    .range-value {
+        min-width: 30px;
+        text-align: center;
+        font-weight: 600;
+        color: #875a7b;
+    }
+
+    /* Word Statistics Styles */
+    .word-stats-display {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+    }
+
+    .stats-tabs {
+        display: flex;
+        border-bottom: 1px solid #e9ecef;
+        background: #f8f9fa;
+    }
+
+    .stats-tab {
+        flex: 1;
+        padding: 12px 16px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        font-weight: 500;
+        color: #6c757d;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    .stats-tab:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: #495057;
+    }
+
+    .stats-tab.active {
+        color: #875a7b;
+        background: white;
+    }
+
+    .stats-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #875a7b;
+    }
+
+    .stats-content {
+        padding: 20px;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    .loading-spinner {
+        text-align: center;
+        color: #6c757d;
+        padding: 20px;
+    }
+
+    .word-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f1f3f4;
+    }
+
+    .word-item:last-child {
+        border-bottom: none;
+    }
+
+    .word-content {
+        flex: 1;
+    }
+
+    .word-front {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+    }
+
+    .word-back {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .word-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+    }
+
+    .word-deck {
+        font-size: 12px;
+        color: #875a7b;
+        background: rgba(135, 90, 123, 0.1);
+        padding: 2px 8px;
+        border-radius: 12px;
+    }
+
+    .word-progress {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .progress-bar {
+        width: 60px;
+        height: 4px;
+        background: #e9ecef;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 4px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: #28a745;
+        transition: width 0.3s ease;
+    }
+
+    .stats-summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .summary-card {
+        padding: 16px;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .summary-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: #875a7b;
+        margin-bottom: 4px;
+    }
+
+    .summary-label {
+        font-size: 14px;
+        color: #666;
+    }
+</style>
+
+<script>
+    // JavaScript for revision settings
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize revision settings
+        initRevisionSettings();
+
+        // Preset button handlers
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const preset = this.dataset.preset;
+                applyRevisionPreset(preset);
+            });
+        });
+
+        // Range slider handlers
+        document.querySelectorAll('.range-input input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', function () {
+                const valueSpan = this.parentElement.querySelector('.range-value');
+                valueSpan.textContent = this.value;
+            });
+        });
+
+        // Word stats tab handlers
+        document.querySelectorAll('.stats-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                const tabId = this.dataset.tab;
+                switchStatsTab(tabId);
+            });
+        });
+
+        // Initialize word stats
+        initWordStats();
+    });
+
+    function initRevisionSettings() {
+        console.log('[RevisionSettings] Initializing revision settings - VERSION 2.0');
+        console.log('[RevisionSettings] Calling loadRevisionStats in 1 second...');
+        setTimeout(() => {
+            loadRevisionStats();
+        }, 1000);
+    }
+
+    async function loadRevisionStats() {
+        console.log('[RevisionSettings] Loading revision statistics from API');
+        
+        try {
+            console.log('[RevisionSettings] Fetching from /api/v1/revision/settings/api/settings/stats/');
+            const response = await fetch('/api/v1/revision/settings/api/settings/stats/');
+            console.log('[RevisionSettings] Response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const stats = await response.json();
+            console.log('[RevisionSettings] Statistics loaded successfully:', stats);
+            
+            // Mettre à jour les éléments HTML avec vérification
+            const updateElement = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                    console.log(`[RevisionSettings] Updated ${id} to: ${value}`);
+                } else {
+                    console.error(`[RevisionSettings] Element ${id} not found`);
+                }
+            };
+            
+            updateElement('total-cards', stats.total_cards || 0);
+            updateElement('cards-learned', stats.cards_learned || 0);
+            updateElement('daily-streak', stats.daily_streak || 0);
+            updateElement('success-rate', stats.success_rate ? Math.round(stats.success_rate * 100) + '%' : '0%');
+        } catch (error) {
+            console.error('[RevisionSettings] Error loading statistics:', error);
+            // Fallback en cas d'erreur
+            document.getElementById('total-cards').textContent = '0';
+            document.getElementById('cards-learned').textContent = '0';
+            document.getElementById('daily-streak').textContent = '0';
+            document.getElementById('success-rate').textContent = '0%';
+        }
+    }
+
+    async function testStatsAPI() {
+        console.log('[TEST] Testing stats API...');
+        try {
+            const response = await fetch('/api/v1/revision/settings/api/settings/test_stats/');
+            const data = await response.json();
+            console.log('[TEST] Test API response:', data);
+            alert(`Test API: ${data.message}\nCartes: ${data.total_cards}\nApprises: ${data.cards_learned}`);
+        } catch (error) {
+            console.error('[TEST] Error:', error);
+            alert('Test API failed: ' + error.message);
+        }
+    }
+
+    function applyRevisionPreset(presetName) {
+        console.log(`[RevisionSettings] Applying preset: ${presetName}`);
+        
+        // Mark preset as active
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-preset="${presetName}"]`).classList.add('active');
+        
+        // Apply preset values
+        const presets = {
+            beginner: { cards_per_session: 10, default_session_duration: 15 },
+            intermediate: { cards_per_session: 20, default_session_duration: 20 },
+            advanced: { cards_per_session: 30, default_session_duration: 30 },
+            intensive: { cards_per_session: 50, default_session_duration: 45 }
+        };
+        
+        if (presets[presetName]) {
+            const settings = presets[presetName];
+            const cardsSlider = document.querySelector('[name="cards_per_session"]');
+            const durationSlider = document.querySelector('[name="default_session_duration"]');
+            
+            if (cardsSlider) {
+                cardsSlider.value = settings.cards_per_session;
+                cardsSlider.parentElement.querySelector('.range-value').textContent = settings.cards_per_session;
+            }
+            
+            if (durationSlider) {
+                durationSlider.value = settings.default_session_duration;
+                durationSlider.parentElement.querySelector('.range-value').textContent = settings.default_session_duration;
+            }
+        }
+    }
+
+    // Word Statistics Functions
+    function initWordStats() {
+        console.log('[WordStats] Initializing word statistics');
+        loadWordStats('known');
+    }
+
+    function switchStatsTab(tabId) {
+        // Update tab active states
+        document.querySelectorAll('.stats-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+
+        // Update content active states
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('active');
+        });
+        
+        const targetPane = document.getElementById(tabId === 'known' ? 'known-words' : 
+                                                 tabId === 'to-learn' ? 'to-learn-words' : 'summary-stats');
+        if (targetPane) {
+            targetPane.classList.add('active');
+        }
+
+        // Load data for the selected tab
+        loadWordStats(tabId);
+    }
+
+    function loadWordStats(type) {
+        console.log(`[WordStats] Loading ${type} word statistics`);
+        
+        const apiUrl = '/api/v1/revision/word-stats/';
+        const params = new URLSearchParams();
+        
+        if (type === 'known') {
+            params.append('type', 'known');
+        } else if (type === 'to-learn') {
+            params.append('type', 'to_learn');
+        } else {
+            params.append('type', 'all');
+        }
+
+        fetch(`${apiUrl}?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                displayWordStats(type, data);
+            })
+            .catch(error => {
+                console.error(`[WordStats] Error loading ${type} stats:`, error);
+                showStatsError(type);
+            });
+    }
+
+    function displayWordStats(type, data) {
+        const container = document.getElementById(
+            type === 'known' ? 'known-words' : 
+            type === 'to-learn' ? 'to-learn-words' : 'summary-stats'
+        );
+
+        if (!container) return;
+
+        if (type === 'summary' || type === 'all') {
+            // Display summary statistics
+            container.innerHTML = `
+                <div class="stats-summary">
+                    <div class="summary-card">
+                        <div class="summary-number">${data.statistics?.total_known || 0}</div>
+                        <div class="summary-label">Mots connus</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${data.statistics?.total_to_learn || 0}</div>
+                        <div class="summary-label">À apprendre</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${data.statistics?.total_words || 0}</div>
+                        <div class="summary-label">Total</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${data.statistics?.completion_rate || 0}%</div>
+                        <div class="summary-label">Taux de réussite</div>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Display word lists
+            const words = type === 'known' ? data.known_words : data.words_to_learn;
+            
+            if (!words || words.length === 0) {
+                container.innerHTML = `
+                    <div class="loading-spinner">
+                        Aucun mot ${type === 'known' ? 'connu' : 'à apprendre'} trouvé.
+                    </div>
+                `;
+                return;
+            }
+
+            const wordsHtml = words.map(word => `
+                <div class="word-item">
+                    <div class="word-content">
+                        <div class="word-front">${word.front_text}</div>
+                        <div class="word-back">${word.back_text}</div>
+                    </div>
+                    <div class="word-meta">
+                        <div class="word-deck">${word.deck_name}</div>
+                        ${type === 'to-learn' ? `
+                            <div class="word-progress">${word.correct_reviews}/${word.reviews_needed + word.correct_reviews}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${word.progress_percentage}%"></div>
+                            </div>
+                        ` : `
+                            <div class="word-progress">Appris ✓</div>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = wordsHtml;
+        }
+    }
+
+    function showStatsError(type) {
+        const container = document.getElementById(
+            type === 'known' ? 'known-words' : 
+            type === 'to-learn' ? 'to-learn-words' : 'summary-stats'
+        );
+        
+        if (container) {
+            container.innerHTML = `
+                <div class="loading-spinner" style="color: #dc3545;">
+                    Erreur lors du chargement des statistiques.
+                </div>
+            `;
+        }
+    }
+</script>

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='note',
             name='example_sentences',
-            field=models.JSONField(blank=True, default=apps.notebook.models.default_list),
+            field=models.JSONField(blank=True, default=list),
         ),
         migrations.AlterField(
             model_name='note',
@@ -24,6 +24,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='note',
             name='related_words',
-            field=models.JSONField(blank=True, default=apps.notebook.models.default_list),
+            field=models.JSONField(blank=True, default=list),
         ),
     ]

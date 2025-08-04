@@ -1,0 +1,274 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+
+{% block title %}AI Chat - Linguify{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container { height: 70vh; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; }
+    .message { margin-bottom: 15px; }
+    .message.user { text-align: right; }
+    .message.ai { text-align: left; }
+    .message-content { 
+        display: inline-block; 
+        max-width: 70%; 
+        padding: 10px 15px; 
+        border-radius: 18px; 
+        word-wrap: break-word;
+    }
+    .message.user .message-content { 
+        background: #007bff; 
+        color: white; 
+    }
+    .message.ai .message-content { 
+        background: #e9ecef; 
+        color: #212529; 
+    }
+    .typing-indicator { display: none; }
+    .chat-input { border-radius: 25px; }
+    .send-btn { border-radius: 50%; width: 45px; height: 45px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-area">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="page-title">🤖 AI Language Assistant</h1>
+                        <p class="page-subtitle">Practice your {{ target_language|default:"target language" }} with AI</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-secondary" onclick="window.history.back()">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="startNewConversation()">
+                            <i class="bi bi-plus-circle"></i> New Chat
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+                <!-- Chat Messages -->
+                <div class="chat-container p-3 mb-3" id="chatContainer">
+                    <div class="message ai">
+                        <div class="message-content">
+                            <strong>🤖 AI Assistant:</strong><br>
+                            Hello! I'm your AI language tutor. I can help you practice {{ target_language|default:"your target language" }}. 
+                            What would you like to talk about today?
+                        </div>
+                    </div>
+                    
+                    <div class="typing-indicator" id="typingIndicator">
+                        <div class="message ai">
+                            <div class="message-content">
+                                <i class="bi bi-three-dots"></i> AI is typing...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Input -->
+                <div class="input-group">
+                    <input type="text" 
+                           class="form-control chat-input" 
+                           id="messageInput" 
+                           placeholder="Type your message in {{ target_language|default:'your target language' }}..."
+                           onkeypress="handleKeyPress(event)">
+                    <button class="btn btn-primary send-btn" 
+                            onclick="sendMessage()"
+                            id="sendButton">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="mt-3">
+                    <small class="text-muted">Quick actions:</small><br>
+                    <button class="btn btn-sm btn-outline-secondary me-2 mt-1" onclick="insertMessage('Hello, how are you?')">
+                        👋 Greeting
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary me-2 mt-1" onclick="insertMessage('Can you help me with grammar?')">
+                        📚 Grammar Help
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary me-2 mt-1" onclick="insertMessage('Let\'s talk about travel')">
+                        ✈️ Travel Topic
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary me-2 mt-1" onclick="insertMessage('Correct my mistakes please')">
+                        ✅ Ask for Correction
+                    </button>
+                </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        let currentConversationId = null;
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function insertMessage(text) {
+            document.getElementById('messageInput').value = text;
+            document.getElementById('messageInput').focus();
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addMessage(content, isUser = false) {
+            const chatContainer = document.getElementById('chatContainer');
+            const typingIndicator = document.getElementById('typingIndicator');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            if (isUser) {
+                contentDiv.innerHTML = `<strong>You:</strong><br>${content}`;
+            } else {
+                contentDiv.innerHTML = `<strong>🤖 AI:</strong><br>${content}`;
+            }
+            
+            messageDiv.appendChild(contentDiv);
+            chatContainer.insertBefore(messageDiv, typingIndicator);
+            
+            scrollToBottom();
+        }
+
+        function showTyping() {
+            document.getElementById('typingIndicator').style.display = 'block';
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Disable input
+            input.disabled = true;
+            document.getElementById('sendButton').disabled = true;
+            
+            // Add user message
+            addMessage(message, true);
+            input.value = '';
+            
+            // Show typing indicator
+            showTyping();
+            
+            try {
+                // Call AI API
+                const response = await fetch('/api/language_ai/chat/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation_id: currentConversationId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide typing
+                hideTyping();
+                
+                if (data.success) {
+                    // Add AI response
+                    addMessage(data.response);
+                    
+                    // Update conversation ID
+                    if (data.conversation_id) {
+                        currentConversationId = data.conversation_id;
+                    }
+                    
+                    // Show corrections if any
+                    if (data.corrections && data.corrections.length > 0) {
+                        setTimeout(() => {
+                            let correctionText = "💡 <strong>Language Tips:</strong><br>";
+                            data.corrections.forEach(correction => {
+                                correctionText += `• ${correction}<br>`;
+                            });
+                            addMessage(correctionText);
+                        }, 1000);
+                    }
+                } else {
+                    addMessage("Sorry, I'm having trouble understanding. Could you try again?");
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                hideTyping();
+                addMessage("Sorry, there was an error. Please try again.");
+            }
+            
+            // Re-enable input
+            input.disabled = false;
+            document.getElementById('sendButton').disabled = false;
+            input.focus();
+        }
+
+        function startNewConversation() {
+            currentConversationId = null;
+            
+            // Clear chat
+            const chatContainer = document.getElementById('chatContainer');
+            const messages = chatContainer.querySelectorAll('.message:not(.typing-indicator .message)');
+            messages.forEach(msg => {
+                if (!msg.closest('.typing-indicator')) {
+                    msg.remove();
+                }
+            });
+            
+            // Add welcome message
+            addMessage("Hello! I'm ready for a new conversation. What would you like to practice today?");
+        }
+
+        function getCsrfToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') {
+                    return value;
+                }
+            }
+            
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            if (csrfMeta) {
+                return csrfMeta.content;
+            }
+            
+            const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            if (csrfInput) {
+                return csrfInput.value;
+            }
+            
+            return '';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('messageInput').focus();
+        });
+    </script>
+{% endblock %}

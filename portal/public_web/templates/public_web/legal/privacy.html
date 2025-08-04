@@ -1,0 +1,170 @@
+{% extends 'public_web/public_base.html' %}
+{% load static %}
+
+{% block title %}Politique de Confidentialité - Open Linguify{% endblock %}
+
+{% block meta_description %}Découvrez comment Open Linguify protège vos données personnelles et respecte votre vie privée.{% endblock %}
+
+{% block content %}
+<div class="legal-page">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 class="text-4xl font-bold text-gray-900 mb-8">Politique de Confidentialité</h1>
+        
+        <div class="prose prose-lg max-w-none">
+            <p class="text-gray-600 mb-6">
+                <strong>Dernière mise à jour :</strong> {{ "now"|date:"d/m/Y" }}
+            </p>
+
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-6 mb-8">
+                <p class="text-blue-800 font-medium">
+                    Open Linguify s'engage à protéger votre vie privée et vos données personnelles. 
+                    Cette politique explique comment nous collectons, utilisons et protégeons vos informations.
+                </p>
+            </div>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Informations que Nous Collectons</h2>
+                
+                <h3 class="text-xl font-medium text-gray-800 mb-3">Informations que vous nous fournissez :</h3>
+                <ul class="list-disc list-inside text-gray-700 mb-4 ml-4">
+                    <li>Nom et prénom lors de l'inscription</li>
+                    <li>Adresse e-mail</li>
+                    <li>Langue native et langue cible d'apprentissage</li>
+                    <li>Préférences d'apprentissage et objectifs</li>
+                    <li>Contenu créé (notes, flashcards, quiz)</li>
+                </ul>
+
+                <h3 class="text-xl font-medium text-gray-800 mb-3">Informations collectées automatiquement :</h3>
+                <ul class="list-disc list-inside text-gray-700 mb-4 ml-4">
+                    <li>Données d'utilisation et statistiques d'apprentissage</li>
+                    <li>Informations techniques (navigateur, système d'exploitation)</li>
+                    <li>Adresse IP et données de géolocalisation approximative</li>
+                    <li>Cookies et technologies similaires</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Comment Nous Utilisons Vos Données</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Nous utilisons vos informations pour :
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-4 ml-4">
+                    <li><strong>Fournir nos services :</strong> Personnaliser votre expérience d'apprentissage</li>
+                    <li><strong>Améliorer la plateforme :</strong> Analyser l'utilisation pour optimiser nos applications</li>
+                    <li><strong>Communication :</strong> Vous envoyer des notifications importantes et optionnelles</li>
+                    <li><strong>Support client :</strong> Répondre à vos questions et résoudre les problèmes</li>
+                    <li><strong>Sécurité :</strong> Protéger contre la fraude et les abus</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. Partage de Vos Données</h2>
+                <div class="bg-green-50 border-l-4 border-green-400 p-6 mb-6">
+                    <p class="text-green-800 font-medium">
+                        Open Linguify ne vend jamais vos données personnelles à des tiers.
+                    </p>
+                </div>
+                
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Nous pouvons partager vos données uniquement dans les cas suivants :
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-4 ml-4">
+                    <li><strong>Avec votre consentement explicite</strong></li>
+                    <li><strong>Fournisseurs de services :</strong> Partenaires techniques nécessaires au fonctionnement (hébergement, analytics)</li>
+                    <li><strong>Obligations légales :</strong> Si requis par la loi ou une décision judiciaire</li>
+                    <li><strong>Protection des droits :</strong> Pour protéger nos droits, votre sécurité ou celle d'autrui</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Sécurité des Données</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Nous mettons en œuvre des mesures de sécurité robustes :
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-4 ml-4">
+                    <li>Chiffrement des données en transit et au repos</li>
+                    <li>Accès restreint aux données personnelles</li>
+                    <li>Surveillance continue de la sécurité</li>
+                    <li>Audits réguliers de sécurité</li>
+                    <li>Formation du personnel sur la protection des données</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Vos Droits (RGPD)</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Conformément au RGPD, vous disposez des droits suivants :
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-4 ml-4">
+                    <li><strong>Droit d'accès :</strong> Consulter les données que nous détenons sur vous</li>
+                    <li><strong>Droit de rectification :</strong> Corriger les données inexactes</li>
+                    <li><strong>Droit à l'effacement :</strong> Demander la suppression de vos données</li>
+                    <li><strong>Droit à la portabilité :</strong> Récupérer vos données dans un format structuré</li>
+                    <li><strong>Droit d'opposition :</strong> Vous opposer au traitement de vos données</li>
+                    <li><strong>Droit de limitation :</strong> Limiter le traitement de vos données</li>
+                </ul>
+                
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Pour exercer ces droits, contactez-nous à : 
+                    <a href="mailto:privacy@openlinguify.com" class="text-blue-600 hover:text-blue-800">privacy@openlinguify.com</a>
+                </p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Conservation des Données</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Nous conservons vos données personnelles :
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-4 ml-4">
+                    <li>Tant que votre compte est actif</li>
+                    <li>Jusqu'à 30 jours après la suppression de votre compte (période de grâce)</li>
+                    <li>Plus longtemps si requis par la loi ou pour résoudre des litiges</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Transferts Internationaux</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Vos données peuvent être traitées dans des pays autres que votre pays de résidence. 
+                    Nous nous assurons que ces transferts respectent les standards de protection appropriés.
+                </p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. Mineurs</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Open Linguify est destiné aux utilisateurs de 16 ans et plus. 
+                    Nous ne collectons pas intentionnellement de données personnelles d'enfants de moins de 16 ans.
+                </p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. Modifications de cette Politique</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Nous pouvons mettre à jour cette politique de confidentialité. 
+                    Les changements importants vous seront notifiés par e-mail ou via la plateforme.
+                </p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. Contact</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Pour toute question concernant cette politique de confidentialité :
+                </p>
+                <ul class="list-none text-gray-700 mb-4">
+                    <li><strong>E-mail :</strong> <a href="mailto:privacy@openlinguify.com" class="text-blue-600 hover:text-blue-800">privacy@openlinguify.com</a></li>
+                    <li><strong>DPO :</strong> <a href="mailto:dpo@openlinguify.com" class="text-blue-600 hover:text-blue-800">dpo@openlinguify.com</a></li>
+                </ul>
+            </section>
+        </div>
+
+        <div class="mt-12 p-6 bg-blue-50 rounded-lg">
+            <h3 class="text-lg font-semibold text-blue-800 mb-3">Notre Engagement</h3>
+            <p class="text-blue-700">
+                Open Linguify s'engage à être transparent sur l'utilisation de vos données et à vous donner 
+                le contrôle sur vos informations personnelles. Votre confiance est essentielle pour nous.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

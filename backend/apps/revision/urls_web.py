@@ -11,6 +11,9 @@ urlpatterns = [
     # Page principale de révision
     path('', views_web.RevisionMainView.as_view(), name='main'),
     
+    # Stats dashboard
+    path('stats/', views_web.stats_dashboard, name='stats_dashboard'),
+    
     # Vue legacy (pour compatibilité)
     path('legacy/', views_web.revision_main, name='main_legacy'),
     

@@ -6,809 +6,409 @@
 {% block title %}{{ profile_user.username }} - {% trans "Profile" %} | Open Linguify{% endblock %}
 
 {% block extra_css %}
-<style>
-/* Profile Page Styles */
-:root {
-    --profile-primary: #6366f1;
-    --profile-secondary: #8b5cf6;
-    --profile-accent: #ec4899;
-    --profile-bg: #f8fafc;
-    --profile-card-bg: #ffffff;
-    --profile-text: #1e293b;
-    --profile-text-muted: #64748b;
-    --profile-border: #e2e8f0;
-    --profile-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --profile-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Main Profile Layout */
-.profile-container {
-    max-width: full;
-    max-height: 100vh;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-}
-
-/* Profile Header */
-.profile-header {
-    background: linear-gradient(135deg, var(--profile-primary) 0%, var(--profile-secondary) 100%);
-    border-radius: 1rem;
-    margin-bottom: -4rem;
-    padding: 3rem 2rem 6rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.profile-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="white" opacity="0.1"/></svg>') repeat;
-    opacity: 0.1;
-}
-
-/* Profile Card */
-.profile-card {
-    background: var(--profile-card-bg);
-    border-radius: 1rem;
-    box-shadow: var(--profile-shadow-lg);
-    margin-bottom: 2rem;
-    position: relative;
-    z-index: 10;
-}
-
-.profile-info {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    padding: 2rem;
-    align-items: center;
-}
-
-/* Profile Picture */
-.profile-picture-container {
-    position: relative;
-    flex-shrink: 0;
-}
-
-.profile-picture {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    border: 5px solid var(--profile-card-bg);
-    box-shadow: var(--profile-shadow-lg);
-    object-fit: cover;
-    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-}
-
-.profile-picture-edit {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: var(--profile-primary);
-    color: white;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: var(--profile-shadow);
-}
-
-.profile-picture-edit:hover {
-    background: var(--profile-secondary);
-    transform: scale(1.1);
-}
-
-/* Profile Details */
-.profile-details {
-    flex: 1;
-}
-
-.profile-name {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--profile-text);
-    margin-bottom: 0.5rem;
-}
-
-.profile-username {
-    color: var(--profile-text-muted);
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-}
-
-.profile-bio {
-    color: var(--profile-text);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-}
-
-.profile-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    color: var(--profile-text-muted);
-    font-size: 0.9rem;
-}
-
-.profile-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-/* Profile Stats */
-.profile-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    padding: 2rem;
-    border-top: 1px solid var(--profile-border);
-}
-
-.stat-item {
-    text-align: center;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    transition: all 0.3s ease;
-}
-
-.stat-item:hover {
-    background: var(--profile-bg);
-    transform: translateY(-2px);
-}
-
-.stat-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--profile-primary);
-    margin-bottom: 0.25rem;
-}
-
-.stat-label {
-    color: var(--profile-text-muted);
-    font-size: 0.9rem;
-}
-
-/* Badges Section */
-.badges-section {
-    padding: 2rem;
-    border-top: 1px solid var(--profile-border);
-}
-
-.badges-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.badge-item {
-    background: var(--profile-bg);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.badge-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--profile-shadow);
-}
-
-.badge-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.badge-name {
-    font-size: 0.8rem;
-    color: var(--profile-text-muted);
-}
-
-/* Activity Section */
-.activity-section {
-    background: var(--profile-card-bg);
-    border-radius: 1rem;
-    box-shadow: var(--profile-shadow);
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-
-.activity-timeline {
-    margin-top: 1.5rem;
-}
-
-.activity-item {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    border-left: 2px solid var(--profile-border);
-    margin-left: 1rem;
-    position: relative;
-}
-
-.activity-item::before {
-    content: '';
-    position: absolute;
-    left: -6px;
-    top: 1.5rem;
-    width: 10px;
-    height: 10px;
-    background: var(--profile-primary);
-    border-radius: 50%;
-}
-
-.activity-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--profile-bg);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.activity-content {
-    flex: 1;
-}
-
-.activity-title {
-    font-weight: 600;
-    color: var(--profile-text);
-    margin-bottom: 0.25rem;
-}
-
-.activity-time {
-    color: var(--profile-text-muted);
-    font-size: 0.85rem;
-}
-
-/* Learning Progress */
-.progress-section {
-    background: var(--profile-card-bg);
-    border-radius: 1rem;
-    box-shadow: var(--profile-shadow);
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-
-.language-progress {
-    margin-top: 1.5rem;
-}
-
-.language-item {
-    margin-bottom: 1.5rem;
-}
-
-.language-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.language-name {
-    font-weight: 600;
-    color: var(--profile-text);
-}
-
-.language-level {
-    color: var(--profile-text-muted);
-    font-size: 0.9rem;
-}
-
-.progress-bar-container {
-    background: var(--profile-bg);
-    border-radius: 0.5rem;
-    height: 10px;
-    overflow: hidden;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--profile-primary) 0%, var(--profile-secondary) 100%);
-    border-radius: 0.5rem;
-    transition: width 1s ease;
-}
-
-/* Connected Apps */
-.apps-section {
-    background: var(--profile-card-bg);
-    border-radius: 1rem;
-    box-shadow: var(--profile-shadow);
-    padding: 2rem;
-}
-
-.apps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
-
-.app-card {
-    background: var(--profile-bg);
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
-}
-
-.app-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--profile-shadow);
-    text-decoration: none;
-}
-
-.app-icon {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, var(--profile-primary) 0%, var(--profile-secondary) 100%);
-    border-radius: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    color: white;
-    font-size: 1.5rem;
-}
-
-.app-name {
-    font-weight: 600;
-    color: var(--profile-text);
-    margin-bottom: 0.25rem;
-}
-
-.app-usage {
-    color: var(--profile-text-muted);
-    font-size: 0.85rem;
-}
-
-/* Edit Profile Button */
-.edit-profile-btn {
-    background: var(--profile-primary);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.edit-profile-btn:hover {
-    background: var(--profile-secondary);
-    transform: translateY(-2px);
-    color: white;
-    text-decoration: none;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .profile-info {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .profile-meta {
-        justify-content: center;
-    }
-    
-    .profile-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .profile-picture {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .profile-name {
-        font-size: 1.5rem;
-    }
-}
-
-/* Loading Animation */
-.skeleton {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
-}
-
-/* Hover Effects */
-.hover-scale {
-    transition: transform 0.3s ease;
-}
-
-.hover-scale:hover {
-    transform: scale(1.05);
-}
-
-/* Section Headers */
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.section-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--profile-text);
-}
-
-.section-action {
-    color: var(--profile-primary);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
-}
-
-.section-action:hover {
-    color: var(--profile-secondary);
-}
-</style>
+<link rel="stylesheet" href="{% static 'authentication/css/profile.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="profile-container">
-    <!-- Profile Header -->
-    <div class="profile-header">
-        <div class="text-white text-center">
-            <h1 class="display-6 fw-bold">{% trans "Profile" %}</h1>
-            <p class="opacity-75">{% trans "Your learning journey on Open Linguify" %}</p>
+    <!-- Hero Profile Section -->
+    <div class="profile-hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <!-- Profile Avatar & Basic Info -->
+            <div class="profile-main-info">
+                <div class="avatar-container">
+                    {% if profile_user.get_profile_picture_url %}
+                        <img src="{{ profile_user.get_profile_picture_url }}" alt="{% trans 'Profile picture' %}" class="profile-avatar">
+                    {% else %}
+                        <div class="profile-avatar avatar-placeholder">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                    {% endif %}
+                    {% if user == profile_user %}
+                    <button class="avatar-edit-btn" data-bs-toggle="tooltip" title="{% trans 'Change profile picture' %}">
+                        <i class="bi bi-camera-fill"></i>
+                    </button>
+                    {% endif %}
+                    <div class="status-indicator online" title="{% trans 'Online' %}"></div>
+                </div>
+                
+                <div class="profile-identity">
+                    <h1 class="profile-display-name">{{ profile_user.name|default:profile_user.username }}</h1>
+                    <p class="profile-handle">@{{ profile_user.username }}</p>
+                    
+                    <div class="profile-badges">
+                        <span class="badge badge-verified">
+                            <i class="bi bi-patch-check-fill"></i>
+                            {% trans "Verified Learner" %}
+                        </span>
+                        <span class="badge badge-level">
+                            <i class="bi bi-star-fill"></i>
+                            {{ profile_user.get_language_level_display|default:"A1" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ profile_user.created_at|timesince }}</div>
+                        <div class="stat-label">{% trans "Learning since" %}</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ profile_user.get_language_level_display|default:"A1" }}</div>
+                        <div class="stat-label">{% trans "Current level" %}</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class="bi bi-target"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ profile_user.get_objectives_display|default:"Personal" }}</div>
+                        <div class="stat-label">{% trans "Learning goal" %}</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class="bi bi-translate"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ profile_user.get_target_language_display|default:"Spanish" }}</div>
+                        <div class="stat-label">{% trans "Target language" %}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="profile-actions">
+                {% if user == profile_user %}
+                    <a href="{% url 'saas_web:settings' %}" class="btn btn-primary">
+                        <i class="bi bi-gear"></i>
+                        {% trans "Edit Profile" %}
+                    </a>
+                    <a href="{% url 'course:dashboard' %}" class="btn btn-secondary">
+                        <i class="bi bi-play-circle"></i>
+                        {% trans "Continue Learning" %}
+                    </a>
+                {% else %}
+                    <button class="btn btn-primary">
+                        <i class="bi bi-person-plus"></i>
+                        {% trans "Follow" %}
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="bi bi-chat-dots"></i>
+                        {% trans "Message" %}
+                    </button>
+                {% endif %}
+            </div>
         </div>
     </div>
 
-    <!-- Profile Card -->
-    <div class="profile-card">
-        <div class="profile-info">
-            <!-- Profile Picture -->
-            <div class="profile-picture-container">
-                {% if profile_user.get_profile_picture_url %}
-                    <img src="{{ profile_user.get_profile_picture_url }}" alt="{% trans 'Profile picture' %}" class="profile-picture">
-                {% else %}
-                    <div class="profile-picture d-flex align-items-center justify-content-center">
-                        <i class="bi bi-person-fill" style="font-size: 4rem; color: #cbd5e1;"></i>
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+        <!-- Left Column - Main Content -->
+        <div class="main-content">
+            <!-- Learning Dashboard Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="header-content">
+                        <div class="header-icon">
+                            <i class="bi bi-mortarboard-fill"></i>
+                        </div>
+                        <div class="header-text">
+                            <h2 class="card-title">{% trans "Learning Dashboard" %}</h2>
+                            <p class="card-subtitle">{% trans "Track your language learning progress" %}</p>
+                        </div>
                     </div>
-                {% endif %}
-                {% if user == profile_user %}
-                <a href="{% url 'saas_web:settings' %}" class="profile-picture-edit" data-bs-toggle="tooltip" title="{% trans 'Change profile picture' %}">
-                    <i class="bi bi-camera"></i>
-                </a>
-                {% endif %}
-            </div>
-
-            <!-- Profile Details -->
-            <div class="profile-details">
-                <h2 class="profile-name">
-                    {{ profile_user.name|default:profile_user.username }}
-                </h2>
-                <p class="profile-username">@{{ profile_user.username }}</p>
-                
-                {% if profile_user.bio %}
-                <p class="profile-bio">{{ profile_user.bio }}</p>
-                {% else %}
-                <p class="profile-bio text-muted">{% trans "No bio yet" %}</p>
-                {% endif %}
-                
-                <div class="profile-meta">
-                    <div class="profile-meta-item">
-                        <i class="bi bi-calendar3"></i>
-                        <span>{% trans "Joined" %} {{ profile_user.created_at|date:"F Y" }}</span>
-                    </div>
-                    {% if profile_user.native_language %}
-                    <div class="profile-meta-item">
-                        <i class="bi bi-translate"></i>
-                        <span>{{ profile_user.get_native_language_display }} → {{ profile_user.get_target_language_display }}</span>
-                    </div>
-                    {% endif %}
-                </div>
-                
-                {% if user == profile_user %}
-                <div class="mt-3">
-                    <a href="{% url 'saas_web:settings' %}" class="edit-profile-btn">
-                        <i class="bi bi-pencil"></i>
-                        {% trans "Edit Profile" %}
+                    <a href="{% url 'course:dashboard' %}" class="view-all-btn">
+                        {% trans "View All" %}
+                        <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Profile Stats -->
-        <!-- <div class="profile-stats">
-            <!-- <div class="stat-item">
-                <div class="stat-value">{{ learning_stats.total_lessons|default:0 }}</div>
-                <div class="stat-label">{% trans "Lessons Completed" %}</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ learning_stats.study_streak|default:0 }}</div>
-                <div class="stat-label">{% trans "Day Streak" %} 🔥</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ learning_stats.words_learned|default:0 }}</div>
-                <div class="stat-label">{% trans "Words Learned" %}</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ learning_stats.total_xp|default:0|intcomma }}</div>
-                <div class="stat-label">{% trans "Total XP" %}</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ learning_stats.hours_studied|default:0 }}</div>
-                <div class="stat-label">{% trans "Hours Studied" %}</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ learning_stats.achievement_count|default:0 }}</div>
-                <div class="stat-label">{% trans "Achievements" %}</div>
-            </div> -->
-        </div> -->
-
-    <div class="row">
-        <div class="col-lg-8">
-            <!-- Recent Activity - Commented for future development -->
-            <!-- <div class="activity-section">
-                <div class="section-header">
-                    <h3 class="section-title">{% trans "Recent Activity" %}</h3>
-                    <a href="#" class="section-action">{% trans "View all" %}</a>
-                </div>
-                <div class="activity-timeline">
-                    {% for activity in recent_activities|slice:":5" %}
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="bi {{ activity.icon }}"></i>
+                
+                <div class="card-content">
+                    <!-- Progress Overview -->
+                    <div class="progress-overview">
+                        <div class="progress-item">
+                            <div class="progress-info">
+                                <span class="progress-label">{% trans "Daily Goal" %}</span>
+                                <span class="progress-value">6/15 {% trans "min" %}</span>
+                            </div>
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar-modern" data-width="40"></div>
+                            </div>
+                            <span class="progress-percentage">40%</span>
                         </div>
-                        <div class="activity-content">
-                            <div class="activity-title">{{ activity.title }}</div>
-                            <div class="activity-time">{{ activity.timestamp|naturaltime }}</div>
+                        
+                        <div class="progress-item">
+                            <div class="progress-info">
+                                <span class="progress-label">{% trans "Weekly Streak" %}</span>
+                                <span class="progress-value">5/7 {% trans "days" %}</span>
+                            </div>
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar-modern success" data-width="71"></div>
+                            </div>
+                            <span class="progress-percentage">71%</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <a href="{% url 'course:dashboard' %}" class="action-card primary">
+                            <div class="action-icon">
+                                <i class="bi bi-play-circle-fill"></i>
+                            </div>
+                            <div class="action-content">
+                                <span class="action-title">{% trans "Continue Lesson" %}</span>
+                                <span class="action-subtitle">{% trans "Spanish Basics" %}</span>
+                            </div>
+                        </a>
+                        
+                        {% for app in user_quick_actions %}
+                        <a href="{{ app.route_path }}" class="action-card">
+                            <div class="action-icon">
+                                <i class="bi {{ app.icon_class }}"></i>
+                            </div>
+                            <div class="action-content">
+                                <span class="action-title">{{ app.display_name }}</span>
+                                <span class="action-subtitle">{{ app.subtitle|default:"Available" }}</span>
+                            </div>
+                        </a>
+                        {% empty %}
+                        <a href="{% url 'revision_web:main' %}" class="action-card">
+                            <div class="action-icon">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </div>
+                            <div class="action-content">
+                                <span class="action-title">{% trans "Review" %}</span>
+                                <span class="action-subtitle">{% trans "12 cards due" %}</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Language Progress Card -->
+            <div class="language-progress-card">
+                <div class="card-header">
+                    <div class="header-content">
+                        <div class="header-icon">
+                            <i class="bi bi-translate"></i>
+                        </div>
+                        <div class="header-text">
+                            <h2 class="card-title">{% trans "Language Mastery" %}</h2>
+                            <p class="card-subtitle">{% trans "Your learning progression" %}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-content">
+                    {% for lang in language_progress %}
+                    <div class="language-mastery-item">
+                        <div class="language-info">
+                            <div class="language-flag">🇪🇸</div>
+                            <div class="language-details">
+                                <h4 class="language-name">{{ lang.name|default:"Spanish" }}</h4>
+                                <span class="language-level-badge">{{ lang.level|default:"B1" }}</span>
+                            </div>
+                            <div class="language-score">{{ lang.percentage|default:"65" }}%</div>
+                        </div>
+                        <div class="language-progress-bar">
+                            <div class="progress-track">
+                                <div class="progress-fill" data-width="{{ lang.percentage|default:'65' }}"></div>
+                            </div>
+                        </div>
+                        <div class="proficiency-levels">
+                            <span class="level-marker active" title="A1">A1</span>
+                            <span class="level-marker active" title="A2">A2</span>
+                            <span class="level-marker active" title="B1">B1</span>
+                            <span class="level-marker" title="B2">B2</span>
+                            <span class="level-marker" title="C1">C1</span>
+                            <span class="level-marker" title="C2">C2</span>
                         </div>
                     </div>
                     {% empty %}
-                    <p class="text-muted text-center py-4">{% trans "No recent activity to show" %}</p>
+                    <div class="language-mastery-item">
+                        <div class="language-info">
+                            <div class="language-flag">🇪🇸</div>
+                            <div class="language-details">
+                                <h4 class="language-name">Spanish</h4>
+                                <span class="language-level-badge">B1</span>
+                            </div>
+                            <div class="language-score">65%</div>
+                        </div>
+                        <div class="language-progress-bar">
+                            <div class="progress-track">
+                                <div class="progress-fill" data-width="65"></div>
+                            </div>
+                        </div>
+                        <div class="proficiency-levels">
+                            <span class="level-marker active" title="A1">A1</span>
+                            <span class="level-marker active" title="A2">A2</span>
+                            <span class="level-marker active" title="B1">B1</span>
+                            <span class="level-marker" title="B2">B2</span>
+                            <span class="level-marker" title="C1">C1</span>
+                            <span class="level-marker" title="C2">C2</span>
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
-            </div> -->
+            </div>
+        </div>
 
-            <!-- Quick Learning Overview -->
-            <div class="activity-section">
-                <div class="section-header">
-                    <h3 class="section-title">
-                        <i class="bi bi-graph-up-arrow me-2 text-primary"></i>
-                        {% trans "Learning Overview" %}
-                    </h3>
-                    <a href="{% url 'course:dashboard' %}" class="section-action">{% trans "View dashboard" %}</a>
+        <!-- Right Column - Sidebar -->
+        <div class="sidebar-content">
+            <!-- Apps & Tools -->
+            <div class="apps-tools-card">
+                <div class="card-header">
+                    <h3 class="card-title">{% trans "Learning Tools" %}</h3>
+                    <a href="{% url 'saas_web:app_store' %}" class="view-all-btn">
+                        {% trans "Browse" %}
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
                 </div>
                 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center p-3 bg-light rounded">
-                            <div class="me-3">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
-                                     style="width: 50px; height: 50px;">
-                                    <i class="bi bi-book"></i>
-                                </div>
+                <div class="card-content">
+                    <div class="tools-grid">
+                        {% for app in user_apps %}
+                        <a href="{{ app.route_path }}" class="tool-item">
+                            <div class="tool-icon">
+                                <i class="bi {{ app.icon_class }}"></i>
                             </div>
-                            <div>
-                                <h6 class="mb-1">{% trans "Current Level" %}</h6>
-                                <p class="mb-0 text-muted">
-                                    {{ profile_user.get_language_level_display|default:"A1" }} 
-                                    {% trans "in" %} {{ profile_user.get_target_language_display|default:"English" }}
-                                </p>
+                            <div class="tool-info">
+                                <span class="tool-name">{{ app.display_name }}</span>
+                                <span class="tool-usage">{{ app.last_used|naturaltime }}</span>
                             </div>
+                        </a>
+                        {% empty %}
+                        <a href="{{ app.route_path }}" class="tool-item">
+                            <div class="tool-icon">
+                                <i class="bi bi-chat-dots"></i>
+                            </div>
+                            <div class="tool-info">
+                                <span class="tool-name">Chat</span>
+                                <span class="tool-usage">il y a 2 heures</span>
+                            </div>
+                        </a>
+                        <a href="{{ app.route_path }}" class="tool-item">
+                            <div class="tool-icon">
+                                <i class="bi bi-robot"></i>
+                            </div>
+                            <div class="tool-info">
+                                <span class="tool-name">AI Conversation</span>
+                                <span class="tool-usage">il y a 2 heures</span>
+                            </div>
+                        </a>
+                        <a href="{{ app.route_path }}" class="tool-item">
+                            <div class="tool-icon">
+                                <i class="bi bi-journal-text"></i>
+                            </div>
+                            <div class="tool-info">
+                                <span class="tool-name">Notes</span>
+                                <span class="tool-usage">il y a 2 heures</span>
+                            </div>
+                        </a>
+                        <a href="{{ app.route_path }}" class="tool-item">
+                            <div class="tool-icon">
+                                <i class="bi bi-question-circle"></i>
+                            </div>
+                            <div class="tool-info">
+                                <span class="tool-name">Quiz</span>
+                                <span class="tool-usage">il y a 2 heures</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community & Achievements -->
+            <div class="community-achievements-card">
+                <div class="card-header">
+                    <h3 class="card-title">{% trans "Community & Achievements" %}</h3>
+                </div>
+                
+                <div class="card-content">
+                    <!-- Achievement Highlights -->
+                    <div class="achievements-preview">
+                        <div class="achievement-item">
+                            <div class="achievement-icon gold">
+                                <i class="bi bi-trophy-fill"></i>
+                            </div>
+                            <div class="achievement-info">
+                                <span class="achievement-title">{% trans "Learning Streak" %}</span>
+                                <span class="achievement-desc">5 {% trans "days in a row" %}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="achievement-item">
+                            <div class="achievement-icon blue">
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                            <div class="achievement-info">
+                                <span class="achievement-title">{% trans "Level Up" %}</span>
+                                <span class="achievement-desc">{% trans "Reached B1" %}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Community Actions -->
+                    <div class="community-actions">
+                        <a href="{% url 'community:discover' %}" class="community-btn">
+                            <i class="bi bi-people"></i>
+                            <span>{% trans "Find Partners" %}</span>
+                        </a>
+                        <a href="{% url 'community:feed' %}" class="community-btn">
+                            <i class="bi bi-chat-dots"></i>
+                            <span>{% trans "Join Discussion" %}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Summary -->
+            <div class="activity-summary-card">
+                <div class="card-header">
+                    <h3 class="card-title">{% trans "This Week" %}</h3>
+                </div>
+                
+                <div class="card-content">
+                    <div class="weekly-stats">
+                        <div class="week-stat">
+                            <span class="stat-number">{{ profile_user.created_at|timesince }}</span>
+                            <span class="stat-label">{% trans "Learning since" %}</span>
+                        </div>
+                        <div class="week-stat">
+                            <span class="stat-number">{% trans "Today" %}</span>
+                            <span class="stat-label">{% trans "Last active" %}</span>
                         </div>
                     </div>
                     
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center p-3 bg-light rounded">
-                            <div class="me-3">
-                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" 
-                                     style="width: 50px; height: 50px;">
-                                    <i class="bi bi-target"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <h6 class="mb-1">{% trans "Learning Goal" %}</h6>
-                                <p class="mb-0 text-muted">{{ profile_user.get_objectives_display|default:"Personal" }}</p>
-                            </div>
-                        </div>
+                    <div class="activity-indicator">
+                        <div class="activity-dot active" title="{% trans 'Monday' %}"></div>
+                        <div class="activity-dot active" title="{% trans 'Tuesday' %}"></div>
+                        <div class="activity-dot active" title="{% trans 'Wednesday' %}"></div>
+                        <div class="activity-dot active" title="{% trans 'Thursday' %}"></div>
+                        <div class="activity-dot active" title="{% trans 'Friday' %}"></div>
+                        <div class="activity-dot" title="{% trans 'Saturday' %}"></div>
+                        <div class="activity-dot" title="{% trans 'Sunday' %}"></div>
                     </div>
-                </div>
-
-                <div class="mt-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fw-semibold">{% trans "Daily Goal Progress" %}</span>
-                        <span class="text-muted">{{ profile_user.daily_goal|default:"15" }} {% trans "min/day" %}</span>
-                    </div>
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <small class="text-muted">{% trans "6 min completed today" %}</small>
-                </div>
-
-                <div class="mt-4 row g-2">
-                    <div class="col">
-                        <a href="{% url 'course:dashboard' %}" class="btn btn-primary w-100">
-                            <i class="bi bi-play-circle me-1"></i>
-                            {% trans "Continue Learning" %}
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="{% url 'revision_web:main' %}" class="btn btn-outline-secondary w-100">
-                            <i class="bi bi-arrow-clockwise me-1"></i>
-                            {% trans "Review" %}
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="{% url 'quizz_web:app' %}" class="btn btn-outline-info w-100">
-                            <i class="bi bi-question-circle me-1"></i>
-                            {% trans "Quiz" %}
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Learning Progress -->
-            <div class="progress-section">
-                <div class="section-header">
-                    <h3 class="section-title">{% trans "Language Progress" %}</h3>
-                    <a href="{% url 'course:dashboard' %}" class="section-action">{% trans "View details" %}</a>
-                </div>
-                <div class="language-progress">
-                    {% for lang in language_progress %}
-                    <div class="language-item">
-                        <div class="language-header">
-                            <span class="language-name">{{ lang.name }}</span>
-                            <span class="language-level">{{ lang.level }} - {{ lang.percentage }}%</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-fill" style="width: {{ lang.percentage }}%"></div>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <p class="text-muted text-center py-4">{% trans "Start learning to track your progress!" %}</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <!-- Connected Apps -->
-            <div class="apps-section">
-                <div class="section-header">
-                    <h3 class="section-title">{% trans "My Apps" %}</h3>
-                    <a href="{% url 'saas_web:app_store' %}" class="section-action">{% trans "Browse apps" %}</a>
-                </div>
-                <div class="apps-grid">
-                    {% for app in user_apps %}
-                    <a href="{{ app.route_path }}" class="app-card">
-                        <div class="app-icon">
-                            <i class="bi {{ app.icon_class }}"></i>
-                        </div>
-                        <div class="app-name">{{ app.display_name }}</div>
-                        <div class="app-usage">{{ app.last_used|naturaltime }}</div>
-                    </a>
-                    {% empty %}
-                    <div class="text-center py-4">
-                        <p class="text-muted mb-3">{% trans "No apps installed yet" %}</p>
-                        <a href="{% url 'saas_web:app_store' %}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-plus-circle me-1"></i>
-                            {% trans "Install Apps" %}
-                        </a>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Achievements & Badges - Commented for future development -->
-            <!-- <div class="apps-section mt-3">
-                <div class="section-header">
-                    <h3 class="section-title">{% trans "Achievements" %}</h3>
-                    <a href="#" class="section-action">{% trans "View all" %}</a>
-                </div>
-                <div class="badges-grid">
-                    {% for badge in user_badges|slice:":6" %}
-                    <div class="badge-item">
-                        <div class="badge-icon">{{ badge.icon }}</div>
-                        <div class="badge-name">{{ badge.name }}</div>
-                    </div>
-                    {% empty %}
-                    <div class="text-center py-4">
-                        <i class="bi bi-award" style="font-size: 3rem; color: #cbd5e1;"></i>
-                        <p class="text-muted mt-2">{% trans "Complete lessons to earn badges!" %}</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div> -->
-
-            <!-- Community & Social -->
-            <div class="apps-section mt-3">
-                <div class="section-header">
-                    <h3 class="section-title">
-                        <i class="bi bi-people me-2 text-success"></i>
-                        {% trans "Community" %}
-                    </h3>
-                    <a href="{% url 'community:main' %}" class="section-action">{% trans "Explore" %}</a>
-                </div>
-                
-                <div class="d-grid gap-2">
-                    <a href="{% url 'community:discover' %}" class="btn btn-outline-primary">
-                        <i class="bi bi-search me-2"></i>
-                        {% trans "Find Language Partners" %}
-                    </a>
-                    <a href="{% url 'community:groups' %}" class="btn btn-outline-info">
-                        <i class="bi bi-people me-2"></i>
-                        {% trans "Join Study Groups" %}
-                    </a>
-                    <a href="{% url 'community:feed' %}" class="btn btn-outline-success">
-                        <i class="bi bi-chat-dots me-2"></i>
-                        {% trans "Community Feed" %}
-                    </a>
-                </div>
-                
-                <div class="mt-3 p-3 bg-light rounded">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">{% trans "Connect & learn together" %}</small>
-                        <i class="bi bi-arrow-right text-primary"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="apps-section mt-3">
-                <div class="section-header">
-                    <h3 class="section-title">
-                        <i class="bi bi-graph-up me-2 text-warning"></i>
-                        {% trans "Quick Stats" %}
-                    </h3>
-                </div>
-                
-                <div class="row g-2 text-center">
-                    <div class="col-6">
-                        <div class="p-3 bg-light rounded">
-                            <div class="h5 mb-1 text-primary">{{ profile_user.created_at|timesince }}</div>
-                            <small class="text-muted">{% trans "Learning since" %}</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="p-3 bg-light rounded">
-                            <div class="h5 mb-1 text-success">{{ profile_user.get_language_level_display|default:"A1" }}</div>
-                            <small class="text-muted">{% trans "Current level" %}</small>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-2 text-center">
-                    <small class="text-muted">
-                        <i class="bi bi-calendar-check me-1"></i>
-                        {% trans "Last active" %}: {% trans "Today" %}
-                    </small>
                 </div>
             </div>
         </div>
@@ -818,49 +418,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function(tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-
-
-    // Animate progress bars on scroll
-    const progressBars = document.querySelectorAll('.progress-bar-fill');
-    const observerOptions = {
-        threshold: 0.5,
-        rootMargin: '0px 0px -100px 0px'
-    };
-
-    const progressObserver = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const width = entry.target.style.width;
-                entry.target.style.width = '0%';
-                setTimeout(() => {
-                    entry.target.style.width = width;
-                }, 100);
-                progressObserver.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    progressBars.forEach(bar => {
-        progressObserver.observe(bar);
-    });
-
-    // Add hover effect to activity items
-    const activityItems = document.querySelectorAll('.activity-item');
-    activityItems.forEach(item => {
-        item.addEventListener('mouseenter', function() {
-            this.style.backgroundColor = '#f8fafc';
-        });
-        item.addEventListener('mouseleave', function() {
-            this.style.backgroundColor = 'transparent';
-        });
-    });
-});
-</script>
+<script src="{% static 'authentication/js/profile.js' %}"></script>
 {% endblock %}

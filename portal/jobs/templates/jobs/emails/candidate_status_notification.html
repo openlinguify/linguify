@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Update - Linguify</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .email-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .content {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .status-update {
+            background-color: #f3f4f6;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .status-reviewed { background-color: #dbeafe; color: #1e40af; }
+        .status-interview { background-color: #e0d4f7; color: #6b46c1; }
+        .status-offer { background-color: #d1fae5; color: #059669; }
+        .status-hired { background-color: #a7f3d0; color: #047857; }
+        .status-rejected { background-color: #fee2e2; color: #dc2626; }
+        .status-withdrawn { background-color: #e5e7eb; color: #374151; }
+        .next-steps {
+            background-color: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 14px;
+            color: #6b7280;
+            text-align: center;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 15px 0;
+        }
+        .cta-button:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">Open Linguify</div>
+        </div>
+        
+        <div class="content">
+            <p>Dear {{ application.first_name }},</p>
+            
+            {% if new_status == 'reviewed' %}
+            <h2 style="color: #1e40af;">Great news! Your application is being reviewed 📋</h2>
+            <p>We wanted to let you know that your application for the <strong>{{ application.position.title }}</strong> position is currently under review by our recruitment team.</p>
+            
+            {% elif new_status == 'interview' %}
+            <h2 style="color: #6b46c1;">Congratulations! You've been selected for an interview 🎯</h2>
+            <p>We're impressed with your application for the <strong>{{ application.position.title }}</strong> position and would like to invite you for an interview.</p>
+            
+            {% elif new_status == 'offer' %}
+            <h2 style="color: #059669;">Exciting news! We'd like to make you an offer 🎉</h2>
+            <p>We're delighted to inform you that we would like to offer you the <strong>{{ application.position.title }}</strong> position at Linguify!</p>
+            
+            {% elif new_status == 'hired' %}
+            <h2 style="color: #047857;">Welcome to the Linguify team! ✅</h2>
+            <p>We're thrilled to officially welcome you to Linguify as our new <strong>{{ application.position.title }}</strong>!</p>
+            
+            {% elif new_status == 'rejected' %}
+            <h2>Thank you for your interest in Linguify</h2>
+            <p>After careful consideration of your application for the <strong>{{ application.position.title }}</strong> position, we have decided to move forward with other candidates whose experience more closely matches our current needs.</p>
+            
+            {% elif new_status == 'withdrawn' %}
+            <h2>Application Withdrawn</h2>
+            <p>Your application for the <strong>{{ application.position.title }}</strong> position has been withdrawn as requested.</p>
+            {% endif %}
+            
+            {% if new_status != 'rejected' %}
+            <div class="status-update">
+                <p style="color: #6b7280; margin-bottom: 10px;">Your application status:</p>
+                <span class="status-badge status-{{ new_status }}">{{ status_display }}</span>
+            </div>
+            {% endif %}
+            
+            {% if new_status == 'reviewed' %}
+            <div class="next-steps">
+                <h4 style="margin-top: 0;">What happens next?</h4>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li>Our team is carefully reviewing all applications</li>
+                    <li>This process typically takes 3-5 business days</li>
+                    <li>We'll contact you with the next steps if you're selected to move forward</li>
+                </ul>
+            </div>
+            
+            {% elif new_status == 'interview' %}
+            <div class="next-steps">
+                <h4 style="margin-top: 0;">What happens next?</h4>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li>Our HR team will contact you within 2 business days to schedule your interview</li>
+                    <li>The interview will be conducted via video call or in person</li>
+                    <li>Please prepare any questions you might have about the role or Linguify</li>
+                </ul>
+            </div>
+            <p><strong>Important:</strong> Please check your email regularly and ensure linguify.info@gmail.com is not marked as spam.</p>
+            
+            {% elif new_status == 'offer' %}
+            <div class="next-steps">
+                <h4 style="margin-top: 0;">What happens next?</h4>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li>You will receive a formal offer letter within 2 business days</li>
+                    <li>The offer will include details about salary, benefits, and start date</li>
+                    <li>You'll have time to review and consider the offer</li>
+                    <li>Our HR team is available to answer any questions</li>
+                </ul>
+            </div>
+            <p style="text-align: center; margin-top: 30px;">
+                <strong>We're excited about the possibility of having you join our team!</strong>
+            </p>
+            
+            {% elif new_status == 'hired' %}
+            <div class="next-steps" style="background-color: #d1fae5; border-color: #059669;">
+                <h4 style="margin-top: 0;">Your onboarding process</h4>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li>Our HR team will contact you with onboarding details</li>
+                    <li>You'll receive information about your first day</li>
+                    <li>We'll send you necessary documentation to complete</li>
+                    <li>Your team is looking forward to meeting you!</li>
+                </ul>
+            </div>
+            
+            {% elif new_status == 'rejected' %}
+            <p>We appreciate the time and effort you put into your application. While this particular position wasn't the right fit, we encourage you to apply for other opportunities at Linguify that match your skills and experience.</p>
+            <p>We wish you the very best in your job search and future career endeavors.</p>
+            {% endif %}
+            
+            {% if new_status != 'rejected' and new_status != 'withdrawn' %}
+            <p>If you have any questions about your application or the process, please don't hesitate to reach out to us at <a href="mailto:linguify.info@gmail.com">linguify.info@gmail.com</a>.</p>
+            {% endif %}
+            
+            <p>Best regards,<br>
+            <strong>The Linguify Recruitment Team</strong></p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Open Linguify</strong><br>
+            Building the future of language learning<br>
+            <a href="https://openlinguify.com">openlinguify.com</a> | <a href="mailto:linguify.info@gmail.com">linguify.info@gmail.com</a></p>
+            
+            <p style="font-size: 12px; margin-top: 15px;">
+                This email was sent because your job application status was updated.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

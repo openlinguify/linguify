@@ -1,0 +1,274 @@
+{% extends 'public_web/public_base.html' %}
+{% load static i18n %}
+
+{% block title %}{{ title }} - Open Linguify Docs{% endblock %}
+
+{% block extra_css %}
+<!-- Docs header override -->
+<style>
+.navbar-brand::after {
+    content: " Docs";
+    color: var(--linguify-accent, #00D4AA);
+    font-weight: 600;
+}
+</style>
+
+<!-- Documentation specific styles -->
+<style>
+    :root {
+        --linguify-primary: #2D5BBA;
+        --linguify-secondary: #8B5CF6;
+        --linguify-accent: #00D4AA;
+        --linguify-gray: #6B7280;
+        --sidebar-width: 280px;
+    }
+
+    .docs-container {
+        display: flex;
+        min-height: calc(100vh - 200px);
+        margin-top: 2rem;
+    }
+
+    .docs-sidebar {
+        width: var(--sidebar-width);
+        background: #f8fafc;
+        border-right: 1px solid #e5e7eb;
+        padding: 1.5rem 0;
+        position: sticky;
+        top: 2rem;
+        height: fit-content;
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+    }
+
+    .sidebar-section {
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1.5rem;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar-link:hover {
+        background: white;
+        color: var(--linguify-primary);
+        border-left-color: var(--linguify-accent);
+        text-decoration: none;
+    }
+
+    .sidebar-link.active {
+        background: white;
+        color: var(--linguify-primary);
+        border-left-color: var(--linguify-primary);
+        font-weight: 500;
+    }
+
+    .sidebar-link i {
+        margin-right: 0.75rem;
+        width: 16px;
+    }
+
+    .docs-content {
+        flex: 1;
+        padding: 0 3rem;
+        max-width: calc(100% - var(--sidebar-width));
+    }
+
+    .docs-content h1 {
+        color: var(--linguify-primary);
+        margin-bottom: 2rem;
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .docs-content h2 {
+        color: #1f2937;
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        font-size: 1.75rem;
+        font-weight: 600;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+    }
+
+    .docs-content h3 {
+        color: #374151;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    /* Code highlighting */
+    pre {
+        background: #1f2937;
+        color: #f9fafb;
+        padding: 1.5rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+    }
+
+    code {
+        background: #f3f4f6;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 0.875rem;
+    }
+
+    /* Alerts */
+    .alert-info {
+        background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+        border: 1px solid #3b82f6;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border: 1px solid #10b981;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .alert-warning {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .docs-container {
+            flex-direction: column;
+        }
+        
+        .docs-sidebar {
+            width: 100%;
+            position: static;
+            max-height: none;
+        }
+        
+        .docs-content {
+            max-width: 100%;
+            padding: 1rem;
+        }
+    }
+</style>
+
+<!-- Prism.js for syntax highlighting -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="docs-container">
+        <!-- Sidebar -->
+        <nav class="docs-sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">{% trans "Getting Started" %}</div>
+                <a href="{% url 'docs:home' %}" class="sidebar-link">
+                    <i class="bi bi-house"></i>
+                    {% trans "Overview" %}
+                </a>
+                <a href="{% url 'docs:quick_start' %}" class="sidebar-link">
+                    <i class="bi bi-play-circle"></i>
+                    {% trans "Quick Start" %}
+                </a>
+                <a href="{% url 'docs:environment_setup' %}" class="sidebar-link">
+                    <i class="bi bi-gear"></i>
+                    {% trans "Environment Setup" %}
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">{% trans "Development" %}</div>
+                <a href="{% url 'docs:developer_guidelines' %}" class="sidebar-link">
+                    <i class="bi bi-code-slash"></i>
+                    {% trans "Developer Guidelines" %}
+                </a>
+                <a href="{% url 'docs:page' page_path='development/create-new-module' %}" class="sidebar-link">
+                    <i class="bi bi-plus-circle"></i>
+                    {% trans "Create New Module" %}
+                </a>
+                <a href="{% url 'docs:page' page_path='backend/architecture/project-structure' %}" class="sidebar-link">
+                    <i class="bi bi-diagram-3"></i>
+                    {% trans "Project Structure" %}
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">{% trans "API Reference" %}</div>
+                <a href="{% url 'docs:api_reference' %}" class="sidebar-link">
+                    <i class="bi bi-cloud"></i>
+                    {% trans "API Documentation" %}
+                </a>
+                <a href="{% url 'docs:page' page_path='backend/models-overview' %}" class="sidebar-link">
+                    <i class="bi bi-database"></i>
+                    {% trans "Models Overview" %}
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">{% trans "Translation" %}</div>
+                <a href="{% url 'docs:translation_guide' %}" class="sidebar-link">
+                    <i class="bi bi-translate"></i>
+                    {% trans "Translation Guide" %}
+                    <span class="badge bg-success ms-2">{% trans "NEW" %}</span>
+                </a>
+                <a href="{% url 'docs:page' page_path='translations/README' %}" class="sidebar-link">
+                    <i class="bi bi-globe"></i>
+                    {% trans "Language Status" %}
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="docs-content">
+            {% block docs_content %}
+            {% endblock %}
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Prism.js for syntax highlighting -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Highlight active sidebar link based on current URL
+    const currentPath = window.location.pathname;
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    
+    sidebarLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+{% endblock %}

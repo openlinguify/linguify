@@ -1,0 +1,89 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Select Organization - Linguify LMS{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Your Organizations</h1>
+        <p class="text-muted mb-4">Select an organization to access its LMS instance:</p>
+    </div>
+</div>
+
+<div class="row">
+    {% for membership in user.organizationmembership_set.all %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ membership.organization.name }}</h5>
+                <p class="card-text">
+                    <small class="text-muted">Role: {{ membership.get_role_display }}</small><br>
+                    <small class="text-muted">Joined: {{ membership.joined_at|date:"M d, Y" }}</small>
+                </p>
+                <div class="mt-3">
+                    <a href="/org/{{ membership.organization.slug }}/" class="btn btn-primary">
+                        Access LMS
+                    </a>
+                    {% if membership.role == 'owner' or membership.role == 'admin' %}
+                    <a href="/org/{{ membership.organization.slug }}/administration/" class="btn btn-outline-secondary">
+                        Admin Panel
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h5>No organizations found</h5>
+            <p>You are not a member of any organization yet.</p>
+            <a href="/tenants/register/" class="btn btn-primary">Register New Organization</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if user.is_superuser %}
+<hr class="my-5">
+<div class="row">
+    <div class="col-12">
+        <h3>All Organizations (Admin View)</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>Database</th>
+                        <th>Plan</th>
+                        <th>Active</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for org in all_organizations %}
+                    <tr>
+                        <td>{{ org.name }}</td>
+                        <td><code>{{ org.slug }}</code></td>
+                        <td><small>{{ org.database_name }}</small></td>
+                        <td>{{ org.plan }}</td>
+                        <td>
+                            {% if org.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="/org/{{ org.slug }}/" class="btn btn-sm btn-primary">Access</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -4,7 +4,29 @@
 {% block title %}App Store - Open Linguify{% endblock %}
 
 {% block extra_css %}
+<!-- Preload critical icons pour ultra performance -->
+<link rel="preload" href="/app-icons/community/icon.png" as="image">
+<link rel="preload" href="/app-icons/chat/icon.png" as="image">
+<link rel="preload" href="/app-icons/course/icon.png" as="image">
+<link rel="preload" href="/app-icons/documents/icon.png" as="image">
+<link rel="preload" href="/app-icons/language_ai/icon.png" as="image">
+<link rel="preload" href="/app-icons/notebook/icon.png" as="image">
+<link rel="preload" href="/app-icons/quizz/icon.png" as="image">
+<link rel="preload" href="/app-icons/revision/icon.png" as="image">
+
 <link rel="stylesheet" href="{% static 'app_manager/css/app_store.css' %}">
+<style>
+/* Critical CSS inline pour ultra performance */
+.app-store-container{display:flex;max-width:1400px;margin:0 auto;gap:2rem;padding:2rem}
+.app-store-sidebar{width:250px;flex-shrink:0}
+.app-store-main{flex:1}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
+.app-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.5rem;transition:all .3s ease;cursor:pointer;position:relative}
+.app-card:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(0,0,0,.08);border-color:#6366f1}
+.app-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem}
+.app-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#fff;flex-shrink:0}
+.app-icon img{will-change:transform;backface-visibility:hidden}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -23,32 +45,23 @@
                     <i class="bi bi-grid-3x3-gap category-icon"></i>
                     <span>Toutes les apps</span>
                 </div>
-                <span class="category-count" id="count-all">{{ apps|length }}</span>
+                <span class="category-count" id="count-all">{{ total_apps }}</span>
             </button>
             
-            <button class="category-item" data-category="learning">
+            <!-- Catégories dynamiques depuis les manifests -->
+            {% for category_id, definition in category_definitions.items %}
+            <button class="category-item" data-category="{{ category_id }}">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-book category-icon"></i>
-                    <span>Apprentissage</span>
+                    <i class="{{ definition.icon }} category-icon"></i>
+                    <span>{{ definition.label }}</span>
                 </div>
-                <span class="category-count" id="count-learning">3</span>
+                <span class="category-count" id="count-{{ category_id }}">
+                    {% for cat_id, count in category_counts.items %}
+                        {% if cat_id == category_id %}{{ count }}{% endif %}
+                    {% empty %}0{% endfor %}
+                </span>
             </button>
-            
-            <button class="category-item" data-category="productivity">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-journal-text category-icon"></i>
-                    <span>Productivité</span>
-                </div>
-                <span class="category-count" id="count-productivity">2</span>
-            </button>
-            
-            <button class="category-item" data-category="ai">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-robot category-icon"></i>
-                    <span>Intelligence IA</span>
-                </div>
-                <span class="category-count" id="count-ai">1</span>
-            </button>
+            {% endfor %}
         </div>
     </aside>
 
@@ -66,17 +79,14 @@
             <div class="app-card" data-category="{{ app.category|default:'other' }}" data-app-id="{{ app.id }}">
                 <!-- App Header -->
                 <div class="app-header">
-                    <div class="app-icon" style="{% if not app.static_icon %}background: {{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }};{% else %}background: transparent; border: 1px solid #e2e8f0; border-radius: 12px;{% endif %}">
-                        {% if app.static_icon %}
-                            <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon" style="width: 40px; height: 40px; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'; this.parentElement.style.background='{{ app.color_gradient|default:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}';">
-                            <i class="bi {{ app.icon|default:'bi-app' }}" style="display: none; color: white;"></i>
-                        {% else %}
-                            <i class="bi {{ app.icon|default:'bi-app' }}" style="color: white;"></i>
+                    <div class="app-icon" style="background: transparent; border: 1px solid #e2e8f0; border-radius: 12px;">
+                        {% if app.name in 'community,chat,course,documents,language_ai,notebook,quizz,revision' %}
+                            <img src="/app-icons/{{ app.name }}/icon.png" alt="{{ app.display_name }} icon" style="width: 40px; height: 40px; object-fit: contain;">
                         {% endif %}
                     </div>
                     <div class="app-info">
                         <h3 class="app-title">{{ app.display_name }}</h3>
-                        <span class="app-category">{{ app.category|title|default:'Application' }}</span>
+                        <span class="app-category">{{ app.category_display|default:'Application' }}</span>
                     </div>
                     <div class="install-toggle">
                         <input type="checkbox" id="toggle-{{ app.id }}" 
@@ -181,332 +191,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Elements
-    const categoryButtons = document.querySelectorAll('.category-item');
-    const searchInput = document.getElementById('searchInput');
-    const appsGrid = document.getElementById('appsGrid');
-    const emptyState = document.getElementById('emptyState');
-    const toggleInputs = document.querySelectorAll('.install-toggle input[type="checkbox"]');
-    
-    // Current filter
-    let currentCategory = 'all';
-    let currentSearch = '';
-    
-    // Category filtering
-    categoryButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            categoryButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            currentCategory = this.dataset.category;
-            filterApps();
-        });
-    });
-    
-    // Search functionality
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            currentSearch = this.value.toLowerCase();
-            filterApps();
-        });
-    }
-    
-    // Filter apps function
-    function filterApps() {
-        const appCards = document.querySelectorAll('.app-card');
-        let visibleCount = 0;
-        
-        console.log(`=== FILTRAGE CATÉGORIE: ${currentCategory} ===`);
-        
-        appCards.forEach(card => {
-            const category = card.dataset.category || '';
-            const title = card.querySelector('.app-title').textContent;
-            const titleLower = title.toLowerCase();
-            const description = card.querySelector('.app-description').textContent.toLowerCase();
-            
-            // Category matching avec mapping des catégories
-            let matchesCategory = currentCategory === 'all';
-            if (!matchesCategory) {
-                const categoryLower = category.toLowerCase();
-                switch(currentCategory) {
-                    case 'learning':
-                        matchesCategory = categoryLower.includes('apprentissage') || 
-                                        categoryLower.includes('learning') || 
-                                        categoryLower.includes('education');
-                        break;
-                    case 'productivity':
-                        matchesCategory = categoryLower.includes('productivité') || 
-                                        categoryLower.includes('productivity');
-                        break;
-                    case 'ai':
-                        matchesCategory = categoryLower.includes('intelligence') || 
-                                        categoryLower.includes('ia') || 
-                                        categoryLower.includes('ai');
-                        break;
-                    default:
-                        matchesCategory = categoryLower === currentCategory;
-                }
-            }
-            
-            const matchesSearch = currentSearch === '' || 
-                                titleLower.includes(currentSearch) || 
-                                description.includes(currentSearch);
-            
-            const shouldShow = matchesCategory && matchesSearch;
-            
-            // Debug pour productivité
-            if (currentCategory === 'productivity') {
-                console.log(`${title}:`);
-                console.log(`  - Catégorie: "${category}"`);
-                console.log(`  - Catégorie lowercase: "${category.toLowerCase()}"`);
-                console.log(`  - Matches category: ${matchesCategory}`);
-                console.log(`  - Matches search: ${matchesSearch}`);
-                console.log(`  - Should show: ${shouldShow}`);
-            }
-            
-            if (shouldShow) {
-                card.style.display = 'block';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-        
-        // Show/hide empty state
-        if (visibleCount === 0 && appsGrid) {
-            appsGrid.style.display = 'none';
-            if (emptyState) emptyState.style.display = 'block';
-        } else if (appsGrid) {
-            appsGrid.style.display = 'grid';
-            if (emptyState) emptyState.style.display = 'none';
-        }
-    }
-    
-    // Toggle functionality
-    toggleInputs.forEach(toggle => {
-        toggle.addEventListener('change', function() {
-            const appId = this.dataset.appId;
-            const isInstalling = this.checked;
-            const card = this.closest('.app-card');
-            
-            // Si on désinstalle, montrer la modal de confirmation
-            if (!isInstalling) {
-                showUninstallModal(appId, this, card);
-                return;
-            }
-            
-            // Sinon, installer directement
-            toggleApp(appId, this, card, isInstalling);
-        });
-    });
-    
-    function showUninstallModal(appId, toggle, card) {
-        // Remettre le toggle en position "on" temporairement
-        toggle.checked = true;
-        
-        // Récupérer les infos de l'app
-        const appName = card.querySelector('.app-title').textContent;
-        const appIcon = card.querySelector('.app-icon i').className;
-        const appIconBg = card.querySelector('.app-icon').style.background;
-        
-        // Configurer la modal
-        const modal = document.getElementById('uninstallModal');
-        const modalAppName = document.getElementById('modalAppName');
-        const modalAppIcon = document.getElementById('modalAppIcon');
-        const confirmButton = document.getElementById('confirmUninstall');
-        
-        // Mettre à jour le contenu de la modal
-        modalAppName.textContent = appName;
-        modalAppIcon.innerHTML = `<i class="${appIcon}"></i>`;
-        modalAppIcon.style.background = appIconBg;
-        
-        // Gérer la confirmation
-        const handleConfirm = () => {
-            const bootstrapModal = bootstrap.Modal.getInstance(modal);
-            bootstrapModal.hide();
-            toggleApp(appId, toggle, card, false);
-            confirmButton.removeEventListener('click', handleConfirm);
-        };
-        
-        // Gérer l'annulation
-        const handleCancel = () => {
-            toggle.checked = true; // Remettre en position "installé"
-            confirmButton.removeEventListener('click', handleConfirm);
-        };
-        
-        confirmButton.addEventListener('click', handleConfirm);
-        modal.addEventListener('hidden.bs.modal', handleCancel, { once: true });
-        
-        // Montrer la modal
-        const bootstrapModal = new bootstrap.Modal(modal);
-        bootstrapModal.show();
-    }
-    
-    function toggleApp(appId, toggleInput, card, isInstalling) {
-        // Show loading
-        const loadingOverlay = card.querySelector('.loading-overlay');
-        const statusDiv = card.querySelector('.install-status');
-        const openButton = card.querySelector('.btn');
-        
-        loadingOverlay.style.display = 'flex';
-        card.classList.add('installing');
-        
-        fetch(`{% url 'saas_web:api_app_toggle' 0 %}`.replace('0', appId), {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCsrfToken(),
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update toggle state
-                toggleInput.checked = isInstalling;
-                
-                // Update status
-                statusDiv.className = `install-status ${data.is_enabled ? 'installed' : ''}`;
-                statusDiv.innerHTML = data.is_enabled ? 
-                    '<i class="bi bi-check-circle me-1"></i>Installée' : 
-                    '<i class="bi bi-download me-1"></i>Non installée';
-                
-                // Update open button
-                const footer = card.querySelector('.app-footer');
-                if (data.is_enabled && !openButton) {
-                    footer.innerHTML += `
-                        <a href="#" class="btn btn-primary btn-sm">
-                            <i class="bi bi-box-arrow-up-right me-1"></i>Ouvrir
-                        </a>
-                    `;
-                } else if (!data.is_enabled && openButton) {
-                    openButton.remove();
-                }
-                
-                // Show success message with data retention info for uninstall
-                let message = data.message;
-                if (!isInstalling) {
-                    message += '. Vos données seront conservées 30 jours.';
-                }
-                
-                showToast(message, 'success');
-            } else {
-                // Revert toggle on error
-                toggleInput.checked = !isInstalling;
-                throw new Error(data.error || 'Erreur lors de l\'opération');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            toggleInput.checked = !isInstalling;
-            showToast('Erreur lors de l\'opération', 'error');
-        })
-        .finally(() => {
-            loadingOverlay.style.display = 'none';
-            card.classList.remove('installing');
-        });
-    }
-    
-    function getCsrfToken() {
-        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
-        if (csrfInput) return csrfInput.value;
-        
-        const csrfCookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
-        if (csrfCookie) return csrfCookie.split('=')[1];
-        
-        return '';
-    }
-    
-    function showToast(message, type) {
-        const toastContainer = document.querySelector('.toast-container');
-        const isSuccess = type === 'success';
-        
-        const toast = document.createElement('div');
-        toast.className = `toast ${isSuccess ? 'bg-success' : 'bg-danger'} text-white`;
-        toast.innerHTML = `
-            <div class="toast-body d-flex align-items-center">
-                <i class="bi ${isSuccess ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'} me-2"></i>
-                ${message}
-            </div>
-        `;
-        
-        toastContainer.appendChild(toast);
-        
-        // Show toast with Bootstrap
-        if (typeof bootstrap !== 'undefined') {
-            const bsToast = new bootstrap.Toast(toast, {
-                autohide: true,
-                delay: 3000
-            });
-            bsToast.show();
-            
-            // Remove after hiding
-            toast.addEventListener('hidden.bs.toast', () => {
-                toast.remove();
-            });
-        } else {
-            // Fallback without Bootstrap
-            toast.style.opacity = '1';
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-    }
-    
-    // Mettre à jour les compteurs de catégories
-    function updateCategoryCounts() {
-        const appCards = document.querySelectorAll('.app-card');
-        const counts = {
-            all: appCards.length,
-            learning: 0,
-            productivity: 0,
-            ai: 0
-        };
-        
-        appCards.forEach(card => {
-            const category = (card.dataset.category || '').toLowerCase();
-            
-            if (category.includes('apprentissage') || category.includes('learning') || category.includes('education')) {
-                counts.learning++;
-            }
-            if (category.includes('productivité') || category.includes('productivity')) {
-                counts.productivity++;
-            }
-            if (category.includes('intelligence') || category.includes('ia') || category.includes('ai')) {
-                counts.ai++;
-            }
-        });
-        
-        // Mettre à jour les compteurs dans l'interface
-        Object.keys(counts).forEach(cat => {
-            const elem = document.getElementById(`count-${cat}`);
-            if (elem) elem.textContent = counts[cat];
-        });
-    }
-    
-    // Appeler la fonction au chargement
-    updateCategoryCounts();
-    
-    // Debug: afficher les catégories des apps au chargement
-    console.log('=== DEBUG CATÉGORIES ===');
-    document.querySelectorAll('.app-card').forEach(card => {
-        const title = card.querySelector('.app-title').textContent;
-        const category = card.dataset.category;
-        const categoryLower = (category || '').toLowerCase();
-        
-        const isLearning = categoryLower.includes('apprentissage') || categoryLower.includes('learning') || categoryLower.includes('education');
-        const isProductivity = categoryLower.includes('productivité') || categoryLower.includes('productivity');
-        const isAI = categoryLower.includes('intelligence') || categoryLower.includes('ia') || categoryLower.includes('ai');
-        
-        console.log(`${title}:`);
-        console.log(`  - Catégorie brute: "${category}"`);
-        console.log(`  - Catégorie lowercase: "${categoryLower}"`);
-        console.log(`  - Apprentissage: ${isLearning}`);
-        console.log(`  - Productivité: ${isProductivity}`);
-        console.log(`  - IA: ${isAI}`);
-        console.log('---');
-    });
-});
-</script>
+<!-- Pass Django URL to JavaScript -->
+<div data-toggle-url="{% url 'app_manager:api_app_toggle' 0 %}" style="display: none;"></div>
+<script src="{% static 'app_manager/js/app_store.js' %}?v=2"></script>
 {% endblock %}

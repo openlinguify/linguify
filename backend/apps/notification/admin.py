@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.utils import timezone
 from django.db.models import Q
 
-from .models import Notification, NotificationSetting, NotificationDevice
+from .models.notification_models import Notification, NotificationSetting, NotificationDevice
 
 class ExpirationFilter(admin.SimpleListFilter):
     """
@@ -38,7 +38,7 @@ class NotificationTypeFilter(admin.SimpleListFilter):
     parameter_name = 'type'
     
     def lookups(self, request, model_admin):
-        from .models import NotificationType
+        from .models.notification_models import NotificationType
         return NotificationType.choices
     
     def queryset(self, request, queryset):
@@ -53,7 +53,7 @@ class NotificationPriorityFilter(admin.SimpleListFilter):
     parameter_name = 'priority'
     
     def lookups(self, request, model_admin):
-        from .models import NotificationPriority
+        from .models.notification_models import NotificationPriority
         return NotificationPriority.choices
     
     def queryset(self, request, queryset):

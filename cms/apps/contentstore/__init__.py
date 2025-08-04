@@ -1,0 +1,1 @@
+# Contentstore app - Course content management following OpenEdX patterns

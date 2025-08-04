@@ -14,9 +14,6 @@ import subprocess
 import io
 import sys
 from .models import SitemapLog, SitemapGenerationReport, SEOPageMetrics, SearchEngineStatus, SystemManagement
-from .jobs.admin import *  # Import jobs admin configurations
-
-
 @admin.register(SitemapLog)
 class SitemapLogAdmin(admin.ModelAdmin):
     list_display = ['action', 'sitemaps_generated', 'timestamp', 'success', 'colored_status']

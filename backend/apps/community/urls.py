@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views, api_views
+from .views import CommunitySettingsView
 
 app_name = 'community'
 
@@ -28,4 +29,7 @@ urlpatterns = [
     path('api/language-partners/', api_views.get_language_partners, name='get_language_partners'),
     path('api/language-exchange/create-room/', api_views.create_language_exchange_room, name='create_language_exchange_room'),
     path('api/friend-suggestions/', api_views.get_friend_suggestions, name='get_friend_suggestions'),
+    
+    # Settings endpoint
+    path('settings/', CommunitySettingsView.as_view(), name='community-settings'),
 ]

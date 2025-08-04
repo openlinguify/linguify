@@ -1,0 +1,291 @@
+{% extends "public_web/public_base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Chat Collaboratif - Discussions en Temps Réel{% endblock %}
+
+{% block meta_description %}Rejoignez des conversations en temps réel avec d'autres apprenants. Pratiquez les langues, collaborez sur vos études et échangez dans un environnement modéré et sécurisé.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-gradient">
+    <div class="hero-section">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle bg-white me-4" style="width: 80px; height: 80px; box-shadow: 0 8px 25px rgba(255,255,255,0.3);">
+                            <img src="{% static 'img/app_icon/chat.png' %}" alt="Chat" style="width: 50px; height: 50px;">
+                        </div>
+                        <div>
+                            <h1 class="display-4 fw-bold mb-2 text-white">
+                                Chat Collaboratif
+                            </h1>
+                            <p class="lead mb-0 text-white" style="opacity: 0.9;">Discussions en temps réel pour l'apprentissage collaboratif</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if not user.is_authenticated %}
+                            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-person-plus me-2"></i>{% trans "Rejoindre gratuitement" %}
+                            </a>
+                        {% else %}
+                            <a href="/chat/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-chat-text me-2"></i>{% trans "Commencer à discuter" %}
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="bi bi-chat-dots me-2"></i>{% trans "Contact" %}
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-4 bg-white" style="width: 200px; height: 200px; box-shadow: 0 15px 40px rgba(255,255,255,0.2);">
+                            <img src="{% static 'img/app_icon/chat.png' %}" alt="Chat" style="width: 120px; height: 120px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Description Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <img src="{% static 'img/app_icon/chat.png' %}" alt="Chat" style="width: 50px; height: 50px;">
+                            </div>
+                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "Communication en Temps Réel" %}</h2>
+                        </div>
+                        
+                        <div class="description-content">
+                            <p class="lead text-center mb-4" style="color: #6b7280;">Connectez-vous avec d'autres apprenants du monde entier grâce à notre système de chat collaboratif. Pratiquez les langues, collaborez sur vos études et échangez dans un environnement sécurisé et modéré.</p>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-people text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Salles de chat de groupe</h6>
+                                            <small class="text-muted">En temps réel pour étudier</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-file-earmark-text text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Collaboration d'étude</h6>
+                                            <small class="text-muted">Partage de fichiers</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-person-video text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Communication enseignant</h6>
+                                            <small class="text-muted">Canaux dédiés</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-translate text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Traduction intégrée</h6>
+                                            <small class="text-muted">Messages multilingues</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-shield-check text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Environnement modéré</h6>
+                                            <small class="text-muted">Interactions respectueuses</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-link text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Intégration native</h6>
+                                            <small class="text-muted">Avec vos cours</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-share text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Partage instantané</h6>
+                                            <small class="text-muted">Ressources pédagogiques</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert border-0 mt-4" style="background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%); border-left: 4px solid var(--linguify-primary) !important;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-lightbulb me-3" style="color: var(--linguify-primary); font-size: 1.2rem;"></i>
+                                    <div>
+                                        <strong style="color: var(--linguify-primary);">Astuce :</strong>
+                                        <span class="text-muted">Utilisez le chat pour créer des groupes d'étude avec d'autres apprenants de votre niveau et pratiquez ensemble !</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4" style="border-color: rgba(45, 91, 186, 0.1);">
+                        
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-tag text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Category" %}</h6>
+                                <p class="text-muted small">Communication</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                    <i class="bi bi-code-slash text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Version" %}</h6>
+                                <p class="text-muted small">1.0.0</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-person text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Author" %}</h6>
+                                <p class="text-muted small">Linguify Team</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Pourquoi choisir notre Chat Collaboratif ?</h2>
+                <p class="lead text-muted">Des fonctionnalités pensées pour l'apprentissage en groupe</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-chat-text"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Messages en Temps Réel</h5>
+                    <p class="text-muted">Échangez instantanément avec d'autres apprenants</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Groupes d'Étude</h5>
+                    <p class="text-muted">Créez et rejoignez des groupes de discussion thématiques</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-translate"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Traduction Intégrée</h5>
+                    <p class="text-muted">Comprenez et communiquez dans toutes les langues</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Environnement Sécurisé</h5>
+                    <p class="text-muted">Modération active pour des échanges respectueux</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white mb-3" style="width: 80px; height: 80px; box-shadow: 0 8px 30px rgba(255,255,255,0.3);">
+                <img src="{% static 'img/app_icon/chat.png' %}" alt="Chat" style="width: 50px; height: 50px;">
+            </div>
+        </div>
+        
+        <h2 class="display-5 fw-bold mb-4 text-white">
+            {% trans "Prêt à rejoindre la communauté ?" %}
+        </h2>
+        <p class="lead mb-5 text-white" style="opacity: 0.95; max-width: 600px; margin: 0 auto;">
+            {% trans "Commencez à discuter et collaborer avec des milliers d'apprenants dès maintenant." %}
+        </p>
+        
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+            {% if not user.is_authenticated %}
+                <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-rocket-takeoff me-2"></i>{% trans "Rejoindre gratuitement" %}
+                </a>
+            {% else %}
+                <a href="/chat/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-chat-text me-2"></i>{% trans "Commencer à discuter" %}
+                </a>
+            {% endif %}
+            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 16px; border: 2px solid rgba(255,255,255,0.8);">
+                <i class="bi bi-chat-dots me-2"></i>{% trans "Contact" %}
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -12,11 +12,12 @@ from drf_spectacular.views import (
     SpectacularSwaggerView, 
     SpectacularRedocView
     )
-from apps.authentication.views_terms import accept_terms, terms_status
+from apps.authentication.views.terms_views import accept_terms, terms_status
 from tests.test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
 from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
-from core.blog.views import comment_like_toggle, comment_report, reply_to_comment as comment_reply
+# Blog moved to portal - commented out
+# from core.blog.views import comment_like_toggle, comment_report, reply_to_comment as comment_reply
 from django.views.generic import RedirectView
 from .favicon_views import favicon_ico, apple_touch_icon, favicon_png
 from app_manager.icon_views import AppIconView
@@ -43,10 +44,10 @@ urlpatterns = [
     # Language switching
     path('i18n/', include('django.conf.urls.i18n')),
     
-    # Blog AJAX endpoints (no language prefix for API calls)
-    path('blog/comment/like/', comment_like_toggle, name='blog_comment_like_ajax'),
-    path('blog/comment/report/', comment_report, name='blog_comment_report_ajax'),
-    path('blog/comment/<int:comment_id>/reply/', comment_reply, name='blog_comment_reply_ajax'),
+    # Blog AJAX endpoints moved to portal
+    # path('blog/comment/like/', comment_like_toggle, name='blog_comment_like_ajax'),
+    # path('blog/comment/report/', comment_report, name='blog_comment_report_ajax'),
+    # path('blog/comment/<int:comment_id>/reply/', comment_reply, name='blog_comment_reply_ajax'),
     
     # App icons - serve app/static/description/icon.png as app-icons/app/icon.png
     path('app-icons/<str:app_name>/<str:filename>', AppIconView.as_view(), name='app_icon'),
@@ -56,8 +57,8 @@ urlpatterns = [
     path('apps/<slug:app_slug>/', views.app_language_redirect_view, name='app_detail_no_lang_redirect'),
     
     # User profile routes (must be before saas_web.urls to avoid conflicts)
-    path('profile/', include('apps.authentication.urls_profile')),
-    path('u/', include('apps.authentication.urls_profile')),
+    path('profile/', include('apps.authentication.urls.profile')),
+    path('u/', include('apps.authentication.urls.profile')),
     
     # SaaS application (protected routes) - no language prefix
     path('', include('saas_web.urls')),
@@ -70,7 +71,7 @@ urlpatterns = [
     path('admin/stats/users/', include('apps.authentication.enhanced_admin.urls')),
     path('csrf/', utils.get_csrf_token, name='get_csrf_token'),
     path('api/', include('rest_framework.urls')),
-    path('api/auth/', include('apps.authentication.urls')),
+    path('api/auth/', include('apps.authentication.urls.main')),
     # Test settings interface
     path('test-settings/', test_settings, name='test_settings'),
     # Terms and conditions endpoints
@@ -78,24 +79,34 @@ urlpatterns = [
     path('api/auth/terms/status', terms_status, name='terms_status'),
     path('api/v1/revision/', include('apps.revision.urls', namespace='revision')),
     path('api/v1/notebook/', include('apps.notebook.urls', namespace='notebook')),
+    path('documents/', include('apps.documents.urls', namespace='documents')),
     path('notebook/', include('apps.notebook.urls_web', namespace='notebook_web')),
     path('revision/', include('apps.revision.urls_web', namespace='revision_web')),
-    path('learning/', include('apps.course.urls_web', namespace='course')),
+    path('learning/', include('apps.course.urls', namespace='course')),
     path('quizz/', include('apps.quizz.urls_web', namespace='quizz_web')),
     path('language_ai/', include('apps.language_ai.urls_web', namespace='language_ai_web')),
-    path('community/', include('apps.community.urls', namespace='community')),
     path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
     path('api/v1/language_ai/', include('apps.language_ai.urls', namespace='language_ai')),
-    path('api/v1/jobs/', include('core.jobs.urls', namespace='jobs')),
+    # Jobs API moved to portal
+    # path('api/v1/jobs/', include('core.jobs.urls', namespace='jobs')),
     path('api/v1/app-manager/', include('app_manager.urls', namespace='app_manager')),
-    # path('api/v1/flashcard/', include('flashcard.urls', namespace='flashcard')),
     # path('api/v1/task/', include('task.urls', namespace='task')),
-    # path('api/v1/chat/', include('chat.urls', namespace='chat')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    # path('api/v1/course/', include('apps.course.api.urls', namespace='course_api')),  # TODO: Create course API URLs
     path('api/v1/quizz/', include('apps.quizz.urls', namespace='quizz')),
+    
+    # Compatibility redirect for old /course/ URL
+    path('course/', RedirectView.as_view(url='/learning/', permanent=True)),
+    
+    # Marketplace apps
+    path('chat/', include('apps.chat.urls', namespace='chat')),
+    path('community/', include('apps.community.urls', namespace='community')),
+    # path('student-dashboard/', include('apps.learning.urls', namespace='learning')),  # Fusionné dans course app
+    # path('teaching/', include('apps.teaching.urls', namespace='teaching')),  # Temporairement désactivé pour résoudre conflit
+    path('api/cms-sync/', include('apps.cms_sync.urls', namespace='cms_sync')),
     
     # SEO URLs - Organized sitemap serving
     path('robots.txt', serve_robots_txt, name='robots_txt'),
@@ -114,21 +125,24 @@ urlpatterns = [
     
     # SEO Status and Management
     path('seo/status/', sitemap_status, name='seo_status'),
+    
+    # LMS info page
+    path('lms/', views.lms_info, name='lms_info'),
 ]
 
 # URLs with language prefix (for public website and authentication)
 urlpatterns += i18n_patterns(
     # Authentication (login/register pages) - with language prefix
-    path('auth/', include('apps.authentication.urls_auth')),
+    path('auth/', include('apps.authentication.urls.auth')),
     
-    # Careers/Jobs pages - with language prefix (public-facing)
-    path('careers/', include('core.jobs.urls_web', namespace='jobs_web')),
+    # Careers/Jobs pages moved to portal
+    # path('careers/', include('core.jobs.urls_web', namespace='jobs_web')),
     
-    # Blog - with language prefix (public-facing)
-    path('blog/', include('core.blog.urls', namespace='blog')),
+    # Blog moved to portal
+    # path('blog/', include('core.blog.urls', namespace='blog')),
     
-    # Public website (landing, marketing) - with language prefix
-    path('', include('public_web.urls')),
+    # Redirect to dashboard for authenticated users, or to portal for others
+    path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
     prefix_default_language=True,  # Add language prefix even for default language
 )
 
@@ -136,4 +150,8 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Serve static files during development
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+else:
+    # Serve static files in production for development server
+    # In real production, this should be handled by nginx/apache
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

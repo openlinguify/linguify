@@ -1,228 +1,503 @@
 {% extends "saas_web/base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans "Community" %} | Open Linguify{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row">
-        <!-- Main Content -->
-        <div class="col-12">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0">
-                    <i class="bi bi-people-fill me-2"></i>
+<div class="community-page">
+    <div class="container">
+        <!-- Header simple -->
+        <div class="community-header">
+            <div class="container">
+                <h1 class="h3 mb-3">
+                    <i class="bi bi-people me-2"></i>
                     {% trans "Community" %}
                 </h1>
                 
-                <div class="d-flex gap-2">
-                    <a href="{% url 'community:discover' %}" class="btn btn-primary">
+                <!-- Navigation simple -->
+                <div class="community-nav">
+                    <a href="{% url 'community:main' %}" class="nav-button active">
+                        <i class="bi bi-house me-1"></i>
+                        {% trans "Overview" %}
+                    </a>
+                    <a href="{% url 'community:discover' %}" class="nav-button">
                         <i class="bi bi-search me-1"></i>
-                        {% trans "Discover Users" %}
+                        {% trans "Discover" %}
                     </a>
-                    <a href="{% url 'community:friends' %}" class="btn btn-outline-primary">
+                    <a href="{% url 'community:friends' %}" class="nav-button">
                         <i class="bi bi-person-heart me-1"></i>
-                        {% trans "My Friends" %} ({{ friends_count }})
+                        {% trans "Friends" %}
+                    </a>
+                    <a href="{% url 'community:groups' %}" class="nav-button">
+                        <i class="bi bi-people me-1"></i>
+                        {% trans "Groups" %}
                     </a>
                 </div>
             </div>
+        </div>
 
-            <!-- Stats Cards -->
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <i class="bi bi-person-heart text-primary" style="font-size: 2rem;"></i>
-                            <h5 class="card-title mt-2">{{ friends_count }}</h5>
-                            <p class="card-text text-muted">{% trans "Friends" %}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <i class="bi bi-envelope text-info" style="font-size: 2rem;"></i>
-                            <h5 class="card-title mt-2">{{ friend_requests_count }}</h5>
-                            <p class="card-text text-muted">{% trans "Friend Requests" %}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <i class="bi bi-people text-success" style="font-size: 2rem;"></i>
-                            <h5 class="card-title mt-2">3</h5>
-                            <p class="card-text text-muted">{% trans "Groups" %}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <i class="bi bi-chat-dots text-warning" style="font-size: 2rem;"></i>
-                            <h5 class="card-title mt-2">12</h5>
-                            <p class="card-text text-muted">{% trans "Messages" %}</p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Stats simples -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number">{{ friends_count|default:0 }}</div>
+                <div class="stat-label">{% trans "Friends" %}</div>
             </div>
-
-            <!-- Quick Actions -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">{% trans "Quick Actions" %}</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <a href="{% url 'community:discover' %}" class="d-block text-decoration-none">
-                                        <div class="border rounded p-3 h-100 text-center hover-shadow">
-                                            <i class="bi bi-search text-primary" style="font-size: 2rem;"></i>
-                                            <h6 class="mt-2">{% trans "Find Language Partners" %}</h6>
-                                            <small class="text-muted">{% trans "Connect with learners of your target language" %}</small>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <a href="{% url 'community:groups' %}" class="d-block text-decoration-none">
-                                        <div class="border rounded p-3 h-100 text-center hover-shadow">
-                                            <i class="bi bi-people text-success" style="font-size: 2rem;"></i>
-                                            <h6 class="mt-2">{% trans "Join Study Groups" %}</h6>
-                                            <small class="text-muted">{% trans "Practice with groups of learners" %}</small>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <a href="{% url 'community:messages' %}" class="d-block text-decoration-none">
-                                        <div class="border rounded p-3 h-100 text-center hover-shadow">
-                                            <i class="bi bi-chat-dots text-info" style="font-size: 2rem;"></i>
-                                            <h6 class="mt-2">{% trans "Start Conversations" %}</h6>
-                                            <small class="text-muted">{% trans "Practice speaking with native speakers" %}</small>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ friend_requests_count|default:0 }}</div>
+                <div class="stat-label">{% trans "Friend Requests" %}</div>
             </div>
-
-            <!-- Suggested Friends -->
-            {% if suggested_friends %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">{% trans "Suggested Friends" %}</h5>
-                            <a href="{% url 'community:discover' %}" class="btn btn-sm btn-outline-primary">
-                                {% trans "See All" %}
-                            </a>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                {% for user in suggested_friends %}
-                                <div class="col-md-4 mb-3">
-                                    <div class="border rounded p-3 text-center">
-                                        {% if user.user.get_profile_picture_url %}
-                                            <img src="{{ user.user.get_profile_picture_url }}" 
-                                                 alt="{{ user.user.username }}" 
-                                                 class="rounded-circle mb-2"
-                                                 style="width: 60px; height: 60px; object-fit: cover;">
-                                        {% else %}
-                                            <div class="bg-primary rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center"
-                                                 style="width: 60px; height: 60px;">
-                                                <i class="bi bi-person text-white"></i>
-                                            </div>
-                                        {% endif %}
-                                        
-                                        <h6 class="mb-1">{{ user.user.name|default:user.user.username }}</h6>
-                                        <small class="text-muted">{{ user.user.get_native_language_display }} → {{ user.user.get_target_language_display }}</small>
-                                        
-                                        <div class="mt-2">
-                                            <button class="btn btn-sm btn-primary send-friend-request" 
-                                                    data-user-id="{{ user.user.id }}">
-                                                <i class="bi bi-person-plus me-1"></i>
-                                                {% trans "Add Friend" %}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">{% trans "Groups" %}</div>
             </div>
-            {% endif %}
+            <div class="stat-card">
+                <div class="stat-number">12</div>
+                <div class="stat-label">{% trans "Messages" %}</div>
+            </div>
+        </div>
 
-            <!-- Recent Activity -->
+        <!-- Actions rapides -->
+        <div class="quick-actions">
+            <a href="{% url 'community:discover' %}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+                <div class="action-title">{% trans "Find Language Partners" %}</div>
+                <div class="action-description">{% trans "Connect with learners of your target language" %}</div>
+            </a>
+            
+            <a href="{% url 'community:groups' %}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="action-title">{% trans "Join Study Groups" %}</div>
+                <div class="action-description">{% trans "Practice with groups of learners" %}</div>
+            </a>
+            
+            <a href="{% url 'community:messages' %}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-chat-dots"></i>
+                </div>
+                <div class="action-title">{% trans "Start Conversations" %}</div>
+                <div class="action-description">{% trans "Practice speaking with native speakers" %}</div>
+            </a>
+            
+            <a href="#" class="action-card" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                <div class="action-icon">
+                    <i class="bi bi-plus-circle"></i>
+                </div>
+                <div class="action-title">{% trans "Share Progress" %}</div>
+                <div class="action-description">{% trans "Post about your learning journey" %}</div>
+            </a>
+        </div>
+
+        <!-- Community Feed -->
+        <div class="main-content">
             <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">{% trans "Recent Activity" %}</h5>
+                <!-- Feed principal -->
+                <div class="col-lg-8">
+                    <div class="section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <i class="bi bi-rss me-2"></i>
+                                {% trans "Community Feed" %}
+                            </h3>
+                            <button class="btn-simple btn-sm" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                                <i class="bi bi-plus me-1"></i>
+                                {% trans "Create Post" %}
+                            </button>
                         </div>
-                        <div class="card-body">
-                            {% if recent_posts %}
-                                {% for post in recent_posts %}
-                                <div class="d-flex mb-3 pb-3 border-bottom">
-                                    {% if post.author.get_profile_picture_url %}
-                                        <img src="{{ post.author.get_profile_picture_url }}" 
-                                             alt="{{ post.author.username }}" 
-                                             class="rounded-circle me-3"
-                                             style="width: 40px; height: 40px; object-fit: cover;">
-                                    {% else %}
-                                        <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                             style="width: 40px; height: 40px;">
-                                            <i class="bi bi-person text-white"></i>
+                        <div class="section-content">
+                            <div class="feed-container">
+                                <!-- Posts du feed -->
+                                {% for i in "12345" %}
+                                <div class="post-card">
+                                    <div class="post-header">
+                                        <div class="post-user">
+                                            <div class="post-avatar">
+                                                {% cycle 'M' 'A' 'S' 'L' 'C' %}{{ forloop.counter }}
+                                            </div>
+                                            <div class="post-user-info">
+                                                <div class="post-username">{% cycle 'Marie Dubois' 'Alex Johnson' 'Sophie Chen' 'Luca Rossi' 'Carlos Silva' %}</div>
+                                                <div class="post-time">{% cycle '2h' '4h' '1d' '2d' '3d' %} ago</div>
+                                            </div>
                                         </div>
-                                    {% endif %}
+                                        <div class="post-language">
+                                            <span class="language-badge">{% cycle '🇫🇷 Français' '🇬🇧 English' '🇨🇳 中文' '🇮🇹 Italiano' '🇪🇸 Español' %}</span>
+                                        </div>
+                                    </div>
                                     
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <h6 class="mb-1">{{ post.author.name|default:post.author.username }}</h6>
-                                            <small class="text-muted">{{ post.created_at|timesince }} ago</small>
+                                    <div class="post-content">
+                                        <p>{% cycle 'Just completed my first conversation in French! Feeling so proud of my progress 🎉 #FrenchLearning' 'Had an amazing language exchange session today. Thank you to all the patient native speakers! 🙏' 'Discovered a new grammar rule today that finally makes sense. Learning Chinese is challenging but rewarding! 📚' 'Perfected my Italian pronunciation today. Practice makes perfect! 🗣️' 'Spanish conjugations are getting easier every day. Consistency is key! 💪' %}</p>
+                                        {% if forloop.counter == 1 %}
+                                        <div class="post-image">
+                                            <img src="https://via.placeholder.com/500x200/2D5BBA/FFFFFF?text=Learning+Progress" alt="Learning progress" style="width: 100%; border-radius: 8px;">
                                         </div>
-                                        {% if post.title %}
-                                            <p class="mb-1 fw-bold">{{ post.title }}</p>
                                         {% endif %}
-                                        <p class="mb-2">{{ post.content|truncatewords:20 }}</p>
-                                        <div class="d-flex gap-3">
-                                            <small class="text-muted">
-                                                <i class="bi bi-heart me-1"></i>{{ post.likes.count }}
-                                            </small>
-                                            <small class="text-muted">
-                                                <i class="bi bi-chat me-1"></i>{{ post.comments.count }}
-                                            </small>
+                                    </div>
+                                    
+                                    <div class="post-actions">
+                                        <button class="post-action-btn like-btn" data-post-id="{{ forloop.counter }}">
+                                            <i class="bi bi-heart"></i>
+                                            <span>{% cycle '12' '8' '25' '6' '15' %}</span>
+                                        </button>
+                                        <button class="post-action-btn comment-btn">
+                                            <i class="bi bi-chat"></i>
+                                            <span>{% cycle '3' '1' '7' '2' '4' %}</span>
+                                        </button>
+                                        <button class="post-action-btn share-btn">
+                                            <i class="bi bi-share"></i>
+                                            {% trans "Share" %}
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Commentaires (pour le premier post) -->
+                                    {% if forloop.first %}
+                                    <div class="post-comments">
+                                        <div class="comment">
+                                            <div class="comment-avatar">A2</div>
+                                            <div class="comment-content">
+                                                <div class="comment-user">Alex Johnson</div>
+                                                <div class="comment-text">Félicitations ! C'est un grand pas en avant 👏</div>
+                                            </div>
+                                        </div>
+                                        <div class="comment-input">
+                                            <div class="comment-avatar">{{ user.username.0|upper|default:"U" }}</div>
+                                            <input type="text" class="form-control" placeholder="{% trans 'Write a comment...' %}">
+                                            <button class="btn-simple btn-sm">{% trans "Post" %}</button>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                                
+                                <!-- Load more button -->
+                                <div class="text-center mt-3">
+                                    <button class="btn-simple btn-secondary" id="loadMorePosts">
+                                        <i class="bi bi-arrow-down me-1"></i>
+                                        {% trans "Load More Posts" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- Profile Quick View -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h3 class="section-title">{% trans "Your Profile" %}</h3>
+                        </div>
+                        <div class="section-content">
+                            <div class="profile-quick-view">
+                                <div class="profile-avatar-large">
+                                    {{ user.username.0|upper|default:"U" }}
+                                </div>
+                                <div class="profile-info">
+                                    <h4>{{ user.get_full_name|default:user.username }}</h4>
+                                    <p class="text-muted">{% trans "Language Learner" %}</p>
+                                    <div class="profile-stats">
+                                        <div class="profile-stat">
+                                            <div class="stat-number">156</div>
+                                            <div class="stat-label">{% trans "Learning Days" %}</div>
+                                        </div>
+                                        <div class="profile-stat">
+                                            <div class="stat-number">23</div>
+                                            <div class="stat-label">{% trans "Friends" %}</div>
+                                        </div>
+                                        <div class="profile-stat">
+                                            <div class="stat-number">8</div>
+                                            <div class="stat-label">{% trans "Posts" %}</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn-simple btn-sm w-100 mt-2">
+                                        <i class="bi bi-person me-1"></i>
+                                        {% trans "View Full Profile" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Learning Goals -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h3 class="section-title">{% trans "Learning Goals" %}</h3>
+                        </div>
+                        <div class="section-content">
+                            <div class="goals-list">
+                                <div class="goal-item">
+                                    <div class="goal-icon">🇫🇷</div>
+                                    <div class="goal-info">
+                                        <div class="goal-title">{% trans "French Conversation" %}</div>
+                                        <div class="goal-progress">
+                                            <div class="progress">
+                                                <div class="progress-bar" style="width: 75%"></div>
+                                            </div>
+                                            <span class="progress-text">75%</span>
                                         </div>
                                     </div>
                                 </div>
-                                {% endfor %}
-                            {% else %}
-                                <div class="text-center py-4">
-                                    <i class="bi bi-chat-square-dots text-muted" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 text-muted">{% trans "No recent activity from your friends." %}</p>
-                                    <a href="{% url 'community:discover' %}" class="btn btn-primary">
-                                        {% trans "Find Friends to Follow Their Activity" %}
-                                    </a>
+                                <div class="goal-item">
+                                    <div class="goal-icon">📚</div>
+                                    <div class="goal-info">
+                                        <div class="goal-title">{% trans "Daily Practice" %}</div>
+                                        <div class="goal-progress">
+                                            <div class="progress">
+                                                <div class="progress-bar" style="width: 90%"></div>
+                                            </div>
+                                            <span class="progress-text">18/20 days</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            {% endif %}
+                                <div class="goal-item">
+                                    <div class="goal-icon">🎯</div>
+                                    <div class="goal-info">
+                                        <div class="goal-title">{% trans "Vocabulary Goal" %}</div>
+                                        <div class="goal-progress">
+                                            <div class="progress">
+                                                <div class="progress-bar" style="width: 60%"></div>
+                                            </div>
+                                            <span class="progress-text">120/200 words</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Online Friends -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h3 class="section-title">{% trans "Friends Online" %}</h3>
+                            <span class="online-count">8 {% trans "online" %}</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="online-friends-list">
+                                {% for i in "12345678" %}
+                                <div class="online-friend">
+                                    <div class="friend-avatar">
+                                        {% cycle 'M' 'A' 'S' 'L' 'C' 'R' 'T' 'N' %}{{ forloop.counter }}
+                                        <div class="online-dot"></div>
+                                    </div>
+                                    <div class="friend-name">{% cycle 'Marie' 'Alex' 'Sophie' 'Luca' 'Carlos' 'Rachel' 'Tom' 'Nina' %}</div>
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Amis suggérés -->
+        {% if suggested_friends %}
+        <div class="section">
+            <div class="section-header">
+                <h3 class="section-title">{% trans "Suggested Friends" %}</h3>
+                <a href="{% url 'community:discover' %}" class="btn-simple btn-secondary">
+                    {% trans "See All" %}
+                </a>
+            </div>
+            <div class="section-content">
+                <div class="user-grid">
+                    {% for user in suggested_friends %}
+                    <div class="user-card">
+                        <div class="user-header">
+                            {% if user.user.get_profile_picture_url %}
+                                <img src="{{ user.user.get_profile_picture_url }}" 
+                                     alt="{{ user.user.username }}" 
+                                     class="user-avatar">
+                            {% else %}
+                                <div class="user-avatar">
+                                    {{ user.user.username|first|upper }}
+                                </div>
+                            {% endif %}
+                            <div class="user-name">{{ user.user.name|default:user.user.username }}</div>
+                        </div>
+                        
+                        <div class="user-languages">
+                            <span class="language-tag native">
+                                {{ user.user.get_native_language_display|default:"??" }}
+                            </span>
+                            <span class="language-tag learning">
+                                {{ user.user.get_target_language_display|default:"??" }}
+                            </span>
+                        </div>
+                        
+                        <button class="btn-simple send-friend-request" data-user-id="{{ user.user.id }}">
+                            <i class="bi bi-person-plus me-1"></i>
+                            {% trans "Add Friend" %}
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Activité récente -->
+        <div class="section">
+            <div class="section-header">
+                <h3 class="section-title">{% trans "Recent Activity" %}</h3>
+            </div>
+            <div class="section-content">
+                {% if recent_posts %}
+                    {% for post in recent_posts %}
+                    <div class="activity-item">
+                        <div class="activity-header">
+                            {% if post.author.get_profile_picture_url %}
+                                <img src="{{ post.author.get_profile_picture_url }}" 
+                                     alt="{{ post.author.username }}" 
+                                     class="activity-avatar">
+                            {% else %}
+                                <div class="activity-avatar">
+                                    {{ post.author.username|first|upper }}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="activity-content">
+                                <div class="activity-meta">
+                                    <span class="activity-author">{{ post.author.name|default:post.author.username }}</span>
+                                    <span class="activity-time">{{ post.created_at|timesince }} ago</span>
+                                </div>
+                                
+                                {% if post.title %}
+                                    <div class="activity-title">{{ post.title }}</div>
+                                {% endif %}
+                                
+                                <div class="activity-text">{{ post.content|truncatewords:20 }}</div>
+                                
+                                <div class="activity-actions">
+                                    <span class="activity-action">
+                                        <i class="bi bi-heart"></i>{{ post.likes.count }}
+                                    </span>
+                                    <span class="activity-action">
+                                        <i class="bi bi-chat"></i>{{ post.comments.count }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-chat-square-dots" style="font-size: 48px; margin-bottom: 16px;"></i>
+                        <div style="margin-bottom: 16px;">{% trans "No recent activity from your friends." %}</div>
+                        <a href="{% url 'community:discover' %}" class="btn-simple">
+                            {% trans "Find Friends to Follow Their Activity" %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 
-<style>
-.hover-shadow:hover {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    transform: translateY(-1px);
-    transition: all 0.15s ease-in-out;
-}
-</style>
+<!-- Modal pour créer un post -->
+<div class="modal fade" id="createPostModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background: var(--linguify-gradient); color: white;">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    {% trans "Share Your Learning Progress" %}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createPostForm">
+                    <div class="mb-3">
+                        <label for="postContent" class="form-label fw-semibold">{% trans "What's on your mind?" %}</label>
+                        <textarea class="form-control" id="postContent" rows="4" 
+                                  placeholder="{% trans 'Share your learning progress, ask questions, or celebrate achievements...' %}" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="postLanguage" class="form-label fw-semibold">{% trans "Language Topic" %}</label>
+                                <select class="form-control" id="postLanguage">
+                                    <option value="">{% trans "Select language (optional)" %}</option>
+                                    <option value="english">🇬🇧 English</option>
+                                    <option value="french">🇫🇷 Français</option>
+                                    <option value="spanish">🇪🇸 Español</option>
+                                    <option value="german">🇩🇪 Deutsch</option>
+                                    <option value="italian">🇮🇹 Italiano</option>
+                                    <option value="portuguese">🇵🇹 Português</option>
+                                    <option value="chinese">🇨🇳 中文</option>
+                                    <option value="japanese">🇯🇵 日本語</option>
+                                    <option value="korean">🇰🇷 한국어</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="postType" class="form-label fw-semibold">{% trans "Post Type" %}</label>
+                                <select class="form-control" id="postType">
+                                    <option value="progress">🎯 {% trans "Progress Update" %}</option>
+                                    <option value="question">❓ {% trans "Question/Help" %}</option>
+                                    <option value="achievement">🏆 {% trans "Achievement" %}</option>
+                                    <option value="tip">💡 {% trans "Learning Tip" %}</option>
+                                    <option value="motivation">💪 {% trans "Motivation" %}</option>
+                                    <option value="general">💬 {% trans "General Discussion" %}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="postTags" class="form-label fw-semibold">{% trans "Tags" %} <small class="text-muted">({% trans "optional" %})</small></label>
+                        <input type="text" class="form-control" id="postTags" 
+                               placeholder="{% trans 'e.g., #grammar #vocabulary #pronunciation' %}">
+                        <small class="form-text text-muted">{% trans "Separate tags with spaces or commas" %}</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="allowComments" checked>
+                            <label class="form-check-label" for="allowComments">
+                                {% trans "Allow comments on this post" %}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="post-preview" id="postPreview" style="display: none;">
+                        <h6>{% trans "Preview:" %}</h6>
+                        <div class="preview-card">
+                            <div class="post-header">
+                                <div class="post-user">
+                                    <div class="post-avatar">{{ user.username.0|upper|default:"U" }}</div>
+                                    <div class="post-user-info">
+                                        <div class="post-username">{{ user.get_full_name|default:user.username }}</div>
+                                        <div class="post-time">{% trans "now" %}</div>
+                                    </div>
+                                </div>
+                                <div class="post-language" id="previewLanguage"></div>
+                            </div>
+                            <div class="post-content">
+                                <p id="previewContent"></p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-simple btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn-simple" id="createPostBtn">
+                    <i class="bi bi-send me-1"></i>
+                    {% trans "Share Post" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -243,7 +518,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     this.innerHTML = '<i class="bi bi-check me-1"></i>{% trans "Request Sent" %}';
                     this.disabled = true;
-                    this.classList.remove('btn-primary');
                     this.classList.add('btn-success');
                 } else {
                     alert(data.error || 'Error sending friend request');
@@ -255,6 +529,203 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    // Gestion des likes sur les posts
+    document.querySelectorAll('.like-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const icon = this.querySelector('i');
+            const countSpan = this.querySelector('span');
+            let currentCount = parseInt(countSpan.textContent);
+            
+            // Animation immédiate
+            if (icon.classList.contains('bi-heart')) {
+                icon.classList.replace('bi-heart', 'bi-heart-fill');
+                this.classList.add('liked');
+                countSpan.textContent = currentCount + 1;
+            } else {
+                icon.classList.replace('bi-heart-fill', 'bi-heart');
+                this.classList.remove('liked');
+                countSpan.textContent = currentCount - 1;
+            }
+            
+            // Simulation d'envoi au serveur
+            setTimeout(() => {
+                console.log('Like/unlike post:', postId);
+            }, 100);
+        });
+    });
+
+    // Gestion des commentaires
+    document.querySelectorAll('.comment-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postCard = this.closest('.post-card');
+            let commentsSection = postCard.querySelector('.post-comments');
+            
+            if (!commentsSection) {
+                // Créer la section commentaires si elle n'existe pas
+                commentsSection = document.createElement('div');
+                commentsSection.className = 'post-comments';
+                commentsSection.innerHTML = `
+                    <div class="comment-input">
+                        <div class="comment-avatar">{{ user.username.0|upper|default:"U" }}</div>
+                        <input type="text" class="form-control" placeholder="{% trans 'Write a comment...' %}">
+                        <button class="btn-simple btn-sm">{% trans "Post" %}</button>
+                    </div>
+                `;
+                postCard.appendChild(commentsSection);
+            }
+            
+            commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+            
+            if (commentsSection.style.display !== 'none') {
+                const input = commentsSection.querySelector('input');
+                input.focus();
+            }
+        });
+    });
+
+    // Prévisualisation du post
+    const postContentTextarea = document.getElementById('postContent');
+    const postLanguageSelect = document.getElementById('postLanguage');
+    const previewSection = document.getElementById('postPreview');
+    const previewContent = document.getElementById('previewContent');
+    const previewLanguage = document.getElementById('previewLanguage');
+
+    function updatePreview() {
+        const content = postContentTextarea.value.trim();
+        const language = postLanguageSelect.value;
+        
+        if (content) {
+            previewSection.style.display = 'block';
+            previewContent.textContent = content;
+            
+            if (language) {
+                const languageOptions = {
+                    'english': '🇬🇧 English',
+                    'french': '🇫🇷 Français',
+                    'spanish': '🇪🇸 Español',
+                    'german': '🇩🇪 Deutsch',
+                    'italian': '🇮🇹 Italiano',
+                    'portuguese': '🇵🇹 Português',
+                    'chinese': '🇨🇳 中文',
+                    'japanese': '🇯🇵 日本語',
+                    'korean': '🇰🇷 한국어'
+                };
+                previewLanguage.innerHTML = `<span class="language-badge">${languageOptions[language]}</span>`;
+            } else {
+                previewLanguage.innerHTML = '';
+            }
+        } else {
+            previewSection.style.display = 'none';
+        }
+    }
+
+    if (postContentTextarea) {
+        postContentTextarea.addEventListener('input', updatePreview);
+        postLanguageSelect.addEventListener('change', updatePreview);
+    }
+
+    // Création de post
+    document.getElementById('createPostBtn').addEventListener('click', function() {
+        const content = document.getElementById('postContent').value.trim();
+        const language = document.getElementById('postLanguage').value;
+        const type = document.getElementById('postType').value;
+        const tags = document.getElementById('postTags').value.trim();
+        
+        if (!content) {
+            alert('{% trans "Please write something before sharing!" %}');
+            return;
+        }
+        
+        const createBtn = this;
+        createBtn.disabled = true;
+        createBtn.innerHTML = '{% trans "Sharing..." %}';
+        
+        // Simulation de création de post
+        setTimeout(() => {
+            alert('{% trans "Post shared successfully!" %}');
+            
+            // Reset form
+            document.getElementById('createPostForm').reset();
+            previewSection.style.display = 'none';
+            
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('createPostModal')).hide();
+            
+            createBtn.disabled = false;
+            createBtn.innerHTML = '<i class="bi bi-send me-1"></i>{% trans "Share Post" %}';
+            
+            // Optionnel: Ajouter le post au feed
+            addPostToFeed({
+                content: content,
+                language: language,
+                type: type,
+                tags: tags
+            });
+        }, 1500);
+    });
+
+    // Load more posts
+    document.getElementById('loadMorePosts').addEventListener('click', function() {
+        this.disabled = true;
+        this.innerHTML = '<i class="bi bi-arrow-clockwise spin me-1"></i>{% trans "Loading..." %}';
+        
+        setTimeout(() => {
+            alert('{% trans "More posts loaded!" %}');
+            this.disabled = false;
+            this.innerHTML = '<i class="bi bi-arrow-down me-1"></i>{% trans "Load More Posts" %}';
+        }, 1000);
+    });
+    
+    function addPostToFeed(postData) {
+        const feedContainer = document.querySelector('.feed-container');
+        const newPost = document.createElement('div');
+        newPost.className = 'post-card';
+        newPost.style.animation = 'slideIn 0.3s ease-out';
+        
+        const languageDisplay = postData.language ? 
+            `<div class="post-language"><span class="language-badge">${document.querySelector('#postLanguage option[value="' + postData.language + '"]').textContent}</span></div>` : '';
+        
+        newPost.innerHTML = `
+            <div class="post-header">
+                <div class="post-user">
+                    <div class="post-avatar">{{ user.username.0|upper|default:"U" }}</div>
+                    <div class="post-user-info">
+                        <div class="post-username">{{ user.get_full_name|default:user.username }}</div>
+                        <div class="post-time">{% trans "just now" %}</div>
+                    </div>
+                </div>
+                ${languageDisplay}
+            </div>
+            <div class="post-content">
+                <p>${postData.content}</p>
+            </div>
+            <div class="post-actions">
+                <button class="post-action-btn like-btn" data-post-id="new">
+                    <i class="bi bi-heart"></i>
+                    <span>0</span>
+                </button>
+                <button class="post-action-btn comment-btn">
+                    <i class="bi bi-chat"></i>
+                    <span>0</span>
+                </button>
+                <button class="post-action-btn share-btn">
+                    <i class="bi bi-share"></i>
+                    {% trans "Share" %}
+                </button>
+            </div>
+        `;
+        
+        // Insérer en premier dans le feed
+        feedContainer.insertBefore(newPost, feedContainer.firstChild);
+        
+        // Réattacher les event listeners pour le nouveau post
+        const likeBtn = newPost.querySelector('.like-btn');
+        likeBtn.addEventListener('click', function() {
+            // Logic de like (déjà définie plus haut)
+        });
+    }
 });
 
 function getCookie(name) {

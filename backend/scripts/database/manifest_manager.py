@@ -23,12 +23,21 @@ def find_app_manifests():
     
     manifests = []
     
+    # Apps à ignorer (apps système ou internes)
+    ignored_apps = {'authentication', 'app_manager', 'cms_sync', 'data', 'notification', 
+                   'payments', 'subscription', 'task', 'coaching'}
+    
     # Chercher dans le dossier apps/
     for app_dir in glob.glob(os.path.join(apps_dir, '*')):
         if os.path.isdir(app_dir):
+            app_name = os.path.basename(app_dir)
+            
+            # Ignorer les apps système
+            if app_name in ignored_apps:
+                continue
+                
             manifest_path = os.path.join(app_dir, '__manifest__.py')
             if os.path.exists(manifest_path):
-                app_name = os.path.basename(app_dir)
                 manifests.append({
                     'app_name': app_name,
                     'path': manifest_path,
@@ -49,19 +58,21 @@ def read_manifest(manifest_path):
         namespace = {}
         exec(content, namespace)
         
-        # Extraire les informations du manifest
-        manifest_data = {}
-        
-        # Variables standard d'un manifest
-        manifest_keys = [
-            'name', 'version', 'description', 'author', 'category', 
-            'depends', 'auto_install', 'installable', 'application',
-            'icon', 'color', 'route_path', 'order', 'permissions'
-        ]
-        
-        for key in manifest_keys:
-            if key in namespace:
-                manifest_data[key] = namespace[key]
+        # Extraire le dictionnaire __manifest__
+        if '__manifest__' in namespace:
+            manifest_data = namespace['__manifest__']
+        else:
+            # Fallback: extraire les variables individuelles
+            manifest_data = {}
+            manifest_keys = [
+                'name', 'version', 'description', 'author', 'category', 
+                'depends', 'auto_install', 'installable', 'application',
+                'icon', 'color', 'route_path', 'order', 'permissions', 'summary'
+            ]
+            
+            for key in manifest_keys:
+                if key in namespace:
+                    manifest_data[key] = namespace[key]
         
         return manifest_data
     

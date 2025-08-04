@@ -2,7 +2,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     ConversationTopicViewSet, AIConversationViewSet,
-    ConversationMessageViewSet, ConversationFeedbackViewSet
+    ConversationMessageViewSet, ConversationFeedbackViewSet,
+    ChatAPIView
 )
 
 app_name = 'language_ai'
@@ -15,4 +16,5 @@ router.register(r'feedback', ConversationFeedbackViewSet, basename='conversation
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('chat/', ChatAPIView.as_view(), name='chat-api'),
 ]

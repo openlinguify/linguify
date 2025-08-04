@@ -10,10 +10,10 @@ class Command(BaseCommand):
             {
                 'code': 'learning',
                 'display_name': 'Learning',
-                'description': 'Interactive language lessons, vocabulary, and grammar exercises',
+                'description': 'Modern learning dashboard with progress tracking and study modes',
                 'icon_name': 'GraduationCap',
                 'color': '#10B981',
-                'route_path': '/learning',
+                'route_path': '/student-dashboard',
                 'order': 1
             },
             {

@@ -21,7 +21,7 @@ except ImportError:
     webpush = None
     WebPushException = Exception
 
-from .models import Notification, NotificationType, NotificationPriority, NotificationSetting, NotificationDevice
+from .models.notification_models import Notification, NotificationType, NotificationPriority, NotificationSetting, NotificationDevice
 from .serializers import NotificationSerializer
 
 User = get_user_model()

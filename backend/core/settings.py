@@ -15,14 +15,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Initialiser environ.Env
 env = environ.Env()
 
-# Lire le fichier .env
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+# Lire le fichier .env avec encodage UTF-8
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'), encoding='utf-8')
 
 if not env('SECRET_KEY', default=None):
     raise ValueError("SECRET_KEY must be set in environment variables or .env file")
 
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
+
+# Security settings for production
+if not DEBUG:
+    # SSL/HTTPS Security
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    
+    # Cookie Security
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Development authentication bypass for JWT issues
 BYPASS_AUTH_FOR_DEVELOPMENT = env.bool('BYPASS_AUTH_FOR_DEVELOPMENT', default=DEBUG)
@@ -81,15 +95,14 @@ INSTALLED_APPS = [
 
     # Project django_apps
     'apps.authentication',
-    # 'apps.chat',
+    'apps.chat',
     # 'apps.coaching',
     'apps.community',
     'apps.course',
     'apps.data',
-    # 'apps.flashcard',
+    'apps.documents',
     'apps.language_ai',
     # 'apps.payments',
-    # 'apps.quiz',
     'apps.revision',
     'apps.notebook',
     # 'apps.task',
@@ -98,24 +111,20 @@ INSTALLED_APPS = [
     'app_manager',
     'apps.quizz',
     
+    # New apps for marketplace
+    # 'apps.learning',  # Fusionné dans apps.course (Learning Platform)
+    'apps.teaching',
+    'apps.cms_sync',
+    
     # Web interfaces
-    'public_web',
     'saas_web',
     'core.apps.CoreConfig',
-    'core.jobs',
-    'core.blog',
-    # 'admin_tools',  # Admin tools for managing the platform
-    # Django REST framework modules
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    
-    # Frontend integration
-    # 'compressor',
-    # 'sass_processor',
 
-    # test
-    'pytest_django',
+    # test - commented out for production
+    # 'pytest_django',
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -128,7 +137,8 @@ LOGOUT_REDIRECT_URL = '/'
 # App config declarations in individual apps
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'apps.authentication.backends.EmailOrUsernameModelBackend',  # Custom backend for email or username login
+    'django.contrib.auth.backends.ModelBackend',  # Fallback to default
     'django.contrib.auth.backends.RemoteUserBackend',
 ]
 
@@ -146,6 +156,17 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/hour',        # Utilisateurs anonymes: 100 requêtes par heure
+        'user': '1000/hour',       # Utilisateurs authentifiés: 1000 requêtes par heure
+        'upload': '100/hour',       # Uploads (photos, etc.): 10 par heure
+        'stats': '60/hour',        # Statistiques: 60 par heure
+        'create': '100/hour',      # Création d'objets: 100 par heure
+    },
 }
 
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
@@ -267,9 +288,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'apps.authentication.middleware.JWTMiddleware',  # Disabled - using Supabase now
-    'apps.authentication.middleware_terms.TermsAcceptanceMiddleware',  # Check terms acceptance
-    'core.jobs.middleware.JobsErrorHandlingMiddleware',  # Jobs error handling
+    # 'apps.authentication.middleware.middleware.JWTMiddleware',  # Disabled - using Supabase now
+    'apps.authentication.middleware.terms_middleware.TermsAcceptanceMiddleware',  # Check terms acceptance
+    # 'core.jobs.middleware.JobsErrorHandlingMiddleware',  # Jobs error handling - moved to portal
     # SEO Optimization Middleware (simplified version)
     'core.seo.middleware.simple.SimpleSEOMiddleware',
     # 'core.seo.middleware.optimization.SEOOptimizationMiddleware',  # Disabled temporarily
@@ -373,11 +394,11 @@ elif django_env == 'development':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DEV_DB_NAME', default='db_linguify_dev'),
-            'USER': env('DEV_DB_USER', default='postgres'),
-            'PASSWORD': env('DEV_DB_PASSWORD', default='azerty'),
-            'HOST': env('DEV_DB_HOST', default='localhost'),
-            'PORT': env('DEV_DB_PORT', default='5432'),
+            'NAME': env('DEV_DB_NAME'),
+            'USER': env('DEV_DB_USER'),
+            'PASSWORD': env('DEV_DB_PASSWORD'),
+            'HOST': env('DEV_DB_HOST'),
+            'PORT': env('DEV_DB_PORT'),
         }
     }
     print("Using PostgreSQL local for development")
@@ -466,9 +487,9 @@ LANGUAGES = [
     ('nl', 'Nederlands'),
 ]
 
-# Locale paths - public_web as central hub for consistent translations
+# Locale paths - for internationalization
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'public_web/i18n'),
+    # os.path.join(BASE_DIR, 'public_web/i18n'), # Moved to portal
     os.path.join(BASE_DIR, 'apps/authentication/i18n'),
     os.path.join(BASE_DIR, 'saas_web/i18n'),
     os.path.join(BASE_DIR, 'apps/course/i18n'),
@@ -530,7 +551,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'public_web', 'static'),
+    # os.path.join(BASE_DIR, 'public_web', 'static'), # Moved to portal
     os.path.join(BASE_DIR, 'saas_web', 'static'),
 ]
 
@@ -587,7 +608,7 @@ else:
                 },
             },
         }
-    except (ImportError, redis.exceptions.ConnectionError, redis.exceptions.TimeoutError):
+    except Exception:
         # Fallback to in-memory layer if Redis is not available
         CHANNEL_LAYERS = {
             "default": {
@@ -599,15 +620,44 @@ else:
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {name} {message}',
+            'style': '{',
+        },
+        'profile_picture': {
+            'format': '[ProfilePicture] {levelname} {asctime} {name} - {message}',
+            'style': '{',
+        }
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'profile_console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'profile_picture',
         },
     },
     'loggers': {
         'apps.authentication': {
             'handlers': ['console'],
             'level': 'DEBUG',
+        },
+        'saas_web.views': {
+            'handlers': ['profile_console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'apps.authentication.supabase_storage': {
+            'handlers': ['profile_console'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
     },
 }

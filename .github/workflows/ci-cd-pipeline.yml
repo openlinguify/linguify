@@ -121,19 +121,15 @@ jobs:
             apps.authentication.tests \
             apps.quizz.tests \
             apps.revision.tests \
-            core.jobs.tests \
             --verbosity=2 --keepdb --settings=core.settings_test --pattern="test_*.py"
         env:
           TEST_MODE: 'True'
           CI: 'True'
       
-      - name: Run Jobs Tests Specifically
+      - name: Backend Tests Complete
         run: |
-          set -a
-          source .env
-          set +a
-          echo "🎯 Running Jobs Tests (including rejection email functionality)"
-          poetry run python manage.py test core.jobs.tests -v 2 --settings=core.settings_test --keepdb
+          echo "🎯 Backend Tests Complete"
+          echo "Note: Jobs tests moved to portal project"
         env:
           TEST_MODE: 'True'
           CI: 'True'
@@ -270,10 +266,8 @@ jobs:
             apps.authentication.tests \
             apps.quizz.tests \
             apps.revision.tests \
-            core.jobs.tests \
             --verbosity=2 --keepdb --settings=core.settings_test
-          echo "🎯 Running Jobs Tests Again for Verification"
-          poetry run python manage.py test core.jobs.tests -v 2 --settings=core.settings_test --keepdb
+          echo "🎯 Backend Tests Complete (jobs tests in portal project)"
         env:
           TEST_MODE: 'True'
           CI: 'True'

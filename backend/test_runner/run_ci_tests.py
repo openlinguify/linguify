@@ -25,10 +25,6 @@ def main():
         
         # Jobs tests - full suite
         'core.jobs.tests',
-        
-        # Dynamic system tests
-        'tests.test_public_web_views',
-        'tests.test_public_web_templatetags',
     ]
     
     print("📋 Running tests for:")

@@ -1,0 +1,16 @@
+{
+  "name": "Linguify Portal",
+  "short_name": "Linguify",
+  "description": "Portail d'accès aux produits Linguify",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#6366f1",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/static/images/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+<!-- Template simple pour inclure le chat dans n'importe quelle page -->
+<!-- Usage: {% include 'chat/chat_include.html' %} -->
+
+{% if user.is_authenticated %}
+    <!-- Chat minimal pour éviter la récursion -->
+    <div id="chat-placeholder">
+        <!-- Le chat sera chargé via JavaScript -->
+        <button class="chat-toggle-btn" id="chat-toggle-btn" title="Ouvrir le chat" style="position: fixed; bottom: 20px; right: 20px; z-index: 1040; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; font-size: 24px;">
+            <i class="bi bi-chat-dots-fill"></i>
+        </button>
+    </div>
+    
+    <script>
+    // Charger le chat une fois que la page est prête
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.chatLoaded === 'undefined') {
+            window.chatLoaded = true;
+            
+            // Variables globales
+            window.currentUserId = {{ user.id|default:'null' }};
+            window.currentUsername = '{{ user.username|default:'' }}';
+            window.csrfToken = '{{ csrf_token }}';
+            
+            console.log('[Chat] Chat placeholder loaded for user:', window.currentUserId);
+            
+            // Gestionnaire pour le bouton de chat
+            const chatToggleBtn = document.getElementById('chat-toggle-btn');
+            if (chatToggleBtn) {
+                chatToggleBtn.addEventListener('click', function() {
+                    alert('Chat à implémenter - connexion à community backend');
+                });
+            }
+        }
+    });
+    </script>
+{% endif %}

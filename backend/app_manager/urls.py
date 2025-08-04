@@ -1,27 +1,21 @@
 # app_manager/urls.py
 from django.urls import path
-from .views import (
-    AppListView,
-    UserAppSettingsView,
-    toggle_app,
-    user_enabled_apps,
-    debug_apps
-)
+from .views import *
 
 app_name = 'app_manager'
 
 urlpatterns = [
-    # List all available apps
-    path('apps/', AppListView.as_view(), name='app-list'),
+    # App Store
+    path('store/', AppStoreView.as_view(), name='app_store'),
     
-    # User app settings (get/update)
-    path('settings/', UserAppSettingsView.as_view(), name='user-app-settings'),
+    # User app settings (get/update) - API
+    path('api/settings/', UserAppSettingsView.as_view(), name='api_user_app_settings'),
     
-    # Get user's enabled apps
-    path('enabled/', user_enabled_apps, name='user-enabled-apps'),
+    # App Manager Settings - Template view
+    path('settings/', AppManagerSettingsView.as_view(), name='app_settings'),
     
-    # Toggle app on/off
-    path('toggle/', toggle_app, name='toggle-app'),
+    # API endpoint to toggle app on/off (from app store)
+    path('apps/<int:app_id>/toggle/', AppToggleAPI.as_view(), name='api_app_toggle'),
     
     # Debug view
     path('debug/', debug_apps, name='debug-apps'),

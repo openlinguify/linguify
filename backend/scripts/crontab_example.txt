@@ -1,0 +1,37 @@
+# Configuration Cron pour les rappels de révision Linguify
+# 
+# Instructions d'installation :
+# 1. Ouvrir le crontab : crontab -e
+# 2. Ajouter les lignes ci-dessous
+# 3. Sauvegarder et fermer
+#
+# Format : minute heure jour mois jour_semaine commande
+#
+#          ┌───────────── minute (0 - 59)
+#          │ ┌───────────── heure (0 - 23)
+#          │ │ ┌───────────── jour du mois (1 - 31)
+#          │ │ │ ┌───────────── mois (1 - 12)
+#          │ │ │ │ ┌───────────── jour de la semaine (0 - 6) (dimanche = 0)
+#          │ │ │ │ │
+#          * * * * * commande
+
+# Envoyer les rappels de révision toutes les heures de 7h à 23h
+0 7-23 * * * /mnt/c/Users/louis/WebstormProjects/linguify/backend/scripts/send_revision_reminders.sh
+
+# Alternative : Envoyer les rappels à des heures spécifiques populaires
+# 0 9 * * * /mnt/c/Users/louis/WebstormProjects/linguify/backend/scripts/send_revision_reminders.sh
+# 0 14 * * * /mnt/c/Users/louis/WebstormProjects/linguify/backend/scripts/send_revision_reminders.sh
+# 0 18 * * * /mnt/c/Users/louis/WebstormProjects/linguify/backend/scripts/send_revision_reminders.sh
+# 0 21 * * * /mnt/c/Users/louis/WebstormProjects/linguify/backend/scripts/send_revision_reminders.sh
+
+# Test : Envoyer une notification toutes les minutes (pour debug uniquement)
+# * * * * * /mnt/c/Users/louis/WebstormProjects/linguify/backend/scripts/test_01h00_reminder.sh
+
+# Nettoyage des logs anciens (une fois par semaine)
+0 2 * * 0 find /var/log -name "linguify_reminders.log*" -mtime +30 -delete
+
+# IMPORTANT :
+# - Assurez-vous que les scripts ont les permissions d'exécution : chmod +x script.sh
+# - Vérifiez que le répertoire de logs existe : sudo mkdir -p /var/log && sudo chown $USER /var/log
+# - Testez d'abord manuellement : ./script.sh
+# - Surveillez les logs : tail -f /var/log/linguify_reminders.log

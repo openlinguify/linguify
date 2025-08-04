@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment Setup - OpenLinguify Documentation</title>
+    <meta name="description" content="Configure your development environment for OpenLinguify with tools, IDEs, and best practices">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../backend/static/images/favicon.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --linguify-primary: #2D5BBA;
+            --linguify-secondary: #8B5CF6;
+            --linguify-accent: #00D4AA;
+            --linguify-gray: #6B7280;
+            --sidebar-width: 280px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        /* Header */
+        .docs-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            height: 64px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .docs-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--linguify-primary);
+            text-decoration: none;
+        }
+
+        .docs-version {
+            background: var(--linguify-accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-left: 1rem;
+        }
+
+        /* Sidebar - same as other pages */
+        .docs-sidebar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - 64px);
+            background: #f8fafc;
+            border-right: 1px solid #e5e7eb;
+            overflow-y: auto;
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1.5rem;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-link:hover {
+            background: white;
+            color: var(--linguify-primary);
+            border-left-color: var(--linguify-accent);
+        }
+
+        .sidebar-link.active {
+            background: white;
+            color: var(--linguify-primary);
+            border-left-color: var(--linguify-primary);
+            font-weight: 500;
+        }
+
+        .sidebar-link i {
+            margin-right: 0.75rem;
+            width: 16px;
+        }
+
+        /* Main content */
+        .docs-main {
+            margin-left: var(--sidebar-width);
+            padding-top: 64px;
+            min-height: 100vh;
+        }
+
+        .docs-content {
+            max-width: 900px;
+            padding: 2rem;
+        }
+
+        /* Content styling */
+        .docs-content h1 {
+            color: var(--linguify-primary);
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .docs-content h2 {
+            color: #1f2937;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.75rem;
+            font-weight: 600;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+
+        .docs-content h3 {
+            color: #374151;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .docs-content h4 {
+            color: #4b5563;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        code {
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+        }
+
+        /* Tool cards */
+        .tool-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            border-color: var(--linguify-primary);
+            box-shadow: 0 4px 12px rgba(45, 91, 186, 0.1);
+        }
+
+        .tool-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tool-icon.primary { background: var(--linguify-primary); }
+        .tool-icon.secondary { background: var(--linguify-secondary); }
+        .tool-icon.success { background: #10b981; }
+        .tool-icon.warning { background: #f59e0b; }
+
+        /* Navigation */
+        .docs-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            color: var(--linguify-primary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: var(--linguify-primary);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .docs-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .docs-main {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="docs-header">
+        <a href="../index.html" class="docs-logo">
+            <i class="bi bi-book"></i>
+            OpenLinguify Docs
+        </a>
+        <span class="docs-version">v1.0</span>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="docs-sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <a href="../index.html" class="sidebar-link">
+                <i class="bi bi-house"></i>
+                Overview
+            </a>
+            <a href="getting-started.html" class="sidebar-link">
+                <i class="bi bi-play-circle"></i>
+                Quick Start
+            </a>
+            <a href="#" class="sidebar-link active">
+                <i class="bi bi-gear"></i>
+                Environment Setup
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Development</div>
+            <a href="../development/developer-guidelines.html" class="sidebar-link">
+                <i class="bi bi-code-slash"></i>
+                Developer Guidelines
+            </a>
+            <a href="../development/create-new-module.html" class="sidebar-link">
+                <i class="bi bi-plus-circle"></i>
+                Create New Module
+            </a>
+            <a href="../backend/architecture/project-structure.html" class="sidebar-link">
+                <i class="bi bi-diagram-3"></i>
+                Project Structure
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">API Reference</div>
+            <a href="../backend/api-reference.html" class="sidebar-link">
+                <i class="bi bi-cloud"></i>
+                API Documentation
+            </a>
+            <a href="../backend/models-overview.html" class="sidebar-link">
+                <i class="bi bi-database"></i>
+                Models Overview
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Translation</div>
+            <a href="../translations/translation-guide.html" class="sidebar-link">
+                <i class="bi bi-translate"></i>
+                Translation Guide
+                <span class="badge-new">NEW</span>
+            </a>
+            <a href="../translations/README.html" class="sidebar-link">
+                <i class="bi bi-globe"></i>
+                Language Status
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="docs-main">
+        <div class="docs-content">
+            <h1><i class="bi bi-gear me-3"></i>Environment Setup</h1>
+            <p class="lead">Configure your development environment for optimal productivity when contributing to OpenLinguify.</p>
+
+            <h2>Development Tools</h2>
+
+            <h3>Required Tools</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="tool-card">
+                        <div class="tool-icon primary">
+                            <i class="bi bi-code-square"></i>
+                        </div>
+                        <h4>Python 3.8+</h4>
+                        <p>Core runtime for Django applications</p>
+                        <div class="mt-3">
+                            <a href="https://www.python.org/downloads/" class="btn btn-outline-primary btn-sm" target="_blank">
+                                <i class="bi bi-download me-1"></i>Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="tool-card">
+                        <div class="tool-icon secondary">
+                            <i class="bi bi-box"></i>
+                        </div>
+                        <h4>Poetry</h4>
+                        <p>Python dependency management and packaging</p>
+                        <div class="mt-3">
+                            <a href="https://python-poetry.org/docs/" class="btn btn-outline-primary btn-sm" target="_blank">
+                                <i class="bi bi-book me-1"></i>Install Guide
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="tool-card">
+                        <div class="tool-icon success">
+                            <i class="bi bi-database"></i>
+                        </div>
+                        <h4>PostgreSQL</h4>
+                        <p>Primary database for development</p>
+                        <div class="mt-3">
+                            <a href="https://www.postgresql.org/download/" class="btn btn-outline-primary btn-sm" target="_blank">
+                                <i class="bi bi-download me-1"></i>Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="tool-card">
+                        <div class="tool-icon warning">
+                            <i class="bi bi-git"></i>
+                        </div>
+                        <h4>Git</h4>
+                        <p>Version control and collaboration</p>
+                        <div class="mt-3">
+                            <a href="https://git-scm.com/downloads" class="btn btn-outline-primary btn-sm" target="_blank">
+                                <i class="bi bi-download me-1"></i>Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>IDE Configuration</h2>
+
+            <h3>Visual Studio Code (Recommended)</h3>
+            <p>VS Code provides excellent Python and Django support with the right extensions.</p>
+
+            <h4>Essential Extensions</h4>
+            <div class="row">
+                <div class="col-12">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Extension</th>
+                                <th>Purpose</th>
+                                <th>Install</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Python</td>
+                                <td>Python language support and debugging</td>
+                                <td><code>ext install ms-python.python</code></td>
+                            </tr>
+                            <tr>
+                                <td>Django</td>
+                                <td>Django template syntax highlighting</td>
+                                <td><code>ext install batisteo.vscode-django</code></td>
+                            </tr>
+                            <tr>
+                                <td>Black Formatter</td>
+                                <td>Python code formatting</td>
+                                <td><code>ext install ms-python.black-formatter</code></td>
+                            </tr>
+                            <tr>
+                                <td>Pylance</td>
+                                <td>Python language server</td>
+                                <td><code>ext install ms-python.vscode-pylance</code></td>
+                            </tr>
+                            <tr>
+                                <td>GitLens</td>
+                                <td>Enhanced Git capabilities</td>
+                                <td><code>ext install eamodio.gitlens</code></td>
+                            </tr>
+                            <tr>
+                                <td>gettext</td>
+                                <td>Translation files (.po) support</td>
+                                <td><code>ext install mrorz.language-gettext</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h4>VS Code Settings</h4>
+            <p>Create <code>.vscode/settings.json</code> in your project root:</p>
+            <pre><code class="language-json">{
+    "python.defaultInterpreterPath": "./backend/.venv/bin/python",
+    "python.formatting.provider": "black",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "files.associations": {
+        "*.html": "html",
+        "*.po": "gettext"
+    },
+    "emmet.includeLanguages": {
+        "django-html": "html"
+    },
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        }
+    }
+}</code></pre>
+
+            <h3>PyCharm (Alternative)</h3>
+            <p>PyCharm Professional provides excellent Django support out of the box.</p>
+
+            <div class="alert-info">
+                <h5><i class="bi bi-lightbulb me-2"></i>PyCharm Tips</h5>
+                <ul class="mb-0">
+                    <li>Enable Django support in Project Settings</li>
+                    <li>Configure Poetry as the project interpreter</li>
+                    <li>Set up Django project structure with apps</li>
+                    <li>Use built-in database tools for PostgreSQL</li>
+                </ul>
+            </div>
+
+            <h2>Code Quality Tools</h2>
+
+            <h3>Formatting and Linting</h3>
+            <p>Install development tools in your Poetry environment:</p>
+            <pre><code class="language-bash">cd backend
+poetry add --group dev black isort pylint pytest pytest-django</code></pre>
+
+            <h4>Pre-commit Hooks</h4>
+            <p>Set up pre-commit hooks to maintain code quality:</p>
+            <pre><code class="language-bash"># Install pre-commit
+poetry add --group dev pre-commit
+
+# Install hooks
+poetry run pre-commit install</code></pre>
+
+            <p>Create <code>.pre-commit-config.yaml</code>:</p>
+            <pre><code class="language-yaml">repos:
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        language_version: python3.8
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        args: ['--max-line-length=88', '--extend-ignore=E203']
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.40.0
+    hooks:
+      - id: eslint
+        files: \.(js|jsx|ts|tsx)$
+        types: [file]</code></pre>
+
+            <h2>Database Setup</h2>
+
+            <h3>PostgreSQL Configuration</h3>
+            <h4>Ubuntu/Debian</h4>
+            <pre><code class="language-bash"># Install PostgreSQL
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+
+# Create database and user
+sudo -u postgres psql
+CREATE DATABASE linguify_db;
+CREATE USER linguify_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE linguify_db TO linguify_user;
+\q</code></pre>
+
+            <h4>macOS</h4>
+            <pre><code class="language-bash"># Install via Homebrew
+brew install postgresql
+brew services start postgresql
+
+# Create database
+createdb linguify_db</code></pre>
+
+            <h4>Windows</h4>
+            <div class="alert-info">
+                <p class="mb-0">Download PostgreSQL installer from <a href="https://www.postgresql.org/download/windows/" target="_blank">postgresql.org</a> and use pgAdmin to create the database.</p>
+            </div>
+
+            <h3>Environment Variables</h3>
+            <p>Create <code>backend/.env</code> file:</p>
+            <pre><code class="language-bash"># Database
+DATABASE_URL=postgresql://linguify_user:your_password@localhost/linguify_db
+
+# Django
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Optional: Email configuration for development
+EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend</code></pre>
+
+            <h2>Development Workflow</h2>
+
+            <h3>Daily Workflow</h3>
+            <ol>
+                <li><strong>Activate virtual environment:</strong> <code>poetry shell</code></li>
+                <li><strong>Pull latest changes:</strong> <code>git pull origin develop</code></li>
+                <li><strong>Update dependencies:</strong> <code>poetry install</code></li>
+                <li><strong>Run migrations:</strong> <code>python manage.py migrate</code></li>
+                <li><strong>Start development servers</strong></li>
+                <li><strong>Run tests before committing:</strong> <code>pytest</code></li>
+            </ol>
+
+            <h3>Useful Commands</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Command</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Format code</td>
+                        <td><code>black .</code></td>
+                        <td>Auto-format Python files</td>
+                    </tr>
+                    <tr>
+                        <td>Sort imports</td>
+                        <td><code>isort .</code></td>
+                        <td>Organize import statements</td>
+                    </tr>
+                    <tr>
+                        <td>Run linter</td>
+                        <td><code>pylint apps/</code></td>
+                        <td>Check code quality</td>
+                    </tr>
+                    <tr>
+                        <td>Run tests</td>
+                        <td><code>pytest</code></td>
+                        <td>Execute test suite</td>
+                    </tr>
+                    <tr>
+                        <td>Test coverage</td>
+                        <td><code>pytest --cov</code></td>
+                        <td>Test with coverage report</td>
+                    </tr>
+                    <tr>
+                        <td>Django shell</td>
+                        <td><code>python manage.py shell</code></td>
+                        <td>Interactive Django environment</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Translation Tools</h2>
+
+            <h3>Poedit (Recommended)</h3>
+            <p>User-friendly editor for translation files (.po).</p>
+            <div class="tool-card">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="tool-icon success">
+                            <i class="bi bi-translate"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <h4>Poedit</h4>
+                        <p>Professional translation editor with translation memory, automatic suggestions, and quality checks.</p>
+                        <a href="https://poedit.net/" class="btn btn-outline-primary" target="_blank">
+                            <i class="bi bi-download me-2"></i>Download Poedit
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <h3>gettext Utilities</h3>
+            <p>Command-line tools for working with translation files:</p>
+            <pre><code class="language-bash"># Ubuntu/Debian
+sudo apt install gettext
+
+# macOS
+brew install gettext
+
+# Compile translations
+msgfmt de.po -o de.mo
+
+# Update translations
+msgmerge --update de.po new-template.pot</code></pre>
+
+            <h2>Troubleshooting</h2>
+
+            <h3>Common Issues</h3>
+            <div class="accordion" id="troubleshootingAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#python-version">
+                            Python Version Conflicts
+                        </button>
+                    </h2>
+                    <div id="python-version" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <p>If you have multiple Python versions:</p>
+                            <ol>
+                                <li>Use <code>pyenv</code> to manage Python versions</li>
+                                <li>Ensure Poetry uses the correct Python: <code>poetry env use python3.8</code></li>
+                                <li>Check active version: <code>poetry run python --version</code></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dependency-conflicts">
+                            Dependency Conflicts
+                        </button>
+                    </h2>
+                    <div id="dependency-conflicts" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <p>If Poetry can't resolve dependencies:</p>
+                            <ol>
+                                <li>Clear Poetry cache: <code>poetry cache clear pypi --all</code></li>
+                                <li>Remove lock file: <code>rm poetry.lock</code></li>
+                                <li>Reinstall: <code>poetry install</code></li>
+                                <li>Use <code>poetry update</code> to update all packages</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ide-issues">
+                            IDE Integration Issues
+                        </button>
+                    </h2>
+                    <div id="ide-issues" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <p>If your IDE doesn't recognize the virtual environment:</p>
+                            <ol>
+                                <li>Find venv path: <code>poetry env info --path</code></li>
+                                <li>Set interpreter in IDE to: <code>[path]/bin/python</code></li>
+                                <li>Restart IDE after changing interpreter</li>
+                                <li>Ensure workspace is opened at project root</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-warning">
+                <h5><i class="bi bi-exclamation-triangle me-2"></i>Need Help?</h5>
+                <p class="mb-0">Join our <a href="https://discord.gg/openlinguify" target="_blank">Discord community</a> or open an issue on <a href="https://github.com/openlinguify/linguify/issues" target="_blank">GitHub</a> if you encounter problems with your environment setup.</p>
+            </div>
+
+            <!-- Navigation -->
+            <div class="docs-nav">
+                <a href="getting-started.html" class="nav-link">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Quick Start Guide
+                </a>
+                <a href="../development/developer-guidelines.html" class="nav-link">
+                    Developer Guidelines
+                    <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <script>
+        // Active link highlighting
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelector('.sidebar-link.active')?.classList.remove('active');
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

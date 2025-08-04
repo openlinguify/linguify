@@ -1,0 +1,32 @@
+APPLICATION RECEIVED SUCCESSFULLY!
+
+Dear {{ application.first_name }},
+
+Thank you for your interest in joining our team at Open Linguify! We have successfully received your application for the {{ application.position.title }} position.
+
+APPLICATION DETAILS
+===================
+Position: {{ application.position.title }}
+Location: {{ application.position.location }}
+Department: {{ application.position.department }}
+Submitted: {{ application.applied_at|date:"F d, Y \a\t H:i" }}
+
+WHAT'S NEXT?
+============
+- Our recruitment team will review your application within the next 5-7 business days
+- If your profile matches our requirements, we'll contact you to schedule an initial interview
+- We'll keep you updated on the progress of your application via email
+
+We're excited about the possibility of having you join our mission to revolutionize language learning through innovative technology.
+
+If you have any questions about your application or the position, feel free to reach out to our HR team at careers@openlinguify.com.
+
+Best regards,
+The Open Linguify Recruitment Team
+
+---
+OPEN LINGUIFY
+Building the future of language learning
+openlinguify.com | careers@openlinguify.com
+
+This email was sent because you submitted an application on our careers page.

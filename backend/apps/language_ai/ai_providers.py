@@ -22,6 +22,7 @@ class AIProvider:
             'openai': OpenAIProvider,
             'huggingface': HuggingFaceProvider,
             'ollama': OllamaProvider,
+            'claude': ClaudeProvider,
             'simulator': SimulatorProvider
         }
         
@@ -104,7 +105,8 @@ class HuggingFaceProvider(AIProvider):
             self.hf_token = settings.HUGGINGFACE_API_TOKEN
         
         # Modèle par défaut à utiliser (on peut le changer dans les settings)
-        self.default_model = getattr(settings, 'HUGGINGFACE_MODEL', 'mistralai/Mistral-7B-Instruct-v0.2')
+        # Utilisons Mistral 7B qui est disponible sur l'API HuggingFace
+        self.default_model = getattr(settings, 'HUGGINGFACE_MODEL', 'mistralai/Mistral-7B-Instruct-v0.1')
         
         if self.hf_token:
             logger.info(f"HuggingFace provider initialized with model {self.default_model}")
@@ -262,6 +264,70 @@ class OllamaProvider(AIProvider):
         return formatted_prompt
 
 
+class ClaudeProvider(AIProvider):
+    """Provider utilisant l'API Claude d'Anthropic"""
+    
+    def __init__(self):
+        # Récupérer la clé API Claude
+        self.api_key = os.environ.get('CLAUDE_API_KEY', None)
+        if hasattr(settings, 'CLAUDE_API_KEY'):
+            self.api_key = settings.CLAUDE_API_KEY
+            
+        self.base_url = "https://api.anthropic.com/v1/messages"
+        self.model = "claude-3-haiku-20240307"  # Modèle rapide et économique
+        
+        if self.api_key:
+            logger.info(f"Claude provider initialized with model {self.model}")
+        else:
+            logger.warning("Claude API key not found. Provider will not work.")
+    
+    def is_available(self):
+        return bool(self.api_key)
+    
+    def generate_response(self, messages, language, max_tokens=500):
+        if not self.is_available():
+            logger.error("Claude provider called without API key")
+            return None
+            
+        try:
+            headers = {
+                "Content-Type": "application/json",
+                "X-API-Key": self.api_key,
+                "anthropic-version": "2023-06-01"
+            }
+            
+            # Convertir les messages au format Claude
+            claude_messages = []
+            system_prompt = ""
+            
+            for msg in messages:
+                if msg["role"] == "system":
+                    system_prompt = msg["content"]
+                elif msg["role"] in ["user", "assistant"]:
+                    claude_messages.append({
+                        "role": msg["role"],
+                        "content": msg["content"]
+                    })
+            
+            payload = {
+                "model": self.model,
+                "messages": claude_messages,
+                "max_tokens": max_tokens,
+                "temperature": 0.7,
+                "system": system_prompt
+            }
+            
+            response = requests.post(self.base_url, headers=headers, json=payload)
+            response.raise_for_status()
+            
+            result = response.json()
+            return result.get("content", [{}])[0].get("text", "").strip()
+            
+        except Exception as e:
+            logger.error(f"Error calling Claude API: {str(e)}")
+            return None
+
+
 class SimulatorProvider(AIProvider):
     """Provider de simulation (mode hors ligne)"""
     
@@ -278,25 +344,44 @@ class SimulatorProvider(AIProvider):
                 user_message = message["content"]
                 break
         
-        # Réponses génériques basées sur la langue
+        # Réponses génériques basées sur la langue et le contexte
+        user_message_lower = user_message.lower()
+        
+        # Réponses contextuelles pour l'espagnol
+        if 'spanish' in language or language == 'es':
+            if any(greeting in user_message_lower for greeting in ['hola', 'buenos', 'buenas']):
+                return "¡Hola! ¡Qué gusto saludarte! Estoy aquí para ayudarte a practicar español. ¿Cómo te ha ido hoy?"
+            elif 'bien' in user_message_lower or 'muy bien' in user_message_lower:
+                return "¡Me alegro mucho de que estés bien! ¿Qué te gustaría practicar hoy? Podemos hablar de cualquier tema que te interese."
+            elif 'que tal' in user_message_lower or 'qué tal' in user_message_lower:
+                return "¡Muy bien, gracias por preguntar! Estoy emocionado de ayudarte con tu español. ¿Sobre qué tema te gustaría conversar?"
+            elif any(travel in user_message_lower for travel in ['viaje', 'viajar', 'travel']):
+                return "¡Los viajes son fascinantes! ¿Has visitado algún país hispanohablante? Me encantaría escuchar sobre tus experiencias o planes de viaje."
+            
         generic_responses = {
-            'en': [
+            'english': [
                 "That's an interesting point! Could you tell me more about it?",
                 "I see what you mean. Have you considered looking at it from another perspective?",
                 "That's great! Let's explore this topic further.",
                 "I understand. What would you like to discuss next?",
             ],
-            'fr': [
+            'french': [
                 "C'est un point intéressant ! Pourriez-vous m'en dire plus ?",
                 "Je comprends ce que vous voulez dire. Avez-vous envisagé de l'examiner sous un autre angle ?",
                 "C'est super ! Explorons ce sujet plus en détail.",
                 "Je comprends. De quoi aimeriez-vous discuter ensuite ?",
             ],
+            'spanish': [
+                "¡Qué interesante lo que dices! ¿Podrías contarme más sobre eso?",
+                "Entiendo tu punto de vista. ¿Has pensado en otras formas de verlo?",
+                "¡Excelente! Continuemos explorando este tema.",
+                "Te comprendo perfectamente. ¿Qué más te gustaría compartir?",
+            ],
             'es': [
-                "¡Es un punto interesante! ¿Podrías contarme más al respecto?",
-                "Entiendo lo que quieres decir. ¿Has considerado verlo desde otra perspectiva?",
-                "¡Eso es genial! Exploremos este tema con más detalle.",
-                "Entiendo. ¿De qué te gustaría hablar a continuación?",
+                "¡Qué interesante lo que dices! ¿Podrías contarme más sobre eso?",
+                "Entiendo tu punto de vista. ¿Has pensado en otras formas de verlo?",
+                "¡Excelente! Continuemos explorando este tema.",
+                "Te comprendo perfectamente. ¿Qué más te gustaría compartir?",
             ]
         }
         

@@ -1,0 +1,181 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+
+{% block title %}Chat - Linguify{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-info-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+    
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+    
+    .feature-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 auto 1rem;
+    }
+    
+    .cta-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: transform 0.3s ease;
+    }
+    
+    .cta-button:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-info-container">
+    <!-- En-tête -->
+    <div class="text-center mb-5">
+        <div class="feature-icon" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 1rem;">
+            <i class="bi bi-chat-dots-fill"></i>
+        </div>
+        <h1 class="display-4 mb-3">Chat Messenger</h1>
+        <p class="lead text-muted">
+            Communiquez en temps réel avec d'autres apprenants de langues sur Linguify
+        </p>
+    </div>
+
+    <!-- Fonctionnalités -->
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-lightning-fill"></i>
+            </div>
+            <h4>Temps Réel</h4>
+            <p class="text-muted">
+                Messages instantanés avec WebSocket pour une communication fluide
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <h4>Échange Linguistique</h4>
+            <p class="text-muted">
+                Connectez-vous avec des locuteurs natifs pour pratiquer vos langues
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-phone-fill"></i>
+            </div>
+            <h4>Interface Familière</h4>
+            <p class="text-muted">
+                Design Facebook Messenger pour une expérience utilisateur intuitive
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-globe"></i>
+            </div>
+            <h4>Communauté Globale</h4>
+            <p class="text-muted">
+                Rencontrez des apprenants du monde entier dans votre voyage linguistique
+            </p>
+        </div>
+    </div>
+
+    <!-- Description détaillée -->
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h3>Comment ça marche ?</h3>
+            <ol class="list-group list-group-flush">
+                <li class="list-group-item border-0 px-0">
+                    <strong>1. Accédez au dashboard</strong><br>
+                    <small class="text-muted">Le chat est intégré directement dans votre tableau de bord</small>
+                </li>
+                <li class="list-group-item border-0 px-0">
+                    <strong>2. Cliquez sur l'icône chat</strong><br>
+                    <small class="text-muted">Bouton flottant en bas à droite de votre écran</small>
+                </li>
+                <li class="list-group-item border-0 px-0">
+                    <strong>3. Recherchez des utilisateurs</strong><br>
+                    <small class="text-muted">Trouvez d'autres apprenants et démarrez une conversation</small>
+                </li>
+                <li class="list-group-item border-0 px-0">
+                    <strong>4. Chattez en temps réel</strong><br>
+                    <small class="text-muted">Échangez instantanément avec vos partenaires d'apprentissage</small>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="col-md-6">
+            <h3>Fonctionnalités</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item border-0 px-0">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Messages en temps réel
+                </li>
+                <li class="list-group-item border-0 px-0">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Statuts en ligne/hors ligne
+                </li>
+                <li class="list-group-item border-0 px-0">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Notifications de nouveaux messages
+                </li>
+                <li class="list-group-item border-0 px-0">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Interface responsive (mobile/desktop)
+                </li>
+                <li class="list-group-item border-0 px-0">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Chat réductible/expandable
+                </li>
+                <li class="list-group-item border-0 px-0">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Recherche d'utilisateurs
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center mt-5">
+        <a href="/dashboard/" class="cta-button">
+            <i class="bi bi-arrow-right me-2"></i>
+            Commencer à chatter maintenant
+        </a>
+    </div>
+</div>
+{% endblock %}

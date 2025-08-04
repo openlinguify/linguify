@@ -1,0 +1,77 @@
+{% extends "components/header/app_header.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block app_navigation %}
+<!-- Navigation Documents dans le header -->
+<div class="d-none d-lg-flex align-items-center gap-2">
+    <!-- Retour Dashboard -->
+    {% if request.resolver_match.url_name != 'dashboard' %}
+    <a href="{% url 'saas_web:dashboard' %}" 
+       class="btn btn-outline-secondary btn-sm header-btn"
+       aria-label="{% trans 'Go to dashboard' %}">
+        <i class="bi bi-house me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Dashboard" %}</span>
+    </a>
+    {% endif %}
+    
+    <!-- Navigation Documents -->
+    <a href="{% url 'documents:main' %}" 
+       class="btn btn-outline-primary btn-sm header-btn {% if request.resolver_match.url_name == 'main' %}active{% endif %}"
+       aria-label="{% trans 'Documents home' %}">
+        <i class="bi bi-house me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Accueil" %}</span>
+    </a>
+    
+    <a href="{% url 'documents:document_list' %}" 
+       class="btn btn-outline-secondary btn-sm header-btn {% if request.resolver_match.url_name == 'document_list' %}active{% endif %}"
+       aria-label="{% trans 'All documents' %}">
+        <i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Documents" %}</span>
+    </a>
+    
+    <a href="{% url 'documents:folder_list' %}" 
+       class="btn btn-outline-secondary btn-sm header-btn {% if request.resolver_match.url_name == 'folder_list' %}active{% endif %}"
+       aria-label="{% trans 'Folders' %}">
+        <i class="bi bi-folder me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Dossiers" %}</span>
+    </a>
+    
+    <!-- Actions -->
+    <div class="vr mx-2"></div>
+    
+    <a href="{% url 'documents:document_create' %}" 
+       class="btn btn-primary btn-sm header-btn"
+       aria-label="{% trans 'Create new document' %}">
+        <i class="bi bi-plus me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Nouveau" %}</span>
+    </a>
+</div>
+
+<!-- Mobile Navigation -->
+<div class="d-lg-none">
+    <div class="dropdown">
+        <button class="btn btn-outline-secondary btn-sm dropdown-toggle header-btn" 
+                type="button" 
+                data-bs-toggle="dropdown" 
+                aria-expanded="false">
+            <i class="bi bi-list"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{% url 'documents:main' %}">
+                <i class="bi bi-house me-2"></i>Accueil
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'documents:document_list' %}">
+                <i class="bi bi-file-earmark-text me-2"></i>Tous les documents
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'documents:folder_list' %}">
+                <i class="bi bi-folder me-2"></i>Dossiers
+            </a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'documents:document_create' %}">
+                <i class="bi bi-plus me-2"></i>Nouveau document
+            </a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -6,7 +6,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import json
 
-from .models import Notification, NotificationType, NotificationPriority, NotificationSetting
+from .models.notification_models import Notification, NotificationType, NotificationPriority, NotificationSetting
 from .serializers import NotificationSerializer
 
 User = get_user_model()

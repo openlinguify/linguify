@@ -1,0 +1,1 @@
+# Template tags pour l'app chat

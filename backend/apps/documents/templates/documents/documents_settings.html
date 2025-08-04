@@ -1,0 +1,421 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Documents Settings Section -->
+<div class="settings-section" id="documents-settings">
+    <!-- Settings Content -->
+    <div class="settings-content">
+        <!-- Statistics Overview -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="stats-overview">
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-file-earmark-text text-primary"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-number">{{ user_documents_count }}</div>
+                                    <div class="stat-label">Documents</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-folder text-success"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-number">{{ user_folders_count }}</div>
+                                    <div class="stat-label">Dossiers</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-share text-info"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-number">{{ shared_with_user_count }}</div>
+                                    <div class="stat-label">Partagés avec moi</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-cloud text-warning"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-number">{{ storage_used_kb|floatformat:1 }} KB</div>
+                                    <div class="stat-label">Stockage utilisé</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Form -->
+        <form id="documents-settings-form">
+            <div class="row">
+                <!-- General Settings -->
+                <div class="col-lg-6">
+                    <div class="settings-group">
+                        <h5 class="settings-group-title">
+                            <i class="bi bi-sliders me-2"></i>
+                            Paramètres généraux
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label for="default-content-type" class="form-label">Type de contenu par défaut</label>
+                            <select class="form-select" id="default-content-type" name="defaultContentType">
+                                <option value="markdown">Markdown</option>
+                                <option value="html">HTML</option>
+                                <option value="plaintext">Texte simple</option>
+                            </select>
+                            <div class="form-text">Format utilisé lors de la création de nouveaux documents</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="default-visibility" class="form-label">Visibilité par défaut</label>
+                            <select class="form-select" id="default-visibility" name="defaultVisibility">
+                                <option value="private">Privé</option>
+                                <option value="shared">Partagé</option>
+                                <option value="public">Public</option>
+                            </select>
+                            <div class="form-text">Niveau de visibilité pour les nouveaux documents</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="auto-save" name="autoSave" checked>
+                                <label class="form-check-label" for="auto-save">
+                                    Sauvegarde automatique
+                                </label>
+                            </div>
+                            <div class="form-text">Sauvegarder automatiquement les modifications</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Editor Settings -->
+                <div class="col-lg-6">
+                    <div class="settings-group">
+                        <h5 class="settings-group-title">
+                            <i class="bi bi-code-square me-2"></i>
+                            Paramètres de l'éditeur
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label for="editor-theme" class="form-label">Thème de l'éditeur</label>
+                            <select class="form-select" id="editor-theme" name="editorTheme">
+                                <option value="light">Clair</option>
+                                <option value="dark">Sombre</option>
+                                <option value="auto">Automatique</option>
+                            </select>
+                            <div class="form-text">Apparence de l'interface d'édition</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="font-size" class="form-label">Taille de police</label>
+                            <select class="form-select" id="font-size" name="fontSize">
+                                <option value="12">12px</option>
+                                <option value="14" selected>14px</option>
+                                <option value="16">16px</option>
+                                <option value="18">18px</option>
+                            </select>
+                            <div class="form-text">Taille du texte dans l'éditeur</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="live-preview" name="livePreview" checked>
+                                <label class="form-check-label" for="live-preview">
+                                    Aperçu en temps réel
+                                </label>
+                            </div>
+                            <div class="form-text">Afficher l'aperçu pendant l'édition</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Collaboration Settings -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="settings-group">
+                        <h5 class="settings-group-title">
+                            <i class="bi bi-people me-2"></i>
+                            Collaboration et partage
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="comment-notifications" name="commentNotifications" checked>
+                                        <label class="form-check-label" for="comment-notifications">
+                                            Notifications de commentaires
+                                        </label>
+                                    </div>
+                                    <div class="form-text">Recevoir des notifications pour les nouveaux commentaires</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="share-notifications" name="shareNotifications" checked>
+                                        <label class="form-check-label" for="share-notifications">
+                                            Notifications de partage
+                                        </label>
+                                    </div>
+                                    <div class="form-text">Recevoir des notifications quand un document est partagé</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="default-permissions" class="form-label">Permissions par défaut</label>
+                                    <select class="form-select" id="default-permissions" name="defaultPermissions">
+                                        <option value="view">Lecture seule</option>
+                                        <option value="edit" selected>Édition</option>
+                                        <option value="admin">Administration</option>
+                                    </select>
+                                    <div class="form-text">Niveau de permission par défaut lors du partage</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="show-cursors" name="showCursors" checked>
+                                        <label class="form-check-label" for="show-cursors">
+                                            Afficher le curseur des collaborateurs
+                                        </label>
+                                    </div>
+                                    <div class="form-text">Voir en temps réel où travaillent les autres utilisateurs</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Recent Activity -->
+        {% if recent_activity %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="settings-group">
+                    <h5 class="settings-group-title">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Activité récente
+                    </h5>
+                    
+                    <div class="activity-list">
+                        {% for document in recent_activity %}
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                {% if document.content_type == 'markdown' %}
+                                    <i class="bi bi-markdown"></i>
+                                {% elif document.content_type == 'html' %}
+                                    <i class="bi bi-filetype-html"></i>
+                                {% else %}
+                                    <i class="bi bi-file-earmark-text"></i>
+                                {% endif %}
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">
+                                    {{ document.title }}
+                                </div>
+                                <div class="activity-meta">
+                                    <span class="activity-type">
+                                        {% if document.owner == user %}
+                                            Modifié
+                                        {% else %}
+                                            Partagé par {{ document.owner.get_full_name|default:document.owner.username }}
+                                        {% endif %}
+                                    </span>
+                                    <span class="activity-time">
+                                        <i class="bi bi-clock"></i>
+                                        {{ document.updated_at|timesince }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Action Buttons -->
+        <div class="settings-actions mt-4">
+            <button type="button" class="btn btn-primary" onclick="documentsSettings.save()">
+                <i class="bi bi-check-lg me-2"></i>
+                Enregistrer les paramètres
+            </button>
+            <button type="button" class="btn btn-outline-secondary" onclick="documentsSettings.reset()">
+                <i class="bi bi-arrow-counterclockwise me-2"></i>
+                Réinitialiser
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Load Documents Settings JavaScript -->
+<script src="{% static 'documents/js/documents_settings.js' %}"></script>
+
+<style>
+.settings-section {
+    padding: 0;
+}
+
+.stats-overview {
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #e3e6f0;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.settings-group {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #e3e6f0;
+    height: fit-content;
+}
+
+.settings-group-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.form-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.activity-list {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e3e6f0;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #f8f9fa;
+    transition: background-color 0.2s;
+}
+
+.activity-item:hover {
+    background-color: #f8f9fa;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #e3f2fd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: #1976d2;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.activity-meta {
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.activity-meta span {
+    margin-right: 1rem;
+}
+
+.settings-actions {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.settings-actions .btn {
+    margin: 0 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+    
+    .settings-group {
+        margin-bottom: 1rem;
+    }
+    
+    .activity-item {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+    
+    .activity-icon {
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+    }
+}
+</style>

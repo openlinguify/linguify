@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Créer un nouveau cours - Linguify Teacher CMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .category-card {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .category-card:hover {
+        border-color: #007bff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    }
+    
+    .category-card.selected {
+        border-color: #007bff;
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .category-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+    
+    .category-emoji {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+    
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    
+    .level-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .level-btn {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .multilingual-tabs {
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 1rem;
+    }
+    
+    .multilingual-content {
+        min-height: 120px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>
+                    Créer un nouveau cours
+                </h1>
+                <a href="{% url 'contentstore:course_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Retour à mes cours
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Informations de base -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Informations de base
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Titre du cours avec traduction automatique -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Titre du cours <span class="text-danger">*</span></label>
+                            <div class="form-floating">
+                                {{ form.title_fr }}
+                                <label for="{{ form.title_fr.id_for_label }}">Titre de votre cours</label>
+                            </div>
+                            <small class="text-muted">
+                                <i class="fas fa-language me-1"></i>
+                                Les traductions en anglais, espagnol et néerlandais seront générées automatiquement
+                            </small>
+                        </div>
+
+                        <!-- Description du cours avec traduction automatique -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Description du cours</label>
+                            <div class="form-floating">
+                                {{ form.description_fr }}
+                                <label for="{{ form.description_fr.id_for_label }}">Description de votre cours</label>
+                            </div>
+                            <small class="text-muted">
+                                <i class="fas fa-language me-1"></i>
+                                Les traductions seront générées automatiquement lors de la sauvegarde
+                            </small>
+                        </div>
+
+                        <!-- Niveau -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Niveau du cours <span class="text-danger">*</span></label>
+                            <div class="level-buttons">
+                                {% for value, label in form.level.field.choices %}
+                                <button type="button" class="btn btn-outline-primary level-btn" data-level="{{ value }}">
+                                    {{ label }}
+                                </button>
+                                {% endfor %}
+                            </div>
+                            {{ form.level }}
+                        </div>
+
+                        <!-- Prix -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.price }}
+                                    <label for="{{ form.price.id_for_label }}">Prix (€) <span class="text-danger">*</span></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.duration_hours }}
+                                    <label for="{{ form.duration_hours.id_for_label }}">Durée estimée (heures)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Catégorie -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tags me-2"></i>
+                            Catégorie du cours
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-3">Choisissez la catégorie qui correspond le mieux à votre cours :</p>
+                        <div class="category-grid">
+                            {% for value, label in form.category.field.choices %}
+                            <div class="category-card" data-category="{{ value }}">
+                                <div class="category-content">
+                                    <span class="category-emoji">{{ label|slice:":2" }}</span>
+                                    <span>{{ label|slice:"3:" }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {{ form.category }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Vous pourrez ajouter du contenu après avoir créé le cours
+                            </div>
+                            <div>
+                                <a href="{% url 'contentstore:course_list' %}" class="btn btn-outline-secondary me-2">
+                                    Annuler
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>
+                                    Créer le cours
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des niveaux
+    const levelButtons = document.querySelectorAll('.level-btn');
+    const levelInput = document.getElementById('id_level');
+    
+    levelButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            levelButtons.forEach(btn => btn.classList.remove('btn-primary'));
+            levelButtons.forEach(btn => btn.classList.add('btn-outline-primary'));
+            
+            this.classList.remove('btn-outline-primary');
+            this.classList.add('btn-primary');
+            
+            levelInput.value = this.dataset.level;
+        });
+    });
+    
+    // Gestion des catégories
+    const categoryCards = document.querySelectorAll('.category-card');
+    const categoryInput = document.getElementById('id_category');
+    
+    categoryCards.forEach(card => {
+        card.addEventListener('click', function() {
+            categoryCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            categoryInput.value = this.dataset.category;
+        });
+    });
+    
+    // Cacher les champs de formulaire originaux
+    levelInput.style.display = 'none';
+    categoryInput.style.display = 'none';
+    
+    // Validation du formulaire
+    const form = document.querySelector('.needs-validation');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity() || !levelInput.value || !categoryInput.value) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            if (!categoryInput.value) {
+                alert('Veuillez sélectionner une catégorie pour votre cours.');
+            }
+            if (!levelInput.value) {
+                alert('Veuillez sélectionner un niveau pour votre cours.');
+            }
+        }
+        form.classList.add('was-validated');
+    });
+});
+</script>
+{% endblock %}

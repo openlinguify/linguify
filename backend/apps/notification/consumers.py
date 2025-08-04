@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.conf import settings
-from .models import Notification, NotificationSetting, NotificationType
+from .models.notification_models import Notification, NotificationSetting, NotificationType
 
 User = get_user_model()
 logger = logging.getLogger(__name__)

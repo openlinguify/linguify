@@ -27,13 +27,19 @@ pandas = "^2.2.3"
 openai = "^1.88.0"  # Pour l'intégration OpenAI
 drf-spectacular = "^0.28.0"
 redis = "^6.2.0"
-pyjwt = "2.10.1"
-supabase = "^2.15.3"
+pyjwt = "^2.10.1"
 whitenoise = "^6.9.0"
 pywebpush = "^2.0.3"
 
+# Voice/Audio dependencies
+pyttsx3 = "^2.90"
+SpeechRecognition = "^3.10.0"
+# pyaudio = "^0.2.13"  # Optional - difficile à installer sur Windows
+supabase = "^2.17.0"
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
+pytest-django = "^4.11.1"
 
 [build-system]
 requires = ["poetry-core"]

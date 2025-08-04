@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditions d'Utilisation - Open Linguify</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        
+        .content-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: -3rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .subsection {
+            margin-bottom: 1.5rem;
+        }
+        
+        .subsection-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .highlight-box {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .acceptance-section {
+            background: #f8fafc;
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .last-updated {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <a href="{% url 'public_web:landing' %}" class="btn back-btn">
+        <i class="bi bi-arrow-left me-2"></i>
+        Retour à l'accueil
+    </a>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="container text-center">
+            <h1 class="mb-2">
+                <i class="bi bi-shield-check me-3"></i>
+                Conditions d'Utilisation
+            </h1>
+            <p class="lead opacity-90">
+                Open Linguify - Plateforme d'Applications Éducatives
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container pb-5">
+        <div class="content-container">
+
+            <!-- Terms Content -->
+            <h2 class="section-title">1. Introduction et Informations sur l'Entreprise</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">1.1 Détails de l'Entreprise</h3>
+                <p>Ces Conditions d'Utilisation ("Conditions") régissent votre accès et votre utilisation des services fournis par Open Linguify, plateforme open source d'applications éducatives ("Open Linguify," "nous," "notre"). Pour toute question concernant ces Conditions, veuillez nous contacter à <a href="mailto:legal@openlinguify.com">legal@openlinguify.com</a>. Pour les demandes générales, veuillez contacter <a href="mailto:info@openlinguify.com">info@openlinguify.com</a>.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">1.2 Acceptation des Conditions</h3>
+                <p>En accédant ou en utilisant la plateforme Open Linguify, vous reconnaissez avoir lu, compris et accepté d'être lié par ces Conditions. Si vous n'acceptez pas ces Conditions, veuillez vous abstenir d'utiliser nos services.</p>
+            </div>
+
+            <h2 class="section-title">2. Description du Service</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">2.1 Aperçu du Service</h3>
+                <p>Open Linguify fournit une plateforme d'applications éducatives open source comprenant :</p>
+                <ul>
+                    <li><strong>Système de mémorisation :</strong> Révision espacée et mémorisation optimisée</li>
+                    <li><strong>Flashcards interactives :</strong> Cartes d'apprentissage personnalisables</li>
+                    <li><strong>Prise de notes :</strong> Outil collaboratif de prise de notes</li>
+                    <li><strong>Génération de quiz :</strong> Quiz intelligents et adaptatifs</li>
+                    <li><strong>Chat collaboratif :</strong> Communication pour l'apprentissage en groupe</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">2.2 Disponibilité du Service</h3>
+                <p>Open Linguify s'efforce de maintenir une disponibilité continue de ses services. Cependant, nous ne garantissons pas un accès ininterrompu à notre plateforme. Les services peuvent être temporairement indisponibles en raison de maintenance, de problèmes techniques ou de circonstances indépendantes de notre volonté.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">2.3 Modifications du Service</h3>
+                <p>Open Linguify se réserve le droit de modifier, suspendre ou interrompre tout aspect de ses services à tout moment sans préavis. Cela inclut l'ajout ou la suppression de fonctionnalités, de contenu ou de fonctionnalités.</p>
+            </div>
+
+            <h2 class="section-title">3. Comptes Utilisateur et Inscription</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">3.1 Création de Compte</h3>
+                <p>Pour accéder à certaines fonctionnalités de notre plateforme, vous devrez créer un compte utilisateur. Vous acceptez de fournir des informations exactes, actuelles et complètes lors du processus d'inscription.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">3.2 Sécurité du Compte</h3>
+                <p>Vous êtes responsable de maintenir la confidentialité de vos identifiants de compte et de toutes les activités qui se produisent sous votre compte. Vous acceptez de notifier immédiatement Open Linguify de toute utilisation non autorisée de votre compte ou de toute autre violation de sécurité.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">3.3 Résiliation de Compte</h3>
+                <p>Open Linguify se réserve le droit de suspendre ou de résilier les comptes qui violent ces Conditions ou pour toute autre raison à notre seule discrétion. Les utilisateurs peuvent résilier leur compte à tout moment en suivant la procédure de suppression de compte disponible sur la plateforme.</p>
+            </div>
+
+            <h2 class="section-title">4. Frais et Paiement</h2>
+            
+            <div class="highlight-box">
+                <div class="subsection">
+                    <h3 class="subsection-title">4.1 Modèle Freemium</h3>
+                    <p>Open Linguify fonctionne selon un modèle freemium :</p>
+                    <ul>
+                        <li><strong>Gratuit :</strong> Accès à 1 application de votre choix</li>
+                        <li><strong>Premium (19,99€/mois) :</strong> Accès à toutes les applications éducatives</li>
+                    </ul>
+                    <p>Ce modèle nous permet de maintenir un accès gratuit aux fonctionnalités de base tout en finançant le développement continu de nouvelles applications.</p>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">4.2 Facturation et Paiements</h3>
+                    <p>Les abonnements premium sont facturés mensuellement. Les paiements sont traités via des prestataires de paiement sécurisés. Vous pouvez annuler votre abonnement à tout moment depuis votre compte.</p>
+                </div>
+            </div>
+
+            <h2 class="section-title">5. Engagement Open Source et Propriété Intellectuelle</h2>
+            
+            <div class="highlight-box">
+                <div class="subsection">
+                    <h3 class="subsection-title">5.1 Philosophie Open Source</h3>
+                    <p>Open Linguify est développé en tant que projet open-source. Nous nous engageons à contribuer à la communauté open-source et continuerons à rendre nos technologies de base disponibles au profit de la communauté élargie. Notre engagement envers l'open source est un aspect fondamental de notre mission d'améliorer l'éducation à l'échelle mondiale.</p>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">5.2 Contenu Open Linguify</h3>
+                <p>Le code source d'Open Linguify est disponible sous licence open source appropriée. Les algorithmes et méthodologies éducatives développés par nos équipes sont partagés avec la communauté.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">5.3 Licence d'Utilisation</h3>
+                <p>Sous réserve de ces Conditions, Open Linguify vous accorde une licence limitée, non exclusive et non transférable pour accéder et utiliser nos services à des fins personnelles et éducatives conformément aux termes de notre licence open source.</p>
+            </div>
+
+            <h2 class="section-title">6. Conduite et Responsabilités de l'Utilisateur</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">6.1 Utilisation Acceptable</h3>
+                <p>Vous acceptez d'utiliser nos services uniquement à des fins légales et conformément à ces Conditions. Vous êtes responsable de toute activité qui se produit sous votre compte.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">6.2 Conduite Interdite</h3>
+                <p>Vous acceptez de ne pas vous engager dans une conduite qui :</p>
+                <ul>
+                    <li>Viole toute loi ou réglementation applicable</li>
+                    <li>Porte atteinte aux droits d'autrui</li>
+                    <li>Interfère avec le fonctionnement de nos services</li>
+                    <li>Contient du contenu offensant, nuisible ou inapproprié</li>
+                    <li>Tente d'obtenir un accès non autorisé à nos systèmes ou comptes utilisateur</li>
+                    <li>Utilise nos services à des fins commerciales sans autorisation</li>
+                </ul>
+            </div>
+
+            <h2 class="section-title">7. Confidentialité et Protection des Données</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">7.1 Politique de Confidentialité</h3>
+                <p>Notre collecte et utilisation d'informations personnelles sont régies par notre <a href="{% url 'public_web:privacy' %}">Politique de Confidentialité</a>, qui est incorporée dans ces Conditions par référence.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">7.2 Sécurité des Données</h3>
+                <p>Open Linguify met en place des mesures de sécurité robustes pour protéger les données des utilisateurs, conformément au RGPD et aux meilleures pratiques de sécurité.</p>
+            </div>
+
+            <h2 class="section-title">8. Dénis de Responsabilité et Limitations de Responsabilité</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">8.1 Déni de Responsabilité du Service</h3>
+                <p>Les services d'Open Linguify sont fournis "en l'état" et "selon disponibilité", sans garanties d'aucune sorte, expresses ou implicites.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">8.2 Résultats Éducatifs</h3>
+                <p>Bien qu'Open Linguify s'efforce de fournir des outils éducatifs de qualité, nous ne garantissons pas des résultats d'apprentissage spécifiques ou des niveaux de maîtrise particuliers.</p>
+            </div>
+
+            <h2 class="section-title">9. Résolution des Différends</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">9.1 Droit Applicable</h3>
+                <p>Ces Conditions seront régies et interprétées conformément aux lois applicables, sans égard à leurs dispositions de conflit de lois.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">9.2 Processus de Résolution des Différends</h3>
+                <p>Tout différend découlant de ces Conditions ou de votre utilisation de nos services sera résolu par des négociations amiables. Si aucune résolution n'est atteinte, les différends seront soumis à médiation avant toute procédure judiciaire.</p>
+            </div>
+
+            <h2 class="section-title">10. Modifications des Conditions</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">10.1 Mises à Jour des Conditions</h3>
+                <p>Open Linguify se réserve le droit de modifier ces Conditions à tout moment. Nous fournirons une notification des changements matériels via notre plateforme ou par email.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">10.2 Utilisation Continue</h3>
+                <p>Votre utilisation continue de nos services après la publication des Conditions révisées constitue votre acceptation de ces changements.</p>
+            </div>
+
+            <h2 class="section-title">11. Résiliation</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">11.1 Résiliation par les Utilisateurs</h3>
+                <p>Vous pouvez résilier votre compte à tout moment en suivant la procédure de suppression de compte ou en contactant <a href="mailto:legal@openlinguify.com">legal@openlinguify.com</a>.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">11.2 Résiliation par Open Linguify</h3>
+                <p>Open Linguify peut résilier ou suspendre votre accès à nos services immédiatement, sans préavis ni responsabilité, pour toute raison, y compris la violation de ces Conditions.</p>
+            </div>
+
+            <h2 class="section-title">12. Dispositions Diverses</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">12.1 Accord Complet</h3>
+                <p>Ces Conditions constituent l'accord complet entre vous et Open Linguify concernant votre utilisation de nos services, remplaçant tout accord antérieur.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">12.2 Divisibilité</h3>
+                <p>Si une disposition de ces Conditions est jugée inapplicable, les dispositions restantes resteront en pleine force et effet.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">12.3 Renonciation</h3>
+                <p>Le défaut d'Open Linguify de faire respecter un droit ou une provision de ces Conditions ne sera pas considéré comme une renonciation à ce droit ou à cette provision.</p>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">12.4 Informations de Contact</h3>
+                <p>Pour toute question concernant ces Conditions, veuillez contacter <a href="mailto:legal@openlinguify.com">legal@openlinguify.com</a></p>
+            </div>
+
+            <div class="last-updated">
+                <strong>Dernière mise à jour :</strong> {{ "now"|date:"d/m/Y" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
