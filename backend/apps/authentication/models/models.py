@@ -271,7 +271,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateTimeField(auto_now=True)
     # Common fields for all users
     profile_picture = models.ImageField(
-        upload_to='profiles',
+        upload_to='',  # Empty string since ProfileStorage already points to profiles/
         storage=ProfileStorage(),
         null=True,
         blank=True,

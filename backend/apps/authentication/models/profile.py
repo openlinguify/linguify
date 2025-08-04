@@ -184,7 +184,7 @@ def process_profile_picture(image_data: bytes,
         'images': {
             'original': {
                 'data': image_data,
-                'path': f"{PROFILES_DIR}/{user_id}/original/{timestamp}_{unique_id}{ext}",
+                'path': f"profiles/{user_id}/original/{timestamp}_{unique_id}{ext}",
             },
         }
     }
@@ -193,7 +193,7 @@ def process_profile_picture(image_data: bytes,
     optimized_data = optimize_image(img, MAX_SIZE, format, DEFAULT_QUALITY)
     result['images']['optimized'] = {
         'data': optimized_data,
-        'path': f"{PROFILES_DIR}/{user_id}/optimized/{unique_id}{ext}",
+        'path': f"profiles/{user_id}/optimized/{unique_id}{ext}",
     }
     
     # Créer les vignettes
@@ -201,7 +201,7 @@ def process_profile_picture(image_data: bytes,
     for size_name, thumb_data in thumbnails.items():
         result['images'][size_name] = {
             'data': thumb_data,
-            'path': f"{PROFILES_DIR}/{user_id}/thumbnails/{size_name}_{unique_id}{ext}",
+            'path': f"profiles/{user_id}/thumbnails/{size_name}_{unique_id}{ext}",
         }
     
     return result
@@ -261,6 +261,9 @@ def save_processed_images(processed_data: Dict[str, Dict[str, Any]]) -> Dict[str
     # Sauvegarder chaque image
     for image_type, image_info in processed_data['images'].items():
         full_path = os.path.join(settings.MEDIA_ROOT, image_info['path'])
+        
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
         
         # Sauvegarder le fichier
         with open(full_path, 'wb') as f:
