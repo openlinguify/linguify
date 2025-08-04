@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ develop, staging, main ]
+    branches: [ dev, develop, staging, main ]
   pull_request:
-    branches: [ develop, staging, main ]
+    branches: [ dev, develop, staging, main ]
   workflow_dispatch:
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.event_name == 'pull_request'
+    if: (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/develop') || github.event_name == 'pull_request'
     
     services:
       postgres:
@@ -45,9 +45,6 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
       
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -142,7 +139,7 @@ jobs:
     name: Auto-merge to Staging
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' && success()
+    if: (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/develop') && success()
     permissions:
       contents: write
       pull-requests: write
