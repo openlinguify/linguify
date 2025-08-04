@@ -1,0 +1,28 @@
+name: Simple CI Test
+
+on:
+  push:
+    branches: [ dev ]
+  workflow_dispatch:
+
+jobs:
+  simple-test:
+    name: Simple Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Simple checkout
+        uses: actions/checkout@v4
+      
+      - name: List files
+        run: |
+          echo "Repository contents:"
+          ls -la
+          echo "Backend directory:"
+          ls -la backend/ || echo "Backend directory not found"
+      
+      - name: Python version
+        run: python3 --version
+      
+      - name: Test complete
+        run: echo "✅ Simple CI test completed successfully"
