@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Administration - {{ organization.name|default:"LMS" }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>🔧 Administration{% if organization %} - {{ organization.name }}{% endif %}</h1>
+            {% if organization %}
+                <a href="{% url 'org-core:dashboard' org_slug=organization.slug %}" class="btn btn-secondary">
+                    ← Retour au Dashboard
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h5>🚧 Interface d'Administration</h5>
+            <p>Cette section est en cours de développement. Vous pourrez bientôt gérer :</p>
+            <ul>
+                <li>📊 Paramètres de l'organisation</li>
+                <li>👥 Gestion des utilisateurs</li>
+                <li>🎓 Configuration des cours</li>
+                <li>📈 Rapports et statistiques</li>
+                <li>🔒 Permissions et rôles</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% if organization %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>🏢 Informations Organisation</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Nom :</strong> {{ organization.name }}</p>
+                <p><strong>Slug :</strong> {{ organization.slug }}</p>
+                <p><strong>Type :</strong> {{ organization.get_org_type_display }}</p>
+                <p><strong>Statut :</strong> 
+                    <span class="badge {% if organization.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                        {% if organization.is_active %}Actif{% else %}Inactif{% endif %}
+                    </span>
+                </p>
+                <p><strong>Base de données :</strong> <code>{{ organization.database_name }}</code></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>⚡ Actions Rapides</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'org-students:student_list' org_slug=organization.slug %}" class="btn btn-outline-primary">
+                        📚 Gérer les Étudiants
+                    </a>
+                    <a href="{% url 'org-students:admin_interface' org_slug=organization.slug %}" class="btn btn-primary">
+                        🔧 Admin Étudiants (Style Django)
+                    </a>
+                    <button class="btn btn-outline-success" disabled>
+                        👨‍🏫 Gérer les Enseignants
+                    </button>
+                    <button class="btn btn-outline-info" disabled>
+                        🎓 Gérer les Cours
+                    </button>
+                    <button class="btn btn-outline-warning" disabled>
+                        📊 Voir les Rapports
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

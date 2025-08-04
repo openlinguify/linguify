@@ -1,0 +1,13 @@
+Django>=5.0,<6.0
+django-environ>=0.11.0
+psycopg2-binary>=2.9.0
+dj-database-url>=2.0.0
+django-cors-headers>=4.0.0
+djangorestframework>=3.16.0
+django-extensions>=4.1
+django-filter>=25.1
+channels>=4.2.0
+drf-spectacular>=0.28.0
+Pillow>=10.0.0
+supabase>=2.16.0
+gunicorn>=21.0.0

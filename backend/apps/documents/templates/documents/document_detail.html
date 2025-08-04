@@ -1,0 +1,411 @@
+{% extends 'documents/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block document_content %}
+<div class="document-detail-page">
+    <!-- Document Header -->
+    <div class="document-header-modern">
+        <div class="header-top">
+            {% if document.folder %}
+            <nav aria-label="breadcrumb" class="document-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'documents:document_list' %}">
+                            <i class="bi bi-file-earmark-text me-1"></i>Documents
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'documents:document_list' %}?folder={{ document.folder.id }}">
+                            <i class="bi bi-folder me-1"></i>{{ document.folder.name }}
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">{{ document.title }}</li>
+                </ol>
+            </nav>
+            {% endif %}
+            
+            <div class="document-actions-modern">
+                <a href="{% url 'documents:document_list' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    <span class="d-none d-lg-inline">Retour</span>
+                </a>
+                {% if can_edit %}
+                <a href="{% url 'documents:document_editor' document.pk %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-pencil"></i>
+                    <span class="d-none d-lg-inline">Modifier</span>
+                </a>
+                {% endif %}
+                
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" 
+                            type="button" 
+                            data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        {% if can_share %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'documents:document_share' document.pk %}">
+                                <i class="bi bi-share"></i> Partager
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% endif %}
+                        <li>
+                            <button class="dropdown-item" onclick="exportDocument('markdown')">
+                                <i class="bi bi-download"></i> Exporter en Markdown
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" onclick="exportDocument('html')">
+                                <i class="bi bi-download"></i> Exporter en HTML
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" onclick="exportDocument('pdf')">
+                                <i class="bi bi-download"></i> Exporter en PDF
+                            </button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <button class="dropdown-item" onclick="duplicateDocument()">
+                                <i class="bi bi-files"></i> Dupliquer
+                            </button>
+                        </li>
+                        {% if can_delete %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="{% url 'documents:document_delete' document.pk %}">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="document-title-section">
+            <div class="title-main">
+                <h1 class="document-title">
+                    {% if document.content_type == 'markdown' %}
+                        <i class="bi bi-markdown"></i>
+                    {% elif document.content_type == 'html' %}
+                        <i class="bi bi-filetype-html"></i>
+                    {% else %}
+                        <i class="bi bi-file-earmark-text"></i>
+                    {% endif %}
+                    {{ document.title }}
+                </h1>
+                
+                {% if document.get_tags_list %}
+                <div class="document-tags-modern">
+                    {% for tag in document.get_tags_list %}
+                    <span class="tag-modern">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="document-meta-modern">
+                <div class="meta-cards-compact">
+                    <div class="meta-card-compact">
+                        <i class="bi bi-person-circle"></i>
+                        <div class="meta-content">
+                            <span class="meta-value">
+                                {% if document.owner == request.user %}Vous{% else %}{{ document.owner.get_full_name|default:document.owner.username }}{% endif %}
+                            </span>
+                            <span class="meta-label">Propriétaire</span>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card-compact">
+                        <i class="bi bi-clock"></i>
+                        <div class="meta-content">
+                            <span class="meta-value">Il y a {{ document.updated_at|timesince }}</span>
+                            <span class="meta-label">Modifié</span>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card-compact">
+                        <i class="bi bi-calendar"></i>
+                        <div class="meta-content">
+                            <span class="meta-value">{{ document.created_at|date:"d M Y" }}</span>
+                            <span class="meta-label">Créé</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Document Content Layout -->
+    <div class="document-main-modern">
+        <!-- Primary Content -->
+        <div class="document-content-modern">
+            {% if document.content %}
+                {% if document.content_type == 'markdown' %}
+                    <div id="markdown-content" class="markdown-content">
+                        {{ document.content|linebreaks }}
+                    </div>
+                {% elif document.content_type == 'html' %}
+                    <div class="html-content">
+                        {{ document.content|safe }}
+                    </div>
+                {% else %}
+                    <div class="plaintext-content">
+                        {{ document.content|linebreaks }}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="empty-content">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <h3>Contenu vide</h3>
+                    <p>Ce document ne contient pas encore de contenu. Cliquez sur "Modifier" pour commencer à rédiger.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Document Info Sidebar Cards -->
+        <div class="document-info-modern">
+            <!-- Statistics Card -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <h4>
+                        <i class="bi bi-graph-up"></i>
+                        Statistiques
+                    </h4>
+                </div>
+                <div class="info-card-content">
+                    <div class="stats-grid-modern">
+                        <div class="stat-modern">
+                            <div class="stat-icon">
+                                <i class="bi bi-type"></i>
+                            </div>
+                            <div class="stat-details">
+                                <span class="stat-number" id="word-count">-</span>
+                                <span class="stat-label">Mots</span>
+                            </div>
+                        </div>
+                        <div class="stat-modern">
+                            <div class="stat-icon">
+                                <i class="bi bi-textarea-t"></i>
+                            </div>
+                            <div class="stat-details">
+                                <span class="stat-number" id="char-count">-</span>
+                                <span class="stat-label">Caractères</span>
+                            </div>
+                        </div>
+                        <div class="stat-modern">
+                            <div class="stat-icon">
+                                <i class="bi bi-clock"></i>
+                            </div>
+                            <div class="stat-details">
+                                <span class="stat-number" id="reading-time">-</span>
+                                <span class="stat-label">Lecture</span>
+                            </div>
+                        </div>
+                        <div class="stat-modern">
+                            <div class="stat-icon">
+                                <i class="bi bi-collection"></i>
+                            </div>
+                            <div class="stat-details">
+                                <span class="stat-number">{{ document.versions.count }}</span>
+                                <span class="stat-label">Versions</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Table of Contents Card (for markdown) -->
+            {% if document.content_type == 'markdown' %}
+            <div class="info-card">
+                <div class="info-card-header">
+                    <h4>
+                        <i class="bi bi-list-nested"></i>
+                        Table des matières
+                    </h4>
+                </div>
+                <div class="info-card-content">
+                    <div id="table-of-contents">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Collaborators Card -->
+            {% if collaborators %}
+            <div class="info-card">
+                <div class="info-card-header">
+                    <h4>
+                        <i class="bi bi-people"></i>
+                        Collaborateurs
+                    </h4>
+                </div>
+                <div class="info-card-content">
+                    <div class="collaborators-modern">
+                        {% for collab in collaborators %}
+                        <div class="collaborator-modern">
+                            <div class="collaborator-avatar">
+                                {% if collab.user.profile_picture %}
+                                    <img src="{{ collab.user.profile_picture.url }}" alt="{{ collab.user.username }}">
+                                {% else %}
+                                    <div class="avatar-placeholder">
+                                        {{ collab.user.get_full_name|default:collab.user.username|first|upper }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="collaborator-info">
+                                <div class="collaborator-name">
+                                    {{ collab.user.get_full_name|default:collab.user.username }}
+                                </div>
+                                <div class="collaborator-role">
+                                    <span class="badge bg-primary">{{ collab.get_permission_level_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Recent Activity Card -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <h4>
+                        <i class="bi bi-clock-history"></i>
+                        Activité récente
+                    </h4>
+                </div>
+                <div class="info-card-content">
+                    <div class="activity-modern">
+                        {% for version in document.versions.all|slice:":5" %}
+                        <div class="activity-item-modern">
+                            <div class="activity-icon-modern">
+                                <i class="bi bi-pencil"></i>
+                            </div>
+                            <div class="activity-content-modern">
+                                <div class="activity-text">
+                                    Version {{ version.version_number }}
+                                    {% if version.notes %}
+                                    - {{ version.notes|truncatechars:40 }}
+                                    {% endif %}
+                                </div>
+                                <div class="activity-meta">
+                                    {{ version.created_by.username }} • {{ version.created_at|timesince }} ago
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-activity">
+                            <i class="bi bi-clock"></i>
+                            <span>Aucune version antérieure</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Comments Section -->
+    {% if comments %}
+    <div class="comments-section">
+        <h3>
+            <i class="bi bi-chat-dots"></i>
+            Commentaires ({{ comments.count }})
+        </h3>
+        
+        <div class="comments-list">
+            {% for comment in comments %}
+            <div class="comment-item" data-comment-id="{{ comment.id }}">
+                <div class="comment-avatar">
+                    {% if comment.author.profile_picture %}
+                        <img src="{{ comment.author.profile_picture.url }}" alt="{{ comment.author.username }}">
+                    {% else %}
+                        <div class="avatar-placeholder">
+                            {{ comment.author.get_full_name|default:comment.author.username|first|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-author">
+                            {{ comment.author.get_full_name|default:comment.author.username }}
+                        </span>
+                        <span class="comment-date">
+                            {{ comment.created_at|timesince }} ago
+                        </span>
+                        {% if comment.is_resolved %}
+                        <span class="badge bg-success">Résolu</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="comment-text">
+                        {{ comment.content|linebreaks }}
+                    </div>
+                    
+                    <div class="comment-actions">
+                        <button class="btn btn-sm btn-outline-primary" data-comment-id="{{ comment.id }}" onclick="replyToComment(this.dataset.commentId)">
+                            <i class="bi bi-reply"></i> Répondre
+                        </button>
+                        
+                        {% if not comment.is_resolved and can_edit %}
+                        <button class="btn btn-sm btn-outline-success" data-comment-id="{{ comment.id }}" onclick="resolveComment(this.dataset.commentId)">
+                            <i class="bi bi-check"></i> Résoudre
+                        </button>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Replies -->
+                    {% if comment.replies.exists %}
+                    <div class="comment-replies">
+                        {% for reply in comment.replies.all %}
+                        <div class="comment-reply">
+                            <div class="reply-avatar">
+                                {% if reply.author.profile_picture %}
+                                    <img src="{{ reply.author.profile_picture.url }}" alt="{{ reply.author.username }}">
+                                {% else %}
+                                    <div class="avatar-placeholder small">
+                                        {{ reply.author.get_full_name|default:reply.author.username|first|upper }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="reply-content">
+                                <div class="reply-header">
+                                    <span class="reply-author">{{ reply.author.get_full_name|default:reply.author.username }}</span>
+                                    <span class="reply-date">{{ reply.created_at|timesince }} ago</span>
+                                </div>
+                                <div class="reply-text">{{ reply.content|linebreaks }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Hidden elements for JavaScript -->
+<input type="hidden" id="document-id" value="{{ document.id }}">
+<textarea id="document-content" style="display: none;">{{ document.content }}</textarea>
+
+
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'documents/css/document_detail.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'documents/js/document_detail.js' %}"></script>
+{% endblock %}

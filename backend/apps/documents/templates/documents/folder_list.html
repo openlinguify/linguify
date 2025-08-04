@@ -1,0 +1,357 @@
+{% extends 'documents/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block document_content %}
+<div class="documents-dashboard">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1>
+                <i class="bi bi-folder2-open"></i>
+                Gestion des dossiers
+            </h1>
+            <p class="subtitle">Organisez vos documents avec des dossiers personnalisés</p>
+        </div>
+        
+        <div class="header-actions">
+            <a href="{% url 'documents:document_list' %}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left"></i>
+                Retour aux documents
+            </a>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFolderModal">
+                    <i class="bi bi-plus"></i>
+                    Nouveau dossier
+                </button>
+                <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" 
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Options</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'documents:document_create' %}">
+                        <i class="bi bi-file-plus"></i> Nouveau document
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="importFolders()">
+                        <i class="bi bi-upload"></i> Importer des dossiers
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportFolders()">
+                        <i class="bi bi-download"></i> Exporter la structure
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Folders Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-folder"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ all_folders.count }}</div>
+                <div class="stat-label">Dossiers total</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number" id="total-documents">-</div>
+                <div class="stat-label">Documents total</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-folder-x"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number" id="empty-folders">-</div>
+                <div class="stat-label">Dossiers vides</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-diagram-3"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number" id="nested-folders">-</div>
+                <div class="stat-label">Sous-dossiers</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Folders List -->
+    <div class="content-section">
+        {% if all_folders %}
+        <div class="folders-table-container">
+            <div class="table-responsive">
+                <table class="table table-hover folders-table">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-folder"></i> Nom du dossier</th>
+                            <th><i class="bi bi-file-text"></i> Description</th>
+                            <th><i class="bi bi-diagram-2"></i> Parent</th>
+                            <th><i class="bi bi-files"></i> Documents</th>
+                            <th><i class="bi bi-calendar"></i> Créé</th>
+                            <th><i class="bi bi-gear"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for folder in all_folders %}
+                        <tr data-folder-id="{{ folder.id }}">
+                            <td>
+                                <div class="folder-name">
+                                    <i class="bi bi-folder folder-icon"></i>
+                                    <span class="name">{{ folder.name }}</span>
+                                    {% if folder.subfolders.exists %}
+                                    <span class="badge bg-secondary ms-1">
+                                        {{ folder.subfolders.count }} sous-dossier{{ folder.subfolders.count|pluralize }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="folder-description">
+                                    {{ folder.description|default:"Aucune description"|truncatechars:80 }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if folder.parent %}
+                                <span class="parent-folder">
+                                    <i class="bi bi-folder-symlink"></i>
+                                    {{ folder.parent.name }}
+                                </span>
+                                {% else %}
+                                <span class="text-muted">Racine</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="document-count">
+                                    <strong>{{ folder.documents.count }}</strong>
+                                    document{{ folder.documents.count|pluralize }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="created-date" data-date="{{ folder.created_at|date:'c' }}">
+                                    {{ folder.created_at|timesince }} ago
+                                </span>
+                            </td>
+                            <td>
+                                <div class="folder-actions">
+                                    <a href="{% url 'documents:document_list' %}?folder={{ folder.id }}" 
+                                       class="btn btn-sm btn-outline-primary" 
+                                       title="Voir les documents">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-secondary" 
+                                            data-folder-id="{{ folder.id }}" 
+                                            data-folder-name="{{ folder.name|escapejs }}" 
+                                            data-folder-description="{{ folder.description|escapejs }}" 
+                                            data-parent-id="{{ folder.parent.id|default:'null' }}"
+                                            onclick="editFolder(this.dataset.folderId, this.dataset.folderName, this.dataset.folderDescription, this.dataset.parentId)"
+                                            title="Modifier">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-danger" 
+                                            data-folder-id="{{ folder.id }}" 
+                                            data-folder-name="{{ folder.name|escapejs }}" 
+                                            data-document-count="{{ folder.documents.count }}"
+                                            onclick="deleteFolder(this.dataset.folderId, this.dataset.folderName, this.dataset.documentCount)"
+                                            title="Supprimer"
+                                            {% if folder.documents.exists or folder.subfolders.exists %}disabled{% endif %}>
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-folder-plus"></i>
+            </div>
+            <h3>Aucun dossier créé</h3>
+            <p>Créez votre premier dossier pour organiser vos documents.</p>
+            <div class="empty-actions">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFolderModal">
+                    <i class="bi bi-plus"></i>
+                    Créer mon premier dossier
+                </button>
+                <a href="{% url 'documents:document_create' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-file-plus"></i>
+                    Ou créer un document
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Create Folder Modal -->
+<div class="modal fade" id="createFolderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-folder-plus"></i>
+                    Créer un nouveau dossier
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-folder-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="folder-name" class="form-label">
+                            <i class="bi bi-type"></i> Nom du dossier *
+                        </label>
+                        <input type="text" class="form-control" id="folder-name" name="name" required
+                               placeholder="Ex: Cours de français">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="folder-description" class="form-label">
+                            <i class="bi bi-file-text"></i> Description
+                        </label>
+                        <textarea class="form-control" id="folder-description" name="description" rows="3"
+                                  placeholder="Description optionnelle du dossier..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="folder-parent" class="form-label">
+                            <i class="bi bi-diagram-2"></i> Dossier parent
+                        </label>
+                        <select class="form-select" id="folder-parent" name="parent">
+                            <option value="">Aucun (dossier racine)</option>
+                            {% for folder in all_folders %}
+                            <option value="{{ folder.id }}">{{ folder.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="createFolder()">
+                    <i class="bi bi-check"></i>
+                    Créer le dossier
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Folder Modal -->
+<div class="modal fade" id="editFolderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil"></i>
+                    Modifier le dossier
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-folder-form">
+                    {% csrf_token %}
+                    <input type="hidden" id="edit-folder-id" name="folder_id">
+                    
+                    <div class="mb-3">
+                        <label for="edit-folder-name" class="form-label">
+                            <i class="bi bi-type"></i> Nom du dossier *
+                        </label>
+                        <input type="text" class="form-control" id="edit-folder-name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit-folder-description" class="form-label">
+                            <i class="bi bi-file-text"></i> Description
+                        </label>
+                        <textarea class="form-control" id="edit-folder-description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit-folder-parent" class="form-label">
+                            <i class="bi bi-diagram-2"></i> Dossier parent
+                        </label>
+                        <select class="form-select" id="edit-folder-parent" name="parent">
+                            <option value="">Aucun (dossier racine)</option>
+                            {% for folder in all_folders %}
+                            <option value="{{ folder.id }}">{{ folder.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="updateFolder()">
+                    <i class="bi bi-check"></i>
+                    Mettre à jour
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteFolderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-trash"></i>
+                    Supprimer le dossier
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Attention !</strong> Cette action est irréversible.
+                </div>
+                <p>Êtes-vous sûr de vouloir supprimer le dossier <strong id="delete-folder-name"></strong> ?</p>
+                <div id="delete-folder-warning" class="alert alert-danger" style="display: none;">
+                    <i class="bi bi-exclamation-circle"></i>
+                    Ce dossier contient <span id="delete-folder-documents-count"></span> document(s). 
+                    Vous devez d'abord déplacer ou supprimer ces documents.
+                </div>
+                <input type="hidden" id="delete-folder-id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-folder" onclick="confirmDeleteFolder()">
+                    <i class="bi bi-trash"></i>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'documents/css/folder_list.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'documents/js/folder_list.js' %}"></script>
+{% endblock %}

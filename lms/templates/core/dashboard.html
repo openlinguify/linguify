@@ -1,0 +1,227 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard - {{ organization.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>{{ organization.name }} - Dashboard</h1>
+        <p class="text-muted">
+            {% if user_role == 'student' %}
+                Bienvenue {{ user.first_name|default:user.username }}, voici votre espace etudiant
+            {% elif user_role == 'instructor' %}
+                Tableau de bord enseignant
+            {% elif user_role == 'owner' or user_role == 'administrator' %}
+                Tableau de bord administrateur
+            {% else %}
+                Bienvenue dans le LMS
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<!-- Student Dashboard -->
+{% if user_role == 'student' %}
+    {% if needs_profile_setup %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <h5>Configuration requise</h5>
+                    <p>Votre profil etudiant n'est pas encore configure. Contactez l'administration pour completer votre inscription.</p>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Profil Etudiant</h5>
+                        <p><strong>ID:</strong> {{ student_profile.student_id }}</p>
+                        <p><strong>Programme:</strong> {{ student_profile.program }}</p>
+                        <p><strong>Annee:</strong> {{ student_profile.get_academic_year_display }}</p>
+                        <p><strong>Statut:</strong> {{ student_profile.get_status_display }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Progression</h5>
+                        <p><strong>Credits obtenus:</strong> {{ student_profile.credits_earned }}/{{ student_profile.credits_required }}</p>
+                        <div class="progress mb-2">
+                            <div class="progress-bar" role="progressbar" style="width: {{ student_profile.progress_percentage }}%" aria-valuenow="{{ student_profile.progress_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small>{{ student_profile.progress_percentage|floatformat:1 }}% complete</small>
+                        {% if student_profile.gpa %}
+                            <p class="mt-2"><strong>Moyenne:</strong> {{ student_profile.gpa }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Cours Inscrits</h5>
+                        <p class="display-6">{{ enrollments|length }}</p>
+                        <a href="#" class="btn btn-primary btn-sm">Voir tous les cours</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if enrollments %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Cours Actuels</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Cours</th>
+                                        <th>Statut</th>
+                                        <th>Credits</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for enrollment in enrollments %}
+                                    <tr>
+                                        <td>{{ enrollment.course_name }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if enrollment.status == 'enrolled' %}primary{% elif enrollment.status == 'completed' %}success{% else %}secondary{% endif %}">
+                                                {{ enrollment.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ enrollment.credits }}</td>
+                                        <td>{{ enrollment.final_grade|default:"-" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+
+<!-- Admin/Owner Dashboard -->
+{% elif user_role == 'owner' or user_role == 'administrator' %}
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Etudiants</h5>
+                    <p class="card-text display-6">{{ total_students }}</p>
+                    <a href="{% url 'org-students:student_list' org_slug=organization.slug %}" class="btn btn-primary">Gerer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Etudiants Actifs</h5>
+                    <p class="card-text display-6">{{ active_students }}</p>
+                    <a href="#" class="btn btn-success">Voir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Cours</h5>
+                    <p class="card-text display-6">0</p>
+                    <a href="#" class="btn btn-info">Gerer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Enseignants</h5>
+                    <p class="card-text display-6">0</p>
+                    <a href="#" class="btn btn-warning">Voir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Activite Recente</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Aucune activite recente a afficher.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Actions Rapides</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'org-students:student_list' org_slug=organization.slug %}" class="btn btn-outline-primary">📚 Gerer Etudiants</a>
+                        <a href="#" class="btn btn-outline-success">➕ Creer Cours</a>
+                        <a href="#" class="btn btn-outline-info">👨‍🏫 Ajouter Enseignant</a>
+                        <a href="#" class="btn btn-outline-warning">📊 Rapports</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Instructor Dashboard -->
+{% elif user_role == 'instructor' %}
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Mes Cours</h5>
+                    <p class="card-text display-6">0</p>
+                    <a href="#" class="btn btn-primary">Voir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Mes Etudiants</h5>
+                    <p class="card-text display-6">0</p>
+                    <a href="#" class="btn btn-success">Gerer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Evaluations</h5>
+                    <p class="card-text display-6">0</p>
+                    <a href="#" class="btn btn-info">Voir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Default/Guest Dashboard -->
+{% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h5>Acces limite</h5>
+                <p>Votre role dans cette organisation n'est pas encore configure. Contactez l'administrateur pour obtenir les permissions appropriees.</p>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

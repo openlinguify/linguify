@@ -1,0 +1,232 @@
+/* Critical CSS for header - loaded inline for performance */
+:root {
+    --header-height: 64px;
+    --primary-color: #007ACC;
+    --border-color: #e2e8f0;
+    --shadow-light: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition-fast: 0.15s ease;
+    --transition-medium: 0.3s ease;
+}
+
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030; /* Bootstrap z-index for fixed elements */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-light);
+    height: var(--header-height);
+    transition: box-shadow var(--transition-medium);
+}
+
+.fixed-header.scrolled {
+    box-shadow: var(--shadow-medium);
+}
+
+.fixed-header .navbar {
+    padding: 0;
+    min-height: var(--header-height);
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+}
+
+.fixed-header .navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #007ACC !important;
+    text-decoration: none;
+    transition: opacity var(--transition-fast);
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.fixed-header .navbar-brand:hover {
+    opacity: 0.8;
+}
+
+/* Improved button styles */
+.header-btn {
+    border-radius: 8px;
+    transition: all var(--transition-fast);
+    font-weight: 500;
+}
+
+.header-btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Notification badge improvements */
+.notification-badge {
+    font-size: 0.75rem;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Profile picture improvements */
+.profile-picture {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    transition: border-color var(--transition-fast);
+}
+
+.profile-picture:hover {
+    border-color: var(--primary-color);
+}
+
+/* Mobile optimizations */
+@media (max-width: 991px) {
+    .navbar-toggler {
+        border: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+    }
+    
+    .navbar-collapse {
+        background: white;
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-medium);
+        border: 1px solid var(--border-color);
+    }
+    
+    .mobile-nav-item {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        transition: background-color var(--transition-fast);
+    }
+    
+    .mobile-nav-item:hover {
+        background-color: #f8fafc;
+    }
+}
+
+/* Language dropdown improvements */
+.language-dropdown {
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #6c757d #f8f9fa;
+    border-radius: 8px !important;
+}
+
+.language-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.language-dropdown::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 3px;
+}
+
+.language-dropdown::-webkit-scrollbar-thumb {
+    background: #6c757d;
+    border-radius: 3px;
+}
+
+.language-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #495057;
+}
+
+.language-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    transition: background-color var(--transition-fast);
+}
+
+.language-item:hover {
+    background-color: #f8fafc;
+}
+
+/* Notification dropdown improvements */
+.notification-dropdown {
+    min-width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Loading states */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Add space for fixed header */
+body {
+    padding-top: var(--header-height);
+}
+
+/* Unified button styles - prevent app-specific CSS from overriding */
+.header-btn, .btn.header-btn {
+    border-radius: 8px !important;
+    transition: all var(--transition-fast) !important;
+    font-weight: 500 !important;
+    border: 1px solid var(--border-color) !important;
+    background: white !important;
+    color: #6c757d !important;
+    /* Force uniform button size */
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+}
+
+.header-btn:hover, .btn.header-btn:hover {
+    transform: translateY(-1px) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Specific button variants */
+.btn-outline-primary.header-btn {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-outline-primary.header-btn:hover {
+    background: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Override any btn-sm or other size variations */
+.header-btn.btn-sm, .btn.header-btn.btn-sm, 
+.header-btn.btn-lg, .btn.header-btn.btn-lg {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+}

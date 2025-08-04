@@ -1,0 +1,8 @@
+{% extends 'public_web/public_base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'blog/css/blog.css' %}">
+{{ block.super }}
+{% endblock %}

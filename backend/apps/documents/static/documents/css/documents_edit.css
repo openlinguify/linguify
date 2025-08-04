@@ -1,0 +1,1101 @@
+/* Document Editor Styles - Linguify Brand */
+
+:root {
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #00D4AA;
+    --linguify-gray: #6B7280;
+    --linguify-primary-light: #4F7BD9;
+    --linguify-primary-dark: #1E4A8C;
+    --linguify-secondary-light: #A78BFA;
+    --linguify-secondary-dark: #7C3AED;
+    --linguify-accent-light: #26E4B8;
+    --linguify-accent-dark: #00B894;
+    --linguify-success: #10B981;
+    --linguify-warning: #F59E0B;
+    --linguify-error: #EF4444;
+    --header-height: 64px;
+}
+
+/* ===========================================
+   EDITOR PAGE CONTAINER
+   =========================================== */
+
+.editor-page-container {
+    width: 100%;
+    height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: #f8f9fb;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+/* ===========================================
+   COMPACT HEADER NAVIGATION
+   =========================================== */
+
+.editor-header-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid #e3e6ea;
+    background: #ffffff;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px -1px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+}
+
+.editor-breadcrumb {
+    flex: 1;
+}
+
+.editor-breadcrumb .breadcrumb {
+    margin: 0;
+    padding: 0;
+    background: none;
+}
+
+.editor-breadcrumb .breadcrumb-item {
+    font-size: 0.875rem;
+}
+
+.editor-breadcrumb .breadcrumb-item a {
+    color: var(--linguify-primary);
+    text-decoration: none;
+}
+
+.editor-breadcrumb .breadcrumb-item a:hover {
+    color: var(--linguify-primary-dark);
+}
+
+.editor-breadcrumb .breadcrumb-item.active {
+    color: var(--linguify-gray);
+    font-weight: 500;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Editor Status */
+.editor-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.auto-save-indicator {
+    font-size: 0.75rem;
+    color: var(--linguify-gray);
+    font-weight: 500;
+}
+
+.auto-save-indicator.saving {
+    color: var(--linguify-warning);
+}
+
+.auto-save-indicator.saved {
+    color: var(--linguify-accent);
+}
+
+/* ===========================================
+   TITLE SECTION
+   =========================================== */
+
+.editor-title-section {
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid #e3e6ea;
+    flex-shrink: 0;
+    background: #ffffff;
+}
+
+.title-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.editor-title-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1.375rem;
+    font-weight: 600;
+    padding: 0.5rem 0;
+    background: transparent;
+    color: #1a202c;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s ease;
+    letter-spacing: -0.01em;
+}
+
+.editor-title-input:focus {
+    border-bottom: 2px solid var(--linguify-primary);
+}
+
+.editor-title-input::placeholder {
+    color: #6c757d;
+    font-weight: 400;
+}
+
+.title-character-count {
+    font-size: 0.75rem;
+    color: var(--linguify-gray);
+    white-space: nowrap;
+    padding: 0.25rem 0.5rem;
+    background: #f8f9fb;
+    border-radius: 0.25rem;
+}
+
+/* ===========================================
+   MAIN EDITOR LAYOUT
+   =========================================== */
+
+.editor-main-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ===========================================
+   EDITOR CONTENT AREA
+   =========================================== */
+
+.editor-content-area {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid #e3e6ea;
+}
+
+.editor-container-full {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #ffffff;
+}
+
+/* ===========================================
+   EDITOR TOOLBAR
+   =========================================== */
+
+.editor-toolbar {
+    background: #ffffff;
+    border-bottom: 1px solid #e3e6ea;
+    padding: 0.625rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    min-height: 52px;
+    box-shadow: 0 1px 3px -1px rgba(0, 0, 0, 0.05);
+}
+
+.toolbar-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.toolbar-spacer {
+    flex: 1;
+}
+
+.toolbar-btn {
+    color: var(--linguify-gray);
+    border-color: #e3e6ea;
+    transition: all 0.2s ease;
+    padding: 0.3125rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+}
+
+.toolbar-btn:hover {
+    background-color: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+}
+
+.toolbar-btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
+}
+
+.toolbar-btn.active {
+    background-color: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+}
+
+/* Word Count Display */
+.word-count {
+    font-size: 0.75rem;
+    color: var(--linguify-gray);
+    padding: 0.25rem 0.625rem;
+    background: #f8f9fb;
+    border-radius: 0.375rem;
+    border: 1px solid #e3e6ea;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Form Controls in Toolbar */
+.toolbar-group .form-select {
+    width: auto;
+    min-width: 120px;
+    font-size: 0.875rem;
+}
+
+.toolbar-group .form-select:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
+}
+
+/* ===========================================
+   EDITOR SPLIT VIEW (MARKDOWN)
+   =========================================== */
+
+.editor-split-view {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    background: #ffffff;
+    margin: 0;
+    gap: 0;
+}
+
+.editor-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.editor-textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 1.5rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    background: #ffffff;
+    color: #2c3e50;
+    resize: none;
+    tab-size: 4;
+    border-right: 1px solid #e3e6ea;
+}
+
+.editor-textarea:focus {
+    box-shadow: none;
+}
+
+.editor-textarea::placeholder {
+    color: #6c757d;
+    font-style: italic;
+    line-height: 1.8;
+}
+
+/* Preview Pane */
+.preview-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #e3e6ea;
+    background: #ffffff;
+    max-width: 50%;
+    overflow: hidden;
+}
+
+.preview-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e3e6ea;
+    background: #f8f9fb;
+    flex-shrink: 0;
+}
+
+.preview-header h6 {
+    margin: 0;
+    color: var(--linguify-gray);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.preview-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+}
+
+/* Markdown Preview Styling */
+.preview-content h1,
+.preview-content h2,
+.preview-content h3,
+.preview-content h4,
+.preview-content h5,
+.preview-content h6 {
+    color: #2c3e50;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.preview-content h1 { font-size: 1.75rem; }
+.preview-content h2 { font-size: 1.5rem; }
+.preview-content h3 { font-size: 1.25rem; }
+
+.preview-content p {
+    margin-bottom: 1rem;
+    color: #4a5568;
+}
+
+.preview-content code {
+    background: #f1f5f9;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--linguify-primary);
+}
+
+.preview-content pre {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+    border-left: 4px solid var(--linguify-accent);
+}
+
+.preview-content blockquote {
+    border-left: 4px solid var(--linguify-accent);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: var(--linguify-gray);
+    font-style: italic;
+}
+
+.preview-content a {
+    color: var(--linguify-primary);
+    text-decoration: none;
+}
+
+.preview-content a:hover {
+    color: var(--linguify-primary-dark);
+    text-decoration: underline;
+}
+
+/* ===========================================
+   VISUAL EDITOR (WYSIWYG like Word)
+   =========================================== */
+
+.visual-editor-workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.visual-editor {
+    flex: 1;
+    padding: 2rem 3rem;
+    outline: none;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #2c3e50;
+    overflow-y: auto;
+    background: #ffffff;
+    border: none;
+    min-height: 100%;
+}
+
+.visual-editor:empty:before {
+    content: attr(data-placeholder);
+    color: #9ca3af;
+    font-style: italic;
+    pointer-events: none;
+}
+
+.visual-editor:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Editor Type Info Badge */
+.editor-type-info {
+    display: flex;
+    align-items: center;
+}
+
+.editor-type-info .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Visual Editor Content Styling */
+.visual-editor h1,
+.visual-editor h2,
+.visual-editor h3,
+.visual-editor h4,
+.visual-editor h5,
+.visual-editor h6 {
+    color: #1a202c;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.visual-editor h1 {
+    font-size: 2rem;
+    border-bottom: 2px solid var(--linguify-primary);
+    padding-bottom: 0.5rem;
+}
+
+.visual-editor h2 {
+    font-size: 1.75rem;
+    color: var(--linguify-primary);
+}
+
+.visual-editor h3 {
+    font-size: 1.5rem;
+}
+
+.visual-editor h4 {
+    font-size: 1.25rem;
+}
+
+.visual-editor p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+}
+
+.visual-editor ul,
+.visual-editor ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.visual-editor li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.visual-editor a {
+    color: var(--linguify-primary);
+    text-decoration: underline;
+}
+
+.visual-editor a:hover {
+    color: var(--linguify-primary-dark);
+}
+
+.visual-editor strong {
+    font-weight: 600;
+    color: #1a202c;
+}
+
+.visual-editor em {
+    font-style: italic;
+}
+
+.visual-editor u {
+    text-decoration: underline;
+}
+
+.visual-editor blockquote {
+    border-left: 4px solid var(--linguify-accent);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: var(--linguify-gray);
+    font-style: italic;
+}
+
+/* Remove old rich text editor styles */
+.rich-text-workspace,
+.rich-text-editor {
+    display: none !important;
+}
+
+/* ===========================================
+   EDITOR SIDEBAR
+   =========================================== */
+
+.editor-sidebar {
+    display: flex;
+    flex-direction: column;
+    background: #f8f9fb;
+    border-left: 1px solid #e3e6ea;
+    overflow: hidden;
+    width: 320px;
+    flex-shrink: 0;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e3e6ea;
+    padding: 0.75rem 1rem;
+    flex-shrink: 0;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.sidebar-nav {
+    border-radius: 0;
+}
+
+.sidebar-nav .nav-link {
+    border-radius: 0;
+    color: var(--linguify-gray);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav .nav-link:hover:not(.active) {
+    background: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary);
+}
+
+.sidebar-nav .nav-link.active {
+    background: var(--linguify-primary);
+    color: white;
+}
+
+/* Sidebar Content */
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.sidebar-section {
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-section:last-child {
+    margin-bottom: 0;
+}
+
+.sidebar-section-title {
+    color: var(--linguify-gray);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ===========================================
+   FORM CONTROLS IN SIDEBAR
+   =========================================== */
+
+.property-group {
+    margin-bottom: 1rem;
+}
+
+.property-group:last-child {
+    margin-bottom: 0;
+}
+
+.property-group .form-label {
+    color: var(--linguify-gray);
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.editor-sidebar .form-select,
+.editor-sidebar .form-control {
+    border-color: #dee2e6;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    font-size: 0.875rem;
+}
+
+.editor-sidebar .form-select:focus,
+.editor-sidebar .form-control:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
+}
+
+.form-text {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+/* ===========================================
+   DOCUMENT STATUS CARD
+   =========================================== */
+
+.document-status-card {
+    background: #ffffff;
+    border: 1px solid #e3e6ea;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+}
+
+.status-item:not(:last-child) {
+    border-bottom: 1px solid #f1f3f4;
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.5rem;
+}
+
+.status-label {
+    font-size: 0.75rem;
+    color: var(--linguify-gray);
+    font-weight: 500;
+}
+
+.status-value {
+    font-size: 0.75rem;
+    color: #2c3e50;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* ===========================================
+   COLLABORATORS SECTION
+   =========================================== */
+
+.collaborators-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.collaborator-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #e3e6ea;
+    border-radius: 0.375rem;
+}
+
+.collaborator-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.collaborator-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--linguify-accent-light);
+    color: var(--linguify-accent-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.collaborator-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.collaborator-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.collaborator-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+/* Share Link Section */
+.share-link-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e3e6ea;
+}
+
+/* ===========================================
+   VERSIONS SECTION
+   =========================================== */
+
+.versions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.version-item {
+    background: #ffffff;
+    border: 1px solid #e3e6ea;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+}
+
+.version-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.version-number {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--linguify-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.version-date {
+    font-size: 0.75rem;
+    color: var(--linguify-gray);
+}
+
+.version-meta {
+    margin-bottom: 0.5rem;
+}
+
+.version-author {
+    font-size: 0.75rem;
+    color: var(--linguify-gray);
+    margin-bottom: 0.25rem;
+}
+
+.version-notes {
+    font-size: 0.75rem;
+    color: #4a5568;
+    font-style: italic;
+}
+
+.version-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+/* ===========================================
+   EMPTY STATES
+   =========================================== */
+
+.empty-state {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--linguify-gray);
+}
+
+.empty-state i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #cbd5e0;
+}
+
+.empty-state p {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.empty-state small {
+    font-size: 0.75rem;
+}
+
+/* ===========================================
+   BUTTON ENHANCEMENTS
+   =========================================== */
+
+/* Button Groups with Editor Type Toggle */
+.btn-group .btn-check:checked + .btn {
+    background-color: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+}
+
+.btn-group .btn-outline-secondary:hover {
+    background-color: var(--linguify-primary-light);
+    border-color: var(--linguify-primary-light);
+    color: white;
+}
+
+/* Editor Type Toggle Active States */
+#markdown-editor:checked + label,
+#rich-text-editor:checked + label {
+    background-color: var(--linguify-primary) !important;
+    border-color: var(--linguify-primary) !important;
+    color: white !important;
+}
+
+/* Toggle Preview Button */
+#toggle-preview-mode.active {
+    background-color: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+}
+
+/* Save Button Styles */
+#save-document {
+    background-color: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+}
+
+#save-document:hover {
+    background-color: var(--linguify-primary-dark);
+    border-color: var(--linguify-primary-dark);
+}
+
+#save-draft {
+    color: var(--linguify-gray);
+    border-color: #dee2e6;
+}
+
+#save-draft:hover {
+    background-color: var(--linguify-accent-light);
+    border-color: var(--linguify-accent);
+    color: var(--linguify-accent-dark);
+}
+
+/* ===========================================
+   KEYBOARD SHORTCUTS MODAL
+   =========================================== */
+
+.modal-body kbd {
+    background: var(--linguify-primary);
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+}
+
+/* ===========================================
+   RESPONSIVE DESIGN
+   =========================================== */
+
+@media (max-width: 1200px) {
+    .editor-main-layout {
+        grid-template-columns: 1fr 280px;
+    }
+    
+    .editor-page-container {
+        padding: 0 1rem;
+    }
+}
+
+/* Large screens optimization */
+@media (min-width: 1400px) {
+    .editor-sidebar {
+        width: 380px;
+    }
+    
+    .editor-header-compact {
+        padding: 0.75rem 2rem;
+    }
+    
+    .editor-title-section {
+        padding: 0.75rem 2rem;
+    }
+    
+    .editor-toolbar {
+        padding: 0.625rem 2rem;
+    }
+}
+
+@media (min-width: 1600px) {
+    .editor-sidebar {
+        width: 420px;
+    }
+    
+    .editor-header-compact {
+        padding: 0.75rem 2.5rem;
+    }
+    
+    .editor-title-section {
+        padding: 0.75rem 2.5rem;
+    }
+    
+    .editor-toolbar {
+        padding: 0.625rem 2.5rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .editor-sidebar {
+        width: 300px;
+    }
+}
+
+@media (max-width: 992px) {
+    .editor-page-container {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        height: auto;
+        min-height: calc(100vh - 64px);
+    }
+    
+    .editor-split-view {
+        flex-direction: column;
+    }
+    
+    .editor-sidebar {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #e3e6ea;
+        max-height: 300px;
+    }
+    
+    .editor-textarea {
+        border-right: none;
+        border-bottom: 1px solid #e3e6ea;
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 992px) {
+    .editor-main-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+    }
+    
+    .editor-sidebar {
+        order: 2;
+        max-height: 300px;
+        border-left: none;
+        border-top: 1px solid #e3e6ea;
+    }
+    
+    .editor-content-area {
+        order: 1;
+        border-right: none;
+        border-bottom: 1px solid #e3e6ea;
+    }
+    
+    .preview-pane {
+        max-width: none;
+    }
+    
+    .editor-pane {
+        width: 100%;
+    }
+    
+    .editor-header-compact {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .editor-actions {
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 768px) {
+    .editor-page-container {
+        padding: 0 0.5rem;
+    }
+    
+    .editor-title-input {
+        font-size: 1.25rem;
+    }
+    
+    .editor-toolbar {
+        padding: 0.5rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .toolbar-section {
+        gap: 0.5rem;
+    }
+    
+    .sidebar-nav .nav-link span {
+        display: none;
+    }
+    
+    .editor-actions {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .word-count {
+        order: -1;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .editor-header-compact {
+        padding: 0.75rem 0;
+    }
+    
+    .editor-title-section {
+        padding: 0.75rem 0;
+    }
+    
+    .title-input-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    
+    .title-character-count {
+        align-self: flex-end;
+    }
+    
+    .editor-textarea {
+        padding: 1rem;
+    }
+    
+    .preview-content {
+        padding: 1rem;
+    }
+}

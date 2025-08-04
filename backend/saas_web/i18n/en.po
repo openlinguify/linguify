@@ -34,7 +34,7 @@ msgstr "Statistiques"
 
 # App Store
 msgid "App Store"
-msgstr "Boutique d'Apps"
+msgstr "Magasin"
 
 msgid "All Apps"
 msgstr "Toutes les Apps"

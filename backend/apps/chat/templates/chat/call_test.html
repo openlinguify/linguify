@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test d'appels - Linguify Chat</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .call-interface {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+        
+        .video-local {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-remote {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 200px;
+            height: 150px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #fff;
+        }
+        
+        .controls-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.connecting {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .participant-list {
+            margin-top: 20px;
+        }
+        
+        .participant {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .participant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .participant-info {
+            flex: 1;
+        }
+        
+        .participant-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .participant-status {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .mute-indicators {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .mute-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        
+        .mute-indicator.audio-muted {
+            background: #dc3545;
+        }
+        
+        .mute-indicator.video-muted {
+            background: #6c757d;
+        }
+        
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .log-entry.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .log-entry.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .log-entry.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        @media (max-width: 768px) {
+            .call-interface {
+                grid-template-columns: 1fr;
+            }
+            
+            .video-remote {
+                width: 120px;
+                height: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎥 Test d'appels vidéo - Linguify</h1>
+            <p>Interface de test pour les appels audio et vidéo</p>
+        </div>
+        
+        <div class="call-interface">
+            <div class="video-section">
+                <div class="video-container">
+                    <video id="localVideo" class="video-local" autoplay muted playsinline></video>
+                    <video id="remoteVideo" class="video-remote" autoplay playsinline></video>
+                </div>
+                
+                <div class="control-group" style="margin-top: 20px; justify-content: center;">
+                    <button id="toggleAudio" class="btn btn-secondary">
+                        🎤 Micro
+                    </button>
+                    <button id="toggleVideo" class="btn btn-secondary">
+                        📹 Caméra
+                    </button>
+                    <button id="endCall" class="btn btn-danger">
+                        📞 Raccrocher
+                    </button>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <div id="callStatus" class="status disconnected">
+                    ⭕ Déconnecté
+                </div>
+                
+                <div class="controls">
+                    <h3>Contrôles d'appel</h3>
+                    
+                    <div class="control-group">
+                        <button id="startCall" class="btn btn-primary">
+                            📞 Démarrer l'appel
+                        </button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <button id="audioCall" class="btn btn-primary">
+                            🎵 Appel audio
+                        </button>
+                        <button id="videoCall" class="btn btn-primary">
+                            🎥 Appel vidéo
+                        </button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <input type="text" id="roomIdInput" placeholder="Room ID" 
+                               style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; flex: 1;">
+                    </div>
+                </div>
+                
+                <div class="participant-list">
+                    <h4>Participants</h4>
+                    <div id="participantsList">
+                        <!-- Les participants seront ajoutés dynamiquement -->
+                    </div>
+                </div>
+                
+                <div class="log">
+                    <h4>Journal d'événements</h4>
+                    <div id="eventLog">
+                        <div class="log-entry info">Interface de test initialisée</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let localStream = null;
+        let remoteStream = null;
+        let peerConnection = null;
+        let websocket = null;
+        let roomId = null;
+        let isAudioMuted = false;
+        let isVideoMuted = false;
+        
+        // Configuration STUN/TURN
+        const iceServers = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
+        
+        // Éléments DOM
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const callStatus = document.getElementById('callStatus');
+        const eventLog = document.getElementById('eventLog');
+        const participantsList = document.getElementById('participantsList');
+        const roomIdInput = document.getElementById('roomIdInput');
+        
+        // Boutons
+        const startCallBtn = document.getElementById('startCall');
+        const audioCallBtn = document.getElementById('audioCall');
+        const videoCallBtn = document.getElementById('videoCall');
+        const toggleAudioBtn = document.getElementById('toggleAudio');
+        const toggleVideoBtn = document.getElementById('toggleVideo');
+        const endCallBtn = document.getElementById('endCall');
+        
+        // Fonctions utilitaires
+        function logEvent(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${timestamp}] ${message}`;
+            eventLog.appendChild(entry);
+            eventLog.scrollTop = eventLog.scrollHeight;
+        }
+        
+        function updateCallStatus(status, message) {
+            callStatus.className = `status ${status}`;
+            callStatus.textContent = message;
+        }
+        
+        function addParticipant(userId, username, isLocal = false) {
+            const participant = document.createElement('div');
+            participant.className = 'participant';
+            participant.id = `participant-${userId}`;
+            
+            participant.innerHTML = `
+                <div class="participant-avatar">${username.charAt(0).toUpperCase()}</div>
+                <div class="participant-info">
+                    <div class="participant-name">${username} ${isLocal ? '(Vous)' : ''}</div>
+                    <div class="participant-status">En ligne</div>
+                </div>
+                <div class="mute-indicators" id="mute-${userId}">
+                    <!-- Les indicateurs de mute seront ajoutés dynamiquement -->
+                </div>
+            `;
+            
+            participantsList.appendChild(participant);
+        }
+        
+        // Gestion des médias
+        async function initializeMedia(videoEnabled = true) {
+            try {
+                const constraints = {
+                    audio: true,
+                    video: videoEnabled ? { width: 1280, height: 720 } : false
+                };
+                
+                localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                localVideo.srcObject = localStream;
+                
+                logEvent(`Média initialisé (vidéo: ${videoEnabled})`, 'success');
+                return true;
+            } catch (error) {
+                logEvent(`Erreur d'accès aux médias: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        // Gestion WebRTC
+        function createPeerConnection() {
+            peerConnection = new RTCPeerConnection(iceServers);
+            
+            // Ajout des tracks locaux
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+            }
+            
+            // Réception des tracks distants
+            peerConnection.ontrack = (event) => {
+                remoteStream = event.streams[0];
+                remoteVideo.srcObject = remoteStream;
+                logEvent('Stream distant reçu', 'success');
+            };
+            
+            // Gestion des candidats ICE
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate && websocket && websocket.readyState === WebSocket.OPEN) {
+                    websocket.send(JSON.stringify({
+                        type: 'ice-candidate',
+                        candidate: event.candidate
+                    }));
+                }
+            };
+            
+            // État de la connexion
+            peerConnection.onconnectionstatechange = () => {
+                const state = peerConnection.connectionState;
+                logEvent(`État de connexion: ${state}`, state === 'connected' ? 'success' : 'info');
+                
+                if (state === 'connected') {
+                    updateCallStatus('connected', '🟢 Connecté');
+                } else if (state === 'disconnected' || state === 'failed') {
+                    updateCallStatus('disconnected', '🔴 Déconnecté');
+                }
+            };
+        }
+        
+        // Gestion WebSocket
+        function connectWebSocket(roomId) {
+            const wsUrl = `ws://localhost:8000/ws/call/${roomId}/`;
+            websocket = new WebSocket(wsUrl);
+            
+            websocket.onopen = () => {
+                logEvent('WebSocket connecté', 'success');
+                updateCallStatus('connecting', '🟡 Connexion...');
+            };
+            
+            websocket.onmessage = async (event) => {
+                const data = JSON.parse(event.data);
+                
+                switch (data.type) {
+                    case 'offer':
+                        await handleOffer(data);
+                        break;
+                    case 'answer':
+                        await handleAnswer(data);
+                        break;
+                    case 'ice-candidate':
+                        await handleIceCandidate(data);
+                        break;
+                    case 'user-joined':
+                        handleUserJoined(data);
+                        break;
+                    case 'user-left':
+                        handleUserLeft(data);
+                        break;
+                    case 'call-ended':
+                        handleCallEnded();
+                        break;
+                }
+            };
+            
+            websocket.onclose = () => {
+                logEvent('WebSocket déconnecté', 'error');
+                updateCallStatus('disconnected', '🔴 Déconnecté');
+            };
+            
+            websocket.onerror = (error) => {
+                logEvent('Erreur WebSocket', 'error');
+            };
+        }
+        
+        // Gestionnaires d'événements WebRTC
+        async function handleOffer(data) {
+            if (!peerConnection) createPeerConnection();
+            
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            
+            websocket.send(JSON.stringify({
+                type: 'answer',
+                answer: answer
+            }));
+            
+            logEvent('Offre reçue et réponse envoyée', 'success');
+        }
+        
+        async function handleAnswer(data) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+            logEvent('Réponse reçue', 'success');
+        }
+        
+        async function handleIceCandidate(data) {
+            if (peerConnection && data.candidate) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+            }
+        }
+        
+        function handleUserJoined(data) {
+            logEvent(`${data.username} a rejoint l'appel`, 'success');
+            addParticipant(data.user_id, data.username);
+        }
+        
+        function handleUserLeft(data) {
+            logEvent(`${data.username} a quitté l'appel`, 'info');
+            const participant = document.getElementById(`participant-${data.user_id}`);
+            if (participant) participant.remove();
+        }
+        
+        function handleCallEnded() {
+            logEvent('Appel terminé', 'info');
+            endCall();
+        }
+        
+        // Actions utilisateur
+        async function startAudioCall() {
+            roomId = roomIdInput.value || generateRoomId();
+            roomIdInput.value = roomId;
+            
+            if (await initializeMedia(false)) {
+                connectWebSocket(roomId);
+                createPeerConnection();
+                addParticipant('local', 'Utilisateur Local', true);
+                logEvent(`Appel audio démarré - Room: ${roomId}`, 'success');
+            }
+        }
+        
+        async function startVideoCall() {
+            roomId = roomIdInput.value || generateRoomId();
+            roomIdInput.value = roomId;
+            
+            if (await initializeMedia(true)) {
+                connectWebSocket(roomId);
+                createPeerConnection();
+                addParticipant('local', 'Utilisateur Local', true);
+                logEvent(`Appel vidéo démarré - Room: ${roomId}`, 'success');
+            }
+        }
+        
+        async function createOffer() {
+            if (!peerConnection) return;
+            
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            
+            websocket.send(JSON.stringify({
+                type: 'offer',
+                offer: offer
+            }));
+            
+            logEvent('Offre créée et envoyée', 'success');
+        }
+        
+        function toggleAudio() {
+            if (localStream) {
+                const audioTrack = localStream.getAudioTracks()[0];
+                if (audioTrack) {
+                    isAudioMuted = !isAudioMuted;
+                    audioTrack.enabled = !isAudioMuted;
+                    toggleAudioBtn.textContent = isAudioMuted ? '🔇 Micro coupé' : '🎤 Micro';
+                    toggleAudioBtn.className = isAudioMuted ? 'btn btn-danger' : 'btn btn-secondary';
+                    
+                    if (websocket && websocket.readyState === WebSocket.OPEN) {
+                        websocket.send(JSON.stringify({
+                            type: 'mute-audio',
+                            is_muted: isAudioMuted
+                        }));
+                    }
+                }
+            }
+        }
+        
+        function toggleVideo() {
+            if (localStream) {
+                const videoTrack = localStream.getVideoTracks()[0];
+                if (videoTrack) {
+                    isVideoMuted = !isVideoMuted;
+                    videoTrack.enabled = !isVideoMuted;
+                    toggleVideoBtn.textContent = isVideoMuted ? '📵 Caméra coupée' : '📹 Caméra';
+                    toggleVideoBtn.className = isVideoMuted ? 'btn btn-danger' : 'btn btn-secondary';
+                    
+                    if (websocket && websocket.readyState === WebSocket.OPEN) {
+                        websocket.send(JSON.stringify({
+                            type: 'mute-video',
+                            is_muted: isVideoMuted
+                        }));
+                    }
+                }
+            }
+        }
+        
+        function endCall() {
+            // Fermer les streams
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+            if (remoteStream) {
+                remoteStream.getTracks().forEach(track => track.stop());
+                remoteStream = null;
+            }
+            
+            // Fermer la connexion peer
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            
+            // Fermer WebSocket
+            if (websocket) {
+                websocket.send(JSON.stringify({ type: 'end-call' }));
+                websocket.close();
+                websocket = null;
+            }
+            
+            // Réinitialiser l'interface
+            localVideo.srcObject = null;
+            remoteVideo.srcObject = null;
+            participantsList.innerHTML = '';
+            updateCallStatus('disconnected', '⭕ Déconnecté');
+            
+            logEvent('Appel terminé', 'info');
+        }
+        
+        function generateRoomId() {
+            return 'room-' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        // Event listeners
+        startCallBtn.addEventListener('click', createOffer);
+        audioCallBtn.addEventListener('click', startAudioCall);
+        videoCallBtn.addEventListener('click', startVideoCall);
+        toggleAudioBtn.addEventListener('click', toggleAudio);
+        toggleVideoBtn.addEventListener('click', toggleVideo);
+        endCallBtn.addEventListener('click', endCall);
+        
+        // Initialisation
+        roomIdInput.value = generateRoomId();
+        logEvent('Interface de test prête', 'success');
+    </script>
+</body>
+</html>

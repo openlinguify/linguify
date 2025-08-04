@@ -76,23 +76,22 @@ jobs:
           os.environ.setdefault('DB_PORT', '5432')
           django.setup()
           
-          from public_web.utils import AppManifestParser
+          sys.path.append('scripts/database')
+          from manifest_manager import find_app_manifests, read_manifest
           
           def validate_manifests():
-              parser = AppManifestParser()
               errors = []
               warnings = []
               
               try:
-                  manifests = parser.get_all_manifests()
-                  public_apps = parser.get_public_apps()
+                  manifests = find_app_manifests()
                   
                   print(f"✅ Found {len(manifests)} total manifests")
-                  print(f"✅ Found {len(public_apps)} public apps")
                   
                   # Validate each manifest
-                  for app_name, app_data in manifests.items():
-                      manifest = app_data['manifest']
+                  for manifest_info in manifests:
+                      app_name = manifest_info['app_name']
+                      manifest = read_manifest(manifest_info['path'])
                       
                       # Required fields validation
                       required_fields = ['name', 'version', 'category', 'summary']
@@ -186,6 +185,7 @@ jobs:
           
           cat > test_discovery.py << 'EOF'
           import os
+          import sys
           import django
           
           os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings_test')
@@ -199,26 +199,47 @@ jobs:
           os.environ.setdefault('DB_PORT', '5432')
           django.setup()
           
-          from public_web.utils import manifest_parser
+          sys.path.append('scripts/database')
+          from manifest_manager import find_app_manifests, read_manifest
           
           try:
               # Test app discovery
-              apps = manifest_parser.get_public_apps()
+              manifests = find_app_manifests()
               
-              print(f"📱 Discovered {len(apps)} public apps:")
-              for app in apps:
-                  print(f"  - {app['name']} (slug: {app['slug']}, order: {app['menu_order']})")
+              print(f"📱 Discovered {len(manifests)} manifests:")
+              for manifest_info in manifests:
+                  app_name = manifest_info['app_name']
+                  manifest = read_manifest(manifest_info['path'])
+                  name = manifest.get('name', app_name)
+                  version = manifest.get('version', 'unknown')
+                  print(f"  - {name} v{version} (code: {app_name})")
               
-              # Test URL generation
-              from public_web.templatetags.app_tags import get_app_url
-              for app in apps:
-                  url = get_app_url(app['slug'])
-                  print(f"  URL for {app['slug']}: {url}")
+              # Test validation
+              errors = []
+              warnings = []
               
-              print("\n✅ App discovery working correctly!")
+              for manifest_info in manifests:
+                  app_name = manifest_info['app_name']
+                  manifest = read_manifest(manifest_info['path'])
+                  
+                  # Required fields validation
+                  required_fields = ['name', 'version', 'category', 'summary']
+                  for field in required_fields:
+                      if field not in manifest:
+                          errors.append(f"{app_name}: Missing required field '{field}'")
+              
+              if errors:
+                  print(f"\n❌ Validation errors found:")
+                  for error in errors:
+                      print(f"  - {error}")
+                  exit(1)
+              else:
+                  print(f"\n✅ All {len(manifests)} manifests are valid!")
               
           except Exception as e:
               print(f"❌ App discovery failed: {e}")
+              import traceback
+              traceback.print_exc()
               exit(1)
           EOF
           

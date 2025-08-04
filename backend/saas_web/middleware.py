@@ -44,7 +44,9 @@ class RequireAuthenticationMiddleware:
         # Si l'URL est protégée et l'utilisateur n'est pas connecté
         if requires_auth and not is_public and not request.user.is_authenticated:
             # Conserver l'URL de destination après connexion
-            login_url = reverse('authentication:login')
+            from django.utils.translation import get_language
+            lang = get_language() or 'fr'
+            login_url = f'/{lang}/auth/login/'
             return redirect(f'{login_url}?next={request.path}')
         
         response = self.get_response(request)

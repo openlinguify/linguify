@@ -2,8 +2,8 @@
 __manifest__ = {
     'name': 'Révision',
     'version': '2.0.0',
-    'category': 'Education/Language Learning',
-    'summary': 'Système de révision avec répétition espacée (Flashcards)',
+    'category': 'Productivity',
+    'summary': 'Mémorisez durablement avec des flashcards intelligentes et la répétition espacée.',
     'description': '''
 Module de Révision pour Linguify
 =================================
@@ -38,10 +38,14 @@ Usage:
     'frontend_components': {
         'main_component': 'RevisionApp',
         'route': '/revision',
-        'icon': '🃏',
+        'icon': 'bi-arrow-repeat',
+        'static_icon': '/static/revision/description/icon.png',
         'menu_order': 2,
         'display_name': 'Révision',
-        'description': 'Révisez vos connaissances avec des flashcards'
+        'description': 'Révisez vos connaissances avec des flashcards',
+        'display_category': 'productivity',
+        'category_label': 'Productivité',
+        'category_icon': 'bi-journal-text',
     },
     'api_endpoints': {
         'base_url': '/api/v1/revision/',
@@ -59,6 +63,31 @@ Usage:
         'admin_registered': True,
         'rest_framework': True,
         'has_web_interface': True,
-        'web_url': '/revision/'
+        'web_url': '/revision/',
+        'has_settings': True,
+        'settings_component': 'RevisionSettings'
+    },
+    'settings_config': {
+        'component_name': 'RevisionSettings',
+        'display_name': 'Configuration Révision',
+        'description': 'Paramètres spécifiques à Révision à développer...',
+        'icon': 'bi-gear-fill',
+        'categories': [
+            {
+                'name': 'learning',
+                'label': 'Apprentissage',
+                'description': 'Paramètres d\'apprentissage et révision'
+            },
+            {
+                'name': 'sessions', 
+                'label': 'Sessions',
+                'description': 'Configuration des sessions de révision'
+            },
+            {
+                'name': 'notifications',
+                'label': 'Notifications',
+                'description': 'Rappels et notifications'
+            }
+        ]
     }
 }

@@ -1,0 +1,102 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Register Your Organization - Linguify LMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Register Your Organization for Linguify LMS</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    Get your own dedicated LMS instance with isolated data, custom branding, and full control over your educational content.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Organization Information</h5>
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.name.label }}</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger">{{ form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.email.label }}</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.phone.label }}</label>
+                                {{ form.phone }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.country.label }}</label>
+                                {{ form.country }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5>Administrator Account</h5>
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.admin_email.label }}</label>
+                                {{ form.admin_email }}
+                                <small class="form-text text-muted">{{ form.admin_email.help_text }}</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.admin_password.label }}</label>
+                                {{ form.admin_password }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.admin_password_confirm.label }}</label>
+                                {{ form.admin_password_confirm }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.address.label }}</label>
+                        {{ form.address }}
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        {{ form.terms_accepted }}
+                        <label class="form-check-label">
+                            {{ form.terms_accepted.label }}
+                        </label>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6>What's included:</h6>
+                        <ul class="mb-0">
+                            <li>Dedicated database for your organization</li>
+                            <li>Custom subdomain (yourorg.lms.linguify.com)</li>
+                            <li>Up to 100 students (upgradeable)</li>
+                            <li>Up to 10 instructors (upgradeable)</li>
+                            <li>Full course management capabilities</li>
+                            <li>Analytics and reporting</li>
+                        </ul>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        Create My LMS Instance
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

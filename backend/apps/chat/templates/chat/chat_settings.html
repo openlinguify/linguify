@@ -1,0 +1,138 @@
+<!-- Chat Tab -->
+<div id="chat" class="tab-content active">
+    <!-- Chat Settings - Improved -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-chat-dots"></i>
+                Paramètres du Chat
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="chat">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="chat_notifications" checked>
+                        Notifications de nouveaux messages
+                    </label>
+                    <div class="form-help">Recevoir des notifications pour les nouveaux messages</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="chat_sounds" checked>
+                        Sons de notification
+                    </label>
+                    <div class="form-help">Jouer un son lors de la réception de messages</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="typing_indicators" checked>
+                        Indicateurs de frappe
+                    </label>
+                    <div class="form-help">Afficher quand quelqu'un écrit</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="read_receipts" checked>
+                        Accusés de réception
+                    </label>
+                    <div class="form-help">Indiquer quand vos messages sont lus</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="auto_archive">
+                        Archivage automatique
+                    </label>
+                    <div class="form-help">Archiver automatiquement les conversations inactives après 30 jours</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Taille du texte</label>
+                    <select name="text_size" class="form-control">
+                        <option value="small">Petit</option>
+                        <option value="medium" selected>Moyen</option>
+                        <option value="large">Grand</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Thème du chat</label>
+                    <select name="chat_theme" class="form-control">
+                        <option value="default" selected>Par défaut</option>
+                        <option value="dark">Sombre</option>
+                        <option value="blue">Bleu</option>
+                        <option value="green">Vert</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-shield-lock"></i>
+                Confidentialité du Chat
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="chat_privacy">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="allow_anyone_to_message" checked>
+                        Autoriser tout le monde à m'envoyer des messages
+                    </label>
+                    <div class="form-help">Si désactivé, seuls vos contacts pourront vous écrire</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="show_online_status" checked>
+                        Afficher mon statut en ligne
+                    </label>
+                    <div class="form-help">Permettre aux autres de voir quand vous êtes en ligne</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="show_last_seen" checked>
+                        Afficher ma dernière connexion
+                    </label>
+                    <div class="form-help">Permettre aux autres de voir votre dernière connexion</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Rétention des messages</label>
+                    <select name="message_retention" class="form-control">
+                        <option value="forever" selected>Conserver indéfiniment</option>
+                        <option value="1_year">1 an</option>
+                        <option value="6_months">6 mois</option>
+                        <option value="3_months">3 mois</option>
+                        <option value="1_month">1 mois</option>
+                    </select>
+                    <div class="form-help">Durée de conservation des messages</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

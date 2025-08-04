@@ -1,0 +1,1084 @@
+{% extends 'public_web/public_base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "OpenLinguify - Open source educational apps platform" %}{% endblock %}
+
+{% block meta_description %}{% trans "OpenLinguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning." %}{% endblock %}
+
+{% block meta_keywords %}{% trans "openlinguify, open linguify, OpenLinguify, Open Linguify, openlinguify.com, linguify apprendre langues, linguify AI, linguify, educational apps, flashcards, memorization, note-taking, quizzes, collaborative chat, classrooms, open source, education, learning, apprentissage" %}{% endblock %}
+
+{% block og_title %}{% trans "OpenLinguify - Open source educational apps platform" %}{% endblock %}
+
+{% block og_description %}{% trans "Discover OpenLinguify, a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn." %}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "OpenLinguify",
+    "alternateName": ["Open Linguify", "openlinguify", "OpenLinguify.com"],
+    "applicationCategory": "EducationalApplication",
+    "applicationSubCategory": "Language Learning",
+    "operatingSystem": "Web, iOS, Android",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR",
+        "description": "Free educational platform - sustainable business model in development"
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.8,
+        "ratingCount": 1250,
+        "bestRating": 5,
+        "worstRating": 1
+    },
+    "featureList": [
+        "{% trans 'AI-powered lessons' %}",
+        "{% trans 'Interactive flashcards' %}",
+        "{% trans 'Speech recognition' %}",
+        "{% trans 'Progress tracking' %}",
+        "{% trans 'Multi-language support' %}",
+        "{% trans 'Offline mode' %}"
+    ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "{% trans 'What is OpenLinguify?' %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% trans 'OpenLinguify is an open source educational platform offering AI-powered language learning tools including flashcards, quizzes, note-taking, and interactive courses.' %}"
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "{% trans 'Is OpenLinguify really free?' %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% trans 'Yes! OpenLinguify is currently completely free to use. All educational apps are available at no cost. Our business model may evolve in the future to ensure platform sustainability.' %}"
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "{% trans 'Which languages can I learn with OpenLinguify?' %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% trans 'OpenLinguify supports learning multiple languages including English, French, Spanish, Dutch, and many more. Our AI adapts to your target language.' %}"
+            }
+        }
+    ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "OpenLinguify Premium",
+    "description": "{% trans 'Full access to all OpenLinguify educational apps' %}",
+    "brand": {
+        "@type": "Brand",
+        "name": "OpenLinguify"
+    },
+    "offers": {
+        "@type": "Offer",
+        "priceCurrency": "EUR",
+        "price": "0",
+        "availability": "https://schema.org/InStock",
+        "description": "{% trans 'Currently free - business model may evolve for sustainability' %}",
+        "seller": {
+            "@id": "https://www.openlinguify.com/#organization"
+        }
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.8,
+        "reviewCount": 500
+    }
+}
+</script>
+{% endblock %}
+
+{% block extra_head %}
+<!-- PWA Manifest -->
+<link rel="manifest" href="{% static 'manifest.json' %}">
+
+<!-- Apple PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="OpenLinguify">
+
+<!-- Additional fonts and icons for this page -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block extra_css %}
+<!-- No additional CSS needed - using main.css from base template -->
+{% endblock %}
+
+{% block content %}
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+        
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <h1 class="hero-title animate-on-scroll">
+                        {% trans "Open Source Education Apps" %}
+                    </h1>
+                    <p class="hero-subtitle animate-on-scroll delay-1">
+                        {% trans "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more." %}
+                    </p>
+                    
+                    <!-- User Type Selection -->
+                    <div id="user-products" class="user-type-selection mb-4 animate-on-scroll delay-2 user-type-enhanced">
+                        <h3 class="mb-3" style="color: #e0e7ff; font-size: 1.1rem;">
+                            {% trans "Choose your Linguify product:" %}
+                        </h3>
+                        <div class="row g-3">
+                            {% for product in products %}
+                                {% if product.key != 'lms' %}  <!-- Hide LMS product as it's not ready -->
+                                <div class="col-md-{% if products|length == 2 %}6{% elif products|length == 3 %}4{% else %}6{% endif %}">
+                                    <div class="user-type-card" style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 1.5rem; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                                        <i class="{{ product.icon }} fa-2x mb-2" style="color: #e0e7ff;"></i>
+                                        <h5 style="color: white; margin-bottom: 0.5rem;">{{ product.name }}</h5>
+                                        <p style="color: #e0e7ff; font-size: 0.9rem; margin-bottom: 1rem;">{{ product.description }}</p>
+                                        <a href="{{ product.url }}" class="btn {% if product.key == 'backend' %}btn-light{% else %}btn-outline-light{% endif %} btn-sm" {% if product.key != 'backend' %}target="_blank"{% endif %}>
+                                            {% if product.key == 'backend' %}
+                                                {% trans "Start Learning" %}
+                                            {% else %}
+                                                {% trans "Learn More" %}
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-3 flex-wrap animate-on-scroll delay-3 hero-cta-enhanced">
+                        <a href="#features" class="btn-hero secondary">
+                            <i class="fas fa-globe"></i>
+                            {% trans "Discover our apps" %}
+                        </a>
+                        <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-hero primary pulse">
+                            <i class="fab fa-github"></i>
+                            {% trans "View Source Code" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-6 col-md-3 animate-on-scroll">
+                    <div class="stat-card">
+                        <span class="stat-number" data-count="7">0</span>
+                        <div class="stat-label">{% trans "Educational Apps" %}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 animate-on-scroll delay-1">
+                    <div class="stat-card">
+                        <span class="stat-number" data-count="1000">0</span><span class="stat-number">+</span>
+                        <div class="stat-label">{% trans "Flashcards Created" %}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 animate-on-scroll delay-2">
+                    <div class="stat-card">
+                        <span class="stat-number" data-count="500">0</span><span class="stat-number">+</span>
+                        <div class="stat-label">{% trans "Quizzes Generated" %}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 animate-on-scroll delay-3">
+                    <div class="stat-card">
+                        <span class="stat-number" data-count="100">0</span><span class="stat-number">%</span>
+                        <div class="stat-label">{% trans "Open Source" %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Teachers Professional Space Section -->
+    <section id="teachers" class="teachers-section py-5" style="background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%); color: white; position: relative; overflow: hidden;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 animate-on-scroll">
+                    <div class="teachers-content">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-chalkboard-teacher fa-3x me-3" style="color: var(--linguify-accent); text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>
+                            <h2 class="display-5 fw-bold mb-0" style="text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                {% trans "Espace Professionnel Enseignants" %}
+                            </h2>
+                        </div>
+                        <p class="lead mb-4" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 3px rgba(0,0,0,0.4);">
+                            {% trans "Créez et monétisez vos cours en ligne avec Linguify Pro. Vos cours créés seront automatiquement disponibles pour tous les étudiants sur la plateforme Linguify. Gérez votre planning et donnez des cours particuliers." %}
+                        </p>
+                        
+                        <!-- Process explanation -->
+                        <div class="process-flow mb-4 p-3" style="background: rgba(255,255,255,0.15); border-radius: 10px; border-left: 4px solid var(--linguify-accent); backdrop-filter: blur(5px);">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-info-circle me-2" style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                                <strong style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{% trans "Comment ça fonctionne :" %}</strong>
+                            </div>
+                            <div class="process-steps" style="font-size: 0.9rem; color: rgba(255,255,255,0.98); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                                <div class="step d-flex align-items-start mb-2">
+                                    <span class="step-number me-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">1</span>
+                                    <span>{% trans "Vous créez vos cours sur <strong>Linguify Pro</strong> (CMS enseignant)" %}</span>
+                                </div>
+                                <div class="step d-flex align-items-start mb-2">
+                                    <span class="step-number me-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">2</span>
+                                    <span>{% trans "Vos cours sont <strong>automatiquement synchronisés</strong> avec la plateforme" %}</span>
+                                </div>
+                                <div class="step d-flex align-items-start">
+                                    <span class="step-number me-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">3</span>
+                                    <span>{% trans "Les étudiants peuvent <strong>découvrir et acheter</strong> vos cours sur Linguify" %}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="teachers-features mb-4">
+                            <div class="feature-item d-flex align-items-center mb-3">
+                                <div class="feature-icon me-3" style="background: rgba(0, 212, 170, 0.25); padding: 0.7rem; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                    <i class="fas fa-graduation-cap" style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                                </div>
+                                <span class="fw-medium" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">{% trans "Créez des cours interactifs avec flashcards et quiz" %}</span>
+                            </div>
+                            <div class="feature-item d-flex align-items-center mb-3">
+                                <div class="feature-icon me-3" style="background: rgba(0, 212, 170, 0.25); padding: 0.7rem; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                    <i class="fas fa-euro-sign" style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                                </div>
+                                <span class="fw-medium" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">{% trans "Gagnez de l'argent avec vos contenus (85% des revenus)" %}</span>
+                            </div>
+                            <div class="feature-item d-flex align-items-center mb-3">
+                                <div class="feature-icon me-3" style="background: rgba(0, 212, 170, 0.25); padding: 0.7rem; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                    <i class="fas fa-calendar-alt" style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                                </div>
+                                <span class="fw-medium" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">{% trans "Gérez votre planning pour les cours particuliers" %}</span>
+                            </div>
+                            <div class="feature-item d-flex align-items-center mb-3">
+                                <div class="feature-icon me-3" style="background: rgba(0, 212, 170, 0.25); padding: 0.7rem; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                    <i class="fas fa-sync-alt" style="color: var(--linguify-accent); text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                                </div>
+                                <span class="fw-medium" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">{% trans "Synchronisation automatique avec la plateforme étudiante" %}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="teachers-cta">
+                            <a href="http://127.0.0.1:8002" target="_blank" class="btn btn-lg me-3 mb-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none; border-radius: 25px; padding: 12px 30px; font-weight: 600; box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);">
+                                <i class="fas fa-rocket me-2"></i>{% trans "Accéder au CMS Enseignant" %}
+                            </a>
+                            <a href="#teacher-benefits" class="btn btn-outline-light btn-lg mb-2" style="border-radius: 25px; padding: 12px 30px; font-weight: 600;">
+                                <i class="fas fa-info-circle me-2"></i>{% trans "En savoir plus" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 animate-on-scroll delay-1">
+                    <div class="teachers-visual">
+                        <div class="teacher-stats-card" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 2rem; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-chart-line" style="font-size: 3rem; color: var(--linguify-accent);"></i>
+                                <h3 class="mt-3 mb-1" style="color: white;">{% trans "Marketplace Enseignants" %}</h3>
+                                <p style="color: rgba(255,255,255,0.8);">{% trans "Rejoignez notre communauté de créateurs" %}</p>
+                            </div>
+                            
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--linguify-accent);">85%</div>
+                                        <div class="stat-label" style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">{% trans "Revenus pour vous" %}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--linguify-accent);">€50</div>
+                                        <div class="stat-label" style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">{% trans "Payout minimum" %}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--linguify-accent);">24/7</div>
+                                        <div class="stat-label" style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">{% trans "Support" %}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255,255,255,0.2);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span style="color: rgba(255,255,255,0.8);">{% trans "Commission plateforme" %}</span>
+                                    <span class="badge" style="background: rgba(0, 212, 170, 0.2); color: var(--linguify-accent);">15%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating elements for visual appeal -->
+        <div class="floating-shapes">
+            <div class="shape shape-1" style="position: absolute; top: 10%; left: 5%; width: 60px; height: 60px; background: rgba(0, 212, 170, 0.1); border-radius: 50%; animation: float 6s ease-in-out infinite;"></div>
+            <div class="shape shape-2" style="position: absolute; top: 60%; right: 10%; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 4s ease-in-out infinite reverse;"></div>
+            <div class="shape shape-3" style="position: absolute; bottom: 20%; left: 15%; width: 30px; height: 30px; background: rgba(0, 212, 170, 0.15); border-radius: 50%; animation: float 8s ease-in-out infinite;"></div>
+        </div>
+    </section>
+
+    <!-- Teacher Benefits Detail Section -->
+    <section id="teacher-benefits" class="teacher-benefits-section py-5" style="background: #f8fafc;">
+        <div class="container">
+            <div class="text-center mb-5 animate-on-scroll">
+                <h2 class="display-5 fw-bold mb-4" style="color: #2d3748;">{% trans "Pourquoi choisir Linguify Professionnel ?" %}</h2>
+                <p class="lead text-muted">
+                    {% trans "Notre plateforme vous offre tous les outils nécessaires pour créer, vendre et gérer vos cours en ligne avec succès." %}
+                </p>
+                
+                <!-- Important notice about course publication -->
+                <div class="alert alert-info d-inline-flex align-items-center mb-4" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 1rem 1.5rem; max-width: 800px;">
+                    <i class="bi bi-info-circle-fill me-3" style="color: #3b82f6; font-size: 1.5rem;"></i>
+                    <div class="text-start">
+                        <strong style="color: #1e40af;">{% trans "📚 Publication automatique :" %}</strong>
+                        <div style="color: #374151; margin-top: 0.25rem;">
+                            {% trans "Tous les cours que vous créez dans <strong>Linguify Pro</strong> deviennent automatiquement disponibles dans le catalogue public de <strong>Linguify</strong>. Les étudiants du monde entier peuvent découvrir, acheter et suivre vos formations !" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6 animate-on-scroll delay-1">
+                    <div class="benefit-card" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: 100%; border-top: 4px solid var(--linguify-primary);">
+                        <div class="benefit-icon mb-3" style="background: rgba(45, 91, 186, 0.1); padding: 1rem; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-tools" style="color: var(--linguify-primary); font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: #2d3748;">{% trans "Outils de création avancés" %}</h4>
+                        <p style="color: var(--linguify-gray);">{% trans "Interface intuitive pour créer des leçons interactives, flashcards personnalisées, quiz adaptatifs et contenu multimédia." %}</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 animate-on-scroll delay-2">
+                    <div class="benefit-card" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: 100%; border-top: 4px solid var(--linguify-accent);">
+                        <div class="benefit-icon mb-3" style="background: rgba(0, 212, 170, 0.1); padding: 1rem; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-globe" style="color: var(--linguify-accent); font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: #2d3748;">{% trans "Visibilité mondiale" %}</h4>
+                        <p style="color: var(--linguify-gray);">{% trans "Vos cours créés dans Linguify Pro sont automatiquement publiés sur la plateforme Linguify, accessible à des milliers d'étudiants." %}</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 animate-on-scroll delay-3">
+                    <div class="benefit-card" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: 100%; border-top: 4px solid var(--linguify-success);">
+                        <div class="benefit-icon mb-3" style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chart-line" style="color: var(--linguify-success); font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: #2d3748;">{% trans "Analytics et revenus" %}</h4>
+                        <p style="color: var(--linguify-gray);">{% trans "Tableau de bord complet pour suivre vos ventes, analyser les performances de vos cours et optimiser vos revenus." %}</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 animate-on-scroll delay-4">
+                    <div class="benefit-card" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: 100%; border-top: 4px solid var(--linguify-secondary);">
+                        <div class="benefit-icon mb-3" style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-calendar-check" style="color: var(--linguify-secondary); font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: #2d3748;">{% trans "Gestion des rendez-vous" %}</h4>
+                        <p style="color: var(--linguify-gray);">{% trans "Système de réservation intégré pour vos cours particuliers avec gestion automatique des créneaux et notifications." %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="text-center mb-5 animate-on-scroll">
+                <h2 class="display-5 fw-bold mb-4">{% trans "Our Educational Apps" %}</h2>
+                <p class="lead text-muted">
+                    {% trans "Discover our complete suite of educational apps designed to transform your learning experience. Currently all apps are completely free to use." %}
+                </p>
+                <div class="alert alert-info d-inline-flex align-items-center mb-4" style="background: rgba(45, 91, 186, 0.1); border: 1px solid rgba(45, 91, 186, 0.2); border-radius: 12px; padding: 0.75rem 1.25rem;">
+                    <i class="bi bi-info-circle me-2" style="color: var(--linguify-primary);"></i>
+                    <small style="color: var(--linguify-primary); margin: 0;">
+                        {% trans "🎉 All features are currently free • We're exploring sustainable business models for long-term platform development" %}
+                    </small>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-1">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='course' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/langue.png' %}" alt="Courses">
+                            </div>
+                            <h3 class="feature-title">{% trans "Courses" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Structured courses with progressive lessons, interactive exercises and personalized assessments." %}
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-2">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='revision' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision">
+                            </div>
+                            <h3 class="feature-title">{% trans "Revision" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Spaced repetition system with smart flashcards for optimal memorization." %}
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-3">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='notebook' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook">
+                            </div>
+                            <h3 class="feature-title">{% trans "Notebook" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Centralized note-taking with intelligent organization and advanced search." %}
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-4">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='quizz' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quizz">
+                            </div>
+                            <h3 class="feature-title">{% trans "Quiz" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Adaptive quiz system to test your knowledge and identify weak points." %}
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-5">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='community' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/community.png' %}" alt="Community">
+                            </div>
+                            <h3 class="feature-title">{% trans "Community" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Connect with other learners, share progress and discover content created by the community." %}
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-6">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='chat' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/Chat.png' %}" alt="Chat">
+                            </div>
+                            <h3 class="feature-title">{% trans "Chat" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Real-time collaborative chat for study groups and language exchange with other learners." %}
+                            </p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-7">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='documents' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents">
+                            </div>
+                            <h3 class="feature-title">{% trans "Documents" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Real-time collaborative documents with rich text editing, version control, and sharing capabilities for educational content." %}
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-8">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='language_ai' %}" class="text-decoration-none">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI">
+                            </div>
+                            <h3 class="feature-title">{% trans "Language AI" %}</h3>
+                            <p class="feature-description">
+                                {% trans "AI assistant for natural conversations and intelligent real-time corrections." %}
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Contribute Section -->
+    <section class="contribute-section py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 animate-on-scroll">
+                    <div class="contribute-content">
+                        <h2 class="display-5 fw-bold mb-4" style="color: var(--gray-900);">
+                            {% trans "Join the Open Source Revolution" %}
+                        </h2>
+                        <p class="lead mb-4" style="color: var(--gray-600);">
+                            {% trans "Open Linguify is built by the community, for the community. Help us create the future of education by contributing to our open source project." %}
+                        </p>
+                        
+                        <div class="contribute-benefits mb-4">
+                            <div class="benefit-item d-flex align-items-center mb-3">
+                                <div class="benefit-icon me-3" style="background: rgba(99, 102, 241, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-code-slash" style="color: var(--primary-color);"></i>
+                                </div>
+                                <span style="color: var(--gray-700);">{% trans "Contribute code and new features" %}</span>
+                            </div>
+                            <div class="benefit-item d-flex align-items-center mb-3">
+                                <div class="benefit-icon me-3" style="background: rgba(139, 92, 246, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-bug" style="color: var(--secondary-color);"></i>
+                                </div>
+                                <span style="color: var(--gray-700);">{% trans "Report bugs and suggest improvements" %}</span>
+                            </div>
+                            <div class="benefit-item d-flex align-items-center mb-3">
+                                <div class="benefit-icon me-3" style="background: rgba(16, 185, 129, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-translate" style="color: var(--success-color);"></i>
+                                </div>
+                                <span style="color: var(--gray-700);">{% trans "Help with translations and documentation" %}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="contribute-actions">
+                            <a href="{% url 'docs:home' %}" class="btn btn-primary btn-lg me-3 mb-2" style="border-radius: 25px; padding: 12px 24px;">
+                                <i class="bi bi-code-slash me-2"></i>{% trans "Start Contributing" %}
+                            </a>
+                            <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn btn-outline-primary btn-lg me-3 mb-2" style="border-radius: 25px; padding: 12px 24px;">
+                                <i class="bi bi-github me-2"></i>{% trans "View on GitHub" %}
+                            </a>
+                            <a href="https://github.com/openlinguify/linguify/issues" target="_blank" class="btn btn-outline-primary btn-lg mb-2" style="border-radius: 25px; padding: 12px 24px;">
+                                <i class="bi bi-exclamation-circle me-2"></i>{% trans "Report Issues" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 animate-on-scroll delay-1">
+                    <div class="contribute-visual">
+                        <div class="github-stats-card" style="background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);">
+                            <div class="text-center mb-4">
+                                <i class="bi bi-github" style="font-size: 3rem; color: var(--gray-900);"></i>
+                                <h3 class="mt-3 mb-1" style="color: var(--gray-900);">{% trans "Open Source Stats" %}</h3>
+                                <p class="text-muted">{% trans "Growing community of contributors" %}</p>
+                            </div>
+                            
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">5+</div>
+                                        <div class="stat-label text-muted">{% trans "Contributors" %}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);">50+</div>
+                                        <div class="stat-label text-muted">{% trans "Commits" %}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <div class="stat-number" style="font-size: 1.5rem; font-weight: 700; color: var(--success-color);">LGPL-3</div>
+                                        <div class="stat-label text-muted">{% trans "License" %}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 pt-3" style="border-top: 1px solid var(--gray-100);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">{% trans "Latest Release" %}</span>
+                                    <span class="badge bg-primary">v1.0.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section py-5" style="background: white;">
+        <div class="container">
+            <div class="text-center mb-5 animate-on-scroll">
+                <h2 class="display-5 fw-bold mb-4">{% trans "Frequently Asked Questions" %}</h2>
+                <p class="lead text-muted">
+                    {% trans "Everything you need to know about OpenLinguify and our educational platform." %}
+                </p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item mb-3 animate-on-scroll delay-1" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" style="background: var(--gray-50); border: none; padding: 1.5rem; font-weight: 600;">
+                                    {% trans "What makes OpenLinguify different from other language learning platforms?" %}
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body" style="padding: 1.5rem; color: var(--gray-600);">
+                                    {% trans "OpenLinguify is completely open source, meaning our code is transparent and constantly improved by the community. We offer a complete suite of educational apps including spaced repetition, AI conversations, collaborative tools, and more - all designed to work together seamlessly." %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 animate-on-scroll delay-2" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" style="background: var(--gray-50); border: none; padding: 1.5rem; font-weight: 600;">
+                                    {% trans "Is OpenLinguify really free to use?" %}
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body" style="padding: 1.5rem; color: var(--gray-600);">
+                                    {% trans "Yes! OpenLinguify is currently completely free to use. All educational apps are available at no cost. As an open source project, you can also self-host the entire platform. While we're committed to keeping our core features free, our business model may evolve in the future to ensure the sustainability and continued development of the platform." %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 animate-on-scroll delay-4" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" style="background: var(--gray-50); border: none; padding: 1.5rem; font-weight: 600;">
+                                    {% trans "Can I contribute to the OpenLinguify project?" %}
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body" style="padding: 1.5rem; color: var(--gray-600);">
+                                    {% trans "Absolutely! As an open source project, we welcome contributions from developers, translators, educators, and users. You can contribute code, report bugs, suggest features, help with translations, or create educational content." %}
+                                    
+                                    <div class="mt-3 d-flex flex-wrap gap-2">
+                                        <a href="{% url 'docs:home' %}" class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-code-slash me-1"></i>
+                                            {% trans "Open Source Guide" %}
+                                        </a>
+                                        <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                            <i class="bi bi-github me-1"></i>
+                                            {% trans "GitHub Repository" %}
+                                        </a>
+                                        <a href="https://github.com/openlinguify/linguify/issues" target="_blank" class="btn btn-outline-info btn-sm">
+                                            <i class="bi bi-bug me-1"></i>
+                                            {% trans "Report Issues" %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 animate-on-scroll delay-5" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" style="background: var(--gray-50); border: none; padding: 1.5rem; font-weight: 600;">
+                                    {% trans "Comment ajouter mes cours à Linguify ?" %}
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body" style="padding: 1.5rem; color: var(--gray-600);">
+                                    {% trans "Pour ajouter vos cours à Linguify, vous devez utiliser <strong>Linguify Pro</strong> (notre CMS enseignant). Une fois vos cours créés et publiés dans Linguify Pro, ils sont automatiquement synchronisés et deviennent disponibles dans le catalogue public de Linguify pour tous les étudiants." %}
+                                    
+                                    <div class="mt-3">
+                                        <a href="http://127.0.0.1:8002" target="_blank" class="btn btn-success btn-sm">
+                                            <i class="bi bi-arrow-right me-1"></i>
+                                            {% trans "Accéder à Linguify Pro" %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 animate-on-scroll delay-6" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6" style="background: var(--gray-50); border: none; padding: 1.5rem; font-weight: 600;">
+                                    {% trans "Mes cours seront-ils visibles par tous les étudiants ?" %}
+                                </button>
+                            </h2>
+                            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body" style="padding: 1.5rem; color: var(--gray-600);">
+                                    {% trans "Oui ! Tous les cours que vous créez et publiez dans Linguify Pro sont automatiquement disponibles dans le catalogue public de Linguify. Les étudiants peuvent les découvrir, les acheter et les suivre. Vous bénéficiez ainsi d'une visibilité maximale auprès de notre communauté d'apprenants mondiale." %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <div class="container text-center">
+                <h2 class="display-5 fw-bold mb-4 animate-on-scroll">
+                    {% trans "Ready to revolutionize your learning?" %}
+                </h2>
+                <p class="lead mb-5 animate-on-scroll delay-1" style="color: #e0e7ff;">
+                    {% trans "Join our community and access a complete suite of open source educational apps." %}
+                </p>
+                <p class="small mb-4 animate-on-scroll delay-1" style="color: rgba(224, 231, 255, 0.8); font-size: 0.9rem;">
+                    {% trans "✨ Currently 100% free • Open Source • Future business model under development for platform sustainability" %}
+                </p>
+                <div class="animate-on-scroll delay-2">
+                    <!-- Dans le portal, on redirige vers le choix de produits -->
+                    <a href="#user-products" class="btn-hero primary pulse">
+                        <i class="fas fa-rocket"></i>
+                        {% trans "Start Your Learning Journey" %}
+                    </a>
+                    <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-hero secondary ms-3">
+                        <i class="fab fa-github"></i>
+                        {% trans "Open Source" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- PWA Install Prompt -->
+<div id="pwaInstallPrompt" class="pwa-install-prompt">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <strong>📱 Installer Open Linguify</strong>
+            <div class="small">Accédez rapidement à OpenLinguify depuis votre écran d'accueil</div>
+        </div>
+        <div>
+            <button class="btn btn-light btn-sm me-2" onclick="installPWA()">Installer</button>
+            <button class="btn btn-outline-light btn-sm" onclick="dismissPWA()">×</button>
+        </div>
+    </div>
+</div>
+
+<script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Language selector
+        document.querySelectorAll('.language-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.language-btn').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Store language preference
+                const lang = this.dataset.lang;
+                localStorage.setItem('preferredLanguage', lang);
+                
+                console.log('Langue sélectionnée:', lang);
+            });
+        });
+
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with animate-on-scroll class
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Animated counters for stats
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number[data-count]');
+            
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-count'));
+                const duration = 2000; // 2 seconds
+                const step = target / (duration / 16); // 60fps
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        counter.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        counter.textContent = Math.floor(current);
+                    }
+                }, 16);
+                
+                // Add counting animation class
+                counter.classList.add('counting');
+            });
+        }
+
+        // Stats section observer
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Trigger counter animation when stats section is visible
+                    animateCounters();
+                    // Add animation class to stat cards
+                    document.querySelectorAll('.stat-card').forEach((card, index) => {
+                        setTimeout(() => {
+                            card.classList.add('animate');
+                        }, index * 100);
+                    });
+                    // Disconnect observer after triggering once
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        // Observe stats section
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+
+        // Language switcher toggle
+        function toggleLanguageMenu() {
+            // Simple language toggle for demo
+            const current = document.getElementById('currentLanguage');
+            const languages = ['FR', 'EN', 'ES', 'NL'];
+            const currentIndex = languages.indexOf(current.textContent);
+            const nextIndex = (currentIndex + 1) % languages.length;
+            current.textContent = languages[nextIndex];
+        }
+
+        // Initialize animations after page load
+        window.addEventListener('load', function() {
+            // Trigger initial animations
+            setTimeout(() => {
+                document.querySelectorAll('.animate-on-scroll').forEach((el, index) => {
+                    if (el.getBoundingClientRect().top < window.innerHeight) {
+                        setTimeout(() => {
+                            el.classList.add('animated');
+                        }, index * 100);
+                    }
+                });
+            }, 500);
+        });
+
+        // Add parallax effect to floating elements
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelectorAll('.floating-element');
+            const speed = 0.5;
+
+            parallax.forEach((element, index) => {
+                const yPos = -(scrolled * speed * (index + 1) * 0.3);
+                element.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+
+        // PWA Installation
+        let deferredPrompt;
+        let pwaInstalled = localStorage.getItem('pwaInstalled') === 'true';
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Empêcher l'affichage automatique
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Afficher notre prompt personnalisé après 5 secondes si pas installé
+            if (!pwaInstalled) {
+                setTimeout(() => {
+                    document.getElementById('pwaInstallPrompt').classList.add('show');
+                }, 5000);
+            }
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        localStorage.setItem('pwaInstalled', 'true');
+                        console.log('PWA installée avec succès');
+                    }
+                    deferredPrompt = null;
+                    dismissPWA();
+                });
+            }
+        }
+
+        function dismissPWA() {
+            document.getElementById('pwaInstallPrompt').classList.remove('show');
+            localStorage.setItem('pwaDismissed', 'true');
+        }
+
+        // Performance optimizations
+        function addWillChangeOnScroll() {
+            const elements = document.querySelectorAll('.floating-element, .navbar');
+            elements.forEach(el => {
+                el.classList.add('will-change-transform');
+            });
+        }
+
+        function removeWillChangeOnScrollEnd() {
+            const elements = document.querySelectorAll('.will-change-transform');
+            elements.forEach(el => {
+                el.classList.remove('will-change-transform');
+            });
+        }
+
+        // Optimisation des animations de scroll
+        let scrollTimer = null;
+        window.addEventListener('scroll', function() {
+            if (scrollTimer !== null) {
+                clearTimeout(scrollTimer);
+            }
+            addWillChangeOnScroll();
+            
+            scrollTimer = setTimeout(() => {
+                removeWillChangeOnScrollEnd();
+            }, 150);
+        });
+
+        // Service Worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // Preload critical resources
+        function preloadCriticalResources() {
+            const criticalImages = [
+                '{% static "images/favicon.png" %}',
+            ];
+            
+            criticalImages.forEach(src => {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.as = 'image';
+                link.href = src;
+                document.head.appendChild(link);
+            });
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            preloadCriticalResources();
+            
+            // Add fade-in to body
+            document.body.classList.add('fade-in');
+            
+            // Check if PWA was dismissed
+            if (localStorage.getItem('pwaDismissed') === 'true') {
+                const prompt = document.getElementById('pwaInstallPrompt');
+                if (prompt) prompt.style.display = 'none';
+            }
+        });
+
+        // Console welcome message
+        console.log('%c🚀 Bienvenue sur OpenLinguify!', 'color: #6366f1; font-size: 20px; font-weight: bold;');
+        console.log('%cMigré avec succès vers la nouvelle architecture! ✨', 'color: #10b981; font-size: 14px;');
+        console.log('%c📱 Support PWA activé', 'color: #8b5cf6; font-size: 12px;');
+</script>
+
+<style>
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.teachers-section .floating-shapes .shape {
+    animation: float 6s ease-in-out infinite;
+}
+
+.teachers-section .floating-shapes .shape:nth-child(2) {
+    animation-delay: -2s;
+}
+
+.teachers-section .floating-shapes .shape:nth-child(3) {
+    animation-delay: -4s;
+}
+
+.benefit-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.benefit-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+}
+
+.teacher-stats-card {
+    transition: transform 0.3s ease;
+}
+
+.teacher-stats-card:hover {
+    transform: scale(1.05);
+}
+</style>
+{% endblock %}

@@ -3,7 +3,7 @@ __manifest__ = {
     'name': 'Conversation AI',
     'version': '1.0.0',
     'category': 'Intelligence IA',
-    'summary': 'Practice conversations with AI',
+    'summary': 'Pratiquez des conversations avec notre IA pour améliorer votre expression orale et recevoir des corrections personnalisées.',
     'description': '''
 Conversation AI Module for Linguify
 ==================================
@@ -35,8 +35,12 @@ Usage:
     'frontend_components': {
         'main_component': 'LanguageAIView',
         'route': '/language_ai',
-        'icon': 'MessageSquare',
+        'icon': 'bi-robot',
+        'static_icon': '/static/language_ai/description/icon.png',
         'menu_order': 4,
+        'display_category': 'ai',
+        'category_label': 'Intelligence IA',
+        'category_icon': 'bi-robot',
     },
     'api_endpoints': {
         'base_url': '/api/v1/language_ai/',

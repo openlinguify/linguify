@@ -1,0 +1,24 @@
+{
+  "settings_tabs": [
+    {
+      "id": "app_manager",
+      "name": "Gestionnaire d'Apps",
+      "icon": "bi-grid-3x3-gap",
+      "template": "app_manager/app_manager_settings.html",
+      "category": "applications",
+      "order": 8,
+      "active": false,
+      "description": "Gérez vos applications installées et découvrez de nouvelles apps"
+    }
+  ],
+  "settings_handlers": [
+    {
+      "setting_type": "app_manager",
+      "handler": "apps.app_manager.views.handle_app_manager_settings"
+    }
+  ],
+  "permissions": {
+    "required_permissions": ["can_manage_apps"],
+    "staff_only": false
+  }
+}

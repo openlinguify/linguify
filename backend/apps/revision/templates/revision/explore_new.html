@@ -1,0 +1,403 @@
+{% extends "revision/base_new.html" %}
+{% load static %}
+
+{% block page_title %}Explorer{% endblock %}
+
+{% block header_content %}
+{% include 'revision/components/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<!-- Sidebar pour les filtres avancés -->
+<div id="exploreSidebar" class="revision-sidebar">
+    <div class="sidebar-content">
+        <!-- Filtres avancés -->
+        <div class="sidebar-header">
+            <h6 class="mb-0">
+                <i class="bi bi-funnel me-2"></i>
+                Filtres avancés
+            </h6>
+        </div>
+        
+        <div class="p-3">
+            <!-- Filtre par auteur -->
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Auteur</label>
+                <input type="text" id="authorFilter" class="form-control form-control-sm" 
+                       placeholder="Nom d'utilisateur...">
+            </div>
+            
+            <!-- Filtre par nombre de cartes -->
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Nombre de cartes</label>
+                <div class="d-flex gap-1">
+                    <input type="number" id="minCards" class="form-control form-control-sm" 
+                           placeholder="Min" min="1">
+                    <input type="number" id="maxCards" class="form-control form-control-sm" 
+                           placeholder="Max" min="1">
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="d-flex gap-2">
+                <button id="applyFilters" class="btn btn-primary btn-sm flex-1">
+                    <i class="bi bi-search me-1"></i>
+                    Appliquer
+                </button>
+                <button id="clearFilters" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-x-circle me-1"></i>
+                    Effacer
+                </button>
+            </div>
+        </div>
+        
+        <!-- Decks populaires -->
+        <div class="sidebar-header">
+            <h6 class="mb-0">
+                <i class="bi bi-star me-2"></i>
+                Decks populaires
+            </h6>
+        </div>
+        
+        <div id="popularDecks" class="p-3">
+            <!-- Sera rempli par JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- Zone principale -->
+<div class="revision-study">
+    <!-- Vue d'accueil -->
+    <div id="exploreWelcome" class="study-content">
+        <div class="text-center p-5">
+            <i class="bi bi-globe2 text-primary mb-4" style="font-size: 4rem;"></i>
+            <h2 class="mb-3">Explorer les Decks Publics</h2>
+            <p class="text-muted mb-4">
+                Découvrez des milliers de decks de flashcards créés par la communauté Linguify.
+                Trouvez le deck parfait pour vos besoins d'apprentissage !
+            </p>
+            
+            <div class="row g-3 justify-content-center">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-search text-primary mb-3" style="font-size: 2rem;"></i>
+                            <h5 class="card-title">Recherche avancée</h5>
+                            <p class="card-text small text-muted">
+                                Trouvez des decks par sujet, langue, niveau de difficulté.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-download text-success mb-3" style="font-size: 2rem;"></i>
+                            <h5 class="card-title">Import facile</h5>
+                            <p class="card-text small text-muted">
+                                Importez instantanément des decks publics dans votre collection.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-people text-info mb-3" style="font-size: 2rem;"></i>
+                            <h5 class="card-title">Communauté</h5>
+                            <p class="card-text small text-muted">
+                                Découvrez du contenu créé par des apprenants passionnés.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="startExploring" class="btn btn-gradient btn-lg mt-4">
+                <i class="bi bi-rocket me-2"></i>
+                Commencer l'exploration
+            </button>
+        </div>
+    </div>
+    
+    <!-- Résultats de recherche -->
+    <div id="exploreResults" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="mb-0">Decks publics</h5>
+                    <small class="text-muted">
+                        <span id="resultsCount">0</span> deck(s) trouvé(s)
+                    </small>
+                </div>
+                <button id="backToWelcome" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    Retour
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content">
+            <!-- Loading -->
+            <div id="exploreLoading" class="text-center p-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="mt-3 text-muted">Recherche en cours...</p>
+            </div>
+            
+            <!-- Grille des decks -->
+            <div id="publicDecksGrid" class="row g-4 p-4">
+                <!-- Sera rempli par JavaScript -->
+            </div>
+            
+            <!-- Aucun résultat -->
+            <div id="noResults" class="text-center p-5" style="display: none;">
+                <i class="bi bi-search text-muted mb-4" style="font-size: 4rem;"></i>
+                <h4 class="text-muted">Aucun deck trouvé</h4>
+                <p class="text-muted">Essayez d'ajuster vos critères de recherche.</p>
+                <button id="clearSearch" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-clockwise me-1"></i>
+                    Effacer la recherche
+                </button>
+            </div>
+            
+            <!-- Pagination -->
+            <div id="explorePagination" class="d-flex justify-content-center mt-4">
+                <!-- Sera rempli par JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Détails d'un deck public -->
+    <div id="publicDeckDetails" style="display: none;">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <button id="backToResults" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <div>
+                        <h4 id="publicDeckName" class="mb-0">Nom du deck</h4>
+                        <small id="publicDeckAuthor" class="text-muted">Par @username</small>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <span id="publicDeckStats" class="badge bg-primary"></span>
+                    <button id="importPublicDeck" class="btn btn-gradient btn-sm">
+                        <i class="bi bi-download me-1"></i>
+                        Importer ce deck
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="study-content">
+            <div class="p-4">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-card-list me-2"></i>
+                                    Aperçu des cartes
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="publicDeckCardsPreview">
+                                    <!-- Sera rempli par JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Informations
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="publicDeckInfo">
+                                    <!-- Sera rempli par JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal d'importation -->
+<div id="importModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-download me-2"></i>
+                    Importer un deck public
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Nom du deck dans votre collection</label>
+                    <input type="text" id="importDeckName" class="form-control" 
+                           placeholder="Nom personnalisé (optionnel)">
+                    <div class="form-text">
+                        Si vide, le nom original sera utilisé avec "(Copie)" ajouté.
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Information :</strong> Une copie complète du deck sera créée dans votre collection personnelle.
+                    Vous pourrez la modifier librement sans affecter le deck original.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Annuler
+                </button>
+                <button type="button" id="confirmImportDeck" class="btn btn-primary">
+                    <i class="bi bi-download me-1"></i>
+                    Importer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.public-deck-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.public-deck-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: var(--primary-color);
+}
+
+.public-deck-card .card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1rem;
+}
+
+.public-deck-card .card-body {
+    padding: 1rem;
+}
+
+.deck-stats-badge {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.deck-author {
+    color: var(--primary-color);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.deck-author:hover {
+    text-decoration: underline;
+}
+
+.card-preview {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-preview-front {
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 0.25rem;
+}
+
+.card-preview-back {
+    color: #718096;
+    font-size: 0.875rem;
+}
+
+.popular-deck-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.popular-deck-item:hover {
+    background: #f8f9fa;
+}
+
+.popular-deck-item:last-child {
+    border-bottom: none;
+}
+
+.pagination-custom {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination-custom button {
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #64748b;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-custom button:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.pagination-custom button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-custom button.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .public-deck-card {
+        margin-bottom: 1rem;
+    }
+    
+    .deck-stats-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'revision/js/revision-explore.js' %}?v=20250109-explore-no-language"></script>
+{% endblock %}

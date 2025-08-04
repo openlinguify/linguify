@@ -2,7 +2,7 @@ import os
 import time
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from apps.authentication.helpers import clean_temp_profile_pictures
+from backend.apps.authentication.utils.helpers import clean_temp_profile_pictures
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 

@@ -3,7 +3,7 @@ Command to clean up duplicate terms notifications
 """
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from apps.notification.models import Notification
+from backend.apps.notification.models.notification_models import Notification
 from django.utils import timezone
 from datetime import timedelta
 

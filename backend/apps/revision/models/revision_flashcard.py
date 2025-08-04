@@ -8,13 +8,28 @@ from apps.authentication.models import User
 class FlashcardDeck(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='flashcard_decks')
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True, default='')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     is_public = models.BooleanField(default=False) 
     is_archived = models.BooleanField(default=False)
     expiration_date = models.DateTimeField(null=True, blank=True)
+    tags = models.JSONField(default=list, blank=True, help_text="Liste des tags pour organiser les decks")
+    
+    # Nouveaux paramètres d'apprentissage
+    required_reviews_to_learn = models.PositiveIntegerField(
+        default=3,
+        help_text="Nombre de révisions correctes nécessaires pour marquer une carte comme apprise"
+    )
+    auto_mark_learned = models.BooleanField(
+        default=True,
+        help_text="Marquer automatiquement les cartes comme apprises après X révisions"
+    )
+    reset_on_wrong_answer = models.BooleanField(
+        default=False,
+        help_text="Remettre le compteur à zéro si mauvaise réponse"
+    )
     
     # Constante de classe pour la période d'avertissement (en jours)
     WARNING_THRESHOLD_DAYS = 3
@@ -239,6 +254,127 @@ class FlashcardDeck(models.Model):
                 'success': False,
                 'error': f"Deck avec ID {deck_id} introuvable"
             }
+    
+    def get_learning_presets(self):
+        """Retourne les presets prédéfinis de configuration d'apprentissage"""
+        return {
+            'beginner': {
+                'required_reviews_to_learn': 2,
+                'auto_mark_learned': True,
+                'reset_on_wrong_answer': False,
+                'name': "Débutant - Apprentissage rapide",
+                'description': "Idéal pour débuter, carte apprise après 2 révisions correctes"
+            },
+            'normal': {
+                'required_reviews_to_learn': 3,
+                'auto_mark_learned': True,
+                'reset_on_wrong_answer': False,
+                'name': "Normal - Équilibré",
+                'description': "Configuration standard, carte apprise après 3 révisions correctes"
+            },
+            'intensive': {
+                'required_reviews_to_learn': 5,
+                'auto_mark_learned': True,
+                'reset_on_wrong_answer': True,
+                'name': "Intensif - Maîtrise complète",
+                'description': "Pour une mémorisation solide, avec reset en cas d'erreur"
+            },
+            'expert': {
+                'required_reviews_to_learn': 10,
+                'auto_mark_learned': False,
+                'reset_on_wrong_answer': True,
+                'name': "Expert - Contrôle total",
+                'description': "Contrôle manuel de l'apprentissage, parfait pour les experts"
+            },
+            'custom': {
+                'required_reviews_to_learn': self.required_reviews_to_learn,
+                'auto_mark_learned': self.auto_mark_learned,
+                'reset_on_wrong_answer': self.reset_on_wrong_answer,
+                'name': "Personnalisé",
+                'description': "Configuration personnalisée"
+            }
+        }
+    
+    def apply_learning_preset(self, preset_name):
+        """
+        Applique un preset de configuration d'apprentissage
+        
+        Args:
+            preset_name (str): Nom du preset à appliquer
+        """
+        presets = self.get_learning_presets()
+        
+        if preset_name in presets and preset_name != 'custom':
+            preset = presets[preset_name]
+            self.required_reviews_to_learn = preset['required_reviews_to_learn']
+            self.auto_mark_learned = preset['auto_mark_learned']
+            self.reset_on_wrong_answer = preset['reset_on_wrong_answer']
+            self.save()
+            
+            # Recalculer le statut des cartes selon les nouveaux paramètres
+            self.recalculate_cards_learned_status()
+            
+            return True
+        return False
+    
+    def recalculate_cards_learned_status(self):
+        """
+        Recalcule le statut d'apprentissage de toutes les cartes du deck
+        selon les nouveaux paramètres
+        """
+        for card in self.flashcards.all():
+            old_learned_status = card.learned
+            
+            if self.auto_mark_learned:
+                # Marquer comme apprise si le nombre de révisions correctes est atteint
+                card.learned = card.correct_reviews_count >= self.required_reviews_to_learn
+            else:
+                # Si auto_mark_learned est désactivé, ne pas changer le statut automatiquement
+                # sauf si la carte était marquée automatiquement avant
+                pass
+            
+            if old_learned_status != card.learned:
+                card.save(update_fields=['learned'])
+    
+    def get_learning_statistics(self):
+        """Retourne les statistiques d'apprentissage du deck"""
+        cards = self.flashcards.all()
+        total_cards = cards.count()
+        
+        if total_cards == 0:
+            return {
+                'total_cards': 0,
+                'learned_cards': 0,
+                'average_progress': 0,
+                'completion_rate': 0,
+                'cards_needing_review': 0
+            }
+        
+        learned_cards = cards.filter(learned=True).count()
+        
+        # Calcul de la progression moyenne
+        total_progress = sum(
+            min(card.correct_reviews_count / self.required_reviews_to_learn, 1.0) 
+            for card in cards
+        )
+        average_progress = (total_progress / total_cards) * 100
+        
+        # Cartes nécessitant une révision
+        cards_needing_review = cards.filter(
+            learned=False,
+            correct_reviews_count__lt=self.required_reviews_to_learn
+        ).count()
+        
+        return {
+            'total_cards': total_cards,
+            'learned_cards': learned_cards,
+            'average_progress': round(average_progress, 1),
+            'completion_rate': round((learned_cards / total_cards) * 100, 1),
+            'cards_needing_review': cards_needing_review,
+            'required_reviews': self.required_reviews_to_learn,
+            'auto_mark_enabled': self.auto_mark_learned,
+            'reset_on_wrong': self.reset_on_wrong_answer
+        }
         
 class Flashcard(models.Model):
     REVIEW_INTERVALS = {
@@ -255,12 +391,37 @@ class Flashcard(models.Model):
     deck = models.ForeignKey(FlashcardDeck, on_delete=models.CASCADE, related_name='flashcards')
     front_text = models.TextField()
     back_text = models.TextField()
+    
+    # Champs de langue pour le recto et le verso
+    front_language = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text="Code de langue pour le recto (ex: 'fr', 'en', 'es')"
+    )
+    back_language = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text="Code de langue pour le verso (ex: 'fr', 'en', 'es')"
+    )
+    
     learned = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     last_reviewed = models.DateTimeField(null=True, blank=True)
     review_count = models.PositiveIntegerField(default=0)
     next_review = models.DateTimeField(null=True, blank=True)
+    
+    # Nouveau système de comptage pour les paramètres d'apprentissage
+    correct_reviews_count = models.PositiveIntegerField(
+        default=0,
+        help_text="Nombre de révisions correctes consécutives"
+    )
+    total_reviews_count = models.PositiveIntegerField(
+        default=0,
+        help_text="Nombre total de révisions"
+    )
 
     class Meta:
         app_label = 'revision'
@@ -268,6 +429,10 @@ class Flashcard(models.Model):
         indexes = [
             models.Index(fields=['user', 'deck']),  # Accélère les requêtes par utilisateur et deck
             models.Index(fields=['next_review']),   # Accélère les requêtes pour les cartes à réviser
+            models.Index(fields=['user', 'learned']),  # Accélère les statistiques learned/total
+            models.Index(fields=['deck', 'learned']),  # Accélère les statistiques par deck
+            models.Index(fields=['user', 'last_reviewed']),  # Accélère les requêtes de révision récente
+            models.Index(fields=['deck', 'next_review']),  # Optimise les requêtes de cartes dues
         ]
 
     def __str__(self):
@@ -304,4 +469,54 @@ class Flashcard(models.Model):
         self.learned = False
         self.last_reviewed = None
         self.next_review = None
+        self.correct_reviews_count = 0
+        self.total_reviews_count = 0
         self.save()
+    
+    def update_review_progress(self, is_correct=True):
+        """
+        Met à jour le progrès de révision selon les paramètres du deck
+        
+        Args:
+            is_correct (bool): Si la révision est correcte
+        """
+        self.total_reviews_count += 1
+        self.last_reviewed = timezone.now()
+        self.review_count += 1
+        
+        if is_correct:
+            self.correct_reviews_count += 1
+            
+            # Vérifier si la carte doit être marquée comme apprise
+            if (self.deck.auto_mark_learned and 
+                self.correct_reviews_count >= self.deck.required_reviews_to_learn):
+                self.learned = True
+        else:
+            # Si mauvaise réponse et reset activé, remettre à zéro
+            if self.deck.reset_on_wrong_answer:
+                self.correct_reviews_count = 0
+                self.learned = False
+        
+        self.save()
+    
+    @property
+    def learning_progress_percentage(self):
+        """Calcule le pourcentage de progression vers l'apprentissage"""
+        if self.learned:
+            return 100
+        
+        # Éviter la division par zéro
+        if self.deck.required_reviews_to_learn == 0:
+            return 100  # Si 0 révision requise, considérer comme 100%
+        
+        return min(
+            (self.correct_reviews_count / self.deck.required_reviews_to_learn) * 100,
+            100
+        )
+    
+    @property
+    def reviews_remaining_to_learn(self):
+        """Nombre de révisions correctes restantes pour marquer comme apprise"""
+        if self.learned:
+            return 0
+        return max(0, self.deck.required_reviews_to_learn - self.correct_reviews_count)

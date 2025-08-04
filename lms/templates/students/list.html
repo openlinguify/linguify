@@ -1,0 +1,19 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Étudiants - LMS{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>📚 Gestion des Étudiants</h1>
+        <div class="alert alert-info">
+            <p>Cette page est l'ancienne interface. Veuillez utiliser les liens contextuels dans chaque organisation :</p>
+            <ul>
+                <li><a href="/org/mit/students/list/">MIT - Gestion des Étudiants</a></li>
+                <li><a href="/org/harvard/students/list/">Harvard - Gestion des Étudiants</a></li>
+                <li><a href="/org/stanford/students/list/">Stanford - Gestion des Étudiants</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

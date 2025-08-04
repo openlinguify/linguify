@@ -1,0 +1,27 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+
+{% block page_title %}Leçon {{ lesson_id }} - Linguify{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-book-open fa-3x text-primary mb-3"></i>
+                    <h2>Leçon {{ lesson_id }}</h2>
+                    <p class="lead">{{ message }}</p>
+                    <p class="text-muted">Cette page sera développée prochainement avec le contenu complet de la leçon.</p>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'course:dashboard' %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour au dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

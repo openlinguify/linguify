@@ -1,0 +1,217 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Étudiants - {{ organization.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>📚 Gestion des Étudiants - {{ organization.name }}</h1>
+            <a href="{% url 'org-core:dashboard' org_slug=organization.slug %}" class="btn btn-secondary">
+                ← Retour au Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if error %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-warning">
+                <h5>⚠️ Base de données non configurée</h5>
+                <p>{{ error }}</p>
+                <p><strong>Solutions :</strong></p>
+                <ul>
+                    <li>Les tables d'étudiants seront créées automatiquement lors de la première connexion d'un étudiant</li>
+                    <li>Vous pouvez aussi exécuter les migrations manuellement pour cette organisation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <h5>Total Étudiants</h5>
+                    <h2>{{ total_students }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <h5>Étudiants Actifs</h5>
+                    <h2>{{ students|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Actions Rapides</h5>
+                    <div class="d-grid gap-2 d-md-block">
+                        <button class="btn btn-outline-primary" onclick="location.reload()">🔄 Actualiser</button>
+                        <button class="btn btn-outline-success">➕ Ajouter Étudiant</button>
+                        <button class="btn btn-outline-info">📊 Rapports</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des étudiants -->
+    {% if students %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>📋 Liste des Étudiants ({{ total_students }} total)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID Étudiant</th>
+                                        <th>Nom</th>
+                                        <th>Email</th>
+                                        <th>Programme</th>
+                                        <th>Année</th>
+                                        <th>Statut</th>
+                                        <th>Moyenne</th>
+                                        <th>Progression</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                    <tr>
+                                        <td><strong>{{ student.student_id }}</strong></td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ student.user.get_full_name|default:student.user.username }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ student.user.username }}</small>
+                                            </div>
+                                        </td>
+                                        <td>{{ student.user.email }}</td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ student.program }}</strong>
+                                                {% if student.specialization %}
+                                                    <br><small class="text-muted">{{ student.specialization }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ student.get_academic_year_display }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge {% if student.status == 'active' %}bg-success{% elif student.status == 'suspended' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                {{ student.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if student.gpa %}
+                                                <strong>{{ student.gpa }}</strong>/4.0
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     style="width: {{ student.progress_percentage }}%" 
+                                                     aria-valuenow="{{ student.progress_percentage }}" 
+                                                     aria-valuemin="0" aria-valuemax="100">
+                                                    {{ student.progress_percentage|floatformat:0 }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'org-students:detail' org_slug=organization.slug student_id=student.student_id %}" 
+                                                   class="btn btn-outline-primary" title="Voir détails">
+                                                    👁️
+                                                </a>
+                                                <button class="btn btn-outline-warning" title="Modifier">✏️</button>
+                                                <button class="btn btn-outline-info" title="Cours">📚</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        {% if students.has_other_pages %}
+                            <div class="d-flex justify-content-center mt-3">
+                                <nav aria-label="Pagination étudiants">
+                                    <ul class="pagination">
+                                        {% if students.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ students.previous_page_number }}">Précédent</a>
+                                            </li>
+                                        {% endif %}
+                                        
+                                        {% for page_num in students.paginator.page_range %}
+                                            {% if page_num == students.number %}
+                                                <li class="page-item active">
+                                                    <span class="page-link">{{ page_num }}</span>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if students.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ students.next_page_number }}">Suivant</a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <h5>👥 Aucun étudiant trouvé</h5>
+                    <p>Il n'y a pas encore d'étudiants inscrits dans cette organisation.</p>
+                    <p><strong>Les étudiants apparaîtront ici :</strong></p>
+                    <ul class="list-unstyled">
+                        <li>🔐 Après leur première connexion au système</li>
+                        <li>➕ Ou après ajout manuel via l'interface</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+
+<style>
+.progress {
+    background-color: #e9ecef;
+}
+.progress-bar {
+    background-color: #28a745;
+    color: white;
+    font-size: 12px;
+    line-height: 20px;
+}
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}

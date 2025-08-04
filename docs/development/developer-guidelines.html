@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Guidelines - OpenLinguify Documentation</title>
+    <meta name="description" content="Best practices, coding standards, and development workflow for contributing to OpenLinguify">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../backend/static/images/favicon.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --linguify-primary: #2D5BBA;
+            --linguify-secondary: #8B5CF6;
+            --linguify-accent: #00D4AA;
+            --linguify-gray: #6B7280;
+            --sidebar-width: 280px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        /* Header */
+        .docs-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            height: 64px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .docs-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--linguify-primary);
+            text-decoration: none;
+        }
+
+        .docs-version {
+            background: var(--linguify-accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-left: 1rem;
+        }
+
+        /* Sidebar */
+        .docs-sidebar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - 64px);
+            background: #f8fafc;
+            border-right: 1px solid #e5e7eb;
+            overflow-y: auto;
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1.5rem;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-link:hover {
+            background: white;
+            color: var(--linguify-primary);
+            border-left-color: var(--linguify-accent);
+        }
+
+        .sidebar-link.active {
+            background: white;
+            color: var(--linguify-primary);
+            border-left-color: var(--linguify-primary);
+            font-weight: 500;
+        }
+
+        .sidebar-link i {
+            margin-right: 0.75rem;
+            width: 16px;
+        }
+
+        /* Main content */
+        .docs-main {
+            margin-left: var(--sidebar-width);
+            padding-top: 64px;
+            min-height: 100vh;
+        }
+
+        .docs-content {
+            max-width: 900px;
+            padding: 2rem;
+        }
+
+        /* Content styling */
+        .docs-content h1 {
+            color: var(--linguify-primary);
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .docs-content h2 {
+            color: #1f2937;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.75rem;
+            font-weight: 600;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+
+        .docs-content h3 {
+            color: #374151;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .docs-content h4 {
+            color: #4b5563;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        code {
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+        }
+
+        /* Code examples */
+        .code-example {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .code-example-header {
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .code-example-body {
+            padding: 0;
+        }
+
+        .code-example pre {
+            margin: 0;
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* Best practices boxes */
+        .best-practice {
+            border-left: 4px solid var(--linguify-accent);
+            background: #f0fdfa;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .best-practice h5 {
+            color: var(--linguify-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Navigation */
+        .docs-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            color: var(--linguify-primary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: var(--linguify-primary);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .docs-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .docs-main {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="docs-header">
+        <a href="../index.html" class="docs-logo">
+            <i class="bi bi-book"></i>
+            OpenLinguify Docs
+        </a>
+        <span class="docs-version">v1.0</span>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="docs-sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <a href="../index.html" class="sidebar-link">
+                <i class="bi bi-house"></i>
+                Overview
+            </a>
+            <a href="../setup/getting-started.html" class="sidebar-link">
+                <i class="bi bi-play-circle"></i>
+                Quick Start
+            </a>
+            <a href="../setup/environment-setup.html" class="sidebar-link">
+                <i class="bi bi-gear"></i>
+                Environment Setup
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Development</div>
+            <a href="#" class="sidebar-link active">
+                <i class="bi bi-code-slash"></i>
+                Developer Guidelines
+            </a>
+            <a href="create-new-module.html" class="sidebar-link">
+                <i class="bi bi-plus-circle"></i>
+                Create New Module
+            </a>
+            <a href="../backend/architecture/project-structure.html" class="sidebar-link">
+                <i class="bi bi-diagram-3"></i>
+                Project Structure
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">API Reference</div>
+            <a href="../backend/api-reference.html" class="sidebar-link">
+                <i class="bi bi-cloud"></i>
+                API Documentation
+            </a>
+            <a href="../backend/models-overview.html" class="sidebar-link">
+                <i class="bi bi-database"></i>
+                Models Overview
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Translation</div>
+            <a href="../translations/translation-guide.html" class="sidebar-link">
+                <i class="bi bi-translate"></i>
+                Translation Guide
+                <span class="badge-new">NEW</span>
+            </a>
+            <a href="../translations/README.html" class="sidebar-link">
+                <i class="bi bi-globe"></i>
+                Language Status
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="docs-main">
+        <div class="docs-content">
+            <h1><i class="bi bi-code-slash me-3"></i>Developer Guidelines</h1>
+            <p class="lead">Best practices, coding standards, and development workflow for contributing to OpenLinguify.</p>
+
+            <div class="alert-info">
+                <h5><i class="bi bi-info-circle me-2"></i>Quick Reference</h5>
+                <p class="mb-0">This guide covers our development standards. For setup instructions, see the <a href="../setup/getting-started.html">Quick Start Guide</a>.</p>
+            </div>
+
+            <h2>Code Style Standards</h2>
+
+            <h3>Python Code Style</h3>
+            <p>We follow PEP 8 with some project-specific conventions:</p>
+
+            <div class="code-example">
+                <div class="code-example-header">✅ Good Example</div>
+                <div class="code-example-body">
+                    <pre><code class="language-python"># models.py
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class Course(models.Model):
+    """Educational course model with progress tracking."""
+    
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    created_by = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='created_courses'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = 'courses'
+    
+    def __str__(self):
+        return self.title
+    
+    def get_absolute_url(self):
+        """Return the canonical URL for this course."""
+        return reverse('course:detail', kwargs={'pk': self.pk})</code></pre>
+                </div>
+            </div>
+
+            <h4>Key Conventions</h4>
+            <ul>
+                <li><strong>Line length:</strong> Maximum 88 characters (Black formatter)</li>
+                <li><strong>Imports:</strong> Use isort for consistent import ordering</li>
+                <li><strong>Docstrings:</strong> Use triple quotes for all classes and functions</li>
+                <li><strong>Naming:</strong> snake_case for variables and functions, PascalCase for classes</li>
+                <li><strong>Type hints:</strong> Use where appropriate, especially for public APIs</li>
+            </ul>
+
+            <h3>Django Specific Guidelines</h3>
+
+            <h4>Model Guidelines</h4>
+            <div class="best-practice">
+                <h5><i class="bi bi-check-circle me-2"></i>Best Practices</h5>
+                <ul class="mb-0">
+                    <li>Always add <code>created_at</code> and <code>updated_at</code> timestamps</li>
+                    <li>Use descriptive <code>related_name</code> for foreign keys</li>
+                    <li>Include proper <code>__str__</code> methods</li>
+                    <li>Add <code>get_absolute_url</code> for models with detail views</li>
+                    <li>Use <code>blank=True</code> for optional fields, <code>null=True</code> sparingly</li>
+                </ul>
+            </div>
+
+            <h4>View Guidelines</h4>
+            <div class="code-example">
+                <div class="code-example-header">Class-Based View Example</div>
+                <div class="code-example-body">
+                    <pre><code class="language-python"># views.py
+from django.views.generic import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404
+
+from .models import Course
+
+
+class CourseDetailView(LoginRequiredMixin, DetailView):
+    """Display course details with user progress."""
+    
+    model = Course
+    template_name = 'course/course_detail.html'
+    context_object_name = 'course'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_progress'] = self.get_user_progress()
+        context['lessons'] = self.object.lessons.all()
+        return context
+    
+    def get_user_progress(self):
+        """Get current user's progress for this course."""
+        if self.request.user.is_authenticated:
+            return UserProgress.objects.filter(
+                user=self.request.user,
+                course=self.object
+            ).first()
+        return None</code></pre>
+                </div>
+            </div>
+
+            <h4>Template Guidelines</h4>
+            <div class="code-example">
+                <div class="code-example-header">Django Template Example</div>
+                <div class="code-example-body">
+                    <pre><code class="language-html">{% extends 'base.html' %}
+{% load i18n static course_tags %}
+
+{% block title %}{{ course.title }} - {% trans "Courses" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'course/css/course-detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="course-header">
+    <h1>{{ course.title }}</h1>
+    {% if course.description %}
+        <p class="course-description">{{ course.description|linebreaks }}</p>
+    {% endif %}
+</div>
+
+<div class="course-content">
+    {% if user_progress %}
+        <div class="progress-section">
+            <h3>{% trans "Your Progress" %}</h3>
+            {% include 'course/components/progress_bar.html' %}
+        </div>
+    {% endif %}
+    
+    <div class="lessons-section">
+        <h3>{% trans "Lessons" %}</h3>
+        {% for lesson in lessons %}
+            {% include 'course/components/lesson_card.html' %}
+        {% empty %}
+            <p>{% trans "No lessons available yet." %}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}</code></pre>
+                </div>
+            </div>
+
+            <h2>Development Workflow</h2>
+
+            <h3>Git Workflow</h3>
+            <p>We use a feature branch workflow with the following conventions:</p>
+
+            <h4>Branch Naming</h4>
+            <ul>
+                <li><code>feature/add-lesson-progress</code> - New features</li>
+                <li><code>fix/course-enrollment-bug</code> - Bug fixes</li>
+                <li><code>refactor/user-progress-model</code> - Code refactoring</li>
+                <li><code>docs/api-documentation</code> - Documentation updates</li>
+                <li><code>translations/add-german</code> - Translation work</li>
+            </ul>
+
+            <h4>Commit Messages</h4>
+            <div class="code-example">
+                <div class="code-example-header">Commit Message Format</div>
+                <div class="code-example-body">
+                    <pre><code class="language-bash"># Good commit messages
+git commit -m "Add user progress tracking to course model
+
+- Added UserProgress model with completion percentage
+- Implemented progress calculation for lessons
+- Added API endpoints for progress updates"
+
+git commit -m "Fix course enrollment validation bug
+
+- Prevent duplicate enrollments for same user/course
+- Add proper error handling in enrollment view
+- Update tests for enrollment edge cases"</code></pre>
+                </div>
+            </div>
+
+            <div class="best-practice">
+                <h5><i class="bi bi-lightbulb me-2"></i>Commit Message Tips</h5>
+                <ul class="mb-0">
+                    <li>Use imperative mood ("Add feature" not "Added feature")</li>
+                    <li>First line should be 50 characters or less</li>
+                    <li>Include detailed description for complex changes</li>
+                    <li>Reference issue numbers when applicable</li>
+                </ul>
+            </div>
+
+            <h3>Pull Request Process</h3>
+            <ol>
+                <li><strong>Create feature branch:</strong> <code>git checkout -b feature/your-feature</code></li>
+                <li><strong>Make changes and commit</strong> following our guidelines</li>
+                <li><strong>Write/update tests</strong> for your changes</li>
+                <li><strong>Run the test suite:</strong> <code>pytest</code></li>
+                <li><strong>Format code:</strong> <code>black . && isort .</code></li>
+                <li><strong>Push branch:</strong> <code>git push origin feature/your-feature</code></li>
+                <li><strong>Create pull request</strong> with detailed description</li>
+            </ol>
+
+            <h4>Pull Request Template</h4>
+            <div class="code-example">
+                <div class="code-example-header">PR Description Template</div>
+                <div class="code-example-body">
+                    <pre><code class="language-markdown">## Summary
+Brief description of what this PR does.
+
+## Changes
+- List specific changes made
+- Include any breaking changes
+- Mention new dependencies
+
+## Testing
+- [ ] Unit tests pass
+- [ ] Integration tests pass
+- [ ] Manual testing completed
+- [ ] Translation strings updated (if applicable)
+
+## Screenshots (if applicable)
+Include before/after screenshots for UI changes.
+
+## Related Issues
+Closes #123
+References #456</code></pre>
+                </div>
+            </div>
+
+            <h2>Testing Standards</h2>
+
+            <h3>Test Structure</h3>
+            <p>We use pytest with Django for all testing:</p>
+
+            <div class="code-example">
+                <div class="code-example-header">Test Example</div>
+                <div class="code-example-body">
+                    <pre><code class="language-python"># tests/test_models.py
+import pytest
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+
+from course.models import Course, UserProgress
+
+User = get_user_model()
+
+
+@pytest.mark.django_db
+class TestCourseModel:
+    """Test course model functionality."""
+    
+    def test_course_creation(self):
+        """Test basic course creation."""
+        user = User.objects.create_user(
+            email='test@example.com',
+            password='testpass123'
+        )
+        course = Course.objects.create(
+            title='Test Course',
+            description='A test course',
+            created_by=user
+        )
+        
+        assert course.title == 'Test Course'
+        assert course.created_by == user
+        assert str(course) == 'Test Course'
+    
+    def test_course_absolute_url(self):
+        """Test course URL generation."""
+        user = User.objects.create_user(
+            email='test@example.com', 
+            password='testpass123'
+        )
+        course = Course.objects.create(
+            title='Test Course',
+            created_by=user
+        )
+        
+        expected_url = f'/courses/{course.pk}/'
+        assert course.get_absolute_url() == expected_url</code></pre>
+                </div>
+            </div>
+
+            <h3>Test Coverage</h3>
+            <div class="alert-warning">
+                <h5><i class="bi bi-target me-2"></i>Coverage Goals</h5>
+                <ul class="mb-0">
+                    <li><strong>Models:</strong> 95%+ coverage</li>
+                    <li><strong>Views:</strong> 85%+ coverage</li>
+                    <li><strong>Utilities:</strong> 90%+ coverage</li>
+                    <li><strong>Overall project:</strong> 80%+ coverage</li>
+                </ul>
+            </div>
+
+            <h3>Running Tests</h3>
+            <pre><code class="language-bash"># Run all tests
+pytest
+
+# Run specific app tests
+pytest apps/course/tests/
+
+# Run with coverage
+pytest --cov=apps --cov-report=html
+
+# Run specific test
+pytest apps/course/tests/test_models.py::TestCourseModel::test_course_creation</code></pre>
+
+            <h2>Documentation Standards</h2>
+
+            <h3>Code Documentation</h3>
+            <div class="code-example">
+                <div class="code-example-header">Docstring Example</div>
+                <div class="code-example-body">
+                    <pre><code class="language-python">def calculate_course_progress(user, course):
+    """
+    Calculate user's progress percentage for a given course.
+    
+    Args:
+        user (User): The user to calculate progress for
+        course (Course): The course to check progress against
+        
+    Returns:
+        float: Progress percentage between 0.0 and 100.0
+        
+    Raises:
+        ValueError: If user is not enrolled in the course
+        
+    Example:
+        >>> user = User.objects.get(email='test@example.com')
+        >>> course = Course.objects.get(title='Python Basics')
+        >>> progress = calculate_course_progress(user, course)
+        >>> assert 0.0 <= progress <= 100.0
+    """
+    if not course.enrollments.filter(user=user).exists():
+        raise ValueError("User is not enrolled in this course")
+    
+    completed_lessons = user.completed_lessons.filter(course=course).count()
+    total_lessons = course.lessons.count()
+    
+    if total_lessons == 0:
+        return 0.0
+        
+    return (completed_lessons / total_lessons) * 100</code></pre>
+                </div>
+            </div>
+
+            <h3>API Documentation</h3>
+            <p>For API endpoints, use Django REST Framework's built-in documentation with detailed docstrings:</p>
+
+            <div class="code-example">
+                <div class="code-example-header">API View Documentation</div>
+                <div class="code-example-body">
+                    <pre><code class="language-python">class CourseListAPIView(ListCreateAPIView):
+    """
+    List all courses or create a new course.
+    
+    GET /api/courses/
+    - Returns paginated list of all published courses
+    - Supports filtering by language, difficulty, and category
+    - Requires authentication for enrolled course details
+    
+    POST /api/courses/
+    - Create a new course (instructor permissions required)
+    - Validates course data and creates associated resources
+    - Returns created course with generated ID
+    """
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['language', 'difficulty', 'category']
+    search_fields = ['title', 'description']</code></pre>
+                </div>
+            </div>
+
+            <h2>Security Guidelines</h2>
+
+            <h3>Authentication & Authorization</h3>
+            <div class="alert-danger">
+                <h5><i class="bi bi-shield-exclamation me-2"></i>Security Requirements</h5>
+                <ul class="mb-0">
+                    <li>Always use <code>LoginRequiredMixin</code> for protected views</li>
+                    <li>Validate user permissions before modifying data</li>
+                    <li>Never expose sensitive data in API responses</li>
+                    <li>Use Django's built-in CSRF protection</li>
+                </ul>
+            </div>
+
+            <h3>Data Validation</h3>
+            <div class="code-example">
+                <div class="code-example-header">Form Validation Example</div>
+                <div class="code-example-body">
+                    <pre><code class="language-python"># forms.py
+from django import forms
+from django.core.exceptions import ValidationError
+
+class CourseCreationForm(forms.ModelForm):
+    """Form for creating new courses with validation."""
+    
+    class Meta:
+        model = Course
+        fields = ['title', 'description', 'language', 'difficulty']
+    
+    def clean_title(self):
+        """Validate course title is unique for this user."""
+        title = self.cleaned_data['title']
+        user = self.instance.created_by if self.instance.pk else None
+        
+        if Course.objects.filter(title=title, created_by=user).exists():
+            raise ValidationError(
+                "You already have a course with this title."
+            )
+        return title
+    
+    def clean(self):
+        """Cross-field validation."""
+        cleaned_data = super().clean()
+        title = cleaned_data.get('title')
+        description = cleaned_data.get('description')
+        
+        if title and description and title.lower() in description.lower():
+            raise ValidationError(
+                "Course description should not repeat the title."
+            )
+        
+        return cleaned_data</code></pre>
+                </div>
+            </div>
+
+            <h2>Performance Guidelines</h2>
+
+            <h3>Database Optimization</h3>
+            <div class="best-practice">
+                <h5><i class="bi bi-lightning me-2"></i>Query Optimization</h5>
+                <ul class="mb-0">
+                    <li>Use <code>select_related()</code> for foreign key relationships</li>
+                    <li>Use <code>prefetch_related()</code> for many-to-many relationships</li>
+                    <li>Add database indexes for frequently queried fields</li>
+                    <li>Use <code>only()</code> and <code>defer()</code> to limit field selection</li>
+                    <li>Implement pagination for large datasets</li>
+                </ul>
+            </div>
+
+            <div class="code-example">
+                <div class="code-example-header">Optimized Query Example</div>
+                <div class="code-example-body">
+                    <pre><code class="language-python"># Optimized queryset for course list with related data
+courses = Course.objects.select_related(
+    'created_by'
+).prefetch_related(
+    'lessons',
+    'enrollments__user'
+).filter(
+    is_published=True
+).only(
+    'title', 'description', 'created_by__username'
+).order_by('-created_at')</code></pre>
+                </div>
+            </div>
+
+            <h3>Caching Strategy</h3>
+            <pre><code class="language-python"># Use caching for expensive operations
+from django.core.cache import cache
+
+def get_popular_courses():
+    """Get popular courses with caching."""
+    cache_key = 'popular_courses_list'
+    popular_courses = cache.get(cache_key)
+    
+    if popular_courses is None:
+        popular_courses = Course.objects.filter(
+            enrollments__count__gte=10
+        ).select_related('created_by').order_by('-enrollment_count')[:10]
+        
+        cache.set(cache_key, popular_courses, timeout=3600)  # 1 hour
+    
+    return popular_courses</code></pre>
+
+            <h2>Internationalization (i18n)</h2>
+
+            <h3>Translation Best Practices</h3>
+            <div class="code-example">
+                <div class="code-example-header">Python Translation Example</div>
+                <div class="code-example-body">
+                    <pre><code class="language-python">from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext
+
+class Course(models.Model):
+    title = models.CharField(_("Course title"), max_length=200)
+    description = models.TextField(_("Course description"), blank=True)
+    
+    class Meta:
+        verbose_name = _("Course")
+        verbose_name_plural = _("Courses")
+
+# For messages with pluralization
+def format_lesson_count(count):
+    return ngettext(
+        "%(count)d lesson",
+        "%(count)d lessons", 
+        count
+    ) % {'count': count}</code></pre>
+                </div>
+            </div>
+
+            <h3>Template Translation</h3>
+            <div class="code-example">
+                <div class="code-example-header">Template Translation Example</div>
+                <div class="code-example-body">
+                    <pre><code class="language-html">{% load i18n %}
+
+<h1>{% trans "Welcome to OpenLinguify" %}</h1>
+
+<!-- With variables -->
+<p>{% blocktrans with name=user.first_name %}
+    Hello {{ name }}, ready to learn?
+{% endblocktrans %}</p>
+
+<!-- Pluralization -->
+{% blocktrans count counter=course.lessons.count %}
+    This course has {{ counter }} lesson.
+{% plural %}
+    This course has {{ counter }} lessons.
+{% endblocktrans %}</code></pre>
+                </div>
+            </div>
+
+            <h2>Code Review Checklist</h2>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>✅ Before Submitting PR</h4>
+                    <ul>
+                        <li>Code follows style guidelines</li>
+                        <li>All tests pass</li>
+                        <li>New features have tests</li>
+                        <li>Documentation updated</li>
+                        <li>Translation strings marked</li>
+                        <li>No sensitive data exposed</li>
+                        <li>Performance considerations addressed</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h4>👀 Code Review Focus</h4>
+                    <ul>
+                        <li>Logic correctness</li>
+                        <li>Security implications</li>
+                        <li>Performance impact</li>
+                        <li>Code readability</li>
+                        <li>Test coverage</li>
+                        <li>Error handling</li>
+                        <li>API consistency</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alert-success">
+                <h5><i class="bi bi-check-circle me-2"></i>Ready to Contribute?</h5>
+                <p class="mb-0">Now that you understand our guidelines, check out our <a href="create-new-module.html">module creation guide</a> to start building new features for OpenLinguify!</p>
+            </div>
+
+            <!-- Navigation -->
+            <div class="docs-nav">
+                <a href="../setup/environment-setup.html" class="nav-link">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Environment Setup
+                </a>
+                <a href="create-new-module.html" class="nav-link">
+                    Create New Module
+                    <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <script>
+        // Active link highlighting
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelector('.sidebar-link.active')?.classList.remove('active');
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

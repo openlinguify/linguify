@@ -1,5 +1,6 @@
 """
-Pytest configuration for public_web dynamic system tests
+Pytest configuration for backend tests
+Note: public_web tests moved to portal project
 """
 import pytest
 import django

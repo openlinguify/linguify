@@ -1,0 +1,171 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load dict_filters %}
+
+{% block title %}Paramètres - Linguify{% endblock %}
+
+{% block body_class %}settings-page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'saas_web/css/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <!-- Enhanced Sidebar -->
+    <div class="settings-sidebar">
+        <div class="sidebar-header">
+            <h3>Paramètres</h3>
+            <div class="subtitle">Personnalisez votre expérience Linguify</div>
+        </div>
+        
+        <!-- Search -->
+        <div class="settings-search">
+            <input type="text" class="search-input" placeholder="Rechercher des paramètres...">
+        </div>
+        
+        <!-- Navigation Categories -->
+        <nav class="settings-nav">
+            <!-- DEBUG: Show what we have -->
+            {% comment %}
+            DEBUG: Categories: {{ settings_categories|length }}
+            {% for category_id, category in settings_categories.items %}
+                - {{ category_id }}: {{ category.name }} ({{ category.tabs|length }} tabs)
+            {% endfor %}
+            {% endcomment %}
+            
+            {% for category_id, category in settings_categories.items %}
+            <div class="nav-category">
+                <div class="nav-category-title">
+                    <i class="{{ category.icon }}"></i>
+                    {{ category.name }}
+                    <small style="color: #999; font-size: 10px;">({{ category.tabs|length }})</small>
+                </div>
+                {% for tab in category.tabs %}
+                <a href="{{ settings_urls|get_item:tab.id }}" class="nav-item{% if tab.active %} active{% endif %}" data-tab="{{ tab.id }}">
+                    <div class="nav-item-text">
+                        <i class="{{ tab.icon }}"></i>
+                        {{ tab.name }}
+                        {% if tab.source == 'debug_forced' %}
+                        <small style="color: #e74c3c; font-size: 10px;">[DEBUG]</small>
+                        {% endif %}
+                    </div>
+                    {% if tab.source == 'auto_discovered' %}
+                    <span class="nav-item-badge">Auto</span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+                
+                <!-- Force ajout de Gestionnaire d'Apps dans Interface -->
+                {% if category_id == 'interface' %}
+                <a href="{% url 'saas_web:app_manager_settings' %}" class="nav-item" data-tab="app_manager">
+                    <div class="nav-item-text">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        Gestionnaire d'Apps
+                    </div>
+                </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="settings-main">
+        <!-- Header -->
+        <div class="main-content-header">
+            <div class="breadcrumb-nav">
+                <span>Linguify</span>
+                <i class="bi bi-chevron-right"></i>
+                <span class="active">{{ breadcrumb_active|default:"Profil & Compte" }}</span>
+            </div>
+            <h1 class="page-title">{{ page_title|default:"Profil & Compte" }}</h1>
+            <p class="page-subtitle">{{ page_subtitle|default:"Gérez vos informations personnelles et paramètres de compte" }}</p>
+        </div>
+        
+        <!-- Content Body -->
+        <div class="main-content-body">
+            <!-- Dynamic Settings Tabs -->
+            {% for tab in settings_tabs %}
+                {% if tab.template %}
+                    <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
+                        {% include tab.template %}
+                    </div>
+                {% elif tab.id == 'revision' and tab.active %}
+                    <!-- DEBUG: Revision tab active -->
+                    {% include 'revision/revision_settings.html' %}
+                {% elif tab.id == 'revision' %}
+                    <!-- DEBUG: Revision tab not active but exists -->
+                    <div id="{{ tab.id }}" class="tab-content">
+                        {% include 'revision/revision_settings.html' %}
+                    </div>
+                {% elif tab.id == 'language_ai' and tab.active %}
+                    {% include 'language_ai/language_ai_settings.html' %}
+                {% elif tab.id == 'learning' and tab.active %}
+                    {% include 'course/course_settings.html' %}
+                {% elif tab.id == 'notebook' and notebook_content %}
+                    <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
+                        {{ notebook_content|safe }}
+                    </div>
+                {% elif tab.id == 'interface' and tab.active %}
+                    {% include 'authentication/interface_settings.html' %}
+                {% elif tab.id == 'voice' and tab.active %}
+                    {% include 'vocal/voice_settings.html' %}
+                {% elif tab.id == 'quiz' and tab.active %}
+                    {% include 'quizz/quizz_settings.html' %}
+                {% elif tab.id == 'chat' and tab.active %}
+                    {% include 'chat/chat_settings.html' %}
+                {% elif tab.id == 'community' and tab.active %}
+                    {% include 'community/community_settings.html' %}
+                {% elif tab.id == 'documents' and tab.active %}
+                    {% include 'documents/documents_settings.html' %}
+                {% elif tab.id == 'app_manager' and tab.active %}
+                    {% include 'app_manager/app_manager_settings.html' %}
+                {% elif tab.active %}
+                    <div id="{{ tab.id }}" class="tab-content active">
+                        <div class="content-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="{{ tab.icon|default:'bi-gear' }}"></i>
+                                    {{ tab.name }}
+                                </h3>
+                            </div>
+                            <div class="section-content">
+                                <p>Paramètres de {{ tab.name|lower }} disponibles bientôt...</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            
+            <!-- Contenu pour app_manager quand on y accède via lien direct -->
+            {% if request.resolver_match.url_name == 'app_manager_settings' %}
+            <div id="app_manager" class="tab-content active">
+                {% include 'app_manager/app_manager_settings.html' %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Auto-save indicator (dynamically created) -->
+{% endblock %}
+
+{% block extra_js %}
+<!-- Core settings functionality -->
+<script src="{% static 'saas_web/js/settings-utils.js' %}?v=2025.2"></script>
+<script src="{% static 'saas_web/js/settings-core.js' %}?v=2025.2"></script>
+
+<!-- App-specific settings scripts -->
+<script src="{% static 'authentication/js/settings.js' %}"></script>
+<script src="{% static 'vocal/js/settings.js' %}"></script>
+<script src="{% static 'chat/js/settings.js' %}"></script>
+<script src="{% static 'quizz/js/settings.js' %}"></script>
+<script src="{% static 'notebook/js/settings.js' %}"></script>
+<script src="{% static 'community/js/settings.js' %}"></script>
+<script src="{% static 'course/js/settings.js' %}"></script>
+<script src="{% static 'revision/js/settings.js' %}"></script>
+<script src="{% static 'notification/js/settings.js' %}"></script>
+<script src="{% static 'documents/js/documents_settings.js' %}"></script>
+{% endblock %}

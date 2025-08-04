@@ -1,0 +1,36 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Documents - Linguify{% endblock %}
+
+{% block body_class %}documents-app{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'documents/css/documents.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Header avec navigation intégrée -->
+{% include 'components/header/documents_header.html' %}
+
+<!-- Main Content Container -->
+<div class="documents-container">
+    {% block document_content %}
+    <!-- Content will be provided by child templates -->
+    {% endblock %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Enhanced Error Handling and Logging -->
+<script>
+    // Set debug mode and user data for error handler
+    document.documentElement.dataset.debug = '{{ settings.DEBUG|yesno:"True,False" }}';
+    document.documentElement.dataset.userId = '{{ user.id|default:"" }}';
+</script>
+<script src="{% static 'documents/js/documents-error-handler.js' %}"></script>
+<script src="{% static 'documents/js/documents-api-client.js' %}"></script>
+<script src="{% static 'documents/js/documents.js' %}"></script>
+{% block document_js %}{% endblock %}
+{% endblock %}

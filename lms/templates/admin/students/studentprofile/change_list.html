@@ -1,0 +1,164 @@
+{% extends "admin/base_site.html" %}
+{% load admin_urls static admin_list %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <style>
+        .organization-header {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .student-stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            flex: 1;
+            text-align: center;
+        }
+        .progress-bar-custom {
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #28a745;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="organization-header">
+    <h2>🏫 {{ organization.name }} - Gestion des Étudiants</h2>
+    <p>Base de données: <code>{{ organization.database_name }}</code></p>
+    <a href="{% url 'org-core:dashboard' org_slug=organization.slug %}" class="button default">← Retour au Dashboard</a>
+</div>
+
+{% if error %}
+    <div class="messagelist">
+        <div class="error">
+            <strong>Erreur:</strong> {{ error }}
+            <br><br>
+            <strong>Solutions possibles:</strong>
+            <ul>
+                <li>Les tables seront créées automatiquement lors de la première connexion d'un étudiant</li>
+                <li>Ou exécutez les migrations manuellement pour cette organisation</li>
+            </ul>
+        </div>
+    </div>
+{% else %}
+    <div class="student-stats">
+        <div class="stat-card">
+            <h3>{{ students|length }}</h3>
+            <p>Total Étudiants</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ students|length }}</h3>
+            <p>Étudiants Actifs</p>
+        </div>
+        <div class="stat-card">
+            <h3>0</h3>
+            <p>Cours Actifs</p>
+        </div>
+    </div>
+
+    {% if students %}
+        <div class="results">
+            <table id="result_list">
+                <thead>
+                    <tr>
+                        <th scope="col">ID Étudiant</th>
+                        <th scope="col">Nom Complet</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Programme</th>
+                        <th scope="col">Année</th>
+                        <th scope="col">Statut</th>
+                        <th scope="col">Moyenne</th>
+                        <th scope="col">Progression</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td><strong>{{ student.student_id }}</strong></td>
+                        <td>
+                            <a href="{% url 'org-students:detail' org_slug=organization.slug student_id=student.student_id %}">
+                                {{ student.user.get_full_name|default:student.user.username }}
+                            </a>
+                            <br><small style="color: #666;">{{ student.user.username }}</small>
+                        </td>
+                        <td>{{ student.user.email }}</td>
+                        <td>
+                            <strong>{{ student.program }}</strong>
+                            {% if student.specialization %}
+                                <br><small style="color: #666;">{{ student.specialization }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span style="background: #e3f2fd; padding: 2px 8px; border-radius: 3px; font-size: 12px;">
+                                {{ student.get_academic_year_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span style="background: {% if student.status == 'active' %}#e8f5e8{% else %}#fff3cd{% endif %}; padding: 2px 8px; border-radius: 3px; font-size: 12px;">
+                                {{ student.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if student.gpa %}
+                                <strong>{{ student.gpa }}</strong>/4.0
+                            {% else %}
+                                <span style="color: #999;">-</span>
+                            {% endif %}
+                        </td>
+                        <td style="width: 120px;">
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: {{ student.progress_percentage }}%">
+                                    {{ student.progress_percentage|floatformat:0 }}%
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{% url 'org-students:detail' org_slug=organization.slug student_id=student.student_id %}" 
+                               class="button default" title="Voir détails">👁️</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="messagelist">
+            <div class="info">
+                <strong>Aucun étudiant trouvé</strong><br>
+                Il n'y a pas encore d'étudiants inscrits dans cette organisation.<br><br>
+                <strong>Les étudiants apparaîtront ici après :</strong>
+                <ul>
+                    <li>🔐 Leur première connexion au système</li>
+                    <li>➕ Ajout manuel via l'interface</li>
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+
+<br class="clear">
+{% endblock %}

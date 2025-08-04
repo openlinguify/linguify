@@ -1,0 +1,120 @@
+:root {
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #00D4AA;
+    --primary-color: var(--linguify-primary);
+    --primary-dark: #1E3A8A;
+    --gradient-bg: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--gradient-bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.auth-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+
+.auth-form {
+    padding: 3rem;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #e5e7eb;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 2rem 0;
+    position: relative;
+}
+
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+.auth-divider span {
+    background: white;
+    padding: 0 1rem;
+    color: #6b7280;
+}
+
+.social-btn {
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #374151;
+}
+
+.social-btn:hover {
+    border-color: var(--primary-color);
+    background: #f8fafc;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.back-to-home {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-to-home:hover {
+    color: #e0e7ff;
+}

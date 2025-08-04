@@ -3,7 +3,7 @@ __manifest__ = {
     'name': 'Notes',
     'version': '1.0.0',
     'category': 'Productivity',
-    'summary': 'Take notes and organize vocabulary',
+    'summary': 'Prenez des notes personnalisées et organisez votre vocabulaire de manière efficace.',
     'description': '''
 Notes Module for Linguify
 ==========================
@@ -35,8 +35,12 @@ Usage:
     'sequence': 30,
     'frontend_components': {
         'route': '/notebook',
-        'static_icon': '/static/app-icons/notebook.png',
+        'icon': 'bi-journal-text',
+        'static_icon': '/static/notebook/description/icon.png',
         'menu_order': 3,
+        'display_category': 'productivity',
+        'category_label': 'Productivité',
+        'category_icon': 'bi-journal-text',
     },
     'api_endpoints': {
         'base_url': '/api/v1/notebook/',

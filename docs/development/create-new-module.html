@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Module - OpenLinguify Documentation</title>
+</head>
+<body>
+    <main class="docs-main">
+        <div class="docs-content">
+            <h1><i class="bi bi-plus-circle me-3"></i>Create New Module</h1>
+            <p class="lead">Learn how to build new educational modules for the OpenLinguify platform using our modular architecture.</p>
+
+            <div class="alert alert-info">
+                <h5><i class="bi bi-info-circle me-2"></i>Module Architecture</h5>
+                <p class="mb-0">OpenLinguify uses a modular Django architecture where each educational feature is a separate app with its own models, views, templates, and static files.</p>
+            </div>
+
+            <h2>1. Understanding Module Structure</h2>
+            <p>Each OpenLinguify module follows this structure:</p>
+            
+            <pre><code>backend/apps/your_module/
+├── __init__.py
+├── admin.py              # Django admin configuration
+├── apps.py              # App configuration
+├── models.py            # Database models
+├── views.py             # View logic
+├── urls.py              # URL patterns
+├── serializers.py       # API serializers (if needed)
+├── forms.py             # Django forms
+├── templates/
+│   └── your_module/
+│       ├── base.html
+│       └── *.html
+├── static/
+│   └── your_module/
+│       ├── css/
+│       ├── js/
+│       └── images/
+├── migrations/
+├── tests/
+│   ├── test_models.py
+│   ├── test_views.py
+│   └── test_api.py
+└── i18n/
+    ├── en.po
+    ├── fr.po
+    ├── es.po
+    └── nl.po</code></pre>
+
+            <h2>2. Creating Your Module</h2>
+
+            <h3>Step 1: Generate the Django App</h3>
+            <pre><code class="language-bash">cd backend
+poetry run python manage.py startapp your_module apps/your_module</code></pre>
+
+            <h3>Step 2: Configure the App</h3>
+            <p>Update <code>apps/your_module/apps.py</code>:</p>
+            <pre><code class="language-python">from django.apps import AppConfig
+
+class YourModuleConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.your_module'
+    verbose_name = 'Your Module Name'
+    
+    def ready(self):
+        # Import signals if you have any
+        try:
+            import apps.your_module.signals
+        except ImportError:
+            pass</code></pre>
+
+            <h3>Step 3: Add to Settings</h3>
+            <p>Add your app to <code>INSTALLED_APPS</code> in <code>core/settings.py</code>:</p>
+            <pre><code class="language-python">INSTALLED_APPS = [
+    # ... other apps
+    'apps.your_module',
+]</code></pre>
+
+            <h2>3. Essential Components</h2>
+
+            <h3>Models</h3>
+            <p>Create your data models with proper relationships:</p>
+            <pre><code class="language-python"># apps/your_module/models.py
+from django.db import models
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+
+User = get_user_model()
+
+class YourModel(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='your_models')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Your Model'
+        verbose_name_plural = 'Your Models'
+    
+    def __str__(self):
+        return self.title
+    
+    def get_absolute_url(self):
+        return reverse('your_module:detail', kwargs={'pk': self.pk})</code></pre>
+
+            <h3>Views</h3>
+            <p>Create class-based views following Django best practices:</p>
+            <pre><code class="language-python"># apps/your_module/views.py
+from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+
+from .models import YourModel
+from .forms import YourModelForm
+
+class YourModuleListView(LoginRequiredMixin, ListView):
+    model = YourModel
+    template_name = 'your_module/list.html'
+    context_object_name = 'items'
+    paginate_by = 20
+    
+    def get_queryset(self):
+        return YourModel.objects.filter(
+            user=self.request.user,
+            is_active=True
+        )
+
+class YourModuleDetailView(LoginRequiredMixin, DetailView):
+    model = YourModel
+    template_name = 'your_module/detail.html'
+    context_object_name = 'item'</code></pre>
+
+            <h3>URLs</h3>
+            <p>Define URL patterns for your module:</p>
+            <pre><code class="language-python"># apps/your_module/urls.py
+from django.urls import path
+from . import views
+
+app_name = 'your_module'
+
+urlpatterns = [
+    path('', views.YourModuleListView.as_view(), name='list'),
+    path('<int:pk>/', views.YourModuleDetailView.as_view(), name='detail'),
+    path('create/', views.YourModuleCreateView.as_view(), name='create'),
+]</code></pre>
+
+            <h2>4. Integration with Main App</h2>
+
+            <h3>Add URLs to Main URLconf</h3>
+            <p>Include your module's URLs in <code>core/urls.py</code>:</p>
+            <pre><code class="language-python">urlpatterns = i18n_patterns(
+    # ... existing patterns
+    path('your-module/', include('apps.your_module.urls')),
+)</code></pre>
+
+            <h3>Navigation Integration</h3>
+            <p>Add your module to the main navigation in templates:</p>
+            <pre><code class="language-html"><!-- In main navigation template -->
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'your_module:list' %}">
+        <i class="bi bi-your-icon me-2"></i>Your Module
+    </a>
+</li></code></pre>
+
+            <h2>5. Testing Your Module</h2>
+
+            <h3>Model Tests</h3>
+            <pre><code class="language-python"># apps/your_module/tests/test_models.py
+import pytest
+from django.contrib.auth import get_user_model
+from apps.your_module.models import YourModel
+
+User = get_user_model()
+
+@pytest.mark.django_db
+class TestYourModel:
+    def test_model_creation(self):
+        user = User.objects.create_user(
+            email='test@example.com',
+            password='testpass'
+        )
+        item = YourModel.objects.create(
+            title='Test Item',
+            user=user
+        )
+        assert item.title == 'Test Item'
+        assert item.user == user</code></pre>
+
+            <h3>View Tests</h3>
+            <pre><code class="language-python"># apps/your_module/tests/test_views.py
+import pytest
+from django.test import Client
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+@pytest.mark.django_db
+class TestYourModuleViews:
+    def test_list_view_requires_login(self, client):
+        response = client.get(reverse('your_module:list'))
+        assert response.status_code == 302  # Redirect to login</code></pre>
+
+            <h2>6. Internationalization</h2>
+
+            <h3>Mark Strings for Translation</h3>
+            <pre><code class="language-python"># In your views and models
+from django.utils.translation import gettext_lazy as _
+
+class YourModel(models.Model):
+    title = models.CharField(_("Title"), max_length=200)
+    
+    class Meta:
+        verbose_name = _("Your Model")
+        verbose_name_plural = _("Your Models")</code></pre>
+
+            <h3>Create Translation Files</h3>
+            <pre><code class="language-bash">cd apps/your_module
+mkdir i18n
+poetry run python ../../manage.py makemessages -l fr -l es -l nl</code></pre>
+
+            <h2>7. Best Practices</h2>
+
+            <div class="alert alert-success">
+                <h5><i class="bi bi-check-circle me-2"></i>Module Guidelines</h5>
+                <ul class="mb-0">
+                    <li>Follow Django naming conventions</li>
+                    <li>Implement proper user permissions</li>
+                    <li>Add comprehensive tests</li>
+                    <li>Include internationalization from the start</li>
+                    <li>Document your API if creating REST endpoints</li>
+                    <li>Follow the existing code style and patterns</li>
+                </ul>
+            </div>
+
+            <h2>8. Example: Creating a Simple Notes Module</h2>
+
+            <p>Here's a complete example of a simple notes module:</p>
+
+            <div class="accordion" id="notesExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#models-example">
+                            Models (models.py)
+                        </button>
+                    </h2>
+                    <div id="models-example" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <pre><code class="language-python">from django.db import models
+from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
+
+User = get_user_model()
+
+class Note(models.Model):
+    title = models.CharField(_("Title"), max_length=200)
+    content = models.TextField(_("Content"))
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')
+    tags = models.CharField(_("Tags"), max_length=500, blank=True)
+    is_favorite = models.BooleanField(_("Is Favorite"), default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-updated_at']
+        verbose_name = _("Note")
+        verbose_name_plural = _("Notes")
+    
+    def __str__(self):
+        return self.title</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Next Steps</h2>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-gear me-2"></i>Environment Setup</h5>
+                            <p class="card-text">Set up your development environment properly</p>
+                            <a href="../setup/environment-setup.html" class="btn btn-outline-primary">Read Guide</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-code-slash me-2"></i>Developer Guidelines</h5>
+                            <p class="card-text">Follow our coding standards and best practices</p>
+                            <a href="developer-guidelines.html" class="btn btn-outline-primary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-4">
+                <h5><i class="bi bi-question-circle me-2"></i>Need Help?</h5>
+                <p class="mb-0">
+                    Join our <a href="https://discord.gg/openlinguify" target="_blank">Discord community</a> 
+                    or check out existing modules in the codebase for more examples.
+                </p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

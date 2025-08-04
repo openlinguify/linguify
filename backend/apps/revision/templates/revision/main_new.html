@@ -1,111 +1,21 @@
 {% extends "revision/base_new.html" %}
+{% load static %}
 
-{% block title %}Memory{% endblock %}
+{% block page_title %}Memory{% endblock %}
 
 {% block header_content %}
-<!-- Actions du header -->
-<div class="d-flex align-items-center justify-content-between">
-    <div class="d-flex align-items-center gap-2">
-        <!-- Bouton toggle sidebar mobile -->
-        <button id="toggleSidebar" class="btn btn-outline-custom d-md-none">
-            <i class="bi bi-list"></i>
-        </button>
-        
-        <!-- Refresh -->
-        <button id="refreshDecks" class="btn btn-outline-custom">
-            <i class="bi bi-arrow-clockwise"></i>
-            <span class="d-none d-md-inline ms-1">Actualiser</span>
-        </button>
-    </div>
-    
-    <div class="d-flex gap-2">
-        <!-- Stats rapides -->
-        <div class="d-none d-lg-flex align-items-center text-muted me-3">
-            <span id="decksCount">0 decks</span>
-            <span class="mx-2">•</span>
-            <span id="cardsCount">0 cartes</span>
-        </div>
-        
-        <!-- Import -->
-        <button id="importDeck" class="btn btn-outline-custom">
-            <i class="bi bi-upload"></i>
-            <span class="d-none d-md-inline ms-1">Importer</span>
-        </button>
-        
-        <!-- Nouveau deck -->
-        <button id="createDeck" class="btn btn-gradient">
-            <i class="bi bi-plus-lg"></i>
-            <span class="d-none d-md-inline ms-1">Nouveau deck</span>
-        </button>
-    </div>
-</div>
-
-<!-- Statistiques et filtres -->
-<div class="stats-grid d-none d-md-grid">
-    <div class="stat-card">
-        <div class="stat-value" id="totalDecks">0</div>
-        <div class="stat-label">Decks</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value" id="totalCards">0</div>
-        <div class="stat-label">Cartes</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value" id="totalLearned">0</div>
-        <div class="stat-label">Apprises</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value" id="completionRate">0%</div>
-        <div class="stat-label">Progression</div>
-    </div>
-</div>
-
-<!-- Filtres de recherche -->
-<div class="search-filters">
-    <div class="row g-2">
-        <div class="col-md-6">
-            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher dans vos decks...">
-        </div>
-        <div class="col-md-3">
-            <select id="statusFilter" class="form-select form-control">
-                <option value="">Tous les statuts</option>
-                <option value="active">Actifs</option>
-                <option value="archived">Archivés</option>
-                <option value="public">Publics</option>
-                <option value="private">Privés</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select id="sortFilter" class="form-select form-control">
-                <option value="updated_desc">Modifiés récemment</option>
-                <option value="updated_asc">Anciens en premier</option>
-                <option value="created_desc">Créés récemment</option>
-                <option value="created_asc">Créés en premier</option>
-                <option value="name_asc">Nom A-Z</option>
-                <option value="name_desc">Nom Z-A</option>
-                <option value="progress_desc">Plus de progrès</option>
-                <option value="progress_asc">Moins de progrès</option>
-            </select>
-        </div>
-    </div>
-</div>
+{% include 'revision/components/navbar.html' %}
 {% endblock %}
 
 {% block content %}
 <!-- Sidebar -->
 <div id="revisionSidebar" class="revision-sidebar">
     <div class="sidebar-content">
-        <!-- Loading state -->
-        <div id="decksLoading" class="d-flex justify-content-center align-items-center p-4">
-            <div class="loading-spinner"></div>
-            <span class="ms-2">Chargement des decks...</span>
-        </div>
-        
         <!-- Decks list -->
-        <ul id="decksList" class="deck-list" style="display: none;"></ul>
+        <ul id="decksList" class="deck-list"></ul>
         
         <!-- Empty state -->
-        <div id="decksEmpty" class="empty-state" style="display: none;">
+        <div id="decksEmpty" class="empty-state empty-state-hidden">
             <i class="bi bi-stack empty-state-icon"></i>
             <div class="empty-state-title">Aucun deck</div>
             <div class="empty-state-description">Créez votre premier deck de flashcards pour commencer à réviser</div>
@@ -116,7 +26,7 @@
         </div>
         
         <!-- Load more -->
-        <div id="loadMoreContainer" class="p-3 text-center" style="display: none;">
+        <div id="loadMoreContainer" class="p-3 text-center load-more-container">
             <button id="loadMoreBtn" class="btn btn-outline-custom">
                 <i class="bi bi-arrow-down-circle me-1"></i>
                 Charger plus
@@ -147,7 +57,7 @@
     </div>
     
     <!-- Deck Details -->
-    <div id="deckDetails" style="display: none;">
+    <div id="deckDetails" class="deck-details-hidden">
         <!-- Deck Header -->
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
@@ -158,6 +68,7 @@
                     <div>
                         <h4 id="deckName" class="mb-0">Nom du deck</h4>
                         <small id="deckDescription" class="text-muted">Description du deck</small>
+                        <div id="deckTagsDisplay" class="deck-tags mt-1"></div>
                     </div>
                 </div>
                 
@@ -166,7 +77,7 @@
                     <div class="d-flex align-items-center gap-2 me-3 d-none d-md-flex">
                         <span id="deckProgress" class="badge deck-badge">0/0</span>
                         <div class="progress-bar-custom">
-                            <div id="deckProgressBar" class="progress-fill" style="width: 0%"></div>
+                            <div id="deckProgressBar" class="progress-fill w-0"></div>
                         </div>
                     </div>
                     
@@ -242,19 +153,13 @@
             <!-- Quick actions -->
             <div class="p-3 border-top">
                 <div class="row g-2">
-                    <div class="col-md-4">
-                        <button id="viewAllCards" class="btn btn-outline-custom w-100">
-                            <i class="bi bi-list-ul me-1"></i>
-                            Voir toutes les cartes
-                        </button>
-                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <button id="practiceWeak" class="btn btn-outline-custom w-100">
                             <i class="bi bi-exclamation-triangle me-1"></i>
                             Réviser les difficiles
                         </button>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <button id="resetProgress" class="btn btn-outline-custom w-100">
                             <i class="bi bi-arrow-clockwise me-1"></i>
                             Réinitialiser progrès
@@ -262,11 +167,32 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Cards Section -->
+            <div class="p-3 border-top">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="mb-0">Cartes du deck</h6>
+                    <span id="cardsCount" class="badge bg-secondary">0 carte(s)</span>
+                </div>
+                <div id="cardsContainer">
+                    <!-- Cards will be loaded here -->
+                </div>
+                
+                <div id="noCardsMessage" class="text-center p-4 no-cards-message-hidden">
+                    <i class="bi bi-stack text-muted" style="font-size: 3rem;"></i>
+                    <h5 class="text-muted mt-3">Aucune carte dans ce deck</h5>
+                    <p class="text-muted">Commencez par ajouter quelques cartes pour réviser !</p>
+                    <button class="btn btn-gradient" onclick="window.revisionMain.showCreateCardForm()">
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Ajouter une carte
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     
     <!-- Create Deck Form -->
-    <div id="createDeckForm" style="display: none;">
+    <div id="createDeckForm" class="create-deck-form-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <h5 class="mb-0">Créer un nouveau deck</h5>
@@ -298,6 +224,16 @@
                           placeholder="Décrivez brièvement le contenu de ce deck..."></textarea>
             </div>
             
+            <div class="mt-3">
+                <label class="form-label">Tags</label>
+                <div class="tags-input-container">
+                    <div class="tags-display" id="newDeckTagsDisplay"></div>
+                    <input type="text" id="newDeckTagsInput" class="form-control" 
+                           placeholder="Ajouter des tags (appuyez sur Entrée)">
+                </div>
+                <div class="form-text">Les tags aident à organiser vos decks. Appuyez sur Entrée pour ajouter un tag.</div>
+            </div>
+            
             <div class="mt-4">
                 <button id="submitCreate" class="btn btn-gradient me-2">
                     <i class="bi bi-plus-lg me-1"></i>
@@ -310,12 +246,407 @@
         </div>
     </div>
     
-    <!-- Import Deck Form -->
-    <div id="importDeckForm" style="display: none;">
+    
+    <!-- Create Card Form -->
+    <div id="createCardForm" class="create-card-form-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
-                <h5 class="mb-0">Importer un deck</h5>
+                <h5 class="mb-0">Ajouter une nouvelle carte</h5>
+                <button id="cancelCardCreate" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Recto (Question) <span class="text-danger">*</span></label>
+                    <textarea id="newCardFront" class="form-control" rows="4" 
+                              placeholder="Ex: Comment dit-on 'bonjour' en anglais ?" required></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Verso (Réponse) <span class="text-danger">*</span></label>
+                    <textarea id="newCardBack" class="form-control" rows="4" 
+                              placeholder="Ex: Hello" required></textarea>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button id="submitCardCreate" class="btn btn-gradient me-2">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Ajouter la carte
+                </button>
+                <button id="cancelCardCreateAlt" class="btn btn-outline-custom">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Card Form -->
+    <div id="editCardForm" class="edit-card-form-hidden">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Modifier la carte</h5>
+                <button id="cancelCardEdit" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <input type="hidden" id="editCardId" value="">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Recto (Question) <span class="text-danger">*</span></label>
+                    <textarea id="editCardFront" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Verso (Réponse) <span class="text-danger">*</span></label>
+                    <textarea id="editCardBack" class="form-control" rows="4" required></textarea>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button id="submitCardEdit" class="btn btn-gradient me-2">
+                    <i class="bi bi-check-lg me-1"></i>
+                    Enregistrer les modifications
+                </button>
+                <button id="cancelCardEditAlt" class="btn btn-outline-custom">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Learning Settings Form -->
+    
+    <!-- Study Modes (extracted into separate templates) -->
+    {% include 'revision/study/flashcards_embedded.html' %}
+    {% include 'revision/study/learn_embedded.html' %}
+    {% include 'revision/study/match_embedded.html' %}
+    {% include 'revision/study/review_embedded.html' %}
+    
+    <!-- Import Deck Form -->
+    <div id="importDeckForm" class="display-none">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-upload icon-linguify-primary me-2 font-size-1-5rem"></i>
+                    <h5 class="mb-0">Importer un deck</h5>
+                </div>
                 <button id="cancelImport" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <!-- Étapes de progression -->
+            <div class="import-steps mb-4">
+                <div class="step-indicator">
+                    <div class="step active">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Sélection</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Aperçu</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Import</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone de drop pour fichier -->
+            <div class="file-drop-zone mb-4" id="fileDropZone">
+                <div class="drop-zone-content">
+                    <i class="bi bi-cloud-upload icon-linguify-primary font-size-3rem"></i>
+                    <h6 class="mt-3 mb-2">Glissez votre fichier ici</h6>
+                    <p class="text-muted mb-3">ou cliquez pour sélectionner</p>
+                    <input type="file" id="importFile" class="d-none" accept=".csv,.xlsx,.xls">
+                    <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('importFile').click()">
+                        <i class="bi bi-folder2-open me-1"></i>
+                        Parcourir
+                    </button>
+                </div>
+                <div class="drop-zone-overlay" id="dropZoneOverlay">
+                    <i class="bi bi-cloud-upload-fill text-white font-size-3rem"></i>
+                    <p class="text-white mt-2 mb-0">Déposez le fichier ici</p>
+                </div>
+            </div>
+
+            <!-- Informations sur le fichier sélectionné -->
+            <div class="selected-file-info display-none" id="selectedFileInfo">
+                <div class="alert alert-success">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-file-earmark-check icon-linguify-success me-2"></i>
+                        <div>
+                            <strong id="selectedFileName"></strong>
+                            <div class="text-muted small" id="selectedFileSize"></div>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm ms-auto" onclick="clearSelectedFile()">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formats supportés -->
+            <div class="supported-formats mb-4">
+                <h6 class="text-muted mb-2">Formats supportés</h6>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-light text-dark">
+                        <i class="bi bi-file-earmark-excel icon-linguify-success me-1"></i>
+                        Excel (.xlsx, .xls)
+                    </span>
+                    <span class="badge bg-light text-dark">
+                        <i class="bi bi-filetype-csv text-info me-1"></i>
+                        CSV (.csv)
+                    </span>
+                </div>
+                <small class="text-muted mt-1 d-block">
+                    Votre fichier doit contenir au minimum 2 colonnes pour le recto et verso des cartes
+                </small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label fw-bold">
+                    <i class="bi bi-tag me-1"></i>
+                    Nom du deck
+                </label>
+                <input type="text" id="importDeckName" class="form-control form-control-lg" 
+                       placeholder="Entrez le nom du nouveau deck..." 
+                       maxlength="100">
+                <div class="form-text">Ce nom doit être unique dans vos decks</div>
+                <div class="invalid-feedback" id="deckNameError"></div>
+            </div>
+            
+            <div class="d-flex gap-2 justify-content-end">
+                <button id="submitImport" class="btn btn-gradient btn-lg" disabled>
+                    <i class="bi bi-arrow-right me-1"></i>
+                    Suivant - Aperçu
+                </button>
+                <button id="cancelImportAlt" class="btn btn-outline-custom">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Import Preview Section -->
+    <div id="importPreviewSection" class="display-none">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-eye text-info me-2 font-size-1-5rem"></i>
+                    <h5 class="mb-0">Aperçu de l'import</h5>
+                </div>
+                <button id="cancelImportPreview" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-x-lg"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <div class="study-content p-4">
+            <!-- Étapes de progression -->
+            <div class="import-steps mb-4">
+                <div class="step-indicator">
+                    <div class="step completed">
+                        <div class="step-number"><i class="bi bi-check"></i></div>
+                        <div class="step-label">Sélection</div>
+                    </div>
+                    <div class="step-line completed"></div>
+                    <div class="step active">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Aperçu</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Import</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Résumé du fichier -->
+            <div class="import-summary mb-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="bi bi-file-earmark icon-linguify-primary"></i>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-title">Fichier</div>
+                                <div class="summary-value" id="previewFileName"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="bi bi-list-ol icon-linguify-success"></i>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-title">Lignes</div>
+                                <div class="summary-value" id="previewTotalRows"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="bi bi-credit-card icon-linguify-warning"></i>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-title">Cartes à créer</div>
+                                <div class="summary-value" id="previewEstimatedCards">~</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration des colonnes -->
+            <div class="column-mapping mb-4">
+                <h6 class="mb-3">
+                    <i class="bi bi-arrow-left-right me-1"></i>
+                    Configuration des colonnes
+                </h6>
+                
+                <!-- Option pour la première ligne -->
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="hasHeaderCheck" checked onchange="updatePreview()">
+                        <label class="form-check-label" for="hasHeaderCheck">
+                            La première ligne contient des en-têtes de colonnes (ne pas l'importer comme carte)
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mapping-option">
+                            <label class="form-label fw-bold text-linguify-primary">
+                                <i class="bi bi-card-text me-1"></i>
+                                Recto des cartes
+                            </label>
+                            <select id="frontColumnSelect" class="form-select form-select-lg" onchange="updatePreview()">
+                            </select>
+                            
+                            <label class="form-label mt-2">
+                                <i class="bi bi-globe me-1"></i>
+                                Langue du recto (optionnel)
+                            </label>
+                            <select id="frontLanguageSelect" class="form-select">
+                                <option value="">-- Sélectionner une langue --</option>
+                                <option value="fr">Français</option>
+                                <option value="en">Anglais</option>
+                                <option value="es">Espagnol</option>
+                                <option value="de">Allemand</option>
+                                <option value="it">Italien</option>
+                                <option value="pt">Portugais</option>
+                                <option value="ru">Russe</option>
+                                <option value="zh">Chinois</option>
+                                <option value="ja">Japonais</option>
+                                <option value="ko">Coréen</option>
+                                <option value="ar">Arabe</option>
+                                <option value="nl">Néerlandais</option>
+                                <option value="pl">Polonais</option>
+                                <option value="tr">Turc</option>
+                                <option value="sv">Suédois</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mapping-option">
+                            <label class="form-label fw-bold text-linguify-success">
+                                <i class="bi bi-card-text me-1"></i>
+                                Verso des cartes
+                            </label>
+                            <select id="backColumnSelect" class="form-select form-select-lg" onchange="updatePreview()">
+                            </select>
+                            
+                            <label class="form-label mt-2">
+                                <i class="bi bi-globe me-1"></i>
+                                Langue du verso (optionnel)
+                            </label>
+                            <select id="backLanguageSelect" class="form-select">
+                                <option value="">-- Sélectionner une langue --</option>
+                                <option value="fr">Français</option>
+                                <option value="en">Anglais</option>
+                                <option value="es">Espagnol</option>
+                                <option value="de">Allemand</option>
+                                <option value="it">Italien</option>
+                                <option value="pt">Portugais</option>
+                                <option value="ru">Russe</option>
+                                <option value="zh">Chinois</option>
+                                <option value="ja">Japonais</option>
+                                <option value="ko">Coréen</option>
+                                <option value="ar">Arabe</option>
+                                <option value="nl">Néerlandais</option>
+                                <option value="pl">Polonais</option>
+                                <option value="tr">Turc</option>
+                                <option value="sv">Suédois</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mapping-hint mt-2">
+                    <i class="bi bi-lightbulb icon-linguify-warning me-1"></i>
+                    <small class="text-muted">Modifiez la sélection pour voir l'aperçu mis à jour en temps réel</small>
+                </div>
+            </div>
+            
+            <!-- Aperçu des cartes -->
+            <div class="preview-cards mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="mb-0">
+                        <i class="bi bi-stack me-1"></i>
+                        Aperçu des cartes (5 premières)
+                    </h6>
+                    <span class="badge bg-info display-none" id="previewUpdateIndicator">
+                        <i class="bi bi-arrow-repeat me-1"></i>
+                        Mise à jour...
+                    </span>
+                </div>
+                <div id="previewCardsContainer" class="preview-cards-grid">
+                    <!-- Les cartes de preview seront ajoutées ici -->
+                </div>
+            </div>
+            
+            <div class="d-flex gap-2 justify-content-between">
+                <button id="cancelImportPreviewAlt" class="btn btn-outline-custom">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Retour
+                </button>
+                <button id="confirmImport" class="btn btn-gradient btn-lg">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Confirmer l'import
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Deck Form -->
+    <div id="editDeckForm" class="display-none">
+        <div class="study-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-pencil icon-linguify-warning me-2 font-size-1-5rem"></i>
+                    <h5 class="mb-0">Modifier le deck</h5>
+                </div>
+                <button id="cancelEditDeck" class="btn btn-outline-custom btn-sm">
                     <i class="bi bi-x-lg"></i>
                     Annuler
                 </button>
@@ -325,25 +656,60 @@
         <div class="study-content p-4">
             <div class="alert alert-info">
                 <i class="bi bi-info-circle me-2"></i>
-                Vous pouvez importer des fichiers CSV ou Excel avec les colonnes : <strong>Terme</strong>, <strong>Définition</strong>, <strong>Exemple (optionnel)</strong>
+                Modifiez les informations de votre deck. Ces changements seront sauvegardés immédiatement.
             </div>
             
             <div class="mb-3">
-                <label class="form-label">Fichier à importer</label>
-                <input type="file" id="importFile" class="form-control" accept=".csv,.xlsx,.xls">
+                <label class="form-label fw-bold">
+                    <i class="bi bi-tag me-1"></i>
+                    Nom du deck
+                </label>
+                <input type="text" id="editDeckName" class="form-control form-control-lg" 
+                       placeholder="Nom du deck..." maxlength="100">
+                <div class="form-text">Le nom doit être unique parmi vos decks</div>
             </div>
             
             <div class="mb-3">
-                <label class="form-label">Nom du deck</label>
-                <input type="text" id="importDeckName" class="form-control" placeholder="Nom pour le deck importé">
+                <label class="form-label fw-bold">
+                    <i class="bi bi-card-text me-1"></i>
+                    Description
+                </label>
+                <textarea id="editDeckDescription" class="form-control" rows="3" 
+                          placeholder="Description du deck (optionnel)..." maxlength="500"></textarea>
+                <div class="form-text">Décrivez le contenu de votre deck en quelques mots</div>
             </div>
             
-            <div class="mt-4">
-                <button id="submitImport" class="btn btn-gradient me-2">
-                    <i class="bi bi-upload me-1"></i>
-                    Importer le deck
+            <div class="mb-3">
+                <label class="form-label fw-bold">
+                    <i class="bi bi-tags me-1"></i>
+                    Tags
+                </label>
+                <div class="tags-input-container">
+                    <div class="tags-display" id="editDeckTagsDisplay"></div>
+                    <input type="text" id="editDeckTagsInput" class="form-control" 
+                           placeholder="Ajouter des tags (appuyez sur Entrée)">
+                </div>
+                <div class="form-text">Les tags aident à organiser vos decks</div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label fw-bold">
+                    <i class="bi bi-eye me-1"></i>
+                    Visibilité
+                </label>
+                <select id="editDeckVisibility" class="form-select form-select-lg">
+                    <option value="private">Privé - Visible par vous seul</option>
+                    <option value="public">Public - Visible par tous les utilisateurs</option>
+                </select>
+                <div class="form-text">Les decks publics peuvent être découverts et utilisés par d'autres utilisateurs</div>
+            </div>
+            
+            <div class="d-flex gap-2 justify-content-end">
+                <button id="saveEditDeck" class="btn btn-gradient btn-lg">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Sauvegarder les modifications
                 </button>
-                <button id="cancelImportAlt" class="btn btn-outline-custom">
+                <button id="cancelEditDeckAlt" class="btn btn-outline-custom">
                     Annuler
                 </button>
             </div>
@@ -352,479 +718,182 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
-<script>
-// État global de l'application
-let appState = {
-    decks: [],
-    filteredDecks: [],
-    selectedDeck: null,
-    isLoading: false,
-    currentPage: 1,
-    hasMore: true,
-    stats: {
-        totalDecks: 0,
-        totalCards: 0,
-        totalLearned: 0,
-        completionRate: 0
-    },
-    filters: {
-        search: '',
-        status: '',
-        sort: 'updated_desc'
-    }
-};
-
-// API Service
-const revisionAPI = {
-    async getDecks(page = 1, filters = {}) {
-        const params = new URLSearchParams({
-            page: page,
-            ...filters
-        });
-        
-        return await window.apiService.request(`/api/v1/revision/decks/?${params}`);
-    },
-    
-    async getDeck(id) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`);
-    },
-    
-    async createDeck(data) {
-        return await window.apiService.request('/api/v1/revision/decks/', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-    },
-    
-    async updateDeck(id, data) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`, {
-            method: 'PATCH',
-            body: JSON.stringify(data)
-        });
-    },
-    
-    async deleteDeck(id) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`, {
-            method: 'DELETE'
-        });
-    },
-    
-    async getStats() {
-        return await window.apiService.request('/api/v1/revision/stats/');
-    },
-    
-    async importDeck(formData) {
-        return await window.apiService.request('/api/v1/revision/import/', {
-            method: 'POST',
-            body: formData,
-            headers: {} // Let browser set Content-Type for FormData
-        });
-    }
-};
-
-// Utility functions
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+{% block extra_css %}
+<style>
+/* Assurer que la barre d'en-tête reste au premier plan */
+.revision-header {
+    position: relative;
+    z-index: 999;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
 }
 
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
+.revision-header .header-content {
+    position: relative;
+    z-index: 1000;
 }
 
-function calculateProgress(deck) {
-    if (!deck.cards_count || deck.cards_count === 0) return 0;
-    return Math.round((deck.learned_count || 0) / deck.cards_count * 100);
+/* Assurer que les éléments interactifs sont accessibles */
+.revision-header button,
+.revision-header select,
+.revision-header input,
+.revision-header a {
+    position: relative;
+    z-index: 1001;
 }
 
-// DOM elements
-const elements = {
-    // Sidebar
-    sidebar: document.getElementById('revisionSidebar'),
-    toggleSidebar: document.getElementById('toggleSidebar'),
-    decksList: document.getElementById('decksList'),
-    decksLoading: document.getElementById('decksLoading'),
-    decksEmpty: document.getElementById('decksEmpty'),
-    loadMoreContainer: document.getElementById('loadMoreContainer'),
-    loadMoreBtn: document.getElementById('loadMoreBtn'),
-    
-    // Filters
-    searchInput: document.getElementById('searchInput'),
-    statusFilter: document.getElementById('statusFilter'),
-    sortFilter: document.getElementById('sortFilter'),
-    
-    // Study area
-    welcomeState: document.getElementById('welcomeState'),
-    deckDetails: document.getElementById('deckDetails'),
-    createDeckForm: document.getElementById('createDeckForm'),
-    importDeckForm: document.getElementById('importDeckForm'),
-    
-    // Deck details
-    deckName: document.getElementById('deckName'),
-    deckDescription: document.getElementById('deckDescription'),
-    deckProgress: document.getElementById('deckProgress'),
-    deckProgressBar: document.getElementById('deckProgressBar'),
-    
-    // Create form
-    newDeckName: document.getElementById('newDeckName'),
-    newDeckDescription: document.getElementById('newDeckDescription'),
-    newDeckVisibility: document.getElementById('newDeckVisibility'),
-    
-    // Import form
-    importFile: document.getElementById('importFile'),
-    importDeckName: document.getElementById('importDeckName'),
-    
-    // Buttons
-    createDeck: document.getElementById('createDeck'),
-    importDeck: document.getElementById('importDeck'),
-    refreshDecks: document.getElementById('refreshDecks'),
-    backToList: document.getElementById('backToList'),
-    submitCreate: document.getElementById('submitCreate'),
-    cancelCreate: document.getElementById('cancelCreate'),
-    cancelCreateAlt: document.getElementById('cancelCreateAlt'),
-    submitImport: document.getElementById('submitImport'),
-    cancelImport: document.getElementById('cancelImport'),
-    cancelImportAlt: document.getElementById('cancelImportAlt'),
-    
-    // Stats
-    decksCount: document.getElementById('decksCount'),
-    cardsCount: document.getElementById('cardsCount'),
-    totalDecks: document.getElementById('totalDecks'),
-    totalCards: document.getElementById('totalCards'),
-    totalLearned: document.getElementById('totalLearned'),
-    completionRate: document.getElementById('completionRate')
-};
-
-// Event listeners
-function setupEventListeners() {
-    // Sidebar toggle
-    elements.toggleSidebar?.addEventListener('click', toggleSidebar);
-    
-    // Search and filters
-    elements.searchInput?.addEventListener('input', debounce(handleSearch, 300));
-    elements.statusFilter?.addEventListener('change', handleStatusFilter);
-    elements.sortFilter?.addEventListener('change', handleSortFilter);
-    
-    // Buttons
-    elements.createDeck?.addEventListener('click', showCreateForm);
-    elements.importDeck?.addEventListener('click', showImportForm);
-    elements.refreshDecks?.addEventListener('click', loadDecks);
-    elements.backToList?.addEventListener('click', backToList);
-    
-    // Create form
-    elements.submitCreate?.addEventListener('click', createNewDeck);
-    elements.cancelCreate?.addEventListener('click', hideCreateForm);
-    elements.cancelCreateAlt?.addEventListener('click', hideCreateForm);
-    
-    // Import form
-    elements.submitImport?.addEventListener('click', importNewDeck);
-    elements.cancelImport?.addEventListener('click', hideImportForm);
-    elements.cancelImportAlt?.addEventListener('click', hideImportForm);
-    
-    // Create deck buttons
-    document.querySelectorAll('.create-deck-btn').forEach(btn => {
-        btn.addEventListener('click', showCreateForm);
-    });
-    
-    // Load more
-    elements.loadMoreBtn?.addEventListener('click', loadMoreDecks);
+/* Dropdowns et modals au dessus de tout */
+.dropdown-menu,
+.tags-filter-dropdown {
+    z-index: 1050 !important;
 }
 
-// Core functions
-async function loadDecks(reset = true) {
-    try {
-        if (reset) {
-            appState.currentPage = 1;
-            appState.decks = [];
-            elements.decksLoading.style.display = 'block';
-            elements.decksList.style.display = 'none';
-            elements.decksEmpty.style.display = 'none';
-        }
-        
-        appState.isLoading = true;
-        
-        const [decksResponse, statsResponse] = await Promise.all([
-            revisionAPI.getDecks(appState.currentPage, appState.filters),
-            revisionAPI.getStats()
-        ]);
-        
-        if (reset) {
-            appState.decks = decksResponse.results || [];
-        } else {
-            appState.decks = [...appState.decks, ...(decksResponse.results || [])];
-        }
-        
-        appState.hasMore = !!decksResponse.next;
-        appState.currentPage = decksResponse.next ? appState.currentPage + 1 : appState.currentPage;
-        appState.stats = statsResponse;
-        
-        renderDecksList();
-        updateStats();
-        
-    } catch (error) {
-        console.error('Error loading decks:', error);
-        window.notificationService.error('Erreur lors du chargement des decks');
-    } finally {
-        appState.isLoading = false;
-        elements.decksLoading.style.display = 'none';
-    }
+/* Éviter les problèmes de scroll sur la barre */
+.revision-header {
+    flex-shrink: 0;
+    min-height: fit-content;
 }
+</style>
+{% endblock %}
 
-function renderDecksList() {
-    if (appState.decks.length === 0) {
-        elements.decksList.style.display = 'none';
-        elements.decksEmpty.style.display = 'block';
-        elements.loadMoreContainer.style.display = 'none';
-        return;
-    }
-    
-    elements.decksEmpty.style.display = 'none';
-    elements.decksList.style.display = 'block';
-    
-    elements.decksList.innerHTML = appState.decks.map(deck => {
-        const progress = calculateProgress(deck);
-        return `
-        <li class="deck-item ${appState.selectedDeck?.id === deck.id ? 'active' : ''}" 
-            onclick="selectDeck(${deck.id})">
-            <div class="deck-header">
-                <div class="deck-name">${deck.name || 'Sans nom'}</div>
-                <div class="deck-stats">
-                    <span class="deck-badge">${deck.cards_count || 0}</span>
-                    ${deck.is_public ? '<i class="bi bi-globe2" title="Public"></i>' : ''}
-                    ${deck.is_archived ? '<i class="bi bi-archive" title="Archivé"></i>' : ''}
-                </div>
+<!-- Modal de gestion des tags -->
+<div class="modal fade" id="tagsManagementModal" tabindex="-1" aria-labelledby="tagsManagementModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tagsManagementModalLabel">
+                    <i class="bi bi-tags me-2"></i>Gestion des étiquettes
+                </h5>
+                <button type="button" class="btn-close" onclick="window.tagsManagement.closeTagsManagement()" aria-label="Close"></button>
             </div>
-            <div class="deck-description">${deck.description || 'Aucune description'}</div>
-            <div class="deck-meta">
-                <div class="deck-progress">
-                    <span>${deck.learned_count || 0}/${deck.cards_count || 0}</span>
-                    <div class="progress-bar-custom">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
+            <div class="modal-body">
+                <!-- Barre de recherche -->
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="tagsSearchInput" class="form-control" placeholder="Rechercher une étiquette...">
+                        </div>
                     </div>
-                    <span>${progress}%</span>
+                    <div class="col-md-4">
+                        <button id="createNewTagBtn" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-lg me-1"></i>Nouvelle étiquette
+                        </button>
+                    </div>
                 </div>
-                <span>${formatDate(deck.updated_at)}</span>
+
+                <!-- Liste des tags -->
+                <div class="tags-management-container">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="w-50px">
+                                        <input type="checkbox" id="selectAllTags" class="form-check-input">
+                                    </th>
+                                    <th>Nom</th>
+                                    <th class="w-80px">Couleur</th>
+                                    <th class="w-100px">Utilisations</th>
+                                    <th class="w-120px">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tagsTableBody">
+                                <!-- Les tags seront chargés dynamiquement ici -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Pagination des tags">
+                    <ul class="pagination justify-content-center" id="tagsPagination">
+                        <!-- Pagination sera générée dynamiquement -->
+                    </ul>
+                </nav>
             </div>
-        </li>
-    `;
-    }).join('');
-    
-    // Load more button
-    elements.loadMoreContainer.style.display = appState.hasMore ? 'block' : 'none';
-}
+            <div class="modal-footer">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <div>
+                        <button type="button" class="btn btn-primary" id="selectTagsBtn">
+                            <i class="bi bi-check-lg me-1"></i>Sélectionner
+                        </button>
+                        <button type="button" class="btn btn-success ms-2" id="createNewTagFromModal">
+                            <i class="bi bi-plus-lg me-1"></i>Nouveau
+                        </button>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <span id="tagsCount" class="text-muted">0 étiquette(s)</span>
+                        <button type="button" class="btn btn-secondary" onclick="window.tagsManagement.closeTagsManagement()">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-async function selectDeck(deckId) {
-    try {
-        const deck = await revisionAPI.getDeck(deckId);
-        appState.selectedDeck = deck;
-        
-        // Hide welcome state and show deck details
-        elements.welcomeState.style.display = 'none';
-        elements.deckDetails.style.display = 'block';
-        elements.createDeckForm.style.display = 'none';
-        elements.importDeckForm.style.display = 'none';
-        
-        // Populate deck details
-        elements.deckName.textContent = deck.name || 'Sans nom';
-        elements.deckDescription.textContent = deck.description || 'Aucune description';
-        
-        const progress = calculateProgress(deck);
-        elements.deckProgress.textContent = `${deck.learned_count || 0}/${deck.cards_count || 0}`;
-        elements.deckProgressBar.style.width = `${progress}%`;
-        
-        // Update decks list visual state
-        renderDecksList();
-        
-        // Hide sidebar on mobile
-        if (window.innerWidth < 768) {
-            elements.sidebar.classList.remove('show');
-        }
-        
-    } catch (error) {
-        console.error('Error loading deck:', error);
-        window.notificationService.error('Erreur lors du chargement du deck');
-    }
-}
+<!-- Modal de création/édition d'étiquette -->
+<div class="modal fade" id="tagEditModal" tabindex="-1" aria-labelledby="tagEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tagEditModalLabel">Nouvelle étiquette</h5>
+                <button type="button" class="btn-close" onclick="window.tagsManagement.closeCreateTagModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="tagEditForm">
+                    <div class="mb-3">
+                        <label for="tagNameInput" class="form-label">Nom de l'étiquette *</label>
+                        <input type="text" class="form-control" id="tagNameInput" required maxlength="50">
+                        <div class="form-text">Utilisez des noms courts et descriptifs</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tagColorInput" class="form-label">Couleur</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="color" class="form-control form-control-color" id="tagColorInput" value="#2D5BBA">
+                            <div class="tag-preview" id="tagPreview">
+                                <span class="badge tag-color-preview">Aperçu</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="window.tagsManagement.closeCreateTagModal()">Annuler</button>
+                <button type="button" class="btn btn-primary" id="saveTagBtn">
+                    <i class="bi bi-check-lg me-1"></i>Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-function showCreateForm() {
-    elements.welcomeState.style.display = 'none';
-    elements.deckDetails.style.display = 'none';
-    elements.createDeckForm.style.display = 'block';
-    elements.importDeckForm.style.display = 'none';
-    
-    // Clear form
-    elements.newDeckName.value = '';
-    elements.newDeckDescription.value = '';
-    elements.newDeckVisibility.value = 'private';
-    
-    // Focus on name input
-    elements.newDeckName.focus();
-}
+<!-- Modals de partage -->
+<!-- DEBUG: Template main_new.html is being rendered -->
+<div id="template-debug-marker" class="display-none">main_new.html loaded</div>
+{% include "revision/components/share_deck.html" %}
 
-function hideCreateForm() {
-    elements.createDeckForm.style.display = 'none';
-    
-    if (appState.selectedDeck) {
-        elements.deckDetails.style.display = 'block';
-    } else {
-        elements.welcomeState.style.display = 'block';
-    }
-}
+{% block extra_js %}
+<!-- CSRF Token for API calls -->
+{% csrf_token %}
 
-function showImportForm() {
-    elements.welcomeState.style.display = 'none';
-    elements.deckDetails.style.display = 'none';
-    elements.createDeckForm.style.display = 'none';
-    elements.importDeckForm.style.display = 'block';
-    
-    // Clear form
-    elements.importFile.value = '';
-    elements.importDeckName.value = '';
-}
+<!-- Charger le JavaScript modulaire -->
+<script src="{% static 'revision/js/revision-tags.js' %}"></script>
+<script src="{% static 'revision/js/revision-tags-management.js' %}"></script>
+<script src="{% static 'revision/js/revision-main.js' %}?v=20250131-include-test"></script>
+<script src="{% static 'revision/js/revision-flashcards.js' %}"></script>
+<script src="{% static 'revision/js/revision-quiz.js' %}"></script>
+<script src="{% static 'revision/js/revision-matching.js' %}"></script>
+<script src="{% static 'revision/js/revision-spaced.js' %}"></script>
 
-function hideImportForm() {
-    elements.importDeckForm.style.display = 'none';
-    
-    if (appState.selectedDeck) {
-        elements.deckDetails.style.display = 'block';
-    } else {
-        elements.welcomeState.style.display = 'block';
-    }
-}
+<script>
+// Le JavaScript principal est maintenant dans revision-main.js
+// Il s'initialise automatiquement au chargement de la page
 
-async function createNewDeck() {
-    const name = elements.newDeckName.value.trim();
-    const description = elements.newDeckDescription.value.trim();
-    const isPublic = elements.newDeckVisibility.value === 'public';
-    
-    if (!name) {
-        window.notificationService.error('Le nom du deck est requis');
-        return;
-    }
-    
-    try {
-        const deckData = {
-            name: name,
-            description: description,
-            is_public: isPublic
-        };
-        
-        const newDeck = await revisionAPI.createDeck(deckData);
-        
-        window.notificationService.success('Deck créé avec succès');
-        
-        // Reload decks and select the new one
-        await loadDecks();
-        await selectDeck(newDeck.id);
-        
-    } catch (error) {
-        console.error('Error creating deck:', error);
-        window.notificationService.error('Erreur lors de la création du deck');
-    }
-}
-
-async function importNewDeck() {
-    const file = elements.importFile.files[0];
-    const name = elements.importDeckName.value.trim();
-    
-    if (!file) {
-        window.notificationService.error('Veuillez sélectionner un fichier');
-        return;
-    }
-    
-    if (!name) {
-        window.notificationService.error('Le nom du deck est requis');
-        return;
-    }
-    
-    try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('name', name);
-        
-        const newDeck = await revisionAPI.importDeck(formData);
-        
-        window.notificationService.success('Deck importé avec succès');
-        
-        // Reload decks and select the new one
-        await loadDecks();
-        await selectDeck(newDeck.id);
-        
-    } catch (error) {
-        console.error('Error importing deck:', error);
-        window.notificationService.error('Erreur lors de l\'importation du deck');
-    }
-}
-
-// Filter functions
-function handleSearch() {
-    appState.filters.search = elements.searchInput.value;
-    loadDecks();
-}
-
-function handleStatusFilter() {
-    appState.filters.status = elements.statusFilter.value;
-    loadDecks();
-}
-
-function handleSortFilter() {
-    appState.filters.sort = elements.sortFilter.value;
-    loadDecks();
-}
-
-function loadMoreDecks() {
-    if (!appState.isLoading && appState.hasMore) {
-        loadDecks(false);
-    }
-}
-
-// UI functions
-function toggleSidebar() {
-    elements.sidebar.classList.toggle('show');
-}
-
-function backToList() {
-    elements.sidebar.classList.add('show');
-}
-
-function updateStats() {
-    const stats = appState.stats;
-    
-    // Header stats
-    if (elements.decksCount) {
-        elements.decksCount.textContent = `${stats.totalDecks} deck${stats.totalDecks !== 1 ? 's' : ''}`;
-    }
-    if (elements.cardsCount) {
-        elements.cardsCount.textContent = `${stats.totalCards} carte${stats.totalCards !== 1 ? 's' : ''}`;
-    }
-    
-    // Detailed stats
-    if (elements.totalDecks) elements.totalDecks.textContent = stats.totalDecks;
-    if (elements.totalCards) elements.totalCards.textContent = stats.totalCards;
-    if (elements.totalLearned) elements.totalLearned.textContent = stats.totalLearned;
-    if (elements.completionRate) elements.completionRate.textContent = `${stats.completionRate}%`;
-}
-
-// Initialize app
-document.addEventListener('DOMContentLoaded', function() {
-    setupEventListeners();
-    loadDecks();
-});
-
-// Global functions for inline event handlers
-window.selectDeck = selectDeck;
+// Exporter selectDeck pour les événements inline
+window.selectDeck = window.revisionMain.selectDeck;
+window.updatePreview = window.revisionMain.updatePreview;
+window.clearSelectedFile = window.revisionMain.clearSelectedFile;
 </script>
 {% endblock %}

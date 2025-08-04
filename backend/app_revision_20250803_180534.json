@@ -1,0 +1,99 @@
+[
+{
+  "model": "app_manager.app",
+  "pk": 4,
+  "fields": {
+    "code": "revision",
+    "display_name": "Révision",
+    "description": "Mémorisez durablement avec des flashcards intelligentes et la répétition espacée.",
+    "icon_name": "bi-journal-text",
+    "color": "#8B5CF6",
+    "route_path": "/revision",
+    "category": "Productivity",
+    "version": "2.0.0",
+    "installable": true,
+    "is_enabled": true,
+    "order": 0,
+    "manifest_data": {
+      "name": "Révision",
+      "author": "Linguify Team",
+      "depends": [
+        "authentication",
+        "app_manager",
+        "course"
+      ],
+      "license": "MIT",
+      "summary": "Mémorisez durablement avec des flashcards intelligentes et la répétition espacée.",
+      "version": "2.0.0",
+      "website": "https://linguify.com",
+      "category": "Productivity",
+      "sequence": 20,
+      "application": true,
+      "description": "\nModule de Révision pour Linguify\n=================================\n\nSystème de révision avec répétition espacée et flashcards.\n\nFonctionnalités:\n- Algorithmes de répétition espacée pour une mémorisation optimale\n- Création et gestion de decks de flashcards\n- Planification des révisions basée sur la force de mémorisation\n- Suivi des progrès et statistiques\n- Multiples modes de révision (flashcards, apprentissage, association, révision rapide)\n- Intégration avec le vocabulaire des modules d'apprentissage\n- Interface OWL moderne et réactive\n\nUsage:\n- API: /api/v1/revision/\n- Interface web: /revision/\n    ",
+      "installable": true,
+      "permissions": {
+        "read": "auth.user",
+        "create": "auth.user",
+        "delete": "auth.user",
+        "update": "auth.user"
+      },
+      "auto_install": false,
+      "api_endpoints": {
+        "viewset": "FlashcardViewSet",
+        "base_url": "/api/v1/revision/"
+      },
+      "technical_info": {
+        "models": [
+          "Flashcard",
+          "FlashcardDeck",
+          "ReviewSession"
+        ],
+        "web_url": "/revision/",
+        "django_app": "apps.revision",
+        "has_settings": true,
+        "rest_framework": true,
+        "admin_registered": true,
+        "has_web_interface": true,
+        "settings_component": "RevisionSettings"
+      },
+      "settings_config": {
+        "icon": "bi-gear-fill",
+        "categories": [
+          {
+            "name": "learning",
+            "label": "Apprentissage",
+            "description": "Paramètres d'apprentissage et révision"
+          },
+          {
+            "name": "sessions",
+            "label": "Sessions",
+            "description": "Configuration des sessions de révision"
+          },
+          {
+            "name": "notifications",
+            "label": "Notifications",
+            "description": "Rappels et notifications"
+          }
+        ],
+        "description": "Paramètres spécifiques à Révision à développer...",
+        "display_name": "Configuration Révision",
+        "component_name": "RevisionSettings"
+      },
+      "frontend_components": {
+        "icon": "bi-arrow-repeat",
+        "route": "/revision",
+        "menu_order": 2,
+        "description": "Révisez vos connaissances avec des flashcards",
+        "static_icon": "/static/revision/description/icon.png",
+        "display_name": "Révision",
+        "category_icon": "bi-journal-text",
+        "category_label": "Productivité",
+        "main_component": "RevisionApp",
+        "display_category": "productivity"
+      }
+    },
+    "created_at": "2025-07-06T21:40:57.174Z",
+    "updated_at": "2025-07-26T12:57:30.944Z"
+  }
+}
+]

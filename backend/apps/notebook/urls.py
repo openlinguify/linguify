@@ -2,8 +2,12 @@
 # Part of Open Linguify. See LICENSE file for full copyright and licensing details.
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import NoteViewSet, NoteCategoryViewSet, TagViewSet, SharedNoteViewSet
-
+from .views.notebook_views import (
+    NoteViewSet,
+    NoteCategoryViewSet,
+    TagViewSet,
+    SharedNoteViewSet,
+)
 app_name = 'notebook'
 
 router = DefaultRouter()

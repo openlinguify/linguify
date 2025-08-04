@@ -1,0 +1,983 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Studio - {{ course.title }} - Linguify CMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Studio Navigation Premium */
+    .studio-nav {
+        background: rgba(45, 91, 186, 0.95);
+        backdrop-filter: blur(20px) saturate(180%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1rem 0;
+        box-shadow: var(--shadow-primary);
+        margin-bottom: 2rem;
+    }
+    
+    .studio-nav .nav-link {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 600;
+        margin: 0 0.3rem;
+        border-radius: 12px;
+        padding: 0.7rem 1.2rem !important;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        border: none;
+    }
+    
+    .studio-nav .nav-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .studio-nav .nav-link:hover {
+        color: white !important;
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    }
+    
+    .studio-nav .nav-link:hover::before {
+        left: 100%;
+    }
+    
+    .studio-nav .nav-link.active {
+        color: white !important;
+        background: var(--aurora-gradient);
+        box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+    }
+    
+    /* Course Header Premium */
+    .course-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px) saturate(180%);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .course-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--linguify-primary-dark);
+        margin-bottom: 1rem;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    /* Content Outline Premium */
+    .content-outline {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px) saturate(180%);
+        border: none;
+        border-radius: 20px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+    
+    .content-outline .card-header {
+        background: var(--aurora-gradient);
+        color: white;
+        padding: 1.5rem 2rem;
+        border: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    .outline-item {
+        border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        padding: 1.5rem 2rem;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .outline-item:last-child {
+        border-bottom: none;
+    }
+    
+    .outline-item:hover {
+        background: linear-gradient(135deg, rgba(45, 91, 186, 0.05), rgba(0, 212, 170, 0.05));
+        transform: translateX(5px);
+    }
+    
+    .outline-actions {
+        position: absolute;
+        right: 2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .outline-item:hover .outline-actions {
+        opacity: 1;
+    }
+    
+    .outline-actions .btn {
+        border-radius: 8px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+    }
+    
+    /* Statistics Cards Premium */
+    .stats-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px) saturate(180%);
+        border: none;
+        border-radius: 20px;
+        box-shadow: var(--shadow-lg);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .stats-card .card-header {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 1.5rem;
+        font-weight: 700;
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    /* Asset Grid Premium */
+    .asset-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .asset-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px) saturate(180%);
+        border: none;
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .asset-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--aurora-gradient);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .asset-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .asset-card:hover::before {
+        opacity: 1;
+    }
+    
+    .asset-preview {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+    
+    /* Settings Sections Premium */
+    .settings-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px) saturate(180%);
+        border: none;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+    
+    .settings-header {
+        background: var(--aurora-gradient);
+        color: white;
+        padding: 1.5rem 2rem;
+        border: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    .settings-body {
+        padding: 2rem;
+    }
+    
+    /* Tab Content Styling */
+    .tab-content {
+        margin-top: 2rem;
+    }
+    
+    .tab-pane {
+        min-height: 400px;
+    }
+    
+    /* Premium Badges */
+    .badge {
+        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .badge.bg-info {
+        background: var(--linguify-info) !important;
+    }
+    
+    .badge.bg-success {
+        background: var(--linguify-success) !important;
+    }
+    
+    .badge.bg-warning {
+        background: var(--linguify-warning) !important;
+    }
+    
+    .badge.bg-secondary {
+        background: var(--linguify-gray) !important;
+    }
+    
+    /* Action Buttons Premium */
+    .action-buttons .btn {
+        border-radius: 12px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        margin: 0 0.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    .action-buttons .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Content Add Buttons */
+    .content-add-section {
+        background: rgba(248, 250, 252, 0.8);
+        border-top: 1px solid rgba(226, 232, 240, 0.5);
+        padding: 1.5rem 2rem;
+    }
+    
+    .content-add-section .btn {
+        border-radius: 10px;
+        padding: 0.7rem 1.3rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .content-add-section .btn:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<!-- Studio Navigation -->
+<div class="studio-nav">
+    <div class="container-fluid">
+        <ul class="nav nav-tabs border-0">
+            <li class="nav-item">
+                <a class="nav-link active" href="#content" data-bs-toggle="tab">
+                    <i class="fas fa-list"></i> Contenu du cours
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#assets" data-bs-toggle="tab">
+                    <i class="fas fa-images"></i> Fichiers & Uploads
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#settings" data-bs-toggle="tab">
+                    <i class="fas fa-cog"></i> Paramètres
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#advanced" data-bs-toggle="tab">
+                    <i class="fas fa-tools"></i> Avancé
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Course Header -->
+<div class="container-fluid mt-4">
+    <div class="course-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="course-title">{{ course.title }}</h1>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-info">{{ course.level }}</span>
+                    <span class="badge bg-{% if course.sync_status == 'synced' %}success{% elif course.sync_status == 'pending' %}warning{% elif course.sync_status == 'failed' %}danger{% else %}secondary{% endif %}">
+                        {{ course.sync_status|title }}
+                    </span>
+                    {% if course.is_published %}
+                        <span class="badge bg-success">Publié</span>
+                    {% else %}
+                        <span class="badge bg-warning">Brouillon</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-outline-secondary" onclick="previewCourse()">
+                    <i class="fas fa-eye"></i> Aperçu
+                </button>
+                {% if course.is_published and course.sync_status != 'synced' %}
+                <button class="btn btn-info" onclick="syncCourse({{ course.id }})">
+                    <i class="fas fa-sync"></i> Synchroniser
+                </button>
+                {% endif %}
+                <button class="btn btn-primary" onclick="{% if course.is_published %}unpublishCourse{% else %}publishCourse{% endif %}({{ course.id }})">
+                    <i class="fas fa-{% if course.is_published %}eye-slash{% else %}globe{% endif %}"></i>
+                    {% if course.is_published %}Dépublier{% else %}Publier{% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Content Tab -->
+        <div class="tab-pane fade show active" id="content">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="content-outline">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-sitemap me-2"></i>
+                                Structure du cours
+                            </h5>
+                        </div>
+                        
+                        <!-- Course Outline -->
+                        <div id="course-outline">
+                            <!-- Chapters -->
+                            {% for chapter in course.chapters.all %}
+                            <div class="outline-item">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-folder text-primary me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ chapter.title }}</h6>
+                                        <small class="text-muted">Chapitre {{ chapter.order }} - {{ chapter.lessons.count }} leçons</small>
+                                    </div>
+                                </div>
+                                <div class="outline-actions">
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editChapter({{ chapter.id }})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteChapter({{ chapter.id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Lessons in Chapter -->
+                                {% for lesson in chapter.lessons.all %}
+                                <div class="outline-item ms-4" style="border-left: 2px solid #007bff;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-graduation-cap text-success me-3"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">{{ lesson.title }}</h6>
+                                            <small class="text-muted">{{ lesson.get_lesson_type_display }} - {{ lesson.estimated_duration }} min</small>
+                                        </div>
+                                    </div>
+                                    <div class="outline-actions">
+                                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson({{ lesson.id }})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson({{ lesson.id }})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                            
+                            <!-- Standalone Lessons -->
+                            {% for lesson in course.lessons.all %}
+                                {% if not lesson.chapter %}
+                                <div class="outline-item">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-graduation-cap text-success me-3"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">{{ lesson.title }}</h6>
+                                            <small class="text-muted">{{ lesson.get_lesson_type_display }} - {{ lesson.estimated_duration }} min</small>
+                                        </div>
+                                    </div>
+                                    <div class="outline-actions">
+                                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson({{ lesson.id }})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson({{ lesson.id }})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Add Content Buttons -->
+                        <div class="content-add-section">
+                            <button class="btn btn-outline-primary me-2" onclick="addChapter()">
+                                <i class="fas fa-plus"></i> Ajouter un chapitre
+                            </button>
+                            <button class="btn btn-outline-success" onclick="addLesson()">
+                                <i class="fas fa-plus"></i> Ajouter une leçon
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <!-- Course Statistics -->
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Statistiques
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="stats-number">{{ course.chapters.count }}</div>
+                                    <small class="text-muted fw-600">Chapitres</small>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stats-number">{{ course.lessons.count }}</div>
+                                    <small class="text-muted fw-600">Leçons</small>
+                                </div>
+                            </div>
+                            <hr style="border-color: rgba(226, 232, 240, 0.5);">
+                            <div class="text-center">
+                                <div class="stats-number">
+                                    {% widthratio course.lessons.count 1 10 %}
+                                </div>
+                                <small class="text-muted fw-600">Minutes estimées</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-clock me-2"></i>
+                                Activité récente
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="small">
+                                <div class="mb-3 d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-edit text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-600">Cours modifié</div>
+                                        <div class="text-muted">{{ course.updated_at|date:"d/m/Y H:i" }}</div>
+                                    </div>
+                                </div>
+                                {% if course.last_sync %}
+                                <div class="mb-3 d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="rounded-circle bg-info d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-sync text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-600">Dernière sync</div>
+                                        <div class="text-muted">{{ course.last_sync|date:"d/m/Y H:i" }}</div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="rounded-circle bg-success d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-plus text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-600">Créé le</div>
+                                        <div class="text-muted">{{ course.created_at|date:"d/m/Y" }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assets Tab -->
+        <div class="tab-pane fade" id="assets">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Fichiers du cours</h5>
+                        <button class="btn btn-primary" onclick="uploadAsset()">
+                            <i class="fas fa-upload"></i> Uploader un fichier
+                        </button>
+                    </div>
+                    
+                    <!-- Asset Filters -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <select class="form-select" id="assetTypeFilter">
+                                <option value="">Tous les types</option>
+                                <option value="image">Images</option>
+                                <option value="video">Vidéos</option>
+                                <option value="audio">Audio</option>
+                                <option value="document">Documents</option>
+                                <option value="archive">Archives</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="assetSearch" placeholder="Rechercher des fichiers...">
+                        </div>
+                    </div>
+                    
+                    <!-- Assets Grid -->
+                    <div class="asset-grid" id="assetsGrid">
+                        <!-- Assets will be loaded here via JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <!-- Upload Guidelines -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Conseils d'upload</h6>
+                        </div>
+                        <div class="card-body small">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Taille max: 50MB</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Images: JPG, PNG, GIF</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Vidéos: MP4, WebM</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Docs: PDF, Word, PowerPoint</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-pane fade" id="settings">
+            <div class="row">
+                <div class="col-md-8">
+                    <!-- Basic Settings -->
+                    <div class="settings-section">
+                        <div class="settings-header">Informations de base</div>
+                        <div class="settings-body">
+                            <form id="courseSettingsForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nom du cours</label>
+                                        <input type="text" class="form-control" name="display_name" value="{{ course.title }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Langue</label>
+                                        <select class="form-select" name="language">
+                                            <option value="fr">Français</option>
+                                            <option value="en">English</option>
+                                            <option value="es">Español</option>
+                                            <option value="nl">Nederlands</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Description courte</label>
+                                    <textarea class="form-control" name="short_description" rows="3">{{ course.description }}</textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Vue d'ensemble</label>
+                                    <textarea class="form-control" name="overview" rows="5"></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Effort estimé</label>
+                                    <input type="text" class="form-control" name="effort" placeholder="ex: 2-4 heures par semaine">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Schedule Settings -->
+                    <div class="settings-section">
+                        <div class="settings-header">Planning du cours</div>
+                        <div class="settings-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Date de début</label>
+                                    <input type="datetime-local" class="form-control" name="start_date">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Date de fin</label>
+                                    <input type="datetime-local" class="form-control" name="end_date">
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Début d'inscription</label>
+                                    <input type="datetime-local" class="form-control" name="enrollment_start">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fin d'inscription</label>
+                                    <input type="datetime-local" class="form-control" name="enrollment_end">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        <button class="btn btn-primary" onclick="saveCourseSettings()">
+                            <i class="fas fa-save"></i> Enregistrer les paramètres
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Tab -->
+        <div class="tab-pane fade" id="advanced">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="settings-section">
+                        <div class="settings-header">Synchronisation Backend</div>
+                        <div class="settings-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Statut:</strong> <span class="badge bg-{{ course.sync_status }}">{{ course.sync_status|title }}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    {% if course.backend_id %}
+                                    <strong>ID Backend:</strong> {{ course.backend_id }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if course.last_sync %}
+                            <div class="mt-2">
+                                <strong>Dernière synchronisation:</strong> {{ course.last_sync|date:"d/m/Y H:i:s" }}
+                            </div>
+                            {% endif %}
+                            {% if course.sync_error %}
+                            <div class="alert alert-danger mt-3">
+                                <h6>Erreur de synchronisation:</h6>
+                                <p class="mb-0">{{ course.sync_error }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Uploader un fichier</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Fichier</label>
+                        <input type="file" class="form-control" name="file" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nom d'affichage</label>
+                        <input type="text" class="form-control" name="display_name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="submitUpload()">Uploader</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const courseId = {{ course.id }};
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    loadAssets();
+});
+
+// Asset Management Functions
+function loadAssets() {
+    const typeFilter = document.getElementById('assetTypeFilter').value;
+    const search = document.getElementById('assetSearch').value;
+    
+    let url = `/contentstore/api/courses/${courseId}/assets/?`;
+    if (typeFilter) url += `type=${typeFilter}&`;
+    if (search) url += `search=${search}&`;
+    
+    fetch(url, {
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            renderAssets(data.assets);
+        }
+    })
+    .catch(error => console.error('Error loading assets:', error));
+}
+
+function renderAssets(assets) {
+    const grid = document.getElementById('assetsGrid');
+    grid.innerHTML = '';
+    
+    assets.forEach(asset => {
+        const card = document.createElement('div');
+        card.className = 'asset-card';
+        card.innerHTML = `
+            ${asset.asset_type === 'image' && asset.file_url ? 
+                `<img src="${asset.file_url}" class="asset-preview" alt="${asset.display_name}">` :
+                `<div class="asset-preview d-flex align-items-center justify-content-center bg-light">
+                    <i class="fas fa-file fa-2x text-muted"></i>
+                </div>`
+            }
+            <h6 class="mt-2 mb-1">${asset.display_name}</h6>
+            <small class="text-muted">${asset.file_size_display}</small>
+            <div class="mt-2">
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="editAsset(${asset.id})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteAsset(${asset.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function uploadAsset() {
+    new bootstrap.Modal(document.getElementById('uploadModal')).show();
+}
+
+function submitUpload() {
+    const form = document.getElementById('uploadForm');
+    const formData = new FormData(form);
+    
+    fetch(`/contentstore/api/courses/${courseId}/assets/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+            loadAssets();
+            showAlert('Fichier uploadé avec succès!', 'success');
+        } else {
+            showAlert(data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showAlert('Erreur lors de l\'upload', 'danger');
+    });
+}
+
+// Course Management Functions
+function syncCourse(courseId) {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Synchronisation...';
+    
+    fetch(`/api/sync/sync-unit/${courseId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Cours synchronisé avec succès!', 'success');
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            showAlert('Erreur de synchronisation: ' + (data.errors?.join(', ') || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        showAlert('Erreur réseau lors de la synchronisation', 'danger');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sync"></i> Synchroniser';
+    });
+}
+
+function saveCourseSettings() {
+    const form = document.getElementById('courseSettingsForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    fetch(`/contentstore/api/courses/${courseId}/settings/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Paramètres sauvegardés avec succès!', 'success');
+        } else {
+            showAlert('Erreur lors de la sauvegarde: ' + data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        showAlert('Erreur réseau lors de la sauvegarde', 'danger');
+    });
+}
+
+// Utility Functions
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const container = document.querySelector('.container-fluid');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+
+// Event Listeners
+document.getElementById('assetTypeFilter').addEventListener('change', loadAssets);
+document.getElementById('assetSearch').addEventListener('input', debounce(loadAssets, 500));
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Course Publishing Functions
+function publishCourse(courseId) {
+    const btn = event.target;
+    const isCurrentlyPublished = btn.textContent.includes('Dépublier');
+    const action = isCurrentlyPublished ? 'unpublish' : 'publish';
+    
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${action === 'publish' ? 'Publication...' : 'Dépublication...'}`;
+    
+    fetch(`/contentstore/api/courses/${courseId}/publish/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: action })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(data.message, 'success');
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            showAlert('Erreur: ' + data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        showAlert('Erreur réseau lors de la publication', 'danger');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-${isCurrentlyPublished ? 'globe' : 'eye-slash'}"></i> ${isCurrentlyPublished ? 'Publier' : 'Dépublier'}`;
+    });
+}
+
+function unpublishCourse(courseId) {
+    publishCourse(courseId);
+}
+
+// Placeholder functions for future implementation
+function addChapter() { showAlert('Fonction à implémenter: Ajouter un chapitre', 'info'); }
+function addLesson() { showAlert('Fonction à implémenter: Ajouter une leçon', 'info'); }
+function editChapter(id) { showAlert(`Fonction à implémenter: Modifier le chapitre ${id}`, 'info'); }
+function editLesson(id) { showAlert(`Fonction à implémenter: Modifier la leçon ${id}`, 'info'); }
+function deleteChapter(id) { showAlert(`Fonction à implémenter: Supprimer le chapitre ${id}`, 'info'); }
+function deleteLesson(id) { showAlert(`Fonction à implémenter: Supprimer la leçon ${id}`, 'info'); }
+function editAsset(id) { showAlert(`Fonction à implémenter: Modifier l'asset ${id}`, 'info'); }
+function deleteAsset(id) { showAlert(`Fonction à implémenter: Supprimer l'asset ${id}`, 'info'); }
+function previewCourse() { showAlert('Fonction à implémenter: Aperçu du cours', 'info'); }
+</script>
+{% endblock %}

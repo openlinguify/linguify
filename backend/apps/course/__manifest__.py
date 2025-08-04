@@ -1,34 +1,27 @@
 # -*- coding: utf-8 -*-
-# Part of Linguify. See LICENSE file for full copyright and licensing details.
 __manifest__ = {
-    'name': 'Learning',
-    'version': '2.0.0',
-    'category': 'Education/Language Learning',
-    'summary': 'Interactive language lessons and exercises',
+    'name': 'Course',
+    'version': '1.0.0',
+    'category': 'Learning',
+    'summary': 'Follow and track your language learning courses and progress.',
     'description': '''
-Learning Module for Open Linguify (v2.0)
-===================================
+Course Module for Linguify
+===========================
 
-Interactive language learning system with modular architecture.
+Course tracking and progress management system.
 
 Features:
-- Multi-level learning units (A1-C2)
-- Interactive lessons with theory, vocabulary, and exercises
-- Multiple exercise types: Matching, Fill-in-blanks, Multiple choice, Speaking
-- Multilingual support (EN, FR, ES, NL)
-- Test recaps and progress assessment
-- Clean modular codebase for better maintenance
-
-Technical Improvements (v2.0):
-- Modular models structure (core, exercises, content, tests)
-- MultilingualMixin for code reuse
-- Optimized admin interface
-- Django templates instead of DRF API
-- Better performance and maintainability
+- Course enrollment and tracking
+- Lesson progress monitoring
+- Vocabulary learning progress
+- Exercise completion tracking
+- Learning statistics and analytics
+- Course content consumption
+- Modern and intuitive interface
 
 Usage:
-- Web interface via saas_web dashboard
-- Admin interface for content management
+- API: /api/v1/course/
+- Interface web: /course/
     ''',
     'author': 'Linguify Team',
     'website': 'https://linguify.com',
@@ -37,19 +30,25 @@ Usage:
         'authentication',  # Core authentication system
         'app_manager',     # App management system
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
-    'application': True,
+    'application': False,  # En développement - pas prêt pour production
     'sequence': 10,
     'frontend_components': {
-        'main_component': 'LearningView',
-        'route': '/learning',
-        'icon': 'GraduationCap',
+        'main_component': 'CourseApp',
+        'route': '/course',
+        'icon': 'bi-book',
+        'static_icon': '/static/course/description/icon.png',
         'menu_order': 1,
+        'display_name': 'Courses',
+        'description': 'Follow and track your language courses',
+        'display_category': 'education',
+        'category_label': 'Education',
+        'category_icon': 'bi-mortarboard',
     },
     'api_endpoints': {
-        'base_url': '/learning/',
-        'web_views': 'course_web_views',
+        'base_url': '/api/v1/course/',
+        'viewset': 'CourseViewSet',
     },
     'permissions': {
         'create': 'auth.user',
@@ -59,15 +58,35 @@ Usage:
     },
     'technical_info': {
         'django_app': 'apps.course',
-        'models': [
-            'Unit', 'Lesson', 'ContentLesson', 'TheoryContent',
-            'VocabularyList', 'MultipleChoiceQuestion', 'MatchingExercise',
-            'FillBlankExercise', 'SpeakingExercise', 'ExerciseGrammarReordering',
-            'TestRecap', 'TestRecapQuestion', 'TestRecapResult'
-        ],
+        'models': ['CourseEnrollment', 'LessonProgress', 'VocabularyProgress', 'ExerciseCompletion'],
         'admin_registered': True,
-        'web_interface': True,
-        'refactored': True,
-        'version': '2.0.0'
+        'rest_framework': True,
+        'has_web_interface': True,
+        'web_url': '/course/',
+        'has_settings': True,
+        'settings_component': 'CourseSettings'
+    },
+    'settings_config': {
+        'component_name': 'CourseSettings',
+        'display_name': 'Course Settings',
+        'description': 'Course tracking and learning preferences',
+        'icon': 'bi-gear-fill',
+        'categories': [
+            {
+                'name': 'tracking',
+                'label': 'Progress Tracking',
+                'description': 'Settings for progress monitoring and statistics'
+            },
+            {
+                'name': 'notifications', 
+                'label': 'Notifications',
+                'description': 'Learning reminders and progress notifications'
+            },
+            {
+                'name': 'preferences',
+                'label': 'Preferences',
+                'description': 'Personal learning preferences and display options'
+            }
+        ]
     }
 }

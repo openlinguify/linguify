@@ -1,0 +1,370 @@
+{% extends "public_web/public_base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Notes - Carnet de Notes Intelligent{% endblock %}
+
+{% block meta_description %}Organisez vos notes d'apprentissage de manière intelligente. Éditeur riche, catégorisation automatique, recherche rapide et synchronisation cloud.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-gradient">
+    <div class="hero-section">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle bg-white me-4" style="width: 80px; height: 80px; box-shadow: 0 8px 25px rgba(255,255,255,0.3);">
+                            <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" style="width: 50px; height: 50px;">
+                        </div>
+                        <div>
+                            <h1 class="display-4 fw-bold mb-2 text-white">
+                                Carnet de Notes
+                            </h1>
+                            <p class="lead mb-0 text-white" style="opacity: 0.9;">Organisez vos apprentissages de manière intelligente</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if not user.is_authenticated %}
+                            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-person-plus me-2"></i>{% trans "Commencer gratuitement" %}
+                            </a>
+                        {% else %}
+                            <a href="/notebook/" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-journal-text me-2"></i>{% trans "Créer mes notes" %}
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="bi bi-chat-dots me-2"></i>{% trans "Contact" %}
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-4 bg-white" style="width: 200px; height: 200px; box-shadow: 0 15px 40px rgba(255,255,255,0.2);">
+                            <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" style="width: 120px; height: 120px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Description Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" style="width: 50px; height: 50px;">
+                            </div>
+                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "Organisation Intelligente de Notes" %}</h2>
+                        </div>
+                        
+                        <div class="description-content">
+                            <p class="lead text-center mb-4" style="color: #6b7280;">Gardez une trace de votre parcours d'apprentissage avec notre système de notes intelligent. Capturez, organisez et retrouvez facilement toutes vos connaissances en un seul endroit.</p>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-type text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Éditeur de texte enrichi</h6>
+                                            <small class="text-muted">Mise en forme avancée</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-tags text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Catégorisation intelligente</h6>
+                                            <small class="text-muted">Organisation automatique</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-search text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Recherche instantanée</h6>
+                                            <small class="text-muted">Dans toutes vos notes</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-cloud text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Synchronisation cloud</h6>
+                                            <small class="text-muted">Accès partout</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-folder text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Organisation par tags</h6>
+                                            <small class="text-muted">Dossiers personnalisés</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-translate text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Intégration vocabulaire</h6>
+                                            <small class="text-muted">Depuis vos cours</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-people text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Partage et collaboration</h6>
+                                            <small class="text-muted">Avec d'autres apprenants</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-question-circle text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Mode révision</h6>
+                                            <small class="text-muted">Notes en quiz</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert border-0 mt-4" style="background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%); border-left: 4px solid var(--linguify-primary) !important;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-lightbulb me-3" style="color: var(--linguify-primary); font-size: 1.2rem;"></i>
+                                    <div>
+                                        <strong style="color: var(--linguify-primary);">Astuce :</strong>
+                                        <span class="text-muted">Utilisez les hashtags pour organiser automatiquement vos notes par thème !</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4" style="border-color: rgba(45, 91, 186, 0.1);">
+                        
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-tag text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Category" %}</h6>
+                                <p class="text-muted small">Productivité & Notes</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                    <i class="bi bi-code-slash text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Version" %}</h6>
+                                <p class="text-muted small">1.0.0</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-person text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Author" %}</h6>
+                                <p class="text-muted small">Linguify Team</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Pourquoi choisir notre Carnet de Notes ?</h2>
+                <p class="lead text-muted">Toutes les fonctionnalités pour un apprentissage organisé</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Éditeur Enrichi</h5>
+                    <p class="text-muted">Formatez vos notes avec style et clarté</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Recherche Intelligente</h5>
+                    <p class="text-muted">Retrouvez instantanément n'importe quelle information</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-tags"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Organisation Auto</h5>
+                    <p class="text-muted">Catégorisation automatique par thèmes</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-cloud"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Sync Cloud</h5>
+                    <p class="text-muted">Accès depuis tous vos appareils</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Use Cases Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Cas d'Usage Parfaits</h2>
+                <p class="lead text-muted">Adaptez votre prise de notes à vos besoins</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                <i class="bi bi-book text-white"></i>
+                            </div>
+                            <h5 class="mb-0 fw-bold">Notes de Cours</h5>
+                        </div>
+                        <p class="text-muted">Prenez des notes structurées pendant vos leçons et organisez-les par chapitre ou thème.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                <i class="bi bi-translate text-white"></i>
+                            </div>
+                            <h5 class="mb-0 fw-bold">Vocabulaire</h5>
+                        </div>
+                        <p class="text-muted">Collectez et organisez le nouveau vocabulaire avec définitions, exemples et contexte.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                <i class="bi bi-lightbulb text-white"></i>
+                            </div>
+                            <h5 class="mb-0 fw-bold">Idées et Réflexions</h5>
+                        </div>
+                        <p class="text-muted">Capturez vos idées d'apprentissage et réflexions sur votre progression.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                <i class="bi bi-journal-check text-white"></i>
+                            </div>
+                            <h5 class="mb-0 fw-bold">Résumés de Révision</h5>
+                        </div>
+                        <p class="text-muted">Créez des résumés concis pour vos sessions de révision et examens.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white mb-3" style="width: 80px; height: 80px; box-shadow: 0 8px 30px rgba(255,255,255,0.3);">
+                <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" style="width: 50px; height: 50px;">
+            </div>
+        </div>
+        
+        <h2 class="display-5 fw-bold mb-4 text-white">
+            {% trans "Prêt à organiser vos apprentissages ?" %}
+        </h2>
+        <p class="lead mb-5 text-white" style="opacity: 0.95; max-width: 600px; margin: 0 auto;">
+            {% trans "Commencez à prendre des notes intelligentes et gardez une trace de votre progression." %}
+        </p>
+        
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+            {% if not user.is_authenticated %}
+                <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-rocket-takeoff me-2"></i>{% trans "Commencer gratuitement" %}
+                </a>
+            {% else %}
+                <a href="/notebook/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                    <i class="bi bi-journal-text me-2"></i>{% trans "Créer mes notes" %}
+                </a>
+            {% endif %}
+            <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 16px; border: 2px solid rgba(255,255,255,0.8);">
+                <i class="bi bi-chat-dots me-2"></i>{% trans "Contact" %}
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -40,6 +40,11 @@
             <option value="title_asc">Titre A-Z</option>
             <option value="title_desc">Titre Z-A</option>
         </select>
+        
+        <button id="manageNotebookTagsBtn" class="btn btn-outline-primary btn-sm" title="Gérer les étiquettes">
+            <i class="bi bi-tag-fill"></i>
+            <span class="d-none d-lg-inline ms-1">Étiquettes</span>
+        </button>
     </div>
     
     <div class="d-flex align-items-center">
@@ -47,15 +52,15 @@
         <div id="multiSelectControls" class="btn-toolbar fade" style="display: none;" role="toolbar">
             <div class="btn-group btn-group-sm me-2" role="group">
                 <button type="button" class="btn btn-outline-secondary" onclick="bulkDelete()" id="bulkDeleteBtn" title="Supprimer la sélection">
-                    <img src="{% static 'src/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
+                    <img src="{% static 'notebook/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
                     <span class="badge bg-secondary ms-1" id="selectedCount">0</span>
                 </button>
                 <button type="button" class="btn btn-outline-secondary" onclick="bulkArchive()" title="Archiver la sélection">
-                    <img src="{% static 'src/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
+                    <img src="{% static 'notebook/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
                     <span class="badge bg-secondary ms-1" id="selectedCountArchive">0</span>
                 </button>
                 <button type="button" class="btn btn-outline-secondary" onclick="bulkUnarchive()" title="Désarchiver la sélection">
-                    <img src="{% static 'src/img/archive.png' %}" alt="Unarchive" style="width: 16px; height: 16px; transform: rotate(180deg);">
+                    <img src="{% static 'notebook/img/archive.png' %}" alt="Unarchive" style="width: 16px; height: 16px; transform: rotate(180deg);">
                     <span class="badge bg-secondary ms-1" id="selectedCountUnarchive">0</span>
                 </button>
             </div>
@@ -68,13 +73,13 @@
         <div id="normalControls" class="btn-toolbar fade show" role="toolbar">
             <div class="btn-group btn-group-sm me-2" role="group">
                 <button type="button" class="btn btn-outline-secondary" onclick="toggleMultiSelect()" title="Mode sélection multiple">
-                    <img src="{% static 'src/img/select.png' %}" alt="Select" style="width: 16px; height: 16px;">
+                    <img src="{% static 'notebook/img/select.png' %}" alt="Select" style="width: 16px; height: 16px;">
                 </button>
                 <button type="button" class="btn btn-outline-secondary" onclick="saveCurrentNote(true)" id="saveButton" title="Sauvegarder la note">
-                    <img src="{% static 'src/img/save-cloud.png' %}" alt="Save" style="width: 18px; height: 14px;">
+                    <img src="{% static 'notebook/img/save-cloud.png' %}" alt="Save" style="width: 18px; height: 14px;">
                 </button>
                 <button type="button" class="btn btn-outline-secondary" onclick="refreshNotes()" title="Actualiser les notes">
-                    <img src="{% static 'src/img/refresh.png' %}" alt="Refresh" style="width: 16px; height: 16px;">
+                    <img src="{% static 'notebook/img/refresh.png' %}" alt="Refresh" style="width: 16px; height: 16px;">
                 </button>
             </div>
             <button type="button" class="btn btn-outline-secondary btn-sm d-md-none" onclick="toggleSidebar()" title="Afficher/masquer la sidebar">
@@ -136,10 +141,10 @@
                     
                     <div class="d-flex align-items-center gap-2 ms-3">
                         <button class="btn btn-outline-secondary btn-sm" onclick="toggleArchiveCurrentNote()" id="archiveToggleBtn" title="Archiver/Désarchiver">
-                            <img src="{% static 'src/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
+                            <img src="{% static 'notebook/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
                         </button>
                         <button class="btn btn-outline-secondary btn-sm" onclick="deleteCurrentNote()">
-                            <img src="{% static 'src/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
+                            <img src="{% static 'notebook/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
                         </button>
                     </div>
                 </div>
@@ -272,6 +277,19 @@
                                 </div>
                                 
                                 <div class="col-12">
+                                    <label class="form-label">
+                                        <i class="bi bi-tags me-1"></i>
+                                        Étiquettes
+                                    </label>
+                                    <div class="tags-input-container">
+                                        <div class="tags-display" id="noteTagsDisplay"></div>
+                                        <input type="text" id="noteTagsInput" class="form-control tags-input" 
+                                               placeholder="Ajouter des étiquettes (appuyez sur Entrée)">
+                                    </div>
+                                    <div class="form-text">Organisez vos notes avec des étiquettes. Appuyez sur Entrée pour ajouter.</div>
+                                </div>
+                                
+                                <div class="col-12">
                                     <div class="form-check form-switch mb-2">
                                         <input class="form-check-input" type="checkbox" id="notePinned" onchange="saveCurrentNote()">
                                         <label class="form-check-label" for="notePinned">
@@ -317,10 +335,117 @@
     </div>
 </div>
 
+<!-- Modal de gestion des tags pour le notebook -->
+<div class="modal fade" id="notebookTagsManagementModal" tabindex="-1" aria-labelledby="notebookTagsManagementModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notebookTagsManagementModalLabel">
+                    <i class="bi bi-tags me-2"></i>Gestion des étiquettes - Notebook
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Barre de recherche -->
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="notebookTagsSearchInput" class="form-control" placeholder="Rechercher une étiquette...">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button id="createNewNotebookTagBtn" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-lg me-1"></i>Nouvelle étiquette
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Liste des tags -->
+                <div class="tags-management-container">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 50px;">
+                                        <input type="checkbox" id="selectAllNotebookTags" class="form-check-input">
+                                    </th>
+                                    <th>Nom</th>
+                                    <th style="width: 80px;">Couleur</th>
+                                    <th style="width: 100px;">Utilisations</th>
+                                    <th style="width: 120px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="notebookTagsTableBody">
+                                <!-- Les tags seront chargés dynamiquement ici -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Pagination des tags">
+                    <ul class="pagination justify-content-center" id="notebookTagsPagination">
+                        <!-- Pagination sera générée dynamiquement -->
+                    </ul>
+                </nav>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="deleteSelectedNotebookTagsBtn" style="display: none;">
+                    <i class="bi bi-trash me-1"></i>Supprimer sélection
+                </button>
+                <div class="ms-auto">
+                    <span id="notebookTagsCount" class="text-muted me-3">0 étiquette(s)</span>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de création/édition d'étiquette pour le notebook -->
+<div class="modal fade" id="notebookTagEditModal" tabindex="-1" aria-labelledby="notebookTagEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notebookTagEditModalLabel">Nouvelle étiquette</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="notebookTagEditForm">
+                    <div class="mb-3">
+                        <label for="notebookTagNameInput" class="form-label">Nom de l'étiquette *</label>
+                        <input type="text" class="form-control" id="notebookTagNameInput" required maxlength="50">
+                        <div class="form-text">Utilisez des noms courts et descriptifs</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notebookTagColorInput" class="form-label">Couleur</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="color" class="form-control form-control-color" id="notebookTagColorInput" value="#3B82F6">
+                            <div class="tag-preview" id="notebookTagPreview">
+                                <span class="badge" style="background: #3B82F6; color: white;">Aperçu</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="saveNotebookTagBtn">
+                    <i class="bi bi-check-lg me-1"></i>Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- CSRF Token hidden input -->
 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'src/js/notebook.js' %}"></script>
+<script src="{% static 'notebook/js/notebook.js' %}"></script>
+<script src="{% static 'notebook/js/notebook-tags-management.js' %}"></script>
 {% endblock %}
