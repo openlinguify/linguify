@@ -429,6 +429,10 @@ class Flashcard(models.Model):
         indexes = [
             models.Index(fields=['user', 'deck']),  # Accélère les requêtes par utilisateur et deck
             models.Index(fields=['next_review']),   # Accélère les requêtes pour les cartes à réviser
+            models.Index(fields=['user', 'learned']),  # Accélère les statistiques learned/total
+            models.Index(fields=['deck', 'learned']),  # Accélère les statistiques par deck
+            models.Index(fields=['user', 'last_reviewed']),  # Accélère les requêtes de révision récente
+            models.Index(fields=['deck', 'next_review']),  # Optimise les requêtes de cartes dues
         ]
 
     def __str__(self):

@@ -156,6 +156,17 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/hour',        # Utilisateurs anonymes: 100 requêtes par heure
+        'user': '1000/hour',       # Utilisateurs authentifiés: 1000 requêtes par heure
+        'upload': '100/hour',       # Uploads (photos, etc.): 10 par heure
+        'stats': '60/hour',        # Statistiques: 60 par heure
+        'create': '100/hour',      # Création d'objets: 100 par heure
+    },
 }
 
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
