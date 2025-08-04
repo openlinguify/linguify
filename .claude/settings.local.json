@@ -197,7 +197,8 @@
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_permissions.DeckPermissionTest.test_owner_can_view_private_deck --verbosity=2 --keepdb)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_views_api.FlashcardDeckViewSetTest.test_deck_stats --verbosity=2 --keepdb)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests --verbosity=1 --keepdb)",
-      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_permissions.AnonymousUserPermissionTest.test_anonymous_cannot_view_public_deck --verbosity=2 --keepdb)"
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_permissions.AnonymousUserPermissionTest.test_anonymous_cannot_view_public_deck --verbosity=2 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.authentication.tests.test_profile_pictures.ProfilePictureTestCase.test_save_processed_images --keepdb --verbosity=2)"
     ],
     "deny": []
   },

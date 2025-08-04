@@ -108,13 +108,13 @@ class ProfilePictureTestCase(TestCase):
         """Test du traitement d'une image JPG."""
         result = process_profile_picture(JPG_1PX, self.user.id, 'JPEG')
         
-        # Vérifier les chemins générés
-        self.assertTrue(result['images']['optimized']['path'].startswith(f"profiles/{self.user.id}/optimized/"))
-        self.assertTrue(result['images']['original']['path'].startswith(f"profiles/{self.user.id}/original/"))
+        # Vérifier les chemins générés (nouveau format sans préfixe profiles/)
+        self.assertTrue(result['images']['optimized']['path'].startswith(f"{self.user.id}/optimized/"))
+        self.assertTrue(result['images']['original']['path'].startswith(f"{self.user.id}/original/"))
         
         # Vérifier les formats
         for image_type in ['small', 'medium', 'large']:
-            self.assertTrue(result['images'][image_type]['path'].startswith(f"profiles/{self.user.id}/thumbnails/{image_type}_"))
+            self.assertTrue(result['images'][image_type]['path'].startswith(f"{self.user.id}/thumbnails/{image_type}_"))
     
     def test_ensure_profile_directories(self):
         """Test de la création des répertoires de profil."""
@@ -142,8 +142,11 @@ class ProfilePictureTestCase(TestCase):
         saved_paths = save_processed_images(result)
         
         # Vérifier que les fichiers ont été créés
+        # Dans les tests, nous utilisons TEMP_MEDIA_ROOT avec override_settings
+        # Le ProfileStorage pointera vers TEMP_MEDIA_ROOT/profiles
+        temp_profiles_dir = os.path.join(TEMP_MEDIA_ROOT, 'profiles')
         for image_type, path in saved_paths.items():
-            full_path = os.path.join(TEMP_MEDIA_ROOT, path)
+            full_path = os.path.join(temp_profiles_dir, path)
             self.assertTrue(os.path.exists(full_path))
     
     def test_clean_old_versions(self):
