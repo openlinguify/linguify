@@ -7,6 +7,11 @@ on:
     branches: [ dev, develop, staging, main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
 jobs:
   # Tests automatiques sur push vers develop
   test:
@@ -44,7 +49,10 @@ jobs:
         working-directory: ./backend
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
       
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -145,9 +153,10 @@ jobs:
       pull-requests: write
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository  
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
           fetch-depth: 0
       
       - name: Configure Git
@@ -197,9 +206,10 @@ jobs:
         working-directory: ./backend
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository  
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
           fetch-depth: 0
       
       - name: Set up Python 3.12
@@ -304,9 +314,10 @@ jobs:
       pull-requests: write
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository  
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
           fetch-depth: 0
       
       - name: Configure Git
