@@ -2,7 +2,6 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from .views import (
-    QuizzMainView,
     QuizViewSet,
     AnalyticsStatsView,
     AnalyticsCategoriesView,
@@ -21,7 +20,6 @@ router.register(r'', QuizViewSet, basename='quiz')
 app_name = 'quizz'
 
 urlpatterns = [
-    path('', QuizzMainView.as_view(), name='app'),
     path('', include(router.urls)),
     
     # Analytics endpoints
