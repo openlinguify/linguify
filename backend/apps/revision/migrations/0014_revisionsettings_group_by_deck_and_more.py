@@ -11,39 +11,45 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # First check if the table exists, if not create it with all fields
+        # Drop and recreate the table to match the model exactly
         migrations.RunSQL(
             sql=[
-                # Create table if it doesn't exist with all the necessary fields
+                # Drop the existing table if it exists
+                "DROP TABLE IF EXISTS revision_revisionsettings;",
+                # Create table with all the fields from the model
                 """
-                CREATE TABLE IF NOT EXISTS revision_revisionsettings (
+                CREATE TABLE revision_revisionsettings (
                     id SERIAL PRIMARY KEY,
                     user_id INTEGER NOT NULL REFERENCES authentication_user(id) ON DELETE CASCADE,
-                    cards_per_session INTEGER DEFAULT 10,
-                    difficulty_level VARCHAR(20) DEFAULT 'normal',
-                    study_mode VARCHAR(20) DEFAULT 'spaced',
-                    daily_goal INTEGER DEFAULT 10,
-                    enable_notifications BOOLEAN DEFAULT true,
-                    notification_frequency VARCHAR(20) DEFAULT 'daily',
-                    preferred_time_hour INTEGER DEFAULT 9,
-                    preferred_time_minute INTEGER DEFAULT 0,
-                    timezone VARCHAR(50) DEFAULT 'UTC',
+                    default_study_mode VARCHAR(20) DEFAULT 'spaced',
+                    default_difficulty VARCHAR(20) DEFAULT 'normal',
+                    default_session_duration INTEGER DEFAULT 20,
+                    cards_per_session INTEGER DEFAULT 20,
                     auto_advance BOOLEAN DEFAULT true,
-                    show_pronunciation BOOLEAN DEFAULT true,
-                    show_examples BOOLEAN DEFAULT true,
-                    randomize_order BOOLEAN DEFAULT true,
-                    review_failed_cards BOOLEAN DEFAULT true,
-                    group_by_deck BOOLEAN DEFAULT false,
-                    hide_learned_words BOOLEAN DEFAULT false,
+                    spaced_repetition_enabled BOOLEAN DEFAULT true,
+                    initial_interval_easy INTEGER DEFAULT 4,
+                    initial_interval_normal INTEGER DEFAULT 2,
+                    initial_interval_hard INTEGER DEFAULT 1,
+                    required_reviews_to_learn INTEGER DEFAULT 3,
+                    reset_on_wrong_answer BOOLEAN DEFAULT false,
+                    show_progress_stats BOOLEAN DEFAULT true,
+                    daily_reminder_enabled BOOLEAN DEFAULT true,
+                    reminder_time TIME DEFAULT '18:00:00',
+                    notification_frequency VARCHAR(20) DEFAULT 'daily',
+                    enable_animations BOOLEAN DEFAULT true,
+                    auto_play_audio BOOLEAN DEFAULT false,
+                    keyboard_shortcuts_enabled BOOLEAN DEFAULT true,
                     show_word_stats BOOLEAN DEFAULT true,
                     stats_display_mode VARCHAR(20) DEFAULT 'detailed',
+                    hide_learned_words BOOLEAN DEFAULT false,
+                    group_by_deck BOOLEAN DEFAULT false,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     UNIQUE(user_id)
                 );
                 """,
                 # Add indexes
-                "CREATE INDEX IF NOT EXISTS revision_revisionsettings_user_id_idx ON revision_revisionsettings (user_id);",
+                "CREATE INDEX revision_revisionsettings_user_id_idx ON revision_revisionsettings (user_id);",
             ],
             reverse_sql=[
                 "DROP TABLE IF EXISTS revision_revisionsettings;",
