@@ -29,6 +29,10 @@ DEBUG = env.bool('DEBUG', default=True)
 django_env = env('DJANGO_ENV', default='development')
 is_production = django_env == 'production'
 
+# Force production settings if DEBUG=False
+if not DEBUG:
+    is_production = True
+
 if is_production:
     ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['openlinguify.com', 'www.openlinguify.com', 'linguify-portal.onrender.com'])
 else:
