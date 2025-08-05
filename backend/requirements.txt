@@ -22,6 +22,6 @@ redis==6.2.0
 supabase==2.15.3
 gunicorn==23.0.0
 whitenoise==6.9.0
-channels-redis==4.2.1
+channels-redis==4.3.0
 dj-database-url==3.0.0
 pywebpush==2.0.3
