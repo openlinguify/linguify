@@ -6,7 +6,7 @@ authors = []
 readme = "Readme.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = ">=3.11,<4.0"
 Django = "5.1.10"
 djangorestframework = "3.16.0"
 django-filter = "25.1"
