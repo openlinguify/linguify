@@ -5,6 +5,10 @@ on:
     branches: [ develop ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   test-and-deploy:
     name: Test & Push to Main
@@ -42,7 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
       
       - name: Set up Python 3.12
