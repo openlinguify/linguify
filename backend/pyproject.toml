@@ -30,6 +30,7 @@ redis = "^6.2.0"
 pyjwt = "^2.10.1"
 whitenoise = "^6.9.0"
 pywebpush = "^2.0.3"
+gunicorn = "^21.0.0"
 
 # Voice/Audio dependencies
 pyttsx3 = "^2.90"
