@@ -203,7 +203,9 @@
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.quizz.tests.tests.QuizAPITests.test_list_quizzes --keepdb --verbosity=2)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.quizz.tests.tests.QuizAPITests.test_create_quiz --keepdb --verbosity=2)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings poetry run python -c \"\nimport django\ndjango.setup()\nfrom app_manager.services import UserAppService\nprint(''✅ UserAppService import successful'')\n\")",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "WebFetch(domain:docs.render.com)",
+      "WebFetch(domain:render.com)"
     ],
     "deny": []
   },
