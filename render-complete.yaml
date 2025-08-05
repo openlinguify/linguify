@@ -6,7 +6,12 @@ services:
     region: frankfurt
     plan: starter
     rootDir: portal
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      pip install poetry
+      poetry config virtualenvs.create false
+      poetry install --no-dev
+      python manage.py collectstatic --noinput
+      python manage.py migrate
     startCommand: gunicorn portal.wsgi:application --bind 0.0.0.0:$PORT
     domains:
       - openlinguify.com
@@ -21,9 +26,11 @@ services:
       - key: SECRET_KEY
         sync: false
       - key: ALLOWED_HOSTS
-        value: openlinguify.com,www.openlinguify.com
+        value: openlinguify.com,www.openlinguify.com,linguify-portal.onrender.com
       - key: DATABASE_URL
         sync: false
+      - key: BACKEND_API_URL
+        value: https://app.openlinguify.com
 
   # 2. BACKEND - SaaS pour particuliers (app.openlinguify.com)
   - type: web
@@ -32,7 +39,12 @@ services:
     region: frankfurt
     plan: starter
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      pip install poetry
+      poetry config virtualenvs.create false
+      poetry install --no-dev
+      python manage.py collectstatic --noinput
+      python manage.py migrate
     startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
     domains:
       - app.openlinguify.com
