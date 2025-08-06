@@ -5,6 +5,7 @@ from django import template
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.apps import apps
+from django.conf import settings
 from ..utils import manifest_parser
 import os
 import importlib.util
@@ -159,3 +160,39 @@ def get_current_app_name(request):
         return None
     except:
         return None
+
+
+@register.simple_tag
+def backend_url(path=""):
+    """Get backend URL based on environment"""
+    # Detect production environment
+    django_env = getattr(settings, 'DJANGO_ENV', 'development')
+    is_production = django_env == 'production' or not getattr(settings, 'DEBUG', True)
+    
+    if is_production:
+        base_url = "https://app.openlinguify.com"
+    else:
+        base_url = "http://127.0.0.1:8000"
+    
+    # Clean path
+    if path and not path.startswith('/'):
+        path = '/' + path
+    
+    return base_url + path
+
+
+@register.simple_tag 
+def cms_url(path=""):
+    """Get CMS URL based on environment"""
+    django_env = getattr(settings, 'DJANGO_ENV', 'development')
+    is_production = django_env == 'production' or not getattr(settings, 'DEBUG', True)
+    
+    if is_production:
+        base_url = "https://cms.openlinguify.com"
+    else:
+        base_url = "http://127.0.0.1:8002"
+    
+    if path and not path.startswith('/'):
+        path = '/' + path
+    
+    return base_url + path
