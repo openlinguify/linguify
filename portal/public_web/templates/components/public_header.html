@@ -1,6 +1,7 @@
 <!-- Header public pour le site marketing -->
 {% load i18n %}
 {% load static %}
+{% load app_tags %}
 
 <header class="public-header">
     <nav class="navbar navbar-expand-lg">
@@ -74,7 +75,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-bold" href="http://127.0.0.1:8002" target="_blank" style="color: var(--linguify-primary) !important;">
+                        <a class="nav-link fw-bold" href="{% cms_url %}" target="_blank" style="color: var(--linguify-primary) !important;">
                             <i class="bi bi-chalkboard me-1"></i>{% trans "Espace Enseignant" %}
                         </a>
                     </li>
@@ -148,12 +149,12 @@
                 <!-- Auth buttons -->
                 <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
                     <!-- CMS Teacher Access Button -->
-                    <a href="http://127.0.0.1:8002" target="_blank" class="btn btn-sm" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none;" title="{% trans 'Accéder au CMS Enseignant' %}">
+                    <a href="{% cms_url %}" target="_blank" class="btn btn-sm" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none;" title="{% trans 'Accéder au CMS Enseignant' %}">
                         <i class="bi bi-chalkboard me-1"></i>{% trans "CMS" %}
                     </a>
                     {% if user.is_authenticated %}
                     <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
-                    <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-outline-primary">
+                    <a href="{% backend_url '/dashboard/' %}" class="btn btn-outline-primary">
                         <i class="bi bi-speedometer2 me-2"></i>Dashboard
                     </a>
                     <div class="dropdown">
@@ -170,23 +171,23 @@
                             <li><a class="dropdown-item" href="/profile/">
                                     <i class="bi bi-person me-2"></i>Mon profil
                                 </a></li>
-                            <li><a class="dropdown-item" href="http://127.0.0.1:8000/settings/">
+                            <li><a class="dropdown-item" href="{% backend_url '/settings/' %}">
                                     <i class="bi bi-gear me-2"></i>Paramètres
                                 </a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item text-danger" href="http://127.0.0.1:8000/fr/auth/logout/">
+                            <li><a class="dropdown-item text-danger" href="{% backend_url '/fr/auth/logout/' %}">
                                     <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
                                 </a></li>
                         </ul>
                     </div>
                     {% else %}
                     <!-- Redirections vers le backend pour l'authentification -->
-                    <a href="http://127.0.0.1:8000/fr/auth/login/" class="btn btn-outline-primary" target="_blank">
+                    <a href="{% backend_url '/fr/auth/login/' %}" class="btn btn-outline-primary" target="_blank">
                         <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Log In" %}
                     </a>
-                    <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary" target="_blank">
+                    <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-primary" target="_blank">
                         <i class="bi bi-person-plus me-2"></i>{% trans "Sign Up" %}
                     </a>
                     {% endif %}
@@ -195,12 +196,12 @@
                 <!-- Mobile Auth buttons -->
                 <div class="auth-buttons-mobile d-lg-none">
                     <!-- CMS Teacher Access Button Mobile -->
-                    <a href="http://127.0.0.1:8002" target="_blank" class="btn btn-sm mb-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none;" title="{% trans 'Accéder au CMS Enseignant' %}">
+                    <a href="{% cms_url %}" target="_blank" class="btn btn-sm mb-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none;" title="{% trans 'Accéder au CMS Enseignant' %}">
                         <i class="bi bi-chalkboard me-1"></i>{% trans "CMS Enseignant" %}
                     </a>
                     {% if user.is_authenticated %}
                     <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
-                    <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-outline-primary">
+                    <a href="{% backend_url '/dashboard/' %}" class="btn btn-outline-primary">
                         <i class="bi bi-speedometer2 me-2"></i>Dashboard
                     </a>
                     <div class="user-menu-mobile">
@@ -218,13 +219,13 @@
                                 <li><a class="dropdown-item" href="/profile/">
                                         <i class="bi bi-person me-2"></i>Mon profil
                                     </a></li>
-                                <li><a class="dropdown-item" href="http://127.0.0.1:8000/settings/">
+                                <li><a class="dropdown-item" href="{% backend_url '/settings/' %}">
                                         <i class="bi bi-gear me-2"></i>Paramètres
                                     </a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item text-danger" href="http://127.0.0.1:8000/fr/auth/logout/">
+                                <li><a class="dropdown-item text-danger" href="{% backend_url '/fr/auth/logout/' %}">
                                         <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
                                     </a></li>
                             </ul>
@@ -232,10 +233,10 @@
                     </div>
                     {% else %}
                     <!-- Redirections vers le backend pour l'authentification -->
-                    <a href="http://127.0.0.1:8000/fr/auth/login/" class="btn btn-outline-primary" target="_blank">
+                    <a href="{% backend_url '/fr/auth/login/' %}" class="btn btn-outline-primary" target="_blank">
                         <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Log In" %}
                     </a>
-                    <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary" target="_blank">
+                    <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-primary" target="_blank">
                         <i class="bi bi-person-plus me-2"></i>{% trans "Sign Up" %}
                     </a>
                     {% endif %}
