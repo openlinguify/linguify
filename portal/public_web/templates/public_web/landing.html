@@ -1,6 +1,7 @@
 {% extends 'public_web/public_base.html' %}
 {% load static %}
 {% load i18n %}
+{% load app_tags %}
 
 {% block title %}{% trans "OpenLinguify - Open source educational apps platform" %}{% endblock %}
 
@@ -286,7 +287,7 @@
                         </div>
                         
                         <div class="teachers-cta">
-                            <a href="http://127.0.0.1:8002" target="_blank" class="btn btn-lg me-3 mb-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none; border-radius: 25px; padding: 12px 30px; font-weight: 600; box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);">
+                            <a href="{% cms_url %}" target="_blank" class="btn btn-lg me-3 mb-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none; border-radius: 25px; padding: 12px 30px; font-weight: 600; box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);">
                                 <i class="fas fa-rocket me-2"></i>{% trans "Accéder au CMS Enseignant" %}
                             </a>
                             <a href="#teacher-benefits" class="btn btn-outline-light btn-lg mb-2" style="border-radius: 25px; padding: 12px 30px; font-weight: 600;">
@@ -714,7 +715,7 @@
                                     {% trans "Pour ajouter vos cours à Linguify, vous devez utiliser <strong>Linguify Pro</strong> (notre CMS enseignant). Une fois vos cours créés et publiés dans Linguify Pro, ils sont automatiquement synchronisés et deviennent disponibles dans le catalogue public de Linguify pour tous les étudiants." %}
                                     
                                     <div class="mt-3">
-                                        <a href="http://127.0.0.1:8002" target="_blank" class="btn btn-success btn-sm">
+                                        <a href="{% cms_url %}" target="_blank" class="btn btn-success btn-sm">
                                             <i class="bi bi-arrow-right me-1"></i>
                                             {% trans "Accéder à Linguify Pro" %}
                                         </a>
