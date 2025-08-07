@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const usernameField = document.querySelector('input[name="username"]');
     const passwordField = document.querySelector('input[name="password1"]');
     const confirmPasswordField = document.querySelector('input[name="password2"]');
+    const nativeLanguageField = document.querySelector('select[name="native_language"]');
+    const targetLanguageField = document.querySelector('select[name="target_language"]');
     
     // Username validation
     if (usernameField) {
@@ -110,6 +112,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.setCustomValidity('');
             }
         });
+    }
+    
+    // Language validation
+    function validateLanguageSelection() {
+        if (!nativeLanguageField || !targetLanguageField) return;
+        
+        const nativeLanguage = nativeLanguageField.value;
+        const targetLanguage = targetLanguageField.value;
+        
+        // Remove any existing feedback
+        const existingFeedback = document.querySelector('.language-validation-feedback');
+        if (existingFeedback) {
+            existingFeedback.remove();
+        }
+        
+        // Check if both languages are selected and identical
+        if (nativeLanguage && targetLanguage && nativeLanguage === targetLanguage) {
+            // Show error message
+            const feedback = document.createElement('div');
+            feedback.className = 'language-validation-feedback error-message';
+            feedback.innerHTML = '<i class="bi bi-exclamation-circle"></i> La langue native et la langue cible ne peuvent pas être identiques.';
+            
+            // Insert after target language field
+            const targetLanguageGroup = targetLanguageField.closest('.form-group');
+            if (targetLanguageGroup) {
+                targetLanguageGroup.appendChild(feedback);
+            }
+            
+            // Set custom validity to prevent form submission
+            nativeLanguageField.setCustomValidity('Les langues ne peuvent pas être identiques');
+            targetLanguageField.setCustomValidity('Les langues ne peuvent pas être identiques');
+            
+            return false;
+        } else {
+            // Clear custom validity if languages are different
+            nativeLanguageField.setCustomValidity('');
+            targetLanguageField.setCustomValidity('');
+            return true;
+        }
+    }
+    
+    // Add event listeners for language validation
+    if (nativeLanguageField) {
+        nativeLanguageField.addEventListener('change', validateLanguageSelection);
+    }
+    
+    if (targetLanguageField) {
+        targetLanguageField.addEventListener('change', validateLanguageSelection);
     }
 });
 
