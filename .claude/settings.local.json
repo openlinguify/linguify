@@ -207,7 +207,8 @@
       "WebFetch(domain:docs.render.com)",
       "WebFetch(domain:render.com)",
       "Bash(./portal/venv/bin/python:*)",
-      "Bash(# Test avec cookie de langue (simulation du sélecteur du header)\ncurl -s -I -H \"\"Accept-Language: es-ES,es;q=0.9\"\" -H \"\"Cookie: django_language=en\"\" http://localhost:8080/ | grep -E \"\"(HTTP|Location)\"\")"
+      "Bash(# Test avec cookie de langue (simulation du sélecteur du header)\ncurl -s -I -H \"\"Accept-Language: es-ES,es;q=0.9\"\" -H \"\"Cookie: django_language=en\"\" http://localhost:8080/ | grep -E \"\"(HTTP|Location)\"\")",
+      "Bash(node:*)"
     ],
     "deny": []
   },

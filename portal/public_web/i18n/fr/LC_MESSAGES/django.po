@@ -689,3 +689,26 @@ msgstr "Dernière Version"
 
 msgid "Contribute"
 msgstr "Contribuer"
+
+# Free badge messages
+msgid "100% FREE FOREVER"
+msgstr "100% GRATUIT À VIE"
+
+msgid "No credit card • No hidden fees • Always free"
+msgstr "Pas de carte de crédit • Pas de frais cachés • Toujours gratuit"
+
+# App status translations
+msgid "Available Now"
+msgstr "Disponible Maintenant"
+
+msgid "Coming Soon"
+msgstr "Bientôt Disponible"
+
+msgid "Ready"
+msgstr "Prêt"
+
+msgid "Soon"
+msgstr "Bientôt"
+
+msgid "These exciting apps are in active development"
+msgstr "Ces applications passionnantes sont en cours de développement actif"

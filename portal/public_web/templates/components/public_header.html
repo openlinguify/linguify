@@ -74,11 +74,6 @@
                             {% trans "Contact" %}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-bold" href="{% cms_url %}" target="_blank" style="color: var(--linguify-primary) !important;">
-                            <i class="bi bi-chalkboard me-1"></i>{% trans "Espace Enseignant" %}
-                        </a>
-                    </li>
                 </ul>
 
                 <!-- Language selector -->
@@ -148,10 +143,6 @@
 
                 <!-- Auth buttons -->
                 <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
-                    <!-- CMS Teacher Access Button -->
-                    <a href="{% cms_url %}" target="_blank" class="btn btn-sm" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none;" title="{% trans 'Accéder au CMS Enseignant' %}">
-                        <i class="bi bi-chalkboard me-1"></i>{% trans "CMS" %}
-                    </a>
                     {% if user.is_authenticated %}
                     <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
                     <a href="{% backend_url '/dashboard/' %}" class="btn btn-outline-primary">
@@ -195,10 +186,6 @@
 
                 <!-- Mobile Auth buttons -->
                 <div class="auth-buttons-mobile d-lg-none">
-                    <!-- CMS Teacher Access Button Mobile -->
-                    <a href="{% cms_url %}" target="_blank" class="btn btn-sm mb-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none;" title="{% trans 'Accéder au CMS Enseignant' %}">
-                        <i class="bi bi-chalkboard me-1"></i>{% trans "CMS Enseignant" %}
-                    </a>
                     {% if user.is_authenticated %}
                     <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
                     <a href="{% backend_url '/dashboard/' %}" class="btn btn-outline-primary">
