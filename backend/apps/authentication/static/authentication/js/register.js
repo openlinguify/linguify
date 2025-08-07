@@ -114,53 +114,83 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Language validation
-    function validateLanguageSelection() {
+    // Language validation with visual feedback
+    function updateLanguageOptions() {
         if (!nativeLanguageField || !targetLanguageField) return;
         
         const nativeLanguage = nativeLanguageField.value;
         const targetLanguage = targetLanguageField.value;
         
-        // Remove any existing feedback
+        // Reset all options to enabled state
+        resetLanguageOptions();
+        
+        // Disable matching option in the other field
+        if (nativeLanguage) {
+            disableOptionInField(targetLanguageField, nativeLanguage);
+        }
+        
+        if (targetLanguage) {
+            disableOptionInField(nativeLanguageField, targetLanguage);
+        }
+        
+        // Remove any existing feedback since we prevent the issue
         const existingFeedback = document.querySelector('.language-validation-feedback');
         if (existingFeedback) {
             existingFeedback.remove();
         }
         
-        // Check if both languages are selected and identical
-        if (nativeLanguage && targetLanguage && nativeLanguage === targetLanguage) {
-            // Show error message
-            const feedback = document.createElement('div');
-            feedback.className = 'language-validation-feedback error-message';
-            feedback.innerHTML = '<i class="bi bi-exclamation-circle"></i> La langue native et la langue cible ne peuvent pas être identiques.';
+        // Clear custom validity
+        nativeLanguageField.setCustomValidity('');
+        targetLanguageField.setCustomValidity('');
+    }
+    
+    function resetLanguageOptions() {
+        // Reset all options in both fields to enabled and visible
+        const allNativeOptions = nativeLanguageField.querySelectorAll('option');
+        const allTargetOptions = targetLanguageField.querySelectorAll('option');
+        
+        allNativeOptions.forEach(option => {
+            option.disabled = false;
+            option.style.display = '';
+            option.style.color = '';
+            option.style.opacity = '';
+        });
+        
+        allTargetOptions.forEach(option => {
+            option.disabled = false;
+            option.style.display = '';
+            option.style.color = '';
+            option.style.opacity = '';
+        });
+    }
+    
+    function disableOptionInField(field, valueToDisable) {
+        if (!valueToDisable) return;
+        
+        const optionToDisable = field.querySelector(`option[value="${valueToDisable}"]`);
+        if (optionToDisable) {
+            optionToDisable.disabled = true;
+            optionToDisable.style.color = '#999';
+            optionToDisable.style.opacity = '0.5';
             
-            // Insert after target language field
-            const targetLanguageGroup = targetLanguageField.closest('.form-group');
-            if (targetLanguageGroup) {
-                targetLanguageGroup.appendChild(feedback);
+            // If the disabled option was selected, clear the selection
+            if (field.value === valueToDisable) {
+                field.value = '';
             }
-            
-            // Set custom validity to prevent form submission
-            nativeLanguageField.setCustomValidity('Les langues ne peuvent pas être identiques');
-            targetLanguageField.setCustomValidity('Les langues ne peuvent pas être identiques');
-            
-            return false;
-        } else {
-            // Clear custom validity if languages are different
-            nativeLanguageField.setCustomValidity('');
-            targetLanguageField.setCustomValidity('');
-            return true;
         }
     }
     
     // Add event listeners for language validation
     if (nativeLanguageField) {
-        nativeLanguageField.addEventListener('change', validateLanguageSelection);
+        nativeLanguageField.addEventListener('change', updateLanguageOptions);
     }
     
     if (targetLanguageField) {
-        targetLanguageField.addEventListener('change', validateLanguageSelection);
+        targetLanguageField.addEventListener('change', updateLanguageOptions);
     }
+    
+    // Initialize language options on page load
+    updateLanguageOptions();
 });
 
 // Helper functions for username validation

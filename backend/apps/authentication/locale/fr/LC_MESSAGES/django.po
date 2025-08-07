@@ -1,0 +1,206 @@
+# FRENCH TRANSLATION FOR AUTHENTICATION
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Authentication\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# Registration form fields
+msgid "Create your free account"
+msgstr "Créez votre compte gratuit"
+
+msgid "Back to home"
+msgstr "Retour à l'accueil"
+
+msgid "First name"
+msgstr "Prénom"
+
+msgid "Your first name"
+msgstr "Votre prénom"
+
+msgid "Last name"
+msgstr "Nom"
+
+msgid "Your last name"
+msgstr "Votre nom"
+
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+msgid "username"
+msgstr "nom_utilisateur"
+
+msgid "Email address"
+msgstr "Adresse email"
+
+msgid "your@email.com"
+msgstr "votre@email.com"
+
+msgid "Phone number"
+msgstr "Numéro de téléphone"
+
+msgid "Optional - for account recovery"
+msgstr "Optionnel - pour la récupération de compte"
+
+msgid "Date of birth"
+msgstr "Date de naissance"
+
+msgid "Gender"
+msgstr "Genre"
+
+msgid "Select your gender"
+msgstr "Sélectionnez votre genre"
+
+msgid "Male"
+msgstr "Homme"
+
+msgid "Female"
+msgstr "Femme"
+
+msgid "Other"
+msgstr "Autre"
+
+msgid "Prefer not to say"
+msgstr "Préfère ne pas dire"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Confirm password"
+msgstr "Confirmer le mot de passe"
+
+msgid "Your native language"
+msgstr "Votre langue native"
+
+msgid "Select your native language"
+msgstr "Sélectionnez votre langue native"
+
+msgid "Language you want to learn"
+msgstr "Langue que vous souhaitez apprendre"
+
+msgid "Select the language to learn"
+msgstr "Sélectionnez la langue à apprendre"
+
+msgid "Current language level"
+msgstr "Niveau de langue actuel"
+
+msgid "Select your level"
+msgstr "Sélectionnez votre niveau"
+
+msgid "Learning objectives"
+msgstr "Objectifs d'apprentissage"
+
+msgid "Select your objectives"
+msgstr "Sélectionnez vos objectifs"
+
+msgid "I accept the terms of use and privacy policy"
+msgstr "J'accepte les conditions d'utilisation et la politique de confidentialité"
+
+msgid "Create my account"
+msgstr "Créer mon compte"
+
+msgid "Already have an account?"
+msgstr "Déjà un compte ?"
+
+msgid "Log in"
+msgstr "Se connecter"
+
+msgid "By registering, you accept our"
+msgstr "En vous inscrivant, vous acceptez notre"
+
+msgid "privacy policy"
+msgstr "politique de confidentialité"
+
+msgid "cookies policy"
+msgstr "politique des cookies"
+
+msgid "This email address is already associated with an existing account."
+msgstr "Cette adresse email est déjà associée à un compte existant."
+
+# Login page
+msgid "Login"
+msgstr "Connexion"
+
+msgid "Email or username"
+msgstr "Email ou nom d'utilisateur"
+
+msgid "Remember me"
+msgstr "Se souvenir de moi"
+
+msgid "Forgot password?"
+msgstr "Mot de passe oublié ?"
+
+msgid "Don't have an account?"
+msgstr "Pas encore de compte ?"
+
+msgid "Create an account"
+msgstr "Créer un compte"
+
+msgid "Welcome, %(username)s!"
+msgstr "Bienvenue, %(username)s !"
+
+msgid "Invalid username or password."
+msgstr "Nom d'utilisateur ou mot de passe incorrect."
+
+msgid "Sign in to your account"
+msgstr "Connectez-vous à votre compte"
+
+msgid "or"
+msgstr "ou"
+
+msgid "Sign up"
+msgstr "S'inscrire"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Native language"
+msgstr "Langue maternelle"
+
+msgid "Target language"
+msgstr "Langue cible"
+
+msgid "I agree to the"
+msgstr "J'accepte les"
+
+msgid "Terms and Conditions"
+msgstr "Conditions d'utilisation"
+
+msgid "Privacy Policy"
+msgstr "Politique de confidentialité"
+
+# Error messages
+msgid "Invalid username or password"
+msgstr "Nom d'utilisateur ou mot de passe invalide"
+
+msgid "This email is already registered"
+msgstr "Cet email est déjà enregistré"
+
+msgid "This username is already taken"
+msgstr "Ce nom d'utilisateur est déjà pris"
+
+msgid "Passwords do not match"
+msgstr "Les mots de passe ne correspondent pas"
+
+msgid "Only letters, numbers and @/./+/-/_"
+msgstr "Uniquement des lettres, chiffres et @/./+/-/_"
+
+msgid "Minimum 8 characters with letters and numbers"
+msgstr "Minimum 8 caractères avec lettres et chiffres"
+
+msgid "I accept the"
+msgstr "J'accepte les"
+
+msgid "and the"
+msgstr "et la"
