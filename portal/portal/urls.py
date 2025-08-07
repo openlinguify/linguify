@@ -6,12 +6,16 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
+from django.views.generic import RedirectView
+from public_web.views import LanguageRedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     # API endpoints (no language prefix)
     path('api/v1/jobs/', include('jobs.urls')),
+    # Redirection intelligente basée sur la langue du navigateur
+    path('', LanguageRedirectView.as_view(), name='root_redirect'),
 ]
 
 # URLs avec préfixe de langue
@@ -21,7 +25,7 @@ urlpatterns += i18n_patterns(
     # Apps déplacées du backend
     path('blog/', include('blog.urls')),
     path('jobs/', include('jobs.urls_web', namespace='jobs_web')),  # Web interface for jobs
-    path('careers/', include('jobs.urls_web')),  # Alternative URL for careers (no namespace)
+    path('careers/', include('jobs.urls_web', namespace='careers_web')),  # Alternative URL for careers
     # Documentation intégrée
     path('docs/', include('docs.urls')),
     prefix_default_language=True,
