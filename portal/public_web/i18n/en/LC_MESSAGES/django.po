@@ -21,7 +21,7 @@ msgid "Open Linguify - Open source educational apps platform"
 msgstr "Open Linguify - Open source educational apps platform"
 
 msgid ""
-"Open Linguify is an open source educational apps platform: memorization "
+"Open Linguify is an open : memorization "
 "system, flashcards, note-taking, quizzes, collaborative chat, classrooms and "
 "much more. Discover our tools to revolutionize learning."
 msgstr ""

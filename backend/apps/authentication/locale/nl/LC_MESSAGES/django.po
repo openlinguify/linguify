@@ -204,3 +204,11 @@ msgstr "Ik accepteer de"
 
 msgid "and the"
 msgstr "en de"
+
+# Login form placeholders
+msgid "your@email.com or username"
+msgstr "jouw@email.com of gebruikersnaam"
+
+msgid "Enter your password"
+msgstr "Voer je wachtwoord in"
+

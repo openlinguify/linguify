@@ -204,3 +204,11 @@ msgstr "J'accepte les"
 
 msgid "and the"
 msgstr "et la"
+
+# Login form placeholders
+msgid "your@email.com or username"
+msgstr "votre@email.com ou nom_utilisateur"
+
+msgid "Enter your password"
+msgstr "Saisissez votre mot de passe"
+
