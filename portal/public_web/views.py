@@ -5,7 +5,7 @@ Handles public-facing pages, SEO, and dynamic app content
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import TemplateView
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _, get_language, get_language_from_request
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
@@ -22,6 +22,42 @@ import logging
 from .utils import manifest_parser
 
 logger = logging.getLogger(__name__)
+
+
+class LanguageRedirectView(View):
+    """Vue qui détecte la langue préférée avec priorité sur le choix utilisateur"""
+    
+    def get(self, request):
+        supported_languages = dict(settings.LANGUAGES)
+        preferred_language = None
+        
+        try:
+            # 1. Priorité: Cookie/Session (choix explicite de l'utilisateur)
+            session_language = request.session.get('django_language') if hasattr(request, 'session') else None
+            cookie_language = request.COOKIES.get('django_language')
+            
+            if session_language and session_language in supported_languages:
+                preferred_language = session_language
+            elif cookie_language and cookie_language in supported_languages:
+                preferred_language = cookie_language
+            
+            # 2. Fallback: Détecter la langue du navigateur (Accept-Language)  
+            if not preferred_language:
+                browser_language = get_language_from_request(request)
+                if browser_language and browser_language in supported_languages:
+                    preferred_language = browser_language
+            
+            # 3. Défaut: Anglais (langue internationale)
+            if not preferred_language:
+                preferred_language = 'en'
+                
+        except Exception as e:
+            # En cas d'erreur, utiliser l'anglais par défaut
+            logger.warning(f"Error in language detection: {e}")
+            preferred_language = 'en'
+            
+        # Rediriger vers la page d'accueil avec la langue appropriée
+        return redirect(f'/{preferred_language}/')
 
 
 class BaseSEOView(TemplateView):
@@ -81,7 +117,7 @@ class LandingView(BaseSEOView):
             products.append(product_data)
         
         # Cache key pour les données de la landing page
-        cache_key = f'landing_apps_{request.LANGUAGE_CODE}'
+        cache_key = f'landing_apps_{get_language()}'
         featured_apps = cache.get(cache_key)
         
         if featured_apps is None:

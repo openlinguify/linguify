@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const usernameField = document.querySelector('input[name="username"]');
     const passwordField = document.querySelector('input[name="password1"]');
     const confirmPasswordField = document.querySelector('input[name="password2"]');
+    const nativeLanguageField = document.querySelector('select[name="native_language"]');
+    const targetLanguageField = document.querySelector('select[name="target_language"]');
     
     // Username validation
     if (usernameField) {
@@ -111,6 +113,84 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Language validation with visual feedback
+    function updateLanguageOptions() {
+        if (!nativeLanguageField || !targetLanguageField) return;
+        
+        const nativeLanguage = nativeLanguageField.value;
+        const targetLanguage = targetLanguageField.value;
+        
+        // Reset all options to enabled state
+        resetLanguageOptions();
+        
+        // Disable matching option in the other field
+        if (nativeLanguage) {
+            disableOptionInField(targetLanguageField, nativeLanguage);
+        }
+        
+        if (targetLanguage) {
+            disableOptionInField(nativeLanguageField, targetLanguage);
+        }
+        
+        // Remove any existing feedback since we prevent the issue
+        const existingFeedback = document.querySelector('.language-validation-feedback');
+        if (existingFeedback) {
+            existingFeedback.remove();
+        }
+        
+        // Clear custom validity
+        nativeLanguageField.setCustomValidity('');
+        targetLanguageField.setCustomValidity('');
+    }
+    
+    function resetLanguageOptions() {
+        // Reset all options in both fields to enabled and visible
+        const allNativeOptions = nativeLanguageField.querySelectorAll('option');
+        const allTargetOptions = targetLanguageField.querySelectorAll('option');
+        
+        allNativeOptions.forEach(option => {
+            option.disabled = false;
+            option.style.display = '';
+            option.style.color = '';
+            option.style.opacity = '';
+        });
+        
+        allTargetOptions.forEach(option => {
+            option.disabled = false;
+            option.style.display = '';
+            option.style.color = '';
+            option.style.opacity = '';
+        });
+    }
+    
+    function disableOptionInField(field, valueToDisable) {
+        if (!valueToDisable) return;
+        
+        const optionToDisable = field.querySelector(`option[value="${valueToDisable}"]`);
+        if (optionToDisable) {
+            optionToDisable.disabled = true;
+            optionToDisable.style.color = '#999';
+            optionToDisable.style.opacity = '0.5';
+            
+            // If the disabled option was selected, clear the selection
+            if (field.value === valueToDisable) {
+                field.value = '';
+            }
+        }
+    }
+    
+    // Add event listeners for language validation
+    if (nativeLanguageField) {
+        nativeLanguageField.addEventListener('change', updateLanguageOptions);
+    }
+    
+    if (targetLanguageField) {
+        targetLanguageField.addEventListener('change', updateLanguageOptions);
+    }
+    
+    // Initialize language options on page load
+    updateLanguageOptions();
 });
 
 // Helper functions for username validation

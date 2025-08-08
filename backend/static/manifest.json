@@ -1,7 +1,7 @@
 {
   "name": "Open Linguify",
   "short_name": "OpenLinguify",
-  "description": "Open source educational apps platform",
+  "description": "Open Source Education Apps",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -183,34 +183,19 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
     <!-- Language switching -->
     <script>
         function setLanguage(lang) {
-            // Create form to submit language change
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/i18n/setlang/';
-
-            // Add CSRF token
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = 'csrfmiddlewaretoken';
-            csrfInput.value = '{{ csrf_token }}';
-            form.appendChild(csrfInput);
-
-            // Add language
-            const langInput = document.createElement('input');
-            langInput.type = 'hidden';
-            langInput.name = 'language';
-            langInput.value = lang;
-            form.appendChild(langInput);
-
-            // Add next URL
-            const nextInput = document.createElement('input');
-            nextInput.type = 'hidden';
-            nextInput.name = 'next';
-            nextInput.value = window.location.pathname;
-            form.appendChild(nextInput);
-
-            document.body.appendChild(form);
-            form.submit();
+            // Simple approach: redirect directly to the language-prefixed URL
+            const currentPath = window.location.pathname;
+            const pathParts = currentPath.split('/').filter(part => part !== '');
+            
+            // Remove existing language prefix if present
+            const supportedLanguages = ['fr', 'en', 'es', 'nl'];
+            if (pathParts.length > 0 && supportedLanguages.includes(pathParts[0])) {
+                pathParts.shift(); // Remove the first part (language code)
+            }
+            
+            // Build new URL with the selected language
+            const newPath = '/' + lang + '/' + pathParts.join('/');
+            window.location.href = newPath;
         }
     </script>
 

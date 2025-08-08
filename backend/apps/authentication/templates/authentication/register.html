@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load url_tags %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
@@ -25,9 +26,9 @@
     <link rel="stylesheet" href="{% static 'authentication/css/register.css' %}">
 </head>
 <body>
-    <a href="/" class="back-home-link">
+    <a href="{% portal_url_with_lang %}" class="back-home-link">
         <i class="bi bi-arrow-left icon"></i>
-        {% trans "Retour à l'accueil" %}
+        {% trans "Back to home" %}
     </a>
     
     <div class="page-container">
@@ -37,7 +38,7 @@
                     <h1 class="form-title">
                         Open Linguify
                     </h1>
-                    <p class="form-subtitle">Créez votre compte gratuit</p>
+                    <p class="form-subtitle">{% trans 'Create your free account' %}</p>
                 </div>
                         
                 <form method="post" id="registerForm">
@@ -53,7 +54,7 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="{{ form.first_name.id_for_label }}" class="form-label">Prénom</label>
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">{% trans 'First name' %}</label>
                             {{ form.first_name }}
                             {% if form.first_name.errors %}
                                 <div class="error-message">
@@ -62,7 +63,7 @@
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Nom</label>
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">{% trans 'Last name' %}</label>
                             {{ form.last_name }}
                             {% if form.last_name.errors %}
                                 <div class="error-message">
@@ -73,11 +74,11 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="{{ form.username.id_for_label }}" class="form-label">Nom d'utilisateur</label>
+                        <label for="{{ form.username.id_for_label }}" class="form-label">{% trans 'Username' %}</label>
                         {{ form.username }}
                         <div class="form-text">
                             <i class="bi bi-info-circle"></i>
-                            Uniquement des lettres, chiffres et @/./+/-/_
+                            {% trans "Only letters, numbers and @/./+/-/_" %}
                         </div>
                         {% if form.username.errors %}
                             <div class="error-message">
@@ -87,7 +88,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="{{ form.email.id_for_label }}" class="form-label">Adresse email</label>
+                        <label for="{{ form.email.id_for_label }}" class="form-label">{% trans 'Email address' %}</label>
                         {{ form.email }}
                         {% if form.email.errors %}
                             <div class="error-message">
@@ -112,7 +113,7 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="{{ form.birthday.id_for_label }}" class="form-label">Date de naissance</label>
+                            <label for="{{ form.birthday.id_for_label }}" class="form-label">{% trans 'Date of birth' %}</label>
                             {{ form.birthday }}
                             {% if form.birthday.errors %}
                                 <div class="error-message">
@@ -121,7 +122,7 @@
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            <label for="{{ form.gender.id_for_label }}" class="form-label">Genre</label>
+                            <label for="{{ form.gender.id_for_label }}" class="form-label">{% trans 'Gender' %}</label>
                             {{ form.gender }}
                             {% if form.gender.errors %}
                                 <div class="error-message">
@@ -132,12 +133,12 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="{{ form.password1.id_for_label }}" class="form-label">Mot de passe</label>
+                        <label for="{{ form.password1.id_for_label }}" class="form-label">{% trans 'Password' %}</label>
                         {{ form.password1 }}
                         <div class="password-strength-container">
                             <div class="password-strength-bar" id="strengthBar"></div>
                             <div class="password-strength-text" id="strengthText">
-                                Minimum 8 caractères avec lettres et chiffres
+                                {% trans "Minimum 8 characters with letters and numbers" %}
                             </div>
                         </div>
                         {% if form.password1.errors %}
@@ -148,7 +149,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="{{ form.password2.id_for_label }}" class="form-label">Confirmer le mot de passe</label>
+                        <label for="{{ form.password2.id_for_label }}" class="form-label">{% trans 'Confirm password' %}</label>
                         {{ form.password2 }}
                         {% if form.password2.errors %}
                             <div class="error-message">
@@ -158,7 +159,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="{{ form.native_language.id_for_label }}" class="form-label">Votre langue native</label>
+                        <label for="{{ form.native_language.id_for_label }}" class="form-label">{% trans 'Your native language' %}</label>
                         {{ form.native_language }}
                         {% if form.native_language.errors %}
                             <div class="error-message">
@@ -168,7 +169,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="{{ form.target_language.id_for_label }}" class="form-label">Langue que vous souhaitez apprendre</label>
+                        <label for="{{ form.target_language.id_for_label }}" class="form-label">{% trans 'Language you want to learn' %}</label>
                         {{ form.target_language }}
                         {% if form.target_language.errors %}
                             <div class="error-message">
@@ -179,7 +180,7 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="{{ form.language_level.id_for_label }}" class="form-label">Niveau de langue actuel</label>
+                            <label for="{{ form.language_level.id_for_label }}" class="form-label">{% trans 'Current language level' %}</label>
                             {{ form.language_level }}
                             {% if form.language_level.errors %}
                                 <div class="error-message">
@@ -188,7 +189,7 @@
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            <label for="{{ form.objectives.id_for_label }}" class="form-label">Objectifs d'apprentissage</label>
+                            <label for="{{ form.objectives.id_for_label }}" class="form-label">{% trans 'Learning objectives' %}</label>
                             {{ form.objectives }}
                             {% if form.objectives.errors %}
                                 <div class="error-message">
@@ -201,10 +202,10 @@
                     <div class="checkbox-group">
                         {{ form.terms }}
                         <label class="checkbox-label" for="{{ form.terms.id_for_label }}">
-                            J'accepte les 
-                            <a href="https://openlinguify.com/fr/terms/" target="_blank" style="color: var(--primary); font-weight: 600;">conditions d'utilisation</a> 
-                            et la 
-                            <a href="https://openlinguify.com/fr/privacy/" target="_blank" style="color: var(--primary); font-weight: 600;">politique de confidentialité</a>
+                            {% trans "I accept the" %} 
+                            <a href="{% portal_url_with_lang 'terms/' %}" target="_blank" style="color: var(--primary); font-weight: 600;">{% trans 'Terms and Conditions' %}</a> 
+                            {% trans "and the" %} 
+                            <a href="{% portal_url_with_lang 'privacy/' %}" target="_blank" style="color: var(--primary); font-weight: 600;">{% trans 'Privacy Policy' %}</a>
                         </label>
                         {% if form.terms.errors %}
                             <div class="error-message">
@@ -214,21 +215,21 @@
                     
                     <button type="submit" class="submit-button">
                         <i class="bi bi-person-plus" style="margin-right: 0.5rem;"></i>
-                        Créer mon compte
+                        {% trans 'Create my account' %}
                     </button>
                 </form>
                         
                         <div class="auth-footer">
                             <p class="text-muted">
-                                Déjà un compte ? 
+                                {% trans 'Already have an account?' %} 
                                 <a href="{% url 'auth:login' %}" class="text-primary text-decoration-none fw-semibold">
-                                    Se connecter
+                                    {% trans 'Log in' %}
                                 </a>
                             </p>
                             <p class="text-muted mt-2">
                                 <small>
-                                    En vous inscrivant, vous acceptez notre 
-                                    <a href="https://openlinguify.com/fr/cookies/" target="_blank" class="text-secondary">politique des cookies</a>
+                                    {% trans 'By registering, you accept our' %} 
+                                    <a href="{% portal_url_with_lang 'cookies/' %}" target="_blank" class="text-secondary">{% trans 'cookies policy' %}</a>
                                 </small>
                             </p>
                         </div>

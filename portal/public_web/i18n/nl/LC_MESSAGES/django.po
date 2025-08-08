@@ -685,3 +685,26 @@ msgstr "Laatste Release"
 
 msgid "Contribute"
 msgstr "Bijdragen"
+
+# Free badge messages
+msgid "100% FREE FOREVER"
+msgstr "100% GRATIS VOOR ALTIJD"
+
+msgid "No credit card • No hidden fees • Always free"
+msgstr "Geen creditcard • Geen verborgen kosten • Altijd gratis"
+
+# App status translations
+msgid "Available Now"
+msgstr "Nu Beschikbaar"
+
+msgid "Coming Soon"
+msgstr "Binnenkort Beschikbaar"
+
+msgid "Ready"
+msgstr "Klaar"
+
+msgid "Soon"
+msgstr "Binnenkort"
+
+msgid "These exciting apps are in active development"
+msgstr "Deze spannende apps zijn in actieve ontwikkeling"

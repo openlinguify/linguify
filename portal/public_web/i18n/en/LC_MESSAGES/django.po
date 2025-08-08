@@ -21,7 +21,7 @@ msgid "Open Linguify - Open source educational apps platform"
 msgstr "Open Linguify - Open source educational apps platform"
 
 msgid ""
-"Open Linguify is an open source educational apps platform: memorization "
+"Open Linguify is an open : memorization "
 "system, flashcards, note-taking, quizzes, collaborative chat, classrooms and "
 "much more. Discover our tools to revolutionize learning."
 msgstr ""
@@ -590,5 +590,25 @@ msgstr "Contact Us"
 msgid "Brand"
 msgstr "Brand"
 
-msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more."
-msgstr "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more."
+# Free badge messages  
+msgid "100% FREE FOREVER"
+msgstr "100% FREE FOREVER"
+
+msgid "No credit card • No hidden fees • Always free"
+msgstr "No credit card • No hidden fees • Always free"
+
+# App status translations
+msgid "Available Now"
+msgstr "Available Now"
+
+msgid "Coming Soon"
+msgstr "Coming Soon"
+
+msgid "Ready"
+msgstr "Ready"
+
+msgid "Soon"
+msgstr "Soon"
+
+msgid "These exciting apps are in active development"
+msgstr "These exciting apps are in active development"

@@ -74,11 +74,6 @@
                             {% trans "Contact" %}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-bold" href="{% cms_url %}" target="_blank" style="color: var(--linguify-primary) !important;">
-                            <i class="bi bi-chalkboard me-1"></i>{% trans "Espace Enseignant" %}
-                        </a>
-                    </li>
                 </ul>
 
                 <!-- Language selector -->
@@ -148,10 +143,6 @@
 
                 <!-- Auth buttons -->
                 <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
-                    <!-- CMS Teacher Access Button -->
-                    <a href="{% cms_url %}" target="_blank" class="btn btn-sm" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none;" title="{% trans 'Accéder au CMS Enseignant' %}">
-                        <i class="bi bi-chalkboard me-1"></i>{% trans "CMS" %}
-                    </a>
                     {% if user.is_authenticated %}
                     <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
                     <a href="{% backend_url '/dashboard/' %}" class="btn btn-outline-primary">
@@ -177,17 +168,17 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item text-danger" href="{% backend_url '/fr/auth/logout/' %}">
+                            <li><a class="dropdown-item text-danger" href="{% backend_url_with_lang '/auth/logout/' %}">
                                     <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
                                 </a></li>
                         </ul>
                     </div>
                     {% else %}
                     <!-- Redirections vers le backend pour l'authentification -->
-                    <a href="{% backend_url '/fr/auth/login/' %}" class="btn btn-outline-primary" target="_blank">
+                    <a href="{% backend_url_with_lang '/auth/login/' %}" class="btn btn-outline-primary">
                         <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Log In" %}
                     </a>
-                    <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-primary" target="_blank">
+                    <a href="{% backend_url_with_lang '/auth/register/' %}" class="btn btn-primary">
                         <i class="bi bi-person-plus me-2"></i>{% trans "Sign Up" %}
                     </a>
                     {% endif %}
@@ -195,10 +186,6 @@
 
                 <!-- Mobile Auth buttons -->
                 <div class="auth-buttons-mobile d-lg-none">
-                    <!-- CMS Teacher Access Button Mobile -->
-                    <a href="{% cms_url %}" target="_blank" class="btn btn-sm mb-2" style="background: var(--linguify-accent); color: var(--linguify-primary); border: none;" title="{% trans 'Accéder au CMS Enseignant' %}">
-                        <i class="bi bi-chalkboard me-1"></i>{% trans "CMS Enseignant" %}
-                    </a>
                     {% if user.is_authenticated %}
                     <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
                     <a href="{% backend_url '/dashboard/' %}" class="btn btn-outline-primary">
@@ -233,10 +220,10 @@
                     </div>
                     {% else %}
                     <!-- Redirections vers le backend pour l'authentification -->
-                    <a href="{% backend_url '/fr/auth/login/' %}" class="btn btn-outline-primary" target="_blank">
+                    <a href="{% backend_url_with_lang '/auth/login/' %}" class="btn btn-outline-primary">
                         <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Log In" %}
                     </a>
-                    <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-primary" target="_blank">
+                    <a href="{% backend_url_with_lang '/auth/register/' %}" class="btn btn-primary">
                         <i class="bi bi-person-plus me-2"></i>{% trans "Sign Up" %}
                     </a>
                     {% endif %}

@@ -1,5 +1,6 @@
 {% extends 'public_web/public_base.html' %}
 {% load static %}
+{% load app_tags %}
 {% load i18n %}
 
 {% block title %}{% trans "Applications" %} - Open Linguify{% endblock %}
@@ -20,11 +21,11 @@
                 </p>
                 <div class="d-flex gap-3">
                     {% if not user.is_authenticated %}
-                        <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg">
+                        <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-light btn-lg">
                             <i class="bi bi-person-plus me-2"></i>{% trans "Start for free" %}
                         </a>
                     {% else %}
-                        <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg">
+                        <a href="{% backend_url '/dashboard/' %}" class="btn btn-light btn-lg">
                             <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
                         </a>
                     {% endif %}
@@ -86,17 +87,17 @@
             {% trans "Join our community and access all these amazing educational applications." %}
         </p>
         {% if not user.is_authenticated %}
-            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary btn-lg me-3">
+            <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-primary btn-lg me-3">
                 <i class="bi bi-rocket me-2"></i>{% trans "Start for free" %}
             </a>
             <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
                 <i class="bi bi-chat-dots me-2"></i>{% trans "Contact us" %}
             </a>
         {% else %}
-            <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-primary btn-lg me-3">
+            <a href="{% backend_url '/dashboard/' %}" class="btn btn-primary btn-lg me-3">
                 <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
             </a>
-            <a href="http://127.0.0.1:8000/app-store/" class="btn btn-outline-light btn-lg">
+            <a href="{% backend_url '/app-store/' %}" class="btn btn-outline-light btn-lg">
                 <i class="bi bi-shop me-2"></i>{% trans "Explore App Store" %}
             </a>
         {% endif %}

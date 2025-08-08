@@ -1,10 +1,11 @@
 {% load i18n %}
+{% load url_tags %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Connexion" %} - Linguify</title>
+    <title>{% trans "Login" %} - Open Linguify</title>
     
     <!-- Favicon - High quality PNG -->
     {% load static %}
@@ -25,9 +26,9 @@
     <link rel="stylesheet" href="{% static 'authentication/css/login.css' %}">
 </head>
 <body>
-    <a href="/" class="back-to-home">
+    <a href="{% portal_url_with_lang %}" class="back-to-home">
         <i class="bi bi-arrow-left me-2"></i>
-        {% trans "Retour à l'accueil" %}
+        {% trans "Back to home" %}
     </a>
     
     <div class="container">
@@ -39,7 +40,7 @@
                             <h1>
                                 Open Linguify
                             </h1>
-                            <p class="text-muted">{% trans "Connectez-vous à votre compte" %}</p>
+                            <p class="text-muted">{% trans "Sign in to your account" %}</p>
                         </div>
                         
                         {% if messages %}
@@ -63,8 +64,8 @@
                             {% endif %}
                             
                             <div class="mb-3">
-                                <label for="id_username" class="form-label">{% trans "Email ou nom d'utilisateur" %}</label>
-                                <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="id_username" name="username" value="{{ form.username.value|default:'' }}" required>
+                                <label for="id_username" class="form-label">{% trans "Email or username" %}</label>
+                                <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="id_username" name="username" value="{{ form.username.value|default:'' }}" placeholder="{% trans 'your@email.com or username' %}" required>
                                 {% if form.username.errors %}
                                     <div class="invalid-feedback">
                                         {% for error in form.username.errors %}
@@ -75,8 +76,8 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label for="id_password" class="form-label">{% trans "Mot de passe" %}</label>
-                                <input type="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" id="id_password" name="password" required>
+                                <label for="id_password" class="form-label">{% trans "Password" %}</label>
+                                <input type="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" id="id_password" name="password" placeholder="{% trans 'Enter your password' %}" required>
                                 {% if form.password.errors %}
                                     <div class="invalid-feedback">
                                         {% for error in form.password.errors %}
@@ -89,26 +90,26 @@
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="remember" name="remember">
                                 <label class="form-check-label" for="remember">
-                                    {% trans "Se souvenir de moi" %}
+                                    {% trans "Remember me" %}
                                 </label>
                             </div>
                             
                             <button type="submit" class="btn btn-primary w-100 mb-3">
                                 <i class="bi bi-box-arrow-in-right me-2"></i>
-                                {% trans "Se connecter" %}
+                                {% trans "Log in" %}
                             </button>
                         </form>
                         
                         <div class="auth-footer">
                             <p class="mb-2">
                                 <a href="{% url 'auth:password_reset' %}" class="text-primary text-decoration-none">
-                                    {% trans "Mot de passe oublié ?" %}
+                                    {% trans "Forgot password?" %}
                                 </a>
                             </p>
                             <p class="text-muted">
-                                {% trans "Pas encore de compte ?" %} 
+                                {% trans "Don't have an account?" %} 
                                 <a href="{% url 'auth:register' %}" class="text-primary text-decoration-none fw-semibold">
-                                    {% trans "Créer un compte" %}
+                                    {% trans "Create an account" %}
                                 </a>
                             </p>
                         </div>

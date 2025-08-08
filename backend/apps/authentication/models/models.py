@@ -15,6 +15,7 @@ from django.db.models.functions import Lower
 from django.http import Http404
 from django.utils import timezone
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 from PIL import Image
 
 from ..utils.storage import ProfileStorage
@@ -251,7 +252,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(db_index=True, max_length=255, unique=True, blank=False, null=False, validators=[validate_username])
     first_name = models.CharField(max_length=255, blank=True)
     last_name = models.CharField(max_length=255, blank=True)
-    email = models.EmailField(db_index=True, unique=True, blank=False, null=False)
+    email = models.EmailField(
+        db_index=True, 
+        unique=True, 
+        blank=False, 
+        null=False,
+        error_messages={'unique': _('This email address is already associated with an existing account.')}
+    )
     phone_number = models.CharField(max_length=20, blank=True, null=True, help_text="Phone number (e.g., +32 123 456 789)")
     birthday = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)

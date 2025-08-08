@@ -1,5 +1,6 @@
 {% extends 'public_web/public_base.html' %}
 {% load static %}
+{% load app_tags %}
 
 {% block title %}Fonctionnalités - Open Linguify{% endblock %}
 
@@ -20,11 +21,11 @@
                 </p>
                 <div class="d-flex gap-3">
                     {% if not user.is_authenticated %}
-                        <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg">
+                        <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-light btn-lg">
                             <i class="bi bi-person-plus me-2"></i>Commencer gratuitement
                         </a>
                     {% else %}
-                        <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg">
+                        <a href="{% backend_url '/dashboard/' %}" class="btn btn-light btn-lg">
                             <i class="bi bi-speedometer2 me-2"></i>Aller au Dashboard
                         </a>
                     {% endif %}
@@ -187,17 +188,17 @@
             peut transformer votre apprentissage des langues.
         </p>
         {% if not user.is_authenticated %}
-            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-primary btn-lg me-3">
+            <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-primary btn-lg me-3">
                 <i class="bi bi-rocket me-2"></i>Commencer gratuitement
             </a>
             <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg">
                 <i class="bi bi-chat-dots me-2"></i>Nous contacter
             </a>
         {% else %}
-            <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-primary btn-lg me-3">
+            <a href="{% backend_url '/dashboard/' %}" class="btn btn-primary btn-lg me-3">
                 <i class="bi bi-speedometer2 me-2"></i>Aller au Dashboard
             </a>
-            <a href="http://127.0.0.1:8000/app-store/" class="btn btn-outline-light btn-lg">
+            <a href="{% backend_url '/app-store/' %}" class="btn btn-outline-light btn-lg">
                 <i class="bi bi-shop me-2"></i>Explorer l'App Store
             </a>
         {% endif %}
