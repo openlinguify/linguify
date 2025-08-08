@@ -1,5 +1,6 @@
 {% extends 'public_web/public_base.html' %}
 {% load static %}
+{% load app_tags %}
 {% load i18n %}
 
 {% block title %}{% trans "Community" %} - Open Linguify{% endblock %}
@@ -27,11 +28,11 @@
                     
                     <div class="d-flex gap-3 flex-wrap">
                         {% if not user.is_authenticated %}
-                            <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-4 py-3">
+                            <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-light btn-lg px-4 py-3">
                                 <i class="bi bi-person-plus me-2"></i>{% trans "Join Community" %}
                             </a>
                         {% else %}
-                            <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg px-4 py-3">
+                            <a href="{% backend_url '/dashboard/' %}" class="btn btn-light btn-lg px-4 py-3">
                                 <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
                             </a>
                         {% endif %}
@@ -327,11 +328,11 @@
         
         <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
             {% if not user.is_authenticated %}
-                <a href="http://127.0.0.1:8000/fr/auth/register/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
                     <i class="bi bi-rocket-takeoff me-2"></i>{% trans "Join Community" %}
                 </a>
             {% else %}
-                <a href="http://127.0.0.1:8000/dashboard/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
+                <a href="{% backend_url '/dashboard/' %}" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
                     <i class="bi bi-speedometer2 me-2"></i>{% trans "Go to Dashboard" %}
                 </a>
             {% endif %}

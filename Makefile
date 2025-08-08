@@ -1,7 +1,7 @@
 # Makefile pour Linguify - Gestion des 3 projets Django
 # Usage: make [target]
 
-.PHONY: help portal lms backend all status clean install
+.PHONY: help portal lms backend all status clean install check-env env
 
 # Configuration des ports
 PORTAL_PORT = 8080
@@ -20,6 +20,11 @@ BACKEND_PYTHON = cd backend && poetry run python
 PORTAL_PYTHON = $(shell if [ -f $(PORTAL_VENV)/bin/python ]; then echo $(PORTAL_VENV)/bin/python; else echo python3; fi)
 LMS_PYTHON = $(shell if [ -f $(LMS_VENV)/bin/python ]; then echo $(LMS_VENV)/bin/python; else echo python3; fi)
 CMS_PYTHON = $(shell if [ -f $(CMS_VENV)/bin/python ]; then echo $(CMS_VENV)/bin/python; else echo python3; fi)
+
+# Variables globales pour check-env
+PYTHON = python3
+PIP = pip3
+VENV_PATH = $(shell if [ -d "./backend/venv" ]; then echo "./backend/venv"; elif [ -d "./portal/venv" ]; then echo "./portal/venv"; elif [ -d "./lms/venv" ]; then echo "./lms/venv"; elif [ -d "./cms/venv" ]; then echo "./cms/venv"; else echo ""; fi)
 
 # Manage commands pour chaque projet
 MANAGE_BACKEND = cd backend && poetry run python ../manage.py backend
@@ -78,6 +83,8 @@ cms: ## Lance le serveur CMS Enseignants (port 8002)
 		exit 1; \
 	fi
 	$(MANAGE_CMS) runserver $(CMS_PORT)
+
+run: all ## Alias pour 'all' - Lance les 4 serveurs en parallèle
 
 all: ## Lance les 4 serveurs en parallèle
 	@echo "$(BLUE) Lancement de tous les serveurs Linguify...$(NC)"
@@ -188,14 +195,24 @@ install: ## Installe les dépendances Python
 	$(PIP) install -r requirements.txt
 	@echo "$(GREEN)✅ Installation terminée$(NC)"
 
-check-env: ## Vérifie l'environnement Python et Django
-	@echo "$(BLUE)🔍 Vérification de l'environnement...$(NC)"
-	@echo "$(YELLOW)Python utilisé:$(NC) $(PYTHON)"
-	@echo "$(YELLOW)Version Python:$(NC)"
-	@$(PYTHON) --version
-	@echo "$(YELLOW)Django installé:$(NC)"
-	@$(PYTHON) -c "import django; print('✅ Django', django.get_version())" || echo "$(RED)❌ Django non installé$(NC)"
-	@if [ -n "$(VENV_PATH)" ]; then echo "$(GREEN)✅ Environnement virtuel détecté: $(VENV_PATH)$(NC)"; else echo "$(YELLOW)⚠️ Aucun environnement virtuel détecté$(NC)"; fi
+check-env: ## Vérifie l'environnement de développement/production pour tous les projets
+	@echo "$(BLUE)🔍 Vérification des environnements Linguify...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📦 PORTAL (port 8080):$(NC)"
+	@./portal/venv/bin/python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'portal.settings'); import django; django.setup(); from django.conf import settings; print('  Mode:', 'Développement' if settings.DEBUG else 'Production'); print('  Hosts:', settings.ALLOWED_HOSTS[:3])" 2>/dev/null || echo "  $(RED)❌ Erreur de configuration$(NC)"
+	@echo ""
+	@echo "$(YELLOW)🎓 LMS (port 8001):$(NC)"
+	@./lms/venv/bin/python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings'); import django; django.setup(); from django.conf import settings; print('  Mode:', 'Développement' if settings.DEBUG else 'Production'); print('  Hosts:', settings.ALLOWED_HOSTS[:3])" 2>/dev/null || echo "  $(RED)❌ Erreur de configuration$(NC)"
+	@echo ""  
+	@echo "$(YELLOW)⚙️ BACKEND (port 8000):$(NC)"
+	@cd backend && poetry run python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings'); import django; django.setup(); from django.conf import settings; print('  Mode:', 'Développement' if settings.DEBUG else 'Production'); print('  Hosts:', settings.ALLOWED_HOSTS[:3])" 2>/dev/null || echo "  $(RED)❌ Erreur de configuration$(NC)"
+	@echo ""
+	@echo "$(YELLOW)👨‍🏫 CMS (port 8002):$(NC)"  
+	@./cms/venv/bin/python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cms.settings'); import django; django.setup(); from django.conf import settings; print('  Mode:', 'Développement' if settings.DEBUG else 'Production'); print('  Hosts:', settings.ALLOWED_HOSTS[:3])" 2>/dev/null || echo "  $(RED)❌ Erreur de configuration$(NC)"
+	@echo ""
+	@echo "$(BLUE)💡 Astuce: Utilisez 'make urls' pour voir les URLs de tous les services$(NC)"
+
+env: check-env ## Alias pour check-env
 
 # Commandes de développement
 dev-portal: ## Lance le Portal en mode développement avec reload automatique

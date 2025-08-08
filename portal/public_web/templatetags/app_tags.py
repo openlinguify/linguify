@@ -181,6 +181,33 @@ def backend_url(path=""):
     return base_url + path
 
 
+@register.simple_tag(takes_context=True)
+def backend_url_with_lang(context, path=""):
+    """Get backend URL with current language"""
+    # Get current language from request context (more efficient)
+    request = context.get('request')
+    current_lang = getattr(request, 'LANGUAGE_CODE', 'en')
+    
+    # Cache environment detection
+    if not hasattr(backend_url_with_lang, '_is_production'):
+        django_env = getattr(settings, 'DJANGO_ENV', 'development')
+        backend_url_with_lang._is_production = (django_env == 'production' or not getattr(settings, 'DEBUG', True))
+    
+    # Cache base URL
+    if not hasattr(backend_url_with_lang, '_base_url'):
+        if backend_url_with_lang._is_production:
+            backend_url_with_lang._base_url = "https://app.openlinguify.com"
+        else:
+            backend_url_with_lang._base_url = "http://127.0.0.1:8000"
+    
+    # Clean path and add language prefix
+    if path and not path.startswith('/'):
+        path = '/' + path
+    
+    # Add language prefix for internationalized URLs
+    return f"{backend_url_with_lang._base_url}/{current_lang}{path}"
+
+
 @register.simple_tag 
 def cms_url(path=""):
     """Get CMS URL based on environment"""

@@ -689,3 +689,72 @@ msgstr "Dernière Version"
 
 msgid "Contribute"
 msgstr "Contribuer"
+
+# Free badge messages
+msgid "100% FREE FOREVER"
+msgstr "100% GRATUIT À VIE"
+
+msgid "No credit card • No hidden fees • Always free"
+msgstr "Pas de carte de crédit • Pas de frais cachés • Toujours gratuit"
+
+# App status translations
+msgid "Available Now"
+msgstr "Disponible Maintenant"
+
+msgid "Coming Soon"
+msgstr "Bientôt Disponible"
+
+msgid "Ready"
+msgstr "Prêt"
+
+msgid "Soon"
+msgstr "Bientôt"
+
+msgid "These exciting apps are in active development"
+msgstr "Ces applications passionnantes sont en cours de développement actif"
+
+# Missing French translations
+msgid "Discover our complete suite of educational apps designed to transform your learning experience. Currently all apps are completely free to use."
+msgstr "Découvrez notre suite complète d'applications éducatives conçues pour transformer votre expérience d'apprentissage. Actuellement, toutes les applications sont entièrement gratuites."
+
+msgid "All features are currently free • We're exploring sustainable business models for long-term platform development"
+msgstr "Toutes les fonctionnalités sont actuellement gratuites • Nous explorons des modèles économiques durables pour le développement à long terme de la plateforme"
+
+msgid "Choose your Linguify product:"
+msgstr "Choisissez votre produit Linguify :"
+
+msgid "For all students"
+msgstr "Pour tous les étudiants"
+
+msgid "View Source Code"
+msgstr "Voir le Code Source"
+
+msgid "Frequently Asked Questions"
+msgstr "Foire Aux Questions"
+
+msgid "Everything you need to know about OpenLinguify and our educational platform."
+msgstr "Tout ce que vous devez savoir sur OpenLinguify et notre plateforme éducative."
+
+msgid "What makes OpenLinguify different from other language learning platforms?"
+msgstr "Qu'est-ce qui rend OpenLinguify différent des autres plateformes d'apprentissage des langues ?"
+
+msgid "OpenLinguify is completely open source, meaning our code is transparent and constantly improved by the community. We offer a complete suite of educational apps including spaced repetition, AI conversations, collaborative tools, and more - all designed to work together seamlessly."
+msgstr "OpenLinguify est entièrement open source, ce qui signifie que notre code est transparent et constamment amélioré par la communauté. Nous offrons une suite complète d'applications éducatives incluant la répétition espacée, des conversations IA, des outils collaboratifs, et plus encore - toutes conçues pour fonctionner ensemble de manière transparente."
+
+msgid "Is OpenLinguify really free to use?"
+msgstr "OpenLinguify est-il vraiment gratuit à utiliser ?"
+
+msgid "Can I contribute to the OpenLinguify project?"
+msgstr "Puis-je contribuer au projet OpenLinguify ?"
+
+msgid "Currently 100% free • Open Source • Future business model under development for platform sustainability"
+msgstr "Actuellement 100% gratuit • Open Source • Futur modèle économique en développement pour la durabilité de la plateforme"
+
+msgid "Start Your Learning Journey"
+msgstr "Commencez Votre Parcours d'Apprentissage"
+
+msgid "Documents"
+msgstr "Documents"
+
+msgid "Real-time collaborative documents with rich text editing, version control, and sharing capabilities for educational content."
+msgstr "Documents collaboratifs en temps réel avec édition de texte riche, contrôle de version et capacités de partage pour le contenu éducatif."

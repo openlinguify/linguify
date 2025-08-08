@@ -100,3 +100,112 @@ msgstr "Ce nom d'utilisateur est déjà pris"
 
 msgid "Passwords do not match"
 msgstr "Les mots de passe ne correspondent pas"
+
+# Registration form fields
+msgid "Create your free account"
+msgstr "Créez votre compte gratuit"
+
+msgid "First name"
+msgstr "Prénom"
+
+msgid "Your first name"
+msgstr "Votre prénom"
+
+msgid "Last name"
+msgstr "Nom"
+
+msgid "Your last name"
+msgstr "Votre nom"
+
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+msgid "username"
+msgstr "nom_utilisateur"
+
+msgid "Email address"
+msgstr "Adresse email"
+
+msgid "your@email.com"
+msgstr "votre@email.com"
+
+msgid "Phone number"
+msgstr "Numéro de téléphone"
+
+msgid "Optional - for account recovery"
+msgstr "Optionnel - pour la récupération de compte"
+
+msgid "Date of birth"
+msgstr "Date de naissance"
+
+msgid "Gender"
+msgstr "Genre"
+
+msgid "Select your gender"
+msgstr "Sélectionnez votre genre"
+
+msgid "Male"
+msgstr "Homme"
+
+msgid "Female"
+msgstr "Femme"
+
+msgid "Other"
+msgstr "Autre"
+
+msgid "Prefer not to say"
+msgstr "Préfère ne pas dire"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Confirm password"
+msgstr "Confirmer le mot de passe"
+
+msgid "Your native language"
+msgstr "Votre langue native"
+
+msgid "Select your native language"
+msgstr "Sélectionnez votre langue native"
+
+msgid "Language you want to learn"
+msgstr "Langue que vous souhaitez apprendre"
+
+msgid "Select the language to learn"
+msgstr "Sélectionnez la langue à apprendre"
+
+msgid "Current language level"
+msgstr "Niveau de langue actuel"
+
+msgid "Select your level"
+msgstr "Sélectionnez votre niveau"
+
+msgid "Learning objectives"
+msgstr "Objectifs d'apprentissage"
+
+msgid "Select your objectives"
+msgstr "Sélectionnez vos objectifs"
+
+msgid "I accept the terms of use and privacy policy"
+msgstr "J'accepte les conditions d'utilisation et la politique de confidentialité"
+
+msgid "Create my account"
+msgstr "Créer mon compte"
+
+msgid "Already have an account?"
+msgstr "Déjà un compte ?"
+
+msgid "Log in"
+msgstr "Se connecter"
+
+msgid "By registering, you accept our"
+msgstr "En vous inscrivant, vous acceptez notre"
+
+msgid "privacy policy"
+msgstr "politique de confidentialité"
+
+msgid "cookies policy"
+msgstr "politique des cookies"
+
+msgid "This email address is already associated with an existing account."
+msgstr "Cette adresse email est déjà associée à un compte existant."

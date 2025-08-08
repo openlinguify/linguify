@@ -36,7 +36,7 @@ if not DEBUG:
 if is_production:
     ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['openlinguify.com', 'www.openlinguify.com', 'linguify-portal.onrender.com'])
 else:
-    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.openlinguify.com']
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.openlinguify.com', 'testserver']
 
 # Application definition
 INSTALLED_APPS = [

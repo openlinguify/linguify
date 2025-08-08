@@ -6,6 +6,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 from ..models.models import LANGUAGE_CHOICES, LEVEL_CHOICES, OBJECTIVES_CHOICES
 
 User = get_user_model()
@@ -21,35 +22,35 @@ class RegisterForm(UserCreationForm):
         max_length=30,
         widget=forms.TextInput(attrs={
             'class': 'form-input',
-            'placeholder': 'Votre prénom'
+            'placeholder': _('Your first name')
         }),
-        label="Prénom"
+        label=_('First name')
     )
     
     last_name = forms.CharField(
         max_length=30,
         widget=forms.TextInput(attrs={
             'class': 'form-input',
-            'placeholder': 'Votre nom'
+            'placeholder': _('Your last name')
         }),
-        label="Nom"
+        label=_('Last name')
     )
     
     username = forms.CharField(
         max_length=150,
         widget=forms.TextInput(attrs={
             'class': 'form-input',
-            'placeholder': 'nom_utilisateur'
+            'placeholder': _('username')
         }),
-        label="Nom d'utilisateur"
+        label=_('Username')
     )
     
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
             'class': 'form-input',
-            'placeholder': 'votre@email.com'
+            'placeholder': _('your@email.com')
         }),
-        label="Adresse email"
+        label=_('Email address')
     )
     
     phone_number = forms.CharField(
@@ -59,8 +60,8 @@ class RegisterForm(UserCreationForm):
             'class': 'form-input',
             'placeholder': '+33 6 12 34 56 78'
         }),
-        label="Numéro de téléphone",
-        help_text="Optionnel - pour la récupération de compte"
+        label=_('Phone number'),
+        help_text=_('Optional - for account recovery')
     )
     
     birthday = forms.DateField(
@@ -68,69 +69,69 @@ class RegisterForm(UserCreationForm):
             'class': 'form-input',
             'type': 'date'
         }),
-        label="Date de naissance"
+        label=_('Date of birth')
     )
     
     gender = forms.ChoiceField(
         choices=[
-            ('', 'Sélectionnez votre genre'),
-            ('M', 'Homme'),
-            ('F', 'Femme'),
-            ('O', 'Autre'),
-            ('N', 'Préfère ne pas dire')
+            ('', _('Select your gender')),
+            ('M', _('Male')),
+            ('F', _('Female')),
+            ('O', _('Other')),
+            ('N', _('Prefer not to say'))
         ],
         widget=forms.Select(attrs={
             'class': 'form-select'
         }),
-        label="Genre"
+        label=_('Gender')
     )
     
     password1 = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-input',
-            'placeholder': 'Mot de passe'
+            'placeholder': _('Password')
         }),
-        label="Mot de passe"
+        label=_('Password')
     )
     
     password2 = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-input',
-            'placeholder': 'Confirmer le mot de passe'
+            'placeholder': _('Confirm password')
         }),
-        label="Confirmer le mot de passe"
+        label=_('Confirm password')
     )
     
     native_language = forms.ChoiceField(
-        choices=[('', 'Sélectionnez votre langue native')] + LANGUAGE_CHOICES,
+        choices=[('', _('Select your native language'))] + LANGUAGE_CHOICES,
         widget=forms.Select(attrs={
             'class': 'form-select'
         }),
-        label="Votre langue native"
+        label=_('Your native language')
     )
     
     target_language = forms.ChoiceField(
-        choices=[('', 'Sélectionnez la langue à apprendre')] + LANGUAGE_CHOICES,
+        choices=[('', _('Select the language to learn'))] + LANGUAGE_CHOICES,
         widget=forms.Select(attrs={
             'class': 'form-select'
         }),
-        label="Langue que vous souhaitez apprendre"
+        label=_('Language you want to learn')
     )
     
     language_level = forms.ChoiceField(
-        choices=[('', 'Sélectionnez votre niveau')] + LEVEL_CHOICES,
+        choices=[('', _('Select your level'))] + LEVEL_CHOICES,
         widget=forms.Select(attrs={
             'class': 'form-select'
         }),
-        label="Niveau de langue actuel"
+        label=_('Current language level')
     )
     
     objectives = forms.ChoiceField(
-        choices=[('', 'Sélectionnez vos objectifs')] + OBJECTIVES_CHOICES,
+        choices=[('', _('Select your objectives'))] + OBJECTIVES_CHOICES,
         widget=forms.Select(attrs={
             'class': 'form-select'
         }),
-        label="Objectifs d'apprentissage"
+        label=_('Learning objectives')
     )
     
     terms = forms.BooleanField(
@@ -138,7 +139,7 @@ class RegisterForm(UserCreationForm):
         widget=forms.CheckboxInput(attrs={
             'class': 'form-checkbox'
         }),
-        label="J'accepte les conditions d'utilisation"
+        label=_('I accept the terms of use and privacy policy')
     )
     
     class Meta:
