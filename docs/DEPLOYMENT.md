@@ -41,7 +41,7 @@ DISCORD_URL=https://discord.gg/PJ8uTzSS
 ## Architecture des liens :
 
 ```
-www.openlinguify.com (Odoo Vitrine)
+www.openlinguify.com (OpenLinguify Vitrine)
 ├── Lien vers Backend Linguify (Render)
 └── Lien vers Documentation (Render)
     ├── Header: Retour vers OpenLinguify.com

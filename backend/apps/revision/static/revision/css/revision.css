@@ -2130,7 +2130,7 @@ body {
     background: rgba(var(--linguify-primary-rgb), 0.05);
 }
 
-/* Modal de modification rapide des tags (style Odoo) */
+/* Modal de modification rapide des tags (style OpenLinguify) */
 .quick-tags-modal {
     position: fixed;
     top: 0;
@@ -2329,7 +2329,7 @@ body {
     transform: translateY(-1px);
 }
 
-/* Styles pour la gestion des tags (style Odoo) */
+/* Styles pour la gestion des tags (style OpenLinguify) */
 .tags-management-container {
     max-height: 400px;
     overflow-y: auto;
@@ -2483,7 +2483,7 @@ body.modal-open {
     overflow: hidden;
 }
 
-/* Styles spécifiques pour les tags assignés (style Odoo) */
+/* Styles spécifiques pour les tags assignés (style OpenLinguify) */
 .tag-row.table-success {
     background-color: rgba(var(--linguify-success-rgb), 0.1) !important;
     border-color: rgba(var(--linguify-success-rgb), 0.2);

@@ -73,8 +73,8 @@ startxref
             position=self.position,
             first_name="Louis-Philippe",
             last_name="Lalou",
-            email="louisphilippelalou@outlook.com",
-            phone="0473488100",
+            email="test.candidate@example.com",
+            phone="123456789",
             cover_letter="I am very interested in this position",
             portfolio_url="https://example.com/portfolio",
             linkedin_url="https://linkedin.com/in/test"
@@ -95,7 +95,7 @@ startxref
         self.assertIn("Linguify", email.subject)
         
         # Check recipient
-        self.assertEqual(email.to, ["louisphilippelalou@outlook.com"])
+        self.assertEqual(email.to, ["test.candidate@example.com"])
         
         # Check reply-to
         self.assertEqual(email.reply_to, ["linguify.info@gmail.com"])

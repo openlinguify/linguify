@@ -1,4 +1,4 @@
-// Gestion des tags pour le Notebook - Interface style Odoo
+// Gestion des tags pour le Notebook - Interface style OpenLinguify
 class NotebookTagsManagement {
     constructor() {
         this.tags = [];

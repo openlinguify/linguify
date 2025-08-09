@@ -2269,7 +2269,7 @@ function updateTagsFilterCounter() {
     }
 }
 
-// Quick tags editing (Odoo style) - Open tags management directly
+// Quick tags editing (OpenLinguify style) - Open tags management directly
 function quickEditTags(deckId) {
     console.log('🏷️ quickEditTags appelé avec deckId:', deckId);
     
