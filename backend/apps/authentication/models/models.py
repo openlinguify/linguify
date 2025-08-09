@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
+
 # backend/authentication/models.py
 import os
 import datetime
@@ -129,7 +132,7 @@ class UserManager(BaseUserManager):
 
         # Vérifier l'unicité case-insensitive du username
         if self.filter(username__iexact=username).exists():
-            raise ValidationError(f'Username "{username}" is already taken.')
+            raise ValidationError(_('This username is already taken'))
 
         user = self.model(
             username=username,
@@ -535,7 +538,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 existing_users = existing_users.exclude(pk=self.pk)
             
             if existing_users.exists():
-                raise ValidationError(f'Username "{self.username}" is already taken.')
+                raise ValidationError(_('This username is already taken'))
 
     def save(self, *args, **kwargs):
         """
