@@ -1,5 +1,4 @@
 {% extends 'docs/base.html' %}
-{% load i18n %}
 
 {% block docs_content %}
 <div class="text-center py-5">
@@ -10,11 +9,11 @@
     <p class="lead text-muted">{{ description }}</p>
     
     <div class="alert alert-info mt-4">
-        <h5><i class="bi bi-info-circle me-2"></i>{% trans "Under Development" %}</h5>
+        <h5><i class="bi bi-info-circle me-2"></i>Under Development</h5>
         <p class="mb-0">
-            {% trans "This section is currently being developed. Check back soon for updates, or" %}
-            <a href="https://github.com/openlinguify/linguify/issues" target="_blank" class="alert-link">
-                {% trans "contribute to help us build it" %}
+            This section is currently being developed. Check back soon for updates, or
+            <a href="https://github.com/linguify/linguify/issues" target="_blank" class="alert-link">
+                contribute to help us build it
             </a>.
         </p>
     </div>
@@ -22,7 +21,7 @@
     <div class="mt-4">
         <a href="{% url 'docs:home' %}" class="btn btn-primary">
             <i class="bi bi-arrow-left me-2"></i>
-            {% trans "Back to Documentation Home" %}
+            Back to Documentation Home
         </a>
     </div>
 </div>

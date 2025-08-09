@@ -2,16 +2,16 @@ import os
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from django.conf import settings
-from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 import markdown
+import re
 
 
 def docs_home(request):
     """Documentation home page with navigation."""
     context = {
-        'title': 'OpenLinguify Documentation',
-        'description': 'Complete guide to building, contributing, and deploying the open source educational apps platform'
+        'title': 'Linguify Developer Documentation',
+        'description': 'Complete guide to building, contributing, and deploying the Linguify educational platform'
     }
     return render(request, 'docs/home.html', context)
 
@@ -19,7 +19,7 @@ def docs_home(request):
 def docs_page(request, page_path=''):
     """Serve documentation pages dynamically."""
     # Base path for documentation
-    docs_base_path = os.path.join(settings.BASE_DIR.parent, 'docs')
+    docs_base_path = settings.BASE_DIR
     
     # Security: prevent directory traversal
     if '..' in page_path or page_path.startswith('/'):
@@ -70,13 +70,13 @@ def docs_page(request, page_path=''):
             }
             return render(request, 'docs/markdown_page.html', context)
         
-        # If it's HTML, extract content and integrate into portal layout
+        # If it's HTML, extract content and integrate into layout
         elif file_path.endswith('.html'):
             # Extract title from HTML
             title = "Documentation"
             if '<title>' in content:
                 title = content.split('<title>')[1].split('</title>')[0]
-                title = title.replace(' - OpenLinguify Documentation', '')
+                title = title.replace(' - Linguify Documentation', '')
             
             # Extract only the main content from the HTML
             body_content = content
@@ -100,8 +100,6 @@ def docs_page(request, page_path=''):
                     body_content = content[start:end]
             
             # Clean up template tags and problematic content
-            import re
-            # Remove Django template tags that shouldn't be processed
             body_content = re.sub(r'{%\s*static\s*[^%]*%}', '', body_content)
             body_content = re.sub(r'{%\s*load\s*[^%]*%}', '', body_content)
             body_content = re.sub(r'{% extends [^%]*%}', '', body_content)

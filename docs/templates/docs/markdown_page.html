@@ -1,5 +1,4 @@
 {% extends 'docs/base.html' %}
-{% load i18n %}
 
 {% block docs_content %}
 <h1>{{ title }}</h1>
@@ -60,7 +59,7 @@
 }
 
 .markdown-content blockquote {
-    border-left: 4px solid #00D4AA;
+    border-left: 4px solid var(--linguify-accent);
     background: #f0fdfa;
     padding: 1rem 1.5rem;
     margin: 1.5rem 0;
