@@ -211,7 +211,9 @@
       "Bash(node:*)",
       "Bash(/mnt/c/Users/louis/WebstormProjects/linguify/backend/venv/bin/python manage.py collectstatic --noinput)",
       "Bash(/mnt/c/Users/louis/WebstormProjects/linguify/backend/venv/bin/python manage.py check --deploy)",
-      "Bash(/mnt/c/Users/louis/WebstormProjects/linguify/backend/venv/bin/python manage.py check)"
+      "Bash(/mnt/c/Users/louis/WebstormProjects/linguify/backend/venv/bin/python manage.py check)",
+      "Bash(git check-ignore:*)",
+      "Bash(git rm:*)"
     ],
     "deny": []
   },

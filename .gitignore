@@ -147,6 +147,8 @@ frontend/.env.*
 # === IDE SPECIFIC ===
 .idea/
 .vscode/settings.json
+*/.vscode/settings.json
+**/.vscode/settings.json
 *.iml
 *.iws
 
