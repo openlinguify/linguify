@@ -16,6 +16,7 @@ help:
 	@echo "  help-db          Database management: status, sync, config, migrations"  
 	@echo "  help-dev         Development: server, tests, code formatting, cleanup"
 	@echo "  help-deploy      Deployment: production, validation, comparisons, workflow"
+	@echo "  help-security    Security: monitoring, testing, token cleanup, logs"
 	@echo ""
 	@echo "⚡ QUICK COMMANDS:"
 	@echo "  st               Quick status (dev + prod)"
@@ -354,6 +355,54 @@ check-deploy:
 	@echo ""
 	@echo "💡 To deploy: make deploy APP=<code>"
 	@echo "💡 To make visible: make app-show APP=<code>"
+
+# ==============================================================================
+# 🔒 SECURITY MANAGEMENT
+# ==============================================================================
+
+help-security:
+	@echo "🔒 SECURITY MANAGEMENT"
+	@echo "===================="
+	@echo ""
+	@echo "🔧 Security monitoring:"
+	@echo "  security-test        Test security features"
+	@echo "  security-cleanup     Clean expired tokens"
+	@echo "  security-logs        View security logs"
+	@echo ""
+	@echo "📝 Examples:"
+	@echo "  make security-test           # Test all security features"
+	@echo "  make security-cleanup        # Remove expired tokens"
+	@echo "  make security-logs          # Monitor security events"
+
+security-test:
+	@echo "🔒 Testing security features..."
+	@echo "🧹 Clearing cache first..."
+	@poetry run python manage.py test_security_features --clear-cache
+	@echo ""
+	@echo "🔐 Testing rate limiting..."
+	@poetry run python manage.py test_security_features --test-rate-limiting
+	@echo ""
+	@echo "📝 Testing security logging..."
+	@poetry run python manage.py test_security_features --test-logging
+	@echo ""
+	@echo "🎫 Testing token limits..."
+	@poetry run python manage.py test_security_features --test-token-limits
+	@echo ""
+	@echo "✅ All security tests completed!"
+
+security-cleanup:
+	@echo "🧹 Cleaning up expired tokens..."
+	poetry run python manage.py cleanup_expired_tokens
+
+security-logs:
+	@echo "📊 Viewing security logs (press Ctrl+C to stop)..."
+	@if [ -f logs/security.log ]; then \
+		tail -f logs/security.log; \
+	else \
+		echo "Security log file not found. Creating logs directory..."; \
+		mkdir -p logs; \
+		echo "No security events yet. Security events will appear here."; \
+	fi
 
 # ==============================================================================
 # ⚡ DEVELOPMENT
