@@ -163,8 +163,8 @@ class FlashcardStudyMode {
         // Update the message to be more helpful
         const noCardsElement = document.getElementById('noCardsToStudy');
         noCardsElement.innerHTML = `
-            <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
-            <h4 class="mt-3 text-success">Aucune carte à réviser !</h4>
+            <i class="bi bi-check-circle text-linguify-accent" style="font-size: 4rem;"></i>
+            <h4 class="mt-3 text-linguify-accent">Aucune carte à réviser !</h4>
             <p class="text-muted">Ce deck ne contient aucune carte, ou alors toutes les cartes sont déjà apprises.</p>
             <div class="d-flex gap-2 justify-content-center">
                 <button class="btn btn-outline-custom" id="practiceAllCardsBtn">
@@ -392,7 +392,7 @@ class FlashcardStudyMode {
                 <p class="text-muted">Excellent travail ! Vous avez terminé ${this.studyCards.length} cartes.</p>
                 <div class="row text-center mt-4 mb-4">
                     <div class="col">
-                        <div class="stat-value text-success">${this.studyStats.correct}</div>
+                        <div class="stat-value text-linguify-accent">${this.studyStats.correct}</div>
                         <div class="stat-label">Faciles</div>
                     </div>
                     <div class="col">

@@ -180,8 +180,8 @@ class SpacedRepetitionMode {
         const noReviewElement = document.getElementById('noReviewNeeded');
         noReviewElement.innerHTML = `
             <div class="empty-state">
-                <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
-                <h4 class="mt-3 text-success">Aucune carte à réviser !</h4>
+                <i class="bi bi-check-circle text-linguify-accent" style="font-size: 4rem;"></i>
+                <h4 class="mt-3 text-linguify-accent">Aucune carte à réviser !</h4>
                 <p class="text-muted">Toutes les cartes sont à jour selon l'algorithme de répétition espacée.</p>
                 <div class="d-flex gap-2 justify-content-center">
                     <button class="btn btn-outline-custom" onclick="window.spacedMode.practiceAllCards()">
@@ -389,7 +389,7 @@ class SpacedRepetitionMode {
         
         if (efficiency >= 80) {
             performanceMessage = 'Excellente session !';
-            performanceClass = 'text-success';
+            performanceClass = 'text-linguify-accent';
         } else if (efficiency >= 60) {
             performanceMessage = 'Bonne session !';
             performanceClass = 'text-warning';
@@ -413,7 +413,7 @@ class SpacedRepetitionMode {
                         <div class="stat-label">Cartes révisées</div>
                     </div>
                     <div class="col">
-                        <div class="stat-value text-success">${efficient}</div>
+                        <div class="stat-value text-linguify-accent">${efficient}</div>
                         <div class="stat-label">Bien maîtrisées</div>
                     </div>
                     <div class="col">

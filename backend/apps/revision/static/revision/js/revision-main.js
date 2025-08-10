@@ -608,7 +608,7 @@ async function loadDeckCards() {
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
-                            <span class="badge ${card.learned ? 'bg-success' : 'bg-secondary'}">
+                            <span class="badge ${card.learned ? 'bg-linguify-accent' : 'bg-secondary'}">
                                 ${card.learned ? 'Apprise' : 'À apprendre'}
                             </span>
                             <small class="text-muted ms-2">
@@ -1827,8 +1827,8 @@ function setupShareModalEventHandlers() {
                 document.execCommand('copy');
                 const originalText = button.innerHTML;
                 button.innerHTML = '<i class="bi bi-check-circle me-1"></i>Copié !';
-                button.style.backgroundColor = 'var(--linguify-accent, #00D4AA)';
-                button.style.borderColor = 'var(--linguify-accent, #00D4AA)';
+                button.style.backgroundColor = 'var(--linguify-accent, #017e84)';
+                button.style.borderColor = 'var(--linguify-accent, #017e84)';
                 
                 setTimeout(() => {
                     button.innerHTML = originalText;
@@ -2150,9 +2150,9 @@ function showArchiveConfirmationModal(deckName, isArchived) {
     
     // Utiliser les couleurs Linguify
     const bgColor = isArchived ? '#e8f5e8' : '#e8f0fe'; // Vert clair pour désarchiver, bleu clair pour archiver
-    const borderColor = isArchived ? '#00D4AA' : '#2D5BBA'; // Accent vert pour désarchiver, primary bleu pour archiver
-    const textColor = isArchived ? '#00D4AA' : '#2D5BBA';
-    const btnBgColor = isArchived ? '#00D4AA' : '#2D5BBA'; // Accent pour désarchiver, primary pour archiver
+    const borderColor = isArchived ? '#017e84' : '#2D5BBA'; // Accent vert pour désarchiver, primary bleu pour archiver
+    const textColor = isArchived ? '#017e84' : '#2D5BBA';
+    const btnBgColor = isArchived ? '#017e84' : '#2D5BBA'; // Accent pour désarchiver, primary pour archiver
     
     // Créer la modal de confirmation
     const modal = document.createElement('div');
@@ -2890,27 +2890,27 @@ function ensureModalsExist() {
                         
                         <div class="mb-3">
                             <h6 class="fw-semibold mb-2" style="color: #6B7280;">
-                                <i class="bi bi-eye me-1" style="color: #00D4AA;"></i>
+                                <i class="bi bi-eye me-1" style="color: #017e84;"></i>
                                 En rendant ce jeu de cartes public :
                             </h6>
                             <ul class="list-unstyled ms-3">
                                 <li class="mb-1" style="color: #6B7280;">
-                                    <i class="bi bi-check-circle me-2" style="color: #00D4AA;"></i>
+                                    <i class="bi bi-check-circle me-2" style="color: #017e84;"></i>
                                     Autres utilisateurs pourront le découvrir
                                 </li>
                                 <li class="mb-1" style="color: #6B7280;">
-                                    <i class="bi bi-check-circle me-2" style="color: #00D4AA;"></i>
+                                    <i class="bi bi-check-circle me-2" style="color: #017e84;"></i>
                                     Vous pourrez partager le lien
                                 </li>
                                 <li class="mb-1" style="color: #6B7280;">
-                                    <i class="bi bi-check-circle me-2" style="color: #00D4AA;"></i>
+                                    <i class="bi bi-check-circle me-2" style="color: #017e84;"></i>
                                     Vous restez propriétaire et pouvez le modifier
                                 </li>
                             </ul>
                         </div>
                         
                         <div class="small" style="color: #6B7280;">
-                            <i class="bi bi-shield-check me-1" style="color: #00D4AA;"></i>
+                            <i class="bi bi-shield-check me-1" style="color: #017e84;"></i>
                             Vous pourrez toujours rendre le jeu de cartes privé plus tard si nécessaire.
                         </div>
                     </div>
@@ -2935,10 +2935,10 @@ function ensureModalsExist() {
                     <div class="modal-header border-0 pb-0">
                         <div class="d-flex align-items-center">
                             <div class="rounded-circle p-2 me-3" style="background-color: rgba(0, 212, 170, 0.1);">
-                                <i class="bi bi-share" style="font-size: 1.5rem; color: #00D4AA;"></i>
+                                <i class="bi bi-share" style="font-size: 1.5rem; color: #017e84;"></i>
                             </div>
                             <div>
-                                <h5 class="modal-title mb-0" style="color: #00D4AA;">Partager votre jeu de cartes</h5>
+                                <h5 class="modal-title mb-0" style="color: #017e84;">Partager votre jeu de cartes</h5>
                                 <p class="text-muted mb-0 small" id="shareModalDeckName">"Nom du jeu de cartes"</p>
                             </div>
                         </div>

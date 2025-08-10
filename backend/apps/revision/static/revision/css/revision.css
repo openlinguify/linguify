@@ -5,14 +5,14 @@
     /* Couleurs OpenLinguify */
     --linguify-primary: #2D5BBA;        /* Bleu royal moderne - confiance et professionnalisme */
     --linguify-secondary: #8B5CF6;      /* Violet élégant - créativité et sophistication */
-    --linguify-accent: #017e84;         /* Vert menthe - succès et progression */
+    --linguify-accent: #017e84;         /* Teal - succès et progression */
     --linguify-gray: #6B7280;           /* Gris moderne - neutralité élégante */
     --linguify-primary-light: #4F7BD9;  /* Bleu plus clair */
     --linguify-primary-dark: #1E4A8C;   /* Bleu plus foncé */
     --linguify-secondary-light: #A78BFA; /* Violet plus clair */
     --linguify-secondary-dark: #7C3AED;  /* Violet plus foncé */
-    --linguify-accent-light: #26E4B8;   /* Vert menthe plus clair */
-    --linguify-accent-dark: #00B894;    /* Vert menthe plus foncé */
+    --linguify-accent-light: #4AC5CB;   /* Teal plus clair */
+    --linguify-accent-dark: #016064;    /* Teal plus foncé */
     --linguify-teal: #017e84;           /* Teal pour gradients */
     --linguify-success: #10B981;        /* Vert succès */
     --linguify-warning: #F59E0B;        /* Jaune attention */
@@ -22,7 +22,8 @@
     /* Variables RGB pour transparence */
     --linguify-primary-rgb: 45, 91, 186;
     --linguify-secondary-rgb: 139, 92, 246;
-    --linguify-accent-rgb: 0, 212, 170;
+    --linguify-accent-rgb: 1, 126, 132;
+    --linguify-teal-rgb: 1, 126, 132;
     --linguify-success-rgb: 16, 185, 129;
     --linguify-warning-rgb: 245, 158, 11;
     
@@ -30,6 +31,8 @@
     --primary-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
     --secondary-gradient: linear-gradient(135deg, var(--linguify-teal) 0%, var(--linguify-primary) 100%);
     --accent-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+    --subtle-gradient: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.05) 100%);
+    --subtle-gradient-medium: linear-gradient(135deg, rgba(45, 91, 186, 0.08) 0%, rgba(1, 126, 132, 0.08) 100%);
     --primary-color: var(--linguify-primary);
     --primary-dark: var(--linguify-primary-dark);
     --secondary-color: var(--linguify-secondary);
@@ -68,7 +71,7 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     margin: 0;
     padding-top: 64px; /* Space for fixed header */
-    background: linear-gradient(135deg, #fdf4ff 0%, #fef3c7 100%);
+    background: var(--subtle-gradient);
     min-height: 100vh;
 }
 
@@ -408,7 +411,7 @@ body {
 }
 
 .deck-item.active {
-    background: linear-gradient(135deg, #f0f4ff 0%, #fef7cd 100%);
+    background: var(--subtle-gradient-medium);
     border-left: 3px solid var(--primary-color);
 }
 
@@ -777,7 +780,7 @@ body {
 }
 
 .flashcard-back {
-    background: linear-gradient(135deg, #fdf4ff 0%, #fef3c7 100%);
+    background: var(--subtle-gradient);
     transform: rotateY(180deg);
 }
 
@@ -867,7 +870,7 @@ body {
 }
 
 .card-row.status-learned {
-    background: #f0fdf4;
+    background: rgba(1, 126, 132, 0.08);
 }
 
 .card-row.status-new {
@@ -889,12 +892,12 @@ body {
 }
 
 .status-badge.status-learned {
-    background: #d1fae5;
-    color: #065f46;
+    background: rgba(1, 126, 132, 0.2);
+    color: #017e84;
 }
 
 .status-badge.status-new {
-    background: #fef3c7;
+    background: rgba(1, 126, 132, 0.1);
     color: #92400e;
 }
 
@@ -987,7 +990,7 @@ body {
 
 .matching-item.selected {
     border-color: var(--primary-color);
-    background: linear-gradient(135deg, #f0f4ff 0%, #fef7cd 100%);
+    background: var(--subtle-gradient-medium);
     transform: scale(1.02);
 }
 
@@ -1246,7 +1249,7 @@ body {
 }
 
 .share-modal-accent-icon {
-    color: var(--linguify-accent, #00D4AA);
+    color: var(--linguify-accent, #017e84);
 }
 
 .share-modal-list-item {
@@ -1274,11 +1277,11 @@ body {
 
 .share-modal-public-icon {
     font-size: 1.5rem;
-    color: var(--linguify-accent, #00D4AA);
+    color: var(--linguify-accent, #017e84);
 }
 
 .share-modal-public-title {
-    color: var(--linguify-accent, #00D4AA);
+    color: var(--linguify-accent, #017e84);
 }
 
 .share-modal-url-input {
@@ -1303,6 +1306,10 @@ body {
 
 .text-linguify-accent {
     color: var(--linguify-accent) !important;
+}
+
+.bg-linguify-accent {
+    background-color: var(--linguify-accent) !important;
 }
 
 .text-linguify-success {
@@ -2676,11 +2683,11 @@ body.modal-open {
 }
 
 .linguify-accent {
-    background-color: var(--linguify-accent, #00D4AA) !important;
+    background-color: var(--linguify-accent, #017e84) !important;
 }
 
 .linguify-accent-bg {
-    background-color: var(--linguify-accent, #00D4AA) !important;
+    background-color: var(--linguify-accent, #017e84) !important;
 }
 
 .linguify-error-bg {
@@ -2697,7 +2704,7 @@ body.modal-open {
 }
 
 .text-linguify-accent {
-    color: var(--linguify-accent, #00D4AA) !important;
+    color: var(--linguify-accent, #017e84) !important;
 }
 
 .text-linguify-success {
