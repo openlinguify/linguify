@@ -45,11 +45,11 @@ class RevisionMainView(TemplateView):
             audio_settings = {
                 'audio_enabled': revision_settings.audio_enabled,
                 'audio_speed': revision_settings.audio_speed,
-                'preferred_voice_french': revision_settings.preferred_voice_french,
-                'preferred_voice_english': revision_settings.preferred_voice_english,
-                'preferred_voice_spanish': revision_settings.preferred_voice_spanish,
-                'preferred_voice_italian': revision_settings.preferred_voice_italian,
-                'preferred_voice_german': revision_settings.preferred_voice_german,
+                'preferred_gender_french': revision_settings.preferred_gender_french,
+                'preferred_gender_english': revision_settings.preferred_gender_english,
+                'preferred_gender_spanish': revision_settings.preferred_gender_spanish,
+                'preferred_gender_italian': revision_settings.preferred_gender_italian,
+                'preferred_gender_german': revision_settings.preferred_gender_german,
             }
         except Exception as e:
             print(f"Warning: Could not load audio settings: {e}")

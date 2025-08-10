@@ -458,12 +458,15 @@
                     <div class="form-help">Vitesse de la synthèse vocale (0.5x à 2.0x)</div>
                 </div>
 
-                <!-- Voice Selection -->
+                <!-- Voice Gender Selection -->
                 <div class="voice-selection-grid">
                     <h4 class="voice-section-title">
                         <i class="bi bi-globe"></i>
-                        Voix préférées par langue
+                        Genres de voix préférés par langue
                     </h4>
+                    <div class="form-help" style="margin-bottom: 16px;">
+                        Choisissez le genre de voix préféré pour chaque langue. Le système sélectionnera automatiquement la meilleure voix disponible.
+                    </div>
                     
                     <div class="voice-language-section">
                         <div class="form-group">
@@ -471,9 +474,10 @@
                                 <img src="https://flagcdn.com/w20/fr.png" alt="FR" class="flag-icon">
                                 Français
                             </label>
-                            <select name="preferred_voice_french" class="form-control voice-select" data-lang="fr-FR">
-                                <option value="">Automatique (meilleure qualité)</option>
-                                <option disabled>--- Chargement des voix... ---</option>
+                            <select name="preferred_gender_french" class="form-control gender-select" data-lang="fr-FR">
+                                <option value="auto">Automatique</option>
+                                <option value="male">Masculin</option>
+                                <option value="female">Féminin</option>
                             </select>
                             <button type="button" class="voice-test-btn" data-lang="fr-FR" data-text="Bonjour, ceci est un test de la voix française">
                                 🎵 Tester
@@ -487,9 +491,10 @@
                                 <img src="https://flagcdn.com/w20/us.png" alt="EN" class="flag-icon">
                                 Anglais
                             </label>
-                            <select name="preferred_voice_english" class="form-control voice-select" data-lang="en-US">
-                                <option value="">Automatique (meilleure qualité)</option>
-                                <option disabled>--- Chargement des voix... ---</option>
+                            <select name="preferred_gender_english" class="form-control gender-select" data-lang="en-US">
+                                <option value="auto">Automatique</option>
+                                <option value="male">Masculin</option>
+                                <option value="female">Féminin</option>
                             </select>
                             <button type="button" class="voice-test-btn" data-lang="en-US" data-text="Hello, this is a test of the English voice">
                                 🎵 Tester
@@ -503,9 +508,10 @@
                                 <img src="https://flagcdn.com/w20/es.png" alt="ES" class="flag-icon">
                                 Espagnol
                             </label>
-                            <select name="preferred_voice_spanish" class="form-control voice-select" data-lang="es-ES">
-                                <option value="">Automatique (meilleure qualité)</option>
-                                <option disabled>--- Chargement des voix... ---</option>
+                            <select name="preferred_gender_spanish" class="form-control gender-select" data-lang="es-ES">
+                                <option value="auto">Automatique</option>
+                                <option value="male">Masculin</option>
+                                <option value="female">Féminin</option>
                             </select>
                             <button type="button" class="voice-test-btn" data-lang="es-ES" data-text="Hola, esto es una prueba de la voz española">
                                 🎵 Tester
@@ -519,9 +525,10 @@
                                 <img src="https://flagcdn.com/w20/it.png" alt="IT" class="flag-icon">
                                 Italien
                             </label>
-                            <select name="preferred_voice_italian" class="form-control voice-select" data-lang="it-IT">
-                                <option value="">Automatique (meilleure qualité)</option>
-                                <option disabled>--- Chargement des voix... ---</option>
+                            <select name="preferred_gender_italian" class="form-control gender-select" data-lang="it-IT">
+                                <option value="auto">Automatique</option>
+                                <option value="male">Masculin</option>
+                                <option value="female">Féminin</option>
                             </select>
                             <button type="button" class="voice-test-btn" data-lang="it-IT" data-text="Ciao, questo è un test della voce italiana">
                                 🎵 Tester
@@ -535,9 +542,10 @@
                                 <img src="https://flagcdn.com/w20/de.png" alt="DE" class="flag-icon">
                                 Allemand
                             </label>
-                            <select name="preferred_voice_german" class="form-control voice-select" data-lang="de-DE">
-                                <option value="">Automatique (meilleure qualité)</option>
-                                <option disabled>--- Chargement des voix... ---</option>
+                            <select name="preferred_gender_german" class="form-control gender-select" data-lang="de-DE">
+                                <option value="auto">Automatique</option>
+                                <option value="male">Masculin</option>
+                                <option value="female">Féminin</option>
                             </select>
                             <button type="button" class="voice-test-btn" data-lang="de-DE" data-text="Hallo, das ist ein Test der deutschen Stimme">
                                 🎵 Tester
@@ -1238,17 +1246,21 @@
     let currentTestUtterance = null;
 
     function initVoiceSettings() {
-        console.log('[VoiceSettings] Initializing voice settings');
+        console.log('[VoiceSettings] Initializing voice settings with gender selection');
         
-        // Load voices (may be async)
-        loadVoices();
+        // Load available voices
+        availableVoices = speechSynthesis.getVoices();
+        console.log(`[VoiceSettings] Loaded ${availableVoices.length} voices for gender categorization`);
         
         // Voices might load asynchronously
         if (speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = loadVoices;
+            speechSynthesis.onvoiceschanged = function() {
+                availableVoices = speechSynthesis.getVoices();
+                console.log(`[VoiceSettings] Voices updated: ${availableVoices.length} available`);
+            };
         }
 
-        // Setup event listeners
+        // Setup event listeners for gender selectors
         setupVoiceEventListeners();
 
         // Setup audio speed slider
@@ -1280,10 +1292,12 @@
             });
         });
 
-        // Voice selection changes
-        document.querySelectorAll('.voice-select').forEach(select => {
+        // Gender selection changes
+        document.querySelectorAll('.gender-select').forEach(select => {
             select.addEventListener('change', function() {
-                console.log(`[VoiceSettings] Voice changed for ${this.dataset.lang}: ${this.value}`);
+                const lang = this.dataset.lang;
+                const gender = this.value;
+                console.log(`[VoiceSettings] Gender preference changed for ${lang}: ${gender}`);
             });
         });
     }
@@ -1342,21 +1356,14 @@
             speechSynthesis.cancel();
         }
 
-        // Get selected voice for this language
-        const select = document.querySelector(`[data-lang="${languageCode}"]`);
-        let selectedVoiceName = select ? select.value : '';
+        // Get selected gender for this language
+        const select = document.querySelector(`[data-lang="${languageCode}"].gender-select`);
+        let selectedGender = select ? select.value : 'auto';
 
-        let voice = null;
-        if (selectedVoiceName) {
-            voice = availableVoices.find(v => v.name === selectedVoiceName);
-        }
+        console.log(`[VoiceSettings] Testing voice for ${languageCode} with gender: ${selectedGender}`);
 
-        // Fallback to best available voice for language
-        if (!voice) {
-            const shortLang = languageCode.split('-')[0];
-            const langVoices = availableVoices.filter(v => v.lang.startsWith(shortLang));
-            voice = langVoices.find(v => v.localService) || langVoices[0];
-        }
+        // Find best voice for the selected gender
+        let voice = getBestVoiceForGender(languageCode, selectedGender);
 
         if (!voice) {
             alert(`Aucune voix trouvée pour ${languageCode}`);
@@ -1397,6 +1404,137 @@
 
         // Speak
         speechSynthesis.speak(currentTestUtterance);
+    }
+
+    function getBestVoiceForGender(languageCode, preferredGender) {
+        const shortLang = languageCode.split('-')[0];
+        const langVoices = availableVoices.filter(v => v.lang.startsWith(shortLang));
+
+        if (preferredGender === 'auto' || !langVoices.length) {
+            // Return best quality voice (local service preferred)
+            const sortedByQuality = langVoices.sort((a, b) => {
+                // Priorité : service local puis score qualité
+                if (a.localService && !b.localService) return -1;
+                if (!a.localService && b.localService) return 1;
+                return (b.qualityScore || 0) - (a.qualityScore || 0);
+            });
+            return sortedByQuality[0];
+        }
+
+        // Categorize voices by gender
+        const voicesByGender = categorizeVoicesByGender(langVoices);
+        const genderVoices = voicesByGender[preferredGender] || [];
+
+        if (genderVoices.length > 0) {
+            // Trier par score de qualité et service local
+            const sortedGenderVoices = genderVoices.sort((a, b) => {
+                // Priorité : service local puis score qualité
+                if (a.localService && !b.localService) return -1;
+                if (!a.localService && b.localService) return 1;
+                return (b.qualityScore || 0) - (a.qualityScore || 0);
+            });
+            console.log(`✅ Sélection de la meilleure voix ${preferredGender} pour ${languageCode}: ${sortedGenderVoices[0].name} (score: ${sortedGenderVoices[0].qualityScore || 'N/A'})`);
+            return sortedGenderVoices[0];
+        }
+
+        // Fallback to any voice if no matching gender found
+        const fallbackVoices = langVoices.sort((a, b) => {
+            if (a.localService && !b.localService) return -1;
+            if (!a.localService && b.localService) return 1;
+            return (b.qualityScore || 0) - (a.qualityScore || 0);
+        });
+        return fallbackVoices[0];
+    }
+
+    function categorizeVoicesByGender(voices) {
+        const genderPatterns = {
+            male: ['paul', 'george', 'david', 'mark', 'richard', 'daniel', 'thomas', 'matthew', 'james', 'john',
+                   'pierre', 'jean', 'michel', 'henri', 'louis', 'françois', 'antoine', 'nicolas',
+                   'carlos', 'diego', 'antonio', 'fernando', 'miguel', 'josé', 'manuel', 'francisco',
+                   'marco', 'giovanni', 'francesco', 'andrea', 'alessandro', 'lorenzo', 'matteo',
+                   'klaus', 'hans', 'wolfgang', 'stefan', 'michael', 'andreas', 'christian',
+                   'male', 'man', 'masculin', 'homme', 'hombre', 'uomo', 'mann'],
+            female: ['julie', 'marie', 'sarah', 'emma', 'sophie', 'claire', 'anne', 'lisa', 'susan', 'helen',
+                     'amélie', 'isabelle', 'nathalie', 'véronique', 'christine', 'françoise', 'martine',
+                     'maria', 'carmen', 'ana', 'lucia', 'pilar', 'rosa', 'elena', 'patricia',
+                     'giulia', 'francesca', 'elena', 'sara', 'anna', 'valentina', 'chiara',
+                     'anna', 'maria', 'petra', 'sabine', 'christine', 'angelika', 'barbara',
+                     'female', 'woman', 'féminin', 'femme', 'mujer', 'donna', 'frau']
+        };
+
+        // Voix anglaises masculines de haute qualité (par ordre de préférence)
+        const premiumEnglishMaleVoices = [
+            'microsoft david', 'google uk english male', 'microsoft ryan', 'microsoft frank',
+            'google us english male', 'microsoft sean', 'google australian male', 'microsoft kevin',
+            'alex', 'daniel', 'samantha male', 'tom', 'nathan', 'aaron enhanced', 'fred'
+        ];
+
+        const result = { male: [], female: [], unknown: [] };
+
+        for (const voice of voices) {
+            const voiceName = voice.name.toLowerCase();
+            let gender = 'unknown';
+            let qualityBonus = 0;
+
+            // Bonus spécial pour les voix anglaises masculines premium
+            if (voice.lang && voice.lang.startsWith('en')) {
+                for (let i = 0; i < premiumEnglishMaleVoices.length; i++) {
+                    if (voiceName.includes(premiumEnglishMaleVoices[i])) {
+                        gender = 'male';
+                        // Plus la voix est haute dans la liste, plus le bonus est important
+                        qualityBonus = 50 + (premiumEnglishMaleVoices.length - i) * 10;
+                        console.log(`🎯 Voix anglaise masculine premium détectée: ${voice.name} (bonus: ${qualityBonus})`);
+                        break;
+                    }
+                }
+            }
+
+            // Si pas encore identifié, vérifier les patterns masculins standards
+            if (gender === 'unknown') {
+                for (const pattern of genderPatterns.male) {
+                    if (voiceName.includes(pattern)) {
+                        gender = 'male';
+                        // Bonus supplémentaire pour les voix anglaises masculines
+                        if (voice.lang && voice.lang.startsWith('en')) {
+                            qualityBonus = 20;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // If not male, check female patterns
+            if (gender === 'unknown') {
+                for (const pattern of genderPatterns.female) {
+                    if (voiceName.includes(pattern)) {
+                        gender = 'female';
+                        break;
+                    }
+                }
+            }
+
+            // Appliquer le bonus qualité
+            if (qualityBonus > 0) {
+                voice.qualityScore = (voice.qualityScore || 0) + qualityBonus;
+            }
+
+            result[gender].push(voice);
+        }
+
+        // Trier les voix masculines par score de qualité pour chaque langue
+        result.male.sort((a, b) => {
+            // Prioriser d'abord les voix anglaises avec bonus
+            if (a.lang && a.lang.startsWith('en') && (!b.lang || !b.lang.startsWith('en'))) {
+                return -1;
+            }
+            if (b.lang && b.lang.startsWith('en') && (!a.lang || !a.lang.startsWith('en'))) {
+                return 1;
+            }
+            // Puis trier par score de qualité
+            return (b.qualityScore || 0) - (a.qualityScore || 0);
+        });
+
+        return result;
     }
 
     function testCurrentVoices() {

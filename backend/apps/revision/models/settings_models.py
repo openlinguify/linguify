@@ -155,34 +155,47 @@ class RevisionSettings(models.Model):
         help_text="Vitesse de la synthèse vocale (0.5 à 2.0)"
     )
     
-    preferred_voice_french = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text="Nom de la voix préférée pour le français"
+    # Choix de genre pour la synthèse vocale
+    VOICE_GENDER_CHOICES = [
+        ('male', 'Masculin'),
+        ('female', 'Féminin'),
+        ('auto', 'Automatique'),
+    ]
+    
+    # Genres préférés par langue
+    preferred_gender_french = models.CharField(
+        max_length=10,
+        choices=VOICE_GENDER_CHOICES,
+        default='auto',
+        help_text="Genre de voix préféré pour le français"
     )
     
-    preferred_voice_english = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text="Nom de la voix préférée pour l'anglais"
+    preferred_gender_english = models.CharField(
+        max_length=10,
+        choices=VOICE_GENDER_CHOICES,
+        default='auto',
+        help_text="Genre de voix préféré pour l'anglais"
     )
     
-    preferred_voice_spanish = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text="Nom de la voix préférée pour l'espagnol"
+    preferred_gender_spanish = models.CharField(
+        max_length=10,
+        choices=VOICE_GENDER_CHOICES,
+        default='auto',
+        help_text="Genre de voix préféré pour l'espagnol"
     )
     
-    preferred_voice_italian = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text="Nom de la voix préférée pour l'italien"
+    preferred_gender_italian = models.CharField(
+        max_length=10,
+        choices=VOICE_GENDER_CHOICES,
+        default='auto',
+        help_text="Genre de voix préféré pour l'italien"
     )
     
-    preferred_voice_german = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text="Nom de la voix préférée pour l'allemand"
+    preferred_gender_german = models.CharField(
+        max_length=10,
+        choices=VOICE_GENDER_CHOICES,
+        default='auto',
+        help_text="Genre de voix préféré pour l'allemand"
     )
     
     keyboard_shortcuts_enabled = models.BooleanField(

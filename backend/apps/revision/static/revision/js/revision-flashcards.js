@@ -506,20 +506,18 @@ class FlashcardStudyMode {
                 autoPlay: settings.auto_play_audio || false
             };
 
-            // Mettre à jour les voix préférées
-            this.preferredVoices = {
-                'fr-FR': settings.preferred_voice_french || null,
-                'en-US': settings.preferred_voice_english || null,
-                'en-GB': settings.preferred_voice_english || null, // Même voix pour en-GB
-                'es-ES': settings.preferred_voice_spanish || null,
-                'it-IT': settings.preferred_voice_italian || null,
-                'de-DE': settings.preferred_voice_german || null
+            // Mettre à jour les préférences de genre par langue
+            this.preferredGenders = {
+                'fr-FR': settings.preferred_gender_french || 'auto',
+                'en-US': settings.preferred_gender_english || 'auto',
+                'en-GB': settings.preferred_gender_english || 'auto',
+                'es-ES': settings.preferred_gender_spanish || 'auto',
+                'it-IT': settings.preferred_gender_italian || 'auto',
+                'de-DE': settings.preferred_gender_german || 'auto'
             };
 
             console.log('✅ Paramètres audio chargés depuis le serveur:', this.audioSettings);
-            console.log('✅ Voix préférées chargées depuis le serveur:', this.preferredVoices);
-            console.log('🔍 preferred_voice_french:', settings.preferred_voice_french);
-            console.log('🔍 preferred_voice_english:', settings.preferred_voice_english);
+            console.log('✅ Préférences de genre chargées depuis le serveur:', this.preferredGenders);
             return;
         }
         
@@ -543,20 +541,18 @@ class FlashcardStudyMode {
                     autoPlay: settings.auto_play_audio || false
                 };
 
-                // Mettre à jour les voix préférées avec debug
-                this.preferredVoices = {
-                    'fr-FR': settings.preferred_voice_french || null,
-                    'en-US': settings.preferred_voice_english || null,
-                    'en-GB': settings.preferred_voice_english || null, // Même voix pour en-GB
-                    'es-ES': settings.preferred_voice_spanish || null,
-                    'it-IT': settings.preferred_voice_italian || null,
-                    'de-DE': settings.preferred_voice_german || null
+                // Mettre à jour les préférences de genre par langue depuis l'API
+                this.preferredGenders = {
+                    'fr-FR': settings.preferred_gender_french || 'auto',
+                    'en-US': settings.preferred_gender_english || 'auto',
+                    'en-GB': settings.preferred_gender_english || 'auto',
+                    'es-ES': settings.preferred_gender_spanish || 'auto',
+                    'it-IT': settings.preferred_gender_italian || 'auto',
+                    'de-DE': settings.preferred_gender_german || 'auto'
                 };
 
                 console.log('✅ Paramètres audio chargés depuis API:', this.audioSettings);
-                console.log('✅ Voix préférées chargées depuis API:', this.preferredVoices);
-                console.log('🔍 preferred_voice_french from API:', settings.preferred_voice_french);
-                console.log('🔍 preferred_voice_english from API:', settings.preferred_voice_english);
+                console.log('✅ Préférences de genre chargées depuis API:', this.preferredGenders);
             } else {
                 console.error('❌ API user-settings failed with status:', response.status);
                 const errorText = await response.text();
@@ -730,23 +726,32 @@ class FlashcardStudyMode {
         return langMap[normalized] || langCode;
     }
 
-    getBestVoiceForLanguage(languageCode) {
+    getBestVoiceForLanguage(languageCode, preferredGender = null) {
         if (!this.voices.length) {
             this.loadVoices();
         }
 
-        // 1. Vérifier d'abord les voix préférées par l'utilisateur
-        const preferredVoiceName = this.preferredVoices[languageCode];
-        if (preferredVoiceName) {
-            console.log(`🔍 Recherche voix préférée "${preferredVoiceName}" pour ${languageCode}`);
+        // 1. Déterminer le genre préféré pour cette langue
+        let targetGender = preferredGender;
+        if (!targetGender && this.preferredGenders && this.preferredGenders[languageCode]) {
+            targetGender = this.preferredGenders[languageCode];
+        }
+        
+        console.log(`🔍 Recherche voix pour ${languageCode} avec genre préféré: ${targetGender || 'auto'}`);
+
+        // 2. Si un genre spécifique est demandé, chercher les meilleures voix de ce genre
+        if (targetGender && targetGender !== 'auto') {
+            const voicesForLanguage = this.voices.filter(v => v.lang === languageCode || v.lang.startsWith(languageCode.split('-')[0]));
+            const voicesByGender = this.categorizeVoicesByGender(voicesForLanguage);
             
-            const preferredVoice = this.voices.find(v => v.name === preferredVoiceName);
-            if (preferredVoice) {
-                console.log(`✅ Utilisation de la voix préférée pour ${languageCode}: ${preferredVoice.name}`);
-                return preferredVoice;
+            const targetVoices = voicesByGender[targetGender] || [];
+            if (targetVoices.length > 0) {
+                // Prendre la meilleure voix de ce genre (score qualité le plus élevé)
+                const bestVoice = targetVoices.sort((a, b) => (b.qualityScore || 0) - (a.qualityScore || 0))[0];
+                console.log(`✅ Voix ${targetGender} sélectionnée automatiquement: ${bestVoice.name} (score: ${bestVoice.qualityScore || 'N/A'})`);
+                return bestVoice;
             } else {
-                console.warn(`❌ Voix préférée "${preferredVoiceName}" non trouvée pour ${languageCode}`);
-                console.log(`Voix disponibles pour ${languageCode}:`, this.voices.filter(v => v.lang === languageCode).map(v => v.name));
+                console.warn(`❌ Aucune voix ${targetGender} trouvée pour ${languageCode}, utilisation du fallback automatique`);
             }
         }
 
@@ -796,6 +801,110 @@ class FlashcardStudyMode {
             .sort((a, b) => (b.qualityScore || 0) - (a.qualityScore || 0));
     }
 
+    categorizeVoicesByGender(voices) {
+        const genderPatterns = {
+            male: [
+                // Noms masculins courants
+                'paul', 'george', 'david', 'mark', 'richard', 'daniel', 'thomas', 'matthew', 'james', 'john',
+                'pierre', 'jean', 'michel', 'henri', 'louis', 'françois', 'antoine', 'nicolas',
+                'carlos', 'diego', 'antonio', 'fernando', 'miguel', 'josé', 'manuel', 'francisco',
+                'marco', 'giovanni', 'francesco', 'andrea', 'alessandro', 'lorenzo', 'matteo',
+                'klaus', 'hans', 'wolfgang', 'stefan', 'michael', 'andreas', 'christian',
+                // Noms masculins anglais plus spécifiques
+                'william', 'robert', 'charles', 'christopher', 'anthony', 'brian', 'kevin', 'edward',
+                'ronald', 'timothy', 'jason', 'jeffrey', 'ryan', 'jacob', 'gary', 'nicholas', 'eric',
+                'jonathan', 'stephen', 'larry', 'justin', 'scott', 'brandon', 'benjamin', 'samuel',
+                'gregory', 'alexander', 'patrick', 'jack', 'dennis', 'jerry', 'tyler', 'aaron',
+                // Indicateurs explicites (priorité haute pour l'anglais)
+                'male', 'man', 'masculin', 'homme', 'hombre', 'uomo', 'mann'
+            ],
+            female: [
+                // Noms féminins courants
+                'julie', 'marie', 'sarah', 'emma', 'sophie', 'claire', 'anne', 'lisa', 'susan', 'helen',
+                'amélie', 'isabelle', 'nathalie', 'véronique', 'christine', 'françoise', 'martine',
+                'maria', 'carmen', 'ana', 'lucia', 'pilar', 'rosa', 'elena', 'patricia',
+                'giulia', 'francesca', 'elena', 'sara', 'anna', 'valentina', 'chiara',
+                'anna', 'maria', 'petra', 'sabine', 'christine', 'angelika', 'barbara',
+                // Indicateurs explicites
+                'female', 'woman', 'féminin', 'femme', 'mujer', 'donna', 'frau'
+            ]
+        };
+
+        // Voix anglaises masculines de haute qualité (par ordre de préférence)
+        const premiumEnglishMaleVoices = [
+            'microsoft david', 'google uk english male', 'microsoft ryan', 'microsoft frank',
+            'google us english male', 'microsoft sean', 'google australian male', 'microsoft kevin',
+            'alex', 'daniel', 'samantha male', 'tom', 'nathan', 'aaron enhanced', 'fred'
+        ];
+
+        const result = { male: [], female: [], unknown: [] };
+
+        for (const voice of voices) {
+            const voiceName = voice.name.toLowerCase();
+            let gender = 'unknown';
+            let qualityBonus = 0;
+
+            // Bonus spécial pour les voix anglaises masculines premium
+            if (voice.lang && voice.lang.startsWith('en')) {
+                for (let i = 0; i < premiumEnglishMaleVoices.length; i++) {
+                    if (voiceName.includes(premiumEnglishMaleVoices[i])) {
+                        gender = 'male';
+                        // Plus la voix est haute dans la liste, plus le bonus est important
+                        qualityBonus = 50 + (premiumEnglishMaleVoices.length - i) * 10;
+                        console.log(`🎯 Voix anglaise masculine premium détectée: ${voice.name} (bonus: ${qualityBonus})`);
+                        break;
+                    }
+                }
+            }
+
+            // Si pas encore identifié, vérifier les patterns masculins standards
+            if (gender === 'unknown') {
+                for (const pattern of genderPatterns.male) {
+                    if (voiceName.includes(pattern)) {
+                        gender = 'male';
+                        // Bonus supplémentaire pour les voix anglaises masculines
+                        if (voice.lang && voice.lang.startsWith('en')) {
+                            qualityBonus = 20;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // Si pas trouvé masculin, vérifier les patterns féminins
+            if (gender === 'unknown') {
+                for (const pattern of genderPatterns.female) {
+                    if (voiceName.includes(pattern)) {
+                        gender = 'female';
+                        break;
+                    }
+                }
+            }
+
+            // Appliquer le bonus qualité
+            if (qualityBonus > 0) {
+                voice.qualityScore = (voice.qualityScore || 0) + qualityBonus;
+            }
+
+            result[gender].push(voice);
+        }
+
+        // Trier les voix masculines par score de qualité pour chaque langue
+        result.male.sort((a, b) => {
+            // Prioriser d'abord les voix anglaises avec bonus
+            if (a.lang && a.lang.startsWith('en') && (!b.lang || !b.lang.startsWith('en'))) {
+                return -1;
+            }
+            if (b.lang && b.lang.startsWith('en') && (!a.lang || !a.lang.startsWith('en'))) {
+                return 1;
+            }
+            // Puis trier par score de qualité
+            return (b.qualityScore || 0) - (a.qualityScore || 0);
+        });
+
+        return result;
+    }
+
     speakText(side) {
         if (!this.speechSynthesis || !this.audioSettings.enabled) {
             console.warn('Speech synthesis not supported or disabled');
@@ -842,7 +951,7 @@ class FlashcardStudyMode {
         // Créer l'utterance
         this.currentUtterance = new SpeechSynthesisUtterance(textToSpeak);
         
-        // Configurer la voix
+        // Configurer la voix selon les préférences utilisateur
         const voice = this.getBestVoiceForLanguage(languageToUse);
         if (voice) {
             this.currentUtterance.voice = voice;
