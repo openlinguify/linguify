@@ -19,109 +19,164 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --linguify-primary: #2D5BBA;
+            --linguify-accent: #00D4AA;
+            --linguify-dark: #1a202c;
+            --linguify-gray: #718096;
+            --linguify-light-gray: #f7fafc;
+            --linguify-border: #e2e8f0;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
         }
+        
         .verification-container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(45, 91, 186, 0.15);
             padding: 3rem;
             max-width: 500px;
             width: 100%;
             text-align: center;
             margin: 2rem;
+            border: 1px solid rgba(0, 212, 170, 0.1);
         }
+        
         .email-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 2rem;
             animation: pulse 2s ease-in-out infinite alternate;
+            box-shadow: 0 10px 30px rgba(45, 91, 186, 0.3);
         }
+        
         @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
+            0% { transform: scale(1); box-shadow: 0 10px 30px rgba(45, 91, 186, 0.3); }
+            100% { transform: scale(1.05); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.4); }
         }
+        
         .email-icon i {
             font-size: 2.5rem;
             color: white;
         }
+        
         h1 {
-            color: #2d3748;
+            color: var(--linguify-dark);
             font-weight: 700;
             margin-bottom: 1rem;
             font-size: 2rem;
         }
+        
         .subtitle {
-            color: #718096;
+            color: var(--linguify-gray);
             font-size: 1.1rem;
             margin-bottom: 2rem;
             line-height: 1.6;
         }
+        
         .email-highlight {
-            background: #f7fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, var(--linguify-light-gray) 0%, rgba(0, 212, 170, 0.05) 100%);
+            border: 2px solid var(--linguify-accent);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
             font-weight: 600;
-            color: #2d3748;
-            margin: 1rem 0;
+            color: var(--linguify-primary);
+            margin: 1.5rem 0;
             word-break: break-all;
+            box-shadow: 0 5px 15px rgba(0, 212, 170, 0.1);
         }
+        
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
             border: none;
-            border-radius: 10px;
-            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            padding: 0.875rem 2.5rem;
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(45, 91, 186, 0.3);
         }
+        
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 12px 25px rgba(45, 91, 186, 0.4);
+            background: linear-gradient(135deg, #3d6bcf 0%, #00e4ba 100%);
         }
+        
         .btn-link {
-            color: #667eea;
+            color: var(--linguify-primary);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
         }
+        
         .btn-link:hover {
-            color: #764ba2;
+            color: var(--linguify-accent);
             text-decoration: underline;
         }
+        
         .back-link {
             position: absolute;
             top: 2rem;
             left: 2rem;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.9);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
         }
+        
         .back-link:hover {
             color: white;
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-2px);
         }
+        
         .divider {
             border: none;
             height: 1px;
-            background: #e2e8f0;
+            background: linear-gradient(90deg, transparent 0%, var(--linguify-border) 50%, transparent 100%);
             margin: 2rem 0;
         }
+        
         .help-text {
-            color: #718096;
+            color: var(--linguify-gray);
             font-size: 0.9rem;
             line-height: 1.5;
+        }
+        
+        .tips-list {
+            background: var(--linguify-light-gray);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            border-left: 4px solid var(--linguify-accent);
+        }
+        
+        .tips-list li {
+            margin-bottom: 0.5rem;
+            color: var(--linguify-gray);
+        }
+        
+        .linguify-brand {
+            background: linear-gradient(45deg, var(--linguify-primary), var(--linguify-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -146,16 +201,16 @@
             </div>
             
             <p class="help-text">
-                {% trans "Click the link in the email to verify your account and start your language learning journey with Linguify." %}
+                {% trans "Click the link in the email to verify your account and start your language learning journey with" %} <span class="linguify-brand">Linguify</span>.
             </p>
             
             <hr class="divider">
             
             <div class="mb-3">
-                <small class="text-muted">{% trans "Didn't receive the email?" %}</small>
+                <h5 style="color: var(--linguify-primary); margin-bottom: 1rem;">{% trans "Didn't receive the email?" %}</h5>
             </div>
             
-            <form method="post" action="{% url 'auth:resend_verification_email' %}" class="mb-3">
+            <form method="post" action="{% url 'auth:resend_verification_email' %}" class="mb-4">
                 {% csrf_token %}
                 <input type="hidden" name="email" value="{{ email }}">
                 <button type="submit" class="btn btn-primary">
@@ -164,9 +219,11 @@
                 </button>
             </form>
             
-            <div class="help-text">
-                <p><strong>{% trans "Tips:" %}</strong></p>
-                <ul class="text-start" style="max-width: 300px; margin: 0 auto;">
+            <div class="tips-list text-start">
+                <p style="margin-bottom: 1rem; font-weight: 600; color: var(--linguify-primary);">
+                    <i class="bi bi-lightbulb me-2"></i>{% trans "Tips:" %}
+                </p>
+                <ul style="margin: 0; padding-left: 1.5rem;">
                     <li>{% trans "Check your spam or junk folder" %}</li>
                     <li>{% trans "Make sure the email address is correct" %}</li>
                     <li>{% trans "The verification link expires in 24 hours" %}</li>
@@ -176,6 +233,7 @@
             <hr class="divider">
             
             <p class="help-text">
+                <i class="bi bi-question-circle me-1"></i>
                 {% trans "Need help?" %} 
                 <a href="{% portal_url_with_lang 'contact/' %}" class="btn-link">{% trans "Contact support" %}</a>
             </p>

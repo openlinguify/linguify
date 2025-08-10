@@ -1,7 +1,7 @@
 # Makefile for Linguify Backend Development
 # Complete application and database management
 
-.PHONY: help install run stop clean apps apps-manifests app-hide app-show app-order app-delete sync-manifests st test-prod test-dev sync-prod sync-app setup-db migrate reset-db deploy-prod deploy check-deploy env env-dev env-prod
+.PHONY: help install run stop clean apps apps-manifests app-hide app-show app-order app-delete sync-manifests st test-prod test-dev sync-prod sync-app setup-db migrate reset-db deploy-prod deploy check-deploy env env-dev env-prod security-test security-cleanup security-logs help-security
 
 # ==============================================================================
 # 🎯 HELP & INFORMATION
@@ -279,7 +279,14 @@ blog-prod:
 
 # Shorthand syntax (format: make blog blogpost prod)
 %:
-	@if [ "$(words $(MAKECMDGOALS))" = "3" ]; then \
+	@# Skip security commands to avoid conflicts
+	@if echo "$(MAKECMDGOALS)" | grep -q "^security-"; then \
+		echo "❌ Unknown security command. Use:"; \
+		echo "  make help-security    # Show security help"; \
+		echo "  make security-test    # Test security features"; \
+		echo "  make security-cleanup # Clean expired tokens"; \
+		echo "  make security-logs    # View security logs"; \
+	elif [ "$(words $(MAKECMDGOALS))" = "3" ]; then \
 		$(eval APP := $(word 1,$(MAKECMDGOALS))) \
 		$(eval TABLE := $(word 2,$(MAKECMDGOALS))) \
 		$(eval TARGET := $(word 3,$(MAKECMDGOALS))) \
@@ -289,6 +296,7 @@ blog-prod:
 		echo "❌ Unrecognized format. Use:"; \
 		echo "  make <app> <table> <target>    # Example: make blog blogpost prod"; \
 		echo "  make <app>-sync-table TABLE=<table> TARGET=<env>"; \
+		echo "  make help-security             # Security commands help"; \
 	fi
 
 # App-specific sync shortcuts

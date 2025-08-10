@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 class EmailVerificationRateLimiter:
     """Rate limiter for email verification attempts"""
     
-    # Rate limiting configuration
-    MAX_VERIFICATION_ATTEMPTS = 5  # Max attempts per time window
-    VERIFICATION_WINDOW = 300  # 5 minutes in seconds
-    MAX_RESEND_ATTEMPTS = 3  # Max email resends per time window
-    RESEND_WINDOW = 600  # 10 minutes in seconds
-    LOCKOUT_DURATION = 1800  # 30 minutes lockout after too many failures
+    # Rate limiting configuration (ajusté pour être plus convivial)
+    MAX_VERIFICATION_ATTEMPTS = 10  # Max attempts per time window (plus généreux)
+    VERIFICATION_WINDOW = 3600  # 1 hour in seconds (fenêtre plus longue)
+    MAX_RESEND_ATTEMPTS = 5  # Max email resends per time window
+    RESEND_WINDOW = 1800  # 30 minutes in seconds
+    LOCKOUT_DURATION = 900  # 15 minutes lockout (réduit de 30 à 15 min)
     
     @staticmethod
     def get_cache_key(identifier, action):
@@ -179,9 +179,30 @@ class EmailVerificationRateLimiter:
 
 
 def rate_limit_response(message, status_code=429):
-    """Return a rate limit exceeded response"""
-    return HttpResponse(
-        f"<h1>Too Many Requests</h1><p>{message}</p>",
-        status=status_code,
-        content_type='text/html'
-    )
+    """Return a user-friendly rate limit response"""
+    friendly_html = f"""
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Trop de tentatives - Linguify</title>
+        <style>
+            body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f7fafc; margin: 0; padding: 40px; }}
+            .container {{ max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(45, 91, 186, 0.1); text-align: center; }}
+            .icon {{ font-size: 48px; margin-bottom: 20px; }}
+            h1 {{ color: #2D5BBA; margin-bottom: 15px; font-size: 24px; }}
+            p {{ color: #718096; line-height: 1.6; margin-bottom: 20px; }}
+            .btn {{ display: inline-block; background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="icon">⏰</div>
+            <h1>Un petit moment s'il vous plaît</h1>
+            <p>{message}</p>
+            <a href="javascript:history.back()" class="btn">← Retour</a>
+        </div>
+    </body>
+    </html>
+    """
+    return HttpResponse(friendly_html, status=status_code, content_type='text/html')

@@ -19,106 +19,155 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --linguify-primary: #2D5BBA;
+            --linguify-accent: #00D4AA;
+            --linguify-dark: #1a202c;
+            --linguify-gray: #718096;
+            --linguify-light-gray: #f7fafc;
+            --linguify-border: #e2e8f0;
+            --linguify-error: #e53e3e;
+            --linguify-warning: #dd6b20;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
         }
+        
         .error-container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(45, 91, 186, 0.15);
             padding: 3rem;
             max-width: 500px;
             width: 100%;
             text-align: center;
             margin: 2rem;
+            border: 1px solid rgba(229, 62, 62, 0.1);
         }
+        
         .error-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, var(--linguify-error) 0%, var(--linguify-warning) 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 2rem;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 10px 30px rgba(229, 62, 62, 0.3);
         }
         .error-icon i {
             font-size: 2.5rem;
             color: white;
         }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
         h1 {
-            color: #2d3748;
+            color: var(--linguify-dark);
             font-weight: 700;
             margin-bottom: 1rem;
             font-size: 2rem;
         }
+        
         .subtitle {
-            color: #718096;
+            color: var(--linguify-gray);
             font-size: 1.1rem;
             margin-bottom: 2rem;
             line-height: 1.6;
         }
+        
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
             border: none;
-            border-radius: 10px;
-            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            padding: 0.875rem 2.5rem;
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
             color: white;
+            box-shadow: 0 6px 20px rgba(45, 91, 186, 0.3);
         }
+        
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 12px 25px rgba(45, 91, 186, 0.4);
             color: white;
+            background: linear-gradient(135deg, #3d6bcf 0%, #00e4ba 100%);
         }
+        
         .btn-link {
-            color: #667eea;
+            color: var(--linguify-primary);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
         }
         .btn-link:hover {
-            color: #764ba2;
+            color: var(--linguify-accent);
             text-decoration: underline;
         }
+        
         .back-link {
             position: absolute;
             top: 2rem;
             left: 2rem;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.9);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
         }
+        
         .back-link:hover {
             color: white;
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-2px);
         }
+        
         .divider {
             border: none;
             height: 1px;
-            background: #e2e8f0;
+            background: linear-gradient(90deg, transparent 0%, var(--linguify-border) 50%, transparent 100%);
             margin: 2rem 0;
         }
+        
         .help-text {
-            color: #718096;
+            color: var(--linguify-gray);
             font-size: 0.9rem;
             line-height: 1.5;
         }
+        
         .error-details {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: 8px;
-            padding: 1rem;
-            color: #991b1b;
+            background: linear-gradient(135deg, #fef2f2 0%, rgba(229, 62, 62, 0.05) 100%);
+            border: 2px solid rgba(229, 62, 62, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: var(--linguify-error);
             margin: 1.5rem 0;
+            box-shadow: 0 5px 15px rgba(229, 62, 62, 0.1);
+        }
+        
+        .linguify-brand {
+            background: linear-gradient(45deg, var(--linguify-primary), var(--linguify-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -144,7 +193,7 @@
                     {% trans "Verification links expire after 24 hours for security reasons." %}
                 </div>
                 <p class="help-text">
-                    {% trans "Don't worry! You can request a new verification email and try again." %}
+                    {% trans "Don't worry! You can request a new verification email and try again with" %} <span class="linguify-brand">Linguify</span>.
                 </p>
                 
             {% elif error == 'token_used' %}
