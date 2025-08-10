@@ -1545,7 +1545,136 @@ body {
 
 /* ===== STYLES POUR L'IMPORT AMÉLIORÉ ===== */
 
-/* Indicateur d'étapes */
+/* Compact import styles */
+.import-steps-compact {
+    padding: var(--space-xs) 0;
+}
+
+.step-compact {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.step-compact.active {
+    opacity: 1;
+}
+
+.step-compact.completed {
+    opacity: 0.8;
+}
+
+.step-number-compact {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--gray-300);
+    color: var(--gray-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.step-compact.active .step-number-compact {
+    background: var(--linguify-primary);
+    color: white;
+}
+
+.step-compact.completed .step-number-compact {
+    background: var(--linguify-success);
+    color: white;
+}
+
+.step-label-compact {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--gray-600);
+}
+
+.step-compact.active .step-label-compact {
+    color: var(--linguify-primary);
+    font-weight: 600;
+}
+
+.step-compact.completed .step-label-compact {
+    color: var(--linguify-success);
+}
+
+.step-separator-compact {
+    width: 20px;
+    height: 2px;
+    background: var(--gray-300);
+    transition: all 0.3s ease;
+}
+
+.step-separator-compact.completed {
+    background: var(--linguify-success);
+}
+
+.file-drop-zone-compact {
+    position: relative;
+    border: 2px dashed rgba(var(--linguify-primary-rgb), 0.3);
+    border-radius: var(--border-radius-md);
+    padding: var(--space-md);
+    text-align: center;
+    background: var(--subtle-gradient);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-drop-zone-compact:hover {
+    border-color: var(--linguify-primary);
+    background: var(--subtle-gradient-medium);
+    box-shadow: 0 4px 16px rgba(var(--linguify-primary-rgb), 0.1);
+}
+
+.file-drop-zone-compact.drag-over {
+    border-color: var(--linguify-primary);
+    background: var(--primary-gradient);
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(var(--linguify-primary-rgb), 0.2);
+}
+
+.import-actions-fixed {
+    border-top: 1px solid rgba(var(--linguify-primary-rgb), 0.1) !important;
+    background: white !important;
+    box-shadow: 0 -4px 12px rgba(var(--linguify-primary-rgb), 0.08);
+}
+
+.supported-formats-compact .badge {
+    font-size: var(--font-size-xs);
+    padding: var(--space-xs) var(--space-sm);
+}
+
+/* Scrollable content styling */
+.import-content-scrollable {
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-400) transparent;
+}
+
+.import-content-scrollable::-webkit-scrollbar {
+    width: 6px;
+}
+
+.import-content-scrollable::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.import-content-scrollable::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: 3px;
+}
+
+.import-content-scrollable::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+}
+
+/* Indicateur d'étapes - version originale pour compatibilité */
 .import-steps {
     padding: 20px 0;
 }

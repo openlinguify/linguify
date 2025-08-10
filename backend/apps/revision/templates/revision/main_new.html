@@ -459,8 +459,8 @@
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-upload icon-linguify-primary me-2 font-size-1-5rem"></i>
-                    <h5 class="mb-0">Importer un deck</h5>
+                    <i class="bi bi-upload text-linguify-primary me-2"></i>
+                    <h5 class="mb-0 text-linguify-primary">Importer un deck</h5>
                 </div>
                 <button id="cancelImport" class="btn btn-outline-custom btn-sm">
                     <i class="bi bi-x-lg"></i>
@@ -469,99 +469,105 @@
             </div>
         </div>
         
-        <div class="study-content p-4">
-            <!-- Étapes de progression -->
-            <div class="import-steps mb-4">
-                <div class="step-indicator">
-                    <div class="step active">
-                        <div class="step-number">1</div>
-                        <div class="step-label">Sélection</div>
-                    </div>
-                    <div class="step-line"></div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-label">Aperçu</div>
-                    </div>
-                    <div class="step-line"></div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-label">Import</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Zone de drop pour fichier -->
-            <div class="file-drop-zone mb-4" id="fileDropZone">
-                <div class="drop-zone-content">
-                    <i class="bi bi-cloud-upload icon-linguify-primary font-size-3rem"></i>
-                    <h6 class="mt-3 mb-2">Glissez votre fichier ici</h6>
-                    <p class="text-muted mb-3">ou cliquez pour sélectionner</p>
-                    <input type="file" id="importFile" class="d-none" accept=".csv,.xlsx,.xls">
-                    <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('importFile').click()">
-                        <i class="bi bi-folder2-open me-1"></i>
-                        Parcourir
-                    </button>
-                </div>
-                <div class="drop-zone-overlay" id="dropZoneOverlay">
-                    <i class="bi bi-cloud-upload-fill text-white font-size-3rem"></i>
-                    <p class="text-white mt-2 mb-0">Déposez le fichier ici</p>
-                </div>
-            </div>
-
-            <!-- Informations sur le fichier sélectionné -->
-            <div class="selected-file-info display-none" id="selectedFileInfo">
-                <div class="alert alert-success">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-file-earmark-check icon-linguify-success me-2"></i>
-                        <div>
-                            <strong id="selectedFileName"></strong>
-                            <div class="text-muted small" id="selectedFileSize"></div>
+        <div class="study-content" style="height: calc(100vh - 220px); overflow: hidden; display: flex; flex-direction: column;">
+            <!-- Main content area with scroll -->
+            <div class="import-content-scrollable" style="flex: 1; overflow-y: auto; padding: 0.75rem; margin-right: -1rem; padding-right: 2rem;">
+                <!-- Compact steps indicator -->
+                <div class="import-steps-compact mb-3">
+                    <div class="d-flex align-items-center justify-content-center gap-3">
+                        <div class="step-compact active">
+                            <span class="step-number-compact">1</span>
+                            <span class="step-label-compact">Sélection</span>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm ms-auto" onclick="clearSelectedFile()">
-                            <i class="bi bi-x"></i>
+                        <div class="step-separator-compact"></div>
+                        <div class="step-compact">
+                            <span class="step-number-compact">2</span>
+                            <span class="step-label-compact">Aperçu</span>
+                        </div>
+                        <div class="step-separator-compact"></div>
+                        <div class="step-compact">
+                            <span class="step-number-compact">3</span>
+                            <span class="step-label-compact">Import</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compact file drop zone -->
+                <div class="file-drop-zone-compact mb-3" id="fileDropZone">
+                    <div class="drop-zone-content">
+                        <i class="bi bi-cloud-upload text-linguify-primary" style="font-size: 2rem;"></i>
+                        <p class="mb-2 mt-2 fw-semibold text-linguify-gray">Glissez votre fichier ici ou cliquez pour sélectionner</p>
+                        <input type="file" id="importFile" class="d-none" accept=".csv,.xlsx,.xls">
+                        <button class="btn btn-gradient btn-sm" onclick="document.getElementById('importFile').click()">
+                            <i class="bi bi-folder2-open me-1"></i>
+                            Parcourir
                         </button>
                     </div>
+                    <div class="drop-zone-overlay" id="dropZoneOverlay">
+                        <i class="bi bi-cloud-upload-fill text-white" style="font-size: 2rem;"></i>
+                        <p class="text-white mt-2 mb-0">Déposez le fichier ici</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Formats supportés -->
-            <div class="supported-formats mb-4">
-                <h6 class="text-muted mb-2">Formats supportés</h6>
-                <div class="d-flex gap-2">
-                    <span class="badge bg-light text-dark">
-                        <i class="bi bi-file-earmark-excel icon-linguify-success me-1"></i>
-                        Excel (.xlsx, .xls)
-                    </span>
-                    <span class="badge bg-light text-dark">
-                        <i class="bi bi-filetype-csv text-info me-1"></i>
-                        CSV (.csv)
-                    </span>
+                <!-- File info - compact -->
+                <div class="selected-file-info display-none" id="selectedFileInfo">
+                    <div class="alert bg-gradient-subtle-linguify border-linguify py-2 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-file-earmark-check text-linguify-success me-2"></i>
+                            <div>
+                                <strong id="selectedFileName" class="small text-linguify-primary"></strong>
+                                <div class="text-linguify-accent" style="font-size: 0.75rem;" id="selectedFileSize"></div>
+                            </div>
+                            <button class="btn btn-outline-custom btn-sm ms-auto py-1" onclick="clearSelectedFile()">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <small class="text-muted mt-1 d-block">
-                    Votre fichier doit contenir au minimum 2 colonnes pour le recto et verso des cartes
-                </small>
+
+                <!-- Compact supported formats -->
+                <div class="supported-formats-compact mb-3">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <small class="text-linguify-accent fw-semibold">Formats supportés:</small>
+                        <span class="badge bg-gradient-subtle-linguify text-linguify-primary border-linguify py-1">
+                            <i class="bi bi-file-earmark-excel text-linguify-success me-1"></i>
+                            Excel
+                        </span>
+                        <span class="badge bg-gradient-subtle-linguify text-linguify-primary border-linguify py-1">
+                            <i class="bi bi-filetype-csv text-linguify-accent me-1"></i>
+                            CSV
+                        </span>
+                    </div>
+                    <small class="text-linguify-gray d-block mt-1">
+                        Minimum 2 colonnes pour recto et verso des cartes
+                    </small>
+                </div>
+                
+                <!-- Compact deck name input -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-linguify-primary mb-1">
+                        <i class="bi bi-tag me-1"></i>
+                        Nom du deck
+                    </label>
+                    <input type="text" id="importDeckName" class="form-control" 
+                           placeholder="Entrez le nom du nouveau deck..." 
+                           maxlength="100">
+                    <div class="form-text small">Ce nom doit être unique dans vos decks</div>
+                    <div class="invalid-feedback" id="deckNameError"></div>
+                </div>
             </div>
             
-            <div class="mb-4">
-                <label class="form-label fw-bold">
-                    <i class="bi bi-tag me-1"></i>
-                    Nom du deck
-                </label>
-                <input type="text" id="importDeckName" class="form-control form-control-lg" 
-                       placeholder="Entrez le nom du nouveau deck..." 
-                       maxlength="100">
-                <div class="form-text">Ce nom doit être unique dans vos decks</div>
-                <div class="invalid-feedback" id="deckNameError"></div>
-            </div>
-            
-            <div class="d-flex gap-2 justify-content-end">
-                <button id="submitImport" class="btn btn-gradient btn-lg" disabled>
-                    <i class="bi bi-arrow-right me-1"></i>
-                    Suivant - Aperçu
-                </button>
-                <button id="cancelImportAlt" class="btn btn-outline-custom">
-                    Annuler
-                </button>
+            <!-- Fixed bottom actions -->
+            <div class="import-actions-fixed bg-white border-top py-2 px-3 mt-auto" style="flex-shrink: 0;">
+                <div class="d-flex gap-2 justify-content-end">
+                    <button id="cancelImportAlt" class="btn btn-outline-custom">
+                        Annuler
+                    </button>
+                    <button id="submitImport" class="btn btn-gradient" disabled>
+                        <i class="bi bi-arrow-right me-1"></i>
+                        Suivant - Aperçu
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -571,8 +577,8 @@
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-eye text-info me-2 font-size-1-5rem"></i>
-                    <h5 class="mb-0">Aperçu de l'import</h5>
+                    <i class="bi bi-eye text-linguify-accent me-2"></i>
+                    <h5 class="mb-0 text-linguify-accent">Aperçu de l'import</h5>
                 </div>
                 <button id="cancelImportPreview" class="btn btn-outline-custom btn-sm">
                     <i class="bi bi-x-lg"></i>
@@ -581,26 +587,27 @@
             </div>
         </div>
         
-        <div class="study-content p-4">
-            <!-- Étapes de progression -->
-            <div class="import-steps mb-4">
-                <div class="step-indicator">
-                    <div class="step completed">
-                        <div class="step-number"><i class="bi bi-check"></i></div>
-                        <div class="step-label">Sélection</div>
-                    </div>
-                    <div class="step-line completed"></div>
-                    <div class="step active">
-                        <div class="step-number">2</div>
-                        <div class="step-label">Aperçu</div>
-                    </div>
-                    <div class="step-line"></div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-label">Import</div>
+        <div class="study-content" style="height: calc(100vh - 220px); overflow: hidden; display: flex; flex-direction: column;">
+            <div class="import-content-scrollable" style="flex: 1; overflow-y: auto; padding: 0.75rem; margin-right: -1rem; padding-right: 2rem;">
+                <!-- Compact steps indicator -->
+                <div class="import-steps-compact mb-3">
+                    <div class="d-flex align-items-center justify-content-center gap-3">
+                        <div class="step-compact completed">
+                            <span class="step-number-compact"><i class="bi bi-check"></i></span>
+                            <span class="step-label-compact">Sélection</span>
+                        </div>
+                        <div class="step-separator-compact completed"></div>
+                        <div class="step-compact active">
+                            <span class="step-number-compact">2</span>
+                            <span class="step-label-compact">Aperçu</span>
+                        </div>
+                        <div class="step-separator-compact"></div>
+                        <div class="step-compact">
+                            <span class="step-number-compact">3</span>
+                            <span class="step-label-compact">Import</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
             <!-- Résumé du fichier -->
             <div class="import-summary mb-4">
@@ -749,15 +756,20 @@
                 </div>
             </div>
             
-            <div class="d-flex gap-2 justify-content-between">
-                <button id="cancelImportPreviewAlt" class="btn btn-outline-custom">
-                    <i class="bi bi-arrow-left me-1"></i>
-                    Retour
-                </button>
-                <button id="confirmImport" class="btn btn-gradient btn-lg">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Confirmer l'import
-                </button>
+            </div>
+            
+            <!-- Fixed bottom actions -->
+            <div class="import-actions-fixed bg-white border-top py-2 px-3 mt-auto" style="flex-shrink: 0;">
+                <div class="d-flex gap-2 justify-content-between">
+                    <button id="cancelImportPreviewAlt" class="btn btn-outline-custom">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Retour
+                    </button>
+                    <button id="confirmImport" class="btn btn-gradient">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Confirmer l'import
+                    </button>
+                </div>
             </div>
         </div>
     </div>
