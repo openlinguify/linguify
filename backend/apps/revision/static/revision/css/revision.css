@@ -1644,6 +1644,25 @@ body {
     border-top: 1px solid rgba(var(--linguify-primary-rgb), 0.1) !important;
     background: white !important;
     box-shadow: 0 -4px 12px rgba(var(--linguify-primary-rgb), 0.08);
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.import-actions-fixed .d-flex {
+    width: 100%;
+    height: 60px;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    padding: 0 1rem !important;
+}
+
+.import-actions-fixed .btn {
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin: 0 !important;
 }
 
 .supported-formats-compact .badge {
