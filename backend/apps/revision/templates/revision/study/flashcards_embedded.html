@@ -21,9 +21,15 @@
                 <div class="flashcard-inner">
                     <div class="flashcard-front">
                         <div class="flashcard-text" id="flashcardFront">Cliquez pour commencer</div>
+                        <button id="speakFrontBtn" class="speak-btn speak-btn-front" onclick="event.stopPropagation(); window.flashcardMode.speakText('front')" title="Lire à haute voix">
+                            <i class="bi bi-volume-up"></i>
+                        </button>
                     </div>
                     <div class="flashcard-back">
                         <div class="flashcard-text" id="flashcardBack">Réponse</div>
+                        <button id="speakBackBtn" class="speak-btn speak-btn-back" onclick="event.stopPropagation(); window.flashcardMode.speakText('back')" title="Lire à haute voix">
+                            <i class="bi bi-volume-up"></i>
+                        </button>
                     </div>
                 </div>
             </div>

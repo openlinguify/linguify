@@ -13,7 +13,12 @@ class FlashcardStudyMode {
             difficult: 0,
             total: 0
         };
+        // Synthèse vocale
+        this.speechSynthesis = window.speechSynthesis;
+        this.currentUtterance = null;
+        this.voices = [];
         this.setupEventListeners();
+        this.initializeSpeechSynthesis();
     }
 
     setupEventListeners() {
@@ -178,6 +183,9 @@ class FlashcardStudyMode {
             this.showCompletionMessage();
             return;
         }
+
+        // Stop any ongoing speech when loading a new card
+        this.stopSpeech();
 
         const card = this.studyCards[this.currentCardIndex];
         
@@ -418,6 +426,9 @@ class FlashcardStudyMode {
     }
 
     exitStudyMode() {
+        // Stop any ongoing speech
+        this.stopSpeech();
+        
         // Hide study mode
         document.getElementById('flashcardStudyMode').style.display = 'none';
         
@@ -431,6 +442,228 @@ class FlashcardStudyMode {
             const elements = window.revisionMain.getElements();
             elements.welcomeState.style.display = 'block';
         }
+    }
+
+    // ===== MÉTHODES POUR LA SYNTHÈSE VOCALE =====
+    
+    initializeSpeechSynthesis() {
+        if (!this.speechSynthesis) {
+            console.warn('Speech synthesis not supported');
+            return;
+        }
+
+        // Charger les voix disponibles
+        this.loadVoices();
+        
+        // Les voix peuvent être chargées de manière asynchrone
+        this.speechSynthesis.addEventListener('voiceschanged', () => {
+            this.loadVoices();
+        });
+    }
+
+    loadVoices() {
+        this.voices = this.speechSynthesis.getVoices();
+        console.log('Voix disponibles:', this.voices.length);
+    }
+
+    detectLanguage(text) {
+        // Détection simple de la langue basée sur des caractères et mots communs
+        if (!text) return 'fr-FR';
+        
+        const textLower = text.toLowerCase();
+        
+        // Français - mots communs et accents
+        const frenchPatterns = [
+            /[àâäçéèêëïîôöùûüÿ]/,
+            /\b(le|la|les|un|une|des|de|du|et|est|être|avoir|que|qui|dans|pour|avec|sur|par|ce|cette|tout|tous|toute|mais|ou|où|comme|très|plus|sans|sous|entre|pendant|après|avant|depuis|jusqu|alors|ainsi|donc|car|si|bien|encore|aussi|même|déjà|ici|là|maintenant|hier|demain|aujourd|bonjour|bonsoir|merci|salut|comment|pourquoi|quand|combien|beaucoup|peu|jamais|toujours|souvent|parfois|peut|peuvent|doit|peuvent|faire|dire|aller|venir|voir|savoir|vouloir|pouvoir)\b/
+        ];
+        
+        // Anglais - mots communs
+        const englishPatterns = [
+            /\b(the|a|an|and|or|but|in|on|at|to|for|of|with|by|from|up|about|into|over|after|beneath|under|above|through|during|before|since|until|while|although|because|if|when|where|what|who|which|how|why|that|this|these|those|some|any|many|much|few|little|all|both|each|every|other|another|such|same|different|new|old|first|last|next|good|bad|big|small|long|short|high|low|hot|cold|fast|slow|easy|hard|right|wrong|true|false|yes|no|hello|hi|goodbye|bye|please|thank|thanks|sorry|excuse|welcome)\b/
+        ];
+        
+        // Espagnol - mots communs et accents
+        const spanishPatterns = [
+            /[áéíóúñü]/,
+            /\b(el|la|los|las|un|una|unos|unas|de|del|y|o|pero|en|por|para|con|sin|sobre|bajo|entre|durante|después|antes|desde|hasta|mientras|aunque|porque|si|cuando|donde|que|quien|como|por|qué|cuándo|dónde|cuánto|mucho|poco|nunca|siempre|a|menudo|vez|veces|puede|pueden|debe|deben|hacer|decir|ir|venir|ver|saber|querer|poder|ser|estar|tener|haber|hola|adiós|gracias|por|favor|lo|siento|perdón|bienvenido)\b/
+        ];
+        
+        // Italien - mots communs et accents
+        const italianPatterns = [
+            /[àèéìíîòóù]/,
+            /\b(il|la|lo|gli|le|un|una|uno|di|del|della|dei|delle|e|o|ma|in|su|per|con|senza|sopra|sotto|tra|fra|durante|dopo|prima|da|fino|mentre|anche|se|perché|quando|dove|che|chi|come|quanto|molto|poco|mai|sempre|spesso|volte|può|possono|deve|devono|fare|dire|andare|venire|vedere|sapere|volere|potere|essere|avere|ciao|arrivederci|grazie|prego|scusi|benvenuto)\b/
+        ];
+        
+        // Allemand - mots communs et caractères
+        const germanPatterns = [
+            /[äöüß]/,
+            /\b(der|die|das|den|dem|des|ein|eine|eines|einem|einer|und|oder|aber|in|an|auf|für|mit|ohne|über|unter|zwischen|während|nach|vor|von|bis|während|obwohl|weil|wenn|wo|was|wer|wie|warum|wann|viel|wenig|nie|immer|oft|manchmal|kann|können|muss|müssen|soll|sollen|machen|sagen|gehen|kommen|sehen|wissen|wollen|können|sein|haben|hallo|auf|wiedersehen|danke|bitte|entschuldigung|willkommen)\b/
+        ];
+
+        // Compter les correspondances pour chaque langue
+        let frenchScore = 0;
+        let englishScore = 0;
+        let spanishScore = 0;
+        let italianScore = 0;
+        let germanScore = 0;
+
+        frenchPatterns.forEach(pattern => {
+            const matches = textLower.match(pattern);
+            if (matches) frenchScore += matches.length;
+        });
+
+        englishPatterns.forEach(pattern => {
+            const matches = textLower.match(pattern);
+            if (matches) englishScore += matches.length;
+        });
+
+        spanishPatterns.forEach(pattern => {
+            const matches = textLower.match(pattern);
+            if (matches) spanishScore += matches.length;
+        });
+
+        italianPatterns.forEach(pattern => {
+            const matches = textLower.match(pattern);
+            if (matches) italianScore += matches.length;
+        });
+
+        germanPatterns.forEach(pattern => {
+            const matches = textLower.match(pattern);
+            if (matches) germanScore += matches.length;
+        });
+
+        // Déterminer la langue avec le score le plus élevé
+        const scores = [
+            { lang: 'fr-FR', score: frenchScore },
+            { lang: 'en-US', score: englishScore },
+            { lang: 'es-ES', score: spanishScore },
+            { lang: 'it-IT', score: italianScore },
+            { lang: 'de-DE', score: germanScore }
+        ];
+
+        scores.sort((a, b) => b.score - a.score);
+        
+        // Si aucun pattern n'est détecté, retourner français par défaut
+        return scores[0].score > 0 ? scores[0].lang : 'fr-FR';
+    }
+
+    getBestVoiceForLanguage(languageCode) {
+        if (!this.voices.length) {
+            this.loadVoices();
+        }
+
+        // Essayer de trouver une voix pour la langue exacte
+        let voice = this.voices.find(v => v.lang === languageCode);
+        
+        // Si pas trouvé, essayer avec juste le code de langue (ex: 'fr' au lieu de 'fr-FR')
+        if (!voice) {
+            const shortLang = languageCode.split('-')[0];
+            voice = this.voices.find(v => v.lang.startsWith(shortLang));
+        }
+        
+        // Si toujours pas trouvé, prendre une voix par défaut
+        if (!voice && this.voices.length > 0) {
+            voice = this.voices[0];
+        }
+        
+        return voice;
+    }
+
+    speakText(side) {
+        if (!this.speechSynthesis) {
+            console.warn('Speech synthesis not supported');
+            return;
+        }
+
+        // Arrêter toute lecture en cours
+        this.stopSpeech();
+
+        const currentCard = this.studyCards[this.currentCardIndex];
+        if (!currentCard) return;
+
+        let textToSpeak = '';
+        let buttonElement = null;
+        
+        if (side === 'front') {
+            textToSpeak = currentCard.front_text;
+            buttonElement = document.getElementById('speakFrontBtn');
+        } else if (side === 'back') {
+            textToSpeak = currentCard.back_text;
+            buttonElement = document.getElementById('speakBackBtn');
+        }
+
+        if (!textToSpeak || !textToSpeak.trim()) {
+            console.warn('No text to speak');
+            return;
+        }
+
+        // Détecter la langue du texte
+        const detectedLanguage = this.detectLanguage(textToSpeak);
+        console.log(`Texte: "${textToSpeak}" - Langue détectée: ${detectedLanguage}`);
+
+        // Créer l'utterance
+        this.currentUtterance = new SpeechSynthesisUtterance(textToSpeak);
+        
+        // Configurer la voix
+        const voice = this.getBestVoiceForLanguage(detectedLanguage);
+        if (voice) {
+            this.currentUtterance.voice = voice;
+            this.currentUtterance.lang = voice.lang;
+            console.log(`Voix utilisée: ${voice.name} (${voice.lang})`);
+        } else {
+            this.currentUtterance.lang = detectedLanguage;
+            console.log(`Pas de voix trouvée, utilisation de la langue: ${detectedLanguage}`);
+        }
+
+        // Configurer les paramètres
+        this.currentUtterance.rate = 0.9; // Vitesse légèrement plus lente
+        this.currentUtterance.pitch = 1.0;
+        this.currentUtterance.volume = 1.0;
+
+        // Animation du bouton pendant la lecture
+        if (buttonElement) {
+            buttonElement.classList.add('speaking');
+        }
+
+        // Gérer les événements
+        this.currentUtterance.onstart = () => {
+            console.log('Début de la lecture');
+        };
+
+        this.currentUtterance.onend = () => {
+            console.log('Fin de la lecture');
+            if (buttonElement) {
+                buttonElement.classList.remove('speaking');
+            }
+            this.currentUtterance = null;
+        };
+
+        this.currentUtterance.onerror = (event) => {
+            console.error('Erreur lors de la lecture:', event.error);
+            if (buttonElement) {
+                buttonElement.classList.remove('speaking');
+            }
+            this.currentUtterance = null;
+        };
+
+        // Lancer la lecture
+        this.speechSynthesis.speak(this.currentUtterance);
+    }
+
+    stopSpeech() {
+        if (this.speechSynthesis && this.speechSynthesis.speaking) {
+            this.speechSynthesis.cancel();
+        }
+        
+        // Nettoyer l'animation des boutons
+        const frontBtn = document.getElementById('speakFrontBtn');
+        const backBtn = document.getElementById('speakBackBtn');
+        
+        if (frontBtn) frontBtn.classList.remove('speaking');
+        if (backBtn) backBtn.classList.remove('speaking');
+        
+        this.currentUtterance = null;
     }
 }
 
