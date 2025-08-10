@@ -1340,6 +1340,10 @@ function setupSearchEventListeners(searchInput, voiceBtn, advancedBtn) {
     const clearHistoryBtn = document.getElementById('clearSearchHistory');
     clearHistoryBtn?.addEventListener('click', clearSearchHistory);
     
+    // Sidebar toggle button
+    const sidebarToggleBtn = document.getElementById('sidebarToggle');
+    sidebarToggleBtn?.addEventListener('click', toggleSidebar);
+    
     // Global click handler for closing dropdowns
     document.addEventListener('click', handleGlobalClick);
 }
@@ -1956,6 +1960,31 @@ function hideAdvancedSearchPanel() {
     
     const advancedBtn = document.getElementById('advancedSearchToggle');
     advancedBtn.classList.remove('active');
+}
+
+// Sidebar Toggle - Norme Linguify standard
+function toggleSidebar() {
+    const sidebar = document.getElementById('exploreSidebar');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    
+    if (!sidebar) return;
+    
+    // Simple toggle comme dans revision-main.js
+    const wasVisible = sidebar.classList.contains('show');
+    sidebar.classList.toggle('show');
+    
+    // Update button state
+    if (sidebar.classList.contains('show')) {
+        toggleBtn?.classList.add('active');
+    } else {
+        toggleBtn?.classList.remove('active');
+    }
+    
+    // Track analytics
+    trackEvent('sidebar_toggle', { 
+        action: wasVisible ? 'close' : 'open',
+        timestamp: new Date().toISOString()
+    });
 }
 
 function applyAdvancedSearch() {
@@ -2710,7 +2739,7 @@ function initializeExplore() {
     setupExploreEventListeners();
     setupFavoritesAndCollectionsEventListeners();
     initializeAdvancedSearch();
-    showExploreWelcome();
+    showExploreResults(); // Changed from showExploreWelcome() to show search immediately
     loadPopularDecks();
     loadTrendingDecks();
     loadFavorites();
@@ -3965,7 +3994,9 @@ async function initializeExploreOptimized() {
         initializeAnalytics();
         
         // Show welcome screen immediately
-        showExploreWelcome();
+        showExploreResults(); // Changed from showExploreWelcome() to show search immediately
+        
+        // Sidebar is shown by default with 'show' class in template
         
         // Load critical path components
         await prioritizeCriticalPath();

@@ -9,7 +9,7 @@
 
 {% block content %}
 <!-- Sidebar pour les filtres avancés -->
-<div id="exploreSidebar" class="revision-sidebar">
+<div id="exploreSidebar" class="revision-sidebar show">
     <div class="sidebar-content">
         <!-- Filtres avancés -->
         <div class="sidebar-header">
@@ -270,6 +270,9 @@
                         </button>
                         <button id="voiceSearchBtn" class="btn btn-link search-voice" title="Recherche vocale">
                             <i class="bi bi-mic"></i>
+                        </button>
+                        <button id="sidebarToggle" class="btn btn-link search-sidebar" title="Filtres et collections">
+                            <i class="bi bi-funnel"></i>
                         </button>
                         <button id="advancedSearchToggle" class="btn btn-link search-advanced" title="Recherche avancée">
                             <i class="bi bi-sliders"></i>
@@ -915,6 +918,10 @@
         </div>
     </div>
 </div>
+
+<!-- Sidebar Overlay -->
+<div id="sidebarOverlay" class="sidebar-overlay" style="display: none;" onclick="toggleSidebar()"></div>
+
 {% endblock %}
 
 {% block extra_css %}

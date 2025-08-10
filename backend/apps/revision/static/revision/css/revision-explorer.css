@@ -1,22 +1,57 @@
 /* ===== LINGUIFY EXPLORER STYLES ===== */
 /* Fichier CSS dédié pour toutes les fonctionnalités Explorer */
 
-/* Variables CSS */
+/* Variables CSS - EXACTEMENT comme revision.css */
 :root {
-    --linguify-primary: #377DFF;
-    --linguify-primary-light: #8BB5FF;
-    --linguify-secondary: #2E7D32;
-    --linguify-accent: #FF6B35;
-    --linguify-text: #212529;
-    --linguify-gray: #6C757D;
-    --linguify-gray-light: #ADB5BD;
-    --linguify-border: #DEE2E6;
-    --linguify-bg: #F8F9FA;
-    --linguify-bg-light: #FFFFFF;
-    --linguify-success: #28A745;
-    --linguify-warning: #FFC107;
-    --linguify-danger: #DC3545;
-    --linguify-info: #17A2B8;
+    /* Couleurs OpenLinguify - identiques à revision.css */
+    --linguify-primary: #2D5BBA;        /* Bleu royal moderne - confiance et professionnalisme */
+    --linguify-secondary: #8B5CF6;      /* Violet élégant - créativité et sophistication */
+    --linguify-accent: #017e84;         /* Teal - succès et progression */
+    --linguify-gray: #374151;           /* Gris sombre pour meilleur contraste WCAG */
+    --linguify-gray-light: #6B7280;    /* Gris clair pour éléments secondaires */
+    --linguify-primary-light: #4F7BD9;  /* Bleu plus clair */
+    --linguify-primary-dark: #1E4A8C;   /* Bleu plus foncé */
+    --linguify-secondary-light: #A78BFA; /* Violet plus clair */
+    --linguify-secondary-dark: #7C3AED;  /* Violet plus foncé */
+    --linguify-accent-light: #4AC5CB;   /* Teal plus clair */
+    --linguify-accent-dark: #016064;    /* Teal plus foncé */
+    --linguify-teal: #017e84;           /* Teal pour gradients */
+    --linguify-success: #10B981;        /* Vert succès */
+    --linguify-warning: #F59E0B;        /* Jaune attention */
+    --linguify-error: #EF4444;          /* Rouge erreur */
+    
+    /* Couleurs principales (compatibilité) */
+    --primary-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
+    --secondary-gradient: linear-gradient(135deg, var(--linguify-teal) 0%, var(--linguify-primary) 100%);
+    --accent-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+    --subtle-gradient: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.05) 100%);
+    --subtle-gradient-medium: linear-gradient(135deg, rgba(45, 91, 186, 0.08) 0%, rgba(1, 126, 132, 0.08) 100%);
+    --primary-color: var(--linguify-primary);
+    --primary-dark: var(--linguify-primary-dark);
+    --secondary-color: var(--linguify-secondary);
+    --accent-color: var(--linguify-accent);
+    
+    /* Couleurs système */
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    
+    /* Couleurs grises - exactes comme revision.css */
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    
+    /* Dimensions layout - exactes */
+    --sidebar-width: 320px;
+    --sidebar-width-mobile: 100%;
+    --header-height: 64px;
 }
 
 /* Critical CSS - Above the fold */
@@ -386,23 +421,95 @@
     margin-left: auto;
 }
 
-/* Sidebar Styles */
+/* ===== SIDEBAR STYLES - EXACTS comme revision.css ===== */
+
+/* Sidebar principale - identique revision.css ligne 322 */
 .revision-sidebar {
-    position: fixed;
-    left: -400px;
-    top: 0;
-    width: 350px;
-    height: 100vh;
-    background: var(--linguify-bg-light);
-    border-right: 1px solid var(--linguify-border);
-    transition: left 0.3s ease;
-    z-index: 1040;
+    width: var(--sidebar-width);
+    background: white;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    height: 100%;
 }
 
-.revision-sidebar.active {
-    left: 0;
+/* Sidebar header - identique revision.css ligne 333 */
+.sidebar-header {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
+    background: var(--bg-gradient-subtle-linguify, rgba(45, 91, 186, 0.03));
+}
+
+/* Sidebar content - identique revision.css ligne 339 */
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+/* Study area - identique revision.css ligne 345 */
+.revision-study {
+    flex: 1;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* ===== BOUTONS - EXACTS comme revision.css ===== */
+
+.btn-gradient {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+    color: white;
+}
+
+.btn-outline-custom {
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: var(--linguify-gray);
+    transition: all 0.2s ease;
+}
+
+.btn-outline-custom:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #f8fafc;
+}
+
+/* ===== RESPONSIVE - EXACT comme revision.css ligne 2914 ===== */
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 100%;
+    }
+    
+    .revision-sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+        transform: translateX(-100%);
+    }
+    
+    .revision-sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .revision-study {
+        width: 100%;
+    }
 }
 
 .sidebar-overlay {
@@ -702,7 +809,7 @@
     margin-left: 0.75rem;
 }
 
-.search-voice, .search-advanced {
+.search-voice, .search-advanced, .search-sidebar {
     background: none;
     border: none;
     color: var(--linguify-gray);
@@ -713,10 +820,15 @@
     cursor: pointer;
 }
 
-.search-voice:hover, .search-advanced:hover {
+.search-voice:hover, .search-advanced:hover, .search-sidebar:hover {
     background: var(--linguify-bg);
     color: var(--linguify-primary);
     transform: scale(1.1);
+}
+
+.search-sidebar.active {
+    background: var(--linguify-primary);
+    color: white;
 }
 
 .search-voice.listening {
@@ -1718,6 +1830,13 @@
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
+/* Large screens - sidebar always visible */
+@media (min-width: 1200px) {
+    .search-sidebar {
+        display: flex; /* Ensure button is visible on large screens */
+    }
+}
+
 @media (max-width: 1200px) {
     .explore-features {
         grid-template-columns: repeat(2, 1fr);
@@ -1729,11 +1848,6 @@
 }
 
 @media (max-width: 768px) {
-    .revision-sidebar {
-        width: 100%;
-        left: -100%;
-    }
-    
     .explore-features {
         grid-template-columns: 1fr;
         gap: 1rem;
