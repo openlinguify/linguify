@@ -609,39 +609,33 @@
                     </div>
                 </div>
 
-            <!-- Résumé du fichier -->
-            <div class="import-summary mb-4">
-                <div class="row">
+            <!-- Résumé du fichier - compact -->
+            <div class="import-summary-compact mb-3">
+                <div class="row g-2">
                     <div class="col-md-4">
-                        <div class="summary-card">
-                            <div class="summary-icon">
-                                <i class="bi bi-file-earmark icon-linguify-primary"></i>
-                            </div>
-                            <div class="summary-content">
-                                <div class="summary-title">Fichier</div>
-                                <div class="summary-value" id="previewFileName"></div>
+                        <div class="summary-card-compact">
+                            <i class="bi bi-file-earmark text-linguify-primary me-2"></i>
+                            <div>
+                                <div class="summary-title-compact">Fichier</div>
+                                <div class="summary-value-compact text-linguify-primary" id="previewFileName"></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="summary-card">
-                            <div class="summary-icon">
-                                <i class="bi bi-list-ol icon-linguify-success"></i>
-                            </div>
-                            <div class="summary-content">
-                                <div class="summary-title">Lignes</div>
-                                <div class="summary-value" id="previewTotalRows"></div>
+                        <div class="summary-card-compact">
+                            <i class="bi bi-list-ol text-linguify-success me-2"></i>
+                            <div>
+                                <div class="summary-title-compact">Lignes</div>
+                                <div class="summary-value-compact text-linguify-success" id="previewTotalRows"></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="summary-card">
-                            <div class="summary-icon">
-                                <i class="bi bi-credit-card icon-linguify-warning"></i>
-                            </div>
-                            <div class="summary-content">
-                                <div class="summary-title">Cartes à créer</div>
-                                <div class="summary-value" id="previewEstimatedCards">~</div>
+                        <div class="summary-card-compact">
+                            <i class="bi bi-credit-card text-linguify-accent me-2"></i>
+                            <div>
+                                <div class="summary-title-compact">Cartes à créer</div>
+                                <div class="summary-value-compact text-linguify-accent" id="previewEstimatedCards">~</div>
                             </div>
                         </div>
                     </div>
@@ -649,109 +643,109 @@
             </div>
 
             <!-- Configuration des colonnes -->
-            <div class="column-mapping mb-4">
-                <h6 class="mb-3">
+            <div class="column-mapping-compact mb-3">
+                <h6 class="mb-2 text-linguify-primary fw-semibold">
                     <i class="bi bi-arrow-left-right me-1"></i>
                     Configuration des colonnes
                 </h6>
                 
                 <!-- Option pour la première ligne -->
-                <div class="mb-3">
+                <div class="mb-2">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="hasHeaderCheck" checked onchange="updatePreview()">
-                        <label class="form-check-label" for="hasHeaderCheck">
+                        <label class="form-check-label text-linguify-gray fw-medium" for="hasHeaderCheck">
                             La première ligne contient des en-têtes de colonnes (ne pas l'importer comme carte)
                         </label>
                     </div>
                 </div>
                 
-                <div class="row">
+                <div class="row g-2">
                     <div class="col-md-6">
-                        <div class="mapping-option">
-                            <label class="form-label fw-bold text-linguify-primary">
+                        <div class="mapping-option-compact">
+                            <label class="form-label fw-semibold text-linguify-primary mb-1">
                                 <i class="bi bi-card-text me-1"></i>
                                 Recto des cartes
                             </label>
-                            <select id="frontColumnSelect" class="form-select form-select-lg" onchange="updatePreview()">
+                            <select id="frontColumnSelect" class="form-select form-select-sm" onchange="updatePreview()">
                             </select>
                             
-                            <label class="form-label mt-2">
+                            <label class="form-label mt-2 mb-1 small text-linguify-accent">
                                 <i class="bi bi-globe me-1"></i>
                                 Langue du recto (optionnel)
                             </label>
-                            <select id="frontLanguageSelect" class="form-select">
+                            <select id="frontLanguageSelect" class="form-select form-select-sm">
                                 <option value="">-- Sélectionner une langue --</option>
-                                <option value="fr">Français</option>
-                                <option value="en">Anglais</option>
-                                <option value="es">Espagnol</option>
-                                <option value="de">Allemand</option>
-                                <option value="it">Italien</option>
-                                <option value="pt">Portugais</option>
-                                <option value="ru">Russe</option>
-                                <option value="zh">Chinois</option>
-                                <option value="ja">Japonais</option>
-                                <option value="ko">Coréen</option>
-                                <option value="ar">Arabe</option>
-                                <option value="nl">Néerlandais</option>
-                                <option value="pl">Polonais</option>
-                                <option value="tr">Turc</option>
-                                <option value="sv">Suédois</option>
+                                <option value="fr">🇫🇷 Français</option>
+                                <option value="en">🇺🇸 Anglais</option>
+                                <option value="es">🇪🇸 Espagnol</option>
+                                <option value="de">🇩🇪 Allemand</option>
+                                <option value="it">🇮🇹 Italien</option>
+                                <option value="pt">🇵🇹 Portugais</option>
+                                <option value="ru">🇷🇺 Russe</option>
+                                <option value="zh">🇨🇳 Chinois</option>
+                                <option value="ja">🇯🇵 Japonais</option>
+                                <option value="ko">🇰🇷 Coréen</option>
+                                <option value="ar">🇸🇦 Arabe</option>
+                                <option value="nl">🇳🇱 Néerlandais</option>
+                                <option value="pl">🇵🇱 Polonais</option>
+                                <option value="tr">🇹🇷 Turc</option>
+                                <option value="sv">🇸🇪 Suédois</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="mapping-option">
-                            <label class="form-label fw-bold text-linguify-success">
+                        <div class="mapping-option-compact">
+                            <label class="form-label fw-semibold text-linguify-accent mb-1">
                                 <i class="bi bi-card-text me-1"></i>
                                 Verso des cartes
                             </label>
-                            <select id="backColumnSelect" class="form-select form-select-lg" onchange="updatePreview()">
+                            <select id="backColumnSelect" class="form-select form-select-sm" onchange="updatePreview()">
                             </select>
                             
-                            <label class="form-label mt-2">
+                            <label class="form-label mt-2 mb-1 small text-linguify-accent">
                                 <i class="bi bi-globe me-1"></i>
                                 Langue du verso (optionnel)
                             </label>
-                            <select id="backLanguageSelect" class="form-select">
+                            <select id="backLanguageSelect" class="form-select form-select-sm">
                                 <option value="">-- Sélectionner une langue --</option>
-                                <option value="fr">Français</option>
-                                <option value="en">Anglais</option>
-                                <option value="es">Espagnol</option>
-                                <option value="de">Allemand</option>
-                                <option value="it">Italien</option>
-                                <option value="pt">Portugais</option>
-                                <option value="ru">Russe</option>
-                                <option value="zh">Chinois</option>
-                                <option value="ja">Japonais</option>
-                                <option value="ko">Coréen</option>
-                                <option value="ar">Arabe</option>
-                                <option value="nl">Néerlandais</option>
-                                <option value="pl">Polonais</option>
-                                <option value="tr">Turc</option>
-                                <option value="sv">Suédois</option>
+                                <option value="fr">🇫🇷 Français</option>
+                                <option value="en">🇺🇸 Anglais</option>
+                                <option value="es">🇪🇸 Espagnol</option>
+                                <option value="de">🇩🇪 Allemand</option>
+                                <option value="it">🇮🇹 Italien</option>
+                                <option value="pt">🇵🇹 Portugais</option>
+                                <option value="ru">🇷🇺 Russe</option>
+                                <option value="zh">🇨🇳 Chinois</option>
+                                <option value="ja">🇯🇵 Japonais</option>
+                                <option value="ko">🇰🇷 Coréen</option>
+                                <option value="ar">🇸🇦 Arabe</option>
+                                <option value="nl">🇳🇱 Néerlandais</option>
+                                <option value="pl">🇵🇱 Polonais</option>
+                                <option value="tr">🇹🇷 Turc</option>
+                                <option value="sv">🇸🇪 Suédois</option>
                             </select>
                         </div>
                     </div>
                 </div>
-                <div class="mapping-hint mt-2">
-                    <i class="bi bi-lightbulb icon-linguify-warning me-1"></i>
-                    <small class="text-muted">Modifiez la sélection pour voir l'aperçu mis à jour en temps réel</small>
+                <div class="mapping-hint-compact mt-2">
+                    <i class="bi bi-lightbulb text-linguify-warning me-1"></i>
+                    <small class="text-linguify-gray">Modifiez la sélection pour voir l'aperçu mis à jour en temps réel</small>
                 </div>
             </div>
             
-            <!-- Aperçu des cartes -->
-            <div class="preview-cards mb-4">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="mb-0">
+            <!-- Aperçu des cartes - compact -->
+            <div class="preview-cards-compact mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h6 class="mb-0 text-linguify-primary fw-semibold">
                         <i class="bi bi-stack me-1"></i>
                         Aperçu des cartes (5 premières)
                     </h6>
-                    <span class="badge bg-info display-none" id="previewUpdateIndicator">
+                    <span class="badge bg-linguify-warning text-white display-none" id="previewUpdateIndicator">
                         <i class="bi bi-arrow-repeat me-1"></i>
                         Mise à jour...
                     </span>
                 </div>
-                <div id="previewCardsContainer" class="preview-cards-grid">
+                <div id="previewCardsContainer" class="preview-cards-grid-compact">
                     <!-- Les cartes de preview seront ajoutées ici -->
                 </div>
             </div>
