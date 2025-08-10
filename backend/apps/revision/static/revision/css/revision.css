@@ -6,7 +6,8 @@
     --linguify-primary: #2D5BBA;        /* Bleu royal moderne - confiance et professionnalisme */
     --linguify-secondary: #8B5CF6;      /* Violet élégant - créativité et sophistication */
     --linguify-accent: #017e84;         /* Teal - succès et progression */
-    --linguify-gray: #6B7280;           /* Gris moderne - neutralité élégante */
+    --linguify-gray: #374151;           /* Gris sombre pour meilleur contraste WCAG */
+    --linguify-gray-light: #6B7280;    /* Gris clair pour éléments secondaires */
     --linguify-primary-light: #4F7BD9;  /* Bleu plus clair */
     --linguify-primary-dark: #1E4A8C;   /* Bleu plus foncé */
     --linguify-secondary-light: #A78BFA; /* Violet plus clair */
@@ -18,6 +19,29 @@
     --linguify-warning: #F59E0B;        /* Jaune attention */
     --linguify-error: #EF4444;          /* Rouge erreur */
     --header-height: 64px;              /* Hauteur du header fixe */
+    
+    /* Design Tokens - Spacing Scale */
+    --space-xs: 0.25rem;    /* 4px */
+    --space-sm: 0.5rem;     /* 8px */
+    --space-md: 1rem;       /* 16px */
+    --space-lg: 1.5rem;     /* 24px */
+    --space-xl: 2rem;       /* 32px */
+    --space-2xl: 3rem;      /* 48px */
+    
+    /* Design Tokens - Typography Scale (1.25 ratio) */
+    --font-size-xs: 0.75rem;   /* 12px */
+    --font-size-sm: 0.875rem;  /* 14px */
+    --font-size-md: 1rem;      /* 16px */
+    --font-size-lg: 1.25rem;   /* 20px */
+    --font-size-xl: 1.563rem;  /* 25px */
+    --font-size-2xl: 1.953rem; /* 31px */
+    
+    /* Design Tokens - Component Sizing */
+    --touch-target-min: 44px;
+    --border-radius-sm: 6px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
     
     /* Variables RGB pour transparence */
     --linguify-primary-rgb: 45, 91, 186;
@@ -161,7 +185,7 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     text-decoration: none;
-    color: #64748b;
+    color: var(--linguify-gray);
     font-weight: 500;
     transition: all 0.2s ease;
 }
@@ -238,7 +262,7 @@ body {
 .btn-outline-custom {
     border: 1px solid #e2e8f0;
     background: white;
-    color: #64748b;
+    color: var(--linguify-gray);
     transition: all 0.2s ease;
 }
 
@@ -453,7 +477,7 @@ body {
 }
 
 .deck-description {
-    color: #64748b;
+    color: var(--linguify-gray);
     font-size: 0.875rem;
     margin-bottom: 0.75rem;
     line-height: 1.5;
@@ -469,7 +493,7 @@ body {
     align-items: center;
     gap: 0.75rem;
     font-size: 0.625rem;
-    color: #94a3b8;
+    color: var(--linguify-gray-light);
 }
 
 .deck-progress {
@@ -742,7 +766,7 @@ body {
 }
 
 .mode-description, .study-mode-description {
-    color: #64748b;
+    color: var(--linguify-gray);
     font-size: 0.875rem;
     line-height: 1.4;
     margin: 0 0 15px;
@@ -1163,7 +1187,7 @@ body {
 }
 
 .empty-state-description {
-    color: #64748b;
+    color: var(--linguify-gray);
     margin-bottom: 1.5rem;
 }
 
@@ -1907,7 +1931,7 @@ body {
 }
 
 .tags-input-container input::placeholder {
-    color: #94a3b8;
+    color: var(--linguify-gray-light);
 }
 
 /* Tags dans la liste des decks */
@@ -1946,7 +1970,7 @@ body {
 .tag-filter-item {
     background: white;
     border: 1px solid #e2e8f0;
-    color: #64748b;
+    color: var(--linguify-gray);
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
     font-size: 0.875rem;
@@ -2126,7 +2150,7 @@ body {
 }
 
 .no-tags-message {
-    color: #94a3b8;
+    color: var(--linguify-gray-light);
     font-size: 0.75rem;
     font-style: italic;
     opacity: 0.8;
@@ -2150,7 +2174,7 @@ body {
 .btn-add-tag {
     background: transparent;
     border: 1px dashed #cbd5e0;
-    color: #64748b;
+    color: var(--linguify-gray);
     padding: 0.25rem 0.5rem;
     border-radius: 0.375rem;
     cursor: pointer;
@@ -2343,7 +2367,7 @@ body {
 .suggestions-title {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--linguify-gray);
     margin-bottom: 0.75rem;
 }
 
@@ -2787,6 +2811,38 @@ body.modal-open {
 #editDeckForm .form-label,
 #createCardForm .form-label {
     margin-bottom: 0.5rem;
+}
+
+/* Cibles tactiles minimum pour l'accessibilité mobile */
+.btn, .form-control, .form-select, .nav-link, 
+button, input[type="button"], input[type="submit"] {
+    min-height: var(--touch-target-min);
+}
+
+.btn-sm {
+    min-height: 36px; /* Plus petit mais toujours accessible */
+    padding: 8px 12px;
+}
+
+/* Espacement mobile amélioré */
+@media (max-width: 768px) {
+    .revision-main {
+        padding: var(--space-sm);
+    }
+    
+    .btn {
+        padding: 12px 16px;
+        font-size: var(--font-size-sm);
+    }
+    
+    .deck-item {
+        padding: var(--space-lg);
+        margin-bottom: var(--space-md);
+    }
+    
+    .study-content {
+        padding: var(--space-md) !important;
+    }
 }
 
 /* Harmoniser les champs de formulaire d'ajout de carte */
