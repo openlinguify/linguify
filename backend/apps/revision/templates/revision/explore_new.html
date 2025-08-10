@@ -20,22 +20,99 @@
         </div>
         
         <div class="p-3">
+            <!-- Filtre par catégorie -->
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-linguify-primary">
+                    <i class="bi bi-folder me-1"></i>
+                    Catégorie
+                </label>
+                <select id="categoryFilter" class="form-select form-select-sm">
+                    <option value="">Toutes les catégories</option>
+                    <option value="languages">🌐 Langues</option>
+                    <option value="science">🔬 Sciences</option>
+                    <option value="history">📚 Histoire</option>
+                    <option value="math">🔢 Mathématiques</option>
+                    <option value="literature">📖 Littérature</option>
+                    <option value="medicine">⚕️ Médecine</option>
+                    <option value="technology">💻 Technologie</option>
+                    <option value="business">💼 Business</option>
+                    <option value="art">🎨 Art & Culture</option>
+                    <option value="other">📋 Autres</option>
+                </select>
+            </div>
+
+            <!-- Filtre par langue -->
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-linguify-primary">
+                    <i class="bi bi-translate me-1"></i>
+                    Langue
+                </label>
+                <select id="languageFilter" class="form-select form-select-sm">
+                    <option value="">Toutes les langues</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇺🇸 Anglais</option>
+                    <option value="es">🇪🇸 Espagnol</option>
+                    <option value="de">🇩🇪 Allemand</option>
+                    <option value="it">🇮🇹 Italien</option>
+                    <option value="pt">🇵🇹 Portugais</option>
+                    <option value="zh">🇨🇳 Chinois</option>
+                    <option value="ja">🇯🇵 Japonais</option>
+                    <option value="ru">🇷🇺 Russe</option>
+                </select>
+            </div>
+
+            <!-- Filtre par niveau -->
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-linguify-primary">
+                    <i class="bi bi-bar-chart me-1"></i>
+                    Niveau
+                </label>
+                <select id="levelFilter" class="form-select form-select-sm">
+                    <option value="">Tous les niveaux</option>
+                    <option value="beginner">🟢 Débutant</option>
+                    <option value="intermediate">🟡 Intermédiaire</option>
+                    <option value="advanced">🔴 Avancé</option>
+                    <option value="expert">⚫ Expert</option>
+                </select>
+            </div>
+            
             <!-- Filtre par auteur -->
             <div class="mb-3">
-                <label class="form-label small fw-bold text-linguify-primary">Auteur</label>
+                <label class="form-label small fw-bold text-linguify-primary">
+                    <i class="bi bi-person me-1"></i>
+                    Auteur
+                </label>
                 <input type="text" id="authorFilter" class="form-control form-control-sm" 
                        placeholder="Nom d'utilisateur...">
             </div>
             
             <!-- Filtre par nombre de cartes -->
             <div class="mb-3">
-                <label class="form-label small fw-bold text-linguify-primary">Nombre de cartes</label>
+                <label class="form-label small fw-bold text-linguify-primary">
+                    <i class="bi bi-stack me-1"></i>
+                    Nombre de cartes
+                </label>
                 <div class="d-flex gap-1">
                     <input type="number" id="minCards" class="form-control form-control-sm" 
                            placeholder="Min" min="1">
                     <input type="number" id="maxCards" class="form-control form-control-sm" 
                            placeholder="Max" min="1">
                 </div>
+            </div>
+
+            <!-- Filtre par rating -->
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-linguify-primary">
+                    <i class="bi bi-star me-1"></i>
+                    Note minimale
+                </label>
+                <select id="ratingFilter" class="form-select form-select-sm">
+                    <option value="">Toutes les notes</option>
+                    <option value="4">⭐⭐⭐⭐ 4+ étoiles</option>
+                    <option value="3">⭐⭐⭐ 3+ étoiles</option>
+                    <option value="2">⭐⭐ 2+ étoiles</option>
+                    <option value="1">⭐ 1+ étoile</option>
+                </select>
             </div>
             
             <!-- Actions -->
@@ -51,16 +128,72 @@
             </div>
         </div>
         
+        <!-- Collections personnelles -->
+        <div class="sidebar-header">
+            <h6 class="mb-0">
+                <i class="bi bi-heart me-2 text-linguify-accent"></i>
+                Mes Collections
+            </h6>
+            <button class="btn btn-link btn-sm p-0" id="createCollectionBtn" title="Créer une collection">
+                <i class="bi bi-plus-circle"></i>
+            </button>
+        </div>
+        
+        <div id="myCollections" class="p-2">
+            <!-- Sera rempli par JavaScript -->
+        </div>
+
+        <!-- Favoris -->
+        <div class="sidebar-header">
+            <h6 class="mb-0">
+                <i class="bi bi-bookmark me-2 text-linguify-secondary"></i>
+                Favoris
+            </h6>
+            <small class="text-muted" id="favoritesCount">0</small>
+        </div>
+        
+        <div id="favoriteDecks" class="p-2">
+            <!-- Sera rempli par JavaScript -->
+        </div>
+
         <!-- Decks populaires -->
         <div class="sidebar-header">
             <h6 class="mb-0">
-                <i class="bi bi-star me-2"></i>
-                Decks populaires
+                <i class="bi bi-fire me-2 text-linguify-warning"></i>
+                Trending cette semaine
             </h6>
         </div>
         
-        <div id="popularDecks" class="p-3">
+        <div id="popularDecks" class="p-2">
             <!-- Sera rempli par JavaScript -->
+        </div>
+
+        <!-- Statistiques globales -->
+        <div class="sidebar-header">
+            <h6 class="mb-0">
+                <i class="bi bi-graph-up me-2 text-linguify-success"></i>
+                Communauté
+            </h6>
+        </div>
+        
+        <div class="p-3">
+            <div class="community-stats">
+                <div class="stat-item">
+                    <i class="bi bi-stack text-linguify-primary"></i>
+                    <span class="stat-value" id="totalDecksCount">-</span>
+                    <span class="stat-label">Decks publics</span>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-card-text text-linguify-accent"></i>
+                    <span class="stat-value" id="totalCardsCount">-</span>
+                    <span class="stat-label">Cartes totales</span>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-people text-linguify-secondary"></i>
+                    <span class="stat-value" id="totalAuthorsCount">-</span>
+                    <span class="stat-label">Créateurs</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -122,18 +255,155 @@
     
     <!-- Résultats de recherche -->
     <div id="exploreResults" style="display: none;">
+        <!-- Advanced Search Bar -->
+        <div class="advanced-search-container">
+            <div class="search-input-wrapper">
+                <div class="search-input-group">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" id="exploreSearchInput" class="form-control search-input" 
+                           placeholder="Rechercher des decks par titre, description, tags..." 
+                           autocomplete="off">
+                    <div class="search-actions">
+                        <button id="notificationBtn" class="btn btn-link notification-btn" title="Notifications" onclick="toggleNotificationCenter()">
+                            <i class="bi bi-bell notification-icon"></i>
+                            <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+                        </button>
+                        <button id="voiceSearchBtn" class="btn btn-link search-voice" title="Recherche vocale">
+                            <i class="bi bi-mic"></i>
+                        </button>
+                        <button id="advancedSearchToggle" class="btn btn-link search-advanced" title="Recherche avancée">
+                            <i class="bi bi-sliders"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Auto-completion dropdown -->
+                <div id="searchSuggestions" class="search-suggestions" style="display: none;">
+                    <!-- Will be filled by JavaScript -->
+                </div>
+                
+                <!-- Notification Center -->
+                <div id="notificationCenter" class="notification-center" style="display: none;">
+                    <div class="notification-header">
+                        <h6 class="mb-0">
+                            <i class="bi bi-bell me-2"></i>
+                            Notifications
+                        </h6>
+                        <div class="notification-actions">
+                            <button class="btn btn-link btn-sm" onclick="markAllNotificationsRead()" title="Marquer tout comme lu">
+                                <i class="bi bi-check2-all"></i>
+                            </button>
+                            <button class="btn btn-link btn-sm" onclick="showNotificationSettings()" title="Paramètres">
+                                <i class="bi bi-gear"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-filters">
+                        <button class="notification-filter active" data-filter="all">
+                            Toutes <span class="filter-count" id="allNotificationsCount">0</span>
+                        </button>
+                        <button class="notification-filter" data-filter="new-decks">
+                            Nouveaux decks <span class="filter-count" id="newDecksCount">0</span>
+                        </button>
+                        <button class="notification-filter" data-filter="favorites-updates">
+                            Favoris <span class="filter-count" id="favoritesUpdatesCount">0</span>
+                        </button>
+                        <button class="notification-filter" data-filter="collections-activity">
+                            Collections <span class="filter-count" id="collectionsActivityCount">0</span>
+                        </button>
+                        <button class="notification-filter" data-filter="system">
+                            Système <span class="filter-count" id="systemNotificationsCount">0</span>
+                        </button>
+                    </div>
+                    
+                    <div class="notification-list" id="notificationList">
+                        <!-- Notifications will be populated by JavaScript -->
+                        <div class="notification-item placeholder">
+                            <div class="notification-icon">
+                                <i class="bi bi-info-circle text-muted"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="notification-title">Aucune notification</p>
+                                <p class="notification-text">Vous êtes à jour avec toutes les nouveautés!</p>
+                                <small class="notification-time text-muted">Maintenant</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-footer">
+                        <button class="btn btn-sm btn-linguify-primary w-100" onclick="showAllNotifications()">
+                            Voir toutes les notifications
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick filters chips -->
+            <div class="quick-filters" id="quickFilters">
+                <div class="filter-chip" data-filter="category" data-value="languages">
+                    🌐 Langues
+                    <i class="bi bi-x-circle filter-remove"></i>
+                </div>
+                <div class="filter-chip" data-filter="level" data-value="beginner">
+                    🟢 Débutant
+                    <i class="bi bi-x-circle filter-remove"></i>
+                </div>
+                <!-- More chips will be added dynamically -->
+            </div>
+            
+            <!-- Search history dropdown -->
+            <div class="search-history" id="searchHistory" style="display: none;">
+                <div class="history-header">
+                    <small class="text-muted">Recherches récentes</small>
+                    <button class="btn btn-link btn-sm" id="clearSearchHistory">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="history-items">
+                    <!-- Will be filled by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
         <div class="study-header">
-            <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <div>
                     <h5 class="mb-0">Decks publics</h5>
                     <small class="text-muted">
                         <span id="resultsCount">0</span> deck(s) trouvé(s)
                     </small>
                 </div>
-                <button id="backToWelcome" class="btn btn-outline-custom btn-sm">
-                    <i class="bi bi-arrow-left"></i>
-                    Retour
-                </button>
+                
+                <!-- Options de tri et vue -->
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Vue -->
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Vue">
+                        <input type="radio" class="btn-check" name="viewMode" id="gridView" autocomplete="off" checked>
+                        <label class="btn btn-outline-custom" for="gridView" title="Vue grille">
+                            <i class="bi bi-grid"></i>
+                        </label>
+                        <input type="radio" class="btn-check" name="viewMode" id="listView" autocomplete="off">
+                        <label class="btn btn-outline-custom" for="listView" title="Vue liste">
+                            <i class="bi bi-list"></i>
+                        </label>
+                    </div>
+                    
+                    <!-- Tri -->
+                    <select id="sortBy" class="form-select form-select-sm" style="width: auto;">
+                        <option value="created_at">➡️ Plus récents</option>
+                        <option value="name">📝 A-Z</option>
+                        <option value="popularity">🔥 Popularité</option>
+                        <option value="rating">⭐ Mieux notés</option>
+                        <option value="cards_count">📚 Plus de cartes</option>
+                        <option value="downloads">⬇️ Plus téléchargés</option>
+                    </select>
+                    
+                    <button id="backToWelcome" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-arrow-left"></i>
+                        Retour
+                    </button>
+                </div>
             </div>
         </div>
         
@@ -225,6 +495,63 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Rating & Reviews Section -->
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-star me-2"></i>
+                                    Évaluations & Avis
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="deckRatingSection">
+                                    <!-- Interactive rating -->
+                                    <div class="rating-section mb-3">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <span class="small fw-bold">Votre note :</span>
+                                            <div id="userRatingStars" class="interactive-rating">
+                                                <i class="bi bi-star rating-star" data-rating="1"></i>
+                                                <i class="bi bi-star rating-star" data-rating="2"></i>
+                                                <i class="bi bi-star rating-star" data-rating="3"></i>
+                                                <i class="bi bi-star rating-star" data-rating="4"></i>
+                                                <i class="bi bi-star rating-star" data-rating="5"></i>
+                                            </div>
+                                        </div>
+                                        <div class="rating-summary" id="ratingSummary">
+                                            <!-- Sera rempli par JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Reviews List -->
+                                <div id="reviewsList" class="mt-3">
+                                    <!-- Sera rempli par JavaScript -->
+                                </div>
+                                
+                                <div class="text-center mt-3">
+                                    <button class="btn btn-outline-primary btn-sm" id="loadMoreReviews">
+                                        <i class="bi bi-arrow-down-circle me-1"></i>
+                                        Voir plus d'avis
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Author Profile Section -->
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    Profil de l'auteur
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="authorProfile">
+                                    <!-- Sera rempli par JavaScript -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -271,133 +598,442 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de création de collection -->
+<div id="createCollectionModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-heart me-2"></i>
+                    Nouvelle Collection
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Nom de la collection</label>
+                    <input type="text" id="collectionName" class="form-control" 
+                           placeholder="Ex: Vocabulaire Anglais, Sciences Niveau 3...">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description (optionnelle)</label>
+                    <textarea id="collectionDescription" class="form-control" rows="2"
+                              placeholder="Décrivez brièvement cette collection..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Visibilité</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="visibility" id="privateCollection" value="private" checked>
+                        <label class="form-check-label" for="privateCollection">
+                            <i class="bi bi-lock me-1"></i>Privée (seulement moi)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="visibility" id="publicCollection" value="public">
+                        <label class="form-check-label" for="publicCollection">
+                            <i class="bi bi-globe me-1"></i>Publique (visible par tous)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" id="createCollectionConfirm" class="btn btn-gradient">
+                    <i class="bi bi-plus me-1"></i>Créer la collection
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal d'ajout à une collection -->
+<div id="addToCollectionModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Ajouter à une collection
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="selectedDeckInfo" class="mb-3">
+                    <!-- Infos du deck sélectionné -->
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Sélectionner une collection</label>
+                    <div id="collectionsList" class="collections-list">
+                        <!-- Sera rempli par JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="createNewCollectionFromModal">
+                        <i class="bi bi-plus me-1"></i>Créer une nouvelle collection
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" id="addToCollectionConfirm" class="btn btn-gradient" disabled>
+                    <i class="bi bi-check me-1"></i>Ajouter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de gestion des collections -->
+<div id="manageCollectionModal" class="modal fade modal-lg" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="manageCollectionTitle">
+                    <i class="bi bi-gear me-2"></i>
+                    Gérer la collection
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="collection-info">
+                            <h6>Informations de la collection</h6>
+                            <div class="mb-3">
+                                <label class="form-label small">Nom</label>
+                                <input type="text" id="editCollectionName" class="form-control form-control-sm">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Description</label>
+                                <textarea id="editCollectionDescription" class="form-control form-control-sm" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Visibilité</label>
+                                <select id="editCollectionVisibility" class="form-select form-select-sm">
+                                    <option value="private">🔒 Privée</option>
+                                    <option value="public">🌐 Publique</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="collection-decks">
+                            <h6>Decks dans cette collection <span id="collectionDeckCount" class="badge bg-primary">0</span></h6>
+                            <div id="collectionDecksList" class="collection-decks-list">
+                                <!-- Sera rempli par JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" id="deleteCollectionBtn">
+                    <i class="bi bi-trash me-1"></i>Supprimer la collection
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" id="saveCollectionChanges" class="btn btn-gradient">
+                    <i class="bi bi-check me-1"></i>Sauvegarder
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de paramètres de notifications -->
+<div id="notificationSettingsModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-bell-fill me-2 text-linguify-primary"></i>
+                    Paramètres des notifications
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-toggles me-2"></i>
+                        Préférences générales
+                    </h6>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="enableNotifications" checked>
+                        <label class="form-check-label" for="enableNotifications">
+                            Activer toutes les notifications
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="enableSoundNotifications">
+                        <label class="form-check-label" for="enableSoundNotifications">
+                            Sons de notification
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="enableBadgeNotifications" checked>
+                        <label class="form-check-label" for="enableBadgeNotifications">
+                            Badge de compteur
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-funnel me-2"></i>
+                        Types de notifications
+                    </h6>
+                    
+                    <div class="notification-type-setting mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <label class="form-check-label fw-medium">
+                                    <i class="bi bi-plus-circle me-2 text-success"></i>
+                                    Nouveaux decks publics
+                                </label>
+                                <small class="d-block text-muted">Alertes pour les nouveaux decks ajoutés</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifyNewDecks" checked>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-type-setting mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <label class="form-check-label fw-medium">
+                                    <i class="bi bi-heart me-2 text-danger"></i>
+                                    Mises à jour des favoris
+                                </label>
+                                <small class="d-block text-muted">Modifications de vos decks favoris</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifyFavoritesUpdates" checked>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-type-setting mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <label class="form-check-label fw-medium">
+                                    <i class="bi bi-collection me-2 text-primary"></i>
+                                    Activité des collections
+                                </label>
+                                <small class="d-block text-muted">Nouveaux decks dans vos collections suivies</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifyCollectionsActivity" checked>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-type-setting mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <label class="form-check-label fw-medium">
+                                    <i class="bi bi-star me-2 text-warning"></i>
+                                    Recommandations intelligentes
+                                </label>
+                                <small class="d-block text-muted">Suggestions personnalisées</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifyRecommendations" checked>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-type-setting mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <label class="form-check-label fw-medium">
+                                    <i class="bi bi-gear me-2 text-secondary"></i>
+                                    Notifications système
+                                </label>
+                                <small class="d-block text-muted">Mises à jour et maintenance</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifySystem">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-clock me-2"></i>
+                        Fréquence des notifications
+                    </h6>
+                    
+                    <select id="notificationFrequency" class="form-select">
+                        <option value="realtime">En temps réel</option>
+                        <option value="hourly">Toutes les heures</option>
+                        <option value="daily" selected>Quotidienne</option>
+                        <option value="weekly">Hebdomadaire</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-linguify-primary" onclick="saveNotificationSettings()">
+                    <i class="bi bi-check-lg me-1"></i>
+                    Sauvegarder
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour toutes les notifications -->
+<div id="allNotificationsModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-bell-fill me-2 text-linguify-primary"></i>
+                    Toutes les notifications
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="notification-full-list" id="notificationFullList">
+                    <!-- All notifications will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-linguify-primary" onclick="markAllNotificationsRead()">
+                    <i class="bi bi-check2-all me-1"></i>
+                    Marquer tout comme lu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_css %}
-<style>
-.public-deck-card {
-    transition: all 0.3s ease;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    overflow: hidden;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.public-deck-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    border-color: var(--primary-color);
-}
-
-.public-deck-card .card-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 1px solid #e2e8f0;
-    padding: 1rem;
-}
-
-.public-deck-card .card-body {
-    padding: 1rem;
-}
-
-.deck-stats-badge {
-    background: var(--primary-gradient);
-    color: white;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.deck-author {
-    color: var(--primary-color);
-    font-weight: 500;
-    text-decoration: none;
-}
-
-.deck-author:hover {
-    text-decoration: underline;
-}
-
-.card-preview {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-}
-
-.card-preview-front {
-    font-weight: 500;
-    color: #2d3748;
-    margin-bottom: 0.25rem;
-}
-
-.card-preview-back {
-    color: #718096;
-    font-size: 0.875rem;
-}
-
-.popular-deck-item {
-    padding: 0.75rem;
-    border-bottom: 1px solid #e2e8f0;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.popular-deck-item:hover {
-    background: #f8f9fa;
-}
-
-.popular-deck-item:last-child {
-    border-bottom: none;
-}
-
-.pagination-custom {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.pagination-custom button {
-    border: 1px solid #e2e8f0;
-    background: white;
-    color: #64748b;
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.pagination-custom button:hover:not(:disabled) {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-.pagination-custom button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.pagination-custom button.active {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
-}
-
-@media (max-width: 768px) {
-    .public-deck-card {
-        margin-bottom: 1rem;
-    }
-    
-    .deck-stats-badge {
-        font-size: 0.7rem;
-        padding: 0.2rem 0.4rem;
-    }
-}
-</style>
+<!-- CSS dédié Explorer - Production optimisé -->
+<link rel="stylesheet" href="{% static 'revision/css/revision-explorer.css' %}?v=20250111-explorer">
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'revision/js/revision-explore.js' %}?v=20250109-explore-no-language"></script>
+<!-- Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register("{% static 'revision/js/explorer/sw.js' %}", {
+            scope: '{% static "revision/" %}'
+        }).then(function(registration) {
+            console.log('🚀 Service Worker registered successfully:', registration.scope);
+        }).catch(function(error) {
+            console.warn('⚠️ Service Worker registration failed:', error);
+        });
+    });
+}
+</script>
+
+<!-- Main Explorer JavaScript -->
+<script src="{% static 'revision/js/explorer/main.js' %}?v=20250111-optimized"></script>
+
+<!-- Load test suite in development/test mode -->
+{% if debug or request.GET.test %}
+<script src="{% static 'revision/js/explorer/test-suite.js' %}"></script>
+{% endif %}
+
+<!-- Performance monitoring script -->
+<script>
+// Critical Web Vitals monitoring
+function measureWebVitals() {
+    if ('web-vital' in window) return;
+    
+    // First Contentful Paint
+    new PerformanceObserver((entryList) => {
+        for (const entry of entryList.getEntries()) {
+            if (entry.name === 'first-contentful-paint') {
+                console.log('🎨 FCP:', entry.startTime);
+                if (window.trackEvent) {
+                    window.trackEvent('web_vital_fcp', { value: entry.startTime });
+                }
+            }
+        }
+    }).observe({ entryTypes: ['paint'] });
+    
+    // Largest Contentful Paint
+    new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        console.log('🖼️ LCP:', lastEntry.startTime);
+        if (window.trackEvent) {
+            window.trackEvent('web_vital_lcp', { value: lastEntry.startTime });
+        }
+    }).observe({ entryTypes: ['largest-contentful-paint'] });
+    
+    // Cumulative Layout Shift
+    let clsValue = 0;
+    new PerformanceObserver((entryList) => {
+        for (const entry of entryList.getEntries()) {
+            if (!entry.hadRecentInput) {
+                clsValue += entry.value;
+            }
+        }
+        console.log('📏 CLS:', clsValue);
+        if (window.trackEvent) {
+            window.trackEvent('web_vital_cls', { value: clsValue });
+        }
+    }).observe({ entryTypes: ['layout-shift'] });
+    
+    // First Input Delay (FID) simulation via click event
+    document.addEventListener('click', function measureFID() {
+        const startTime = performance.now();
+        requestAnimationFrame(() => {
+            const endTime = performance.now();
+            const fid = endTime - startTime;
+            console.log('⚡ FID (estimated):', fid);
+            if (window.trackEvent) {
+                window.trackEvent('web_vital_fid', { value: fid });
+            }
+        });
+        document.removeEventListener('click', measureFID, { once: true });
+    }, { once: true });
+}
+
+// Start monitoring when page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', measureWebVitals);
+} else {
+    measureWebVitals();
+}
+</script>
+
+<!-- Error boundary for JavaScript errors -->
+<script>
+window.addEventListener('error', function(event) {
+    console.error('🚨 JavaScript Error:', event.error);
+    if (window.trackEvent) {
+        window.trackEvent('javascript_error', {
+            message: event.message,
+            filename: event.filename,
+            line: event.lineno,
+            column: event.colno,
+            stack: event.error ? event.error.stack : null
+        });
+    }
+});
+
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('🚨 Unhandled Promise Rejection:', event.reason);
+    if (window.trackEvent) {
+        window.trackEvent('promise_rejection', {
+            reason: event.reason.toString(),
+            stack: event.reason.stack
+        });
+    }
+});
+</script>
 {% endblock %}
