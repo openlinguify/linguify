@@ -82,10 +82,22 @@
                     </div>
                     
                     <!-- Actions -->
-                    <button id="addCard" class="btn btn-outline-custom btn-sm">
-                        <i class="bi bi-plus-lg"></i>
-                        <span class="d-none d-md-inline ms-1">Ajouter carte</span>
-                    </button>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button id="addCard" class="btn btn-outline-custom btn-sm">
+                            <i class="bi bi-plus-lg"></i>
+                            <span class="d-none d-md-inline ms-1">Ajouter carte</span>
+                        </button>
+                        
+                        <button id="practiceWeak" class="btn btn-outline-custom btn-sm">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <span class="d-none d-lg-inline ms-1">Réviser difficiles</span>
+                        </button>
+                        
+                        <button id="resetProgress" class="btn btn-outline-custom btn-sm">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            <span class="d-none d-lg-inline ms-1">Réinitialiser</span>
+                        </button>
+                    </div>
                     
                     <div class="dropdown">
                         <button class="btn btn-outline-custom btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -150,24 +162,6 @@
                 </a>
             </div>
             
-            <!-- Quick actions -->
-            <div class="p-3 border-top">
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <button id="practiceWeak" class="btn btn-outline-custom w-100">
-                            <i class="bi bi-exclamation-triangle me-1"></i>
-                            Réviser les difficiles
-                        </button>
-                    </div>
-                    <div class="col-md-6">
-                        <button id="resetProgress" class="btn btn-outline-custom w-100">
-                            <i class="bi bi-arrow-clockwise me-1"></i>
-                            Réinitialiser progrès
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
             <!-- Cards Section -->
             <div class="p-3 border-top">
                 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -179,7 +173,7 @@
                 <div id="deckLanguageSettings" class="mb-3 p-3 bg-gradient-subtle-linguify rounded border-linguify" style="display: none;">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small">🎯 <strong>Langue par défaut du recto</strong></label>
+                            <label class="form-label small"><strong>Langue par défaut du recto</strong></label>
                             <select id="deckFrontLanguage" class="form-select form-select-sm">
                                 <option value="">🔄 Détection automatique</option>
                                 <option value="fr">🇫🇷 Français</option>
@@ -191,7 +185,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small">🎯 <strong>Langue par défaut du verso</strong></label>
+                            <label class="form-label small"><strong>Langue par défaut du verso</strong></label>
                             <select id="deckBackLanguage" class="form-select form-select-sm">
                                 <option value="">🔄 Détection automatique</option>
                                 <option value="fr">🇫🇷 Français</option>
@@ -204,17 +198,17 @@
                         </div>
                     </div>
                     <div class="mt-2">
-                        <button id="applyLanguagesToDeck" class="btn btn-primary btn-sm me-2">
+                        <button id="applyLanguagesToDeck" class="btn btn-gradient btn-sm me-2">
                             <i class="bi bi-check-lg me-1"></i>
                             Appliquer à toutes les cartes
                         </button>
-                        <button id="applyLanguagesToNewCards" class="btn btn-outline-primary btn-sm">
+                        <button id="applyLanguagesToNewCards" class="btn btn-outline-custom btn-sm">
                             <i class="bi bi-plus-circle me-1"></i>
                             Utiliser pour les nouvelles cartes
                         </button>
                     </div>
                     <div class="mt-2">
-                        <small class="text-muted">
+                        <small class="text-linguify-accent">
                             <i class="bi bi-info-circle me-1"></i>
                             Ces paramètres permettent une meilleure prononciation avec la synthèse vocale
                         </small>

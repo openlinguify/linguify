@@ -1312,6 +1312,16 @@ body {
     background-color: var(--linguify-accent) !important;
 }
 
+.bg-gradient-subtle-linguify {
+    background: linear-gradient(135deg, 
+        rgba(45, 91, 186, 0.08) 0%, 
+        rgba(1, 126, 132, 0.08) 100%) !important;
+}
+
+.border-linguify {
+    border: 1px solid rgba(45, 91, 186, 0.2) !important;
+}
+
 .text-linguify-success {
     color: var(--linguify-success) !important;
 }
