@@ -5,7 +5,7 @@
     /* Couleurs OpenLinguify */
     --linguify-primary: #2D5BBA;        /* Bleu royal moderne - confiance et professionnalisme */
     --linguify-secondary: #8B5CF6;      /* Violet élégant - créativité et sophistication */
-    --linguify-accent: #00D4AA;         /* Vert menthe - succès et progression */
+    --linguify-accent: #017e84;         /* Vert menthe - succès et progression */
     --linguify-gray: #6B7280;           /* Gris moderne - neutralité élégante */
     --linguify-primary-light: #4F7BD9;  /* Bleu plus clair */
     --linguify-primary-dark: #1E4A8C;   /* Bleu plus foncé */
@@ -13,6 +13,7 @@
     --linguify-secondary-dark: #7C3AED;  /* Violet plus foncé */
     --linguify-accent-light: #26E4B8;   /* Vert menthe plus clair */
     --linguify-accent-dark: #00B894;    /* Vert menthe plus foncé */
+    --linguify-teal: #017e84;           /* Teal pour gradients */
     --linguify-success: #10B981;        /* Vert succès */
     --linguify-warning: #F59E0B;        /* Jaune attention */
     --linguify-error: #EF4444;          /* Rouge erreur */
@@ -26,7 +27,9 @@
     --linguify-warning-rgb: 245, 158, 11;
     
     /* Couleurs principales (compatibilité) */
-    --primary-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    --primary-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
+    --secondary-gradient: linear-gradient(135deg, var(--linguify-teal) 0%, var(--linguify-primary) 100%);
+    --accent-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
     --primary-color: var(--linguify-primary);
     --primary-dark: var(--linguify-primary-dark);
     --secondary-color: var(--linguify-secondary);
@@ -52,7 +55,7 @@
     /* Dimensions layout */
     --sidebar-width: 320px;
     --sidebar-width-mobile: 100%;
-    --header-height: 120px;
+    --header-height: 64px;              /* Uniformisation avec la valeur du haut */
     --flashcard-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
 }
 
@@ -1878,7 +1881,7 @@ body {
 }
 
 .deck-tag {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
     color: white;
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
@@ -1961,7 +1964,7 @@ body {
 }
 
 .btn-tags-filter {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
     color: white !important;   /* Force la couleur blanche */
     border: none;
     /* Ajuster pour correspondre exactement aux form-select-sm */
@@ -1992,7 +1995,7 @@ body {
 
 .btn-tags-filter:focus,
 .btn-tags-filter:focus-visible {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%) !important;
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%) !important;
     color: white !important;
     outline: none;
     box-shadow: 0 0 0 0.2rem rgba(var(--linguify-primary-rgb), 0.25);
@@ -2177,7 +2180,7 @@ body {
 }
 
 .quick-tags-header {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
     color: white;
     padding: 1rem 1.5rem;
     display: flex;
@@ -2232,7 +2235,7 @@ body {
 }
 
 .tag-pill {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
     color: white;
     padding: 0.5rem 0.75rem;
     border-radius: 1.5rem;
@@ -2249,7 +2252,7 @@ body {
 .tag-pill:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    background: linear-gradient(135deg, var(--linguify-primary-dark) 0%, var(--linguify-secondary) 100%);
+    background: linear-gradient(135deg, var(--linguify-teal) 0%, var(--linguify-primary) 100%);
 }
 
 .tag-pill i {
