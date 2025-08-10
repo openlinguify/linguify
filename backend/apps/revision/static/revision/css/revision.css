@@ -2803,6 +2803,24 @@ body.modal-open {
     box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
 }
 
+/* Styles pour les indicateurs de langue */
+.lang-indicator-badge {
+    font-size: 0.8rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.lang-modify-btn {
+    font-size: 0.75rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.lang-modify-btn:hover {
+    color: var(--linguify-primary) !important;
+    text-decoration: none;
+}
+
 .text-linguify-success {
     color: var(--linguify-success, #10B981) !important;
 }

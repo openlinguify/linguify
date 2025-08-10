@@ -500,6 +500,86 @@ function hideCreateCardForm() {
     } else {
         elements.welcomeState.style.display = 'block';
     }
+    
+    // Reset language selectors to default state
+    resetLanguageSelectors();
+}
+
+// Functions to handle language selector visibility
+function toggleFrontLanguageSelector() {
+    const selector = document.getElementById('frontLangSelector');
+    const button = document.getElementById('changeFrontLang');
+    
+    if (selector && button) {
+        if (selector.style.display === 'none' || selector.style.display === '') {
+            selector.style.display = 'block';
+            button.innerHTML = '<i class="bi bi-check" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Confirmer</span>';
+            button.title = 'Confirmer le choix de langue';
+        } else {
+            selector.style.display = 'none';
+            button.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
+            button.title = 'Modifier la langue pour cette carte';
+            updateLanguageDisplay('front');
+        }
+    }
+}
+
+function toggleBackLanguageSelector() {
+    const selector = document.getElementById('backLangSelector');
+    const button = document.getElementById('changeBackLang');
+    
+    if (selector && button) {
+        if (selector.style.display === 'none' || selector.style.display === '') {
+            selector.style.display = 'block';
+            button.innerHTML = '<i class="bi bi-check" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Confirmer</span>';
+            button.title = 'Confirmer le choix de langue';
+        } else {
+            selector.style.display = 'none';
+            button.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
+            button.title = 'Modifier la langue pour cette carte';
+            updateLanguageDisplay('back');
+        }
+    }
+}
+
+function updateLanguageDisplay(side) {
+    const select = document.getElementById(side === 'front' ? 'newCardFrontLang' : 'newCardBackLang');
+    const display = document.getElementById(side === 'front' ? 'deckFrontLangDisplay' : 'deckBackLangDisplay');
+    
+    if (select && display) {
+        const selectedOption = select.options[select.selectedIndex];
+        if (selectedOption.value === '' || selectedOption.value === null) {
+            display.textContent = 'Langue par défaut du deck';
+        } else {
+            display.textContent = selectedOption.textContent;
+        }
+    }
+}
+
+function resetLanguageSelectors() {
+    // Reset front language selector
+    const frontSelector = document.getElementById('frontLangSelector');
+    const frontButton = document.getElementById('changeFrontLang');
+    const frontDisplay = document.getElementById('deckFrontLangDisplay');
+    
+    if (frontSelector) frontSelector.style.display = 'none';
+    if (frontButton) {
+        frontButton.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
+        frontButton.title = 'Modifier la langue pour cette carte';
+    }
+    if (frontDisplay) frontDisplay.textContent = 'Langue par défaut du deck';
+    
+    // Reset back language selector
+    const backSelector = document.getElementById('backLangSelector');
+    const backButton = document.getElementById('changeBackLang');
+    const backDisplay = document.getElementById('deckBackLangDisplay');
+    
+    if (backSelector) backSelector.style.display = 'none';
+    if (backButton) {
+        backButton.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
+        backButton.title = 'Modifier la langue pour cette carte';
+    }
+    if (backDisplay) backDisplay.textContent = 'Langue par défaut du deck';
 }
 
 async function createNewCard() {
@@ -2816,6 +2896,10 @@ function setupEventListeners() {
     elements.cancelCardEdit?.addEventListener('click', hideEditCardForm);
     elements.cancelCardEditAlt?.addEventListener('click', hideEditCardForm);
     
+    // Language modification buttons for new cards
+    document.getElementById('changeFrontLang')?.addEventListener('click', toggleFrontLanguageSelector);
+    document.getElementById('changeBackLang')?.addEventListener('click', toggleBackLanguageSelector);
+    
     // Deck Management buttons
     document.getElementById('editDeck')?.addEventListener('click', showEditDeckForm);
     document.getElementById('exportDeck')?.addEventListener('click', exportDeck);
@@ -3045,6 +3129,10 @@ window.revisionMain = {
     hideImportForm,
     showCreateCardForm,
     hideCreateCardForm,
+    toggleFrontLanguageSelector,
+    toggleBackLanguageSelector,
+    updateLanguageDisplay,
+    resetLanguageSelectors,
     hideAllSections,
     createNewDeck,
     createNewCard,
