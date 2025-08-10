@@ -308,8 +308,8 @@ body {
 
 .sidebar-header {
     padding: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-    background: #fafbfc;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
+    background: var(--bg-gradient-subtle-linguify, rgba(45, 91, 186, 0.03));
 }
 
 .sidebar-content {
@@ -398,21 +398,28 @@ body {
 }
 
 .deck-item {
-    padding: 1rem;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 1.25rem;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     background: white;
     position: relative;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 3px rgba(45, 91, 186, 0.08);
 }
 
 .deck-item:hover {
-    background: #fafbfc;
+    background: rgba(45, 91, 186, 0.02);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.15);
+    transform: translateY(-1px);
 }
 
 .deck-item.active {
-    background: var(--subtle-gradient-medium);
-    border-left: 3px solid var(--primary-color);
+    background: var(--bg-gradient-subtle-linguify, rgba(45, 91, 186, 0.05));
+    border-left: 4px solid var(--linguify-primary);
+    box-shadow: 0 4px 20px rgba(45, 91, 186, 0.2);
+    transform: translateY(-2px);
 }
 
 .deck-header {
@@ -424,8 +431,10 @@ body {
 
 .deck-name {
     font-weight: 600;
-    color: #1e293b;
-    font-size: 0.875rem;
+    color: var(--linguify-primary);
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
 }
 
 .deck-stats {
@@ -445,14 +454,14 @@ body {
 
 .deck-description {
     color: #64748b;
-    font-size: 0.75rem;
-    line-height: 1.4;
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    margin-bottom: 0.5rem;
 }
 
 .deck-meta {
@@ -466,15 +475,18 @@ body {
 .deck-progress {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .progress-bar, .progress-bar-custom {
-    width: 60px;
-    height: 4px;
-    background: #e2e8f0;
-    border-radius: 2px;
+    width: 80px;
+    height: 6px;
+    background: rgba(45, 91, 186, 0.1);
+    border-radius: 3px;
     overflow: hidden;
+    position: relative;
 }
 
 .progress-fill {
@@ -862,23 +874,32 @@ body {
 }
 
 .card-row {
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    border: 1px solid transparent;
 }
 
 .card-row:hover {
-    background: var(--gray-50);
+    background: rgba(45, 91, 186, 0.03);
+    border-color: rgba(45, 91, 186, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.1);
 }
 
 .card-row.status-learned {
     background: rgba(1, 126, 132, 0.08);
+    border-color: rgba(1, 126, 132, 0.2);
 }
 
 .card-row.status-new {
-    background: #fffbeb;
+    background: rgba(45, 91, 186, 0.05);
+    border-color: rgba(45, 91, 186, 0.15);
 }
 
 .card-row.status-review {
-    background: #fef3f2;
+    background: rgba(139, 92, 246, 0.08);
+    border-color: rgba(139, 92, 246, 0.2);
 }
 
 .status-badge {
@@ -2715,6 +2736,71 @@ body.modal-open {
 
 .text-linguify-accent {
     color: var(--linguify-accent, #017e84) !important;
+}
+
+/* Améliorations pour la page Explorer */
+#exploreWelcome .card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.08);
+}
+
+#exploreWelcome .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.15);
+}
+
+/* Améliorations pour le formulaire de modification de deck */
+#editDeckForm .form-control:focus,
+#editDeckForm .form-select:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
+}
+
+#editDeckForm .form-control,
+#editDeckForm .form-select {
+    border-radius: 6px;
+    border: 2px solid rgba(45, 91, 186, 0.1);
+    transition: all 0.3s ease;
+    padding: 0.625rem 0.75rem;
+}
+
+.tags-input-container {
+    border: 2px solid rgba(45, 91, 186, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.tags-input-container:focus-within {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
+}
+
+/* Améliorer les textes d'aide */
+#editDeckForm .form-text {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-weight: 400;
+}
+
+/* Améliorer l'espacement des labels */
+#editDeckForm .form-label,
+#createCardForm .form-label {
+    margin-bottom: 0.5rem;
+}
+
+/* Harmoniser les champs de formulaire d'ajout de carte */
+#createCardForm .form-control,
+#createCardForm .form-select {
+    border-radius: 6px;
+    border: 2px solid rgba(45, 91, 186, 0.1);
+    transition: all 0.3s ease;
+}
+
+#createCardForm .form-control:focus,
+#createCardForm .form-select:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
 }
 
 .text-linguify-success {
