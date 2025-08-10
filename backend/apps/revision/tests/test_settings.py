@@ -174,3 +174,36 @@ class RevisionSettingsAPITest(APITestCase):
         self.assertEqual(response.data['stats_display_mode'], 'summary')
         self.assertEqual(response.data['hide_learned_words'], True)
         self.assertEqual(response.data['group_by_deck'], True)
+
+
+
+
+class AudioSettingsTest(TestCase):
+    """
+    ici il s'agit de bien vérifier que tout fonctionne correctement concernant la fonctionne pour lire les fashcards à haute voix.
+    Pour rappel un deck à des flashcards recto verso.
+    Il faut vérifier si le recto (flashcards d'un deck) sont bien assignées à recto et ont une langue (francais, anglais)
+    Il faut vérifier si le Verso (flashcards d'un deck) sont bien assignées à verso et ont une langue (francais, anglais)
+    Il faut vérifier que les param^tres assginés, tester avec une langue (anglais - paul microsfot)
+    et voir dans le modul de flashcards si la prononciation d'une flashcard se fait bien dans la langue paramêtré dans les settings audio. 
+    L'idée du test est de refaire le parcours de l'utilisateur depuis les param^tres audio dans les settings jusqu'à ce qu'il entent réellement avec les bonnes voix masculines et féminines définies dans les paramètres de revision
+    
+
+    """
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+    url = 'api/v1/revision/user-settings/'
+
+    def settings_audio(self):
+        for voice in 
+
+    def test_change_audio(self):
+
+    def flashcards_with_right_audio(self):
+
+class FlashcardsAudioTest(TestCase):
+    pass

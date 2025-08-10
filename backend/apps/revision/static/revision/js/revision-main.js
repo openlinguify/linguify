@@ -379,6 +379,9 @@ async function selectDeck(deckId) {
         // Update cards count
         updateCardsCount();
         
+        // Show language settings if deck has cards
+        showDeckLanguageSettings(deck);
+        
         // Hide sidebar on mobile
         if (window.innerWidth < 768) {
             elements.sidebar.classList.remove('show');
@@ -467,9 +470,16 @@ function showCreateCardForm() {
     const elements = getElements();
     elements.createCardForm.style.display = 'block';
     
-    // Clear form
+    // Clear form and apply defaults
     elements.newCardFront.value = '';
     elements.newCardBack.value = '';
+    
+    // Apply default languages if set
+    const frontLangDefault = appState.deckDefaults?.frontLanguage || '';
+    const backLangDefault = appState.deckDefaults?.backLanguage || '';
+    
+    document.getElementById('newCardFrontLang').value = frontLangDefault;
+    document.getElementById('newCardBackLang').value = backLangDefault;
     
     // Focus on front input
     elements.newCardFront.focus();
@@ -478,6 +488,12 @@ function showCreateCardForm() {
 function hideCreateCardForm() {
     const elements = getElements();
     elements.createCardForm.style.display = 'none';
+    
+    // Clear form fields
+    elements.newCardFront.value = '';
+    elements.newCardBack.value = '';
+    document.getElementById('newCardFrontLang').value = '';
+    document.getElementById('newCardBackLang').value = '';
     
     if (appState.selectedDeck) {
         elements.deckDetails.style.display = 'block';
@@ -495,6 +511,8 @@ async function createNewCard() {
     const elements = getElements();
     const frontText = elements.newCardFront.value.trim();
     const backText = elements.newCardBack.value.trim();
+    const frontLang = document.getElementById('newCardFrontLang').value;
+    const backLang = document.getElementById('newCardBackLang').value;
     
     if (!frontText) {
         window.notificationService.error('Le texte recto est requis');
@@ -511,7 +529,9 @@ async function createNewCard() {
     try {
         const cardData = {
             front_text: frontText,
-            back_text: backText
+            back_text: backText,
+            front_language: frontLang || null,
+            back_language: backLang || null
         };
         
         const newCard = await revisionAPI.createCard(appState.selectedDeck.id, cardData);
@@ -1887,6 +1907,117 @@ function updateCardsCount() {
     
     const count = appState.selectedDeck.cards_count || 0;
     cardsCountElement.textContent = `${count} carte${count > 1 ? 's' : ''}`;
+}
+
+// === LANGUAGE SETTINGS FOR DECK ===
+
+function showDeckLanguageSettings(deck) {
+    const languageSettings = document.getElementById('deckLanguageSettings');
+    if (!languageSettings) return;
+    
+    // Show language settings only if deck has cards
+    if (deck.cards_count && deck.cards_count > 0) {
+        languageSettings.style.display = 'block';
+        
+        // Initialize event listeners if not already done
+        if (!languageSettings.hasAttribute('data-initialized')) {
+            initializeDeckLanguageEvents();
+            languageSettings.setAttribute('data-initialized', 'true');
+        }
+    } else {
+        languageSettings.style.display = 'none';
+    }
+}
+
+function initializeDeckLanguageEvents() {
+    const applyToDeckBtn = document.getElementById('applyLanguagesToDeck');
+    const applyToNewCardsBtn = document.getElementById('applyLanguagesToNewCards');
+    
+    if (applyToDeckBtn) {
+        applyToDeckBtn.addEventListener('click', applyLanguagesToAllCards);
+    }
+    
+    if (applyToNewCardsBtn) {
+        applyToNewCardsBtn.addEventListener('click', setDefaultLanguagesForNewCards);
+    }
+}
+
+async function applyLanguagesToAllCards() {
+    if (!appState.selectedDeck) return;
+    
+    const frontLang = document.getElementById('deckFrontLanguage').value;
+    const backLang = document.getElementById('deckBackLanguage').value;
+    
+    if (!frontLang && !backLang) {
+        window.notificationService.error('Veuillez sélectionner au moins une langue');
+        return;
+    }
+    
+    const confirmMessage = `Voulez-vous appliquer ces langues à toutes les ${appState.selectedDeck.cards_count} cartes du deck ?\n\n` +
+                          `Recto: ${frontLang ? getLanguageName(frontLang) : 'Détection automatique'}\n` +
+                          `Verso: ${backLang ? getLanguageName(backLang) : 'Détection automatique'}`;
+    
+    if (!confirm(confirmMessage)) return;
+    
+    try {
+        // Get all cards of the deck
+        const deck = await revisionAPI.getDeck(appState.selectedDeck.id);
+        
+        for (const card of deck.cards || []) {
+            const updateData = {};
+            if (frontLang) updateData.front_language = frontLang;
+            if (backLang) updateData.back_language = backLang;
+            
+            await revisionAPI.updateCard(card.id, updateData);
+        }
+        
+        window.notificationService.success(`Langues appliquées à ${deck.cards_count || 0} cartes`);
+        
+        // Reload deck to refresh data
+        await selectDeck(appState.selectedDeck.id);
+        
+    } catch (error) {
+        console.error('Error applying languages to cards:', error);
+        window.notificationService.error('Erreur lors de la mise à jour des langues');
+    }
+}
+
+function setDefaultLanguagesForNewCards() {
+    const frontLang = document.getElementById('deckFrontLanguage').value;
+    const backLang = document.getElementById('deckBackLanguage').value;
+    
+    // Store in app state for future use
+    if (!appState.deckDefaults) {
+        appState.deckDefaults = {};
+    }
+    
+    appState.deckDefaults.frontLanguage = frontLang;
+    appState.deckDefaults.backLanguage = backLang;
+    
+    // Update the card creation forms with these defaults
+    const newCardFrontLang = document.getElementById('newCardFrontLang');
+    const newCardBackLang = document.getElementById('newCardBackLang');
+    
+    if (newCardFrontLang) newCardFrontLang.value = frontLang;
+    if (newCardBackLang) newCardBackLang.value = backLang;
+    
+    const message = `Langues définies pour les nouvelles cartes :\n` +
+                   `Recto: ${frontLang ? getLanguageName(frontLang) : 'Détection automatique'}\n` +
+                   `Verso: ${backLang ? getLanguageName(backLang) : 'Détection automatique'}`;
+    
+    window.notificationService.success('Paramètres appliqués aux nouvelles cartes');
+}
+
+function getLanguageName(code) {
+    const languages = {
+        'fr': '🇫🇷 Français',
+        'en': '🇺🇸 Anglais', 
+        'es': '🇪🇸 Espagnol',
+        'it': '🇮🇹 Italien',
+        'de': '🇩🇪 Allemand',
+        'pt': '🇵🇹 Portugais'
+    };
+    return languages[code] || code;
 }
 
 async function archiveDeck() {

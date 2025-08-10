@@ -218,7 +218,11 @@
       "Bash(DJANGO_ENV=\"production\" poetry run python manage.py dbshell -c \"\\d course_chapter_progress\")",
       "Bash(PGPASSWORD=\"louisloulou123\" psql -h aws-0-eu-west-3.pooler.supabase.com -d postgres -U postgres.bfsxhrpyotstyhddkvrf -c \"\\d course_chapter_progress\")",
       "Bash(DJANGO_ENV=\"production\" poetry run python manage.py makemigrations course --empty)",
-      "Bash(DJANGO_ENV=\"production\" poetry run python manage.py migrate course)"
+      "Bash(DJANGO_ENV=\"production\" poetry run python manage.py migrate course)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py showmigrations revision)",
+      "Bash(DJANGO_ENV=\"production\" poetry run python manage.py showmigrations revision)",
+      "Bash(DJANGO_ENV=\"production\" poetry run python manage.py migrate revision 0015 --fake)",
+      "Bash(DJANGO_ENV=\"production\" poetry run python manage.py migrate revision 0016)"
     ],
     "deny": []
   },

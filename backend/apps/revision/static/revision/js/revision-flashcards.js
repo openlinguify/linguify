@@ -452,6 +452,24 @@ class FlashcardStudyMode {
             return;
         }
 
+        // Configuration par défaut des voix préférées
+        this.preferredVoices = {
+            'fr-FR': null,
+            'en-US': null,
+            'es-ES': null,
+            'it-IT': null,
+            'de-DE': null
+        };
+
+        // Paramètres audio par défaut (pourraient venir des settings utilisateur)
+        this.audioSettings = {
+            enabled: true,
+            speed: 0.9,
+            pitch: 1.0,
+            volume: 1.0,
+            autoPlay: false
+        };
+
         // Charger les voix disponibles
         this.loadVoices();
         
@@ -459,11 +477,155 @@ class FlashcardStudyMode {
         this.speechSynthesis.addEventListener('voiceschanged', () => {
             this.loadVoices();
         });
+
+        // Charger les paramètres utilisateur depuis l'API
+        this.loadUserAudioSettings();
     }
 
     loadVoices() {
         this.voices = this.speechSynthesis.getVoices();
         console.log('Voix disponibles:', this.voices.length);
+        
+        if (this.voices.length > 0) {
+            this.categorizeBestVoices();
+        }
+    }
+
+    async loadUserAudioSettings() {
+        // Utiliser les paramètres passés depuis le serveur s'ils sont disponibles
+        if (window.userAudioSettings && Object.keys(window.userAudioSettings).length > 0) {
+            const settings = window.userAudioSettings;
+            console.log('🎵 Utilisation des paramètres audio du serveur:', settings);
+            
+            // Mettre à jour les paramètres audio
+            this.audioSettings = {
+                enabled: settings.audio_enabled !== false,
+                speed: settings.audio_speed || 0.9,
+                pitch: 1.0,
+                volume: 1.0,
+                autoPlay: settings.auto_play_audio || false
+            };
+
+            // Mettre à jour les voix préférées
+            this.preferredVoices = {
+                'fr-FR': settings.preferred_voice_french || null,
+                'en-US': settings.preferred_voice_english || null,
+                'en-GB': settings.preferred_voice_english || null, // Même voix pour en-GB
+                'es-ES': settings.preferred_voice_spanish || null,
+                'it-IT': settings.preferred_voice_italian || null,
+                'de-DE': settings.preferred_voice_german || null
+            };
+
+            console.log('✅ Paramètres audio chargés depuis le serveur:', this.audioSettings);
+            console.log('✅ Voix préférées chargées depuis le serveur:', this.preferredVoices);
+            console.log('🔍 preferred_voice_french:', settings.preferred_voice_french);
+            console.log('🔍 preferred_voice_english:', settings.preferred_voice_english);
+            return;
+        }
+        
+        // Fallback vers l'API si les paramètres serveur ne sont pas disponibles
+        try {
+            const response = await fetch('/api/v1/revision/user-settings/');
+            console.log('🔍 API Response status:', response.status);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('🔍 API Response data:', data);
+                const settings = data.settings || {};
+                console.log('🔍 Settings object:', settings);
+                
+                // Mettre à jour les paramètres audio
+                this.audioSettings = {
+                    enabled: settings.audio_enabled !== false,
+                    speed: settings.audio_speed || 0.9,
+                    pitch: 1.0,
+                    volume: 1.0,
+                    autoPlay: settings.auto_play_audio || false
+                };
+
+                // Mettre à jour les voix préférées avec debug
+                this.preferredVoices = {
+                    'fr-FR': settings.preferred_voice_french || null,
+                    'en-US': settings.preferred_voice_english || null,
+                    'en-GB': settings.preferred_voice_english || null, // Même voix pour en-GB
+                    'es-ES': settings.preferred_voice_spanish || null,
+                    'it-IT': settings.preferred_voice_italian || null,
+                    'de-DE': settings.preferred_voice_german || null
+                };
+
+                console.log('✅ Paramètres audio chargés depuis API:', this.audioSettings);
+                console.log('✅ Voix préférées chargées depuis API:', this.preferredVoices);
+                console.log('🔍 preferred_voice_french from API:', settings.preferred_voice_french);
+                console.log('🔍 preferred_voice_english from API:', settings.preferred_voice_english);
+            } else {
+                console.error('❌ API user-settings failed with status:', response.status);
+                const errorText = await response.text();
+                console.error('❌ Error response:', errorText);
+            }
+        } catch (error) {
+            console.warn('❌ Exception loading user audio settings:', error);
+            // Utiliser les paramètres par défaut
+        }
+    }
+
+    categorizeBestVoices() {
+        // Catégoriser les meilleures voix par langue
+        const bestVoicesByLanguage = {};
+        
+        // Critères de qualité pour les voix
+        const qualityCriteria = {
+            // Préférences par plateforme/navigateur
+            preferredEngines: ['neural', 'premium', 'enhanced', 'natural'],
+            // Éviter les voix de faible qualité
+            avoidKeywords: ['eSpeak', 'Festival', 'robot', 'basic'],
+            // Préférer les voix locales
+            preferLocal: true
+        };
+
+        this.voices.forEach(voice => {
+            const langCode = voice.lang;
+            const shortLang = langCode.split('-')[0];
+
+            if (!bestVoicesByLanguage[langCode]) {
+                bestVoicesByLanguage[langCode] = [];
+            }
+            
+            // Calculer un score de qualité pour cette voix
+            let qualityScore = 0;
+            
+            // Voix locales sont préférées
+            if (voice.localService) qualityScore += 10;
+            
+            // Noms de voix qui indiquent une bonne qualité
+            const voiceName = voice.name.toLowerCase();
+            qualityCriteria.preferredEngines.forEach(engine => {
+                if (voiceName.includes(engine)) qualityScore += 5;
+            });
+            
+            // Pénaliser les voix de mauvaise qualité
+            qualityCriteria.avoidKeywords.forEach(keyword => {
+                if (voiceName.includes(keyword)) qualityScore -= 10;
+            });
+            
+            // Préférer les voix avec des noms spécifiques par langue
+            if (shortLang === 'en' && (voiceName.includes('samantha') || voiceName.includes('alex') || voiceName.includes('karen'))) {
+                qualityScore += 3;
+            } else if (shortLang === 'fr' && (voiceName.includes('amelie') || voiceName.includes('thomas') || voiceName.includes('marie'))) {
+                qualityScore += 3;
+            }
+            
+            voice.qualityScore = qualityScore;
+            bestVoicesByLanguage[langCode].push(voice);
+        });
+
+        // Trier les voix par score de qualité
+        Object.keys(bestVoicesByLanguage).forEach(lang => {
+            bestVoicesByLanguage[lang].sort((a, b) => b.qualityScore - a.qualityScore);
+        });
+
+        this.bestVoicesByLanguage = bestVoicesByLanguage;
+        
+        console.log('Meilleures voix par langue:', bestVoicesByLanguage);
     }
 
     detectLanguage(text) {
@@ -548,21 +710,71 @@ class FlashcardStudyMode {
         return scores[0].score > 0 ? scores[0].lang : 'fr-FR';
     }
 
+    normalizeLanguageCode(langCode) {
+        if (!langCode) return null;
+        
+        const langMap = {
+            'fr': 'fr-FR',
+            'en': 'en-US', 
+            'es': 'es-ES',
+            'it': 'it-IT',
+            'de': 'de-DE',
+            'pt': 'pt-PT',
+            'ru': 'ru-RU',
+            'ja': 'ja-JP',
+            'ko': 'ko-KR',
+            'zh': 'zh-CN'
+        };
+        
+        const normalized = langCode.toLowerCase().trim();
+        return langMap[normalized] || langCode;
+    }
+
     getBestVoiceForLanguage(languageCode) {
         if (!this.voices.length) {
             this.loadVoices();
         }
 
-        // Essayer de trouver une voix pour la langue exacte
+        // 1. Vérifier d'abord les voix préférées par l'utilisateur
+        const preferredVoiceName = this.preferredVoices[languageCode];
+        if (preferredVoiceName) {
+            console.log(`🔍 Recherche voix préférée "${preferredVoiceName}" pour ${languageCode}`);
+            
+            const preferredVoice = this.voices.find(v => v.name === preferredVoiceName);
+            if (preferredVoice) {
+                console.log(`✅ Utilisation de la voix préférée pour ${languageCode}: ${preferredVoice.name}`);
+                return preferredVoice;
+            } else {
+                console.warn(`❌ Voix préférée "${preferredVoiceName}" non trouvée pour ${languageCode}`);
+                console.log(`Voix disponibles pour ${languageCode}:`, this.voices.filter(v => v.lang === languageCode).map(v => v.name));
+            }
+        }
+
+        // 2. Utiliser nos voix classées par qualité
+        if (this.bestVoicesByLanguage && this.bestVoicesByLanguage[languageCode]) {
+            const bestVoices = this.bestVoicesByLanguage[languageCode];
+            if (bestVoices.length > 0) {
+                console.log(`Utilisation de la meilleure voix pour ${languageCode}: ${bestVoices[0].name} (score: ${bestVoices[0].qualityScore})`);
+                return bestVoices[0];
+            }
+        }
+
+        // 3. Fallback : essayer de trouver une voix pour la langue exacte
         let voice = this.voices.find(v => v.lang === languageCode);
         
-        // Si pas trouvé, essayer avec juste le code de langue (ex: 'fr' au lieu de 'fr-FR')
+        // 4. Si pas trouvé, essayer avec juste le code de langue (ex: 'fr' au lieu de 'fr-FR')
         if (!voice) {
             const shortLang = languageCode.split('-')[0];
-            voice = this.voices.find(v => v.lang.startsWith(shortLang));
+            const languageVoices = this.voices.filter(v => v.lang.startsWith(shortLang));
+            
+            if (languageVoices.length > 0) {
+                // Préférer les voix locales
+                const localVoices = languageVoices.filter(v => v.localService);
+                voice = localVoices.length > 0 ? localVoices[0] : languageVoices[0];
+            }
         }
         
-        // Si toujours pas trouvé, prendre une voix par défaut
+        // 5. Si toujours pas trouvé, prendre une voix par défaut
         if (!voice && this.voices.length > 0) {
             voice = this.voices[0];
         }
@@ -570,9 +782,23 @@ class FlashcardStudyMode {
         return voice;
     }
 
+    // Nouvelle méthode pour obtenir la liste des voix disponibles pour une langue (pour les settings)
+    getAvailableVoicesForLanguage(languageCode) {
+        const shortLang = languageCode.split('-')[0];
+        return this.voices
+            .filter(v => v.lang.startsWith(shortLang))
+            .map(v => ({
+                name: v.name,
+                lang: v.lang,
+                localService: v.localService,
+                qualityScore: v.qualityScore || 0
+            }))
+            .sort((a, b) => (b.qualityScore || 0) - (a.qualityScore || 0));
+    }
+
     speakText(side) {
-        if (!this.speechSynthesis) {
-            console.warn('Speech synthesis not supported');
+        if (!this.speechSynthesis || !this.audioSettings.enabled) {
+            console.warn('Speech synthesis not supported or disabled');
             return;
         }
 
@@ -584,13 +810,16 @@ class FlashcardStudyMode {
 
         let textToSpeak = '';
         let buttonElement = null;
+        let cardLanguage = null;
         
         if (side === 'front') {
             textToSpeak = currentCard.front_text;
             buttonElement = document.getElementById('speakFrontBtn');
+            cardLanguage = currentCard.front_language;
         } else if (side === 'back') {
             textToSpeak = currentCard.back_text;
             buttonElement = document.getElementById('speakBackBtn');
+            cardLanguage = currentCard.back_language;
         }
 
         if (!textToSpeak || !textToSpeak.trim()) {
@@ -598,28 +827,36 @@ class FlashcardStudyMode {
             return;
         }
 
-        // Détecter la langue du texte
-        const detectedLanguage = this.detectLanguage(textToSpeak);
-        console.log(`Texte: "${textToSpeak}" - Langue détectée: ${detectedLanguage}`);
+        // Utiliser la langue définie dans la carte, sinon détecter automatiquement
+        let languageToUse;
+        if (cardLanguage && cardLanguage.trim()) {
+            // La carte a une langue définie
+            languageToUse = this.normalizeLanguageCode(cardLanguage);
+            console.log(`Texte: "${textToSpeak}" - Langue définie: ${cardLanguage} -> ${languageToUse}`);
+        } else {
+            // Fallback sur la détection automatique
+            languageToUse = this.detectLanguage(textToSpeak);
+            console.log(`Texte: "${textToSpeak}" - Langue détectée automatiquement: ${languageToUse}`);
+        }
 
         // Créer l'utterance
         this.currentUtterance = new SpeechSynthesisUtterance(textToSpeak);
         
         // Configurer la voix
-        const voice = this.getBestVoiceForLanguage(detectedLanguage);
+        const voice = this.getBestVoiceForLanguage(languageToUse);
         if (voice) {
             this.currentUtterance.voice = voice;
             this.currentUtterance.lang = voice.lang;
-            console.log(`Voix utilisée: ${voice.name} (${voice.lang})`);
+            console.log(`Voix utilisée: ${voice.name} (${voice.lang}) - Score qualité: ${voice.qualityScore || 'N/A'}`);
         } else {
-            this.currentUtterance.lang = detectedLanguage;
-            console.log(`Pas de voix trouvée, utilisation de la langue: ${detectedLanguage}`);
+            this.currentUtterance.lang = languageToUse;
+            console.log(`Pas de voix trouvée, utilisation de la langue: ${languageToUse}`);
         }
 
-        // Configurer les paramètres
-        this.currentUtterance.rate = 0.9; // Vitesse légèrement plus lente
-        this.currentUtterance.pitch = 1.0;
-        this.currentUtterance.volume = 1.0;
+        // Utiliser les paramètres utilisateur pour la configuration
+        this.currentUtterance.rate = this.audioSettings.speed;
+        this.currentUtterance.pitch = this.audioSettings.pitch;
+        this.currentUtterance.volume = this.audioSettings.volume;
 
         // Animation du bouton pendant la lecture
         if (buttonElement) {
@@ -664,6 +901,76 @@ class FlashcardStudyMode {
         if (backBtn) backBtn.classList.remove('speaking');
         
         this.currentUtterance = null;
+    }
+
+    // ===== MÉTHODES UTILITAIRES POUR DÉBUGGAGE ET CONFIGURATION =====
+    
+    // Méthode pour tester les voix disponibles (appelable depuis la console)
+    testVoicesForLanguage(languageCode = 'en-US') {
+        const availableVoices = this.getAvailableVoicesForLanguage(languageCode);
+        console.log(`Voix disponibles pour ${languageCode}:`, availableVoices);
+        
+        availableVoices.forEach((voiceInfo, index) => {
+            console.log(`${index + 1}. ${voiceInfo.name} (${voiceInfo.lang}) - Score: ${voiceInfo.qualityScore} - Local: ${voiceInfo.localService}`);
+        });
+        
+        return availableVoices;
+    }
+    
+    // Méthode pour tester une voix spécifique
+    testVoice(voiceName, text = 'Hello, this is a test') {
+        const voice = this.voices.find(v => v.name === voiceName);
+        if (!voice) {
+            console.error(`Voix "${voiceName}" non trouvée`);
+            return false;
+        }
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.voice = voice;
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        utterance.onstart = () => console.log(`Test de la voix: ${voice.name}`);
+        utterance.onend = () => console.log(`Test terminé: ${voice.name}`);
+        
+        this.speechSynthesis.speak(utterance);
+        return true;
+    }
+    
+    // Méthode pour définir une voix préférée
+    setPreferredVoice(languageCode, voiceName) {
+        const voice = this.voices.find(v => v.name === voiceName);
+        if (!voice) {
+            console.error(`Voix "${voiceName}" non trouvée`);
+            return false;
+        }
+        
+        this.preferredVoices[languageCode] = voiceName;
+        console.log(`Voix préférée définie pour ${languageCode}: ${voiceName}`);
+        
+        // TODO: Sauvegarder dans les paramètres utilisateur
+        return true;
+    }
+
+    // Méthode pour lister toutes les voix par langue
+    listAllVoicesByLanguage() {
+        const voicesByLang = {};
+        this.voices.forEach(voice => {
+            const shortLang = voice.lang.split('-')[0];
+            if (!voicesByLang[shortLang]) {
+                voicesByLang[shortLang] = [];
+            }
+            voicesByLang[shortLang].push({
+                name: voice.name,
+                lang: voice.lang,
+                localService: voice.localService,
+                qualityScore: voice.qualityScore || 0
+            });
+        });
+        
+        console.log('Toutes les voix par langue:', voicesByLang);
+        return voicesByLang;
     }
 }
 

@@ -143,6 +143,48 @@ class RevisionSettings(models.Model):
         help_text="Lecture automatique de l'audio (si disponible)"
     )
     
+    # Paramètres audio et voix
+    audio_enabled = models.BooleanField(
+        default=True,
+        help_text="Activer la synthèse vocale"
+    )
+    
+    audio_speed = models.FloatField(
+        default=0.9,
+        validators=[MinValueValidator(0.5), MaxValueValidator(2.0)],
+        help_text="Vitesse de la synthèse vocale (0.5 à 2.0)"
+    )
+    
+    preferred_voice_french = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Nom de la voix préférée pour le français"
+    )
+    
+    preferred_voice_english = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Nom de la voix préférée pour l'anglais"
+    )
+    
+    preferred_voice_spanish = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Nom de la voix préférée pour l'espagnol"
+    )
+    
+    preferred_voice_italian = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Nom de la voix préférée pour l'italien"
+    )
+    
+    preferred_voice_german = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Nom de la voix préférée pour l'allemand"
+    )
+    
     keyboard_shortcuts_enabled = models.BooleanField(
         default=True,
         help_text="Activer les raccourcis clavier"

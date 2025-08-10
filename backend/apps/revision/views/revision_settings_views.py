@@ -250,6 +250,26 @@ def get_user_revision_settings(request):
             'group_by_deck': False,
         })
         
+        # Récupérer aussi les paramètres audio depuis la base de données
+        try:
+            revision_settings, _ = RevisionSettings.objects.get_or_create(user=request.user)
+            
+            # Ajouter les paramètres audio
+            settings.update({
+                'audio_enabled': revision_settings.audio_enabled,
+                'audio_speed': revision_settings.audio_speed,
+                'preferred_voice_french': revision_settings.preferred_voice_french,
+                'preferred_voice_english': revision_settings.preferred_voice_english,
+                'preferred_voice_spanish': revision_settings.preferred_voice_spanish,
+                'preferred_voice_italian': revision_settings.preferred_voice_italian,
+                'preferred_voice_german': revision_settings.preferred_voice_german,
+            })
+            
+            logger.info(f"[USER_SETTINGS] Added audio settings for {request.user.username}")
+            
+        except Exception as e:
+            logger.warning(f"[USER_SETTINGS] Could not load audio settings: {e}")
+        
         logger.info(f"[USER_SETTINGS] Retrieved settings for {request.user.username}: {settings}")
         
         return JsonResponse({

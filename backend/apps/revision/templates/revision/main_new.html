@@ -174,6 +174,53 @@
                     <h6 class="mb-0">Cartes du deck</h6>
                     <span id="cardsCount" class="badge bg-secondary">0 carte(s)</span>
                 </div>
+                
+                <!-- Language Settings for the Deck -->
+                <div id="deckLanguageSettings" class="mb-3 p-3 bg-light rounded" style="display: none;">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small">🎯 <strong>Langue par défaut du recto</strong></label>
+                            <select id="deckFrontLanguage" class="form-select form-select-sm">
+                                <option value="">🔄 Détection automatique</option>
+                                <option value="fr">🇫🇷 Français</option>
+                                <option value="en">🇺🇸 Anglais</option>
+                                <option value="es">🇪🇸 Espagnol</option>
+                                <option value="it">🇮🇹 Italien</option>
+                                <option value="de">🇩🇪 Allemand</option>
+                                <option value="pt">🇵🇹 Portugais</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">🎯 <strong>Langue par défaut du verso</strong></label>
+                            <select id="deckBackLanguage" class="form-select form-select-sm">
+                                <option value="">🔄 Détection automatique</option>
+                                <option value="fr">🇫🇷 Français</option>
+                                <option value="en">🇺🇸 Anglais</option>
+                                <option value="es">🇪🇸 Espagnol</option>
+                                <option value="it">🇮🇹 Italien</option>
+                                <option value="de">🇩🇪 Allemand</option>
+                                <option value="pt">🇵🇹 Portugais</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button id="applyLanguagesToDeck" class="btn btn-primary btn-sm me-2">
+                            <i class="bi bi-check-lg me-1"></i>
+                            Appliquer à toutes les cartes
+                        </button>
+                        <button id="applyLanguagesToNewCards" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            Utiliser pour les nouvelles cartes
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Ces paramètres permettent une meilleure prononciation avec la synthèse vocale
+                        </small>
+                    </div>
+                </div>
+                
                 <div id="cardsContainer">
                     <!-- Cards will be loaded here -->
                 </div>
@@ -263,11 +310,35 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Recto (Question) <span class="text-danger">*</span></label>
+                    <div class="d-flex align-items-center mb-2">
+                        <select id="newCardFrontLang" class="form-select form-select-sm me-2" style="max-width: 120px;">
+                            <option value="">Auto</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇺🇸 Anglais</option>
+                            <option value="es">🇪🇸 Espagnol</option>
+                            <option value="it">🇮🇹 Italien</option>
+                            <option value="de">🇩🇪 Allemand</option>
+                            <option value="pt">🇵🇹 Portugais</option>
+                        </select>
+                        <small class="text-muted">Langue du recto</small>
+                    </div>
                     <textarea id="newCardFront" class="form-control" rows="4" 
                               placeholder="Ex: Comment dit-on 'bonjour' en anglais ?" required></textarea>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Verso (Réponse) <span class="text-danger">*</span></label>
+                    <div class="d-flex align-items-center mb-2">
+                        <select id="newCardBackLang" class="form-select form-select-sm me-2" style="max-width: 120px;">
+                            <option value="">Auto</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇺🇸 Anglais</option>
+                            <option value="es">🇪🇸 Espagnol</option>
+                            <option value="it">🇮🇹 Italien</option>
+                            <option value="de">🇩🇪 Allemand</option>
+                            <option value="pt">🇵🇹 Portugais</option>
+                        </select>
+                        <small class="text-muted">Langue du verso</small>
+                    </div>
                     <textarea id="newCardBack" class="form-control" rows="4" 
                               placeholder="Ex: Hello" required></textarea>
                 </div>
@@ -302,10 +373,34 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Recto (Question) <span class="text-danger">*</span></label>
+                    <div class="d-flex align-items-center mb-2">
+                        <select id="editCardFrontLang" class="form-select form-select-sm me-2" style="max-width: 120px;">
+                            <option value="">Auto</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇺🇸 Anglais</option>
+                            <option value="es">🇪🇸 Espagnol</option>
+                            <option value="it">🇮🇹 Italien</option>
+                            <option value="de">🇩🇪 Allemand</option>
+                            <option value="pt">🇵🇹 Portugais</option>
+                        </select>
+                        <small class="text-muted">Langue du recto</small>
+                    </div>
                     <textarea id="editCardFront" class="form-control" rows="4" required></textarea>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Verso (Réponse) <span class="text-danger">*</span></label>
+                    <div class="d-flex align-items-center mb-2">
+                        <select id="editCardBackLang" class="form-select form-select-sm me-2" style="max-width: 120px;">
+                            <option value="">Auto</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇺🇸 Anglais</option>
+                            <option value="es">🇪🇸 Espagnol</option>
+                            <option value="it">🇮🇹 Italien</option>
+                            <option value="de">🇩🇪 Allemand</option>
+                            <option value="pt">🇵🇹 Portugais</option>
+                        </select>
+                        <small class="text-muted">Langue du verso</small>
+                    </div>
                     <textarea id="editCardBack" class="form-control" rows="4" required></textarea>
                 </div>
             </div>
@@ -895,5 +990,9 @@
 window.selectDeck = window.revisionMain.selectDeck;
 window.updatePreview = window.revisionMain.updatePreview;
 window.clearSelectedFile = window.revisionMain.clearSelectedFile;
+
+// Paramètres audio utilisateur depuis le serveur
+window.userAudioSettings = {{ audio_settings|default:"{}" }};
+console.log('🎵 Paramètres audio chargés depuis le serveur:', window.userAudioSettings);
 </script>
 {% endblock %}

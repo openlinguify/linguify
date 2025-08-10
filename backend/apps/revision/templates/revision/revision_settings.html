@@ -419,6 +419,142 @@
             </form>
         </div>
     </div>
+
+    <!-- Audio and Voice Settings Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-volume-up"></i>
+                Paramètres audio et voix
+            </h3>
+            <div class="section-actions">
+                <button type="button" onclick="testCurrentVoices()" style="margin-right: 8px; padding: 4px 8px; font-size: 12px; background: #17a2b8; color: white; border: none; border-radius: 4px;">
+                    🎵 Test
+                </button>
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="audio">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="audio_enabled" checked>
+                        Activer la synthèse vocale
+                    </label>
+                    <div class="form-help">Active ou désactive complètement la lecture audio</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Vitesse de lecture</label>
+                    <div class="range-input">
+                        <input type="range" name="audio_speed" min="0.5" max="2.0" step="0.1" value="0.9" class="form-range">
+                        <span class="range-value">0.9x</span>
+                    </div>
+                    <div class="form-help">Vitesse de la synthèse vocale (0.5x à 2.0x)</div>
+                </div>
+
+                <!-- Voice Selection -->
+                <div class="voice-selection-grid">
+                    <h4 class="voice-section-title">
+                        <i class="bi bi-globe"></i>
+                        Voix préférées par langue
+                    </h4>
+                    
+                    <div class="voice-language-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <img src="https://flagcdn.com/w20/fr.png" alt="FR" class="flag-icon">
+                                Français
+                            </label>
+                            <select name="preferred_voice_french" class="form-control voice-select" data-lang="fr-FR">
+                                <option value="">Automatique (meilleure qualité)</option>
+                                <option disabled>--- Chargement des voix... ---</option>
+                            </select>
+                            <button type="button" class="voice-test-btn" data-lang="fr-FR" data-text="Bonjour, ceci est un test de la voix française">
+                                🎵 Tester
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="voice-language-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <img src="https://flagcdn.com/w20/us.png" alt="EN" class="flag-icon">
+                                Anglais
+                            </label>
+                            <select name="preferred_voice_english" class="form-control voice-select" data-lang="en-US">
+                                <option value="">Automatique (meilleure qualité)</option>
+                                <option disabled>--- Chargement des voix... ---</option>
+                            </select>
+                            <button type="button" class="voice-test-btn" data-lang="en-US" data-text="Hello, this is a test of the English voice">
+                                🎵 Tester
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="voice-language-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <img src="https://flagcdn.com/w20/es.png" alt="ES" class="flag-icon">
+                                Espagnol
+                            </label>
+                            <select name="preferred_voice_spanish" class="form-control voice-select" data-lang="es-ES">
+                                <option value="">Automatique (meilleure qualité)</option>
+                                <option disabled>--- Chargement des voix... ---</option>
+                            </select>
+                            <button type="button" class="voice-test-btn" data-lang="es-ES" data-text="Hola, esto es una prueba de la voz española">
+                                🎵 Tester
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="voice-language-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <img src="https://flagcdn.com/w20/it.png" alt="IT" class="flag-icon">
+                                Italien
+                            </label>
+                            <select name="preferred_voice_italian" class="form-control voice-select" data-lang="it-IT">
+                                <option value="">Automatique (meilleure qualité)</option>
+                                <option disabled>--- Chargement des voix... ---</option>
+                            </select>
+                            <button type="button" class="voice-test-btn" data-lang="it-IT" data-text="Ciao, questo è un test della voce italiana">
+                                🎵 Tester
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="voice-language-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <img src="https://flagcdn.com/w20/de.png" alt="DE" class="flag-icon">
+                                Allemand
+                            </label>
+                            <select name="preferred_voice_german" class="form-control voice-select" data-lang="de-DE">
+                                <option value="">Automatique (meilleure qualité)</option>
+                                <option disabled>--- Chargement des voix... ---</option>
+                            </select>
+                            <button type="button" class="voice-test-btn" data-lang="de-DE" data-text="Hallo, das ist ein Test der deutschen Stimme">
+                                🎵 Tester
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -726,6 +862,106 @@
         font-size: 14px;
         color: #666;
     }
+
+    /* Audio and Voice Settings Styles */
+    .voice-selection-grid {
+        margin-top: 20px;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+    .voice-section-title {
+        margin: 0 0 16px 0;
+        color: #333;
+        font-size: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .voice-language-section {
+        margin-bottom: 16px;
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+    }
+
+    .voice-language-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .voice-language-section .form-group {
+        margin-bottom: 0;
+        display: grid;
+        grid-template-columns: 120px 1fr auto;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .flag-icon {
+        width: 16px;
+        height: 12px;
+        margin-right: 8px;
+        border-radius: 2px;
+    }
+
+    .voice-select {
+        max-width: none;
+    }
+
+    .voice-test-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        background: #17a2b8;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+
+    .voice-test-btn:hover {
+        background: #138496;
+        transform: scale(1.05);
+    }
+
+    .voice-test-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .voice-test-btn.testing {
+        background: #28a745;
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    /* Audio speed range styling */
+    .range-input input[name="audio_speed"] + .range-value::after {
+        content: "x";
+    }
+
+    /* Responsive voice settings */
+    @media (max-width: 768px) {
+        .voice-language-section .form-group {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        
+        .voice-test-btn {
+            justify-self: start;
+        }
+    }
 </style>
 
 <script>
@@ -760,6 +996,9 @@
 
         // Initialize word stats
         initWordStats();
+
+        // Initialize voice settings
+        initVoiceSettings();
     });
 
     function initRevisionSettings() {
@@ -991,4 +1230,197 @@
             `;
         }
     }
+
+    // ===== VOICE SETTINGS FUNCTIONS =====
+    
+    let speechSynthesis = window.speechSynthesis;
+    let availableVoices = [];
+    let currentTestUtterance = null;
+
+    function initVoiceSettings() {
+        console.log('[VoiceSettings] Initializing voice settings');
+        
+        // Load voices (may be async)
+        loadVoices();
+        
+        // Voices might load asynchronously
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        // Setup event listeners
+        setupVoiceEventListeners();
+
+        // Setup audio speed slider
+        const audioSpeedSlider = document.querySelector('[name="audio_speed"]');
+        if (audioSpeedSlider) {
+            audioSpeedSlider.addEventListener('input', function() {
+                const valueSpan = this.parentElement.querySelector('.range-value');
+                valueSpan.textContent = this.value + 'x';
+            });
+        }
+    }
+
+    function loadVoices() {
+        availableVoices = speechSynthesis.getVoices();
+        console.log(`[VoiceSettings] Loaded ${availableVoices.length} voices`);
+        
+        if (availableVoices.length > 0) {
+            populateVoiceSelectors();
+        }
+    }
+
+    function setupVoiceEventListeners() {
+        // Voice test buttons
+        document.querySelectorAll('.voice-test-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const lang = this.dataset.lang;
+                const text = this.dataset.text;
+                testVoice(lang, text, this);
+            });
+        });
+
+        // Voice selection changes
+        document.querySelectorAll('.voice-select').forEach(select => {
+            select.addEventListener('change', function() {
+                console.log(`[VoiceSettings] Voice changed for ${this.dataset.lang}: ${this.value}`);
+            });
+        });
+    }
+
+    function populateVoiceSelectors() {
+        const languages = {
+            'fr-FR': 'fr',
+            'en-US': 'en', 
+            'es-ES': 'es',
+            'it-IT': 'it',
+            'de-DE': 'de'
+        };
+
+        Object.entries(languages).forEach(([fullLang, shortLang]) => {
+            const select = document.querySelector(`[data-lang="${fullLang}"]`);
+            if (!select) return;
+
+            // Find voices for this language
+            const languageVoices = availableVoices.filter(voice => 
+                voice.lang.startsWith(shortLang) || voice.lang.startsWith(fullLang)
+            );
+
+            // Sort by quality (local first, then by name)
+            languageVoices.sort((a, b) => {
+                if (a.localService && !b.localService) return -1;
+                if (!a.localService && b.localService) return 1;
+                return a.name.localeCompare(b.name);
+            });
+
+            // Clear existing options (except the first one)
+            const firstOption = select.querySelector('option');
+            select.innerHTML = '';
+            select.appendChild(firstOption);
+
+            // Add voice options
+            if (languageVoices.length === 0) {
+                const option = document.createElement('option');
+                option.disabled = true;
+                option.textContent = `--- Aucune voix ${shortLang.toUpperCase()} trouvée ---`;
+                select.appendChild(option);
+            } else {
+                languageVoices.forEach(voice => {
+                    const option = document.createElement('option');
+                    option.value = voice.name;
+                    option.textContent = `${voice.name} ${voice.localService ? '🏠' : '☁️'}`;
+                    select.appendChild(option);
+                });
+            }
+
+            console.log(`[VoiceSettings] Populated ${languageVoices.length} voices for ${fullLang}`);
+        });
+    }
+
+    function testVoice(languageCode, text, buttonElement) {
+        if (currentTestUtterance) {
+            speechSynthesis.cancel();
+        }
+
+        // Get selected voice for this language
+        const select = document.querySelector(`[data-lang="${languageCode}"]`);
+        let selectedVoiceName = select ? select.value : '';
+
+        let voice = null;
+        if (selectedVoiceName) {
+            voice = availableVoices.find(v => v.name === selectedVoiceName);
+        }
+
+        // Fallback to best available voice for language
+        if (!voice) {
+            const shortLang = languageCode.split('-')[0];
+            const langVoices = availableVoices.filter(v => v.lang.startsWith(shortLang));
+            voice = langVoices.find(v => v.localService) || langVoices[0];
+        }
+
+        if (!voice) {
+            alert(`Aucune voix trouvée pour ${languageCode}`);
+            return;
+        }
+
+        // Create and configure utterance
+        currentTestUtterance = new SpeechSynthesisUtterance(text);
+        currentTestUtterance.voice = voice;
+        currentTestUtterance.lang = voice.lang;
+        
+        // Use current speed setting
+        const speedSlider = document.querySelector('[name="audio_speed"]');
+        currentTestUtterance.rate = speedSlider ? parseFloat(speedSlider.value) : 0.9;
+        currentTestUtterance.pitch = 1.0;
+        currentTestUtterance.volume = 1.0;
+
+        // Button animation
+        buttonElement.classList.add('testing');
+        buttonElement.disabled = true;
+
+        currentTestUtterance.onstart = () => {
+            console.log(`[VoiceSettings] Testing voice: ${voice.name} (${voice.lang})`);
+        };
+
+        currentTestUtterance.onend = () => {
+            buttonElement.classList.remove('testing');
+            buttonElement.disabled = false;
+            currentTestUtterance = null;
+        };
+
+        currentTestUtterance.onerror = (error) => {
+            console.error(`[VoiceSettings] Voice test error:`, error);
+            buttonElement.classList.remove('testing');
+            buttonElement.disabled = false;
+            currentTestUtterance = null;
+        };
+
+        // Speak
+        speechSynthesis.speak(currentTestUtterance);
+    }
+
+    function testCurrentVoices() {
+        // Test each configured language with a sample phrase
+        const testPhrases = {
+            'fr-FR': 'Bonjour, ceci est un test de qualité de la voix française',
+            'en-US': 'Hello, this is a quality test of the English voice', 
+            'es-ES': 'Hola, esta es una prueba de calidad de la voz española',
+            'it-IT': 'Ciao, questo è un test di qualità della voce italiana',
+            'de-DE': 'Hallo, das ist ein Qualitätstest der deutschen Stimme'
+        };
+
+        let delay = 0;
+        Object.entries(testPhrases).forEach(([lang, text]) => {
+            setTimeout(() => {
+                const button = document.querySelector(`[data-lang="${lang}"].voice-test-btn`);
+                if (button) {
+                    testVoice(lang, text, button);
+                }
+            }, delay);
+            delay += 3000; // 3 seconds between tests
+        });
+    }
+
+    // Make function globally available
+    window.testCurrentVoices = testCurrentVoices;
 </script>

@@ -39,6 +39,11 @@ class RevisionSettingsSerializer(serializers.ModelSerializer):
             # Interface
             'enable_animations', 'auto_play_audio', 'keyboard_shortcuts_enabled',
             
+            # Audio et voix préférées
+            'audio_enabled', 'audio_speed', 'audio_pitch', 'audio_volume',
+            'preferred_voice_french', 'preferred_voice_english', 'preferred_voice_spanish',
+            'preferred_voice_italian', 'preferred_voice_german',
+            
             # Statistiques de mots
             'show_word_stats', 'stats_display_mode', 'hide_learned_words', 'group_by_deck',
             
