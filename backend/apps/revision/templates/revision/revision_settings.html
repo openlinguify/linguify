@@ -1251,14 +1251,50 @@
         // Load available voices
         availableVoices = speechSynthesis.getVoices();
         console.log(`[VoiceSettings] Loaded ${availableVoices.length} voices for gender categorization`);
+        logVoiceDetails();
         
         // Voices might load asynchronously
         if (speechSynthesis.onvoiceschanged !== undefined) {
             speechSynthesis.onvoiceschanged = function() {
                 availableVoices = speechSynthesis.getVoices();
                 console.log(`[VoiceSettings] Voices updated: ${availableVoices.length} available`);
+                logVoiceDetails();
             };
         }
+
+    function logVoiceDetails() {
+        console.log('🔍 DIAGNOSTIC DÉTAILLÉ DES VOIX DISPONIBLES:');
+        console.log('=============================================');
+        
+        const englishVoices = availableVoices.filter(v => v.lang && v.lang.startsWith('en'));
+        const italianVoices = availableVoices.filter(v => v.lang && v.lang.startsWith('it'));
+        
+        console.log(`🇺🇸 VOIX ANGLAISES (${englishVoices.length} trouvées):`);
+        englishVoices.forEach((voice, index) => {
+            console.log(`  ${index + 1}. "${voice.name}" (${voice.lang}) - Local: ${voice.localService}`);
+        });
+        
+        console.log(`🇮🇹 VOIX ITALIENNES (${italianVoices.length} trouvées):`);
+        italianVoices.forEach((voice, index) => {
+            console.log(`  ${index + 1}. "${voice.name}" (${voice.lang}) - Local: ${voice.localService}`);
+        });
+        
+        // Test de catégorisation
+        console.log('\n🧪 TEST DE CATÉGORISATION:');
+        if (englishVoices.length > 0) {
+            const englishCategorized = categorizeVoicesByGender(englishVoices);
+            console.log('Anglais - Masculines:', englishCategorized.male.map(v => v.name));
+            console.log('Anglais - Féminines:', englishCategorized.female.map(v => v.name));
+            console.log('Anglais - Inconnues:', englishCategorized.unknown.map(v => v.name));
+        }
+        
+        if (italianVoices.length > 0) {
+            const italianCategorized = categorizeVoicesByGender(italianVoices);
+            console.log('Italien - Masculines:', italianCategorized.male.map(v => v.name));
+            console.log('Italien - Féminines:', italianCategorized.female.map(v => v.name));
+            console.log('Italien - Inconnues:', italianCategorized.unknown.map(v => v.name));
+        }
+    }
 
         // Setup event listeners for gender selectors
         setupVoiceEventListeners();
@@ -1410,7 +1446,14 @@
         const shortLang = languageCode.split('-')[0];
         const langVoices = availableVoices.filter(v => v.lang.startsWith(shortLang));
 
-        if (preferredGender === 'auto' || !langVoices.length) {
+        if (!langVoices.length) {
+            console.warn(`❌ Aucune voix trouvée pour ${languageCode}`);
+            return null;
+        }
+
+        console.log(`🔍 [Settings] Recherche voix ${preferredGender} pour ${languageCode} (${langVoices.length} voix disponibles)`);
+
+        if (preferredGender === 'auto') {
             // Return best quality voice (local service preferred)
             const sortedByQuality = langVoices.sort((a, b) => {
                 // Priorité : service local puis score qualité
@@ -1418,12 +1461,15 @@
                 if (!a.localService && b.localService) return 1;
                 return (b.qualityScore || 0) - (a.qualityScore || 0);
             });
+            console.log(`✅ Mode auto - voix sélectionnée: ${sortedByQuality[0].name}`);
             return sortedByQuality[0];
         }
 
         // Categorize voices by gender
         const voicesByGender = categorizeVoicesByGender(langVoices);
         const genderVoices = voicesByGender[preferredGender] || [];
+
+        console.log(`📊 Voix ${preferredGender} trouvées: ${genderVoices.length}`);
 
         if (genderVoices.length > 0) {
             // Trier par score de qualité et service local
@@ -1437,36 +1483,94 @@
             return sortedGenderVoices[0];
         }
 
-        // Fallback to any voice if no matching gender found
+        // FALLBACK INTELLIGENT: Si aucune voix n'est détectée pour ce genre
+        console.warn(`⚠️ Aucune voix ${preferredGender} détectée pour ${languageCode}, utilisation du fallback intelligent`);
+        
+        // Stratégie spéciale pour l'italien avec une seule voix disponible
+        if (shortLang === 'it' && langVoices.length === 1) {
+            const italianVoice = langVoices[0];
+            console.log(`🇮🇹 Italien: Une seule voix disponible (${italianVoice.name}) - utilisation pour les deux genres`);
+            
+            // Ajouter un indicateur pour différencier dans l'interface utilisateur
+            if (preferredGender === 'female') {
+                console.log(`🔄 Mode féminin italien: ${italianVoice.name} (même voix, ton ajusté)`);
+                // En option : ajuster la vitesse/pitch pour féminiser légèrement
+            } else {
+                console.log(`🔄 Mode masculin italien: ${italianVoice.name} (voix standard)`);
+            }
+            return italianVoice;
+        }
+        
+        // Stratégie : utiliser la position dans la liste comme indicateur
+        // En général, les voix masculines sont souvent en première position, les féminines ensuite
+        if (langVoices.length >= 2) {
+            if (preferredGender === 'male') {
+                console.log(`🔄 Fallback masculin: sélection de la première voix (${langVoices[0].name})`);
+                return langVoices[0]; // Première voix généralement masculine
+            } else if (preferredGender === 'female') {
+                console.log(`🔄 Fallback féminin: sélection de la deuxième voix (${langVoices[1].name})`);
+                return langVoices[1]; // Deuxième voix généralement féminine
+            }
+        }
+
+        // Fallback final: meilleure voix disponible
         const fallbackVoices = langVoices.sort((a, b) => {
             if (a.localService && !b.localService) return -1;
             if (!a.localService && b.localService) return 1;
             return (b.qualityScore || 0) - (a.qualityScore || 0);
         });
+        console.log(`🔄 Fallback final: ${fallbackVoices[0].name}`);
         return fallbackVoices[0];
     }
 
     function categorizeVoicesByGender(voices) {
         const genderPatterns = {
-            male: ['paul', 'george', 'david', 'mark', 'richard', 'daniel', 'thomas', 'matthew', 'james', 'john',
-                   'pierre', 'jean', 'michel', 'henri', 'louis', 'françois', 'antoine', 'nicolas',
-                   'carlos', 'diego', 'antonio', 'fernando', 'miguel', 'josé', 'manuel', 'francisco',
-                   'marco', 'giovanni', 'francesco', 'andrea', 'alessandro', 'lorenzo', 'matteo',
-                   'klaus', 'hans', 'wolfgang', 'stefan', 'michael', 'andreas', 'christian',
-                   'male', 'man', 'masculin', 'homme', 'hombre', 'uomo', 'mann'],
-            female: ['julie', 'marie', 'sarah', 'emma', 'sophie', 'claire', 'anne', 'lisa', 'susan', 'helen',
-                     'amélie', 'isabelle', 'nathalie', 'véronique', 'christine', 'françoise', 'martine',
-                     'maria', 'carmen', 'ana', 'lucia', 'pilar', 'rosa', 'elena', 'patricia',
-                     'giulia', 'francesca', 'elena', 'sara', 'anna', 'valentina', 'chiara',
-                     'anna', 'maria', 'petra', 'sabine', 'christine', 'angelika', 'barbara',
-                     'female', 'woman', 'féminin', 'femme', 'mujer', 'donna', 'frau']
+            male: [
+                // Patterns masculins anglais (très spécifiques)
+                'microsoft david', 'google us english male', 'google uk english male', 'alex', 'daniel',
+                'microsoft mark', 'microsoft ryan', 'microsoft frank', 'microsoft sean', 'microsoft kevin',
+                // Patterns italiens masculins
+                'microsoft cosimo', 'luca', 'marco', 'giovanni', 'francesco', 'alessandro', 'lorenzo', 'matteo',
+                // Patterns généraux masculins
+                'paul', 'george', 'david', 'mark', 'richard', 'daniel', 'thomas', 'matthew', 'james', 'john',
+                'pierre', 'jean', 'michel', 'henri', 'louis', 'françois', 'antoine', 'nicolas',
+                'carlos', 'diego', 'antonio', 'fernando', 'miguel', 'josé', 'manuel', 'francisco',
+                'klaus', 'hans', 'wolfgang', 'stefan', 'michael', 'andreas', 'christian',
+                // Indicators
+                'male', 'man', 'masculin', 'homme', 'hombre', 'uomo', 'mann', 'masculine'
+            ],
+            female: [
+                // Patterns féminins anglais (très spécifiques)  
+                'microsoft zira', 'google us english female', 'google uk english female', 'samantha', 'victoria',
+                'microsoft eva', 'microsoft hazel', 'microsoft aria', 'microsoft natasha',
+                // Patterns italiens féminins
+                'microsoft elsa', 'giulia', 'francesca', 'elena', 'sara', 'anna', 'valentina', 'chiara',
+                // Patterns généraux féminins
+                'julie', 'marie', 'sarah', 'emma', 'sophie', 'claire', 'anne', 'lisa', 'susan', 'helen',
+                'amélie', 'isabelle', 'nathalie', 'véronique', 'christine', 'françoise', 'martine',
+                'maria', 'carmen', 'ana', 'lucia', 'pilar', 'rosa', 'elena', 'patricia',
+                'anna', 'maria', 'petra', 'sabine', 'christine', 'angelika', 'barbara',
+                // Indicators
+                'female', 'woman', 'féminin', 'femme', 'mujer', 'donna', 'frau', 'feminine'
+            ]
         };
 
-        // Voix anglaises masculines de haute qualité (par ordre de préférence)
+        // Voix anglaises masculines de haute qualité (patterns étendus pour une meilleure détection)
         const premiumEnglishMaleVoices = [
             'microsoft david', 'google uk english male', 'microsoft ryan', 'microsoft frank',
             'google us english male', 'microsoft sean', 'google australian male', 'microsoft kevin',
-            'alex', 'daniel', 'samantha male', 'tom', 'nathan', 'aaron enhanced', 'fred'
+            'alex', 'daniel', 'samantha male', 'tom', 'nathan', 'aaron enhanced', 'fred',
+            // Ajout de patterns plus larges pour détecter les voix système
+            'male', 'man', 'masculine', 'guy', 'boy', 'mr', 'sir'
+        ];
+
+        // Voix anglaises féminines de haute qualité
+        const premiumEnglishFemaleVoices = [
+            'microsoft zira', 'microsoft eva', 'google uk english female', 'microsoft hazel',
+            'google us english female', 'microsoft aria', 'google australian female', 'microsoft natasha',
+            'samantha', 'victoria', 'kate', 'alice', 'emma', 'olivia', 'sophia',
+            // Ajout de patterns plus larges pour détecter les voix système
+            'female', 'woman', 'feminine', 'girl', 'lady', 'ms', 'mrs'
         ];
 
         const result = { male: [], female: [], unknown: [] };
@@ -1476,15 +1580,40 @@
             let gender = 'unknown';
             let qualityBonus = 0;
 
-            // Bonus spécial pour les voix anglaises masculines premium
+            // DÉTECTION PRÉCISE PAR MOT-CLÉ EXPLICITE (priorité absolue)
             if (voice.lang && voice.lang.startsWith('en')) {
-                for (let i = 0; i < premiumEnglishMaleVoices.length; i++) {
-                    if (voiceName.includes(premiumEnglishMaleVoices[i])) {
-                        gender = 'male';
-                        // Plus la voix est haute dans la liste, plus le bonus est important
-                        qualityBonus = 50 + (premiumEnglishMaleVoices.length - i) * 10;
-                        console.log(`🎯 Voix anglaise masculine premium détectée: ${voice.name} (bonus: ${qualityBonus})`);
-                        break;
+                // D'abord vérifier les mots-clés explicites de genre
+                if (voiceName.includes('female') || voiceName.includes('woman') || voiceName.includes('feminine')) {
+                    gender = 'female';
+                    qualityBonus = 100;
+                    console.log(`👩 Voix féminine détectée par mot-clé explicite: ${voice.name} (bonus: ${qualityBonus})`);
+                } else if (voiceName.includes('male') || voiceName.includes('man') || voiceName.includes('masculine')) {
+                    gender = 'male';  
+                    qualityBonus = 100;
+                    console.log(`👨 Voix masculine détectée par mot-clé explicite: ${voice.name} (bonus: ${qualityBonus})`);
+                }
+                
+                // Si pas encore déterminé, vérifier les voix féminines premium spécifiques
+                if (gender === 'unknown') {
+                    for (let i = 0; i < premiumEnglishFemaleVoices.length; i++) {
+                        if (voiceName.includes(premiumEnglishFemaleVoices[i]) && !voiceName.includes('male')) {
+                            gender = 'female';
+                            qualityBonus = 50 + (premiumEnglishFemaleVoices.length - i) * 10;
+                            console.log(`🎯 Voix anglaise féminine premium détectée: ${voice.name} (bonus: ${qualityBonus})`);
+                            break;
+                        }
+                    }
+                }
+                
+                // Si pas encore déterminé, vérifier les voix masculines premium spécifiques
+                if (gender === 'unknown') {
+                    for (let i = 0; i < premiumEnglishMaleVoices.length; i++) {
+                        if (voiceName.includes(premiumEnglishMaleVoices[i]) && !voiceName.includes('female')) {
+                            gender = 'male';
+                            qualityBonus = 50 + (premiumEnglishMaleVoices.length - i) * 10;
+                            console.log(`🎯 Voix anglaise masculine premium détectée: ${voice.name} (bonus: ${qualityBonus})`);
+                            break;
+                        }
                     }
                 }
             }
@@ -1508,6 +1637,10 @@
                 for (const pattern of genderPatterns.female) {
                     if (voiceName.includes(pattern)) {
                         gender = 'female';
+                        // Bonus supplémentaire pour les voix anglaises féminines
+                        if (voice.lang && voice.lang.startsWith('en')) {
+                            qualityBonus = 20;
+                        }
                         break;
                     }
                 }
@@ -1533,6 +1666,31 @@
             // Puis trier par score de qualité
             return (b.qualityScore || 0) - (a.qualityScore || 0);
         });
+
+        // Trier aussi les voix féminines par score de qualité
+        result.female.sort((a, b) => {
+            // Prioriser d'abord les voix anglaises avec bonus
+            if (a.lang && a.lang.startsWith('en') && (!b.lang || !b.lang.startsWith('en'))) {
+                return -1;
+            }
+            if (b.lang && b.lang.startsWith('en') && (!a.lang || !a.lang.startsWith('en'))) {
+                return 1;
+            }
+            // Puis trier par score de qualité
+            return (b.qualityScore || 0) - (a.qualityScore || 0);
+        });
+
+        // Debug: Afficher les résultats de la catégorisation pour l'anglais
+        const englishVoices = voices.filter(v => v.lang && v.lang.startsWith('en'));
+        if (englishVoices.length > 0) {
+            console.log('🔍 [Settings] Catégorisation des voix anglaises:');
+            console.log(`📊 Masculines (${result.male.filter(v => v.lang.startsWith('en')).length}):`, 
+                result.male.filter(v => v.lang.startsWith('en')).map(v => `${v.name} (score: ${v.qualityScore || 0})`));
+            console.log(`📊 Féminines (${result.female.filter(v => v.lang.startsWith('en')).length}):`, 
+                result.female.filter(v => v.lang.startsWith('en')).map(v => `${v.name} (score: ${v.qualityScore || 0})`));
+            console.log(`📊 Inconnues (${result.unknown.filter(v => v.lang.startsWith('en')).length}):`, 
+                result.unknown.filter(v => v.lang.startsWith('en')).map(v => v.name));
+        }
 
         return result;
     }

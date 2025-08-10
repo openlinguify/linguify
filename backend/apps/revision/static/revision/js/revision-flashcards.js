@@ -830,11 +830,22 @@ class FlashcardStudyMode {
             ]
         };
 
-        // Voix anglaises masculines de haute qualité (par ordre de préférence)
+        // Voix anglaises masculines de haute qualité (patterns étendus pour une meilleure détection)
         const premiumEnglishMaleVoices = [
             'microsoft david', 'google uk english male', 'microsoft ryan', 'microsoft frank',
             'google us english male', 'microsoft sean', 'google australian male', 'microsoft kevin',
-            'alex', 'daniel', 'samantha male', 'tom', 'nathan', 'aaron enhanced', 'fred'
+            'alex', 'daniel', 'samantha male', 'tom', 'nathan', 'aaron enhanced', 'fred',
+            // Ajout de patterns plus larges pour détecter les voix système
+            'male', 'man', 'masculine', 'guy', 'boy', 'mr', 'sir'
+        ];
+
+        // Voix anglaises féminines de haute qualité
+        const premiumEnglishFemaleVoices = [
+            'microsoft zira', 'microsoft eva', 'google uk english female', 'microsoft hazel',
+            'google us english female', 'microsoft aria', 'google australian female', 'microsoft natasha',
+            'samantha', 'victoria', 'kate', 'alice', 'emma', 'olivia', 'sophia',
+            // Ajout de patterns plus larges pour détecter les voix système
+            'female', 'woman', 'feminine', 'girl', 'lady', 'ms', 'mrs'
         ];
 
         const result = { male: [], female: [], unknown: [] };
@@ -844,15 +855,40 @@ class FlashcardStudyMode {
             let gender = 'unknown';
             let qualityBonus = 0;
 
-            // Bonus spécial pour les voix anglaises masculines premium
+            // DÉTECTION PRÉCISE PAR MOT-CLÉ EXPLICITE (priorité absolue)
             if (voice.lang && voice.lang.startsWith('en')) {
-                for (let i = 0; i < premiumEnglishMaleVoices.length; i++) {
-                    if (voiceName.includes(premiumEnglishMaleVoices[i])) {
-                        gender = 'male';
-                        // Plus la voix est haute dans la liste, plus le bonus est important
-                        qualityBonus = 50 + (premiumEnglishMaleVoices.length - i) * 10;
-                        console.log(`🎯 Voix anglaise masculine premium détectée: ${voice.name} (bonus: ${qualityBonus})`);
-                        break;
+                // D'abord vérifier les mots-clés explicites de genre
+                if (voiceName.includes('female') || voiceName.includes('woman') || voiceName.includes('feminine')) {
+                    gender = 'female';
+                    qualityBonus = 100;
+                    console.log(`👩 Voix féminine détectée par mot-clé explicite: ${voice.name} (bonus: ${qualityBonus})`);
+                } else if (voiceName.includes('male') || voiceName.includes('man') || voiceName.includes('masculine')) {
+                    gender = 'male';  
+                    qualityBonus = 100;
+                    console.log(`👨 Voix masculine détectée par mot-clé explicite: ${voice.name} (bonus: ${qualityBonus})`);
+                }
+                
+                // Si pas encore déterminé, vérifier les voix féminines premium spécifiques
+                if (gender === 'unknown') {
+                    for (let i = 0; i < premiumEnglishFemaleVoices.length; i++) {
+                        if (voiceName.includes(premiumEnglishFemaleVoices[i]) && !voiceName.includes('male')) {
+                            gender = 'female';
+                            qualityBonus = 50 + (premiumEnglishFemaleVoices.length - i) * 10;
+                            console.log(`🎯 Voix anglaise féminine premium détectée: ${voice.name} (bonus: ${qualityBonus})`);
+                            break;
+                        }
+                    }
+                }
+                
+                // Si pas encore déterminé, vérifier les voix masculines premium spécifiques
+                if (gender === 'unknown') {
+                    for (let i = 0; i < premiumEnglishMaleVoices.length; i++) {
+                        if (voiceName.includes(premiumEnglishMaleVoices[i]) && !voiceName.includes('female')) {
+                            gender = 'male';
+                            qualityBonus = 50 + (premiumEnglishMaleVoices.length - i) * 10;
+                            console.log(`🎯 Voix anglaise masculine premium détectée: ${voice.name} (bonus: ${qualityBonus})`);
+                            break;
+                        }
                     }
                 }
             }
@@ -876,6 +912,10 @@ class FlashcardStudyMode {
                 for (const pattern of genderPatterns.female) {
                     if (voiceName.includes(pattern)) {
                         gender = 'female';
+                        // Bonus supplémentaire pour les voix anglaises féminines
+                        if (voice.lang && voice.lang.startsWith('en')) {
+                            qualityBonus = 20;
+                        }
                         break;
                     }
                 }
@@ -901,6 +941,31 @@ class FlashcardStudyMode {
             // Puis trier par score de qualité
             return (b.qualityScore || 0) - (a.qualityScore || 0);
         });
+
+        // Trier aussi les voix féminines par score de qualité
+        result.female.sort((a, b) => {
+            // Prioriser d'abord les voix anglaises avec bonus
+            if (a.lang && a.lang.startsWith('en') && (!b.lang || !b.lang.startsWith('en'))) {
+                return -1;
+            }
+            if (b.lang && b.lang.startsWith('en') && (!a.lang || !a.lang.startsWith('en'))) {
+                return 1;
+            }
+            // Puis trier par score de qualité
+            return (b.qualityScore || 0) - (a.qualityScore || 0);
+        });
+
+        // Debug: Afficher les résultats de la catégorisation pour l'anglais
+        const englishVoices = voices.filter(v => v.lang && v.lang.startsWith('en'));
+        if (englishVoices.length > 0) {
+            console.log('🔍 Catégorisation des voix anglaises:');
+            console.log(`📊 Masculines (${result.male.filter(v => v.lang.startsWith('en')).length}):`, 
+                result.male.filter(v => v.lang.startsWith('en')).map(v => `${v.name} (score: ${v.qualityScore || 0})`));
+            console.log(`📊 Féminines (${result.female.filter(v => v.lang.startsWith('en')).length}):`, 
+                result.female.filter(v => v.lang.startsWith('en')).map(v => `${v.name} (score: ${v.qualityScore || 0})`));
+            console.log(`📊 Inconnues (${result.unknown.filter(v => v.lang.startsWith('en')).length}):`, 
+                result.unknown.filter(v => v.lang.startsWith('en')).map(v => v.name));
+        }
 
         return result;
     }
