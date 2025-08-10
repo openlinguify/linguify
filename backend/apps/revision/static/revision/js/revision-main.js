@@ -1305,7 +1305,11 @@ function showImportPreview(previewResult) {
     const totalRows = previewResult.total_rows || 0;
     const hasHeader = document.getElementById('hasHeaderCheck').checked;
     const estimatedCards = Math.max(0, hasHeader ? totalRows - 1 : totalRows);
-    animateValue(document.getElementById('previewEstimatedCards'), estimatedCards);
+    const estimatedCardsElement = document.getElementById('previewEstimatedCards');
+    if (estimatedCardsElement) {
+        console.log('Initial load - setting cards to:', estimatedCards);
+        estimatedCardsElement.textContent = estimatedCards;
+    }
     
     // Afficher les options de colonnes
     const frontSelect = elements.frontColumnSelect;
@@ -1382,6 +1386,19 @@ async function updatePreview() {
         const frontColumn = elements.frontColumnSelect.value;
         const backColumn = elements.backColumnSelect.value;
         
+        // Recalculer le nombre de cartes immédiatement, même si les colonnes sont identiques
+        const hasHeaderNow = document.getElementById('hasHeaderCheck').checked;
+        const totalRowsElement = document.getElementById('previewTotalRows');
+        if (totalRowsElement && totalRowsElement.textContent) {
+            const totalRows = parseInt(totalRowsElement.textContent) || 0;
+            const estimatedCards = Math.max(0, hasHeaderNow ? totalRows - 1 : totalRows);
+            const estimatedCardsElement = document.getElementById('previewEstimatedCards');
+            if (estimatedCardsElement) {
+                console.log('Updating estimated cards:', estimatedCards, 'from total rows:', totalRows, 'hasHeader:', hasHeaderNow);
+                estimatedCardsElement.textContent = estimatedCards;
+            }
+        }
+        
         if (frontColumn === backColumn) {
             window.notificationService.error('Les colonnes recto et verso doivent être différentes');
             return;
@@ -1422,6 +1439,16 @@ async function updatePreview() {
         
         // Attendre que l'animation se termine puis afficher les nouvelles cartes
         setTimeout(() => {
+            // Recalculer le nombre de cartes estimées
+            const totalRows = previewResult.total_rows || 0;
+            const hasHeaderNow = document.getElementById('hasHeaderCheck').checked;
+            const estimatedCards = Math.max(0, hasHeaderNow ? totalRows - 1 : totalRows);
+            const estimatedCardsElement = document.getElementById('previewEstimatedCards');
+            if (estimatedCardsElement) {
+                console.log('Final update - setting cards to:', estimatedCards);
+                estimatedCardsElement.textContent = estimatedCards;
+            }
+            
             updatePreviewDisplay(previewResult.preview || []);
             
             // Animation d'entrée des nouvelles cartes
