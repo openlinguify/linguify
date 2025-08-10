@@ -254,15 +254,15 @@ def get_user_revision_settings(request):
         try:
             revision_settings, _ = RevisionSettings.objects.get_or_create(user=request.user)
             
-            # Ajouter les paramètres audio
+            # Ajouter les paramètres audio avec préférences de genre
             settings.update({
                 'audio_enabled': revision_settings.audio_enabled,
                 'audio_speed': revision_settings.audio_speed,
-                'preferred_voice_french': revision_settings.preferred_voice_french,
-                'preferred_voice_english': revision_settings.preferred_voice_english,
-                'preferred_voice_spanish': revision_settings.preferred_voice_spanish,
-                'preferred_voice_italian': revision_settings.preferred_voice_italian,
-                'preferred_voice_german': revision_settings.preferred_voice_german,
+                'preferred_gender_french': revision_settings.preferred_gender_french,
+                'preferred_gender_english': revision_settings.preferred_gender_english,
+                'preferred_gender_spanish': revision_settings.preferred_gender_spanish,
+                'preferred_gender_italian': revision_settings.preferred_gender_italian,
+                'preferred_gender_german': revision_settings.preferred_gender_german,
             })
             
             logger.info(f"[USER_SETTINGS] Added audio settings for {request.user.username}")

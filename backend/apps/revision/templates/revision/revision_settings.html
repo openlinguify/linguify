@@ -437,7 +437,7 @@
             </div>
         </div>
         <div class="section-content">
-            <form method="post">
+            <form id="revision-audio-form" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="setting_type" value="audio">
                 
@@ -1253,14 +1253,61 @@
         console.log(`[VoiceSettings] Loaded ${availableVoices.length} voices for gender categorization`);
         logVoiceDetails();
         
+        // Load current user preferences and set form values
+        loadCurrentVoicePreferences();
+        
         // Voices might load asynchronously
         if (speechSynthesis.onvoiceschanged !== undefined) {
             speechSynthesis.onvoiceschanged = function() {
                 availableVoices = speechSynthesis.getVoices();
                 console.log(`[VoiceSettings] Voices updated: ${availableVoices.length} available`);
                 logVoiceDetails();
+                // Reload preferences in case voices changed
+                loadCurrentVoicePreferences();
             };
         }
+
+    async function loadCurrentVoicePreferences() {
+        console.log('[VoiceSettings] Loading current voice preferences from server...');
+        
+        try {
+            const response = await fetch('/api/v1/revision/user-settings/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('[VoiceSettings] Current preferences loaded:', data);
+                
+                // Appliquer les préférences aux sélecteurs
+                if (data.settings) {
+                    const selectors = {
+                        'preferred_gender_french': data.settings.preferred_gender_french || 'auto',
+                        'preferred_gender_english': data.settings.preferred_gender_english || 'auto',
+                        'preferred_gender_spanish': data.settings.preferred_gender_spanish || 'auto',
+                        'preferred_gender_italian': data.settings.preferred_gender_italian || 'auto',
+                        'preferred_gender_german': data.settings.preferred_gender_german || 'auto'
+                    };
+                    
+                    Object.entries(selectors).forEach(([name, value]) => {
+                        const select = document.querySelector(`[name="${name}"]`);
+                        if (select) {
+                            select.value = value;
+                            console.log(`[VoiceSettings] Set ${name} to ${value}`);
+                        }
+                    });
+                }
+            } else {
+                console.warn('[VoiceSettings] Failed to load preferences, using defaults');
+            }
+        } catch (error) {
+            console.error('[VoiceSettings] Error loading preferences:', error);
+        }
+    }
 
     function logVoiceDetails() {
         console.log('🔍 DIAGNOSTIC DÉTAILLÉ DES VOIX DISPONIBLES:');
@@ -1334,6 +1381,24 @@
                 const lang = this.dataset.lang;
                 const gender = this.value;
                 console.log(`[VoiceSettings] Gender preference changed for ${lang}: ${gender}`);
+                
+                // Déclencher la sauvegarde automatique
+                const triggerAutoSave = () => {
+                    if (window.settingsCore) {
+                        console.log(`[VoiceSettings] Triggering auto-save for gender change: ${lang} -> ${gender}`);
+                        const form = document.querySelector('#revision-audio-form');
+                        if (form) {
+                            window.settingsCore.autoSaveForm(form);
+                        } else {
+                            console.error('[VoiceSettings] Audio form not found for auto-save');
+                        }
+                    } else {
+                        console.warn('[VoiceSettings] settingsCore not available, trying again in 500ms...');
+                        // Retry après un délai si settingsCore n'est pas encore chargé
+                        setTimeout(triggerAutoSave, 500);
+                    }
+                };
+                triggerAutoSave();
             });
         });
     }

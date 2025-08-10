@@ -1924,6 +1924,39 @@ function showDeckLanguageSettings(deck) {
             initializeDeckLanguageEvents();
             languageSettings.setAttribute('data-initialized', 'true');
         }
+        
+        // Populate language selectors with current deck settings
+        const frontLangSelect = document.getElementById('deckFrontLanguage');
+        const backLangSelect = document.getElementById('deckBackLanguage');
+        
+        console.log(`[Language Settings] DEBUG - Deck object:`, deck);
+        console.log(`[Language Settings] DEBUG - Front language from API: "${deck.default_front_language}"`);
+        console.log(`[Language Settings] DEBUG - Back language from API: "${deck.default_back_language}"`);
+        
+        // Temporarily disable auto-save during initialization
+        window.isInitializingLanguageSettings = true;
+        
+        if (frontLangSelect) {
+            const frontValue = deck.default_front_language || '';
+            frontLangSelect.value = frontValue;
+            console.log(`[Language Settings] Set front language selector to: "${frontValue}"`);
+        } else {
+            console.error('[Language Settings] Front language selector not found!');
+        }
+        
+        if (backLangSelect) {
+            const backValue = deck.default_back_language || '';
+            backLangSelect.value = backValue;
+            console.log(`[Language Settings] Set back language selector to: "${backValue}"`);
+        } else {
+            console.error('[Language Settings] Back language selector not found!');
+        }
+        
+        // Re-enable auto-save after a short delay to ensure all initialization is complete
+        setTimeout(() => {
+            window.isInitializingLanguageSettings = false;
+            console.log('[Language Settings] ✅ Auto-save re-enabled after initialization');
+        }, 100);
     } else {
         languageSettings.style.display = 'none';
     }
@@ -1932,6 +1965,8 @@ function showDeckLanguageSettings(deck) {
 function initializeDeckLanguageEvents() {
     const applyToDeckBtn = document.getElementById('applyLanguagesToDeck');
     const applyToNewCardsBtn = document.getElementById('applyLanguagesToNewCards');
+    const frontLangSelect = document.getElementById('deckFrontLanguage');
+    const backLangSelect = document.getElementById('deckBackLanguage');
     
     if (applyToDeckBtn) {
         applyToDeckBtn.addEventListener('click', applyLanguagesToAllCards);
@@ -1939,6 +1974,15 @@ function initializeDeckLanguageEvents() {
     
     if (applyToNewCardsBtn) {
         applyToNewCardsBtn.addEventListener('click', setDefaultLanguagesForNewCards);
+    }
+    
+    // Auto-save language preferences when they change
+    if (frontLangSelect) {
+        frontLangSelect.addEventListener('change', saveDeckLanguagePreferences);
+    }
+    
+    if (backLangSelect) {
+        backLangSelect.addEventListener('change', saveDeckLanguagePreferences);
     }
 }
 
@@ -2018,6 +2062,70 @@ function getLanguageName(code) {
         'pt': '🇵🇹 Portugais'
     };
     return languages[code] || code;
+}
+
+async function saveDeckLanguagePreferences() {
+    console.log('[Language Settings] 🔄 saveDeckLanguagePreferences() called');
+    
+    // Skip auto-save during initialization to prevent overwriting user changes
+    if (window.isInitializingLanguageSettings) {
+        console.log('[Language Settings] ⏸️ Skipping auto-save during initialization');
+        return;
+    }
+    
+    if (!appState.selectedDeck) {
+        console.warn('[Language Settings] No deck selected, cannot save language preferences');
+        return;
+    }
+    
+    const frontLangSelect = document.getElementById('deckFrontLanguage');
+    const backLangSelect = document.getElementById('deckBackLanguage');
+    
+    if (!frontLangSelect || !backLangSelect) {
+        console.error('[Language Settings] Language selectors not found');
+        return;
+    }
+    
+    const frontLang = frontLangSelect.value;
+    const backLang = backLangSelect.value;
+    
+    console.log(`[Language Settings] 💾 Saving deck ${appState.selectedDeck.id} language preferences - Front: "${frontLang}" (empty=${!frontLang}), Back: "${backLang}" (empty=${!backLang})`);
+    
+    try {
+        // Update the deck with new language preferences
+        const updateData = {
+            default_front_language: frontLang,
+            default_back_language: backLang
+        };
+        
+        console.log('[Language Settings] 📤 Sending API update with data:', updateData);
+        
+        const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, updateData);
+        
+        console.log('[Language Settings] 📥 API response received:', updatedDeck);
+        
+        // Update the local state
+        appState.selectedDeck.default_front_language = frontLang;
+        appState.selectedDeck.default_back_language = backLang;
+        
+        console.log('[Language Settings] ✅ Language preferences saved successfully');
+        
+        // Show a subtle notification
+        if (window.notificationService) {
+            window.notificationService.success('Préférences de langue sauvegardées');
+        }
+        
+    } catch (error) {
+        console.error('[Language Settings] ❌ Error saving language preferences:', error);
+        
+        if (window.notificationService) {
+            window.notificationService.error('Erreur lors de la sauvegarde des préférences');
+        }
+        
+        // Revert the selectors to their previous values
+        frontLangSelect.value = appState.selectedDeck.default_front_language || '';
+        backLangSelect.value = appState.selectedDeck.default_back_language || '';
+    }
 }
 
 async function archiveDeck() {
