@@ -925,8 +925,316 @@
 {% endblock %}
 
 {% block extra_css %}
-<!-- CSS dédié Explorer - Production optimisé -->
-<link rel="stylesheet" href="{% static 'revision/css/revision-explorer.css' %}?v=20250111-explorer">
+<!-- CSS dédié Explorer - Production optimisé avec priorité élevée -->
+<link rel="stylesheet" href="{% static 'revision/css/revision-explorer.css' %}?v=20250111-explorer-fix">
+
+<!-- CSS correctif pour forcer les styles Linguify dans Explorer -->
+<style>
+/* FORCE DESIGN LINGUIFY POUR EXPLORER - PRIORITÉ MAXIMALE */
+.revision-main .advanced-search-container,
+.revision-main .study-content,
+.revision-main .study-header {
+    font-family: 'Inter', sans-serif !important;
+    color: #374151 !important;
+}
+
+/* Sidebar Explorer - Force style Linguify */
+#exploreSidebar .sidebar-header {
+    background: #f9fafb !important;
+    background-image: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    color: #374151 !important;
+    padding: 1rem !important;
+}
+
+#exploreSidebar .sidebar-header h6 {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    margin: 0 !important;
+}
+
+/* Statistiques communautaires */
+.community-stats {
+    background: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+}
+
+.stat-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    padding: 0.5rem !important;
+    background: white !important;
+    border-radius: 0.5rem !important;
+    border: 1px solid #f3f4f6 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.stat-value {
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    color: #2D5BBA !important;
+    margin-left: auto !important;
+}
+
+.stat-label {
+    font-size: 0.875rem !important;
+    color: #6b7280 !important;
+    flex: 1 !important;
+}
+
+/* Barre de recherche */
+.advanced-search-container {
+    background: white !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    padding: 1.5rem !important;
+}
+
+.search-input-group {
+    border: 2px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    background: white !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.search-input-group:focus-within {
+    border-color: #2D5BBA !important;
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1) !important;
+}
+
+.search-input {
+    border: none !important;
+    background: transparent !important;
+    font-size: 1rem !important;
+    padding: 0.875rem 1rem !important;
+}
+
+/* Cartes de deck publiques */
+.public-deck-card {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    padding: 1.5rem !important;
+    background: white !important;
+    transition: all 0.3s ease !important;
+    margin-bottom: 1rem !important;
+}
+
+.public-deck-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 12px 24px rgba(45, 91, 186, 0.15) !important;
+    border-color: #2D5BBA !important;
+}
+
+/* Boutons Linguify */
+.btn-gradient {
+    background: linear-gradient(135deg, #2D5BBA 0%, #017e84 100%) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 500 !important;
+    border-radius: 8px !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3) !important;
+    color: white !important;
+}
+
+.btn-linguify-primary {
+    background-color: #2D5BBA !important;
+    border-color: #2D5BBA !important;
+    color: white !important;
+}
+
+.btn-linguify-primary:hover {
+    background-color: #1E4A8C !important;
+    border-color: #1E4A8C !important;
+    color: white !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3) !important;
+}
+
+/* Text colors Linguify */
+.text-linguify-primary {
+    color: #2D5BBA !important;
+}
+
+.text-linguify-secondary {
+    color: #8B5CF6 !important;
+}
+
+.text-linguify-accent {
+    color: #017e84 !important;
+}
+
+.text-linguify-success {
+    color: #10B981 !important;
+}
+
+.text-linguify-warning {
+    color: #F59E0B !important;
+}
+
+/* Background gradients Linguify */
+.bg-gradient-subtle-linguify {
+    background: rgba(45, 91, 186, 0.03) !important;
+    border: 1px solid rgba(45, 91, 186, 0.1) !important;
+}
+
+/* Header results */
+.study-header {
+    background: white !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    padding: 1rem 1.5rem !important;
+}
+
+.study-header h5 {
+    color: #374151 !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+}
+
+/* Form controls */
+.form-select, .form-control {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.75rem !important;
+}
+
+.form-select:focus, .form-control:focus {
+    border-color: #2D5BBA !important;
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1) !important;
+}
+
+.form-label.text-linguify-primary {
+    color: #2D5BBA !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+}
+
+/* Loading spinner */
+.spinner-border.text-linguify-primary {
+    color: #2D5BBA !important;
+}
+
+/* Force override any conflicting styles */
+.revision-main * {
+    box-sizing: border-box;
+}
+
+/* Correctifs pour le contenu dans la liste des résultats */
+#publicDecksGrid .col-md-6, #publicDecksGrid .col-lg-4 {
+    padding: 0.75rem !important;
+}
+
+#publicDecksGrid .card {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+}
+
+#publicDecksGrid .card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.15) !important;
+    border-color: #2D5BBA !important;
+}
+
+#publicDecksGrid .card-body {
+    padding: 1.5rem !important;
+}
+
+#publicDecksGrid .card-title {
+    color: #374151 !important;
+    font-weight: 600 !important;
+    font-size: 1.125rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+#publicDecksGrid .card-text {
+    color: #6b7280 !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+}
+
+#publicDecksGrid .badge {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.75rem !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+}
+
+#publicDecksGrid .badge.bg-success {
+    background-color: #10B981 !important;
+}
+
+#publicDecksGrid .badge.bg-warning {
+    background-color: #F59E0B !important;
+}
+
+#publicDecksGrid .badge.bg-danger {
+    background-color: #EF4444 !important;
+}
+
+/* Vue d'accueil Welcome */
+#exploreWelcome {
+    background: #f9fafb !important;
+    min-height: 60vh !important;
+}
+
+#exploreWelcome .card {
+    border: 1px solid rgba(45, 91, 186, 0.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.3s ease !important;
+}
+
+#exploreWelcome .card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.15) !important;
+}
+
+/* Pagination et navigation */
+.btn-outline-custom {
+    border: 1px solid #e5e7eb !important;
+    color: #6b7280 !important;
+    background: white !important;
+    border-radius: 8px !important;
+}
+
+.btn-outline-custom:hover {
+    background: #f9fafb !important;
+    border-color: #2D5BBA !important;
+    color: #2D5BBA !important;
+}
+
+/* Sidebar toggle button */
+#sidebarToggle {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    color: #6b7280 !important;
+    border-radius: 8px !important;
+}
+
+#sidebarToggle:hover,
+#sidebarToggle.active {
+    background: #2D5BBA !important;
+    border-color: #2D5BBA !important;
+    color: white !important;
+}
+
+/* Vue grille/liste boutons */
+.btn-check:checked + .btn-outline-custom {
+    background: #2D5BBA !important;
+    border-color: #2D5BBA !important;
+    color: white !important;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
