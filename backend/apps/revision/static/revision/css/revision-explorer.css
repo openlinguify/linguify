@@ -979,11 +979,13 @@
 
 /* ===== PERFECTIONNEMENT COMPLET DE LA SIDEBAR ===== */
 
-/* Layout principal avec sidebar intégrée */
+/* Layout principal qui respecte la structure flexbox de base_new.html */
 .revision-main {
     display: flex !important;
-    min-height: calc(100vh - 64px) !important;
+    flex: 1 !important; /* Prend l'espace restant après .revision-header */
+    overflow: hidden !important; /* Empêche le scroll de la page */
 }
+
 
 /* Sidebar globale - Structure corrigée pour respecter la navbar */
 #exploreSidebar {
@@ -1023,7 +1025,7 @@
 
 /* Sidebar content - Scroll parfait */
 #exploreSidebar .sidebar-content {
-    height: calc(100vh - 128px) !important; /* Ajustement pour tenir compte du header de révision */
+    height: 100% !important; /* Prend toute la hauteur du parent (.revision-main) */
     overflow-y: auto !important;
     padding: 0 !important;
     background: white !important;
@@ -1276,10 +1278,10 @@
 
 /* ===== AJUSTEMENTS CONTENU PRINCIPAL ===== */
 
+
 /* Zone principale flexible */
 .revision-study {
     flex: 1 !important;
-    min-height: calc(100vh - 64px) !important;
     background: #f9fafb !important;
     overflow-x: hidden !important;
 }
@@ -1594,13 +1596,9 @@ body:has(#exploreSidebar.show) #toggleSidebar {
 
 /* Mobile responsive pour sidebar */
 @media (max-width: 768px) {
-    .revision-main {
-        flex-direction: column !important;
-    }
-    
     #exploreSidebar {
         position: fixed !important;
-        top: 64px !important;
+        top: 64px !important; /* Sous le header principal Linguify */
         left: 0 !important;
         width: 100% !important;
         max-width: 350px !important;
@@ -1615,12 +1613,7 @@ body:has(#exploreSidebar.show) #toggleSidebar {
     }
     
     #exploreSidebar .sidebar-content {
-        height: calc(100vh - 64px) !important;
-    }
-    
-    .revision-study {
-        width: 100% !important;
-        flex: none !important;
+        height: 100% !important;
     }
     
     #exploreWelcome {
