@@ -1344,6 +1344,15 @@ function setupSearchEventListeners(searchInput, voiceBtn, advancedBtn) {
     const sidebarToggleBtn = document.getElementById('sidebarToggle');
     sidebarToggleBtn?.addEventListener('click', toggleSidebar);
     
+    // Initialize sidebar state on desktop
+    if (window.innerWidth >= 769) {
+        const sidebar = document.getElementById('exploreSidebar');
+        const toggleBtn = document.getElementById('toggleSidebar');
+        if (sidebar && sidebar.classList.contains('show') && toggleBtn) {
+            toggleBtn.classList.add('active');
+        }
+    }
+    
     // Global click handler for closing dropdowns
     document.addEventListener('click', handleGlobalClick);
 }
@@ -1962,9 +1971,10 @@ function hideAdvancedSearchPanel() {
     advancedBtn.classList.remove('active');
 }
 
-// Sidebar Toggle - Norme Linguify standard
+// Sidebar Toggle - Norme Linguify standard avec overlay
 function toggleSidebar() {
     const sidebar = document.getElementById('exploreSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
     const toggleBtn = document.getElementById('sidebarToggle');
     
     if (!sidebar) return;
@@ -1972,6 +1982,21 @@ function toggleSidebar() {
     // Simple toggle comme dans revision-main.js
     const wasVisible = sidebar.classList.contains('show');
     sidebar.classList.toggle('show');
+    
+    // Handle overlay for mobile
+    if (overlay) {
+        if (sidebar.classList.contains('show')) {
+            overlay.classList.add('active');
+            overlay.style.display = 'block';
+        } else {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                if (!overlay.classList.contains('active')) {
+                    overlay.style.display = 'none';
+                }
+            }, 300);
+        }
+    }
     
     // Update button state
     if (sidebar.classList.contains('show')) {
