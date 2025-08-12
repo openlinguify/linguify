@@ -41,11 +41,12 @@ services:
     plan: starter
     rootDir: backend
     buildCommand: |
+      export DJANGO_SETTINGS_MODULE=core.settings
       pip install poetry
       poetry config virtualenvs.create false
       poetry install --no-dev
-      python manage.py collectstatic --noinput
-      python manage.py migrate
+      python manage.py collectstatic --noinput --settings=core.settings
+      python manage.py migrate --settings=core.settings
     startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
     domains:
       - app.openlinguify.com
