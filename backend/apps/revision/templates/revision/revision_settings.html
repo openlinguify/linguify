@@ -1253,8 +1253,12 @@
         console.log(`[VoiceSettings] Loaded ${availableVoices.length} voices for gender categorization`);
         logVoiceDetails();
         
-        // Load current user preferences and set form values
-        loadCurrentVoicePreferences();
+        // Load current user preferences and set form values with a small delay
+        // This ensures any DOM manipulation functions (like populateVoiceSelectors) complete first
+        setTimeout(() => {
+            console.log('[VoiceSettings] 🚀 Loading preferences with delayed timing...');
+            loadCurrentVoicePreferences();
+        }, 100);
         
         // Voices might load asynchronously
         if (speechSynthesis.onvoiceschanged !== undefined) {
@@ -1262,13 +1266,16 @@
                 availableVoices = speechSynthesis.getVoices();
                 console.log(`[VoiceSettings] Voices updated: ${availableVoices.length} available`);
                 logVoiceDetails();
-                // Reload preferences in case voices changed
-                loadCurrentVoicePreferences();
+                // Reload preferences in case voices changed, with delay
+                setTimeout(() => {
+                    console.log('[VoiceSettings] 🔄 Reloading preferences after voice change...');
+                    loadCurrentVoicePreferences();
+                }, 200);
             };
         }
 
     async function loadCurrentVoicePreferences() {
-        console.log('[VoiceSettings] Loading current voice preferences from server...');
+        console.log('[VoiceSettings] 🔄 Loading current voice preferences from server...');
         
         try {
             const response = await fetch('/api/v1/revision/user-settings/', {
@@ -1281,7 +1288,7 @@
             
             if (response.ok) {
                 const data = await response.json();
-                console.log('[VoiceSettings] Current preferences loaded:', data);
+                console.log('[VoiceSettings] ✅ API response received:', data);
                 
                 // Appliquer les préférences aux sélecteurs
                 if (data.settings) {
@@ -1293,19 +1300,43 @@
                         'preferred_gender_german': data.settings.preferred_gender_german || 'auto'
                     };
                     
+                    console.log('[VoiceSettings] 🎯 About to apply preferences:', selectors);
+                    
+                    let appliedCount = 0;
                     Object.entries(selectors).forEach(([name, value]) => {
                         const select = document.querySelector(`[name="${name}"]`);
                         if (select) {
+                            const beforeValue = select.value;
                             select.value = value;
-                            console.log(`[VoiceSettings] Set ${name} to ${value}`);
+                            const afterValue = select.value;
+                            appliedCount++;
+                            
+                            console.log(`[VoiceSettings] 🔧 ${name}: "${beforeValue}" → "${afterValue}" (set to "${value}")`);
+                            
+                            // Verify the value was actually set
+                            if (afterValue !== value) {
+                                console.error(`[VoiceSettings] ❌ FAILED to set ${name} to "${value}", still shows "${afterValue}"`);
+                                
+                                // Check available options in the dropdown
+                                const options = Array.from(select.options).map(opt => opt.value);
+                                console.error(`[VoiceSettings] Available options in ${name}:`, options);
+                            }
+                        } else {
+                            console.error(`[VoiceSettings] ❌ Could not find select element for ${name}`);
                         }
                     });
+                    
+                    console.log(`[VoiceSettings] ✅ Applied preferences to ${appliedCount} selectors`);
+                } else {
+                    console.warn('[VoiceSettings] ⚠️ No settings found in API response');
                 }
             } else {
-                console.warn('[VoiceSettings] Failed to load preferences, using defaults');
+                console.error(`[VoiceSettings] ❌ API request failed with status ${response.status}`);
+                const errorText = await response.text();
+                console.error('[VoiceSettings] Error response:', errorText);
             }
         } catch (error) {
-            console.error('[VoiceSettings] Error loading preferences:', error);
+            console.error('[VoiceSettings] ❌ Exception loading preferences:', error);
         }
     }
 
@@ -1404,6 +1435,14 @@
     }
 
     function populateVoiceSelectors() {
+        console.log('[VoiceSettings] NOTE: populateVoiceSelectors called but DISABLED to preserve gender selections');
+        console.log('[VoiceSettings] Gender dropdowns should contain: auto, male, female - NOT voice names');
+        
+        // DISABLED: This function was incorrectly replacing gender options with voice names
+        // The HTML template already contains the correct gender options (auto/male/female)
+        // Voice quality is handled internally by getBestVoiceForLanguage() in the speech synthesis
+        
+        // Just log voice availability for debugging
         const languages = {
             'fr-FR': 'fr',
             'en-US': 'en', 
@@ -1413,42 +1452,10 @@
         };
 
         Object.entries(languages).forEach(([fullLang, shortLang]) => {
-            const select = document.querySelector(`[data-lang="${fullLang}"]`);
-            if (!select) return;
-
-            // Find voices for this language
             const languageVoices = availableVoices.filter(voice => 
                 voice.lang.startsWith(shortLang) || voice.lang.startsWith(fullLang)
             );
-
-            // Sort by quality (local first, then by name)
-            languageVoices.sort((a, b) => {
-                if (a.localService && !b.localService) return -1;
-                if (!a.localService && b.localService) return 1;
-                return a.name.localeCompare(b.name);
-            });
-
-            // Clear existing options (except the first one)
-            const firstOption = select.querySelector('option');
-            select.innerHTML = '';
-            select.appendChild(firstOption);
-
-            // Add voice options
-            if (languageVoices.length === 0) {
-                const option = document.createElement('option');
-                option.disabled = true;
-                option.textContent = `--- Aucune voix ${shortLang.toUpperCase()} trouvée ---`;
-                select.appendChild(option);
-            } else {
-                languageVoices.forEach(voice => {
-                    const option = document.createElement('option');
-                    option.value = voice.name;
-                    option.textContent = `${voice.name} ${voice.localService ? '🏠' : '☁️'}`;
-                    select.appendChild(option);
-                });
-            }
-
-            console.log(`[VoiceSettings] Populated ${languageVoices.length} voices for ${fullLang}`);
+            console.log(`[VoiceSettings] Available voices for ${fullLang}: ${languageVoices.length} found`);
         });
     }
 
