@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from rest_framework import status
 from apps.revision.models.settings_models import RevisionSettings, RevisionSessionConfig
+from apps.revision.models.revision_flashcard import FlashcardDeck, Flashcard
 
 User = get_user_model()
 
@@ -233,34 +234,28 @@ class AudioSettingsTest(TestCase):
         # Vérifier les valeurs par défaut
         self.assertTrue(settings.audio_enabled)
         self.assertEqual(settings.audio_speed, 0.9)
-        self.assertEqual(settings.preferred_voice_french_male, '')
-        self.assertEqual(settings.preferred_voice_french_female, '')
-        self.assertEqual(settings.preferred_voice_english_male, '')
-        self.assertEqual(settings.preferred_voice_english_female, '')
+        self.assertEqual(settings.preferred_gender_french, 'auto')
+        self.assertEqual(settings.preferred_gender_english, 'auto')
+        self.assertEqual(settings.preferred_gender_spanish, 'auto')
+        self.assertEqual(settings.preferred_gender_italian, 'auto')
         
     def test_save_voice_preferences(self):
         """Test: Sauvegarde des voix préférées"""
         settings, created = RevisionSettings.objects.get_or_create(user=self.user)
         
         # Configurer des voix préférées par genre
-        settings.preferred_voice_french_male = 'Microsoft Paul - French (France)'
-        settings.preferred_voice_french_female = 'Microsoft Julie - French (France)'
-        settings.preferred_voice_english_male = 'Microsoft George - English (Great Britain)'
-        settings.preferred_voice_english_female = 'Microsoft Susan - English (Great Britain)'
-        settings.preferred_voice_spanish_male = 'Google español (Spain)'
-        settings.preferred_voice_spanish_female = 'Google español de España (Female)'
-        settings.audio_speed = 1.2
+        settings.preferred_gender_french = 'male'
+        settings.preferred_gender_english = 'female'
+        settings.preferred_gender_spanish = 'male'
+        settings.audio_speed = 0.9
         settings.save()
         
         # Vérifier la sauvegarde
         settings.refresh_from_db()
-        self.assertEqual(settings.preferred_voice_french_male, 'Microsoft Paul - French (France)')
-        self.assertEqual(settings.preferred_voice_french_female, 'Microsoft Julie - French (France)')
-        self.assertEqual(settings.preferred_voice_english_male, 'Microsoft George - English (Great Britain)')
-        self.assertEqual(settings.preferred_voice_english_female, 'Microsoft Susan - English (Great Britain)')
-        self.assertEqual(settings.preferred_voice_spanish_male, 'Google español (Spain)')
-        self.assertEqual(settings.preferred_voice_spanish_female, 'Google español de España (Female)')
-        self.assertEqual(settings.audio_speed, 1.2)
+        self.assertEqual(settings.preferred_gender_french, 'male')
+        self.assertEqual(settings.preferred_gender_english, 'female')
+        self.assertEqual(settings.preferred_gender_spanish, 'male')
+        self.assertEqual(settings.audio_speed, 0.9)
         
     def test_flashcard_language_assignment(self):
         """Test: Vérification des langues assignées aux flashcards"""
@@ -305,14 +300,16 @@ class FlashcardsAudioAPITest(APITestCase):
         )
         self.client.force_authenticate(user=self.user)
         
-        # Créer des paramètres de révision avec voix configurées
-        self.revision_settings = RevisionSettings.objects.create(
+        # Créer des paramètres de révision avec voix configurées - use get_or_create
+        self.revision_settings, created = RevisionSettings.objects.get_or_create(
             user=self.user,
-            audio_enabled=True,
-            audio_speed=0.9,
-            preferred_voice_french='Microsoft Julie - French (France)',
-            preferred_voice_english='Google UK English Male',
-            preferred_voice_spanish='Google español'
+            defaults={
+                'audio_enabled': True,
+                'audio_speed': 0.9,
+                'preferred_gender_french': 'female',
+                'preferred_gender_english': 'male',
+                'preferred_gender_spanish': 'auto'
+            }
         )
     
     def test_get_user_audio_settings(self):
@@ -326,8 +323,8 @@ class FlashcardsAudioAPITest(APITestCase):
         settings = response.data['settings']
         self.assertTrue(settings['audio_enabled'])
         self.assertEqual(settings['audio_speed'], 0.9)
-        self.assertEqual(settings['preferred_voice_french'], 'Microsoft Julie - French (France)')
-        self.assertEqual(settings['preferred_voice_english'], 'Google UK English Male')
+        self.assertEqual(settings['preferred_gender_french'], 'female')
+        self.assertEqual(settings['preferred_gender_english'], 'male')
         
     def test_update_audio_settings_via_form(self):
         """Test: Mise à jour des paramètres audio via formulaire"""
@@ -341,8 +338,8 @@ class FlashcardsAudioAPITest(APITestCase):
             'setting_type': 'revision',
             'audio_enabled': 'on',
             'audio_speed': '1.1',
-            'preferred_voice_french': 'Microsoft Paul - French (France)',
-            'preferred_voice_english': 'Microsoft George - English (Great Britain)'
+            'preferred_gender_french': 'male',
+            'preferred_gender_english': 'male'
         }
         
         # Simuler une soumission AJAX
@@ -376,23 +373,35 @@ class FlashcardsAudioAPITest(APITestCase):
         audio_settings = context['audio_settings']
         
         self.assertEqual(audio_settings['audio_enabled'], True)
-        self.assertEqual(audio_settings['preferred_voice_french'], 'Microsoft Julie - French (France)')
+        self.assertEqual(audio_settings['preferred_gender_french'], 'female')
         
     def test_audio_settings_serialization(self):
         """Test: Sérialisation correcte des paramètres audio"""
         from apps.revision.serializers.settings_serializers import RevisionSettingsSerializer
         
-        serializer = RevisionSettingsSerializer(self.revision_settings)
+        # Use get_or_create to avoid duplicate key violations
+        settings, created = RevisionSettings.objects.get_or_create(
+            user=self.user,
+            defaults={
+                'audio_enabled': True,
+                'audio_speed': 0.9,
+                'preferred_gender_french': 'female',
+                'preferred_gender_english': 'male',
+                'preferred_gender_spanish': 'auto'
+            }
+        )
+        
+        serializer = RevisionSettingsSerializer(settings)
         data = serializer.data
         
         # Vérifier que tous les champs audio sont présents
         self.assertIn('audio_enabled', data)
         self.assertIn('audio_speed', data)
-        self.assertIn('preferred_voice_french', data)
-        self.assertIn('preferred_voice_english', data)
-        self.assertIn('preferred_voice_spanish', data)
-        self.assertIn('preferred_voice_italian', data)
-        self.assertIn('preferred_voice_german', data)
+        self.assertIn('preferred_gender_french', data)
+        self.assertIn('preferred_gender_english', data)
+        self.assertIn('preferred_gender_spanish', data)
+        self.assertIn('preferred_gender_italian', data)
+        self.assertIn('preferred_gender_german', data)
 
 
 class FlashcardsLanguageIntegrationTest(TestCase):
@@ -448,9 +457,9 @@ class FlashcardsLanguageIntegrationTest(TestCase):
             user=self.user,
             audio_enabled=True,
             audio_speed=0.8,
-            preferred_voice_french='Microsoft Paul - French (France)',
-            preferred_voice_english='Microsoft George - English (Great Britain)', 
-            preferred_voice_spanish='Google español de Estados Unidos'
+            preferred_gender_french='male',
+            preferred_gender_english='male', 
+            preferred_gender_spanish='auto'
         )
         
     def test_complete_audio_workflow(self):
@@ -463,15 +472,15 @@ class FlashcardsLanguageIntegrationTest(TestCase):
         
         # 2. Vérifier que les paramètres audio existent
         self.assertTrue(self.audio_settings.audio_enabled)
-        self.assertEqual(self.audio_settings.preferred_voice_french, 'Microsoft Paul - French (France)')
+        self.assertEqual(self.audio_settings.preferred_gender_french, 'male')
         
         # 3. Simuler la logique de sélection de voix (comme dans le JS)
         def get_voice_for_language(language_code, settings):
             """Simuler la logique JavaScript de sélection de voix"""
             voice_mapping = {
-                'en': settings.preferred_voice_english,
-                'fr': settings.preferred_voice_french, 
-                'es': settings.preferred_voice_spanish
+                'en': settings.preferred_gender_english,
+                'fr': settings.preferred_gender_french, 
+                'es': settings.preferred_gender_spanish
             }
             return voice_mapping.get(language_code, None)
             
@@ -480,9 +489,9 @@ class FlashcardsLanguageIntegrationTest(TestCase):
         fr_voice = get_voice_for_language('fr', self.audio_settings)
         es_voice = get_voice_for_language('es', self.audio_settings)
         
-        self.assertEqual(en_voice, 'Microsoft George - English (Great Britain)')
-        self.assertEqual(fr_voice, 'Microsoft Paul - French (France)')
-        self.assertEqual(es_voice, 'Google español de Estados Unidos')
+        self.assertEqual(en_voice, 'male')
+        self.assertEqual(fr_voice, 'male')
+        self.assertEqual(es_voice, 'auto')
         
     def test_language_normalization(self):
         """Test: Normalisation des codes de langue (comme dans le JS)"""
@@ -549,13 +558,13 @@ class VoiceMatchingTest(TestCase):
         
         # Noms de voix typiques qu'on retrouve dans les navigateurs
         common_voice_names = [
-            'Microsoft Paul - French (France)',     # Masculin français
-            'Microsoft Julie - French (France)',    # Féminin français
-            'Microsoft George - English (Great Britain)',  # Masculin anglais (GB)
-            'Google US English',                     # Anglais US (souvent féminin)
-            'Google UK English Male',                # Anglais UK masculin
-            'Google français',                       # Français Google
-            'Google español',                        # Espagnol Google
+            'male',     # Masculin français
+            'female',    # Féminin français
+            'male',  # Masculin anglais (GB)
+            'female',                     # Anglais US (souvent féminin)
+            'male',                # Anglais UK masculin
+            'female',                       # Français Google
+            'auto',                        # Espagnol Google
         ]
         
         # Tester la sauvegarde et récupération de chaque nom
@@ -565,22 +574,22 @@ class VoiceMatchingTest(TestCase):
                 
                 # Sauvegarder un nom de voix
                 if 'French' in voice_name or 'français' in voice_name:
-                    settings.preferred_voice_french = voice_name
+                    settings.preferred_gender_french = voice_name
                 elif 'English' in voice_name:
-                    settings.preferred_voice_english = voice_name
+                    settings.preferred_gender_english = voice_name
                 elif 'español' in voice_name:
-                    settings.preferred_voice_spanish = voice_name
+                    settings.preferred_gender_spanish = voice_name
                     
                 settings.save()
                 settings.refresh_from_db()
                 
                 # Vérifier que le nom est exactement préservé
                 if 'French' in voice_name or 'français' in voice_name:
-                    self.assertEqual(settings.preferred_voice_french, voice_name)
+                    self.assertEqual(settings.preferred_gender_french, voice_name)
                 elif 'English' in voice_name:
-                    self.assertEqual(settings.preferred_voice_english, voice_name)
+                    self.assertEqual(settings.preferred_gender_english, voice_name)
                 elif 'español' in voice_name:
-                    self.assertEqual(settings.preferred_voice_spanish, voice_name)
+                    self.assertEqual(settings.preferred_gender_spanish, voice_name)
                     
     def test_voice_name_normalization(self):
         """Test: Normalisation des noms de voix pour éviter les erreurs de correspondance"""
@@ -588,23 +597,23 @@ class VoiceMatchingTest(TestCase):
         settings, _ = RevisionSettings.objects.get_or_create(user=self.user)
         
         # Test avec des espaces en trop
-        settings.preferred_voice_french = '  Microsoft Paul - French (France)  '
+        settings.preferred_gender_french = '  male  '
         settings.save()
         settings.refresh_from_db()
         
         # Le nom devrait être nettoyé (si on implémente la normalisation)
-        voice_name = settings.preferred_voice_french.strip()
-        self.assertEqual(voice_name, 'Microsoft Paul - French (France)')
+        voice_name = settings.preferred_gender_french.strip()
+        self.assertEqual(voice_name, 'male')
         
     def test_empty_voice_fallback(self):
         """Test: Comportement quand aucune voix préférée n'est définie"""
         
         settings, _ = RevisionSettings.objects.get_or_create(user=self.user)
         
-        # Les voix devraient être vides par défaut
-        self.assertEqual(settings.preferred_voice_french, '')
-        self.assertEqual(settings.preferred_voice_english, '')
-        self.assertEqual(settings.preferred_voice_spanish, '')
+        # Les voix devraient être 'auto' par défaut
+        self.assertEqual(settings.preferred_gender_french, 'auto')
+        self.assertEqual(settings.preferred_gender_english, 'auto')
+        self.assertEqual(settings.preferred_gender_spanish, 'auto')
         
         # Dans ce cas, le JavaScript devrait utiliser la meilleure voix disponible
         
@@ -614,15 +623,15 @@ class VoiceMatchingTest(TestCase):
         # Mapping des voix par genre (basé sur les noms courants)
         voice_gender_mapping = {
             # Voix masculines
-            'Microsoft Paul - French (France)': 'male',
-            'Microsoft George - English (Great Britain)': 'male', 
-            'Google UK English Male': 'male',
+            'male': 'male',
+            'male': 'male', 
+            'male': 'male',
             
             # Voix féminines  
-            'Microsoft Julie - French (France)': 'female',
-            'Microsoft Hortense - French (France)': 'female',
-            'Google US English': 'female',  # Généralement féminine
-            'Google français': 'female',    # Généralement féminine
+            'female': 'female',
+            'female': 'female',
+            'female': 'female',  # Généralement féminine
+            'female': 'female',    # Généralement féminine
         }
         
         # Test pour s'assurer qu'on a des voix des deux genres
@@ -634,12 +643,12 @@ class VoiceMatchingTest(TestCase):
         
         # Test avec des voix masculines
         settings, _ = RevisionSettings.objects.get_or_create(user=self.user)
-        settings.preferred_voice_french = 'Microsoft Paul - French (France)'  # Masculin
-        settings.preferred_voice_english = 'Microsoft George - English (Great Britain)'  # Masculin
+        settings.preferred_gender_french = 'male'  # Masculin
+        settings.preferred_gender_english = 'male'  # Masculin
         settings.save()
         
-        self.assertIn('Paul', settings.preferred_voice_french)  # Paul = masculin
-        self.assertIn('George', settings.preferred_voice_english)  # George = masculin
+        self.assertEqual(settings.preferred_gender_french, 'male')  # Masculin
+        self.assertEqual(settings.preferred_gender_english, 'male')  # Masculin
 
 
 class VoiceParametersAPITest(APITestCase):
@@ -656,14 +665,16 @@ class VoiceParametersAPITest(APITestCase):
     def test_voice_parameters_in_api_response(self):
         """Test: Vérifier que tous les paramètres de voix sont dans la réponse API"""
         
-        # Configurer des voix dans tous les champs
-        settings = RevisionSettings.objects.create(
+        # Configurer des voix dans tous les champs - use get_or_create
+        settings, created = RevisionSettings.objects.get_or_create(
             user=self.user,
-            preferred_voice_french='Microsoft Paul - French (France)',
-            preferred_voice_english='Google UK English Male', 
-            preferred_voice_spanish='Google español',
-            preferred_voice_italian='Google italiano',
-            preferred_voice_german='Google Deutsch'
+            defaults={
+                'preferred_gender_french': 'male',
+                'preferred_gender_english': 'male', 
+                'preferred_gender_spanish': 'auto',
+                'preferred_gender_italian': 'female',
+                'preferred_gender_german': 'auto'
+            }
         )
         
         url = '/api/v1/revision/user-settings/'
@@ -675,11 +686,11 @@ class VoiceParametersAPITest(APITestCase):
         
         # Vérifier que toutes les voix sont présentes
         expected_voices = {
-            'preferred_voice_french': 'Microsoft Paul - French (France)',
-            'preferred_voice_english': 'Google UK English Male',
-            'preferred_voice_spanish': 'Google español', 
-            'preferred_voice_italian': 'Google italiano',
-            'preferred_voice_german': 'Google Deutsch'
+            'preferred_gender_french': 'male',
+            'preferred_gender_english': 'male',
+            'preferred_gender_spanish': 'auto', 
+            'preferred_gender_italian': 'female',
+            'preferred_gender_german': 'auto'
         }
         
         for field, expected_value in expected_voices.items():
@@ -694,35 +705,40 @@ class VoiceParametersAPITest(APITestCase):
         response = self.client.get(url)
         initial_settings = response.data['settings']
         
-        # Les voix devraient être vides initialement
-        self.assertEqual(initial_settings.get('preferred_voice_french', ''), '')
+        # Les voix devraient être 'auto' par défaut
+        self.assertEqual(initial_settings.get('preferred_gender_french', 'auto'), 'auto')
         
         # 2. Simuler la mise à jour via l'interface (normalement via POST)
         # Créer directement les paramètres pour simuler la sauvegarde
         RevisionSettings.objects.filter(user=self.user).delete()
-        updated_settings = RevisionSettings.objects.create(
+        updated_settings, created = RevisionSettings.objects.get_or_create(
             user=self.user,
-            preferred_voice_french='Microsoft Julie - French (France)',
-            preferred_voice_english='Google US English',
-            audio_speed=1.2
+            defaults={
+                'preferred_gender_french': 'female',
+                'preferred_gender_english': 'female',
+                'audio_speed': 1.2
+            }
         )
         
         # 3. Vérifier que les nouveaux paramètres sont récupérés
         response = self.client.get(url)
         new_settings = response.data['settings']
         
-        self.assertEqual(new_settings['preferred_voice_french'], 'Microsoft Julie - French (France)')
-        self.assertEqual(new_settings['preferred_voice_english'], 'Google US English')
+        self.assertEqual(new_settings['preferred_gender_french'], 'female')
+        self.assertEqual(new_settings['preferred_gender_english'], 'female')
         self.assertEqual(new_settings['audio_speed'], 1.2)
         
     def test_voice_settings_template_context(self):
-        """Test: Vérifier que les voix sont correctement passées au template"""
+        """Test: Vérifier que les paramètres audio sont correctement passés au template"""
         
-        # Configurer des paramètres
-        RevisionSettings.objects.create(
+        # Configurer des paramètres - use get_or_create
+        settings, created = RevisionSettings.objects.get_or_create(
             user=self.user,
-            preferred_voice_french='Test French Voice',
-            preferred_voice_english='Test English Voice'
+            defaults={
+                'preferred_gender_french': 'male',
+                'preferred_gender_english': 'female',
+                'audio_speed': 1.2
+            }
         )
         
         # Simuler l'appel à la vue qui génère le contexte template
@@ -741,5 +757,179 @@ class VoiceParametersAPITest(APITestCase):
         self.assertIn('audio_settings', context)
         audio_settings = context['audio_settings']
         
-        self.assertEqual(audio_settings['preferred_voice_french'], 'Test French Voice')
-        self.assertEqual(audio_settings['preferred_voice_english'], 'Test English Voice')
+        self.assertEqual(audio_settings['preferred_gender_french'], 'male')
+        self.assertEqual(audio_settings['preferred_gender_english'], 'female')
+
+
+class RevisionSettingsViewTest(TestCase):
+    """Tests pour les vues web Django"""
+    
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='webuser',
+            email='web@example.com',
+            password='testpass123'
+        )
+    
+    def test_get_user_revision_settings_view(self):
+        """Test de l'endpoint get_user_revision_settings"""
+        from django.test import Client
+        
+        client = Client()
+        client.login(username='webuser', password='testpass123')
+        
+        # Créer des paramètres de révision - use get_or_create
+        settings, created = RevisionSettings.objects.get_or_create(
+            user=self.user,
+            defaults={
+                'audio_enabled': True,
+                'audio_speed': 1.1,
+                'preferred_gender_french': 'male'
+            }
+        )
+        
+        response = client.get('/api/v1/revision/user-settings/')
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertIn('settings', data)
+        self.assertIn('audio_enabled', data['settings'])
+        self.assertIn('preferred_gender_french', data['settings'])
+
+
+class RevisionSettingsViewSetAdvancedTest(APITestCase):
+    """Tests pour les actions avancées du ViewSet"""
+    
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='apiuser',
+            email='api@example.com',
+            password='testpass123'
+        )
+        self.client.force_authenticate(user=self.user)
+    
+    def test_apply_preset_api(self):
+        """Test de l'action apply_preset"""
+        url = '/api/v1/revision/settings/api/settings/apply_preset/'
+        data = {'preset_name': 'beginner'}
+        
+        response = self.client.post(url, data)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data['success'])
+        self.assertEqual(response.data['preset_applied'], 'beginner')
+    
+    def test_session_config_api(self):
+        """Test de l'action session_config"""
+        url = '/api/v1/revision/settings/api/settings/session_config/'
+        
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('study_mode', response.data)
+        self.assertIn('recommended_time', response.data)
+    
+    def test_stats_api(self):
+        """Test de l'action stats"""
+        url = '/api/v1/revision/settings/api/settings/stats/'
+        
+        response = self.client.get(url)
+        
+        # Devrait réussir même sans données de flashcards
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('total_cards', response.data)
+    
+    def test_destroy_reset_settings(self):
+        """Test du reset des paramètres (destroy)"""
+        # Créer des paramètres personnalisés - use get_or_create
+        settings, created = RevisionSettings.objects.get_or_create(
+            user=self.user,
+            defaults={
+                'cards_per_session': 50,
+                'default_difficulty': 'hard'
+            }
+        )
+        
+        url = f'/api/v1/revision/settings/api/settings/{settings.id}/'
+        response = self.client.delete(url)
+        
+        self.assertEqual(response.status_code, 200)
+        
+        # Vérifier que les paramètres ont été resetés
+        new_settings = RevisionSettings.objects.get(user=self.user)
+        self.assertEqual(new_settings.cards_per_session, 20)  # Valeur par défaut
+        self.assertEqual(new_settings.default_difficulty, 'normal')  # Valeur par défaut
+
+
+class RevisionSessionConfigTest(APITestCase):
+    """Tests pour RevisionSessionConfig"""
+    
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='sessionuser',
+            email='session@example.com',
+            password='testpass123'
+        )
+        self.client.force_authenticate(user=self.user)
+    
+    def test_create_session_config(self):
+        """Test de création d'une configuration de session"""
+        url = '/api/v1/revision/settings/api/session-configs/'
+        data = {
+            'name': 'Session Test',
+            'session_type': 'quick',
+            'duration_minutes': 15,
+            'target_cards': 10,
+            'include_new_cards': True,  # Required by validation
+            'include_review_cards': True
+        }
+        
+        response = self.client.post(url, data)
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], 'Session Test')
+        self.assertEqual(response.data['user'], self.user.id)
+    
+    def test_set_default_config(self):
+        """Test de définition d'une config par défaut"""
+        # Créer une configuration
+        config = RevisionSessionConfig.objects.create(
+            user=self.user,
+            name='Config Test',
+            session_type='standard'
+        )
+        
+        url = f'/api/v1/revision/settings/api/session-configs/{config.id}/set_default/'
+        response = self.client.post(url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data['success'])
+        
+        # Vérifier que la config est maintenant par défaut
+        config.refresh_from_db()
+        self.assertTrue(config.is_default)
+    
+    def test_get_default_config(self):
+        """Test de récupération de la config par défaut"""
+        # Créer une configuration par défaut
+        RevisionSessionConfig.objects.create(
+            user=self.user,
+            name='Default Config',
+            session_type='standard',
+            is_default=True
+        )
+        
+        url = '/api/v1/revision/settings/api/session-configs/default/'
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['name'], 'Default Config')
+    
+    def test_get_default_config_not_found(self):
+        """Test quand aucune config par défaut n'existe"""
+        url = '/api/v1/revision/settings/api/session-configs/default/'
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('error', response.data)
