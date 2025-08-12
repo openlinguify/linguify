@@ -901,16 +901,17 @@ class VoiceParametersAPITest(APITestCase):
     def test_voice_parameters_in_api_response(self):
         """Test: Vérifier que tous les paramètres de voix sont dans la réponse API"""
         
-        # Configurer des voix dans tous les champs - use get_or_create
-        settings, created = RevisionSettings.objects.get_or_create(
+        # S'assurer qu'aucun paramètre n'existe pour ce test
+        RevisionSettings.objects.filter(user=self.user).delete()
+        
+        # Configurer des voix dans tous les champs - create directly
+        settings = RevisionSettings.objects.create(
             user=self.user,
-            defaults={
-                'preferred_gender_french': 'male',
-                'preferred_gender_english': 'male', 
-                'preferred_gender_spanish': 'auto',
-                'preferred_gender_italian': 'female',
-                'preferred_gender_german': 'auto'
-            }
+            preferred_gender_french='male',
+            preferred_gender_english='male', 
+            preferred_gender_spanish='auto',
+            preferred_gender_italian='female',
+            preferred_gender_german='auto'
         )
         
         url = '/api/v1/revision/user-settings/'
@@ -967,14 +968,15 @@ class VoiceParametersAPITest(APITestCase):
     def test_voice_settings_template_context(self):
         """Test: Vérifier que les paramètres audio sont correctement passés au template"""
         
-        # Configurer des paramètres - use get_or_create
-        settings, created = RevisionSettings.objects.get_or_create(
+        # S'assurer qu'aucun paramètre n'existe pour ce test
+        RevisionSettings.objects.filter(user=self.user).delete()
+        
+        # Configurer des paramètres - create directly
+        settings = RevisionSettings.objects.create(
             user=self.user,
-            defaults={
-                'preferred_gender_french': 'male',
-                'preferred_gender_english': 'female',
-                'audio_speed': 1.2
-            }
+            preferred_gender_french='male',
+            preferred_gender_english='female',
+            audio_speed=1.2
         )
         
         # Simuler l'appel à la vue qui génère le contexte template
@@ -997,8 +999,8 @@ class VoiceParametersAPITest(APITestCase):
         self.assertEqual(audio_settings['preferred_gender_english'], 'female')
 
 
-class RevisionSettingsViewTest(TestCase):
-    """Tests pour les vues web Django"""
+class RevisionSettingsViewTest(APITestCase):
+    """Tests pour les vues API DRF"""
     
     def setUp(self):
         self.user = User.objects.create_user(
@@ -1006,13 +1008,10 @@ class RevisionSettingsViewTest(TestCase):
             email='web@example.com',
             password='testpass123'
         )
+        self.client.force_authenticate(user=self.user)
     
     def test_get_user_revision_settings_view(self):
         """Test de l'endpoint get_user_revision_settings"""
-        from django.test import Client
-        
-        client = Client()
-        client.login(username='webuser', password='testpass123')
         
         # Créer des paramètres de révision - use get_or_create
         settings, created = RevisionSettings.objects.get_or_create(
@@ -1024,7 +1023,7 @@ class RevisionSettingsViewTest(TestCase):
             }
         )
         
-        response = client.get('/api/v1/revision/user-settings/')
+        response = self.client.get('/api/v1/revision/user-settings/')
         
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -1035,29 +1034,24 @@ class RevisionSettingsViewTest(TestCase):
     
     def test_get_user_revision_settings_enhanced_audio_loading(self):
         """Test de l'API améliorée get_user_revision_settings avec chargement audio depuis BDD"""
-        from django.test import Client
-        from django.urls import reverse
-        import json
         
-        client = Client()
-        client.login(username='webuser', password='testpass123')
+        # S'assurer qu'aucun paramètre n'existe pour ce test
+        RevisionSettings.objects.filter(user=self.user).delete()
         
         # Créer paramètres audio spécifiques en BDD
-        settings, created = RevisionSettings.objects.get_or_create(
+        settings = RevisionSettings.objects.create(
             user=self.user,
-            defaults={
-                'audio_enabled': False,
-                'audio_speed': 1.6,
-                'preferred_gender_french': 'female',
-                'preferred_gender_english': 'male',
-                'preferred_gender_spanish': 'auto',
-                'preferred_gender_italian': 'female',
-                'preferred_gender_german': 'male'
-            }
+            audio_enabled=False,
+            audio_speed=1.6,
+            preferred_gender_french='female',
+            preferred_gender_english='male',
+            preferred_gender_spanish='auto',
+            preferred_gender_italian='female',
+            preferred_gender_german='male'
         )
         
         # Appeler l'API
-        response = client.get('/api/v1/revision/user-settings/')
+        response = self.client.get('/api/v1/revision/user-settings/')
         
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -1082,16 +1076,12 @@ class RevisionSettingsViewTest(TestCase):
     
     def test_get_user_revision_settings_creates_defaults_if_missing(self):
         """Test que l'API crée des paramètres par défaut si aucun n'existe"""
-        from django.test import Client
-        
-        client = Client()
-        client.login(username='webuser', password='testpass123')
         
         # S'assurer qu'aucun paramètre n'existe
         RevisionSettings.objects.filter(user=self.user).delete()
         
         # Appeler l'API
-        response = client.get('/api/v1/revision/user-settings/')
+        response = self.client.get('/api/v1/revision/user-settings/')
         
         self.assertEqual(response.status_code, 200)
         data = response.json()
