@@ -3,7 +3,10 @@ Django template-based authentication URLs
 """
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from ..views.auth_views import LoginView, RegisterView, logout_view
+from ..views.auth_views import (
+    LoginView, RegisterView, logout_view, 
+    EmailVerificationWaitingView, verify_email_view, resend_verification_email_view
+)
 from ..views.views_password_reset import CustomPasswordResetView
 
 app_name = 'auth'
@@ -12,6 +15,11 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('register/', RegisterView.as_view(), name='register'),
     path('logout/', logout_view, name='logout'),
+    
+    # Email verification URLs
+    path('email-verification-waiting/', EmailVerificationWaitingView.as_view(), name='email_verification_waiting'),
+    path('verify-email/<str:token>/', verify_email_view, name='verify_email'),
+    path('resend-verification-email/', resend_verification_email_view, name='resend_verification_email'),
     
     # Password reset URLs
     path('password-reset/', 

@@ -82,10 +82,22 @@
                     </div>
                     
                     <!-- Actions -->
-                    <button id="addCard" class="btn btn-outline-custom btn-sm">
-                        <i class="bi bi-plus-lg"></i>
-                        <span class="d-none d-md-inline ms-1">Ajouter carte</span>
-                    </button>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button id="addCard" class="btn btn-outline-custom btn-sm">
+                            <i class="bi bi-plus-lg"></i>
+                            <span class="d-none d-md-inline ms-1">Ajouter carte</span>
+                        </button>
+                        
+                        <button id="practiceWeak" class="btn btn-outline-custom btn-sm">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <span class="d-none d-lg-inline ms-1">Réviser difficiles</span>
+                        </button>
+                        
+                        <button id="resetProgress" class="btn btn-outline-custom btn-sm">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            <span class="d-none d-lg-inline ms-1">Réinitialiser</span>
+                        </button>
+                    </div>
                     
                     <div class="dropdown">
                         <button class="btn btn-outline-custom btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -150,30 +162,59 @@
                 </a>
             </div>
             
-            <!-- Quick actions -->
-            <div class="p-3 border-top">
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <button id="practiceWeak" class="btn btn-outline-custom w-100">
-                            <i class="bi bi-exclamation-triangle me-1"></i>
-                            Réviser les difficiles
-                        </button>
-                    </div>
-                    <div class="col-md-6">
-                        <button id="resetProgress" class="btn btn-outline-custom w-100">
-                            <i class="bi bi-arrow-clockwise me-1"></i>
-                            Réinitialiser progrès
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
             <!-- Cards Section -->
             <div class="p-3 border-top">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h6 class="mb-0">Cartes du deck</h6>
                     <span id="cardsCount" class="badge bg-secondary">0 carte(s)</span>
                 </div>
+                
+                <!-- Language Settings for the Deck -->
+                <div id="deckLanguageSettings" class="mb-3 p-3 bg-gradient-subtle-linguify rounded border-linguify" style="display: none;">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small"><strong>Langue par défaut du recto</strong></label>
+                            <select id="deckFrontLanguage" class="form-select form-select-sm">
+                                <option value="">🔄 Détection automatique</option>
+                                <option value="fr">🇫🇷 Français</option>
+                                <option value="en">🇺🇸 Anglais</option>
+                                <option value="es">🇪🇸 Espagnol</option>
+                                <option value="it">🇮🇹 Italien</option>
+                                <option value="de">🇩🇪 Allemand</option>
+                                <option value="pt">🇵🇹 Portugais</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small"><strong>Langue par défaut du verso</strong></label>
+                            <select id="deckBackLanguage" class="form-select form-select-sm">
+                                <option value="">🔄 Détection automatique</option>
+                                <option value="fr">🇫🇷 Français</option>
+                                <option value="en">🇺🇸 Anglais</option>
+                                <option value="es">🇪🇸 Espagnol</option>
+                                <option value="it">🇮🇹 Italien</option>
+                                <option value="de">🇩🇪 Allemand</option>
+                                <option value="pt">🇵🇹 Portugais</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button id="applyLanguagesToDeck" class="btn btn-gradient btn-sm me-2">
+                            <i class="bi bi-check-lg me-1"></i>
+                            Appliquer à toutes les cartes
+                        </button>
+                        <button id="applyLanguagesToNewCards" class="btn btn-outline-custom btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            Utiliser pour les nouvelles cartes
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-linguify-accent">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Ces paramètres permettent une meilleure prononciation avec la synthèse vocale
+                        </small>
+                    </div>
+                </div>
+                
                 <div id="cardsContainer">
                     <!-- Cards will be loaded here -->
                 </div>
@@ -251,7 +292,10 @@
     <div id="createCardForm" class="create-card-form-hidden">
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
-                <h5 class="mb-0">Ajouter une nouvelle carte</h5>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-plus-circle text-linguify-primary me-2" style="font-size: 1.5rem;"></i>
+                    <h4 class="mb-0 text-linguify-primary">Ajouter une nouvelle carte</h4>
+                </div>
                 <button id="cancelCardCreate" class="btn btn-outline-custom btn-sm">
                     <i class="bi bi-x-lg"></i>
                     Annuler
@@ -260,14 +304,70 @@
         </div>
         
         <div class="study-content p-4">
+            <div class="alert bg-gradient-subtle-linguify border-linguify p-3 mb-4">
+                <i class="bi bi-info-circle text-linguify-accent me-2" style="font-size: 1rem;"></i>
+                <span class="text-linguify-primary" style="font-size: 0.9rem; font-weight: 500;">Les langues par défaut du deck seront utilisées. Vous pouvez les modifier uniquement pour cette carte si nécessaire.</span>
+            </div>
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label">Recto (Question) <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
+                        <i class="bi bi-card-text me-2"></i>
+                        Recto (Question) <span class="text-danger">*</span>
+                    </label>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-gradient-subtle-linguify text-linguify-primary border-linguify px-2 py-1">
+                                <i class="bi bi-translate me-1" style="font-size: 0.75rem;"></i>
+                                <span id="deckFrontLangDisplay">Langue par défaut du deck</span>
+                            </span>
+                        </div>
+                        <button type="button" class="btn btn-link btn-sm text-linguify-accent p-0" id="changeFrontLang" title="Modifier la langue pour cette carte">
+                            <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                            <span class="ms-1" style="font-size: 0.75rem;">Modifier</span>
+                        </button>
+                    </div>
+                    <div id="frontLangSelector" style="display: none;" class="mb-2">
+                        <select id="newCardFrontLang" class="form-select form-select-sm">
+                            <option value="">Utiliser langue par défaut du deck</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇺🇸 Anglais</option>
+                            <option value="es">🇪🇸 Espagnol</option>
+                            <option value="it">🇮🇹 Italien</option>
+                            <option value="de">🇩🇪 Allemand</option>
+                            <option value="pt">🇵🇹 Portugais</option>
+                        </select>
+                    </div>
                     <textarea id="newCardFront" class="form-control" rows="4" 
                               placeholder="Ex: Comment dit-on 'bonjour' en anglais ?" required></textarea>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Verso (Réponse) <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
+                        <i class="bi bi-card-text-reverse me-2"></i>
+                        Verso (Réponse) <span class="text-danger">*</span>
+                    </label>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-gradient-subtle-linguify text-linguify-primary border-linguify px-2 py-1">
+                                <i class="bi bi-translate me-1" style="font-size: 0.75rem;"></i>
+                                <span id="deckBackLangDisplay">Langue par défaut du deck</span>
+                            </span>
+                        </div>
+                        <button type="button" class="btn btn-link btn-sm text-linguify-accent p-0" id="changeBackLang" title="Modifier la langue pour cette carte">
+                            <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                            <span class="ms-1" style="font-size: 0.75rem;">Modifier</span>
+                        </button>
+                    </div>
+                    <div id="backLangSelector" style="display: none;" class="mb-2">
+                        <select id="newCardBackLang" class="form-select form-select-sm">
+                            <option value="">Utiliser langue par défaut du deck</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇺🇸 Anglais</option>
+                            <option value="es">🇪🇸 Espagnol</option>
+                            <option value="it">🇮🇹 Italien</option>
+                            <option value="de">🇩🇪 Allemand</option>
+                            <option value="pt">🇵🇹 Portugais</option>
+                        </select>
+                    </div>
                     <textarea id="newCardBack" class="form-control" rows="4" 
                               placeholder="Ex: Hello" required></textarea>
                 </div>
@@ -302,10 +402,34 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Recto (Question) <span class="text-danger">*</span></label>
+                    <div class="d-flex align-items-center mb-2">
+                        <select id="editCardFrontLang" class="form-select form-select-sm me-2" style="max-width: 120px;">
+                            <option value="">Auto</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇺🇸 Anglais</option>
+                            <option value="es">🇪🇸 Espagnol</option>
+                            <option value="it">🇮🇹 Italien</option>
+                            <option value="de">🇩🇪 Allemand</option>
+                            <option value="pt">🇵🇹 Portugais</option>
+                        </select>
+                        <small class="text-muted">Langue du recto</small>
+                    </div>
                     <textarea id="editCardFront" class="form-control" rows="4" required></textarea>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Verso (Réponse) <span class="text-danger">*</span></label>
+                    <div class="d-flex align-items-center mb-2">
+                        <select id="editCardBackLang" class="form-select form-select-sm me-2" style="max-width: 120px;">
+                            <option value="">Auto</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇺🇸 Anglais</option>
+                            <option value="es">🇪🇸 Espagnol</option>
+                            <option value="it">🇮🇹 Italien</option>
+                            <option value="de">🇩🇪 Allemand</option>
+                            <option value="pt">🇵🇹 Portugais</option>
+                        </select>
+                        <small class="text-muted">Langue du verso</small>
+                    </div>
                     <textarea id="editCardBack" class="form-control" rows="4" required></textarea>
                 </div>
             </div>
@@ -335,8 +459,8 @@
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-upload icon-linguify-primary me-2 font-size-1-5rem"></i>
-                    <h5 class="mb-0">Importer un deck</h5>
+                    <i class="bi bi-upload text-linguify-primary me-2"></i>
+                    <h5 class="mb-0 text-linguify-primary">Importer un deck</h5>
                 </div>
                 <button id="cancelImport" class="btn btn-outline-custom btn-sm">
                     <i class="bi bi-x-lg"></i>
@@ -345,99 +469,105 @@
             </div>
         </div>
         
-        <div class="study-content p-4">
-            <!-- Étapes de progression -->
-            <div class="import-steps mb-4">
-                <div class="step-indicator">
-                    <div class="step active">
-                        <div class="step-number">1</div>
-                        <div class="step-label">Sélection</div>
-                    </div>
-                    <div class="step-line"></div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-label">Aperçu</div>
-                    </div>
-                    <div class="step-line"></div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-label">Import</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Zone de drop pour fichier -->
-            <div class="file-drop-zone mb-4" id="fileDropZone">
-                <div class="drop-zone-content">
-                    <i class="bi bi-cloud-upload icon-linguify-primary font-size-3rem"></i>
-                    <h6 class="mt-3 mb-2">Glissez votre fichier ici</h6>
-                    <p class="text-muted mb-3">ou cliquez pour sélectionner</p>
-                    <input type="file" id="importFile" class="d-none" accept=".csv,.xlsx,.xls">
-                    <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('importFile').click()">
-                        <i class="bi bi-folder2-open me-1"></i>
-                        Parcourir
-                    </button>
-                </div>
-                <div class="drop-zone-overlay" id="dropZoneOverlay">
-                    <i class="bi bi-cloud-upload-fill text-white font-size-3rem"></i>
-                    <p class="text-white mt-2 mb-0">Déposez le fichier ici</p>
-                </div>
-            </div>
-
-            <!-- Informations sur le fichier sélectionné -->
-            <div class="selected-file-info display-none" id="selectedFileInfo">
-                <div class="alert alert-success">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-file-earmark-check icon-linguify-success me-2"></i>
-                        <div>
-                            <strong id="selectedFileName"></strong>
-                            <div class="text-muted small" id="selectedFileSize"></div>
+        <div class="study-content" style="height: calc(100vh - 220px); overflow: hidden; display: flex; flex-direction: column;">
+            <!-- Main content area with scroll -->
+            <div class="import-content-scrollable" style="flex: 1; overflow-y: auto; padding: 0.75rem; margin-right: -1rem; padding-right: 2rem;">
+                <!-- Compact steps indicator -->
+                <div class="import-steps-compact mb-3">
+                    <div class="d-flex align-items-center justify-content-center gap-3">
+                        <div class="step-compact active">
+                            <span class="step-number-compact">1</span>
+                            <span class="step-label-compact">Sélection</span>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm ms-auto" onclick="clearSelectedFile()">
-                            <i class="bi bi-x"></i>
+                        <div class="step-separator-compact"></div>
+                        <div class="step-compact">
+                            <span class="step-number-compact">2</span>
+                            <span class="step-label-compact">Aperçu</span>
+                        </div>
+                        <div class="step-separator-compact"></div>
+                        <div class="step-compact">
+                            <span class="step-number-compact">3</span>
+                            <span class="step-label-compact">Import</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compact file drop zone -->
+                <div class="file-drop-zone-compact mb-3" id="fileDropZone">
+                    <div class="drop-zone-content">
+                        <i class="bi bi-cloud-upload text-linguify-primary" style="font-size: 2rem;"></i>
+                        <p class="mb-2 mt-2 fw-semibold text-linguify-gray">Glissez votre fichier ici ou cliquez pour sélectionner</p>
+                        <input type="file" id="importFile" class="d-none" accept=".csv,.xlsx,.xls">
+                        <button class="btn btn-gradient btn-sm" onclick="document.getElementById('importFile').click()">
+                            <i class="bi bi-folder2-open me-1"></i>
+                            Parcourir
                         </button>
                     </div>
+                    <div class="drop-zone-overlay" id="dropZoneOverlay">
+                        <i class="bi bi-cloud-upload-fill text-white" style="font-size: 2rem;"></i>
+                        <p class="text-white mt-2 mb-0">Déposez le fichier ici</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Formats supportés -->
-            <div class="supported-formats mb-4">
-                <h6 class="text-muted mb-2">Formats supportés</h6>
-                <div class="d-flex gap-2">
-                    <span class="badge bg-light text-dark">
-                        <i class="bi bi-file-earmark-excel icon-linguify-success me-1"></i>
-                        Excel (.xlsx, .xls)
-                    </span>
-                    <span class="badge bg-light text-dark">
-                        <i class="bi bi-filetype-csv text-info me-1"></i>
-                        CSV (.csv)
-                    </span>
+                <!-- File info - compact -->
+                <div class="selected-file-info display-none" id="selectedFileInfo">
+                    <div class="alert bg-gradient-subtle-linguify border-linguify py-2 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-file-earmark-check text-linguify-success me-2"></i>
+                            <div>
+                                <strong id="selectedFileName" class="small text-linguify-primary"></strong>
+                                <div class="text-linguify-accent" style="font-size: 0.75rem;" id="selectedFileSize"></div>
+                            </div>
+                            <button class="btn btn-outline-custom btn-sm ms-auto py-1" onclick="clearSelectedFile()">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <small class="text-muted mt-1 d-block">
-                    Votre fichier doit contenir au minimum 2 colonnes pour le recto et verso des cartes
-                </small>
+
+                <!-- Compact supported formats -->
+                <div class="supported-formats-compact mb-3">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <small class="text-linguify-accent fw-semibold">Formats supportés:</small>
+                        <span class="badge bg-gradient-subtle-linguify text-linguify-primary border-linguify py-1">
+                            <i class="bi bi-file-earmark-excel text-linguify-success me-1"></i>
+                            Excel
+                        </span>
+                        <span class="badge bg-gradient-subtle-linguify text-linguify-primary border-linguify py-1">
+                            <i class="bi bi-filetype-csv text-linguify-accent me-1"></i>
+                            CSV
+                        </span>
+                    </div>
+                    <small class="text-linguify-gray d-block mt-1">
+                        Minimum 2 colonnes pour recto et verso des cartes
+                    </small>
+                </div>
+                
+                <!-- Compact deck name input -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-linguify-primary mb-1">
+                        <i class="bi bi-tag me-1"></i>
+                        Nom du deck
+                    </label>
+                    <input type="text" id="importDeckName" class="form-control" 
+                           placeholder="Entrez le nom du nouveau deck..." 
+                           maxlength="100">
+                    <div class="form-text small">Ce nom doit être unique dans vos decks</div>
+                    <div class="invalid-feedback" id="deckNameError"></div>
+                </div>
             </div>
             
-            <div class="mb-4">
-                <label class="form-label fw-bold">
-                    <i class="bi bi-tag me-1"></i>
-                    Nom du deck
-                </label>
-                <input type="text" id="importDeckName" class="form-control form-control-lg" 
-                       placeholder="Entrez le nom du nouveau deck..." 
-                       maxlength="100">
-                <div class="form-text">Ce nom doit être unique dans vos decks</div>
-                <div class="invalid-feedback" id="deckNameError"></div>
-            </div>
-            
-            <div class="d-flex gap-2 justify-content-end">
-                <button id="submitImport" class="btn btn-gradient btn-lg" disabled>
-                    <i class="bi bi-arrow-right me-1"></i>
-                    Suivant - Aperçu
-                </button>
-                <button id="cancelImportAlt" class="btn btn-outline-custom">
-                    Annuler
-                </button>
+            <!-- Fixed bottom actions -->
+            <div class="import-actions-fixed bg-white border-top px-3 mt-auto" style="flex-shrink: 0;">
+                <div class="d-flex gap-2 justify-content-end align-items-center">
+                    <button id="cancelImportAlt" class="btn btn-outline-custom">
+                        Annuler
+                    </button>
+                    <button id="submitImport" class="btn btn-gradient" disabled>
+                        <i class="bi bi-arrow-right me-1"></i>
+                        Suivant - Aperçu
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -447,8 +577,8 @@
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-eye text-info me-2 font-size-1-5rem"></i>
-                    <h5 class="mb-0">Aperçu de l'import</h5>
+                    <i class="bi bi-eye text-linguify-accent me-2"></i>
+                    <h5 class="mb-0 text-linguify-accent">Aperçu de l'import</h5>
                 </div>
                 <button id="cancelImportPreview" class="btn btn-outline-custom btn-sm">
                     <i class="bi bi-x-lg"></i>
@@ -457,60 +587,55 @@
             </div>
         </div>
         
-        <div class="study-content p-4">
-            <!-- Étapes de progression -->
-            <div class="import-steps mb-4">
-                <div class="step-indicator">
-                    <div class="step completed">
-                        <div class="step-number"><i class="bi bi-check"></i></div>
-                        <div class="step-label">Sélection</div>
-                    </div>
-                    <div class="step-line completed"></div>
-                    <div class="step active">
-                        <div class="step-number">2</div>
-                        <div class="step-label">Aperçu</div>
-                    </div>
-                    <div class="step-line"></div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-label">Import</div>
+        <div class="study-content" style="height: calc(100vh - 220px); overflow: hidden; display: flex; flex-direction: column;">
+            <div class="import-content-scrollable" style="flex: 1; overflow-y: auto; padding: 0.75rem; margin-right: -1rem; padding-right: 2rem;">
+                <!-- Compact steps indicator -->
+                <div class="import-steps-compact mb-3">
+                    <div class="d-flex align-items-center justify-content-center gap-3">
+                        <div class="step-compact completed">
+                            <span class="step-number-compact"><i class="bi bi-check"></i></span>
+                            <span class="step-label-compact">Sélection</span>
+                        </div>
+                        <div class="step-separator-compact completed"></div>
+                        <div class="step-compact active">
+                            <span class="step-number-compact">2</span>
+                            <span class="step-label-compact">Aperçu</span>
+                        </div>
+                        <div class="step-separator-compact"></div>
+                        <div class="step-compact">
+                            <span class="step-number-compact">3</span>
+                            <span class="step-label-compact">Import</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Résumé du fichier -->
-            <div class="import-summary mb-4">
-                <div class="row">
+            <!-- Résumé du fichier - compact -->
+            <div class="import-summary-compact mb-3">
+                <div class="row g-2">
                     <div class="col-md-4">
-                        <div class="summary-card">
-                            <div class="summary-icon">
-                                <i class="bi bi-file-earmark icon-linguify-primary"></i>
-                            </div>
-                            <div class="summary-content">
-                                <div class="summary-title">Fichier</div>
-                                <div class="summary-value" id="previewFileName"></div>
+                        <div class="summary-card-compact">
+                            <i class="bi bi-file-earmark text-linguify-primary me-2"></i>
+                            <div>
+                                <div class="summary-title-compact">Fichier</div>
+                                <div class="summary-value-compact text-linguify-primary" id="previewFileName"></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="summary-card">
-                            <div class="summary-icon">
-                                <i class="bi bi-list-ol icon-linguify-success"></i>
-                            </div>
-                            <div class="summary-content">
-                                <div class="summary-title">Lignes</div>
-                                <div class="summary-value" id="previewTotalRows"></div>
+                        <div class="summary-card-compact">
+                            <i class="bi bi-list-ol text-linguify-success me-2"></i>
+                            <div>
+                                <div class="summary-title-compact">Lignes</div>
+                                <div class="summary-value-compact text-linguify-success" id="previewTotalRows"></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="summary-card">
-                            <div class="summary-icon">
-                                <i class="bi bi-credit-card icon-linguify-warning"></i>
-                            </div>
-                            <div class="summary-content">
-                                <div class="summary-title">Cartes à créer</div>
-                                <div class="summary-value" id="previewEstimatedCards">~</div>
+                        <div class="summary-card-compact">
+                            <i class="bi bi-credit-card text-linguify-accent me-2"></i>
+                            <div>
+                                <div class="summary-title-compact">Cartes à créer</div>
+                                <div class="summary-value-compact text-linguify-accent" id="previewEstimatedCards">~</div>
                             </div>
                         </div>
                     </div>
@@ -518,122 +643,127 @@
             </div>
 
             <!-- Configuration des colonnes -->
-            <div class="column-mapping mb-4">
-                <h6 class="mb-3">
+            <div class="column-mapping-compact mb-3">
+                <h6 class="mb-2 text-linguify-primary fw-semibold">
                     <i class="bi bi-arrow-left-right me-1"></i>
                     Configuration des colonnes
                 </h6>
                 
                 <!-- Option pour la première ligne -->
-                <div class="mb-3">
+                <div class="mb-2">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="hasHeaderCheck" checked onchange="updatePreview()">
-                        <label class="form-check-label" for="hasHeaderCheck">
+                        <label class="form-check-label text-linguify-gray fw-medium" for="hasHeaderCheck">
                             La première ligne contient des en-têtes de colonnes (ne pas l'importer comme carte)
                         </label>
                     </div>
                 </div>
                 
-                <div class="row">
+                <div class="row g-2">
                     <div class="col-md-6">
-                        <div class="mapping-option">
-                            <label class="form-label fw-bold text-linguify-primary">
+                        <div class="mapping-option-compact">
+                            <label class="form-label fw-semibold text-linguify-primary mb-1">
                                 <i class="bi bi-card-text me-1"></i>
                                 Recto des cartes
                             </label>
-                            <select id="frontColumnSelect" class="form-select form-select-lg" onchange="updatePreview()">
+                            <select id="frontColumnSelect" class="form-select form-select-sm" onchange="updatePreview()">
                             </select>
                             
-                            <label class="form-label mt-2">
+                            <label class="form-label mt-2 mb-1 small text-linguify-accent">
                                 <i class="bi bi-globe me-1"></i>
                                 Langue du recto (optionnel)
                             </label>
-                            <select id="frontLanguageSelect" class="form-select">
+                            <select id="frontLanguageSelect" class="form-select form-select-sm">
                                 <option value="">-- Sélectionner une langue --</option>
-                                <option value="fr">Français</option>
-                                <option value="en">Anglais</option>
-                                <option value="es">Espagnol</option>
-                                <option value="de">Allemand</option>
-                                <option value="it">Italien</option>
-                                <option value="pt">Portugais</option>
-                                <option value="ru">Russe</option>
-                                <option value="zh">Chinois</option>
-                                <option value="ja">Japonais</option>
-                                <option value="ko">Coréen</option>
-                                <option value="ar">Arabe</option>
-                                <option value="nl">Néerlandais</option>
-                                <option value="pl">Polonais</option>
-                                <option value="tr">Turc</option>
-                                <option value="sv">Suédois</option>
+                                <option value="fr">🇫🇷 Français</option>
+                                <option value="en">🇺🇸 Anglais</option>
+                                <option value="es">🇪🇸 Espagnol</option>
+                                <option value="de">🇩🇪 Allemand</option>
+                                <option value="it">🇮🇹 Italien</option>
+                                <option value="pt">🇵🇹 Portugais</option>
+                                <option value="ru">🇷🇺 Russe</option>
+                                <option value="zh">🇨🇳 Chinois</option>
+                                <option value="ja">🇯🇵 Japonais</option>
+                                <option value="ko">🇰🇷 Coréen</option>
+                                <option value="ar">🇸🇦 Arabe</option>
+                                <option value="nl">🇳🇱 Néerlandais</option>
+                                <option value="pl">🇵🇱 Polonais</option>
+                                <option value="tr">🇹🇷 Turc</option>
+                                <option value="sv">🇸🇪 Suédois</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="mapping-option">
-                            <label class="form-label fw-bold text-linguify-success">
+                        <div class="mapping-option-compact">
+                            <label class="form-label fw-semibold text-linguify-accent mb-1">
                                 <i class="bi bi-card-text me-1"></i>
                                 Verso des cartes
                             </label>
-                            <select id="backColumnSelect" class="form-select form-select-lg" onchange="updatePreview()">
+                            <select id="backColumnSelect" class="form-select form-select-sm" onchange="updatePreview()">
                             </select>
                             
-                            <label class="form-label mt-2">
+                            <label class="form-label mt-2 mb-1 small text-linguify-accent">
                                 <i class="bi bi-globe me-1"></i>
                                 Langue du verso (optionnel)
                             </label>
-                            <select id="backLanguageSelect" class="form-select">
+                            <select id="backLanguageSelect" class="form-select form-select-sm">
                                 <option value="">-- Sélectionner une langue --</option>
-                                <option value="fr">Français</option>
-                                <option value="en">Anglais</option>
-                                <option value="es">Espagnol</option>
-                                <option value="de">Allemand</option>
-                                <option value="it">Italien</option>
-                                <option value="pt">Portugais</option>
-                                <option value="ru">Russe</option>
-                                <option value="zh">Chinois</option>
-                                <option value="ja">Japonais</option>
-                                <option value="ko">Coréen</option>
-                                <option value="ar">Arabe</option>
-                                <option value="nl">Néerlandais</option>
-                                <option value="pl">Polonais</option>
-                                <option value="tr">Turc</option>
-                                <option value="sv">Suédois</option>
+                                <option value="fr">🇫🇷 Français</option>
+                                <option value="en">🇺🇸 Anglais</option>
+                                <option value="es">🇪🇸 Espagnol</option>
+                                <option value="de">🇩🇪 Allemand</option>
+                                <option value="it">🇮🇹 Italien</option>
+                                <option value="pt">🇵🇹 Portugais</option>
+                                <option value="ru">🇷🇺 Russe</option>
+                                <option value="zh">🇨🇳 Chinois</option>
+                                <option value="ja">🇯🇵 Japonais</option>
+                                <option value="ko">🇰🇷 Coréen</option>
+                                <option value="ar">🇸🇦 Arabe</option>
+                                <option value="nl">🇳🇱 Néerlandais</option>
+                                <option value="pl">🇵🇱 Polonais</option>
+                                <option value="tr">🇹🇷 Turc</option>
+                                <option value="sv">🇸🇪 Suédois</option>
                             </select>
                         </div>
                     </div>
                 </div>
-                <div class="mapping-hint mt-2">
-                    <i class="bi bi-lightbulb icon-linguify-warning me-1"></i>
-                    <small class="text-muted">Modifiez la sélection pour voir l'aperçu mis à jour en temps réel</small>
+                <div class="mapping-hint-compact mt-2">
+                    <i class="bi bi-lightbulb text-linguify-warning me-1"></i>
+                    <small class="text-linguify-gray">Modifiez la sélection pour voir l'aperçu mis à jour en temps réel</small>
                 </div>
             </div>
             
-            <!-- Aperçu des cartes -->
-            <div class="preview-cards mb-4">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="mb-0">
+            <!-- Aperçu des cartes - compact -->
+            <div class="preview-cards-compact mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h6 class="mb-0 text-linguify-primary fw-semibold">
                         <i class="bi bi-stack me-1"></i>
                         Aperçu des cartes (5 premières)
                     </h6>
-                    <span class="badge bg-info display-none" id="previewUpdateIndicator">
+                    <span class="badge bg-linguify-warning text-white display-none" id="previewUpdateIndicator">
                         <i class="bi bi-arrow-repeat me-1"></i>
                         Mise à jour...
                     </span>
                 </div>
-                <div id="previewCardsContainer" class="preview-cards-grid">
+                <div id="previewCardsContainer" class="preview-cards-grid-compact">
                     <!-- Les cartes de preview seront ajoutées ici -->
                 </div>
             </div>
             
-            <div class="d-flex gap-2 justify-content-between">
-                <button id="cancelImportPreviewAlt" class="btn btn-outline-custom">
-                    <i class="bi bi-arrow-left me-1"></i>
-                    Retour
-                </button>
-                <button id="confirmImport" class="btn btn-gradient btn-lg">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Confirmer l'import
-                </button>
+            </div>
+            
+            <!-- Fixed bottom actions -->
+            <div class="import-actions-fixed bg-white border-top px-3 mt-auto" style="flex-shrink: 0;">
+                <div class="d-flex gap-2 justify-content-between align-items-center">
+                    <button id="cancelImportPreviewAlt" class="btn btn-outline-custom">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Retour
+                    </button>
+                    <button id="confirmImport" class="btn btn-gradient">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Confirmer l'import
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -643,8 +773,8 @@
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-pencil icon-linguify-warning me-2 font-size-1-5rem"></i>
-                    <h5 class="mb-0">Modifier le deck</h5>
+                    <i class="bi bi-pencil text-linguify-primary me-2" style="font-size: 1.5rem;"></i>
+                    <h4 class="mb-0 text-linguify-primary">Modifier le deck</h4>
                 </div>
                 <button id="cancelEditDeck" class="btn btn-outline-custom btn-sm">
                     <i class="bi bi-x-lg"></i>
@@ -654,34 +784,34 @@
         </div>
         
         <div class="study-content p-4">
-            <div class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i>
-                Modifiez les informations de votre deck. Ces changements seront sauvegardés immédiatement.
+            <div class="alert bg-gradient-subtle-linguify border-linguify p-3">
+                <i class="bi bi-info-circle text-linguify-accent me-2" style="font-size: 1.1rem;"></i>
+                <span class="text-linguify-primary" style="font-size: 0.95rem; font-weight: 500;">Modifiez les informations de votre deck. Ces changements seront sauvegardés immédiatement.</span>
             </div>
             
-            <div class="mb-3">
-                <label class="form-label fw-bold">
-                    <i class="bi bi-tag me-1"></i>
+            <div class="mb-4">
+                <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
+                    <i class="bi bi-tag me-2"></i>
                     Nom du deck
                 </label>
-                <input type="text" id="editDeckName" class="form-control form-control-lg" 
+                <input type="text" id="editDeckName" class="form-control" 
                        placeholder="Nom du deck..." maxlength="100">
-                <div class="form-text">Le nom doit être unique parmi vos decks</div>
+                <div class="form-text text-linguify-accent">Le nom doit être unique parmi vos decks</div>
             </div>
             
-            <div class="mb-3">
-                <label class="form-label fw-bold">
-                    <i class="bi bi-card-text me-1"></i>
+            <div class="mb-4">
+                <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
+                    <i class="bi bi-card-text me-2"></i>
                     Description
                 </label>
                 <textarea id="editDeckDescription" class="form-control" rows="3" 
                           placeholder="Description du deck (optionnel)..." maxlength="500"></textarea>
-                <div class="form-text">Décrivez le contenu de votre deck en quelques mots</div>
+                <div class="form-text text-linguify-accent">Décrivez le contenu de votre deck en quelques mots</div>
             </div>
             
-            <div class="mb-3">
-                <label class="form-label fw-bold">
-                    <i class="bi bi-tags me-1"></i>
+            <div class="mb-4">
+                <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
+                    <i class="bi bi-tags me-2"></i>
                     Tags
                 </label>
                 <div class="tags-input-container">
@@ -689,28 +819,29 @@
                     <input type="text" id="editDeckTagsInput" class="form-control" 
                            placeholder="Ajouter des tags (appuyez sur Entrée)">
                 </div>
-                <div class="form-text">Les tags aident à organiser vos decks</div>
+                <div class="form-text text-linguify-accent">Les tags aident à organiser vos decks</div>
             </div>
             
             <div class="mb-4">
-                <label class="form-label fw-bold">
-                    <i class="bi bi-eye me-1"></i>
+                <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
+                    <i class="bi bi-eye me-2"></i>
                     Visibilité
                 </label>
-                <select id="editDeckVisibility" class="form-select form-select-lg">
+                <select id="editDeckVisibility" class="form-select">
                     <option value="private">Privé - Visible par vous seul</option>
                     <option value="public">Public - Visible par tous les utilisateurs</option>
                 </select>
-                <div class="form-text">Les decks publics peuvent être découverts et utilisés par d'autres utilisateurs</div>
+                <div class="form-text text-linguify-accent">Les decks publics peuvent être découverts et utilisés par d'autres utilisateurs</div>
             </div>
             
-            <div class="d-flex gap-2 justify-content-end">
-                <button id="saveEditDeck" class="btn btn-gradient btn-lg">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Sauvegarder les modifications
-                </button>
+            <div class="d-flex gap-3 justify-content-end pt-3 mt-4 border-top" style="border-color: rgba(45, 91, 186, 0.1) !important;">
                 <button id="cancelEditDeckAlt" class="btn btn-outline-custom">
+                    <i class="bi bi-x-lg me-2"></i>
                     Annuler
+                </button>
+                <button id="saveEditDeck" class="btn btn-gradient">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Sauvegarder les modifications
                 </button>
             </div>
         </div>
@@ -895,5 +1026,9 @@
 window.selectDeck = window.revisionMain.selectDeck;
 window.updatePreview = window.revisionMain.updatePreview;
 window.clearSelectedFile = window.revisionMain.clearSelectedFile;
+
+// Paramètres audio utilisateur depuis le serveur
+window.userAudioSettings = {{ audio_settings|default:"{}" }};
+console.log('🎵 Paramètres audio chargés depuis le serveur:', window.userAudioSettings);
 </script>
 {% endblock %}

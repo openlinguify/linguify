@@ -37,6 +37,23 @@ class RevisionMainView(TemplateView):
             'route_path': '/revision/'
         }
         
+        # Load audio settings for the user
+        from .models.settings_models import RevisionSettings
+        audio_settings = {}
+        try:
+            revision_settings, _ = RevisionSettings.objects.get_or_create(user=self.request.user)
+            audio_settings = {
+                'audio_enabled': revision_settings.audio_enabled,
+                'audio_speed': revision_settings.audio_speed,
+                'preferred_gender_french': revision_settings.preferred_gender_french,
+                'preferred_gender_english': revision_settings.preferred_gender_english,
+                'preferred_gender_spanish': revision_settings.preferred_gender_spanish,
+                'preferred_gender_italian': revision_settings.preferred_gender_italian,
+                'preferred_gender_german': revision_settings.preferred_gender_german,
+            }
+        except Exception as e:
+            print(f"Warning: Could not load audio settings: {e}")
+        
         context.update({
             'current_app': current_app_info,
             'page_title': 'Révision - Mes Flashcards',
@@ -46,6 +63,7 @@ class RevisionMainView(TemplateView):
                 'username': self.request.user.username,
                 'email': self.request.user.email,
             },
+            'audio_settings': audio_settings,
             'api_base_url': '/api/v1/revision',
             'debug': settings.DEBUG,
         })

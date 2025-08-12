@@ -31,6 +31,20 @@ class FlashcardDeck(models.Model):
         help_text="Remettre le compteur à zéro si mauvaise réponse"
     )
     
+    # Paramètres de langue par défaut pour les nouvelles cartes
+    default_front_language = models.CharField(
+        max_length=10,
+        blank=True,
+        default='',
+        help_text="Langue par défaut pour le recto des cartes (ex: 'fr', 'en', 'es'). Vide pour détection automatique."
+    )
+    default_back_language = models.CharField(
+        max_length=10,
+        blank=True,
+        default='',
+        help_text="Langue par défaut pour le verso des cartes (ex: 'fr', 'en', 'es'). Vide pour détection automatique."
+    )
+    
     # Constante de classe pour la période d'avertissement (en jours)
     WARNING_THRESHOLD_DAYS = 3
     # Constante pour la durée d'archivage avant expiration auto

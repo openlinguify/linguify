@@ -21,9 +21,21 @@
                 <div class="flashcard-inner">
                     <div class="flashcard-front">
                         <div class="flashcard-text" id="flashcardFront">Cliquez pour commencer</div>
+                        <button id="speakFrontBtn" class="speak-btn speak-btn-front" 
+                                onclick="event.stopPropagation(); window.flashcardMode.speakText('front')" 
+                                aria-label="Lire le recto de la carte à haute voix"
+                                title="Lire à haute voix">
+                            <i class="bi bi-volume-up" aria-hidden="true"></i>
+                        </button>
                     </div>
                     <div class="flashcard-back">
                         <div class="flashcard-text" id="flashcardBack">Réponse</div>
+                        <button id="speakBackBtn" class="speak-btn speak-btn-back" 
+                                onclick="event.stopPropagation(); window.flashcardMode.speakText('back')" 
+                                aria-label="Lire le verso de la carte à haute voix"
+                                title="Lire à haute voix">
+                            <i class="bi bi-volume-up" aria-hidden="true"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -64,7 +76,7 @@
         <div class="border-top p-3">
             <div class="row text-center">
                 <div class="col">
-                    <div class="stat-value text-linguify-success" id="studyCorrect">0</div>
+                    <div class="stat-value text-linguify-accent" id="studyCorrect">0</div>
                     <div class="stat-label">Réussies</div>
                 </div>
                 <div class="col">
@@ -72,7 +84,7 @@
                     <div class="stat-label">Moyennes</div>
                 </div>
                 <div class="col">
-                    <div class="stat-value text-danger" id="studyDifficult">0</div>
+                    <div class="stat-value text-danger" id="studyDifficultCount">0</div>
                     <div class="stat-label">Difficiles</div>
                 </div>
                 <div class="col">

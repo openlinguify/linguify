@@ -1,6 +1,10 @@
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
+
 # backend/django_apps/authentication/serializers.py
 from rest_framework import serializers
 import logging
+from django.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)
 # REMOVED: rest_framework_simplejwt - Using Django+Supabase authentication now
@@ -248,7 +252,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             
             if existing_users.exists():
                 raise serializers.ValidationError(
-                    f'Username "{value}" is already taken.'
+                    _('This username is already taken')
                 )
         return value
     

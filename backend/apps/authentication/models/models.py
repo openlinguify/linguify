@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Part of Linguify. See LICENSE file for full copyright and licensing details.
+
 # backend/authentication/models.py
 import os
 import datetime
@@ -17,6 +20,8 @@ from django.utils import timezone
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from PIL import Image
+import secrets
+import string
 
 from ..utils.storage import ProfileStorage
 
@@ -129,7 +134,7 @@ class UserManager(BaseUserManager):
 
         # Vérifier l'unicité case-insensitive du username
         if self.filter(username__iexact=username).exists():
-            raise ValidationError(f'Username "{username}" is already taken.')
+            raise ValidationError(_('This username is already taken'))
 
         user = self.model(
             username=username,
@@ -266,7 +271,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # the user can be deactivated by the admin or by the user himself
     # the user progress will be saved even if the user is deactivated during a certain period of time (e.g. 6 months)
     # if the user is deactivated for more than 6 months, the user progress will be deleted
-    is_active = models.BooleanField(null=False, default=True)
+    is_active = models.BooleanField(null=False, default=False)
     is_subscribed = models.BooleanField(null=False, default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -535,7 +540,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 existing_users = existing_users.exclude(pk=self.pk)
             
             if existing_users.exists():
-                raise ValidationError(f'Username "{self.username}" is already taken.')
+                raise ValidationError(_('This username is already taken'))
 
     def save(self, *args, **kwargs):
         """
@@ -1135,3 +1140,68 @@ class CookieConsentLog(models.Model):
     
     def __str__(self):
         return f"{self.consent} - {self.action} at {self.created_at}"
+
+
+class EmailVerificationToken(models.Model):
+    """
+    Model for storing email verification tokens
+    """
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='email_verification_tokens'
+    )
+    token = models.CharField(
+        max_length=64, 
+        unique=True,
+        help_text="Unique verification token"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(
+        help_text="Token expiration time"
+    )
+    is_used = models.BooleanField(
+        default=False,
+        help_text="Whether the token has been used"
+    )
+    
+    class Meta:
+        app_label = 'authentication'
+        verbose_name = "Email Verification Token"
+        verbose_name_plural = "Email Verification Tokens"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['token']),
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['expires_at']),
+        ]
+    
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = self.generate_token()
+        if not self.expires_at:
+            # Token expires in 24 hours
+            self.expires_at = timezone.now() + timezone.timedelta(hours=24)
+        super().save(*args, **kwargs)
+    
+    @staticmethod
+    def generate_token():
+        """Generate a secure random token"""
+        return ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(64))
+    
+    def is_expired(self):
+        """Check if the token is expired"""
+        return timezone.now() > self.expires_at
+    
+    def is_valid(self):
+        """Check if the token is valid (not used and not expired)"""
+        return not self.is_used and not self.is_expired()
+    
+    def use_token(self):
+        """Mark the token as used"""
+        self.is_used = True
+        self.save()
+    
+    def __str__(self):
+        status = "Used" if self.is_used else ("Expired" if self.is_expired() else "Active")
+        return f"{self.user.email} - {status} - {self.created_at}"

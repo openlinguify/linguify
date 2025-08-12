@@ -649,6 +649,11 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
+        'security.authentication': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
         'saas_web.views': {
             'handlers': ['profile_console'],
             'level': 'DEBUG',

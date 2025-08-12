@@ -379,6 +379,9 @@ async function selectDeck(deckId) {
         // Update cards count
         updateCardsCount();
         
+        // Show language settings if deck has cards
+        showDeckLanguageSettings(deck);
+        
         // Hide sidebar on mobile
         if (window.innerWidth < 768) {
             elements.sidebar.classList.remove('show');
@@ -467,9 +470,16 @@ function showCreateCardForm() {
     const elements = getElements();
     elements.createCardForm.style.display = 'block';
     
-    // Clear form
+    // Clear form and apply defaults
     elements.newCardFront.value = '';
     elements.newCardBack.value = '';
+    
+    // Apply default languages if set
+    const frontLangDefault = appState.deckDefaults?.frontLanguage || '';
+    const backLangDefault = appState.deckDefaults?.backLanguage || '';
+    
+    document.getElementById('newCardFrontLang').value = frontLangDefault;
+    document.getElementById('newCardBackLang').value = backLangDefault;
     
     // Focus on front input
     elements.newCardFront.focus();
@@ -479,11 +489,97 @@ function hideCreateCardForm() {
     const elements = getElements();
     elements.createCardForm.style.display = 'none';
     
+    // Clear form fields
+    elements.newCardFront.value = '';
+    elements.newCardBack.value = '';
+    document.getElementById('newCardFrontLang').value = '';
+    document.getElementById('newCardBackLang').value = '';
+    
     if (appState.selectedDeck) {
         elements.deckDetails.style.display = 'block';
     } else {
         elements.welcomeState.style.display = 'block';
     }
+    
+    // Reset language selectors to default state
+    resetLanguageSelectors();
+}
+
+// Functions to handle language selector visibility
+function toggleFrontLanguageSelector() {
+    const selector = document.getElementById('frontLangSelector');
+    const button = document.getElementById('changeFrontLang');
+    
+    if (selector && button) {
+        if (selector.style.display === 'none' || selector.style.display === '') {
+            selector.style.display = 'block';
+            button.innerHTML = '<i class="bi bi-check" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Confirmer</span>';
+            button.title = 'Confirmer le choix de langue';
+        } else {
+            selector.style.display = 'none';
+            button.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
+            button.title = 'Modifier la langue pour cette carte';
+            updateLanguageDisplay('front');
+        }
+    }
+}
+
+function toggleBackLanguageSelector() {
+    const selector = document.getElementById('backLangSelector');
+    const button = document.getElementById('changeBackLang');
+    
+    if (selector && button) {
+        if (selector.style.display === 'none' || selector.style.display === '') {
+            selector.style.display = 'block';
+            button.innerHTML = '<i class="bi bi-check" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Confirmer</span>';
+            button.title = 'Confirmer le choix de langue';
+        } else {
+            selector.style.display = 'none';
+            button.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
+            button.title = 'Modifier la langue pour cette carte';
+            updateLanguageDisplay('back');
+        }
+    }
+}
+
+function updateLanguageDisplay(side) {
+    const select = document.getElementById(side === 'front' ? 'newCardFrontLang' : 'newCardBackLang');
+    const display = document.getElementById(side === 'front' ? 'deckFrontLangDisplay' : 'deckBackLangDisplay');
+    
+    if (select && display) {
+        const selectedOption = select.options[select.selectedIndex];
+        if (selectedOption.value === '' || selectedOption.value === null) {
+            display.textContent = 'Langue par défaut du deck';
+        } else {
+            display.textContent = selectedOption.textContent;
+        }
+    }
+}
+
+function resetLanguageSelectors() {
+    // Reset front language selector
+    const frontSelector = document.getElementById('frontLangSelector');
+    const frontButton = document.getElementById('changeFrontLang');
+    const frontDisplay = document.getElementById('deckFrontLangDisplay');
+    
+    if (frontSelector) frontSelector.style.display = 'none';
+    if (frontButton) {
+        frontButton.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
+        frontButton.title = 'Modifier la langue pour cette carte';
+    }
+    if (frontDisplay) frontDisplay.textContent = 'Langue par défaut du deck';
+    
+    // Reset back language selector
+    const backSelector = document.getElementById('backLangSelector');
+    const backButton = document.getElementById('changeBackLang');
+    const backDisplay = document.getElementById('deckBackLangDisplay');
+    
+    if (backSelector) backSelector.style.display = 'none';
+    if (backButton) {
+        backButton.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
+        backButton.title = 'Modifier la langue pour cette carte';
+    }
+    if (backDisplay) backDisplay.textContent = 'Langue par défaut du deck';
 }
 
 async function createNewCard() {
@@ -495,6 +591,8 @@ async function createNewCard() {
     const elements = getElements();
     const frontText = elements.newCardFront.value.trim();
     const backText = elements.newCardBack.value.trim();
+    const frontLang = document.getElementById('newCardFrontLang').value;
+    const backLang = document.getElementById('newCardBackLang').value;
     
     if (!frontText) {
         window.notificationService.error('Le texte recto est requis');
@@ -511,7 +609,9 @@ async function createNewCard() {
     try {
         const cardData = {
             front_text: frontText,
-            back_text: backText
+            back_text: backText,
+            front_language: frontLang || null,
+            back_language: backLang || null
         };
         
         const newCard = await revisionAPI.createCard(appState.selectedDeck.id, cardData);
@@ -588,7 +688,7 @@ async function loadDeckCards() {
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
-                            <span class="badge ${card.learned ? 'bg-success' : 'bg-secondary'}">
+                            <span class="badge ${card.learned ? 'bg-linguify-accent' : 'bg-secondary'}">
                                 ${card.learned ? 'Apprise' : 'À apprendre'}
                             </span>
                             <small class="text-muted ms-2">
@@ -1205,7 +1305,11 @@ function showImportPreview(previewResult) {
     const totalRows = previewResult.total_rows || 0;
     const hasHeader = document.getElementById('hasHeaderCheck').checked;
     const estimatedCards = Math.max(0, hasHeader ? totalRows - 1 : totalRows);
-    animateValue(document.getElementById('previewEstimatedCards'), estimatedCards);
+    const estimatedCardsElement = document.getElementById('previewEstimatedCards');
+    if (estimatedCardsElement) {
+        console.log('Initial load - setting cards to:', estimatedCards);
+        estimatedCardsElement.textContent = estimatedCards;
+    }
     
     // Afficher les options de colonnes
     const frontSelect = elements.frontColumnSelect;
@@ -1282,6 +1386,19 @@ async function updatePreview() {
         const frontColumn = elements.frontColumnSelect.value;
         const backColumn = elements.backColumnSelect.value;
         
+        // Recalculer le nombre de cartes immédiatement, même si les colonnes sont identiques
+        const hasHeaderNow = document.getElementById('hasHeaderCheck').checked;
+        const totalRowsElement = document.getElementById('previewTotalRows');
+        if (totalRowsElement && totalRowsElement.textContent) {
+            const totalRows = parseInt(totalRowsElement.textContent) || 0;
+            const estimatedCards = Math.max(0, hasHeaderNow ? totalRows - 1 : totalRows);
+            const estimatedCardsElement = document.getElementById('previewEstimatedCards');
+            if (estimatedCardsElement) {
+                console.log('Updating estimated cards:', estimatedCards, 'from total rows:', totalRows, 'hasHeader:', hasHeaderNow);
+                estimatedCardsElement.textContent = estimatedCards;
+            }
+        }
+        
         if (frontColumn === backColumn) {
             window.notificationService.error('Les colonnes recto et verso doivent être différentes');
             return;
@@ -1322,6 +1439,16 @@ async function updatePreview() {
         
         // Attendre que l'animation se termine puis afficher les nouvelles cartes
         setTimeout(() => {
+            // Recalculer le nombre de cartes estimées
+            const totalRows = previewResult.total_rows || 0;
+            const hasHeaderNow = document.getElementById('hasHeaderCheck').checked;
+            const estimatedCards = Math.max(0, hasHeaderNow ? totalRows - 1 : totalRows);
+            const estimatedCardsElement = document.getElementById('previewEstimatedCards');
+            if (estimatedCardsElement) {
+                console.log('Final update - setting cards to:', estimatedCards);
+                estimatedCardsElement.textContent = estimatedCards;
+            }
+            
             updatePreviewDisplay(previewResult.preview || []);
             
             // Animation d'entrée des nouvelles cartes
@@ -1807,8 +1934,8 @@ function setupShareModalEventHandlers() {
                 document.execCommand('copy');
                 const originalText = button.innerHTML;
                 button.innerHTML = '<i class="bi bi-check-circle me-1"></i>Copié !';
-                button.style.backgroundColor = 'var(--linguify-accent, #00D4AA)';
-                button.style.borderColor = 'var(--linguify-accent, #00D4AA)';
+                button.style.backgroundColor = 'var(--linguify-accent, #017e84)';
+                button.style.borderColor = 'var(--linguify-accent, #017e84)';
                 
                 setTimeout(() => {
                     button.innerHTML = originalText;
@@ -1889,6 +2016,225 @@ function updateCardsCount() {
     cardsCountElement.textContent = `${count} carte${count > 1 ? 's' : ''}`;
 }
 
+// === LANGUAGE SETTINGS FOR DECK ===
+
+function showDeckLanguageSettings(deck) {
+    const languageSettings = document.getElementById('deckLanguageSettings');
+    if (!languageSettings) return;
+    
+    // Show language settings only if deck has cards
+    if (deck.cards_count && deck.cards_count > 0) {
+        languageSettings.style.display = 'block';
+        
+        // Initialize event listeners if not already done
+        if (!languageSettings.hasAttribute('data-initialized')) {
+            initializeDeckLanguageEvents();
+            languageSettings.setAttribute('data-initialized', 'true');
+        }
+        
+        // Populate language selectors with current deck settings
+        const frontLangSelect = document.getElementById('deckFrontLanguage');
+        const backLangSelect = document.getElementById('deckBackLanguage');
+        
+        console.log(`[Language Settings] DEBUG - Deck object:`, deck);
+        console.log(`[Language Settings] DEBUG - Front language from API: "${deck.default_front_language}"`);
+        console.log(`[Language Settings] DEBUG - Back language from API: "${deck.default_back_language}"`);
+        
+        // Temporarily disable auto-save during initialization
+        window.isInitializingLanguageSettings = true;
+        
+        if (frontLangSelect) {
+            const frontValue = deck.default_front_language || '';
+            frontLangSelect.value = frontValue;
+            console.log(`[Language Settings] Set front language selector to: "${frontValue}"`);
+        } else {
+            console.error('[Language Settings] Front language selector not found!');
+        }
+        
+        if (backLangSelect) {
+            const backValue = deck.default_back_language || '';
+            backLangSelect.value = backValue;
+            console.log(`[Language Settings] Set back language selector to: "${backValue}"`);
+        } else {
+            console.error('[Language Settings] Back language selector not found!');
+        }
+        
+        // Re-enable auto-save after a short delay to ensure all initialization is complete
+        setTimeout(() => {
+            window.isInitializingLanguageSettings = false;
+            console.log('[Language Settings] ✅ Auto-save re-enabled after initialization');
+        }, 100);
+    } else {
+        languageSettings.style.display = 'none';
+    }
+}
+
+function initializeDeckLanguageEvents() {
+    const applyToDeckBtn = document.getElementById('applyLanguagesToDeck');
+    const applyToNewCardsBtn = document.getElementById('applyLanguagesToNewCards');
+    const frontLangSelect = document.getElementById('deckFrontLanguage');
+    const backLangSelect = document.getElementById('deckBackLanguage');
+    
+    if (applyToDeckBtn) {
+        applyToDeckBtn.addEventListener('click', applyLanguagesToAllCards);
+    }
+    
+    if (applyToNewCardsBtn) {
+        applyToNewCardsBtn.addEventListener('click', setDefaultLanguagesForNewCards);
+    }
+    
+    // Auto-save language preferences when they change
+    if (frontLangSelect) {
+        frontLangSelect.addEventListener('change', saveDeckLanguagePreferences);
+    }
+    
+    if (backLangSelect) {
+        backLangSelect.addEventListener('change', saveDeckLanguagePreferences);
+    }
+}
+
+async function applyLanguagesToAllCards() {
+    if (!appState.selectedDeck) return;
+    
+    const frontLang = document.getElementById('deckFrontLanguage').value;
+    const backLang = document.getElementById('deckBackLanguage').value;
+    
+    if (!frontLang && !backLang) {
+        window.notificationService.error('Veuillez sélectionner au moins une langue');
+        return;
+    }
+    
+    const confirmMessage = `Voulez-vous appliquer ces langues à toutes les ${appState.selectedDeck.cards_count} cartes du deck ?\n\n` +
+                          `Recto: ${frontLang ? getLanguageName(frontLang) : 'Détection automatique'}\n` +
+                          `Verso: ${backLang ? getLanguageName(backLang) : 'Détection automatique'}`;
+    
+    if (!confirm(confirmMessage)) return;
+    
+    try {
+        // Get all cards of the deck
+        const deck = await revisionAPI.getDeck(appState.selectedDeck.id);
+        
+        for (const card of deck.cards || []) {
+            const updateData = {};
+            if (frontLang) updateData.front_language = frontLang;
+            if (backLang) updateData.back_language = backLang;
+            
+            await revisionAPI.updateCard(card.id, updateData);
+        }
+        
+        window.notificationService.success(`Langues appliquées à ${deck.cards_count || 0} cartes`);
+        
+        // Reload deck to refresh data
+        await selectDeck(appState.selectedDeck.id);
+        
+    } catch (error) {
+        console.error('Error applying languages to cards:', error);
+        window.notificationService.error('Erreur lors de la mise à jour des langues');
+    }
+}
+
+function setDefaultLanguagesForNewCards() {
+    const frontLang = document.getElementById('deckFrontLanguage').value;
+    const backLang = document.getElementById('deckBackLanguage').value;
+    
+    // Store in app state for future use
+    if (!appState.deckDefaults) {
+        appState.deckDefaults = {};
+    }
+    
+    appState.deckDefaults.frontLanguage = frontLang;
+    appState.deckDefaults.backLanguage = backLang;
+    
+    // Update the card creation forms with these defaults
+    const newCardFrontLang = document.getElementById('newCardFrontLang');
+    const newCardBackLang = document.getElementById('newCardBackLang');
+    
+    if (newCardFrontLang) newCardFrontLang.value = frontLang;
+    if (newCardBackLang) newCardBackLang.value = backLang;
+    
+    const message = `Langues définies pour les nouvelles cartes :\n` +
+                   `Recto: ${frontLang ? getLanguageName(frontLang) : 'Détection automatique'}\n` +
+                   `Verso: ${backLang ? getLanguageName(backLang) : 'Détection automatique'}`;
+    
+    window.notificationService.success('Paramètres appliqués aux nouvelles cartes');
+}
+
+function getLanguageName(code) {
+    const languages = {
+        'fr': '🇫🇷 Français',
+        'en': '🇺🇸 Anglais', 
+        'es': '🇪🇸 Espagnol',
+        'it': '🇮🇹 Italien',
+        'de': '🇩🇪 Allemand',
+        'pt': '🇵🇹 Portugais'
+    };
+    return languages[code] || code;
+}
+
+async function saveDeckLanguagePreferences() {
+    console.log('[Language Settings] 🔄 saveDeckLanguagePreferences() called');
+    
+    // Skip auto-save during initialization to prevent overwriting user changes
+    if (window.isInitializingLanguageSettings) {
+        console.log('[Language Settings] ⏸️ Skipping auto-save during initialization');
+        return;
+    }
+    
+    if (!appState.selectedDeck) {
+        console.warn('[Language Settings] No deck selected, cannot save language preferences');
+        return;
+    }
+    
+    const frontLangSelect = document.getElementById('deckFrontLanguage');
+    const backLangSelect = document.getElementById('deckBackLanguage');
+    
+    if (!frontLangSelect || !backLangSelect) {
+        console.error('[Language Settings] Language selectors not found');
+        return;
+    }
+    
+    const frontLang = frontLangSelect.value;
+    const backLang = backLangSelect.value;
+    
+    console.log(`[Language Settings] 💾 Saving deck ${appState.selectedDeck.id} language preferences - Front: "${frontLang}" (empty=${!frontLang}), Back: "${backLang}" (empty=${!backLang})`);
+    
+    try {
+        // Update the deck with new language preferences
+        const updateData = {
+            default_front_language: frontLang,
+            default_back_language: backLang
+        };
+        
+        console.log('[Language Settings] 📤 Sending API update with data:', updateData);
+        
+        const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, updateData);
+        
+        console.log('[Language Settings] 📥 API response received:', updatedDeck);
+        
+        // Update the local state
+        appState.selectedDeck.default_front_language = frontLang;
+        appState.selectedDeck.default_back_language = backLang;
+        
+        console.log('[Language Settings] ✅ Language preferences saved successfully');
+        
+        // Show a subtle notification
+        if (window.notificationService) {
+            window.notificationService.success('Préférences de langue sauvegardées');
+        }
+        
+    } catch (error) {
+        console.error('[Language Settings] ❌ Error saving language preferences:', error);
+        
+        if (window.notificationService) {
+            window.notificationService.error('Erreur lors de la sauvegarde des préférences');
+        }
+        
+        // Revert the selectors to their previous values
+        frontLangSelect.value = appState.selectedDeck.default_front_language || '';
+        backLangSelect.value = appState.selectedDeck.default_back_language || '';
+    }
+}
+
 async function archiveDeck() {
     if (!appState.selectedDeck) {
         window.notificationService.error('Aucun deck sélectionné');
@@ -1911,9 +2257,9 @@ function showArchiveConfirmationModal(deckName, isArchived) {
     
     // Utiliser les couleurs Linguify
     const bgColor = isArchived ? '#e8f5e8' : '#e8f0fe'; // Vert clair pour désarchiver, bleu clair pour archiver
-    const borderColor = isArchived ? '#00D4AA' : '#2D5BBA'; // Accent vert pour désarchiver, primary bleu pour archiver
-    const textColor = isArchived ? '#00D4AA' : '#2D5BBA';
-    const btnBgColor = isArchived ? '#00D4AA' : '#2D5BBA'; // Accent pour désarchiver, primary pour archiver
+    const borderColor = isArchived ? '#017e84' : '#2D5BBA'; // Accent vert pour désarchiver, primary bleu pour archiver
+    const textColor = isArchived ? '#017e84' : '#2D5BBA';
+    const btnBgColor = isArchived ? '#017e84' : '#2D5BBA'; // Accent pour désarchiver, primary pour archiver
     
     // Créer la modal de confirmation
     const modal = document.createElement('div');
@@ -2269,7 +2615,7 @@ function updateTagsFilterCounter() {
     }
 }
 
-// Quick tags editing (Odoo style) - Open tags management directly
+// Quick tags editing (OpenLinguify style) - Open tags management directly
 function quickEditTags(deckId) {
     console.log('🏷️ quickEditTags appelé avec deckId:', deckId);
     
@@ -2577,6 +2923,10 @@ function setupEventListeners() {
     elements.cancelCardEdit?.addEventListener('click', hideEditCardForm);
     elements.cancelCardEditAlt?.addEventListener('click', hideEditCardForm);
     
+    // Language modification buttons for new cards
+    document.getElementById('changeFrontLang')?.addEventListener('click', toggleFrontLanguageSelector);
+    document.getElementById('changeBackLang')?.addEventListener('click', toggleBackLanguageSelector);
+    
     // Deck Management buttons
     document.getElementById('editDeck')?.addEventListener('click', showEditDeckForm);
     document.getElementById('exportDeck')?.addEventListener('click', exportDeck);
@@ -2651,27 +3001,27 @@ function ensureModalsExist() {
                         
                         <div class="mb-3">
                             <h6 class="fw-semibold mb-2" style="color: #6B7280;">
-                                <i class="bi bi-eye me-1" style="color: #00D4AA;"></i>
+                                <i class="bi bi-eye me-1" style="color: #017e84;"></i>
                                 En rendant ce jeu de cartes public :
                             </h6>
                             <ul class="list-unstyled ms-3">
                                 <li class="mb-1" style="color: #6B7280;">
-                                    <i class="bi bi-check-circle me-2" style="color: #00D4AA;"></i>
+                                    <i class="bi bi-check-circle me-2" style="color: #017e84;"></i>
                                     Autres utilisateurs pourront le découvrir
                                 </li>
                                 <li class="mb-1" style="color: #6B7280;">
-                                    <i class="bi bi-check-circle me-2" style="color: #00D4AA;"></i>
+                                    <i class="bi bi-check-circle me-2" style="color: #017e84;"></i>
                                     Vous pourrez partager le lien
                                 </li>
                                 <li class="mb-1" style="color: #6B7280;">
-                                    <i class="bi bi-check-circle me-2" style="color: #00D4AA;"></i>
+                                    <i class="bi bi-check-circle me-2" style="color: #017e84;"></i>
                                     Vous restez propriétaire et pouvez le modifier
                                 </li>
                             </ul>
                         </div>
                         
                         <div class="small" style="color: #6B7280;">
-                            <i class="bi bi-shield-check me-1" style="color: #00D4AA;"></i>
+                            <i class="bi bi-shield-check me-1" style="color: #017e84;"></i>
                             Vous pourrez toujours rendre le jeu de cartes privé plus tard si nécessaire.
                         </div>
                     </div>
@@ -2696,10 +3046,10 @@ function ensureModalsExist() {
                     <div class="modal-header border-0 pb-0">
                         <div class="d-flex align-items-center">
                             <div class="rounded-circle p-2 me-3" style="background-color: rgba(0, 212, 170, 0.1);">
-                                <i class="bi bi-share" style="font-size: 1.5rem; color: #00D4AA;"></i>
+                                <i class="bi bi-share" style="font-size: 1.5rem; color: #017e84;"></i>
                             </div>
                             <div>
-                                <h5 class="modal-title mb-0" style="color: #00D4AA;">Partager votre jeu de cartes</h5>
+                                <h5 class="modal-title mb-0" style="color: #017e84;">Partager votre jeu de cartes</h5>
                                 <p class="text-muted mb-0 small" id="shareModalDeckName">"Nom du jeu de cartes"</p>
                             </div>
                         </div>
@@ -2806,6 +3156,10 @@ window.revisionMain = {
     hideImportForm,
     showCreateCardForm,
     hideCreateCardForm,
+    toggleFrontLanguageSelector,
+    toggleBackLanguageSelector,
+    updateLanguageDisplay,
+    resetLanguageSelectors,
     hideAllSections,
     createNewDeck,
     createNewCard,

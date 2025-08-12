@@ -39,6 +39,11 @@ class RevisionSettingsSerializer(serializers.ModelSerializer):
             # Interface
             'enable_animations', 'auto_play_audio', 'keyboard_shortcuts_enabled',
             
+            # Audio et genres de voix préférés
+            'audio_enabled', 'audio_speed',
+            'preferred_gender_french', 'preferred_gender_english', 'preferred_gender_spanish',
+            'preferred_gender_italian', 'preferred_gender_german',
+            
             # Statistiques de mots
             'show_word_stats', 'stats_display_mode', 'hide_learned_words', 'group_by_deck',
             
@@ -153,6 +158,31 @@ class RevisionSettingsSerializer(serializers.ModelSerializer):
         logger.debug(f"New values: {validated_data}")
         
         return updated_instance
+    
+    def validate_audio_speed(self, value):
+        """Validation spécifique pour la vitesse audio"""
+        if not (0.5 <= value <= 2.0):
+            raise serializers.ValidationError("La vitesse audio doit être entre 0.5 et 2.0")
+        return value
+    
+    def validate(self, data):
+        """Validation globale des paramètres"""
+        # Vérifier la cohérence des intervalles de répétition espacée
+        if data.get('spaced_repetition_enabled', True):
+            easy = data.get('initial_interval_easy', 4)
+            normal = data.get('initial_interval_normal', 2) 
+            hard = data.get('initial_interval_hard', 1)
+            
+            if easy < normal:
+                raise serializers.ValidationError(
+                    "L'intervalle facile doit être supérieur ou égal à l'intervalle normal"
+                )
+            if normal < hard:
+                raise serializers.ValidationError(
+                    "L'intervalle normal doit être supérieur ou égal à l'intervalle difficile"
+                )
+        
+        return data
 
 
 class RevisionSessionConfigSerializer(serializers.ModelSerializer):
@@ -178,18 +208,7 @@ class RevisionSessionConfigSerializer(serializers.ModelSerializer):
     
     def get_estimated_completion_time(self, obj):
         """Calcule le temps estimé pour terminer cette configuration"""
-        # Estimation basée sur 30 secondes par carte en moyenne
-        base_time_per_card = 0.5  # minutes
-        
-        if obj.session_type == 'quick':
-            time_per_card = base_time_per_card * 0.7
-        elif obj.session_type == 'extended':
-            time_per_card = base_time_per_card * 1.3
-        else:
-            time_per_card = base_time_per_card
-        
-        estimated_time = obj.target_cards * time_per_card
-        return round(estimated_time, 1)
+        return obj.get_estimated_time()
     
     def get_difficulty_distribution(self, obj):
         """Retourne la distribution prévue des difficultés"""
