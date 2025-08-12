@@ -5,28 +5,58 @@
     /* Couleurs OpenLinguify */
     --linguify-primary: #2D5BBA;        /* Bleu royal moderne - confiance et professionnalisme */
     --linguify-secondary: #8B5CF6;      /* Violet élégant - créativité et sophistication */
-    --linguify-accent: #00D4AA;         /* Vert menthe - succès et progression */
-    --linguify-gray: #6B7280;           /* Gris moderne - neutralité élégante */
+    --linguify-accent: #017e84;         /* Teal - succès et progression */
+    --linguify-gray: #374151;           /* Gris sombre pour meilleur contraste WCAG */
+    --linguify-gray-light: #6B7280;    /* Gris clair pour éléments secondaires */
     --linguify-primary-light: #4F7BD9;  /* Bleu plus clair */
     --linguify-primary-dark: #1E4A8C;   /* Bleu plus foncé */
     --linguify-secondary-light: #A78BFA; /* Violet plus clair */
     --linguify-secondary-dark: #7C3AED;  /* Violet plus foncé */
-    --linguify-accent-light: #26E4B8;   /* Vert menthe plus clair */
-    --linguify-accent-dark: #00B894;    /* Vert menthe plus foncé */
+    --linguify-accent-light: #4AC5CB;   /* Teal plus clair */
+    --linguify-accent-dark: #016064;    /* Teal plus foncé */
+    --linguify-teal: #017e84;           /* Teal pour gradients */
     --linguify-success: #10B981;        /* Vert succès */
     --linguify-warning: #F59E0B;        /* Jaune attention */
     --linguify-error: #EF4444;          /* Rouge erreur */
     --header-height: 64px;              /* Hauteur du header fixe */
     
+    /* Design Tokens - Spacing Scale */
+    --space-xs: 0.25rem;    /* 4px */
+    --space-sm: 0.5rem;     /* 8px */
+    --space-md: 1rem;       /* 16px */
+    --space-lg: 1.5rem;     /* 24px */
+    --space-xl: 2rem;       /* 32px */
+    --space-2xl: 3rem;      /* 48px */
+    
+    /* Design Tokens - Typography Scale (1.25 ratio) */
+    --font-size-xs: 0.75rem;   /* 12px */
+    --font-size-sm: 0.875rem;  /* 14px */
+    --font-size-md: 1rem;      /* 16px */
+    --font-size-lg: 1.25rem;   /* 20px */
+    --font-size-xl: 1.563rem;  /* 25px */
+    --font-size-2xl: 1.953rem; /* 31px */
+    
+    /* Design Tokens - Component Sizing */
+    --touch-target-min: 44px;
+    --border-radius-sm: 6px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+    
     /* Variables RGB pour transparence */
     --linguify-primary-rgb: 45, 91, 186;
     --linguify-secondary-rgb: 139, 92, 246;
-    --linguify-accent-rgb: 0, 212, 170;
+    --linguify-accent-rgb: 1, 126, 132;
+    --linguify-teal-rgb: 1, 126, 132;
     --linguify-success-rgb: 16, 185, 129;
     --linguify-warning-rgb: 245, 158, 11;
     
     /* Couleurs principales (compatibilité) */
-    --primary-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    --primary-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
+    --secondary-gradient: linear-gradient(135deg, var(--linguify-teal) 0%, var(--linguify-primary) 100%);
+    --accent-gradient: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+    --subtle-gradient: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.05) 100%);
+    --subtle-gradient-medium: linear-gradient(135deg, rgba(45, 91, 186, 0.08) 0%, rgba(1, 126, 132, 0.08) 100%);
     --primary-color: var(--linguify-primary);
     --primary-dark: var(--linguify-primary-dark);
     --secondary-color: var(--linguify-secondary);
@@ -52,7 +82,7 @@
     /* Dimensions layout */
     --sidebar-width: 320px;
     --sidebar-width-mobile: 100%;
-    --header-height: 120px;
+    --header-height: 64px;              /* Uniformisation avec la valeur du haut */
     --flashcard-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
 }
 
@@ -65,7 +95,7 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     margin: 0;
     padding-top: 64px; /* Space for fixed header */
-    background: linear-gradient(135deg, #fdf4ff 0%, #fef3c7 100%);
+    background: var(--subtle-gradient);
     min-height: 100vh;
 }
 
@@ -155,7 +185,7 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     text-decoration: none;
-    color: #64748b;
+    color: var(--linguify-gray);
     font-weight: 500;
     transition: all 0.2s ease;
 }
@@ -232,7 +262,7 @@ body {
 .btn-outline-custom {
     border: 1px solid #e2e8f0;
     background: white;
-    color: #64748b;
+    color: var(--linguify-gray);
     transition: all 0.2s ease;
 }
 
@@ -302,8 +332,8 @@ body {
 
 .sidebar-header {
     padding: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-    background: #fafbfc;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
+    background: var(--bg-gradient-subtle-linguify, rgba(45, 91, 186, 0.03));
 }
 
 .sidebar-content {
@@ -392,21 +422,28 @@ body {
 }
 
 .deck-item {
-    padding: 1rem;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 1.25rem;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     background: white;
     position: relative;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 3px rgba(45, 91, 186, 0.08);
 }
 
 .deck-item:hover {
-    background: #fafbfc;
+    background: rgba(45, 91, 186, 0.02);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.15);
+    transform: translateY(-1px);
 }
 
 .deck-item.active {
-    background: linear-gradient(135deg, #f0f4ff 0%, #fef7cd 100%);
-    border-left: 3px solid var(--primary-color);
+    background: var(--bg-gradient-subtle-linguify, rgba(45, 91, 186, 0.05));
+    border-left: 4px solid var(--linguify-primary);
+    box-shadow: 0 4px 20px rgba(45, 91, 186, 0.2);
+    transform: translateY(-2px);
 }
 
 .deck-header {
@@ -418,8 +455,10 @@ body {
 
 .deck-name {
     font-weight: 600;
-    color: #1e293b;
-    font-size: 0.875rem;
+    color: var(--linguify-primary);
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
 }
 
 .deck-stats {
@@ -438,15 +477,15 @@ body {
 }
 
 .deck-description {
-    color: #64748b;
-    font-size: 0.75rem;
-    line-height: 1.4;
+    color: var(--linguify-gray);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    margin-bottom: 0.5rem;
 }
 
 .deck-meta {
@@ -454,21 +493,24 @@ body {
     align-items: center;
     gap: 0.75rem;
     font-size: 0.625rem;
-    color: #94a3b8;
+    color: var(--linguify-gray-light);
 }
 
 .deck-progress {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .progress-bar, .progress-bar-custom {
-    width: 60px;
-    height: 4px;
-    background: #e2e8f0;
-    border-radius: 2px;
+    width: 80px;
+    height: 6px;
+    background: rgba(45, 91, 186, 0.1);
+    border-radius: 3px;
     overflow: hidden;
+    position: relative;
 }
 
 .progress-fill {
@@ -724,7 +766,7 @@ body {
 }
 
 .mode-description, .study-mode-description {
-    color: #64748b;
+    color: var(--linguify-gray);
     font-size: 0.875rem;
     line-height: 1.4;
     margin: 0 0 15px;
@@ -774,7 +816,7 @@ body {
 }
 
 .flashcard-back {
-    background: linear-gradient(135deg, #fdf4ff 0%, #fef3c7 100%);
+    background: var(--subtle-gradient);
     transform: rotateY(180deg);
 }
 
@@ -856,23 +898,32 @@ body {
 }
 
 .card-row {
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    border: 1px solid transparent;
 }
 
 .card-row:hover {
-    background: var(--gray-50);
+    background: rgba(45, 91, 186, 0.03);
+    border-color: rgba(45, 91, 186, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.1);
 }
 
 .card-row.status-learned {
-    background: #f0fdf4;
+    background: rgba(1, 126, 132, 0.08);
+    border-color: rgba(1, 126, 132, 0.2);
 }
 
 .card-row.status-new {
-    background: #fffbeb;
+    background: rgba(45, 91, 186, 0.05);
+    border-color: rgba(45, 91, 186, 0.15);
 }
 
 .card-row.status-review {
-    background: #fef3f2;
+    background: rgba(139, 92, 246, 0.08);
+    border-color: rgba(139, 92, 246, 0.2);
 }
 
 .status-badge {
@@ -886,12 +937,12 @@ body {
 }
 
 .status-badge.status-learned {
-    background: #d1fae5;
-    color: #065f46;
+    background: rgba(1, 126, 132, 0.2);
+    color: #017e84;
 }
 
 .status-badge.status-new {
-    background: #fef3c7;
+    background: rgba(1, 126, 132, 0.1);
     color: #92400e;
 }
 
@@ -984,7 +1035,7 @@ body {
 
 .matching-item.selected {
     border-color: var(--primary-color);
-    background: linear-gradient(135deg, #f0f4ff 0%, #fef7cd 100%);
+    background: var(--subtle-gradient-medium);
     transform: scale(1.02);
 }
 
@@ -1136,7 +1187,7 @@ body {
 }
 
 .empty-state-description {
-    color: #64748b;
+    color: var(--linguify-gray);
     margin-bottom: 1.5rem;
 }
 
@@ -1243,7 +1294,7 @@ body {
 }
 
 .share-modal-accent-icon {
-    color: var(--linguify-accent, #00D4AA);
+    color: var(--linguify-accent, #017e84);
 }
 
 .share-modal-list-item {
@@ -1271,11 +1322,11 @@ body {
 
 .share-modal-public-icon {
     font-size: 1.5rem;
-    color: var(--linguify-accent, #00D4AA);
+    color: var(--linguify-accent, #017e84);
 }
 
 .share-modal-public-title {
-    color: var(--linguify-accent, #00D4AA);
+    color: var(--linguify-accent, #017e84);
 }
 
 .share-modal-url-input {
@@ -1300,6 +1351,20 @@ body {
 
 .text-linguify-accent {
     color: var(--linguify-accent) !important;
+}
+
+.bg-linguify-accent {
+    background-color: var(--linguify-accent) !important;
+}
+
+.bg-gradient-subtle-linguify {
+    background: linear-gradient(135deg, 
+        rgba(45, 91, 186, 0.08) 0%, 
+        rgba(1, 126, 132, 0.08) 100%) !important;
+}
+
+.border-linguify {
+    border: 1px solid rgba(45, 91, 186, 0.2) !important;
 }
 
 .text-linguify-success {
@@ -1480,7 +1545,269 @@ body {
 
 /* ===== STYLES POUR L'IMPORT AMÉLIORÉ ===== */
 
-/* Indicateur d'étapes */
+/* Compact import styles */
+.import-steps-compact {
+    padding: var(--space-xs) 0;
+}
+
+.step-compact {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.step-compact.active {
+    opacity: 1;
+}
+
+.step-compact.completed {
+    opacity: 0.8;
+}
+
+.step-number-compact {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--gray-300);
+    color: var(--gray-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.step-compact.active .step-number-compact {
+    background: var(--linguify-primary);
+    color: white;
+}
+
+.step-compact.completed .step-number-compact {
+    background: var(--linguify-success);
+    color: white;
+}
+
+.step-label-compact {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--gray-600);
+}
+
+.step-compact.active .step-label-compact {
+    color: var(--linguify-primary);
+    font-weight: 600;
+}
+
+.step-compact.completed .step-label-compact {
+    color: var(--linguify-success);
+}
+
+.step-separator-compact {
+    width: 20px;
+    height: 2px;
+    background: var(--gray-300);
+    transition: all 0.3s ease;
+}
+
+.step-separator-compact.completed {
+    background: var(--linguify-success);
+}
+
+.file-drop-zone-compact {
+    position: relative;
+    border: 2px dashed rgba(var(--linguify-primary-rgb), 0.3);
+    border-radius: var(--border-radius-md);
+    padding: var(--space-md);
+    text-align: center;
+    background: var(--subtle-gradient);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-drop-zone-compact:hover {
+    border-color: var(--linguify-primary);
+    background: var(--subtle-gradient-medium);
+    box-shadow: 0 4px 16px rgba(var(--linguify-primary-rgb), 0.1);
+}
+
+.file-drop-zone-compact.drag-over {
+    border-color: var(--linguify-primary);
+    background: var(--primary-gradient);
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(var(--linguify-primary-rgb), 0.2);
+}
+
+.import-actions-fixed {
+    border-top: 1px solid rgba(var(--linguify-primary-rgb), 0.1) !important;
+    background: white !important;
+    box-shadow: 0 -4px 12px rgba(var(--linguify-primary-rgb), 0.08);
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.import-actions-fixed .d-flex {
+    width: 100%;
+    height: 60px;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    padding: 0 1rem !important;
+}
+
+.import-actions-fixed .btn {
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin: 0 !important;
+}
+
+.supported-formats-compact .badge {
+    font-size: var(--font-size-xs);
+    padding: var(--space-xs) var(--space-sm);
+}
+
+/* Import summary compact */
+.import-summary-compact {
+    background: var(--subtle-gradient);
+    border-radius: var(--border-radius-md);
+    padding: var(--space-md);
+    border: 1px solid rgba(var(--linguify-primary-rgb), 0.1);
+}
+
+.summary-card-compact {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: var(--border-radius-sm);
+    padding: var(--space-sm) var(--space-md);
+    height: 100%;
+    box-shadow: 0 1px 3px rgba(var(--linguify-primary-rgb), 0.1);
+    transition: transform 0.2s ease;
+    border: 1px solid rgba(var(--linguify-primary-rgb), 0.05);
+}
+
+.summary-card-compact:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(var(--linguify-primary-rgb), 0.15);
+}
+
+.summary-title-compact {
+    font-size: var(--font-size-xs);
+    color: var(--linguify-gray-light);
+    margin-bottom: var(--space-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-value-compact {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* Column mapping compact */
+.column-mapping-compact {
+    background: white;
+    border-radius: var(--border-radius-md);
+    padding: var(--space-md);
+    border: 1px solid rgba(var(--linguify-primary-rgb), 0.1);
+}
+
+.mapping-option-compact {
+    position: relative;
+}
+
+.mapping-option-compact .form-select {
+    border: 1px solid rgba(var(--linguify-primary-rgb), 0.2);
+    transition: all 0.3s ease;
+}
+
+.mapping-option-compact .form-select:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--linguify-primary-rgb), 0.15);
+}
+
+.mapping-hint-compact {
+    text-align: center;
+    padding: var(--space-sm);
+    background: rgba(var(--linguify-warning-rgb), 0.1);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(var(--linguify-warning-rgb), 0.2);
+}
+
+/* Preview cards compact */
+.preview-cards-compact {
+    background: white;
+    border-radius: var(--border-radius-md);
+    padding: var(--space-md);
+    border: 1px solid rgba(var(--linguify-primary-rgb), 0.1);
+}
+
+.preview-cards-grid-compact {
+    display: grid;
+    gap: var(--space-sm);
+}
+
+.preview-cards-grid-compact .card {
+    border: 1px solid rgba(var(--linguify-primary-rgb), 0.1);
+    box-shadow: 0 1px 3px rgba(var(--linguify-primary-rgb), 0.1);
+    border-radius: var(--border-radius-sm);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.preview-cards-grid-compact .card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(var(--linguify-primary-rgb), 0.15);
+}
+
+.preview-cards-grid-compact .card-body {
+    padding: var(--space-sm);
+}
+
+.preview-cards-grid-compact .card-body h6 {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-xs);
+    font-weight: 600;
+}
+
+.preview-cards-grid-compact .card-body p {
+    font-size: var(--font-size-sm);
+    line-height: 1.3;
+    margin-bottom: 0;
+}
+
+/* Scrollable content styling */
+.import-content-scrollable {
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-400) transparent;
+}
+
+.import-content-scrollable::-webkit-scrollbar {
+    width: 6px;
+}
+
+.import-content-scrollable::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.import-content-scrollable::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: 3px;
+}
+
+.import-content-scrollable::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+}
+
+/* Indicateur d'étapes - version originale pour compatibilité */
 .import-steps {
     padding: 20px 0;
 }
@@ -1866,7 +2193,7 @@ body {
 }
 
 .tags-input-container input::placeholder {
-    color: #94a3b8;
+    color: var(--linguify-gray-light);
 }
 
 /* Tags dans la liste des decks */
@@ -1878,7 +2205,7 @@ body {
 }
 
 .deck-tag {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
     color: white;
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
@@ -1905,7 +2232,7 @@ body {
 .tag-filter-item {
     background: white;
     border: 1px solid #e2e8f0;
-    color: #64748b;
+    color: var(--linguify-gray);
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
     font-size: 0.875rem;
@@ -1961,7 +2288,7 @@ body {
 }
 
 .btn-tags-filter {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
     color: white !important;   /* Force la couleur blanche */
     border: none;
     /* Ajuster pour correspondre exactement aux form-select-sm */
@@ -1992,7 +2319,7 @@ body {
 
 .btn-tags-filter:focus,
 .btn-tags-filter:focus-visible {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%) !important;
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%) !important;
     color: white !important;
     outline: none;
     box-shadow: 0 0 0 0.2rem rgba(var(--linguify-primary-rgb), 0.25);
@@ -2085,7 +2412,7 @@ body {
 }
 
 .no-tags-message {
-    color: #94a3b8;
+    color: var(--linguify-gray-light);
     font-size: 0.75rem;
     font-style: italic;
     opacity: 0.8;
@@ -2109,7 +2436,7 @@ body {
 .btn-add-tag {
     background: transparent;
     border: 1px dashed #cbd5e0;
-    color: #64748b;
+    color: var(--linguify-gray);
     padding: 0.25rem 0.5rem;
     border-radius: 0.375rem;
     cursor: pointer;
@@ -2130,7 +2457,7 @@ body {
     background: rgba(var(--linguify-primary-rgb), 0.05);
 }
 
-/* Modal de modification rapide des tags (style Odoo) */
+/* Modal de modification rapide des tags (style OpenLinguify) */
 .quick-tags-modal {
     position: fixed;
     top: 0;
@@ -2177,7 +2504,7 @@ body {
 }
 
 .quick-tags-header {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
     color: white;
     padding: 1rem 1.5rem;
     display: flex;
@@ -2232,7 +2559,7 @@ body {
 }
 
 .tag-pill {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
     color: white;
     padding: 0.5rem 0.75rem;
     border-radius: 1.5rem;
@@ -2249,7 +2576,7 @@ body {
 .tag-pill:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    background: linear-gradient(135deg, var(--linguify-primary-dark) 0%, var(--linguify-secondary) 100%);
+    background: linear-gradient(135deg, var(--linguify-teal) 0%, var(--linguify-primary) 100%);
 }
 
 .tag-pill i {
@@ -2302,7 +2629,7 @@ body {
 .suggestions-title {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--linguify-gray);
     margin-bottom: 0.75rem;
 }
 
@@ -2329,7 +2656,7 @@ body {
     transform: translateY(-1px);
 }
 
-/* Styles pour la gestion des tags (style Odoo) */
+/* Styles pour la gestion des tags (style OpenLinguify) */
 .tags-management-container {
     max-height: 400px;
     overflow-y: auto;
@@ -2483,7 +2810,7 @@ body.modal-open {
     overflow: hidden;
 }
 
-/* Styles spécifiques pour les tags assignés (style Odoo) */
+/* Styles spécifiques pour les tags assignés (style OpenLinguify) */
 .tag-row.table-success {
     background-color: rgba(var(--linguify-success-rgb), 0.1) !important;
     border-color: rgba(var(--linguify-success-rgb), 0.2);
@@ -2673,11 +3000,11 @@ body.modal-open {
 }
 
 .linguify-accent {
-    background-color: var(--linguify-accent, #00D4AA) !important;
+    background-color: var(--linguify-accent, #017e84) !important;
 }
 
 .linguify-accent-bg {
-    background-color: var(--linguify-accent, #00D4AA) !important;
+    background-color: var(--linguify-accent, #017e84) !important;
 }
 
 .linguify-error-bg {
@@ -2694,7 +3021,122 @@ body.modal-open {
 }
 
 .text-linguify-accent {
-    color: var(--linguify-accent, #00D4AA) !important;
+    color: var(--linguify-accent, #017e84) !important;
+}
+
+/* Améliorations pour la page Explorer */
+#exploreWelcome .card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.08);
+}
+
+#exploreWelcome .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.15);
+}
+
+/* Améliorations pour le formulaire de modification de deck */
+#editDeckForm .form-control:focus,
+#editDeckForm .form-select:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
+}
+
+#editDeckForm .form-control,
+#editDeckForm .form-select {
+    border-radius: 6px;
+    border: 2px solid rgba(45, 91, 186, 0.1);
+    transition: all 0.3s ease;
+    padding: 0.625rem 0.75rem;
+}
+
+.tags-input-container {
+    border: 2px solid rgba(45, 91, 186, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.tags-input-container:focus-within {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
+}
+
+/* Améliorer les textes d'aide */
+#editDeckForm .form-text {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-weight: 400;
+}
+
+/* Améliorer l'espacement des labels */
+#editDeckForm .form-label,
+#createCardForm .form-label {
+    margin-bottom: 0.5rem;
+}
+
+/* Cibles tactiles minimum pour l'accessibilité mobile */
+.btn, .form-control, .form-select, .nav-link, 
+button, input[type="button"], input[type="submit"] {
+    min-height: var(--touch-target-min);
+}
+
+.btn-sm {
+    min-height: 36px; /* Plus petit mais toujours accessible */
+    padding: 8px 12px;
+}
+
+/* Espacement mobile amélioré */
+@media (max-width: 768px) {
+    .revision-main {
+        padding: var(--space-sm);
+    }
+    
+    .btn {
+        padding: 12px 16px;
+        font-size: var(--font-size-sm);
+    }
+    
+    .deck-item {
+        padding: var(--space-lg);
+        margin-bottom: var(--space-md);
+    }
+    
+    .study-content {
+        padding: var(--space-md) !important;
+    }
+}
+
+/* Harmoniser les champs de formulaire d'ajout de carte */
+#createCardForm .form-control,
+#createCardForm .form-select {
+    border-radius: 6px;
+    border: 2px solid rgba(45, 91, 186, 0.1);
+    transition: all 0.3s ease;
+}
+
+#createCardForm .form-control:focus,
+#createCardForm .form-select:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25);
+}
+
+/* Styles pour les indicateurs de langue */
+.lang-indicator-badge {
+    font-size: 0.8rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.lang-modify-btn {
+    font-size: 0.75rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.lang-modify-btn:hover {
+    color: var(--linguify-primary) !important;
+    text-decoration: none;
 }
 
 .text-linguify-success {
@@ -2837,5 +3279,103 @@ body.modal-open {
     
     .stats-header .d-flex .d-flex {
         flex-direction: row;
+    }
+}
+
+/* ===== STYLES POUR LES BOUTONS DE LECTURE AUDIO ===== */
+.speak-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(var(--linguify-primary-rgb), 0.3);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+    color: var(--linguify-primary);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.speak-btn:hover {
+    background: var(--linguify-primary);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(var(--linguify-primary-rgb), 0.3);
+}
+
+.speak-btn:active {
+    transform: scale(0.95);
+}
+
+/* Bouton pour la face avant de la carte */
+.speak-btn-front {
+    opacity: 1;
+}
+
+/* Bouton pour la face arrière de la carte */
+.speak-btn-back {
+    opacity: 1;
+}
+
+/* Animation lors de la lecture */
+.speak-btn.speaking {
+    background: var(--linguify-accent);
+    color: white;
+    animation: pulse-speak 1.5s infinite;
+}
+
+@keyframes pulse-speak {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(var(--linguify-accent-rgb), 0.7);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 8px rgba(var(--linguify-accent-rgb), 0);
+    }
+}
+
+/* Styles pour la détection de la langue */
+.language-indicator {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.flashcard:hover .language-indicator {
+    opacity: 1;
+}
+
+/* Responsive pour les boutons de lecture */
+@media (max-width: 768px) {
+    .speak-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+        top: 8px;
+        right: 8px;
+    }
+    
+    .language-indicator {
+        top: 44px;
+        right: 8px;
+        font-size: 0.65rem;
     }
 }

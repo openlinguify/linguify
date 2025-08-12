@@ -1,0 +1,157 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% trans "Email Verification" %} - Linguify</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+</head>
+<body style="margin: 0; padding: 0; background-color: #f7fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <!-- Email wrapper -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f7fafc;">
+        <tr>
+            <td align="center" style="padding: 20px 15px;">
+                <!-- Main email container -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width: 600px; background-color: #ffffff; border-radius: 15px; box-shadow: 0 10px 30px rgba(45, 91, 186, 0.1); overflow: hidden;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%); padding: 40px 30px; color: #ffffff;">
+                            <h1 style="margin: 0 0 10px 0; font-size: 28px; font-weight: 700; line-height: 1.2;">
+                                {% trans "Welcome to" %} <span style="font-weight: 800;">Linguify</span>!
+                            </h1>
+                            <p style="margin: 0; font-size: 16px; opacity: 0.9; line-height: 1.4;">
+                                {% trans "Your language learning journey starts here" %}
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Main content -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <!-- Greeting -->
+                            <p style="margin: 0 0 20px 0; font-size: 18px; color: #718096; text-align: center; line-height: 1.7;">
+                                {% trans "Hello" %} <strong style="color: #1a202c;">{{ user.first_name }}</strong>,
+                            </p>
+                            
+                            <!-- Main message -->
+                            <p style="margin: 0 0 30px 0; font-size: 16px; color: #718096; text-align: center; line-height: 1.7;">
+                                {% trans "Thank you for joining Linguify! To complete your registration and start your personalized language learning journey, please verify your email address by clicking the button below:" %}
+                            </p>
+                            
+                            <!-- CTA Button -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center" style="padding: 20px 0 30px 0;">
+                                        <a href="{{ verification_url }}" style="display: inline-block; background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%); color: #ffffff; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3); text-align: center;">
+                                            ✉️ {% trans "Verify My Email Address" %}
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Alternative link text -->
+                            <p style="margin: 0 0 15px 0; font-size: 14px; color: #718096; text-align: center; line-height: 1.5;">
+                                {% trans "If the button doesn't work, you can copy and paste this link into your browser:" %}
+                            </p>
+                            
+                            <!-- Link box -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td style="background-color: #f7fafc; border: 2px solid #00D4AA; border-radius: 10px; padding: 15px; word-break: break-all; font-family: monospace; color: #2D5BBA; font-size: 14px; line-height: 1.4;">
+                                        {{ verification_url }}
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Warning box -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td style="background: linear-gradient(135deg, #fff3cd 0%, rgba(221, 107, 32, 0.05) 100%); border: 1px solid #00D4AA; border-radius: 12px; padding: 20px; margin: 25px 0;">
+                                        <p style="margin: 0; font-size: 14px; color: #1a202c; line-height: 1.5; text-align: center;">
+                                            <strong>{% trans "Important:" %}</strong> {% blocktrans with hours=24 %}This verification link will expire in {{ hours }} hours. If you don't verify your email within this time, you'll need to request a new verification email.{% endblocktrans %}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Features list -->
+                            <p style="margin: 30px 0 15px 0; font-size: 16px; color: #1a202c; text-align: center; font-weight: 600;">
+                                {% trans "Once your email is verified, you'll be able to:" %}
+                            </p>
+                            
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td style="padding: 10px 0;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                            <tr>
+                                                <td width="30" style="color: #00D4AA; font-size: 16px; text-align: center;">✓</td>
+                                                <td style="color: #718096; font-size: 14px; line-height: 1.5;">{% trans "Access your personalized dashboard" %}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                            <tr>
+                                                <td width="30" style="color: #00D4AA; font-size: 16px; text-align: center;">✓</td>
+                                                <td style="color: #718096; font-size: 14px; line-height: 1.5;">{% trans "Start learning with our interactive lessons" %}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                            <tr>
+                                                <td width="30" style="color: #00D4AA; font-size: 16px; text-align: center;">✓</td>
+                                                <td style="color: #718096; font-size: 14px; line-height: 1.5;">{% trans "Track your progress and achievements" %}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                            <tr>
+                                                <td width="30" style="color: #00D4AA; font-size: 16px; text-align: center;">✓</td>
+                                                <td style="color: #718096; font-size: 14px; line-height: 1.5;">{% trans "Connect with other language learners" %}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f7fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+                            <p style="margin: 0 0 10px 0; font-size: 14px; color: #718096; line-height: 1.5;">
+                                {% trans "If you didn't create this account, please ignore this email." %}
+                            </p>
+                            <p style="margin: 0; font-size: 16px; color: #1a202c; font-weight: 600;">
+                                {% trans "Happy learning!" %}<br>
+                                <span style="color: #2D5BBA; font-weight: 700;">{% trans "The Linguify Team" %}</span>
+                            </p>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

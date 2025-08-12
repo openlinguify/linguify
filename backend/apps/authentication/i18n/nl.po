@@ -98,5 +98,32 @@ msgstr "Dit e-mailadres is al geregistreerd"
 msgid "This username is already taken"
 msgstr "Deze gebruikersnaam is al bezet"
 
+msgid "Username cannot be empty"
+msgstr "Gebruikersnaam kan niet leeg zijn"
+
+msgid "Username must contain at least 3 characters"
+msgstr "Gebruikersnaam moet minimaal 3 tekens bevatten"
+
+msgid "Username cannot exceed 30 characters"
+msgstr "Gebruikersnaam mag niet meer dan 30 tekens bevatten"
+
+msgid "Username can only contain letters, numbers, _ and -"
+msgstr "Gebruikersnaam kan alleen letters, cijfers, _ en - bevatten"
+
+msgid "Username must contain at least one letter or number"
+msgstr "Gebruikersnaam moet minimaal één letter of cijfer bevatten"
+
+msgid "This username is available"
+msgstr "Deze gebruikersnaam is beschikbaar"
+
+msgid "Native language and target language cannot be the same"
+msgstr "Moedertaal en doeltaal kunnen niet hetzelfde zijn"
+
+msgid "Checking availability..."
+msgstr "Beschikbaarheid controleren..."
+
+msgid "Error during verification"
+msgstr "Fout tijdens verificatie"
+
 msgid "Passwords do not match"
 msgstr "Wachtwoorden komen niet overeen"

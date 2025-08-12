@@ -26,8 +26,6 @@ urlpatterns += i18n_patterns(
     path('blog/', include('blog.urls')),
     path('jobs/', include('jobs.urls_web', namespace='jobs_web')),  # Web interface for jobs
     path('careers/', include('jobs.urls_web', namespace='careers_web')),  # Alternative URL for careers
-    # Documentation intégrée
-    path('docs/', include('docs.urls')),
     prefix_default_language=True,
 )
 

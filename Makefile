@@ -1,25 +1,28 @@
-# Makefile pour Linguify - Gestion des 3 projets Django
+# Makefile pour Linguify - Gestion des 5 projets Django
 # Usage: make [target]
 
-.PHONY: help portal lms backend all status clean install check-env env
+.PHONY: help portal lms backend cms docs all status clean install check-env env
 
 # Configuration des ports
 PORTAL_PORT = 8080
 LMS_PORT = 8001
 BACKEND_PORT = 8000
 CMS_PORT = 8002
+DOCS_PORT = 8003
 
 # Commandes Python - Utilisation de l'environnement virtuel du backend
 BACKEND_VENV = ./backend/venv
 PORTAL_VENV = ./portal/venv
 LMS_VENV = ./lms/venv
 CMS_VENV = ./cms/venv
+DOCS_VENV = ./backend/venv
 
 # Python pour chaque projet (avec fallback vers système)
 BACKEND_PYTHON = cd backend && poetry run python
 PORTAL_PYTHON = $(shell if [ -f $(PORTAL_VENV)/bin/python ]; then echo $(PORTAL_VENV)/bin/python; else echo python3; fi)
 LMS_PYTHON = $(shell if [ -f $(LMS_VENV)/bin/python ]; then echo $(LMS_VENV)/bin/python; else echo python3; fi)
 CMS_PYTHON = $(shell if [ -f $(CMS_VENV)/bin/python ]; then echo $(CMS_VENV)/bin/python; else echo python3; fi)
+DOCS_PYTHON = $(shell if [ -f $(DOCS_VENV)/bin/python ]; then echo "$(PWD)/$(DOCS_VENV)/bin/python"; else echo python3; fi)
 
 # Variables globales pour check-env
 PYTHON = python3
@@ -31,6 +34,7 @@ MANAGE_BACKEND = cd backend && poetry run python ../manage.py backend
 MANAGE_PORTAL = cd portal && ./venv/bin/python manage.py  
 MANAGE_LMS = cd lms && ./venv/bin/python manage.py
 MANAGE_CMS = cd cms && ./venv/bin/python manage.py
+MANAGE_DOCS = cd docs && $(DOCS_PYTHON) manage.py
 
 # Couleurs pour l'affichage
 RED = \033[0;31m
@@ -84,20 +88,33 @@ cms: ## Lance le serveur CMS Enseignants (port 8002)
 	fi
 	$(MANAGE_CMS) runserver $(CMS_PORT)
 
-run: all ## Alias pour 'all' - Lance les 4 serveurs en parallèle
+docs: ## Lance le serveur Documentation (port 8003)
+	@echo "$(BLUE)📖 Lancement de la Documentation Linguify...$(NC)"
+	@echo "$(GREEN)🌐 Accédez au serveur sur : http://localhost:$(DOCS_PORT)/$(NC)"
+	@echo ""
+	@if lsof -Pi :$(DOCS_PORT) -t >/dev/null 2>&1; then \
+		echo "$(RED)❌ Erreur: Le port $(DOCS_PORT) est déjà utilisé!$(NC)"; \
+		echo "$(YELLOW)💡 Essayez: make stop-docs ou utilisez un autre port$(NC)"; \
+		exit 1; \
+	fi
+	$(MANAGE_DOCS) runserver $(DOCS_PORT)
 
-all: ## Lance les 4 serveurs en parallèle
-	@echo "$(BLUE) Lancement de tous les serveurs Linguify...$(NC)"
+run: all ## Alias pour 'all' - Lance les 5 serveurs en parallèle
+
+all: ## Lance les 5 serveurs en parallèle
+	@echo "$(BLUE)🚀 Lancement de tous les serveurs Linguify...$(NC)"
 	@echo "$(YELLOW)Portal: http://127.0.0.1:$(PORTAL_PORT)$(NC)"
 	@echo "$(YELLOW)LMS: http://127.0.0.1:$(LMS_PORT)$(NC)"
 	@echo "$(YELLOW)Backend: http://127.0.0.1:$(BACKEND_PORT)$(NC)"
 	@echo "$(YELLOW)CMS: http://127.0.0.1:$(CMS_PORT)$(NC)"
+	@echo "$(YELLOW)Docs: http://127.0.0.1:$(DOCS_PORT)$(NC)"
 	@echo "$(RED)Utilisez Ctrl+C pour arrêter tous les serveurs$(NC)"
 	@echo "$(BLUE)⏳ Démarrage en cours... (peut prendre 30s sur WSL)$(NC)"
 	cd portal && ./venv/bin/python manage.py runserver $(PORTAL_PORT) --nothreading & \
 	sleep 2 && cd lms && ./venv/bin/python manage.py runserver $(LMS_PORT) --nothreading & \
 	sleep 2 && cd backend && poetry run python manage.py runserver 0.0.0.0:$(BACKEND_PORT) --nothreading & \
 	sleep 2 && cd cms && ./venv/bin/python manage.py runserver $(CMS_PORT) --nothreading & \
+	sleep 2 && $(MANAGE_DOCS) runserver $(DOCS_PORT) --nothreading & \
 	wait
 
 stop: ## Arrête tous les serveurs Django
@@ -125,6 +142,11 @@ stop-cms: ## Arrête le serveur CMS
 	@lsof -ti :$(CMS_PORT) | xargs -r kill -9 2>/dev/null || true
 	@echo "$(GREEN)✅ Serveur CMS arrêté$(NC)"
 
+stop-docs: ## Arrête le serveur Documentation
+	@echo "$(RED)🛑 Arrêt du serveur Documentation...$(NC)"
+	@lsof -ti :$(DOCS_PORT) | xargs -r kill -9 2>/dev/null || true
+	@echo "$(GREEN)✅ Serveur Documentation arrêté$(NC)"
+
 restart: ## Redémarre tous les serveurs
 	@make stop
 	@sleep 2
@@ -135,6 +157,11 @@ restart-backend: ## Redémarre le serveur Backend
 	@sleep 1
 	@make backend
 
+restart-docs: ## Redémarre le serveur Documentation
+	@make stop-docs
+	@sleep 1
+	@make docs
+
 status: ## Vérifie le statut des projets
 	@echo "$(BLUE)📊 Vérification du statut des projets...$(NC)"
 	@echo "$(YELLOW)Portal:$(NC)"
@@ -143,6 +170,8 @@ status: ## Vérifie le statut des projets
 	@$(MANAGE_LMS) check > /dev/null 2>&1 && echo "  $(GREEN)✅ OK$(NC)" || echo "  $(RED)❌ Erreur$(NC)"
 	@echo "$(YELLOW)Backend:$(NC)"
 	@$(MANAGE_BACKEND) check > /dev/null 2>&1 && echo "  $(GREEN)✅ OK$(NC)" || echo "  $(RED)❌ Erreur$(NC)"
+	@echo "$(YELLOW)Documentation:$(NC)"
+	@$(MANAGE_DOCS) check > /dev/null 2>&1 && echo "  $(GREEN)✅ OK$(NC)" || echo "  $(RED)❌ Erreur$(NC)"
 
 migrate: ## Applique les migrations sur tous les projets
 	@echo "$(BLUE)📦 Application des migrations...$(NC)"
@@ -152,6 +181,8 @@ migrate: ## Applique les migrations sur tous les projets
 	$(MANAGE_LMS) migrate
 	@echo "$(YELLOW)Backend:$(NC)"
 	$(MANAGE_BACKEND) migrate
+	@echo "$(YELLOW)Documentation:$(NC)"
+	$(MANAGE_DOCS) migrate
 
 migrate-portal: ## Applique les migrations sur le Portal seulement
 	@echo "$(BLUE)📦 Migration du Portal...$(NC)"
@@ -165,6 +196,10 @@ migrate-backend: ## Applique les migrations sur le Backend seulement
 	@echo "$(BLUE)📦 Migration du Backend...$(NC)"
 	$(MANAGE_BACKEND) migrate
 
+migrate-docs: ## Applique les migrations sur la Documentation seulement
+	@echo "$(BLUE)📦 Migration de la Documentation...$(NC)"
+	$(MANAGE_DOCS) migrate
+
 shell-portal: ## Ouvre le shell Django pour le Portal
 	@echo "$(BLUE)🐚 Shell Django Portal...$(NC)"
 	$(MANAGE_PORTAL) shell
@@ -177,11 +212,16 @@ shell-backend: ## Ouvre le shell Django pour le Backend
 	@echo "$(BLUE)🐚 Shell Django Backend...$(NC)"
 	$(MANAGE_BACKEND) shell
 
+shell-docs: ## Ouvre le shell Django pour la Documentation
+	@echo "$(BLUE)🐚 Shell Django Documentation...$(NC)"
+	$(MANAGE_DOCS) shell
+
 collectstatic: ## Collecte les fichiers statiques pour tous les projets
 	@echo "$(BLUE)📁 Collecte des fichiers statiques...$(NC)"
 	$(MANAGE_PORTAL) collectstatic --noinput
 	$(MANAGE_LMS) collectstatic --noinput
 	$(MANAGE_BACKEND) collectstatic --noinput
+	$(MANAGE_DOCS) collectstatic --noinput
 
 clean: ## Nettoie les fichiers temporaires
 	@echo "$(BLUE)🧹 Nettoyage des fichiers temporaires...$(NC)"
@@ -210,6 +250,9 @@ check-env: ## Vérifie l'environnement de développement/production pour tous le
 	@echo "$(YELLOW)👨‍🏫 CMS (port 8002):$(NC)"  
 	@./cms/venv/bin/python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cms.settings'); import django; django.setup(); from django.conf import settings; print('  Mode:', 'Développement' if settings.DEBUG else 'Production'); print('  Hosts:', settings.ALLOWED_HOSTS[:3])" 2>/dev/null || echo "  $(RED)❌ Erreur de configuration$(NC)"
 	@echo ""
+	@echo "$(YELLOW)📖 DOCS (port 8003):$(NC)"
+	@cd docs && $(DOCS_PYTHON) -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'docs_site.settings'); import django; django.setup(); from django.conf import settings; print('  Mode:', 'Développement' if settings.DEBUG else 'Production'); print('  Hosts:', settings.ALLOWED_HOSTS[:3])" 2>/dev/null || echo "  $(RED)❌ Erreur de configuration$(NC)"
+	@echo ""
 	@echo "$(BLUE)💡 Astuce: Utilisez 'make urls' pour voir les URLs de tous les services$(NC)"
 
 env: check-env ## Alias pour check-env
@@ -227,12 +270,17 @@ dev-backend: ## Lance le Backend en mode développement avec reload automatique
 	@echo "$(BLUE)🔄 Backend en mode développement...$(NC)"
 	$(MANAGE_BACKEND) runserver $(BACKEND_PORT)
 
+dev-docs: ## Lance la Documentation en mode développement avec reload automatique
+	@echo "$(BLUE)🔄 Documentation en mode développement...$(NC)"
+	$(MANAGE_DOCS) runserver $(DOCS_PORT)
+
 # Commandes de test
 test: ## Lance les tests pour tous les projets
 	@echo "$(BLUE)🧪 Lancement des tests...$(NC)"
 	$(MANAGE_PORTAL) test
 	$(MANAGE_LMS) test
 	$(MANAGE_BACKEND) test
+	$(MANAGE_DOCS) test
 
 test-portal: ## Lance les tests pour le Portal
 	@echo "$(BLUE)🧪 Tests Portal...$(NC)"
@@ -246,12 +294,17 @@ test-backend: ## Lance les tests pour le Backend
 	@echo "$(BLUE)🧪 Tests Backend...$(NC)"
 	$(MANAGE_BACKEND) test
 
+test-docs: ## Lance les tests pour la Documentation
+	@echo "$(BLUE)🧪 Tests Documentation...$(NC)"
+	$(MANAGE_DOCS) test
+
 # Commandes de production
 prod-check: ## Vérifie la configuration pour la production
 	@echo "$(BLUE)🔍 Vérification de la configuration de production...$(NC)"
 	$(MANAGE_PORTAL) check --deploy
 	$(MANAGE_LMS) check --deploy
 	$(MANAGE_BACKEND) check --deploy
+	$(MANAGE_DOCS) check --deploy
 
 # Commandes pratiques
 urls: ## Affiche les URLs disponibles
@@ -259,4 +312,6 @@ urls: ## Affiche les URLs disponibles
 	@echo "$(YELLOW)Portal:$(NC) http://127.0.0.1:$(PORTAL_PORT)"
 	@echo "$(YELLOW)LMS:$(NC) http://127.0.0.1:$(LMS_PORT)"
 	@echo "$(YELLOW)Backend:$(NC) http://127.0.0.1:$(BACKEND_PORT)"
+	@echo "$(YELLOW)CMS:$(NC) http://127.0.0.1:$(CMS_PORT)"
+	@echo "$(YELLOW)Documentation:$(NC) http://127.0.0.1:$(DOCS_PORT)"
 

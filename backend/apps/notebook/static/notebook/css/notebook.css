@@ -1080,7 +1080,7 @@ button.btn-outline-info,
     opacity: 0.7;
 }
 
-/* Styles pour la gestion des tags (style Odoo) */
+/* Styles pour la gestion des tags (style OpenLinguify) */
 .tags-management-container {
     max-height: 400px;
     overflow-y: auto;

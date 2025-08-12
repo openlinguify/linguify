@@ -8,7 +8,7 @@ from django.views.generic import View
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.db.models import Count, Avg, Sum
@@ -16,7 +16,8 @@ from datetime import timedelta
 
 # REST Framework imports
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
@@ -50,7 +51,7 @@ class RevisionSettingsView(View):
             # Check if it's an AJAX request for getting settings as JSON
             is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
             
-            # Get settings from session since Profile model doesn't have revision_settings field
+            # Get settings from session for non-audio settings
             session_key = f'revision_settings_{request.user.id}'
             settings = request.session.get(session_key, {})
             
@@ -73,6 +74,30 @@ class RevisionSettingsView(View):
                     'group_by_deck': False,
                 }
             
+            # ALWAYS get audio and revision settings from database (RevisionSettings model)
+            try:
+                revision_settings, _ = RevisionSettings.objects.get_or_create(user=request.user)
+                
+                # Override with database values for revision and audio settings
+                settings.update({
+                    'audio_enabled': revision_settings.audio_enabled,
+                    'audio_speed': revision_settings.audio_speed,
+                    'preferred_gender_french': revision_settings.preferred_gender_french,
+                    'preferred_gender_english': revision_settings.preferred_gender_english,
+                    'preferred_gender_spanish': revision_settings.preferred_gender_spanish,
+                    'preferred_gender_italian': revision_settings.preferred_gender_italian,
+                    'preferred_gender_german': revision_settings.preferred_gender_german,
+                    'default_study_mode': revision_settings.default_study_mode,
+                    'default_difficulty': revision_settings.default_difficulty,
+                    'cards_per_session': revision_settings.cards_per_session,
+                    'default_session_duration': revision_settings.default_session_duration,
+                })
+                
+                logger.info(f"[REVISION_SETTINGS_VIEW] Loaded audio + revision settings for {request.user.username}")
+                
+            except Exception as e:
+                logger.warning(f"[REVISION_SETTINGS_VIEW] Could not load RevisionSettings: {e}")
+            
             if is_ajax:
                 return JsonResponse({
                     'success': True,
@@ -90,7 +115,7 @@ class RevisionSettingsView(View):
                 
                 # Add Revision specific data
                 context.update({
-                    'title': _('Paramètres Révision - Linguify'),
+                    'title': gettext('Paramètres Révision - Linguify'),
                     'revision_settings': settings,
                 })
                 
@@ -101,10 +126,10 @@ class RevisionSettingsView(View):
             if is_ajax:
                 return JsonResponse({
                     'success': False,
-                    'message': _('Erreur lors de la récupération des paramètres')
+                    'message': gettext('Erreur lors de la récupération des paramètres')
                 }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
-                messages.error(request, _("Erreur lors du chargement des paramètres de révision"))
+                messages.error(request, gettext("Erreur lors du chargement des paramètres de révision"))
                 return redirect('saas_web:settings')
     
     def post(self, request):
@@ -164,6 +189,86 @@ class RevisionSettingsView(View):
                     'weekday_reminders': weekday_reminders,
                     'notification_frequency': request.POST.get('notification_frequency', 'daily'),
                 }
+            elif setting_type == 'revision' or 'audio_enabled' in request.POST or any(field.startswith('preferred_gender_') for field in request.POST):
+                # Handle revision settings including audio settings - save to database
+                revision_settings, created = RevisionSettings.objects.get_or_create(user=request.user)
+                
+                # Update audio settings if provided
+                audio_fields_updated = []
+                if 'audio_enabled' in request.POST:
+                    revision_settings.audio_enabled = request.POST.get('audio_enabled') == 'on'
+                    audio_fields_updated.append('audio_enabled')
+                
+                if 'audio_speed' in request.POST:
+                    try:
+                        audio_speed = float(request.POST.get('audio_speed', '0.9'))
+                        if 0.5 <= audio_speed <= 2.0:
+                            revision_settings.audio_speed = audio_speed
+                            audio_fields_updated.append('audio_speed')
+                    except (ValueError, TypeError):
+                        pass
+                
+                # Update voice gender preferences
+                voice_fields = [
+                    'preferred_gender_french', 'preferred_gender_english', 
+                    'preferred_gender_spanish', 'preferred_gender_italian', 'preferred_gender_german'
+                ]
+                
+                for field in voice_fields:
+                    if field in request.POST:
+                        value = request.POST.get(field, 'auto')
+                        if value in ['male', 'female', 'auto']:
+                            setattr(revision_settings, field, value)
+                            audio_fields_updated.append(field)
+                
+                # Update other revision settings
+                revision_fields_updated = []
+                if 'default_study_mode' in request.POST:
+                    revision_settings.default_study_mode = request.POST.get('default_study_mode', 'spaced')
+                    revision_fields_updated.append('default_study_mode')
+                
+                if 'default_difficulty' in request.POST:
+                    revision_settings.default_difficulty = request.POST.get('default_difficulty', 'normal')
+                    revision_fields_updated.append('default_difficulty')
+                
+                if 'cards_per_session' in request.POST:
+                    try:
+                        cards_per_session = int(request.POST.get('cards_per_session', '20'))
+                        if 5 <= cards_per_session <= 100:
+                            revision_settings.cards_per_session = cards_per_session
+                            revision_fields_updated.append('cards_per_session')
+                    except (ValueError, TypeError):
+                        pass
+                
+                if 'default_session_duration' in request.POST:
+                    try:
+                        session_duration = int(request.POST.get('default_session_duration', '20'))
+                        if 5 <= session_duration <= 120:
+                            revision_settings.default_session_duration = session_duration
+                            revision_fields_updated.append('default_session_duration')
+                    except (ValueError, TypeError):
+                        pass
+                
+                # Save the revision settings
+                if audio_fields_updated or revision_fields_updated:
+                    revision_settings.save()
+                    logger.info(f"Updated RevisionSettings for user {request.user.username}: audio={audio_fields_updated}, revision={revision_fields_updated}")
+                
+                # Prepare response data from database
+                data = {
+                    'audio_enabled': revision_settings.audio_enabled,
+                    'audio_speed': revision_settings.audio_speed,
+                    'preferred_gender_french': revision_settings.preferred_gender_french,
+                    'preferred_gender_english': revision_settings.preferred_gender_english,
+                    'preferred_gender_spanish': revision_settings.preferred_gender_spanish,
+                    'preferred_gender_italian': revision_settings.preferred_gender_italian,
+                    'preferred_gender_german': revision_settings.preferred_gender_german,
+                    'default_study_mode': revision_settings.default_study_mode,
+                    'default_difficulty': revision_settings.default_difficulty,
+                    'cards_per_session': revision_settings.cards_per_session,
+                    'default_session_duration': revision_settings.default_session_duration,
+                }
+                
             else:
                 # Parse all form data for other settings
                 data = {
@@ -193,17 +298,17 @@ class RevisionSettingsView(View):
             if is_ajax:
                 return JsonResponse({
                     'success': True,
-                    'message': _("Paramètres de révision mis à jour avec succès"),
+                    'message': gettext("Paramètres de révision mis à jour avec succès"),
                     'data': data
                 })
             else:
-                messages.success(request, _("Paramètres de révision mis à jour avec succès"))
+                messages.success(request, gettext("Paramètres de révision mis à jour avec succès"))
                 return redirect('saas_web:settings')
                 
         except ValueError as e:
             # Handle conversion errors
             logger.error(f"Value error in revision settings: {e}")
-            error_message = _("Valeur invalide dans les paramètres")
+            error_message = gettext("Valeur invalide dans les paramètres")
             
             if is_ajax:
                 return JsonResponse({
@@ -216,7 +321,7 @@ class RevisionSettingsView(View):
                 
         except Exception as e:
             logger.error(f"Error in RevisionSettingsView POST: {e}")
-            error_message = _("Erreur lors de la mise à jour des paramètres de révision")
+            error_message = gettext("Erreur lors de la mise à jour des paramètres de révision")
             
             if is_ajax:
                 return JsonResponse({
@@ -228,8 +333,8 @@ class RevisionSettingsView(View):
                 return redirect('saas_web:settings')
 
 
-@login_required
-@require_http_methods(["GET"])
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user_revision_settings(request):
     """
     Récupère les paramètres de révision de l'utilisateur pour l'app révision
@@ -250,16 +355,47 @@ def get_user_revision_settings(request):
             'group_by_deck': False,
         })
         
+        # Récupérer aussi les paramètres audio depuis la base de données
+        try:
+            revision_settings, _ = RevisionSettings.objects.get_or_create(user=request.user)
+            
+            # DEBUG: Log des valeurs avant mise à jour
+            logger.info(f"[USER_SETTINGS] 🎵 BEFORE update - user: {request.user.username}")
+            logger.info(f"[USER_SETTINGS] 🎵 DB audio_speed: {revision_settings.audio_speed}")
+            logger.info(f"[USER_SETTINGS] 🎵 DB audio_enabled: {revision_settings.audio_enabled}")
+            logger.info(f"[USER_SETTINGS] 🎵 DB spanish_gender: {revision_settings.preferred_gender_spanish}")
+            
+            # Ajouter les paramètres audio avec préférences de genre
+            audio_settings = {
+                'audio_enabled': revision_settings.audio_enabled,
+                'audio_speed': revision_settings.audio_speed,
+                'preferred_gender_french': revision_settings.preferred_gender_french,
+                'preferred_gender_english': revision_settings.preferred_gender_english,
+                'preferred_gender_spanish': revision_settings.preferred_gender_spanish,
+                'preferred_gender_italian': revision_settings.preferred_gender_italian,
+                'preferred_gender_german': revision_settings.preferred_gender_german,
+            }
+            
+            logger.info(f"[USER_SETTINGS] 🎵 Audio settings to add: {audio_settings}")
+            
+            settings.update(audio_settings)
+            
+            logger.info(f"[USER_SETTINGS] 🎵 AFTER update - settings audio_speed: {settings.get('audio_speed')}")
+            logger.info(f"[USER_SETTINGS] Added audio settings for {request.user.username}")
+            
+        except Exception as e:
+            logger.warning(f"[USER_SETTINGS] Could not load audio settings: {e}")
+        
         logger.info(f"[USER_SETTINGS] Retrieved settings for {request.user.username}: {settings}")
         
-        return JsonResponse({
+        return Response({
             'success': True,
             'settings': settings
         })
         
     except Exception as e:
         logger.error(f"[USER_SETTINGS] Error: {e}")
-        return JsonResponse({
+        return Response({
             'success': False,
             'error': str(e),
             'settings': {
@@ -274,7 +410,7 @@ def get_user_revision_settings(request):
                 'hide_learned_words': False,
                 'group_by_deck': False,
             }
-        })
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # =============================================================================
@@ -477,6 +613,40 @@ class RevisionSettingsViewSet(viewsets.ModelViewSet):
         })
         
         return Response(config)
+    
+    @action(detail=False, methods=['post'])
+    def reset_to_defaults(self, request):
+        """Remet tous les paramètres aux valeurs par défaut"""
+        settings = self.get_object()
+        settings.reset_to_defaults()
+        
+        serializer = self.get_serializer(settings)
+        return Response({
+            'success': True,
+            'message': 'Paramètres remis aux valeurs par défaut',
+            'settings': serializer.data
+        })
+    
+    @action(detail=False, methods=['get', 'patch'])
+    def audio_settings(self, request):
+        """Gère spécifiquement les paramètres audio"""
+        settings = self.get_object()
+        
+        if request.method == 'GET':
+            return Response({
+                'success': True,
+                'audio_settings': settings.get_audio_settings()
+            })
+        
+        elif request.method == 'PATCH':
+            audio_data = request.data
+            settings.update_audio_settings(audio_data)
+            
+            return Response({
+                'success': True,
+                'message': 'Paramètres audio mis à jour',
+                'audio_settings': settings.get_audio_settings()
+            })
 
 
 class RevisionSessionConfigViewSet(viewsets.ModelViewSet):
@@ -532,11 +702,92 @@ class RevisionSessionConfigViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def default(self, request):
         """Retourne la configuration par défaut"""
-        try:
-            config = self.get_queryset().get(is_default=True)
+        config = RevisionSessionConfig.get_default_for_user(request.user)
+        if config:
             serializer = self.get_serializer(config)
             return Response(serializer.data)
-        except RevisionSessionConfig.DoesNotExist:
+        else:
             return Response({
                 'error': 'Aucune configuration par défaut définie'
             }, status=status.HTTP_404_NOT_FOUND)
+    
+    @action(detail=True, methods=['post'])
+    def duplicate(self, request, pk=None):
+        """Duplique une configuration"""
+        config = self.get_object()
+        new_name = request.data.get('name')
+        
+        try:
+            duplicated_config = config.duplicate(new_name)
+            serializer = self.get_serializer(duplicated_config)
+            return Response({
+                'success': True,
+                'message': f'Configuration dupliquée sous le nom "{duplicated_config.name}"',
+                'config': serializer.data
+            })
+        except Exception as e:
+            return Response({
+                'success': False,
+                'error': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['get'])
+    def presets(self, request):
+        """Retourne des configurations pré-définies"""
+        presets = [
+            {
+                'name': 'Session rapide',
+                'session_type': 'quick',
+                'duration_minutes': 10,
+                'target_cards': 15,
+                'include_new_cards': True,
+                'include_review_cards': True,
+                'include_difficult_cards': False,
+                'description': 'Session courte pour révision rapide'
+            },
+            {
+                'name': 'Session standard',
+                'session_type': 'standard', 
+                'duration_minutes': 20,
+                'target_cards': 25,
+                'include_new_cards': True,
+                'include_review_cards': True,
+                'include_difficult_cards': True,
+                'description': 'Session équilibrée pour apprentissage régulier'
+            },
+            {
+                'name': 'Session intensive',
+                'session_type': 'extended',
+                'duration_minutes': 30,
+                'target_cards': 40,
+                'include_new_cards': True,
+                'include_review_cards': True,
+                'include_difficult_cards': True,
+                'description': 'Session longue pour révision approfondie'
+            }
+        ]
+        
+        return Response({
+            'presets': presets,
+            'message': 'Configurations pré-définies disponibles'
+        })
+    
+    @action(detail=False, methods=['post'])
+    def create_from_preset(self, request):
+        """Crée une configuration à partir d'un preset"""
+        preset_data = request.data
+        preset_data['user'] = request.user.id
+        
+        serializer = self.get_serializer(data=preset_data)
+        if serializer.is_valid():
+            config = serializer.save(user=request.user)
+            return Response({
+                'success': True,
+                'message': f'Configuration "{config.name}" créée à partir du preset',
+                'config': serializer.data
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response({
+                'success': False,
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)

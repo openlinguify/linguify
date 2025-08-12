@@ -22,7 +22,9 @@ def setup_organizations():
     
     # Get the superuser
     try:
-        user = OrganizationUser.objects.get(email='louisphilippelalou@outlook.com')
+        # TODO: Update with admin email from environment variable
+        admin_email = os.environ.get('ADMIN_EMAIL', 'admin@example.com')
+        user = OrganizationUser.objects.get(email=admin_email)
         print(f"Found user: {user.username}")
     except OrganizationUser.DoesNotExist:
         print("User not found. Please create superuser first.")

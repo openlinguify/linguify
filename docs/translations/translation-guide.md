@@ -256,7 +256,7 @@ Keep these terms consistent:
 - **[Language codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)**: ISO 639-1 reference
 
 ### Community
-- **[Discord #translations](https://discord.gg/openlinguify)**: Real-time help
+- **[Discord #translations](https://discord.gg/PJ8uTzSS)**: Real-time help
 - **[GitHub Discussions](https://github.com/openlinguify/linguify/discussions)**: Longer discussions
 - **Email**: translations@openlinguify.com
 

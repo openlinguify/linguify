@@ -4,6 +4,8 @@
 # Validateurs pour l'authentification
 # TODO: Migrer depuis validators.py
 
+from django.utils.translation import gettext_lazy as _
+
 def validate_username(username):
     """Valide un nom d'utilisateur"""
     # TODO: Implémenter
@@ -107,7 +109,7 @@ def is_username_available(username, exclude_user=None):
     if not username:
         return {
             'available': False,
-            'message': 'Le nom d\'utilisateur ne peut pas être vide'
+            'message': str(_('Username cannot be empty'))
         }
     
     username = username.strip()
@@ -116,28 +118,28 @@ def is_username_available(username, exclude_user=None):
     if len(username) < 3:
         return {
             'available': False,
-            'message': 'Le nom d\'utilisateur doit contenir au moins 3 caractères'
+            'message': str(_('Username must contain at least 3 characters'))
         }
     
     # Check maximum length
     if len(username) > 30:
         return {
             'available': False,
-            'message': 'Le nom d\'utilisateur ne peut pas dépasser 30 caractères'
+            'message': str(_('Username cannot exceed 30 characters'))
         }
     
     # Check for valid characters (letters, numbers, underscores, hyphens)
     if not re.match(r'^[a-zA-Z0-9_-]+$', username):
         return {
             'available': False,
-            'message': 'Le nom d\'utilisateur ne peut contenir que des lettres, chiffres, _ et -'
+            'message': str(_('Username can only contain letters, numbers, _ and -'))
         }
     
     # Check that it contains at least one alphanumeric character
     if not re.search(r'[a-zA-Z0-9]', username):
         return {
             'available': False,
-            'message': 'Le nom d\'utilisateur doit contenir au moins une lettre ou un chiffre'
+            'message': str(_('Username must contain at least one letter or number'))
         }
     
     # Check if username already exists
@@ -148,10 +150,10 @@ def is_username_available(username, exclude_user=None):
     if query.exists():
         return {
             'available': False,
-            'message': 'Ce nom d\'utilisateur est déjà pris'
+            'message': str(_('This username is already taken'))
         }
     
     return {
         'available': True,
-        'message': 'Ce nom d\'utilisateur est disponible'
+        'message': str(_('This username is available'))
     }

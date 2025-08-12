@@ -13,7 +13,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--email', 
             type=str, 
-            default='louisphilippelalou@outlook.com',
+            default='admin@example.com',
             help='Email of the user to make owner of organizations'
         )
     

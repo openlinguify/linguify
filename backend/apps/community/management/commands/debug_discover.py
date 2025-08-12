@@ -18,8 +18,17 @@ class Command(BaseCommand):
         factory = RequestFactory()
         request = factory.get('/community/discover/')
         
-        # Get a test user
-        user = User.objects.get(username='llalou')
+        # Get a test user (first superuser or any user)
+        try:
+            user = User.objects.filter(is_superuser=True).first()
+            if not user:
+                user = User.objects.first()
+            if not user:
+                self.stdout.write(self.style.ERROR('No users found in database'))
+                return
+        except User.DoesNotExist:
+            self.stdout.write(self.style.ERROR('No users found in database'))
+            return
         request.user = user
         
         # Create the view

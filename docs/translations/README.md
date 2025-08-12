@@ -60,7 +60,7 @@ Complete step-by-step guide for translating OpenLinguify into any language. Cove
 ## 🤝 Community & Support
 
 ### Get Help
-- **💬 [Discord #translations](https://discord.gg/openlinguify)** - Real-time chat
+- **💬 [Discord #translations](https://discord.gg/PJ8uTzSS)** - Real-time chat
 - **💡 [GitHub Discussions](https://github.com/openlinguify/linguify/discussions)** - Questions & ideas  
 - **📧 Email**: translations@openlinguify.com
 

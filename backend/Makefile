@@ -1,7 +1,7 @@
 # Makefile for Linguify Backend Development
 # Complete application and database management
 
-.PHONY: help install run stop clean apps apps-manifests app-hide app-show app-order app-delete sync-manifests st test-prod test-dev sync-prod sync-app setup-db migrate reset-db deploy-prod deploy check-deploy env env-dev env-prod
+.PHONY: help install run stop clean apps apps-manifests app-hide app-show app-order app-delete sync-manifests st test-prod test-dev sync-prod sync-app setup-db migrate reset-db deploy-prod deploy check-deploy env env-dev env-prod security-test security-cleanup security-logs help-security
 
 # ==============================================================================
 # 🎯 HELP & INFORMATION
@@ -16,6 +16,7 @@ help:
 	@echo "  help-db          Database management: status, sync, config, migrations"  
 	@echo "  help-dev         Development: server, tests, code formatting, cleanup"
 	@echo "  help-deploy      Deployment: production, validation, comparisons, workflow"
+	@echo "  help-security    Security: monitoring, testing, token cleanup, logs"
 	@echo ""
 	@echo "⚡ QUICK COMMANDS:"
 	@echo "  st               Quick status (dev + prod)"
@@ -278,7 +279,14 @@ blog-prod:
 
 # Shorthand syntax (format: make blog blogpost prod)
 %:
-	@if [ "$(words $(MAKECMDGOALS))" = "3" ]; then \
+	@# Skip security commands to avoid conflicts
+	@if echo "$(MAKECMDGOALS)" | grep -q "^security-"; then \
+		echo "❌ Unknown security command. Use:"; \
+		echo "  make help-security    # Show security help"; \
+		echo "  make security-test    # Test security features"; \
+		echo "  make security-cleanup # Clean expired tokens"; \
+		echo "  make security-logs    # View security logs"; \
+	elif [ "$(words $(MAKECMDGOALS))" = "3" ]; then \
 		$(eval APP := $(word 1,$(MAKECMDGOALS))) \
 		$(eval TABLE := $(word 2,$(MAKECMDGOALS))) \
 		$(eval TARGET := $(word 3,$(MAKECMDGOALS))) \
@@ -288,6 +296,7 @@ blog-prod:
 		echo "❌ Unrecognized format. Use:"; \
 		echo "  make <app> <table> <target>    # Example: make blog blogpost prod"; \
 		echo "  make <app>-sync-table TABLE=<table> TARGET=<env>"; \
+		echo "  make help-security             # Security commands help"; \
 	fi
 
 # App-specific sync shortcuts
@@ -354,6 +363,54 @@ check-deploy:
 	@echo ""
 	@echo "💡 To deploy: make deploy APP=<code>"
 	@echo "💡 To make visible: make app-show APP=<code>"
+
+# ==============================================================================
+# 🔒 SECURITY MANAGEMENT
+# ==============================================================================
+
+help-security:
+	@echo "🔒 SECURITY MANAGEMENT"
+	@echo "===================="
+	@echo ""
+	@echo "🔧 Security monitoring:"
+	@echo "  security-test        Test security features"
+	@echo "  security-cleanup     Clean expired tokens"
+	@echo "  security-logs        View security logs"
+	@echo ""
+	@echo "📝 Examples:"
+	@echo "  make security-test           # Test all security features"
+	@echo "  make security-cleanup        # Remove expired tokens"
+	@echo "  make security-logs          # Monitor security events"
+
+security-test:
+	@echo "🔒 Testing security features..."
+	@echo "🧹 Clearing cache first..."
+	@poetry run python manage.py test_security_features --clear-cache
+	@echo ""
+	@echo "🔐 Testing rate limiting..."
+	@poetry run python manage.py test_security_features --test-rate-limiting
+	@echo ""
+	@echo "📝 Testing security logging..."
+	@poetry run python manage.py test_security_features --test-logging
+	@echo ""
+	@echo "🎫 Testing token limits..."
+	@poetry run python manage.py test_security_features --test-token-limits
+	@echo ""
+	@echo "✅ All security tests completed!"
+
+security-cleanup:
+	@echo "🧹 Cleaning up expired tokens..."
+	poetry run python manage.py cleanup_expired_tokens
+
+security-logs:
+	@echo "📊 Viewing security logs (press Ctrl+C to stop)..."
+	@if [ -f logs/security.log ]; then \
+		tail -f logs/security.log; \
+	else \
+		echo "Security log file not found. Creating logs directory..."; \
+		mkdir -p logs; \
+		echo "No security events yet. Security events will appear here."; \
+	fi
 
 # ==============================================================================
 # ⚡ DEVELOPMENT

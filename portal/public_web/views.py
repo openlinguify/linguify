@@ -230,7 +230,7 @@ Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                 subject=email_subject,
                 message=email_body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=['louisphilippelalou@outlook.com'],
+                recipient_list=[settings.BUG_REPORT_EMAIL],
                 fail_silently=False,
             )
             

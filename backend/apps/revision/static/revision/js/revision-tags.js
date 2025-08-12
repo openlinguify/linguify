@@ -298,7 +298,7 @@ function displayDeckTags(deck) {
         return '<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag"></i> pour en ajouter</span>';
     }
 
-    // Couleurs des tags (style Odoo)
+    // Couleurs des tags (style OpenLinguify)
     const tagColors = [
         'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',

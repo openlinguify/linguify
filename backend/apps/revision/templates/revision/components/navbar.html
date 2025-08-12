@@ -2,10 +2,12 @@
 <div class="d-flex align-items-center justify-content-between gap-2" style="min-height: 40px; overflow-x: auto; position: relative; z-index: 1000;">
     <!-- Gauche: Navigation + Actions principales -->
     <div class="d-flex align-items-center gap-3">
-        <!-- Bouton toggle sidebar mobile -->
+        <!-- Bouton toggle sidebar mobile pour autres pages -->
+        {% if view_type != 'explore' %}
         <button id="toggleSidebar" class="btn btn-outline-custom btn-sm d-md-none">
             <i class="bi bi-list"></i>
         </button>
+        {% endif %}
         
         <!-- Navigation tabs -->
         <div class="d-flex align-items-center gap-1">
@@ -37,6 +39,12 @@
     <!-- Droite: Actions et filtres contextuels -->
     <div class="d-flex align-items-center gap-1 flex-nowrap">
         {% if view_type == 'explore' %}
+        <!-- Bouton toggle sidebar pour Explorer -->
+        <button id="toggleSidebar" class="btn btn-outline-custom btn-sm px-2" onclick="toggleSidebar()">
+            <i class="bi bi-layout-sidebar"></i>
+            <span class="d-none d-lg-inline ms-1">Filtres</span>
+        </button>
+        
         <!-- Filtres pour la page Explorer -->
         <input type="text" id="searchInput" class="form-control form-control-sm search-input" placeholder="Rechercher des decks..." style="width: 180px; min-width: 120px;">
         

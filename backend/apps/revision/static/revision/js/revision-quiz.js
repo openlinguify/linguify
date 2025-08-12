@@ -339,7 +339,7 @@ class QuizStudyMode {
         
         if (this.quizStats.score >= 80) {
             performanceMessage = 'Excellent travail !';
-            performanceClass = 'text-success';
+            performanceClass = 'text-linguify-accent';
         } else if (this.quizStats.score >= 60) {
             performanceMessage = 'Bon travail !';
             performanceClass = 'text-warning';
@@ -356,7 +356,7 @@ class QuizStudyMode {
                 
                 <div class="row text-center mt-4 mb-4">
                     <div class="col">
-                        <div class="stat-value text-success">${this.quizStats.correct}</div>
+                        <div class="stat-value text-linguify-accent">${this.quizStats.correct}</div>
                         <div class="stat-label">Correctes</div>
                     </div>
                     <div class="col">

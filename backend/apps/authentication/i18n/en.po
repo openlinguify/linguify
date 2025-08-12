@@ -98,5 +98,32 @@ msgstr "This email is already registered"
 msgid "This username is already taken"
 msgstr "This username is already taken"
 
+msgid "Username cannot be empty"
+msgstr "Username cannot be empty"
+
+msgid "Username must contain at least 3 characters"
+msgstr "Username must contain at least 3 characters"
+
+msgid "Username cannot exceed 30 characters"
+msgstr "Username cannot exceed 30 characters"
+
+msgid "Username can only contain letters, numbers, _ and -"
+msgstr "Username can only contain letters, numbers, _ and -"
+
+msgid "Username must contain at least one letter or number"
+msgstr "Username must contain at least one letter or number"
+
+msgid "This username is available"
+msgstr "This username is available"
+
+msgid "Native language and target language cannot be the same"
+msgstr "Native language and target language cannot be the same"
+
+msgid "Checking availability..."
+msgstr "Checking availability..."
+
+msgid "Error during verification"
+msgstr "Error during verification"
+
 msgid "Passwords do not match"
 msgstr "Passwords do not match"

@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (username.length < 3) {
                 if (username.length > 0) {
                     console.log('Username too short, showing error');
-                    showUsernameFeedback(this, 'Le nom d\'utilisateur doit contenir au moins 3 caractères', 'error');
+                    showUsernameFeedback(this, window.TRANSLATIONS.usernameMinLength, 'error');
                 }
                 return;
             }
@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const hasAlphaNumeric = /[a-zA-Z0-9]/.test(username);
             if (!hasAlphaNumeric) {
                 console.log('Username has no alphanumeric characters, showing error');
-                showUsernameFeedback(this, 'Le nom d\'utilisateur doit contenir au moins une lettre ou un chiffre', 'error');
-                this.setCustomValidity('Le nom d\'utilisateur doit contenir au moins une lettre ou un chiffre');
+                showUsernameFeedback(this, window.TRANSLATIONS.usernameAlphaNumeric, 'error');
+                this.setCustomValidity(window.TRANSLATIONS.usernameAlphaNumeric);
                 return;
             } else {
                 this.setCustomValidity('');
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const password2 = this.value;
             
             if (password2 && password1 !== password2) {
-                this.setCustomValidity('Les mots de passe ne correspondent pas');
+                this.setCustomValidity(window.TRANSLATIONS.passwordsDoNotMatch);
             } else {
                 this.setCustomValidity('');
             }
@@ -226,7 +226,7 @@ async function checkUsernameAvailability(username, input) {
     try {
         // Show loading state
         console.log('Showing loading feedback');
-        showUsernameFeedback(input, 'Vérification en cours...', 'loading');
+        showUsernameFeedback(input, window.TRANSLATIONS.checkingAvailability, 'loading');
         
         const csrfToken = getCsrfToken();
         console.log('CSRF Token:', csrfToken);
@@ -259,12 +259,12 @@ async function checkUsernameAvailability(username, input) {
         
         if (data.available) {
             console.log('Username available, showing success');
-            showUsernameFeedback(input, data.message, 'success');
+            showUsernameFeedback(input, window.TRANSLATIONS.usernameAvailable || data.message, 'success');
             input.setCustomValidity('');
         } else {
             console.log('Username not available, showing error');
-            showUsernameFeedback(input, data.message, 'error');
-            input.setCustomValidity(data.message);
+            showUsernameFeedback(input, window.TRANSLATIONS.usernameTaken || data.message, 'error');
+            input.setCustomValidity(window.TRANSLATIONS.usernameTaken || data.message);
         }
     } catch (error) {
         console.error('Username check error:', error);
@@ -272,7 +272,7 @@ async function checkUsernameAvailability(username, input) {
         if (loadingFeedback) {
             loadingFeedback.remove();
         }
-        showUsernameFeedback(input, 'Erreur lors de la vérification', 'error');
+        showUsernameFeedback(input, window.TRANSLATIONS.verificationError, 'error');
     }
 }
 

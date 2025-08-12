@@ -1,0 +1,175 @@
+{% extends 'docs/base.html' %}
+
+{% block description %}Linguify Developer Documentation - Your complete guide to building, contributing, and deploying the Linguify educational platform. Get started with quick setup guides, API documentation, and development workflows.{% endblock %}
+
+{% block docs_content %}
+<div class="mb-5 p-5 rounded" style="background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-secondary) 100%);">
+    <h1 class="text-white">
+        <i class="bi bi-book me-3"></i>
+        Linguify Developer Documentation
+    </h1>
+    <p class="lead text-white opacity-75 mb-4">
+        Complete guide to building, contributing, and deploying the Linguify educational platform
+    </p>
+    <div class="d-flex gap-3">
+        <a href="{% url 'docs:quick_start' %}" class="btn btn-light btn-lg">
+            <i class="bi bi-play-circle me-2"></i>
+            Get Started
+        </a>
+        <a href="{{ GITHUB_REPO_URL }}" class="btn btn-outline-light btn-lg" target="_blank">
+            <i class="bi bi-github me-2"></i>
+            View Source
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <a href="{% url 'docs:quick_start' %}" class="card h-100 text-decoration-none border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 text-white rounded me-3" style="background: var(--linguify-primary);">
+                        <i class="bi bi-rocket fs-4"></i>
+                    </div>
+                    <h5 class="card-title mb-0">Quick Start Guide</h5>
+                </div>
+                <p class="card-text text-muted">
+                    Get Linguify running locally in minutes. Install dependencies, set up the database, and start developing.
+                </p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6">
+        <a href="{% url 'docs:translation_guide' %}" class="card h-100 text-decoration-none border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 bg-success text-white rounded me-3">
+                        <i class="bi bi-translate fs-4"></i>
+                    </div>
+                    <h5 class="card-title mb-0">
+                        Translation Guide
+                        <span class="badge bg-success ms-2">NEW</span>
+                    </h5>
+                </div>
+                <p class="card-text text-muted">
+                    Help make Linguify accessible worldwide. Complete step-by-step guide to translating the platform.
+                </p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6">
+        <a href="{% url 'docs:developer_guidelines' %}" class="card h-100 text-decoration-none border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 text-white rounded me-3" style="background: var(--linguify-secondary);">
+                        <i class="bi bi-code-slash fs-4"></i>
+                    </div>
+                    <h5 class="card-title mb-0">Developer Guidelines</h5>
+                </div>
+                <p class="card-text text-muted">
+                    Best practices, coding standards, and development workflow for contributing to Linguify.
+                </p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6">
+        <a href="{% url 'docs:api_reference' %}" class="card h-100 text-decoration-none border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 bg-info text-white rounded me-3">
+                        <i class="bi bi-cloud fs-4"></i>
+                    </div>
+                    <h5 class="card-title mb-0">API Reference</h5>
+                </div>
+                <p class="card-text text-muted">
+                    Complete REST API documentation with endpoints, authentication, and response examples.
+                </p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6">
+        <a href="{% url 'docs:page' page_path='development/create-new-module' %}" class="card h-100 text-decoration-none border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 bg-warning text-white rounded me-3">
+                        <i class="bi bi-plus-circle fs-4"></i>
+                    </div>
+                    <h5 class="card-title mb-0">Create New Module</h5>
+                </div>
+                <p class="card-text text-muted">
+                    Learn how to build new educational apps for the Linguify platform using our modular architecture.
+                </p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6">
+        <a href="{% url 'docs:environment_setup' %}" class="card h-100 text-decoration-none border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 bg-dark text-white rounded me-3">
+                        <i class="bi bi-gear fs-4"></i>
+                    </div>
+                    <h5 class="card-title mb-0">Environment Setup</h5>
+                </div>
+                <p class="card-text text-muted">
+                    Configure your development environment for optimal productivity when contributing to Linguify.
+                </p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="mt-5">
+    <h2>What's New</h2>
+    <div class="alert alert-info">
+        <h5><i class="bi bi-info-circle me-2"></i>Latest Updates</h5>
+        <ul class="mb-0">
+            <li><strong>Independent Docs Site:</strong> Documentation now runs as an independent Django project</li>
+            <li><strong>Translation System:</strong> Complete guide for contributing translations in 20+ European languages</li>
+            <li><strong>Modular Architecture:</strong> Enhanced module creation tools and documentation</li>
+            <li><strong>Developer Guidelines:</strong> Comprehensive coding standards and best practices</li>
+        </ul>
+    </div>
+</div>
+
+<div class="mt-5">
+    <h2>Community</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="text-center p-4">
+                <i class="bi bi-discord" style="font-size: 3rem; color: var(--linguify-primary);"></i>
+                <h5 class="mt-3">Discord</h5>
+                <p class="text-muted">Join our community for real-time help and discussions</p>
+                <a href="{{ DISCORD_URL }}" class="btn btn-outline-primary" target="_blank">
+                    Join Discord
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center p-4">
+                <i class="bi bi-github text-secondary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">GitHub</h5>
+                <p class="text-muted">Contribute code, report issues, and collaborate</p>
+                <a href="{{ GITHUB_REPO_URL }}" class="btn btn-outline-secondary" target="_blank">
+                    View Repository
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center p-4">
+                <i class="bi bi-envelope text-success" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Email</h5>
+                <p class="text-muted">Get in touch with the development team</p>
+                <a href="mailto:dev@openlinguify.com" class="btn btn-outline-success">
+                    Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

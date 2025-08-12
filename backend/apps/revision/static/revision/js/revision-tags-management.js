@@ -1,4 +1,4 @@
-// Gestion des tags - Interface style Odoo
+// Gestion des tags - Interface style OpenLinguify
 class TagsManagement {
     constructor() {
         this.tags = [];
@@ -76,7 +76,7 @@ class TagsManagement {
             });
         }
 
-        // Boutons style Odoo
+        // Boutons style OpenLinguify
         const selectTagsBtn = document.getElementById('selectTagsBtn');
         if (selectTagsBtn) {
             selectTagsBtn.addEventListener('click', () => this.closeTagsManagement());
@@ -867,7 +867,7 @@ class TagsManagement {
             selectAllTags.addEventListener('change', (e) => this.toggleSelectAll(e.target.checked));
         }
 
-        // Boutons style Odoo
+        // Boutons style OpenLinguify
         const selectTagsBtn = document.getElementById('selectTagsBtn');
         if (selectTagsBtn) {
             selectTagsBtn.addEventListener('click', () => this.closeTagsManagement());
