@@ -534,8 +534,8 @@ class FlashcardsAudioAPITest(APITestCase):
         )
         self.client.force_authenticate(user=self.user)
         
-        # Créer des paramètres de révision avec voix configurées - use get_or_create
-        self.revision_settings, created = RevisionSettings.objects.get_or_create(
+        # Créer des paramètres de révision avec voix configurées
+        self.revision_settings, created = RevisionSettings.objects.update_or_create(
             user=self.user,
             defaults={
                 'audio_enabled': True,
@@ -687,13 +687,15 @@ class FlashcardsLanguageIntegrationTest(TestCase):
         ]
         
         # Configurer des paramètres audio
-        self.audio_settings = RevisionSettings.objects.create(
+        self.audio_settings, _ = RevisionSettings.objects.update_or_create(
             user=self.user,
-            audio_enabled=True,
-            audio_speed=0.8,
-            preferred_gender_french='male',
-            preferred_gender_english='male', 
-            preferred_gender_spanish='auto'
+            defaults={
+                'audio_enabled': True,
+                'audio_speed': 0.8,
+                'preferred_gender_french': 'male',
+                'preferred_gender_english': 'male', 
+                'preferred_gender_spanish': 'auto'
+            }
         )
         
     def test_complete_audio_workflow(self):

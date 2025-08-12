@@ -16,7 +16,8 @@ from datetime import timedelta
 
 # REST Framework imports
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
@@ -332,8 +333,8 @@ class RevisionSettingsView(View):
                 return redirect('saas_web:settings')
 
 
-@login_required
-@require_http_methods(["GET"])
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user_revision_settings(request):
     """
     Récupère les paramètres de révision de l'utilisateur pour l'app révision
@@ -387,14 +388,14 @@ def get_user_revision_settings(request):
         
         logger.info(f"[USER_SETTINGS] Retrieved settings for {request.user.username}: {settings}")
         
-        return JsonResponse({
+        return Response({
             'success': True,
             'settings': settings
         })
         
     except Exception as e:
         logger.error(f"[USER_SETTINGS] Error: {e}")
-        return JsonResponse({
+        return Response({
             'success': False,
             'error': str(e),
             'settings': {
@@ -409,7 +410,7 @@ def get_user_revision_settings(request):
                 'hide_learned_words': False,
                 'group_by_deck': False,
             }
-        })
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # =============================================================================

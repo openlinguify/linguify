@@ -159,7 +159,7 @@ def log_user_login_failed(sender, credentials, request, **kwargs):
     """Log failed login attempt"""
     from ..security.rate_limiter import EmailVerificationRateLimiter
     ip_address = EmailVerificationRateLimiter.get_client_ip(request)
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    user_agent = request.META.get('HTTP_USER_AGENT', '') if request else ''
     
     # Don't log the actual credentials for security
     username = credentials.get('username', 'unknown')

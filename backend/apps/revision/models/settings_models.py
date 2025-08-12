@@ -322,9 +322,11 @@ class RevisionSettings(models.Model):
     
     def clean(self):
         """
-        Validation des paramètres de révision
+        Validation des paramètres de révision et des données
         """
         from django.core.exceptions import ValidationError
+        
+        super().clean()
         
         # Vérifier que les intervalles de répétition espacée sont cohérents
         if self.spaced_repetition_enabled:
@@ -349,6 +351,13 @@ class RevisionSettings(models.Model):
         """
         Sauvegarde avec validation et logging
         """
+        # Normaliser les champs de préférence de genre vocal AVANT la validation
+        voice_fields = ['preferred_gender_french', 'preferred_gender_english', 'preferred_gender_spanish']
+        for field_name in voice_fields:
+            value = getattr(self, field_name, None)
+            if value and isinstance(value, str):
+                setattr(self, field_name, value.strip())
+        
         self.full_clean()  # Appelle clean() pour validation
         
         # Log les changements importants
@@ -372,9 +381,13 @@ class RevisionSettings(models.Model):
         """
         logger.info(f"Resetting revision settings to defaults for user {self.user.username}")
         
+        # Champs à exclure lors du reset (timestamps, clés étrangères)
+        excluded_fields = ['user', 'created_at', 'updated_at', 'id']
+        
         # Récupérer les valeurs par défaut du modèle
         for field in self._meta.fields:
-            if hasattr(field, 'default') and field.default is not None and field.name != 'user':
+            if (hasattr(field, 'default') and field.default is not None 
+                and field.name not in excluded_fields):
                 if callable(field.default):
                     setattr(self, field.name, field.default())
                 else:

@@ -172,6 +172,8 @@ class EmailVerificationRateLimiter:
     @classmethod
     def get_client_ip(cls, request):
         """Get client IP address from request"""
+        if request is None:
+            return '127.0.0.1'  # Default for test scenarios
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
             return x_forwarded_for.split(',')[0].strip()
