@@ -1354,12 +1354,37 @@
                         audioSpeedSlider.value = audioSettings.audio_speed;
                         const afterValue = audioSpeedSlider.value;
                         
-                        // Update the display text
+                        console.log(`[VoiceSettings] 🎵 audio_speed: "${beforeValue}" → "${afterValue}" (set to ${audioSettings.audio_speed})`);
+                        
+                        // Update the display text with multiple strategies
+                        const targetDisplayText = audioSettings.audio_speed + 'x';
+                        console.log(`[VoiceSettings] 🎵 Updating display text to: "${targetDisplayText}"`);
+                        
                         if (audioSpeedDisplay) {
-                            audioSpeedDisplay.textContent = audioSettings.audio_speed + 'x';
+                            const beforeDisplayText = audioSpeedDisplay.textContent;
+                            audioSpeedDisplay.textContent = targetDisplayText;
+                            const afterDisplayText = audioSpeedDisplay.textContent;
+                            console.log(`[VoiceSettings] 🎵 Display text: "${beforeDisplayText}" → "${afterDisplayText}"`);
+                        } else {
+                            console.error(`[VoiceSettings] ❌ Could not find .range-value display element`);
+                            
+                            // Try alternative selectors
+                            const altDisplay1 = audioSpeedSlider.parentElement?.querySelector('.range-value');
+                            const altDisplay2 = audioSpeedSlider.nextElementSibling;
+                            
+                            if (altDisplay1) {
+                                altDisplay1.textContent = targetDisplayText;
+                                console.log(`[VoiceSettings] ✅ Updated display via parent search: "${targetDisplayText}"`);
+                            } else if (altDisplay2 && altDisplay2.classList.contains('range-value')) {
+                                altDisplay2.textContent = targetDisplayText;
+                                console.log(`[VoiceSettings] ✅ Updated display via sibling search: "${targetDisplayText}"`);
+                            } else {
+                                console.error(`[VoiceSettings] ❌ Could not find ANY display element for audio speed`);
+                            }
                         }
                         
-                        console.log(`[VoiceSettings] 🎵 audio_speed: "${beforeValue}" → "${afterValue}" (set to ${audioSettings.audio_speed})`);
+                        // Force a visual update by triggering the input event
+                        audioSpeedSlider.dispatchEvent(new Event('input', { bubbles: true }));
                         
                         if (Math.abs(parseFloat(afterValue) - audioSettings.audio_speed) > 0.01) {
                             console.error(`[VoiceSettings] ❌ FAILED to set audio_speed to ${audioSettings.audio_speed}, still shows ${afterValue}`);
