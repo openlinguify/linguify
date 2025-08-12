@@ -309,7 +309,7 @@ class MatchingStudyMode {
         
         if (accuracy >= 90 && timeElapsed <= 60) {
             performanceMessage = 'Performance exceptionnelle !';
-            performanceClass = 'text-success';
+            performanceClass = 'text-linguify-accent';
         } else if (accuracy >= 70) {
             performanceMessage = 'Bon travail !';
             performanceClass = 'text-warning';
@@ -331,7 +331,7 @@ class MatchingStudyMode {
                     
                     <div class="row text-center mt-4 mb-4">
                         <div class="col">
-                            <div class="stat-value text-success">${this.matchedPairs.length}</div>
+                            <div class="stat-value text-linguify-accent">${this.matchedPairs.length}</div>
                             <div class="stat-label">Paires trouvées</div>
                         </div>
                         <div class="col">

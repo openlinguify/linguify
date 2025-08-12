@@ -1,0 +1,26 @@
+{% load i18n %}🎓 {% trans "Welcome to Linguify!" %}
+========================================
+
+{% trans "Hello" %} {{ user.first_name }},
+
+{% trans "Thank you for joining Linguify! To complete your registration and start your personalized language learning journey, please verify your email address by clicking the link below:" %}
+
+🔗 {% trans "Verification Link:" %}
+{{ verification_url }}
+
+⚠️ {% trans "Important:" %} {% blocktrans with hours=24 %}This verification link will expire in {{ hours }} hours. If you don't verify your email within this time, you'll need to request a new verification email.{% endblocktrans %}
+
+✨ {% trans "Once your email is verified, you'll be able to:" %}
+✓ {% trans "Access your personalized dashboard" %}
+✓ {% trans "Start learning with our interactive lessons" %}  
+✓ {% trans "Track your progress and achievements" %}
+✓ {% trans "Connect with other language learners" %}
+
+📝 {% trans "If you didn't create this account, please ignore this email." %}
+
+{% trans "Happy learning!" %}
+🚀 {% trans "The Linguify Team" %}
+
+========================================
+Linguify | {% trans "Your AI-powered language learning companion" %}
+{% trans "This email was sent because you registered for a Linguify account." %}

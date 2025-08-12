@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'public_web',  # Notre app principale pour le portail
     'blog',       # App blog déplacée du backend
     'jobs',       # App jobs déplacée du backend
-    'docs',       # Documentation intégrée
 ]
 
 MIDDLEWARE = [
@@ -172,3 +171,18 @@ LINGUIFY_PRODUCTS = {
     #     'icon': 'fas fa-building',
     # },
 }
+
+# Email configuration
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@openlinguify.com')
+BUG_REPORT_EMAIL = env('BUG_REPORT_EMAIL', default='bugs@openlinguify.com')
+
+# Email backend for development/production
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = env('EMAIL_HOST', default='')
+    EMAIL_PORT = env.int('EMAIL_PORT', default=587)
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+    EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)

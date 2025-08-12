@@ -165,7 +165,7 @@ class RegisterForm(UserCreationForm):
         target_language = cleaned_data.get('target_language')
         
         if native_language and target_language and native_language == target_language:
-            raise forms.ValidationError("La langue native et la langue cible ne peuvent pas être identiques.")
+            raise forms.ValidationError(_("Native language and target language cannot be the same"))
         
         return cleaned_data
     

@@ -96,6 +96,7 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
             'id', 'name', 'description', 'created_at', 'updated_at', 
             'is_active', 'is_public', 'is_archived', 'expiration_date', 'tags',
             'required_reviews_to_learn', 'auto_mark_learned', 'reset_on_wrong_answer',
+            'default_front_language', 'default_back_language',
             'cards_count', 'learned_count', 'username', 'user', 'is_owner',
             'days_until_deletion', 'expiration_info', 'learning_statistics', 'learning_presets'
         ]
@@ -104,6 +105,7 @@ class FlashcardDeckSerializer(serializers.ModelSerializer):
             'cards_count', 'learned_count', 'username', 'user', 'is_owner',
             'days_until_deletion', 'expiration_info', 'learning_statistics', 'learning_presets'
         ]
+        # Note: default_front_language et default_back_language sont modifiables
     
     def get_cards_count(self, obj):
         """Renvoie le nombre total de cartes dans ce deck."""

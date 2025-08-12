@@ -1,0 +1,79 @@
+{% extends 'docs/base.html' %}
+
+{% block docs_content %}
+<h1>{{ title }}</h1>
+<div class="markdown-content">
+    {{ content }}
+</div>
+
+<style>
+/* Markdown specific styles */
+.markdown-content h1 {
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.markdown-content h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: #1f2937;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+.markdown-content h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #374151;
+}
+
+.markdown-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+}
+
+.markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.markdown-content th,
+.markdown-content td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.markdown-content th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    color: #374151;
+}
+
+.markdown-content blockquote {
+    border-left: 4px solid var(--linguify-accent);
+    background: #f0fdfa;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.markdown-content ul, .markdown-content ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.markdown-content li {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+}
+</style>
+{% endblock %}

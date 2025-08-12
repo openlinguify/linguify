@@ -419,6 +419,150 @@
             </form>
         </div>
     </div>
+
+    <!-- Audio and Voice Settings Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-volume-up"></i>
+                Paramètres audio et voix
+            </h3>
+            <div class="section-actions">
+                <button type="button" onclick="testCurrentVoices()" style="margin-right: 8px; padding: 4px 8px; font-size: 12px; background: #17a2b8; color: white; border: none; border-radius: 4px;">
+                    🎵 Test
+                </button>
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form id="revision-audio-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="audio">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="audio_enabled" checked>
+                        Activer la synthèse vocale
+                    </label>
+                    <div class="form-help">Active ou désactive complètement la lecture audio</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Vitesse de lecture</label>
+                    <div class="range-input">
+                        <input type="range" name="audio_speed" min="0.5" max="2.0" step="0.1" value="0.9" class="form-range">
+                        <span class="range-value">0.9x</span>
+                    </div>
+                    <div class="form-help">Vitesse de la synthèse vocale (0.5x à 2.0x)</div>
+                </div>
+
+                <!-- Voice Gender Selection -->
+                <div class="voice-selection-grid">
+                    <h4 class="voice-section-title">
+                        <i class="bi bi-globe"></i>
+                        Genres de voix préférés par langue
+                    </h4>
+                    <div class="form-help" style="margin-bottom: 16px;">
+                        Choisissez le genre de voix préféré pour chaque langue. Le système sélectionnera automatiquement la meilleure voix disponible.
+                    </div>
+                    
+                    <div class="voice-language-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <img src="https://flagcdn.com/w20/fr.png" alt="FR" class="flag-icon">
+                                Français
+                            </label>
+                            <select name="preferred_gender_french" class="form-control gender-select" data-lang="fr-FR">
+                                <option value="auto">Automatique</option>
+                                <option value="male">Masculin</option>
+                                <option value="female">Féminin</option>
+                            </select>
+                            <button type="button" class="voice-test-btn" data-lang="fr-FR" data-text="Bonjour, ceci est un test de la voix française">
+                                🎵 Tester
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="voice-language-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <img src="https://flagcdn.com/w20/us.png" alt="EN" class="flag-icon">
+                                Anglais
+                            </label>
+                            <select name="preferred_gender_english" class="form-control gender-select" data-lang="en-US">
+                                <option value="auto">Automatique</option>
+                                <option value="male">Masculin</option>
+                                <option value="female">Féminin</option>
+                            </select>
+                            <button type="button" class="voice-test-btn" data-lang="en-US" data-text="Hello, this is a test of the English voice">
+                                🎵 Tester
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="voice-language-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <img src="https://flagcdn.com/w20/es.png" alt="ES" class="flag-icon">
+                                Espagnol
+                            </label>
+                            <select name="preferred_gender_spanish" class="form-control gender-select" data-lang="es-ES">
+                                <option value="auto">Automatique</option>
+                                <option value="male">Masculin</option>
+                                <option value="female">Féminin</option>
+                            </select>
+                            <button type="button" class="voice-test-btn" data-lang="es-ES" data-text="Hola, esto es una prueba de la voz española">
+                                🎵 Tester
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="voice-language-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <img src="https://flagcdn.com/w20/it.png" alt="IT" class="flag-icon">
+                                Italien
+                            </label>
+                            <select name="preferred_gender_italian" class="form-control gender-select" data-lang="it-IT">
+                                <option value="auto">Automatique</option>
+                                <option value="male">Masculin</option>
+                                <option value="female">Féminin</option>
+                            </select>
+                            <button type="button" class="voice-test-btn" data-lang="it-IT" data-text="Ciao, questo è un test della voce italiana">
+                                🎵 Tester
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="voice-language-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <img src="https://flagcdn.com/w20/de.png" alt="DE" class="flag-icon">
+                                Allemand
+                            </label>
+                            <select name="preferred_gender_german" class="form-control gender-select" data-lang="de-DE">
+                                <option value="auto">Automatique</option>
+                                <option value="male">Masculin</option>
+                                <option value="female">Féminin</option>
+                            </select>
+                            <button type="button" class="voice-test-btn" data-lang="de-DE" data-text="Hallo, das ist ein Test der deutschen Stimme">
+                                🎵 Tester
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -726,6 +870,106 @@
         font-size: 14px;
         color: #666;
     }
+
+    /* Audio and Voice Settings Styles */
+    .voice-selection-grid {
+        margin-top: 20px;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+    .voice-section-title {
+        margin: 0 0 16px 0;
+        color: #333;
+        font-size: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .voice-language-section {
+        margin-bottom: 16px;
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+    }
+
+    .voice-language-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .voice-language-section .form-group {
+        margin-bottom: 0;
+        display: grid;
+        grid-template-columns: 120px 1fr auto;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .flag-icon {
+        width: 16px;
+        height: 12px;
+        margin-right: 8px;
+        border-radius: 2px;
+    }
+
+    .voice-select {
+        max-width: none;
+    }
+
+    .voice-test-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        background: #17a2b8;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+
+    .voice-test-btn:hover {
+        background: #138496;
+        transform: scale(1.05);
+    }
+
+    .voice-test-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .voice-test-btn.testing {
+        background: #28a745;
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    /* Audio speed range styling */
+    .range-input input[name="audio_speed"] + .range-value::after {
+        content: "x";
+    }
+
+    /* Responsive voice settings */
+    @media (max-width: 768px) {
+        .voice-language-section .form-group {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        
+        .voice-test-btn {
+            justify-self: start;
+        }
+    }
 </style>
 
 <script>
@@ -760,6 +1004,9 @@
 
         // Initialize word stats
         initWordStats();
+
+        // Initialize voice settings
+        initVoiceSettings();
     });
 
     function initRevisionSettings() {
@@ -991,4 +1238,622 @@
             `;
         }
     }
+
+    // ===== VOICE SETTINGS FUNCTIONS =====
+    
+    let speechSynthesis = window.speechSynthesis;
+    let availableVoices = [];
+    let currentTestUtterance = null;
+
+    function initVoiceSettings() {
+        console.log('[VoiceSettings] Initializing voice settings with gender selection');
+        
+        // Load available voices
+        availableVoices = speechSynthesis.getVoices();
+        console.log(`[VoiceSettings] Loaded ${availableVoices.length} voices for gender categorization`);
+        logVoiceDetails();
+        
+        // Load current user preferences and set form values with a small delay
+        // This ensures any DOM manipulation functions (like populateVoiceSelectors) complete first
+        setTimeout(() => {
+            console.log('[VoiceSettings] 🚀 Loading preferences with delayed timing...');
+            loadCurrentVoicePreferences();
+        }, 100);
+        
+        // Voices might load asynchronously
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = function() {
+                availableVoices = speechSynthesis.getVoices();
+                console.log(`[VoiceSettings] Voices updated: ${availableVoices.length} available`);
+                logVoiceDetails();
+                // Reload preferences in case voices changed, with delay
+                setTimeout(() => {
+                    console.log('[VoiceSettings] 🔄 Reloading preferences after voice change...');
+                    loadCurrentVoicePreferences();
+                }, 200);
+            };
+        }
+
+    async function loadCurrentVoicePreferences() {
+        console.log('[VoiceSettings] 🔄 Loading current voice preferences from server...');
+        
+        try {
+            const response = await fetch('/api/v1/revision/user-settings/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('[VoiceSettings] ✅ API response received:', data);
+                
+                // Appliquer les préférences aux sélecteurs
+                if (data.settings) {
+                    const selectors = {
+                        'preferred_gender_french': data.settings.preferred_gender_french || 'auto',
+                        'preferred_gender_english': data.settings.preferred_gender_english || 'auto',
+                        'preferred_gender_spanish': data.settings.preferred_gender_spanish || 'auto',
+                        'preferred_gender_italian': data.settings.preferred_gender_italian || 'auto',
+                        'preferred_gender_german': data.settings.preferred_gender_german || 'auto'
+                    };
+                    
+                    console.log('[VoiceSettings] 🎯 About to apply preferences:', selectors);
+                    
+                    let appliedCount = 0;
+                    Object.entries(selectors).forEach(([name, value]) => {
+                        const select = document.querySelector(`[name="${name}"]`);
+                        if (select) {
+                            const beforeValue = select.value;
+                            select.value = value;
+                            const afterValue = select.value;
+                            appliedCount++;
+                            
+                            console.log(`[VoiceSettings] 🔧 ${name}: "${beforeValue}" → "${afterValue}" (set to "${value}")`);
+                            
+                            // Verify the value was actually set
+                            if (afterValue !== value) {
+                                console.error(`[VoiceSettings] ❌ FAILED to set ${name} to "${value}", still shows "${afterValue}"`);
+                                
+                                // Check available options in the dropdown
+                                const options = Array.from(select.options).map(opt => opt.value);
+                                console.error(`[VoiceSettings] Available options in ${name}:`, options);
+                            }
+                        } else {
+                            console.error(`[VoiceSettings] ❌ Could not find select element for ${name}`);
+                        }
+                    });
+                    
+                    console.log(`[VoiceSettings] ✅ Applied preferences to ${appliedCount} selectors`);
+                    
+                    // 🎵 ALSO APPLY AUDIO SPEED AND OTHER AUDIO SETTINGS
+                    console.log('[VoiceSettings] 🚀 STARTING audio settings section...');
+                    const audioSettings = {
+                        'audio_enabled': data.settings.audio_enabled !== false, // default true if not specified
+                        'audio_speed': data.settings.audio_speed || 0.9
+                    };
+                    
+                    console.log('[VoiceSettings] 🎵 About to apply audio settings:', audioSettings);
+                    
+                    // Apply audio_enabled checkbox
+                    const audioEnabledCheckbox = document.querySelector('[name="audio_enabled"]');
+                    if (audioEnabledCheckbox) {
+                        const beforeChecked = audioEnabledCheckbox.checked;
+                        audioEnabledCheckbox.checked = audioSettings.audio_enabled;
+                        const afterChecked = audioEnabledCheckbox.checked;
+                        console.log(`[VoiceSettings] 🔧 audio_enabled: ${beforeChecked} → ${afterChecked}`);
+                    }
+                    
+                    // Apply audio_speed range slider
+                    const audioSpeedSlider = document.querySelector('[name="audio_speed"]');
+                    const audioSpeedDisplay = document.querySelector('.range-value');
+                    if (audioSpeedSlider) {
+                        const beforeValue = audioSpeedSlider.value;
+                        audioSpeedSlider.value = audioSettings.audio_speed;
+                        const afterValue = audioSpeedSlider.value;
+                        
+                        console.log(`[VoiceSettings] 🎵 audio_speed: "${beforeValue}" → "${afterValue}" (set to ${audioSettings.audio_speed})`);
+                        
+                        // Update the display text with multiple strategies
+                        const targetDisplayText = audioSettings.audio_speed + 'x';
+                        console.log(`[VoiceSettings] 🎵 Updating display text to: "${targetDisplayText}"`);
+                        
+                        if (audioSpeedDisplay) {
+                            const beforeDisplayText = audioSpeedDisplay.textContent;
+                            audioSpeedDisplay.textContent = targetDisplayText;
+                            const afterDisplayText = audioSpeedDisplay.textContent;
+                            console.log(`[VoiceSettings] 🎵 Display text: "${beforeDisplayText}" → "${afterDisplayText}"`);
+                        } else {
+                            console.error(`[VoiceSettings] ❌ Could not find .range-value display element`);
+                            
+                            // Try alternative selectors
+                            const altDisplay1 = audioSpeedSlider.parentElement?.querySelector('.range-value');
+                            const altDisplay2 = audioSpeedSlider.nextElementSibling;
+                            
+                            if (altDisplay1) {
+                                altDisplay1.textContent = targetDisplayText;
+                                console.log(`[VoiceSettings] ✅ Updated display via parent search: "${targetDisplayText}"`);
+                            } else if (altDisplay2 && altDisplay2.classList.contains('range-value')) {
+                                altDisplay2.textContent = targetDisplayText;
+                                console.log(`[VoiceSettings] ✅ Updated display via sibling search: "${targetDisplayText}"`);
+                            } else {
+                                console.error(`[VoiceSettings] ❌ Could not find ANY display element for audio speed`);
+                            }
+                        }
+                        
+                        // Force a visual update by triggering the input event
+                        audioSpeedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+                        
+                        if (Math.abs(parseFloat(afterValue) - audioSettings.audio_speed) > 0.01) {
+                            console.error(`[VoiceSettings] ❌ FAILED to set audio_speed to ${audioSettings.audio_speed}, still shows ${afterValue}`);
+                        }
+                    } else {
+                        console.error(`[VoiceSettings] ❌ Could not find audio_speed slider`);
+                    }
+                } else {
+                    console.warn('[VoiceSettings] ⚠️ No settings found in API response');
+                }
+            } else {
+                console.error(`[VoiceSettings] ❌ API request failed with status ${response.status}`);
+                const errorText = await response.text();
+                console.error('[VoiceSettings] Error response:', errorText);
+            }
+        } catch (error) {
+            console.error('[VoiceSettings] ❌ Exception loading preferences:', error);
+        }
+    }
+
+    function logVoiceDetails() {
+        console.log('🔍 DIAGNOSTIC DÉTAILLÉ DES VOIX DISPONIBLES:');
+        console.log('=============================================');
+        
+        const englishVoices = availableVoices.filter(v => v.lang && v.lang.startsWith('en'));
+        const italianVoices = availableVoices.filter(v => v.lang && v.lang.startsWith('it'));
+        
+        console.log(`🇺🇸 VOIX ANGLAISES (${englishVoices.length} trouvées):`);
+        englishVoices.forEach((voice, index) => {
+            console.log(`  ${index + 1}. "${voice.name}" (${voice.lang}) - Local: ${voice.localService}`);
+        });
+        
+        console.log(`🇮🇹 VOIX ITALIENNES (${italianVoices.length} trouvées):`);
+        italianVoices.forEach((voice, index) => {
+            console.log(`  ${index + 1}. "${voice.name}" (${voice.lang}) - Local: ${voice.localService}`);
+        });
+        
+        // Test de catégorisation
+        console.log('\n🧪 TEST DE CATÉGORISATION:');
+        if (englishVoices.length > 0) {
+            const englishCategorized = categorizeVoicesByGender(englishVoices);
+            console.log('Anglais - Masculines:', englishCategorized.male.map(v => v.name));
+            console.log('Anglais - Féminines:', englishCategorized.female.map(v => v.name));
+            console.log('Anglais - Inconnues:', englishCategorized.unknown.map(v => v.name));
+        }
+        
+        if (italianVoices.length > 0) {
+            const italianCategorized = categorizeVoicesByGender(italianVoices);
+            console.log('Italien - Masculines:', italianCategorized.male.map(v => v.name));
+            console.log('Italien - Féminines:', italianCategorized.female.map(v => v.name));
+            console.log('Italien - Inconnues:', italianCategorized.unknown.map(v => v.name));
+        }
+    }
+
+        // Setup event listeners for gender selectors
+        setupVoiceEventListeners();
+
+        // Setup audio speed slider
+        const audioSpeedSlider = document.querySelector('[name="audio_speed"]');
+        if (audioSpeedSlider) {
+            audioSpeedSlider.addEventListener('input', function() {
+                const valueSpan = this.parentElement.querySelector('.range-value');
+                valueSpan.textContent = this.value + 'x';
+            });
+        }
+    }
+
+    function loadVoices() {
+        availableVoices = speechSynthesis.getVoices();
+        console.log(`[VoiceSettings] Loaded ${availableVoices.length} voices`);
+        
+        if (availableVoices.length > 0) {
+            populateVoiceSelectors();
+        }
+    }
+
+    function setupVoiceEventListeners() {
+        // Voice test buttons
+        document.querySelectorAll('.voice-test-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const lang = this.dataset.lang;
+                const text = this.dataset.text;
+                testVoice(lang, text, this);
+            });
+        });
+
+        // Gender selection changes
+        document.querySelectorAll('.gender-select').forEach(select => {
+            select.addEventListener('change', function() {
+                const lang = this.dataset.lang;
+                const gender = this.value;
+                console.log(`[VoiceSettings] Gender preference changed for ${lang}: ${gender}`);
+                
+                // Déclencher la sauvegarde automatique
+                const triggerAutoSave = () => {
+                    if (window.settingsCore) {
+                        console.log(`[VoiceSettings] Triggering auto-save for gender change: ${lang} -> ${gender}`);
+                        const form = document.querySelector('#revision-audio-form');
+                        if (form) {
+                            window.settingsCore.autoSaveForm(form);
+                        } else {
+                            console.error('[VoiceSettings] Audio form not found for auto-save');
+                        }
+                    } else {
+                        console.warn('[VoiceSettings] settingsCore not available, trying again in 500ms...');
+                        // Retry après un délai si settingsCore n'est pas encore chargé
+                        setTimeout(triggerAutoSave, 500);
+                    }
+                };
+                triggerAutoSave();
+            });
+        });
+    }
+
+    function populateVoiceSelectors() {
+        console.log('[VoiceSettings] NOTE: populateVoiceSelectors called but DISABLED to preserve gender selections');
+        console.log('[VoiceSettings] Gender dropdowns should contain: auto, male, female - NOT voice names');
+        
+        // DISABLED: This function was incorrectly replacing gender options with voice names
+        // The HTML template already contains the correct gender options (auto/male/female)
+        // Voice quality is handled internally by getBestVoiceForLanguage() in the speech synthesis
+        
+        // Just log voice availability for debugging
+        const languages = {
+            'fr-FR': 'fr',
+            'en-US': 'en', 
+            'es-ES': 'es',
+            'it-IT': 'it',
+            'de-DE': 'de'
+        };
+
+        Object.entries(languages).forEach(([fullLang, shortLang]) => {
+            const languageVoices = availableVoices.filter(voice => 
+                voice.lang.startsWith(shortLang) || voice.lang.startsWith(fullLang)
+            );
+            console.log(`[VoiceSettings] Available voices for ${fullLang}: ${languageVoices.length} found`);
+        });
+    }
+
+    function testVoice(languageCode, text, buttonElement) {
+        if (currentTestUtterance) {
+            speechSynthesis.cancel();
+        }
+
+        // Get selected gender for this language
+        const select = document.querySelector(`[data-lang="${languageCode}"].gender-select`);
+        let selectedGender = select ? select.value : 'auto';
+
+        console.log(`[VoiceSettings] Testing voice for ${languageCode} with gender: ${selectedGender}`);
+
+        // Find best voice for the selected gender
+        let voice = getBestVoiceForGender(languageCode, selectedGender);
+
+        if (!voice) {
+            alert(`Aucune voix trouvée pour ${languageCode}`);
+            return;
+        }
+
+        // Create and configure utterance
+        currentTestUtterance = new SpeechSynthesisUtterance(text);
+        currentTestUtterance.voice = voice;
+        currentTestUtterance.lang = voice.lang;
+        
+        // Use current speed setting
+        const speedSlider = document.querySelector('[name="audio_speed"]');
+        currentTestUtterance.rate = speedSlider ? parseFloat(speedSlider.value) : 0.9;
+        currentTestUtterance.pitch = 1.0;
+        currentTestUtterance.volume = 1.0;
+
+        // Button animation
+        buttonElement.classList.add('testing');
+        buttonElement.disabled = true;
+
+        currentTestUtterance.onstart = () => {
+            console.log(`[VoiceSettings] Testing voice: ${voice.name} (${voice.lang})`);
+        };
+
+        currentTestUtterance.onend = () => {
+            buttonElement.classList.remove('testing');
+            buttonElement.disabled = false;
+            currentTestUtterance = null;
+        };
+
+        currentTestUtterance.onerror = (error) => {
+            console.error(`[VoiceSettings] Voice test error:`, error);
+            buttonElement.classList.remove('testing');
+            buttonElement.disabled = false;
+            currentTestUtterance = null;
+        };
+
+        // Speak
+        speechSynthesis.speak(currentTestUtterance);
+    }
+
+    function getBestVoiceForGender(languageCode, preferredGender) {
+        const shortLang = languageCode.split('-')[0];
+        const langVoices = availableVoices.filter(v => v.lang.startsWith(shortLang));
+
+        if (!langVoices.length) {
+            console.warn(`❌ Aucune voix trouvée pour ${languageCode}`);
+            return null;
+        }
+
+        console.log(`🔍 [Settings] Recherche voix ${preferredGender} pour ${languageCode} (${langVoices.length} voix disponibles)`);
+
+        if (preferredGender === 'auto') {
+            // Return best quality voice (local service preferred)
+            const sortedByQuality = langVoices.sort((a, b) => {
+                // Priorité : service local puis score qualité
+                if (a.localService && !b.localService) return -1;
+                if (!a.localService && b.localService) return 1;
+                return (b.qualityScore || 0) - (a.qualityScore || 0);
+            });
+            console.log(`✅ Mode auto - voix sélectionnée: ${sortedByQuality[0].name}`);
+            return sortedByQuality[0];
+        }
+
+        // Categorize voices by gender
+        const voicesByGender = categorizeVoicesByGender(langVoices);
+        const genderVoices = voicesByGender[preferredGender] || [];
+
+        console.log(`📊 Voix ${preferredGender} trouvées: ${genderVoices.length}`);
+
+        if (genderVoices.length > 0) {
+            // Trier par score de qualité et service local
+            const sortedGenderVoices = genderVoices.sort((a, b) => {
+                // Priorité : service local puis score qualité
+                if (a.localService && !b.localService) return -1;
+                if (!a.localService && b.localService) return 1;
+                return (b.qualityScore || 0) - (a.qualityScore || 0);
+            });
+            console.log(`✅ Sélection de la meilleure voix ${preferredGender} pour ${languageCode}: ${sortedGenderVoices[0].name} (score: ${sortedGenderVoices[0].qualityScore || 'N/A'})`);
+            return sortedGenderVoices[0];
+        }
+
+        // FALLBACK INTELLIGENT: Si aucune voix n'est détectée pour ce genre
+        console.warn(`⚠️ Aucune voix ${preferredGender} détectée pour ${languageCode}, utilisation du fallback intelligent`);
+        
+        // Stratégie spéciale pour l'italien avec une seule voix disponible
+        if (shortLang === 'it' && langVoices.length === 1) {
+            const italianVoice = langVoices[0];
+            console.log(`🇮🇹 Italien: Une seule voix disponible (${italianVoice.name}) - utilisation pour les deux genres`);
+            
+            // Ajouter un indicateur pour différencier dans l'interface utilisateur
+            if (preferredGender === 'female') {
+                console.log(`🔄 Mode féminin italien: ${italianVoice.name} (même voix, ton ajusté)`);
+                // En option : ajuster la vitesse/pitch pour féminiser légèrement
+            } else {
+                console.log(`🔄 Mode masculin italien: ${italianVoice.name} (voix standard)`);
+            }
+            return italianVoice;
+        }
+        
+        // Stratégie : utiliser la position dans la liste comme indicateur
+        // En général, les voix masculines sont souvent en première position, les féminines ensuite
+        if (langVoices.length >= 2) {
+            if (preferredGender === 'male') {
+                console.log(`🔄 Fallback masculin: sélection de la première voix (${langVoices[0].name})`);
+                return langVoices[0]; // Première voix généralement masculine
+            } else if (preferredGender === 'female') {
+                console.log(`🔄 Fallback féminin: sélection de la deuxième voix (${langVoices[1].name})`);
+                return langVoices[1]; // Deuxième voix généralement féminine
+            }
+        }
+
+        // Fallback final: meilleure voix disponible
+        const fallbackVoices = langVoices.sort((a, b) => {
+            if (a.localService && !b.localService) return -1;
+            if (!a.localService && b.localService) return 1;
+            return (b.qualityScore || 0) - (a.qualityScore || 0);
+        });
+        console.log(`🔄 Fallback final: ${fallbackVoices[0].name}`);
+        return fallbackVoices[0];
+    }
+
+    function categorizeVoicesByGender(voices) {
+        const genderPatterns = {
+            male: [
+                // Patterns masculins anglais (très spécifiques)
+                'microsoft david', 'google us english male', 'google uk english male', 'alex', 'daniel',
+                'microsoft mark', 'microsoft ryan', 'microsoft frank', 'microsoft sean', 'microsoft kevin',
+                // Patterns italiens masculins
+                'microsoft cosimo', 'luca', 'marco', 'giovanni', 'francesco', 'alessandro', 'lorenzo', 'matteo',
+                // Patterns généraux masculins
+                'paul', 'george', 'david', 'mark', 'richard', 'daniel', 'thomas', 'matthew', 'james', 'john',
+                'pierre', 'jean', 'michel', 'henri', 'louis', 'françois', 'antoine', 'nicolas',
+                'carlos', 'diego', 'antonio', 'fernando', 'miguel', 'josé', 'manuel', 'francisco',
+                'klaus', 'hans', 'wolfgang', 'stefan', 'michael', 'andreas', 'christian',
+                // Indicators
+                'male', 'man', 'masculin', 'homme', 'hombre', 'uomo', 'mann', 'masculine'
+            ],
+            female: [
+                // Patterns féminins anglais (très spécifiques)  
+                'microsoft zira', 'google us english female', 'google uk english female', 'samantha', 'victoria',
+                'microsoft eva', 'microsoft hazel', 'microsoft aria', 'microsoft natasha',
+                // Patterns italiens féminins
+                'microsoft elsa', 'giulia', 'francesca', 'elena', 'sara', 'anna', 'valentina', 'chiara',
+                // Patterns généraux féminins
+                'julie', 'marie', 'sarah', 'emma', 'sophie', 'claire', 'anne', 'lisa', 'susan', 'helen',
+                'amélie', 'isabelle', 'nathalie', 'véronique', 'christine', 'françoise', 'martine',
+                'maria', 'carmen', 'ana', 'lucia', 'pilar', 'rosa', 'elena', 'patricia',
+                'anna', 'maria', 'petra', 'sabine', 'christine', 'angelika', 'barbara',
+                // Indicators
+                'female', 'woman', 'féminin', 'femme', 'mujer', 'donna', 'frau', 'feminine'
+            ]
+        };
+
+        // Voix anglaises masculines de haute qualité (patterns étendus pour une meilleure détection)
+        const premiumEnglishMaleVoices = [
+            'microsoft david', 'google uk english male', 'microsoft ryan', 'microsoft frank',
+            'google us english male', 'microsoft sean', 'google australian male', 'microsoft kevin',
+            'alex', 'daniel', 'samantha male', 'tom', 'nathan', 'aaron enhanced', 'fred',
+            // Ajout de patterns plus larges pour détecter les voix système
+            'male', 'man', 'masculine', 'guy', 'boy', 'mr', 'sir'
+        ];
+
+        // Voix anglaises féminines de haute qualité
+        const premiumEnglishFemaleVoices = [
+            'microsoft zira', 'microsoft eva', 'google uk english female', 'microsoft hazel',
+            'google us english female', 'microsoft aria', 'google australian female', 'microsoft natasha',
+            'samantha', 'victoria', 'kate', 'alice', 'emma', 'olivia', 'sophia',
+            // Ajout de patterns plus larges pour détecter les voix système
+            'female', 'woman', 'feminine', 'girl', 'lady', 'ms', 'mrs'
+        ];
+
+        const result = { male: [], female: [], unknown: [] };
+
+        for (const voice of voices) {
+            const voiceName = voice.name.toLowerCase();
+            let gender = 'unknown';
+            let qualityBonus = 0;
+
+            // DÉTECTION PRÉCISE PAR MOT-CLÉ EXPLICITE (priorité absolue)
+            if (voice.lang && voice.lang.startsWith('en')) {
+                // D'abord vérifier les mots-clés explicites de genre
+                if (voiceName.includes('female') || voiceName.includes('woman') || voiceName.includes('feminine')) {
+                    gender = 'female';
+                    qualityBonus = 100;
+                    console.log(`👩 Voix féminine détectée par mot-clé explicite: ${voice.name} (bonus: ${qualityBonus})`);
+                } else if (voiceName.includes('male') || voiceName.includes('man') || voiceName.includes('masculine')) {
+                    gender = 'male';  
+                    qualityBonus = 100;
+                    console.log(`👨 Voix masculine détectée par mot-clé explicite: ${voice.name} (bonus: ${qualityBonus})`);
+                }
+                
+                // Si pas encore déterminé, vérifier les voix féminines premium spécifiques
+                if (gender === 'unknown') {
+                    for (let i = 0; i < premiumEnglishFemaleVoices.length; i++) {
+                        if (voiceName.includes(premiumEnglishFemaleVoices[i]) && !voiceName.includes('male')) {
+                            gender = 'female';
+                            qualityBonus = 50 + (premiumEnglishFemaleVoices.length - i) * 10;
+                            console.log(`🎯 Voix anglaise féminine premium détectée: ${voice.name} (bonus: ${qualityBonus})`);
+                            break;
+                        }
+                    }
+                }
+                
+                // Si pas encore déterminé, vérifier les voix masculines premium spécifiques
+                if (gender === 'unknown') {
+                    for (let i = 0; i < premiumEnglishMaleVoices.length; i++) {
+                        if (voiceName.includes(premiumEnglishMaleVoices[i]) && !voiceName.includes('female')) {
+                            gender = 'male';
+                            qualityBonus = 50 + (premiumEnglishMaleVoices.length - i) * 10;
+                            console.log(`🎯 Voix anglaise masculine premium détectée: ${voice.name} (bonus: ${qualityBonus})`);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Si pas encore identifié, vérifier les patterns masculins standards
+            if (gender === 'unknown') {
+                for (const pattern of genderPatterns.male) {
+                    if (voiceName.includes(pattern)) {
+                        gender = 'male';
+                        // Bonus supplémentaire pour les voix anglaises masculines
+                        if (voice.lang && voice.lang.startsWith('en')) {
+                            qualityBonus = 20;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // If not male, check female patterns
+            if (gender === 'unknown') {
+                for (const pattern of genderPatterns.female) {
+                    if (voiceName.includes(pattern)) {
+                        gender = 'female';
+                        // Bonus supplémentaire pour les voix anglaises féminines
+                        if (voice.lang && voice.lang.startsWith('en')) {
+                            qualityBonus = 20;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // Appliquer le bonus qualité
+            if (qualityBonus > 0) {
+                voice.qualityScore = (voice.qualityScore || 0) + qualityBonus;
+            }
+
+            result[gender].push(voice);
+        }
+
+        // Trier les voix masculines par score de qualité pour chaque langue
+        result.male.sort((a, b) => {
+            // Prioriser d'abord les voix anglaises avec bonus
+            if (a.lang && a.lang.startsWith('en') && (!b.lang || !b.lang.startsWith('en'))) {
+                return -1;
+            }
+            if (b.lang && b.lang.startsWith('en') && (!a.lang || !a.lang.startsWith('en'))) {
+                return 1;
+            }
+            // Puis trier par score de qualité
+            return (b.qualityScore || 0) - (a.qualityScore || 0);
+        });
+
+        // Trier aussi les voix féminines par score de qualité
+        result.female.sort((a, b) => {
+            // Prioriser d'abord les voix anglaises avec bonus
+            if (a.lang && a.lang.startsWith('en') && (!b.lang || !b.lang.startsWith('en'))) {
+                return -1;
+            }
+            if (b.lang && b.lang.startsWith('en') && (!a.lang || !a.lang.startsWith('en'))) {
+                return 1;
+            }
+            // Puis trier par score de qualité
+            return (b.qualityScore || 0) - (a.qualityScore || 0);
+        });
+
+        // Debug: Afficher les résultats de la catégorisation pour l'anglais
+        const englishVoices = voices.filter(v => v.lang && v.lang.startsWith('en'));
+        if (englishVoices.length > 0) {
+            console.log('🔍 [Settings] Catégorisation des voix anglaises:');
+            console.log(`📊 Masculines (${result.male.filter(v => v.lang.startsWith('en')).length}):`, 
+                result.male.filter(v => v.lang.startsWith('en')).map(v => `${v.name} (score: ${v.qualityScore || 0})`));
+            console.log(`📊 Féminines (${result.female.filter(v => v.lang.startsWith('en')).length}):`, 
+                result.female.filter(v => v.lang.startsWith('en')).map(v => `${v.name} (score: ${v.qualityScore || 0})`));
+            console.log(`📊 Inconnues (${result.unknown.filter(v => v.lang.startsWith('en')).length}):`, 
+                result.unknown.filter(v => v.lang.startsWith('en')).map(v => v.name));
+        }
+
+        return result;
+    }
+
+    function testCurrentVoices() {
+        // Test each configured language with a sample phrase
+        const testPhrases = {
+            'fr-FR': 'Bonjour, ceci est un test de qualité de la voix française',
+            'en-US': 'Hello, this is a quality test of the English voice', 
+            'es-ES': 'Hola, esta es una prueba de calidad de la voz española',
+            'it-IT': 'Ciao, questo è un test di qualità della voce italiana',
+            'de-DE': 'Hallo, das ist ein Qualitätstest der deutschen Stimme'
+        };
+
+        let delay = 0;
+        Object.entries(testPhrases).forEach(([lang, text]) => {
+            setTimeout(() => {
+                const button = document.querySelector(`[data-lang="${lang}"].voice-test-btn`);
+                if (button) {
+                    testVoice(lang, text, button);
+                }
+            }, delay);
+            delay += 3000; // 3 seconds between tests
+        });
+    }
+
+    // Make function globally available
+    window.testCurrentVoices = testCurrentVoices;
 </script>
