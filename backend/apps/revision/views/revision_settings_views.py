@@ -8,7 +8,7 @@ from django.views.generic import View
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.db.models import Count, Avg, Sum
@@ -114,7 +114,7 @@ class RevisionSettingsView(View):
                 
                 # Add Revision specific data
                 context.update({
-                    'title': _('Paramètres Révision - Linguify'),
+                    'title': gettext('Paramètres Révision - Linguify'),
                     'revision_settings': settings,
                 })
                 
@@ -125,10 +125,10 @@ class RevisionSettingsView(View):
             if is_ajax:
                 return JsonResponse({
                     'success': False,
-                    'message': _('Erreur lors de la récupération des paramètres')
+                    'message': gettext('Erreur lors de la récupération des paramètres')
                 }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
-                messages.error(request, _("Erreur lors du chargement des paramètres de révision"))
+                messages.error(request, gettext("Erreur lors du chargement des paramètres de révision"))
                 return redirect('saas_web:settings')
     
     def post(self, request):
@@ -297,17 +297,17 @@ class RevisionSettingsView(View):
             if is_ajax:
                 return JsonResponse({
                     'success': True,
-                    'message': _("Paramètres de révision mis à jour avec succès"),
+                    'message': gettext("Paramètres de révision mis à jour avec succès"),
                     'data': data
                 })
             else:
-                messages.success(request, _("Paramètres de révision mis à jour avec succès"))
+                messages.success(request, gettext("Paramètres de révision mis à jour avec succès"))
                 return redirect('saas_web:settings')
                 
         except ValueError as e:
             # Handle conversion errors
             logger.error(f"Value error in revision settings: {e}")
-            error_message = _("Valeur invalide dans les paramètres")
+            error_message = gettext("Valeur invalide dans les paramètres")
             
             if is_ajax:
                 return JsonResponse({
@@ -320,7 +320,7 @@ class RevisionSettingsView(View):
                 
         except Exception as e:
             logger.error(f"Error in RevisionSettingsView POST: {e}")
-            error_message = _("Erreur lors de la mise à jour des paramètres de révision")
+            error_message = gettext("Erreur lors de la mise à jour des paramètres de révision")
             
             if is_ajax:
                 return JsonResponse({
@@ -358,8 +358,14 @@ def get_user_revision_settings(request):
         try:
             revision_settings, _ = RevisionSettings.objects.get_or_create(user=request.user)
             
+            # DEBUG: Log des valeurs avant mise à jour
+            logger.info(f"[USER_SETTINGS] 🎵 BEFORE update - user: {request.user.username}")
+            logger.info(f"[USER_SETTINGS] 🎵 DB audio_speed: {revision_settings.audio_speed}")
+            logger.info(f"[USER_SETTINGS] 🎵 DB audio_enabled: {revision_settings.audio_enabled}")
+            logger.info(f"[USER_SETTINGS] 🎵 DB spanish_gender: {revision_settings.preferred_gender_spanish}")
+            
             # Ajouter les paramètres audio avec préférences de genre
-            settings.update({
+            audio_settings = {
                 'audio_enabled': revision_settings.audio_enabled,
                 'audio_speed': revision_settings.audio_speed,
                 'preferred_gender_french': revision_settings.preferred_gender_french,
@@ -367,8 +373,13 @@ def get_user_revision_settings(request):
                 'preferred_gender_spanish': revision_settings.preferred_gender_spanish,
                 'preferred_gender_italian': revision_settings.preferred_gender_italian,
                 'preferred_gender_german': revision_settings.preferred_gender_german,
-            })
+            }
             
+            logger.info(f"[USER_SETTINGS] 🎵 Audio settings to add: {audio_settings}")
+            
+            settings.update(audio_settings)
+            
+            logger.info(f"[USER_SETTINGS] 🎵 AFTER update - settings audio_speed: {settings.get('audio_speed')}")
             logger.info(f"[USER_SETTINGS] Added audio settings for {request.user.username}")
             
         except Exception as e:

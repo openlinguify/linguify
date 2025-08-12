@@ -1327,6 +1327,46 @@
                     });
                     
                     console.log(`[VoiceSettings] ✅ Applied preferences to ${appliedCount} selectors`);
+                    
+                    // 🎵 ALSO APPLY AUDIO SPEED AND OTHER AUDIO SETTINGS
+                    console.log('[VoiceSettings] 🚀 STARTING audio settings section...');
+                    const audioSettings = {
+                        'audio_enabled': data.settings.audio_enabled !== false, // default true if not specified
+                        'audio_speed': data.settings.audio_speed || 0.9
+                    };
+                    
+                    console.log('[VoiceSettings] 🎵 About to apply audio settings:', audioSettings);
+                    
+                    // Apply audio_enabled checkbox
+                    const audioEnabledCheckbox = document.querySelector('[name="audio_enabled"]');
+                    if (audioEnabledCheckbox) {
+                        const beforeChecked = audioEnabledCheckbox.checked;
+                        audioEnabledCheckbox.checked = audioSettings.audio_enabled;
+                        const afterChecked = audioEnabledCheckbox.checked;
+                        console.log(`[VoiceSettings] 🔧 audio_enabled: ${beforeChecked} → ${afterChecked}`);
+                    }
+                    
+                    // Apply audio_speed range slider
+                    const audioSpeedSlider = document.querySelector('[name="audio_speed"]');
+                    const audioSpeedDisplay = document.querySelector('.range-value');
+                    if (audioSpeedSlider) {
+                        const beforeValue = audioSpeedSlider.value;
+                        audioSpeedSlider.value = audioSettings.audio_speed;
+                        const afterValue = audioSpeedSlider.value;
+                        
+                        // Update the display text
+                        if (audioSpeedDisplay) {
+                            audioSpeedDisplay.textContent = audioSettings.audio_speed + 'x';
+                        }
+                        
+                        console.log(`[VoiceSettings] 🎵 audio_speed: "${beforeValue}" → "${afterValue}" (set to ${audioSettings.audio_speed})`);
+                        
+                        if (Math.abs(parseFloat(afterValue) - audioSettings.audio_speed) > 0.01) {
+                            console.error(`[VoiceSettings] ❌ FAILED to set audio_speed to ${audioSettings.audio_speed}, still shows ${afterValue}`);
+                        }
+                    } else {
+                        console.error(`[VoiceSettings] ❌ Could not find audio_speed slider`);
+                    }
                 } else {
                     console.warn('[VoiceSettings] ⚠️ No settings found in API response');
                 }
