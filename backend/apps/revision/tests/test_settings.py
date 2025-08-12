@@ -65,15 +65,16 @@ class RevisionSettingsModelTest(TestCase):
 
     def test_get_audio_settings_method(self):
         """Test de la méthode get_audio_settings"""
-        settings, created = RevisionSettings.objects.get_or_create(
+        # S'assurer qu'aucun paramètre n'existe pour ce test
+        RevisionSettings.objects.filter(user=self.user).delete()
+        
+        settings = RevisionSettings.objects.create(
             user=self.user,
-            defaults={
-                'audio_enabled': True,
-                'audio_speed': 1.2,
-                'preferred_gender_french': 'female',
-                'preferred_gender_english': 'male',
-                'auto_play_audio': False
-            }
+            audio_enabled=True,
+            audio_speed=1.2,
+            preferred_gender_french='female',
+            preferred_gender_english='male',
+            auto_play_audio=False
         )
         
         audio_settings = settings.get_audio_settings()
@@ -331,14 +332,15 @@ class AudioSettingsPersistenceTest(TestCase):
     
     def test_voice_gender_persistence_after_browser_refresh(self):
         """Test que les genres de voix persistent après actualisation du navigateur"""
+        # S'assurer qu'aucun paramètre n'existe pour ce test
+        RevisionSettings.objects.filter(user=self.user).delete()
+        
         # Créer paramètres avec genres personnalisés
-        settings, created = RevisionSettings.objects.get_or_create(
+        settings = RevisionSettings.objects.create(
             user=self.user,
-            defaults={
-                'preferred_gender_french': 'female',
-                'preferred_gender_english': 'male',
-                'preferred_gender_spanish': 'female'
-            }
+            preferred_gender_french='female',
+            preferred_gender_english='male',
+            preferred_gender_spanish='female'
         )
         
         # Simuler modification via formulaire web
@@ -360,14 +362,15 @@ class AudioSettingsPersistenceTest(TestCase):
     
     def test_audio_settings_load_from_database_not_session(self):
         """Test que les paramètres audio sont toujours chargés depuis la BDD, pas la session"""
+        # S'assurer qu'aucun paramètre n'existe pour ce test
+        RevisionSettings.objects.filter(user=self.user).delete()
+        
         # Créer paramètres en BDD
-        db_settings, created = RevisionSettings.objects.get_or_create(
+        db_settings = RevisionSettings.objects.create(
             user=self.user,
-            defaults={
-                'audio_enabled': True,
-                'audio_speed': 1.4,
-                'preferred_gender_french': 'male'
-            }
+            audio_enabled=True,
+            audio_speed=1.4,
+            preferred_gender_french='male'
         )
         
         # Vérifier que get_audio_settings() retourne les valeurs BDD
@@ -1186,16 +1189,17 @@ class FrontendBackendIntegrationTest(TestCase):
     
     def test_javascript_loadCurrentVoicePreferences_simulation(self):
         """Test simulant la logique JavaScript loadCurrentVoicePreferences()"""
+        # S'assurer qu'aucun paramètre n'existe pour ce test
+        RevisionSettings.objects.filter(user=self.user).delete()
+        
         # Créer des paramètres en BDD
-        settings, created = RevisionSettings.objects.get_or_create(
+        settings = RevisionSettings.objects.create(
             user=self.user,
-            defaults={
-                'audio_enabled': True,
-                'audio_speed': 1.3,
-                'preferred_gender_french': 'male',
-                'preferred_gender_english': 'female',
-                'preferred_gender_spanish': 'auto'
-            }
+            audio_enabled=True,
+            audio_speed=1.3,
+            preferred_gender_french='male',
+            preferred_gender_english='female',
+            preferred_gender_spanish='auto'
         )
         
         # Simuler le chargement des paramètres (comme le fait le JS)
@@ -1231,10 +1235,13 @@ class FrontendBackendIntegrationTest(TestCase):
     
     def test_audio_speed_display_update_simulation(self):
         """Test simulant la mise à jour de l'affichage de la vitesse audio"""
+        # S'assurer qu'aucun paramètre n'existe pour ce test
+        RevisionSettings.objects.filter(user=self.user).delete()
+        
         # Paramètres avec vitesse personnalisée
-        settings, created = RevisionSettings.objects.get_or_create(
+        settings = RevisionSettings.objects.create(
             user=self.user,
-            defaults={'audio_speed': 1.7}
+            audio_speed=1.7
         )
         
         # Simuler la logique JavaScript qui applique la vitesse à l'interface
@@ -1660,6 +1667,9 @@ class FlashcardAudioIntegrationTest(TestCase):
                 back_language='es'
             )
         }
+        
+        # S'assurer qu'aucun paramètre n'existe pour ce test
+        RevisionSettings.objects.filter(user=self.user).delete()
         
         # Paramètres audio personnalisés
         self.audio_settings = RevisionSettings.objects.create(

@@ -230,7 +230,15 @@
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.RevisionSettingsModelTest --verbosity=2 --keepdb)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.RevisionSessionConfigTest.test_create_session_config --verbosity=2 --keepdb)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.FlashcardsAudioAPITest.test_audio_settings_serialization --verbosity=2 --keepdb)",
-      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings --verbosity=0 --keepdb)"
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings --verbosity=0 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py migrate --verbosity=1)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings --verbosity=2 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.RevisionSettingsModelTest.test_get_audio_settings_method --verbosity=2 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.FrontendBackendIntegrationTest --verbosity=1 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.FlashcardAudioIntegrationTest --verbosity=1 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.FlashcardAudioIntegrationTest.test_real_world_scenario_french_feminine_setting --verbosity=2 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.FlashcardAudioIntegrationTest.test_flashcard_uses_correct_voice_gender_for_language --verbosity=2 --keepdb)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.AudioSettingsPersistenceTest --verbosity=1 --keepdb)"
     ],
     "deny": []
   },

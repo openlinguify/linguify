@@ -10,24 +10,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='revisionsettings',
-            name='group_by_deck',
-            field=models.BooleanField(default=False, help_text='Grouper les statistiques par deck'),
-        ),
-        migrations.AddField(
-            model_name='revisionsettings',
-            name='hide_learned_words',
-            field=models.BooleanField(default=False, help_text='Masquer les mots déjà appris dans les statistiques'),
-        ),
-        migrations.AddField(
-            model_name='revisionsettings',
-            name='show_word_stats',
-            field=models.BooleanField(default=True, help_text='Afficher les statistiques de mots'),
-        ),
-        migrations.AddField(
-            model_name='revisionsettings',
-            name='stats_display_mode',
-            field=models.CharField(choices=[('detailed', 'Détaillé'), ('summary', 'Résumé'), ('minimal', 'Minimal')], default='detailed', help_text="Mode d'affichage des statistiques", max_length=20),
-        ),
+        # Ces champs ont déjà été ajoutés dans la migration 0014
+        # Cette migration est maintenant vide pour éviter les conflits
+        # Les champs suivants existent déjà :
+        # - group_by_deck
+        # - hide_learned_words  
+        # - show_word_stats
+        # - stats_display_mode
     ]
