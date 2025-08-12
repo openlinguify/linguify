@@ -12,10 +12,36 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='unit',
-            old_name='teacher_cms_id',
-            new_name='cms_unit_id',
+        # Safely rename teacher_cms_id to cms_unit_id if it exists
+        migrations.RunSQL(
+            """
+            DO $$
+            BEGIN
+                IF EXISTS (SELECT 1 FROM information_schema.columns 
+                          WHERE table_name = 'course_unit' AND column_name = 'teacher_cms_id') THEN
+                    ALTER TABLE course_unit RENAME COLUMN teacher_cms_id TO cms_unit_id;
+                ELSIF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                                 WHERE table_name = 'course_unit' AND column_name = 'cms_unit_id') THEN
+                    ALTER TABLE course_unit ADD COLUMN cms_unit_id INTEGER NULL;
+                END IF;
+            END $$;
+            """,
+            reverse_sql="""
+            DO $$
+            BEGIN
+                IF EXISTS (SELECT 1 FROM information_schema.columns 
+                          WHERE table_name = 'course_unit' AND column_name = 'cms_unit_id') THEN
+                    ALTER TABLE course_unit RENAME COLUMN cms_unit_id TO teacher_cms_id;
+                END IF;
+            END $$;
+            """,
+            state_operations=[
+                migrations.RenameField(
+                    model_name='unit',
+                    old_name='teacher_cms_id',
+                    new_name='cms_unit_id',
+                ),
+            ]
         ),
         migrations.RenameField(
             model_name='unitprogress',
