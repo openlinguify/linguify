@@ -1441,16 +1441,17 @@ class EnhancedAudioSettingsAPITest(APITestCase):
     
     def test_audio_settings_endpoint_get(self):
         """Test de l'endpoint spécifique audio_settings en GET"""
+        # S'assurer qu'aucun paramètre n'existe pour ce test
+        RevisionSettings.objects.filter(user=self.user).delete()
+        
         # Créer des paramètres audio personnalisés
-        settings, created = RevisionSettings.objects.get_or_create(
+        settings = RevisionSettings.objects.create(
             user=self.user,
-            defaults={
-                'audio_enabled': False,
-                'audio_speed': 1.8,
-                'preferred_gender_french': 'male',
-                'preferred_gender_english': 'female',
-                'auto_play_audio': True
-            }
+            audio_enabled=False,
+            audio_speed=1.8,
+            preferred_gender_french='male',
+            preferred_gender_english='female',
+            auto_play_audio=True
         )
         
         # Appeler l'endpoint audio_settings
@@ -1777,17 +1778,26 @@ class FlashcardAudioIntegrationTest(TestCase):
         # Fonction qui simule la lecture audio d'une flashcard
         def simulate_flashcard_audio(flashcard, audio_settings):
             """Simule la lecture audio complète d'une flashcard (recto + verso)"""
+            # Mapping correct des langues vers les champs
+            language_to_field = {
+                'fr': audio_settings.preferred_gender_french,
+                'en': audio_settings.preferred_gender_english,
+                'es': audio_settings.preferred_gender_spanish,
+                'it': audio_settings.preferred_gender_italian,
+                'de': audio_settings.preferred_gender_german
+            }
+            
             front_audio = {
                 'text': flashcard.front_text,
                 'language': flashcard.front_language,
-                'gender': getattr(audio_settings, f'preferred_gender_{flashcard.front_language}', 'auto'),
+                'gender': language_to_field.get(flashcard.front_language, 'auto'),
                 'speed': audio_settings.audio_speed
             }
             
             back_audio = {
                 'text': flashcard.back_text, 
                 'language': flashcard.back_language,
-                'gender': getattr(audio_settings, f'preferred_gender_{flashcard.back_language}', 'auto'),
+                'gender': language_to_field.get(flashcard.back_language, 'auto'),
                 'speed': audio_settings.audio_speed
             }
             
