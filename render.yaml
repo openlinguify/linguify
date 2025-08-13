@@ -7,28 +7,43 @@ services:
     plan: starter
     rootDir: portal
     buildCommand: |
+      echo "==> Render Build Starting..."
+      echo "==> Python version: $(python3 --version)"
+      echo "==> Working directory: $(pwd)"
       chmod +x ./build.sh
+      chmod +x ./start.sh
       ./build.sh
-    startCommand: ./start.sh
+    startCommand: |
+      echo "==> Render Start Command..."
+      chmod +x ./start.sh
+      ./start.sh
     healthCheckPath: /health/
     domains:
       - openlinguify.com
       - www.openlinguify.com
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12.0
+        value: 3.12
       - key: DEBUG
-        value: False
+        value: "False"
       - key: DJANGO_ENV
         value: production
       - key: SECRET_KEY
         sync: false
       - key: ALLOWED_HOSTS
-        value: openlinguify.com,www.openlinguify.com,linguify-portal.onrender.com
+        value: "openlinguify.com,www.openlinguify.com,linguify-portal.onrender.com"
       - key: DATABASE_URL
         sync: false
       - key: BACKEND_API_URL
         value: https://app.openlinguify.com
+      - key: DJANGO_SETTINGS_MODULE
+        value: portal.settings
+      - key: POETRY_VERSION
+        value: "1.7.1"
+      - key: PIP_DISABLE_PIP_VERSION_CHECK
+        value: "1"
+      - key: PYTHONUNBUFFERED
+        value: "1"
 
   # 2. BACKEND - SaaS pour particuliers (app.openlinguify.com)
   - type: web

@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "OpenLinguify Portal - Landing page and public website"
 authors = ["OpenLinguify Team <dev@openlinguify.com>"]
 readme = "README.md"
-packages = [{include = "portal"}, {include = "public_web"}, {include = "blog"}, {include = "jobs"}, {include = "docs"}]
+packages = [{include = "portal"}, {include = "public_web"}, {include = "blog"}, {include = "jobs"}]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<4.0"
