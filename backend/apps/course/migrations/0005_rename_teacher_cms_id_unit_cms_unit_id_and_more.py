@@ -43,26 +43,30 @@ class Migration(migrations.Migration):
                 ),
             ]
         ),
-        # Safely rename completion_date to completed_at if it exists
+        # Safely rename completion_date to completed_at if table and column exist
         migrations.RunSQL(
             """
             DO $$
             BEGIN
-                IF EXISTS (SELECT 1 FROM information_schema.columns 
-                          WHERE table_name = 'course_unitprogress' AND column_name = 'completion_date') THEN
-                    ALTER TABLE course_unitprogress RENAME COLUMN completion_date TO completed_at;
-                ELSIF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                                 WHERE table_name = 'course_unitprogress' AND column_name = 'completed_at') THEN
-                    ALTER TABLE course_unitprogress ADD COLUMN completed_at TIMESTAMP WITH TIME ZONE NULL;
+                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'course_unitprogress') THEN
+                    IF EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name = 'course_unitprogress' AND column_name = 'completion_date') THEN
+                        ALTER TABLE course_unitprogress RENAME COLUMN completion_date TO completed_at;
+                    ELSIF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                                     WHERE table_name = 'course_unitprogress' AND column_name = 'completed_at') THEN
+                        ALTER TABLE course_unitprogress ADD COLUMN completed_at TIMESTAMP WITH TIME ZONE NULL;
+                    END IF;
                 END IF;
             END $$;
             """,
             reverse_sql="""
             DO $$
             BEGIN
-                IF EXISTS (SELECT 1 FROM information_schema.columns 
-                          WHERE table_name = 'course_unitprogress' AND column_name = 'completed_at') THEN
-                    ALTER TABLE course_unitprogress RENAME COLUMN completed_at TO completion_date;
+                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'course_unitprogress') THEN
+                    IF EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name = 'course_unitprogress' AND column_name = 'completed_at') THEN
+                        ALTER TABLE course_unitprogress RENAME COLUMN completed_at TO completion_date;
+                    END IF;
                 END IF;
             END $$;
             """,
@@ -74,26 +78,30 @@ class Migration(migrations.Migration):
                 ),
             ]
         ),
-        # Safely rename enrollment_date to started_at if it exists
+        # Safely rename enrollment_date to started_at if table and column exist
         migrations.RunSQL(
             """
             DO $$
             BEGIN
-                IF EXISTS (SELECT 1 FROM information_schema.columns 
-                          WHERE table_name = 'course_unitprogress' AND column_name = 'enrollment_date') THEN
-                    ALTER TABLE course_unitprogress RENAME COLUMN enrollment_date TO started_at;
-                ELSIF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                                 WHERE table_name = 'course_unitprogress' AND column_name = 'started_at') THEN
-                    ALTER TABLE course_unitprogress ADD COLUMN started_at TIMESTAMP WITH TIME ZONE NULL;
+                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'course_unitprogress') THEN
+                    IF EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name = 'course_unitprogress' AND column_name = 'enrollment_date') THEN
+                        ALTER TABLE course_unitprogress RENAME COLUMN enrollment_date TO started_at;
+                    ELSIF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                                     WHERE table_name = 'course_unitprogress' AND column_name = 'started_at') THEN
+                        ALTER TABLE course_unitprogress ADD COLUMN started_at TIMESTAMP WITH TIME ZONE NULL;
+                    END IF;
                 END IF;
             END $$;
             """,
             reverse_sql="""
             DO $$
             BEGIN
-                IF EXISTS (SELECT 1 FROM information_schema.columns 
-                          WHERE table_name = 'course_unitprogress' AND column_name = 'started_at') THEN
-                    ALTER TABLE course_unitprogress RENAME COLUMN started_at TO enrollment_date;
+                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'course_unitprogress') THEN
+                    IF EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name = 'course_unitprogress' AND column_name = 'started_at') THEN
+                        ALTER TABLE course_unitprogress RENAME COLUMN started_at TO enrollment_date;
+                    END IF;
                 END IF;
             END $$;
             """,
