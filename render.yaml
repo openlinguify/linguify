@@ -11,8 +11,8 @@ services:
       pip install poetry
       poetry config virtualenvs.create false
       poetry install --no-dev
-      poetry run python manage.py collectstatic --noinput
-      poetry run python manage.py migrate
+      poetry run python manage.py collectstatic --noinput --settings=portal.settings
+      poetry run python manage.py migrate --settings=portal.settings
     startCommand: poetry run gunicorn portal.wsgi:application --bind 0.0.0.0:$PORT
     domains:
       - openlinguify.com
