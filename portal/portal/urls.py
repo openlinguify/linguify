@@ -7,11 +7,22 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.views.generic import RedirectView
+from django.http import JsonResponse
 from public_web.views import LanguageRedirectView
+
+def health_check(request):
+    """Health check endpoint for monitoring"""
+    return JsonResponse({
+        'status': 'healthy',
+        'service': 'linguify-portal',
+        'version': '1.0.0'
+    })
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
+    # Health check endpoint
+    path('health/', health_check, name='health_check'),
     # API endpoints (no language prefix)
     path('api/v1/jobs/', include('jobs.urls')),
     # Redirection intelligente basée sur la langue du navigateur

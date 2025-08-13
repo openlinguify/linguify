@@ -1,0 +1,58 @@
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+*.log
+*.sqlite3
+db.sqlite3
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+tests/
+**/test_*.py
+**/tests.py
+
+# Development tools
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation
+README.md
+*.md
+docs/
+
+# Git
+.git/
+.gitignore
+
+# Poetry lock file is included but not needed for production
+# poetry.lock
+
+# Cache directories
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.cache/
+
+# Media files (should be served by CDN in production)
+media/
+uploads/
