@@ -160,6 +160,14 @@
                         Révision éclair des cartes que vous devez revoir selon l'algorithme de répétition espacée.
                     </div>
                 </a>
+                
+                <a href="#" class="study-mode-card" id="studyWrite">
+                    <span class="study-mode-icon">✍️</span>
+                    <div class="study-mode-title">Écriture</div>
+                    <div class="study-mode-description">
+                        Exercice d'écriture pour traduire les mots. Parfait pour améliorer l'orthographe et la mémorisation.
+                    </div>
+                </a>
             </div>
             
             <!-- Cards Section -->
@@ -453,6 +461,7 @@
     {% include 'revision/study/learn_embedded.html' %}
     {% include 'revision/study/match_embedded.html' %}
     {% include 'revision/study/review_embedded.html' %}
+    {% include 'revision/study/write_embedded.html' %}
     
     <!-- Import Deck Form -->
     <div id="importDeckForm" class="display-none">
@@ -1017,6 +1026,7 @@
 <script src="{% static 'revision/js/revision-quiz.js' %}"></script>
 <script src="{% static 'revision/js/revision-matching.js' %}"></script>
 <script src="{% static 'revision/js/revision-spaced.js' %}"></script>
+<script src="{% static 'revision/js/revision-write.js' %}"></script>
 
 <script>
 // Le JavaScript principal est maintenant dans revision-main.js

@@ -782,6 +782,19 @@ function startReviewMode() {
     }
 }
 
+function startWriteMode() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Veuillez sélectionner un deck d\'abord');
+        return;
+    }
+    
+    if (window.writeMode) {
+        window.writeMode.startWriteStudy(appState.selectedDeck);
+    } else {
+        window.notificationService.error('Mode Écriture non disponible');
+    }
+}
+
 // Card management functions
 async function editCard(cardId) {
     try {
@@ -2892,6 +2905,7 @@ function setupEventListeners() {
     document.getElementById('studyLearn')?.addEventListener('click', startLearnMode);
     document.getElementById('studyMatch')?.addEventListener('click', startMatchMode);
     document.getElementById('studyReview')?.addEventListener('click', startReviewMode);
+    document.getElementById('studyWrite')?.addEventListener('click', startWriteMode);
     
     // Create form
     elements.submitCreate?.addEventListener('click', createNewDeck);
@@ -3173,6 +3187,7 @@ window.revisionMain = {
     startLearnMode,
     startMatchMode,
     startReviewMode,
+    startWriteMode,
     submitCardEdit,
     hideEditCardForm,
     handleSearch,

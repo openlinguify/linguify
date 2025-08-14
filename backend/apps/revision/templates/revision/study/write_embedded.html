@@ -1,0 +1,150 @@
+<!-- Write Study Mode -->
+<div id="writeStudyMode" class="study-mode-hidden">
+    <div class="study-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Mode Écriture - <span id="writeStudyDeckName"></span></h5>
+            <div class="d-flex align-items-center gap-2">
+                <span id="writeStudyProgress" class="badge bg-primary">0/0</span>
+                <span id="writeTimer" class="badge bg-info">30s</span>
+                <button id="exitWriteStudyMode" class="btn btn-outline-custom btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    Retour au deck
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="study-content">
+        <div id="writeStudyArea" class="d-flex flex-column align-items-center justify-content-center p-4 study-area">
+            
+            <!-- Instructions -->
+            <div class="alert alert-info mb-4 text-center">
+                <i class="bi bi-pencil-square me-2"></i>
+                Écrivez la traduction du mot donné
+            </div>
+            
+            <!-- Affichage du mot -->
+            <div class="write-word-display mb-4">
+                <div class="card border-primary">
+                    <div class="card-body text-center p-4">
+                        <h3 id="writeWordToTranslate" class="mb-2 text-primary">---</h3>
+                        <small id="writeSourceLanguage" class="text-muted">Langue source</small>
+                        <button id="speakWriteWordBtn" class="speak-btn ms-2" 
+                                aria-label="Lire le mot à haute voix"
+                                title="Lire à haute voix">
+                            <i class="bi bi-volume-up" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Zone de réponse -->
+            <div class="write-answer-zone mb-4 w-100" style="max-width: 400px;">
+                <div class="input-group">
+                    <input type="text" 
+                           id="writeAnswerInput" 
+                           class="form-control form-control-lg text-center" 
+                           placeholder="Tapez votre réponse..." 
+                           autocomplete="off"
+                           autocorrect="off"
+                           spellcheck="false">
+                    <button id="submitWriteAnswerBtn" class="btn btn-primary" type="button">
+                        <i class="bi bi-check-lg"></i>
+                        Valider
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Boutons d'action -->
+            <div class="write-actions d-flex gap-2 mb-4">
+                <button id="writeHintBtn" class="btn btn-outline-warning btn-sm" title="Afficher un indice (-2 points)">
+                    <i class="bi bi-lightbulb"></i>
+                    Indice (-2 pts)
+                </button>
+                <button id="writeSkipBtn" class="btn btn-outline-secondary btn-sm" title="Passer cette carte (-5 points)">
+                    <i class="bi bi-skip-forward"></i>
+                    Passer (-5 pts)
+                </button>
+            </div>
+            
+            <!-- Affichage de l'indice -->
+            <div id="writeHintDisplay" class="alert alert-warning d-none">
+                <i class="bi bi-lightbulb-fill me-2"></i>
+                <span id="writeHintText"></span>
+            </div>
+            
+            <!-- Feedback -->
+            <div id="writeFeedbackDisplay" class="write-feedback d-none">
+                <div class="alert" id="writeFeedbackAlert">
+                    <div class="d-flex align-items-center">
+                        <i id="writeFeedbackIcon" class="me-2"></i>
+                        <span id="writeFeedbackMessage"></span>
+                    </div>
+                    <div id="writeCorrectAnswer" class="mt-2 d-none">
+                        <strong>Réponse correcte :</strong> <span id="writeCorrectAnswerText"></span>
+                    </div>
+                </div>
+                <button id="writeNextBtn" class="btn btn-primary">
+                    Carte suivante
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </button>
+            </div>
+            
+        </div>
+        
+        <!-- Barre de progression -->
+        <div class="progress mt-3" style="height: 6px;">
+            <div id="writeProgressBar" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
+        </div>
+        
+    </div>
+
+    <!-- Modal de fin -->
+    <div class="modal fade" id="writeCompletionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-trophy-fill me-2"></i>
+                        Session d'écriture terminée !
+                    </h5>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h4 id="writeCorrectCount" class="text-success">0</h4>
+                                    <small class="text-muted">Réponses correctes</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h4 id="writeTotalScore" class="text-warning">0</h4>
+                                    <small class="text-muted">Points obtenus</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="mb-1"><strong>Temps total :</strong> <span id="writeTotalTime">0:00</span></p>
+                        <p class="mb-1"><strong>Indices utilisés :</strong> <span id="writeHintsUsed">0</span></p>
+                        <p class="mb-0"><strong>Précision :</strong> <span id="writeAccuracy">0%</span></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="window.writeMode.restart()">
+                        <i class="bi bi-arrow-repeat me-2"></i>
+                        Recommencer
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="window.writeMode.exitWriteMode()">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Retour au deck
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
