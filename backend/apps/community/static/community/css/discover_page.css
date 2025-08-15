@@ -1,0 +1,18 @@
+/* ===== STYLES SPÉCIFIQUES À LA PAGE DISCOVER ===== */
+
+/* Button group styling */
+.button-group {
+    display: flex;
+    gap: 8px;
+}
+
+/* Empty state icon */
+.empty-state i.large-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+/* Clear filters button spacing */
+.clear-filters-btn {
+    margin-top: 16px;
+}

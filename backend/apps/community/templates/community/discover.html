@@ -5,6 +5,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/discover_page.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -60,7 +62,7 @@
                     </div>
                     
                     <!-- Boutons -->
-                    <div style="display: flex; gap: 8px;">
+                    <div class="button-group">
                         <button type="submit" class="btn-simple">
                             <i class="bi bi-funnel me-1"></i>
                             {% trans "Filter" %}
@@ -154,7 +156,7 @@
             {% endif %}
         {% else %}
             <div class="empty-state">
-                <i class="bi bi-people" style="font-size: 48px; margin-bottom: 16px;"></i>
+                <i class="bi bi-people large-icon"></i>
                 <h4>{% trans "No users found" %}</h4>
                 <p>
                     {% if current_search or current_native_language or current_target_language %}
@@ -164,7 +166,7 @@
                     {% endif %}
                 </p>
                 {% if current_search or current_native_language or current_target_language %}
-                <a href="{% url 'community:discover' %}" class="btn-simple" style="margin-top: 16px;">
+                <a href="{% url 'community:discover' %}" class="btn-simple clear-filters-btn">
                     <i class="bi bi-arrow-clockwise me-1"></i>
                     {% trans "Clear Filters" %}
                 </a>

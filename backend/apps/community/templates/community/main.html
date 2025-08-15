@@ -5,6 +5,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/main_page.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -122,7 +124,7 @@
                                         <p>{% cycle 'Just completed my first conversation in French! Feeling so proud of my progress 🎉 #FrenchLearning' 'Had an amazing language exchange session today. Thank you to all the patient native speakers! 🙏' 'Discovered a new grammar rule today that finally makes sense. Learning Chinese is challenging but rewarding! 📚' 'Perfected my Italian pronunciation today. Practice makes perfect! 🗣️' 'Spanish conjugations are getting easier every day. Consistency is key! 💪' %}</p>
                                         {% if forloop.counter == 1 %}
                                         <div class="post-image">
-                                            <img src="https://via.placeholder.com/500x200/2D5BBA/FFFFFF?text=Learning+Progress" alt="Learning progress" style="width: 100%; border-radius: 8px;">
+                                            <img src="https://via.placeholder.com/500x200/2D5BBA/FFFFFF?text=Learning+Progress" alt="Learning progress" class="post-image">
                                         </div>
                                         {% endif %}
                                     </div>
@@ -225,7 +227,7 @@
                                         <div class="goal-title">{% trans "French Conversation" %}</div>
                                         <div class="goal-progress">
                                             <div class="progress">
-                                                <div class="progress-bar" style="width: 75%"></div>
+                                                <div class="progress-bar french-conversation"></div>
                                             </div>
                                             <span class="progress-text">75%</span>
                                         </div>
@@ -237,7 +239,7 @@
                                         <div class="goal-title">{% trans "Daily Practice" %}</div>
                                         <div class="goal-progress">
                                             <div class="progress">
-                                                <div class="progress-bar" style="width: 90%"></div>
+                                                <div class="progress-bar daily-practice"></div>
                                             </div>
                                             <span class="progress-text">18/20 days</span>
                                         </div>
@@ -249,7 +251,7 @@
                                         <div class="goal-title">{% trans "Vocabulary Goal" %}</div>
                                         <div class="goal-progress">
                                             <div class="progress">
-                                                <div class="progress-bar" style="width: 60%"></div>
+                                                <div class="progress-bar vocabulary-goal"></div>
                                             </div>
                                             <span class="progress-text">120/200 words</span>
                                         </div>
@@ -376,8 +378,8 @@
                     {% endfor %}
                 {% else %}
                     <div class="empty-state">
-                        <i class="bi bi-chat-square-dots" style="font-size: 48px; margin-bottom: 16px;"></i>
-                        <div style="margin-bottom: 16px;">{% trans "No recent activity from your friends." %}</div>
+                        <i class="bi bi-chat-square-dots large-icon"></i>
+                        <div class="spacing">{% trans "No recent activity from your friends." %}</div>
                         <a href="{% url 'community:discover' %}" class="btn-simple">
                             {% trans "Find Friends to Follow Their Activity" %}
                         </a>
@@ -393,7 +395,7 @@
 <div class="modal fade" id="createPostModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header" style="background: var(--linguify-gradient); color: white;">
+            <div class="modal-header gradient">
                 <h5 class="modal-title">
                     <i class="bi bi-plus-circle me-2"></i>
                     {% trans "Share Your Learning Progress" %}
@@ -457,7 +459,7 @@
                         </div>
                     </div>
 
-                    <div class="post-preview" id="postPreview" style="display: none;">
+                    <div class="post-preview" id="postPreview">
                         <h6>{% trans "Preview:" %}</h6>
                         <div class="preview-card">
                             <div class="post-header">

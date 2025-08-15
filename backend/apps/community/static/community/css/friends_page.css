@@ -1,0 +1,89 @@
+/* ===== STYLES SPÉCIFIQUES À LA PAGE FRIENDS ===== */
+
+/* Search input width */
+.search-input-friends {
+    width: 200px;
+}
+
+/* User info styling */
+.user-info-meta {
+    color: #6B7280;
+    font-size: 12px;
+}
+
+.friend-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.friend-status.online {
+    color: var(--linguify-success);
+}
+
+.friend-status.offline {
+    color: #6B7280;
+}
+
+.friend-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.friend-request-card {
+    background: rgba(45, 91, 186, 0.05);
+    border-left: 3px solid var(--linguify-primary);
+}
+
+.tabs-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    background: var(--linguify-white);
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid var(--linguify-gray-200);
+}
+
+.tab-button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #6B7280;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.tab-button.active {
+    background: var(--linguify-gradient);
+    color: var(--linguify-white);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.online-indicator {
+    width: 8px;
+    height: 8px;
+    background: var(--linguify-success);
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.offline-indicator {
+    width: 8px;
+    height: 8px;
+    background: #6B7280;
+    border-radius: 50%;
+    display: inline-block;
+}

@@ -5,205 +5,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
-<style>
-.group-card {
-    background: var(--linguify-white);
-    border: 1px solid var(--linguify-gray-200);
-    border-radius: 8px;
-    padding: 20px;
-    transition: all 0.2s ease;
-    height: 100%;
-}
-
-.group-card:hover {
-    border-color: var(--linguify-primary-light);
-    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.1);
-    transform: translateY(-2px);
-}
-
-.group-header {
-    display: flex;
-    justify-content: between;
-    align-items: start;
-    margin-bottom: 12px;
-}
-
-.group-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #6B7280;
-    margin-bottom: 4px;
-}
-
-.group-stats {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 16px;
-    padding: 12px;
-    background: var(--linguify-gray-50);
-    border-radius: 6px;
-}
-
-.group-stat {
-    text-align: center;
-    flex: 1;
-}
-
-.group-stat-number {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--linguify-primary);
-}
-
-.group-stat-label {
-    font-size: 11px;
-    color: #6B7280;
-    text-transform: uppercase;
-    font-weight: 500;
-}
-
-.group-members {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-
-.member-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--linguify-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--linguify-white);
-    font-size: 10px;
-    font-weight: 600;
-}
-
-.member-count {
-    font-size: 12px;
-    color: #6B7280;
-}
-
-.group-badges {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-}
-
-.group-badge {
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.group-badge.language {
-    background: rgba(45, 91, 186, 0.1);
-    color: var(--linguify-primary);
-}
-
-.group-badge.level {
-    background: rgba(0, 212, 170, 0.1);
-    color: var(--linguify-accent-dark);
-}
-
-.group-badge.type {
-    background: rgba(139, 92, 246, 0.1);
-    color: var(--linguify-secondary);
-}
-
-.group-badge.status {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--linguify-success);
-}
-
-.filter-tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 24px;
-    background: var(--linguify-white);
-    border-radius: 8px;
-    padding: 4px;
-    border: 1px solid var(--linguify-gray-200);
-    overflow-x: auto;
-}
-
-.filter-tab {
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: #6B7280;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    font-size: 14px;
-}
-
-.filter-tab.active {
-    background: var(--linguify-gradient);
-    color: var(--linguify-white);
-}
-
-.create-group-card {
-    background: var(--linguify-gradient);
-    color: var(--linguify-white);
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-}
-
-.create-group-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(45, 91, 186, 0.2);
-}
-
-.group-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: auto;
-}
-
-.groups-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.my-groups-section {
-    background: rgba(45, 91, 186, 0.05);
-    border-left: 4px solid var(--linguify-primary);
-    border-radius: 0 8px 8px 0;
-}
-
-.form-control-modern {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--linguify-gray-200);
-    border-radius: 6px;
-    font-size: 14px;
-    background: var(--linguify-white);
-    color: var(--linguify-gray-700);
-    transition: all 0.2s ease;
-}
-
-.form-control-modern:focus {
-    outline: none;
-    border-color: var(--linguify-primary);
-    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
-}
-</style>
+<link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/groups_page.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -277,9 +80,9 @@
                 <div class="groups-grid">
                     <!-- Create New Group Card -->
                     <div class="group-card create-group-card" data-bs-toggle="modal" data-bs-target="#createGroupModal">
-                        <i class="bi bi-plus-circle" style="font-size: 48px; margin-bottom: 16px;"></i>
+                        <i class="bi bi-plus-circle create-group-icon"></i>
                         <h4>{% trans "Create New Group" %}</h4>
-                        <p style="opacity: 0.9; font-size: 14px;">{% trans "Start your own study group" %}</p>
+                        <p class="create-group-subtitle">{% trans "Start your own study group" %}</p>
                     </div>
                     
                     <!-- My Groups -->
@@ -296,7 +99,7 @@
                             </div>
                         </div>
                         
-                        <div style="color: #6B7280; margin-bottom: 16px; font-size: 14px; line-height: 1.4;">
+                        <div class="group-description">
                             Practice French conversation with native speakers and learners. We meet daily for 30-minute sessions.
                         </div>
                         
@@ -344,7 +147,7 @@
             <div class="section-header">
                 <h3 class="section-title">{% trans "Discover Groups" %}</h3>
                 <div class="d-flex gap-2">
-                    <input type="text" class="form-control" placeholder="{% trans 'Search groups...' %}" style="width: 200px;">
+                    <input type="text" class="form-control search-input-groups" placeholder="{% trans 'Search groups...' %}">
                     <button class="btn-simple btn-secondary">
                         <i class="bi bi-funnel"></i>
                     </button>
@@ -365,7 +168,7 @@
                             </div>
                         </div>
                         
-                        <div style="color: #6B7280; margin-bottom: 16px; font-size: 14px; line-height: 1.4;">
+                        <div class="group-description">
                             {% cycle 'Practice English speaking with confidence. Daily conversations and pronunciation tips.' 'Approfondissez vos connaissances grammaticales françaises avec des exercices pratiques.' 'Learn Spanish basics in a friendly environment. Perfect for beginners!' 'Explore German literature and improve reading comprehension skills.' 'Professional English for business contexts. Network and learn together.' 'Découvrez la culture française à travers la langue et les traditions.' 'Learn Italian through cooking recipes and food culture discussions.' 'Prepare for IELTS exam with structured practice and feedback.' 'Learn practical Spanish phrases for your travels and adventures.' %}
                         </div>
                         
@@ -413,7 +216,7 @@
 <div class="modal fade" id="createGroupModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header" style="background: var(--linguify-gradient); color: white;">
+            <div class="modal-header gradient">
                 <h5 class="modal-title">
                     <i class="bi bi-plus-circle me-2"></i>
                     {% trans "Create New Study Group" %}
@@ -482,24 +285,24 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">{% trans "Group Guidelines" %}</label>
-                        <div style="background: var(--linguify-gray-50); padding: 16px; border-radius: 8px;">
+                        <div class="modal-guidelines">
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="respectfulRule" checked disabled>
-                                <label class="form-check-label" for="respectfulRule" style="color: #6B7280;">
+                                <label class="form-check-label" for="respectfulRule">
                                     <i class="bi bi-heart text-danger me-1"></i>
                                     {% trans "Members must be respectful and encouraging" %}
                                 </label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="activeRule">
-                                <label class="form-check-label" for="activeRule" style="color: #6B7280;">
+                                <label class="form-check-label" for="activeRule">
                                     <i class="bi bi-chat-dots text-primary me-1"></i>
                                     {% trans "Members should participate actively" %}
                                 </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="languageRule">
-                                <label class="form-check-label" for="languageRule" style="color: #6B7280;">
+                                <label class="form-check-label" for="languageRule">
                                     <i class="bi bi-translate text-success me-1"></i>
                                     {% trans "Practice target language primarily" %}
                                 </label>

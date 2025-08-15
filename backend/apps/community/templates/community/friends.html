@@ -5,84 +5,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
-<style>
-.friend-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.friend-status.online {
-    color: var(--linguify-success);
-}
-
-.friend-status.offline {
-    color: #6B7280;
-}
-
-.friend-actions {
-    display: flex;
-    gap: 6px;
-}
-
-.friend-request-card {
-    background: rgba(45, 91, 186, 0.05);
-    border-left: 3px solid var(--linguify-primary);
-}
-
-.tabs-nav {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 20px;
-    background: var(--linguify-white);
-    border-radius: 8px;
-    padding: 4px;
-    border: 1px solid var(--linguify-gray-200);
-}
-
-.tab-button {
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: #6B7280;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.tab-button.active {
-    background: var(--linguify-gradient);
-    color: var(--linguify-white);
-}
-
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-.online-indicator {
-    width: 8px;
-    height: 8px;
-    background: var(--linguify-success);
-    border-radius: 50%;
-    display: inline-block;
-}
-
-.offline-indicator {
-    width: 8px;
-    height: 8px;
-    background: #6B7280;
-    border-radius: 50%;
-    display: inline-block;
-}
-</style>
+<link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/friends_page.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -143,7 +67,7 @@
                 <div class="section-header">
                     <h3 class="section-title">{% trans "All Friends" %}</h3>
                     <div class="d-flex gap-2">
-                        <input type="text" class="form-control" placeholder="{% trans 'Search friends...' %}" style="width: 200px;">
+                        <input type="text" class="form-control search-input-friends" placeholder="{% trans 'Search friends...' %}">
                         <button class="btn-simple btn-secondary">
                             <i class="bi bi-funnel"></i>
                         </button>
@@ -204,7 +128,7 @@
                                 </div>
                                 <div class="user-info">
                                     <div class="user-name">John Smith</div>
-                                    <div style="color: #6B7280; font-size: 12px;">
+                                    <div class="user-info-meta">
                                         {% trans "2 hours ago" %}
                                     </div>
                                 </div>
@@ -252,7 +176,7 @@
                                 </div>
                                 <div class="user-info">
                                     <div class="user-name">Anna González</div>
-                                    <div style="color: #6B7280; font-size: 12px;">
+                                    <div class="user-info-meta">
                                         {% trans "Sent 1 day ago" %}
                                     </div>
                                 </div>
