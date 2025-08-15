@@ -783,15 +783,21 @@ function startReviewMode() {
 }
 
 function startWriteMode() {
+    console.log('🖊️ startWriteMode called');
+    console.log('selectedDeck:', appState.selectedDeck);
+    console.log('window.writeMode:', window.writeMode);
+    
     if (!appState.selectedDeck) {
         window.notificationService.error('Veuillez sélectionner un deck d\'abord');
         return;
     }
     
     if (window.writeMode) {
+        console.log('✅ Starting write study mode');
         window.writeMode.startWriteStudy(appState.selectedDeck);
     } else {
-        window.notificationService.error('Mode Écriture non disponible');
+        console.error('❌ window.writeMode not available');
+        window.notificationService.error('Mode Écriture non disponible - module non chargé');
     }
 }
 

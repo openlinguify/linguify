@@ -2,7 +2,7 @@
 # Part of Linguify. See LICENSE file for full copyright and licensing details.
 
 from .chat_settings_views import ChatSettingsView
-from .main_views import (
+from .chat_views import (
     chat_redirect,
     get_conversations,
     get_messages,

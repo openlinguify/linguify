@@ -115,7 +115,13 @@ class WriteStudyMode {
         }
         
         // Show write study mode
-        document.getElementById('writeStudyMode').style.display = 'block';
+        const writeElement = document.getElementById('writeStudyMode');
+        if (writeElement) {
+            writeElement.style.display = 'block';
+            writeElement.classList.remove('study-mode-hidden');
+        } else {
+            console.error('Element writeStudyMode not found');
+        }
         
         // Set deck name
         document.getElementById('writeStudyDeckName').textContent = this.currentDeck.name;
@@ -439,7 +445,11 @@ class WriteStudyMode {
         this.stopTimer();
         
         // Hide write study mode
-        document.getElementById('writeStudyMode').style.display = 'none';
+        const writeElement = document.getElementById('writeStudyMode');
+        if (writeElement) {
+            writeElement.style.display = 'none';
+            writeElement.classList.add('study-mode-hidden');
+        }
         
         // Show deck details using centralized function
         if (window.revisionMain.appState.selectedDeck) {
@@ -460,9 +470,9 @@ class WriteStudyMode {
     }
 
     async updateCardProgress(cardId, isCorrect) {
-        """
-        Met à jour les statistiques de la carte dans le backend
-        """
+        /**
+         * Met à jour les statistiques de la carte dans le backend
+         */
         try {
             const response = await window.apiService.request(
                 `/api/v1/revision/flashcards/${cardId}/update_review_progress/`,
