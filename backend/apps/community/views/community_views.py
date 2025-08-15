@@ -158,7 +158,7 @@ class FriendRequestsView(LoginRequiredMixin, TemplateView):
 class GroupsView(LoginRequiredMixin, ListView):
     """Page des groupes"""
     model = Group
-    template_name = 'community/groups.html'
+    template_name = 'community/group/groups.html'
     context_object_name = 'groups'
     paginate_by = 10
     
@@ -419,7 +419,7 @@ def create_group(request):
 
 class GroupDetailView(LoginRequiredMixin, TemplateView):
     """Vue détaillée d'un groupe avec chat intelligent"""
-    template_name = 'community/group_detail.html'
+    template_name = 'community/group/group_detail.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -706,7 +706,7 @@ def delete_group(request, group_id):
 
 class GroupManageView(LoginRequiredMixin, TemplateView):
     """Vue de gestion d'un groupe (pour les créateurs/modérateurs)"""
-    template_name = 'community/group_manage.html'
+    template_name = 'community/group/group_manage.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

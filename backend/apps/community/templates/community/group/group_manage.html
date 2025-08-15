@@ -25,6 +25,17 @@
             <div class="group-navbar-container d-flex align-items-center justify-content-between gap-3">
                 <!-- Gauche: Info groupe compacte -->
                 <div class="d-flex align-items-center gap-3">
+                    <!-- Avatar du groupe -->
+                    <div class="group-avatar-display">
+                        {% if group.avatar %}
+                        <img src="{{ group.avatar.url }}" alt="{{ group.name }}" class="group-avatar-img">
+                        {% else %}
+                        <div class="group-avatar-placeholder-small">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
                     <!-- Nom du groupe -->
                     <div class="group-name-section">
                         <h2 class="group-name-compact">{{ group.name }} - {% trans "Management" %}</h2>
