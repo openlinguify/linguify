@@ -382,6 +382,10 @@ def create_group(request):
         # Obtenir ou créer le profil utilisateur
         creator_profile, _ = Profile.objects.get_or_create(user=request.user)
         
+        # Vérifier si un groupe avec ce nom existe déjà
+        if Group.objects.filter(name=name).exists():
+            return JsonResponse({'error': f'A group named "{name}" already exists. Please choose a different name.'}, status=400)
+
         # Créer le groupe
         group = Group.objects.create(
             name=name,

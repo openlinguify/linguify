@@ -7,9 +7,91 @@
 <link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
 <link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
 <link rel="stylesheet" href="{% static 'community/css/groups_page.css' %}">
+<style>
+/* 🎯 Toast Notifications - Style Linguify */
+.toast-container {
+    max-width: 350px;
+}
+
+.linguify-toast {
+    background: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(45, 91, 186, 0.15);
+    border-left: 4px solid #10b981;
+    margin-bottom: 0.75rem;
+    animation: slideInRight 0.4s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.linguify-toast .toast-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
+    padding: 0.75rem 1rem;
+}
+
+.linguify-toast .toast-header .toast-icon {
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.linguify-toast .toast-header .toast-title {
+    color: #2D5BBA;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin: 0;
+    flex: 1;
+}
+
+.linguify-toast .toast-body {
+    padding: 0.75rem 1rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.toast-close-btn {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-close-btn:hover {
+    color: #6b7280;
+}
+</style>
 {% endblock %}
 
 {% block content %}
+<!-- Notification Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 10000;"></div>
+
 <div class="community-page">
     <div class="community-container">
         <!-- Header avec navbar intégrée -->
@@ -388,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const groupType = document.getElementById('groupType').value;
         
         if (!name || !description || !language) {
-            alert('{% trans "Please fill in all required fields." %}');
+            showErrorToast('Validation Error', '{% trans "Please fill in all required fields." %}');
             return;
         }
         
@@ -415,19 +497,27 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(data.message);
-                bootstrap.Modal.getInstance(document.getElementById('createGroupModal')).hide();
+                showSuccessToast('Success', data.message);
+                
+                // Fermer le modal de façon plus fiable
+                const modal = document.getElementById('createGroupModal');
+                const modalInstance = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
+                modalInstance.hide();
+                
+                // Reset form
                 document.getElementById('createGroupForm').reset();
                 
-                // Recharger la page pour afficher le nouveau groupe
-                location.reload();
+                // Recharger la page pour afficher le nouveau groupe après un délai
+                setTimeout(() => {
+                    location.reload();
+                }, 2000); // Délai plus long pour voir le toast
             } else {
-                alert(data.error || '{% trans "Error creating group" %}');
+                showErrorToast('Error', data.error || '{% trans "Error creating group" %}');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('{% trans "Error creating group" %}');
+            showErrorToast('Error', '{% trans "Error creating group" %}');
         })
         .finally(() => {
             createBtn.disabled = false;
@@ -449,6 +539,124 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         return cookieValue;
+    }
+
+    // 🎯 Toast Notification Functions - Style Linguify (Sans Bootstrap)
+    function showSuccessToast(title, message) {
+        console.log('showSuccessToast called:', title, message); // Debug
+        
+        // Vérifier que le container existe
+        const container = document.getElementById('toastContainer');
+        if (!container) {
+            console.error('toastContainer not found!');
+            alert(message); // Fallback
+            return;
+        }
+        
+        const toastId = 'toast-' + Date.now();
+        const toastHtml = `
+            <div id="${toastId}" class="linguify-toast" style="display: none;">
+                <div class="toast-header d-flex align-items-center">
+                    <div class="toast-icon">
+                        <i class="bi bi-check"></i>
+                    </div>
+                    <div class="toast-title">${title}</div>
+                    <button type="button" class="toast-close-btn" onclick="closeToast('${toastId}')">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', toastHtml);
+        
+        const toastElement = document.getElementById(toastId);
+        
+        // Show with animation
+        setTimeout(() => {
+            toastElement.style.display = 'block';
+            toastElement.style.opacity = '0';
+            toastElement.style.transform = 'translateX(100%)';
+            
+            setTimeout(() => {
+                toastElement.style.transition = 'all 0.4s ease-out';
+                toastElement.style.opacity = '1';
+                toastElement.style.transform = 'translateX(0)';
+            }, 10);
+        }, 10);
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            closeToast(toastId);
+        }, 3000);
+    }
+
+    function showErrorToast(title, message) {
+        console.log('showErrorToast called:', title, message); // Debug
+        
+        // Vérifier que le container existe
+        const container = document.getElementById('toastContainer');
+        if (!container) {
+            console.error('toastContainer not found!');
+            alert(message); // Fallback
+            return;
+        }
+        
+        const toastId = 'toast-' + Date.now();
+        const toastHtml = `
+            <div id="${toastId}" class="linguify-toast" style="display: none; border-left-color: #dc3545;">
+                <div class="toast-header d-flex align-items-center">
+                    <div class="toast-icon" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+                        <i class="bi bi-exclamation"></i>
+                    </div>
+                    <div class="toast-title">${title}</div>
+                    <button type="button" class="toast-close-btn" onclick="closeToast('${toastId}')">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', toastHtml);
+        
+        const toastElement = document.getElementById(toastId);
+        
+        // Show with animation
+        setTimeout(() => {
+            toastElement.style.display = 'block';
+            toastElement.style.opacity = '0';
+            toastElement.style.transform = 'translateX(100%)';
+            
+            setTimeout(() => {
+                toastElement.style.transition = 'all 0.4s ease-out';
+                toastElement.style.opacity = '1';
+                toastElement.style.transform = 'translateX(0)';
+            }, 10);
+        }, 10);
+        
+        // Auto-hide after 4 seconds for errors
+        setTimeout(() => {
+            closeToast(toastId);
+        }, 4000);
+    }
+
+    function closeToast(toastId) {
+        const toastElement = document.getElementById(toastId);
+        if (toastElement) {
+            toastElement.style.transition = 'all 0.3s ease-out';
+            toastElement.style.opacity = '0';
+            toastElement.style.transform = 'translateX(100%)';
+            
+            setTimeout(() => {
+                toastElement.remove();
+            }, 300);
+        }
     }
 });
 </script>

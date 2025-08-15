@@ -8,6 +8,38 @@
     border-radius: 50%;
 }
 
+/* 🏷️ Avatar du groupe dans l'en-tête */
+.group-avatar-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(45, 91, 186, 0.3);
+    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.15);
+    background: #f8f9ff;
+    flex-shrink: 0;
+}
+
+.group-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.group-avatar-placeholder-small {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2D5BBA, #1e40af);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
 /* En-tête du groupe - Style Navbar Compact */
 .group-navbar-container {
     background: white;
