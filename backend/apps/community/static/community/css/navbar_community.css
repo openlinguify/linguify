@@ -8,61 +8,92 @@
     --linguify-border: #e2e8f0;
 }
 
-/* Navigation tabs - identique revision */
+/* Navigation tabs - transitions améliorées */
 .nav-tab {
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     text-decoration: none;
     color: var(--linguify-gray);
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
     font-size: 14px;
     white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
 }
 
-.nav-tab:hover {
+.nav-tab:hover:not(.active) {
     color: var(--primary-color);
-    background: #f8fafc;
+    background: rgba(45, 91, 186, 0.05);
     text-decoration: none;
+    border-color: rgba(45, 91, 186, 0.1);
+    transform: none;
 }
 
 .nav-tab.active {
     background: var(--primary-gradient);
     color: white;
+    border-color: transparent;
+    transform: none;
 }
 
-/* Boutons outline custom - identique revision */
+.nav-tab.active:hover {
+    background: var(--primary-gradient);
+    color: white;
+    transform: none;
+    cursor: default;
+}
+
+/* États de transition optimisés */
+.nav-tab:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.nav-tab:not(.active):focus {
+    background: rgba(45, 91, 186, 0.05);
+    color: var(--primary-color);
+}
+
+/* Boutons outline custom - transitions améliorées */
 .btn-outline-custom {
     border: 1px solid #e2e8f0;
     background: white;
     color: var(--linguify-gray);
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 8px;
     font-weight: 500;
+    transform: none;
 }
 
 .btn-outline-custom:hover {
     border-color: var(--primary-color);
     color: var(--primary-color);
-    background: #f8fafc;
+    background: rgba(45, 91, 186, 0.05);
+    transform: none;
+    box-shadow: none;
 }
 
-/* Boutons gradient - identique revision */
+/* Boutons gradient - transitions améliorées */
 .btn-gradient {
     background: var(--primary-gradient);
     border: none;
     color: white;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 8px;
+    transform: none;
 }
 
 .btn-gradient:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+    background: var(--primary-gradient);
+    filter: brightness(1.05);
     color: white;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(45, 91, 186, 0.2);
 }
 
 /* Boutons small - identique revision */
@@ -72,19 +103,25 @@
     min-height: 36px;
 }
 
-/* Inputs et selects small - identique revision */
+/* Inputs et selects small - transitions améliorées */
 .form-control-sm, .form-select-sm {
     font-size: 0.875rem;
     border-radius: 6px;
     border: 1px solid var(--linguify-border);
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 0.375rem 0.75rem;
+    background: white;
 }
 
 .form-control-sm:focus, .form-select-sm:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.15);
     outline: none;
+    transform: none;
+}
+
+.form-control-sm:hover:not(:focus), .form-select-sm:hover:not(:focus) {
+    border-color: rgba(45, 91, 186, 0.3);
 }
 
 /* Classes utilitaires Bootstrap overrides pour cohérence */
@@ -122,6 +159,13 @@
     overflow-x: auto;
     position: relative;
     z-index: 1000;
+    contain: layout style;
+}
+
+/* Navigation container stabilisé */
+.community-navbar-container .d-flex {
+    min-height: 40px;
+    align-items: center;
 }
 
 /* Responsive - identique revision */
@@ -165,20 +209,28 @@
 }
 
 /* Focus states améliorés pour accessibilité */
-.nav-tab:focus,
 .btn-outline-custom:focus,
 .btn-gradient:focus {
     outline: 2px solid var(--primary-color);
     outline-offset: 2px;
 }
 
-/* Animation subtle pour les transitions */
+/* Animation uniforme pour tous les éléments */
 .nav-tab,
 .btn-outline-custom,
 .btn-gradient,
 .form-control-sm,
 .form-select-sm {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: background-color, border-color, color, box-shadow;
+}
+
+/* Prévention des effets de scintillement */
+.nav-tab,
+.btn-outline-custom,
+.btn-gradient {
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* States pour boutons disabled */
