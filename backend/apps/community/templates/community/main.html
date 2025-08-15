@@ -10,32 +10,10 @@
 {% block content %}
 <div class="community-page">
     <div class="community-container">
-        <!-- Header simple -->
+        <!-- Header avec navbar intégrée -->
         <div class="community-header">
-            <h1 class="h3 mb-3">
-                <i class="bi bi-people me-2"></i>
-                {% trans "Community" %}
-            </h1>
-            
-            <!-- Navigation simple -->
-            <div class="community-nav">
-                <a href="{% url 'community:main' %}" class="nav-button active">
-                    <i class="bi bi-house me-1"></i>
-                    {% trans "Overview" %}
-                </a>
-                <a href="{% url 'community:discover' %}" class="nav-button">
-                    <i class="bi bi-search me-1"></i>
-                    {% trans "Discover" %}
-                </a>
-                <a href="{% url 'community:friends' %}" class="nav-button">
-                    <i class="bi bi-person-heart me-1"></i>
-                    {% trans "Friends" %}
-                </a>
-                <a href="{% url 'community:groups' %}" class="nav-button">
-                    <i class="bi bi-people me-1"></i>
-                    {% trans "Groups" %}
-                </a>
-            </div>
+            <!-- Navigation unifiée -->
+            {% include 'community/components/navbar.html' %}
         </div>
 
         <!-- Main scrollable content -->
