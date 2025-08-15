@@ -76,7 +76,7 @@
                     </div>
                     
                     <!-- Actions -->
-                    {% if is_creator %}
+                    {% if is_creator or is_moderator %}
                     <a href="{% url 'community:group_manage' group.id %}" class="btn-outline-custom btn-sm">
                         <i class="bi bi-gear"></i>
                         <span class="d-none d-xl-inline ms-1">{% trans "Manage" %}</span>
@@ -112,7 +112,13 @@
                             <!-- Vrais messages de la base de données -->
                             {% for message in recent_messages reversed %}
                             <div class="message">
-                                <div class="message-avatar">{{ message.sender.user.username.0|upper }}</div>
+                                <div class="message-avatar">
+                                    {% if message.sender.avatar %}
+                                    <img src="{{ message.sender.avatar.url }}" alt="{{ message.sender.user.username }}" class="user-avatar-img">
+                                    {% else %}
+                                    {{ message.sender.user.username.0|upper }}
+                                    {% endif %}
+                                </div>
                                 <div class="message-content">
                                     <div class="message-header">
                                         <strong>{{ message.sender.user.get_full_name|default:message.sender.user.username }}</strong>
@@ -163,7 +169,11 @@
                             {% for member in online_members %}
                             <div class="member-item">
                                 <div class="member-avatar">
+                                    {% if member.avatar %}
+                                    <img src="{{ member.avatar.url }}" alt="{{ member.user.username }}" class="user-avatar-img">
+                                    {% else %}
                                     {{ member.user.first_name.0|upper|default:member.user.username.0|upper }}
+                                    {% endif %}
                                 </div>
                                 <div class="member-info">
                                     <div class="member-name">
@@ -227,7 +237,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message';
                 messageDiv.innerHTML = `
-                    <div class="message-avatar">${data.message.sender_avatar}</div>
+                    <div class="message-avatar">
+                        ${data.message.sender_avatar_url ? 
+                            `<img src="${data.message.sender_avatar_url}" alt="${data.message.sender_name}" class="user-avatar-img">` :
+                            data.message.sender_avatar
+                        }
+                    </div>
                     <div class="message-content">
                         <div class="message-header">
                             <strong>${data.message.sender_name}</strong>

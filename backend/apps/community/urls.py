@@ -14,6 +14,11 @@ urlpatterns = [
     path('groups/<int:group_id>/manage/', views.GroupManageView.as_view(), name='group_manage'),
     path('groups/<int:group_id>/send-message/', views.send_group_message, name='send_group_message'),
     path('groups/<int:group_id>/messages/', views.get_group_messages, name='get_group_messages'),
+    path('groups/<int:group_id>/promote/<int:user_id>/', views.promote_to_moderator, name='promote_to_moderator'),
+    path('groups/<int:group_id>/demote/<int:user_id>/', views.remove_moderator, name='remove_moderator'),
+    path('groups/<int:group_id>/remove/<int:user_id>/', views.remove_group_member, name='remove_group_member'),
+    path('groups/<int:group_id>/update/', views.update_group_settings, name='update_group_settings'),
+    path('groups/<int:group_id>/delete/', views.delete_group, name='delete_group'),
     path('feed/', views.ActivityFeedView.as_view(), name='feed'),
     path('profile/<str:username>/', views.UserProfileView.as_view(), name='user_profile'),
     

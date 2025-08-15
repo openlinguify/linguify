@@ -198,6 +198,7 @@ GROUP_TYPE_CHOICES = [
 class Group(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True, help_text="Description du groupe")
+    avatar = models.ImageField(upload_to='groups/avatars/', blank=True, null=True, help_text="Avatar du groupe")
     language = models.CharField(max_length=10, choices=[
         ('EN', 'English'),
         ('FR', 'French'),

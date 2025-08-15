@@ -428,6 +428,7 @@ class GroupDetailView(LoginRequiredMixin, TemplateView):
             # Vérifier si l'utilisateur est membre du groupe
             is_member = profile in group.members.all()
             is_creator = group.created_by == profile
+            is_moderator = profile in group.moderators.all() if hasattr(group, 'moderators') else False
             
             if not is_member and not group.is_private:
                 # Auto-join pour les groupes publics
@@ -441,6 +442,7 @@ class GroupDetailView(LoginRequiredMixin, TemplateView):
                 'group': group,
                 'is_member': is_member,
                 'is_creator': is_creator,
+                'is_moderator': is_moderator,
                 'members_count': group.members.count(),
                 'online_members': group.members.filter(is_online=True),
                 'recent_messages': recent_messages,
@@ -486,6 +488,7 @@ def send_group_message(request, group_id):
                 'id': group_message.id,
                 'sender_name': group_message.sender.user.get_full_name() or group_message.sender.user.username,
                 'sender_avatar': group_message.sender.user.username[0].upper(),
+                'sender_avatar_url': group_message.sender.avatar.url if group_message.sender.avatar else None,
                 'message': group_message.message,
                 'timestamp': group_message.timestamp.isoformat(),
                 'time_display': 'now'
@@ -526,6 +529,171 @@ def get_group_messages(request, group_id):
         return JsonResponse({
             'success': True,
             'messages': messages_data
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def promote_to_moderator(request, group_id, user_id):
+    """Promouvoir un membre comme modérateur (seuls les créateurs peuvent faire cela)"""
+    try:
+        group = get_object_or_404(Group, id=group_id)
+        target_profile = get_object_or_404(Profile, id=user_id)
+        current_profile, _ = Profile.objects.get_or_create(user=request.user)
+        
+        # Vérifier que l'utilisateur actuel est le créateur du groupe
+        if group.created_by != current_profile:
+            return JsonResponse({'error': 'Only group creators can promote moderators'}, status=403)
+        
+        # Vérifier que l'utilisateur cible est membre du groupe
+        if target_profile not in group.members.all():
+            return JsonResponse({'error': 'User must be a group member'}, status=400)
+        
+        # Ajouter comme modérateur
+        group.moderators.add(target_profile)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{target_profile.user.get_full_name() or target_profile.user.username} is now a moderator'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def remove_moderator(request, group_id, user_id):
+    """Retirer les droits de modérateur (seuls les créateurs peuvent faire cela)"""
+    try:
+        group = get_object_or_404(Group, id=group_id)
+        target_profile = get_object_or_404(Profile, id=user_id)
+        current_profile, _ = Profile.objects.get_or_create(user=request.user)
+        
+        # Vérifier que l'utilisateur actuel est le créateur du groupe
+        if group.created_by != current_profile:
+            return JsonResponse({'error': 'Only group creators can remove moderators'}, status=403)
+        
+        # Retirer des modérateurs
+        group.moderators.remove(target_profile)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{target_profile.user.get_full_name() or target_profile.user.username} is no longer a moderator'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST 
+def remove_group_member(request, group_id, user_id):
+    """Retirer un membre du groupe (créateurs et modérateurs peuvent faire cela)"""
+    try:
+        group = get_object_or_404(Group, id=group_id)
+        target_profile = get_object_or_404(Profile, id=user_id)
+        current_profile, _ = Profile.objects.get_or_create(user=request.user)
+        
+        # Vérifier les permissions
+        is_creator = group.created_by == current_profile
+        is_moderator = current_profile in group.moderators.all()
+        
+        if not (is_creator or is_moderator):
+            return JsonResponse({'error': 'Only creators and moderators can remove members'}, status=403)
+            
+        # Ne pas permettre de retirer le créateur
+        if target_profile == group.created_by:
+            return JsonResponse({'error': 'Cannot remove group creator'}, status=400)
+        
+        # Retirer du groupe et des modérateurs si applicable
+        group.members.remove(target_profile)
+        group.moderators.remove(target_profile)  # Au cas où il était modérateur
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{target_profile.user.get_full_name() or target_profile.user.username} has been removed from the group'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def update_group_settings(request, group_id):
+    """Mettre à jour les paramètres du groupe"""
+    try:
+        group = get_object_or_404(Group, id=group_id)
+        current_profile, _ = Profile.objects.get_or_create(user=request.user)
+        
+        # Vérifier les permissions
+        is_creator = group.created_by == current_profile
+        is_moderator = current_profile in group.moderators.all()
+        
+        if not (is_creator or is_moderator):
+            return JsonResponse({'error': 'Only creators and moderators can update group settings'}, status=403)
+        
+        # Si c'est un upload d'avatar (multipart/form-data)
+        if 'avatar' in request.FILES:
+            group.avatar = request.FILES['avatar']
+            group.save()
+            return JsonResponse({
+                'success': True,
+                'message': 'Group avatar updated successfully!',
+                'avatar_url': group.avatar.url if group.avatar else None
+            })
+        
+        # Sinon, c'est une mise à jour JSON des autres paramètres
+        import json
+        data = json.loads(request.body)
+        
+        # Mettre à jour les champs
+        if 'name' in data:
+            group.name = data['name'].strip()
+        if 'description' in data:
+            group.description = data['description'].strip()
+        if 'language' in data:
+            group.language = data['language']
+        if 'level' in data:
+            group.level = data['level']
+            
+        group.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Group settings updated successfully!'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def delete_group(request, group_id):
+    """Supprimer un groupe (seuls les créateurs peuvent faire cela)"""
+    try:
+        group = get_object_or_404(Group, id=group_id)
+        current_profile, _ = Profile.objects.get_or_create(user=request.user)
+        
+        # Vérifier que l'utilisateur actuel est le créateur du groupe
+        if group.created_by != current_profile:
+            return JsonResponse({'error': 'Only group creators can delete groups'}, status=403)
+        
+        # Supprimer le groupe
+        group_name = group.name
+        group.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Group "{group_name}" has been deleted successfully!',
+            'redirect_url': '/community/groups/'
         })
         
     except Exception as e:

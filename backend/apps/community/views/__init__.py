@@ -18,6 +18,11 @@ from .community_views import (
     create_group,
     send_group_message,
     get_group_messages,
+    promote_to_moderator,
+    remove_moderator,
+    remove_group_member,
+    update_group_settings,
+    delete_group,
 )
 
 __all__ = [
@@ -37,4 +42,9 @@ __all__ = [
     'create_group',
     'send_group_message',
     'get_group_messages',
+    'promote_to_moderator',
+    'remove_moderator',
+    'remove_group_member',
+    'update_group_settings',
+    'delete_group',
 ]
