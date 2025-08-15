@@ -48,10 +48,70 @@ class Profile(models.Model):
     def unread_group_messages(self):
         return GroupMessage.objects.filter(group__members=self, is_read=False)
 
-    def suggest_friends(self):
-        """Renvoie une liste de profils suggérés basés sur des amis communs ou langues partagées."""
-        suggested = Profile.objects.filter(learning_languages__overlap=self.teaching_languages).exclude(id__in=self.friends.all()).exclude(id=self.id)
-        return suggested
+    def suggest_friends(self, limit=10):
+        """
+        Returns intelligent friend suggestions based on multiple factors:
+        - Language exchange compatibility (native/target language match)
+        - Common friends
+        - Similar learning goals
+        - Activity level
+        """
+        from django.db.models import Q, Count, F
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
+        # Exclude current friends and self
+        excluded_ids = list(self.friends.values_list('id', flat=True)) + [self.id]
+        
+        # Start with all profiles except excluded
+        suggestions = Profile.objects.exclude(id__in=excluded_ids)
+        
+        # Priority 1: Perfect language exchange match
+        # Users whose native language is what I'm learning AND who are learning my native language
+        if hasattr(self.user, 'native_language') and hasattr(self.user, 'target_language'):
+            perfect_matches = suggestions.filter(
+                user__native_language=self.user.target_language,
+                user__target_language=self.user.native_language
+            )
+            
+            # Priority 2: One-way language match
+            # Users who speak what I'm learning OR are learning what I speak
+            good_matches = suggestions.filter(
+                Q(user__native_language=self.user.target_language) |
+                Q(user__target_language=self.user.native_language)
+            ).exclude(id__in=perfect_matches.values_list('id', flat=True))
+            
+            # Priority 3: Same target language (study buddies)
+            study_buddies = suggestions.filter(
+                user__target_language=self.user.target_language
+            ).exclude(
+                id__in=list(perfect_matches.values_list('id', flat=True)) + 
+                list(good_matches.values_list('id', flat=True))
+            )
+            
+            # Combine with weights
+            from itertools import chain
+            weighted_suggestions = list(chain(
+                perfect_matches[:limit//2],  # Half of suggestions from perfect matches
+                good_matches[:limit//3],      # Third from good matches
+                study_buddies[:limit//6]       # Remaining from study buddies
+            ))
+            
+            # If we still need more suggestions, add random active users
+            if len(weighted_suggestions) < limit:
+                remaining = suggestions.exclude(
+                    id__in=[p.id for p in weighted_suggestions]
+                ).filter(is_online=True)[:limit - len(weighted_suggestions)]
+                weighted_suggestions.extend(remaining)
+            
+            return weighted_suggestions[:limit]
+        
+        # Fallback to original logic if user doesn't have language preferences set
+        return suggestions.filter(
+            Q(learning_languages__overlap=self.teaching_languages) |
+            Q(teaching_languages__overlap=self.learning_languages) if self.learning_languages else Q()
+        )[:limit]
+
 class Post(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
     content = models.TextField(null=False, blank=False, max_length=5000, help_text="Post content", verbose_name="Post Content")

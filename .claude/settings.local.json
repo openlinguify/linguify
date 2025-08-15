@@ -245,9 +245,11 @@
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.authentication.tests.test_profile_pictures apps.revision.tests.test_settings --verbosity=0 --keepdb)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.FlashcardAudioIntegrationTest.test_french_female_voice_preference_applied_to_french_flashcards --verbosity=2 --keepdb)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.VoiceParametersAPITest.test_voice_parameters_in_api_response --verbosity=2 --keepdb)",
-      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.VoiceParametersAPITest.test_voice_settings_template_context --verbosity=2 --keepdb)"
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.revision.tests.test_settings.VoiceParametersAPITest.test_voice_settings_template_context --verbosity=2 --keepdb)",
+      "Bash(DJANGO_ENV=\"production\" poetry run python -c \"\nimport os, sys, django\nsys.path.append(''.'')\nos.environ.setdefault(''DJANGO_SETTINGS_MODULE'', ''core.settings'')\ndjango.setup()\nfrom app_manager.models import App\nprint(''📋 Toutes les applications (avec détails Chat):'')\nprint(''='' * 60)\nfor app in App.objects.all().order_by(''order'', ''display_name''):\n    visibility = ''✅ Visible'' if app.is_enabled else ''❌ Cachée''\n    installable = ''📦 Installable'' if app.installable else ''🚫 Non-installable''\n    print(f''{app.display_name} (code: {app.code})'')\n    print(f''   État: {visibility}, {installable}'')\n    print(f''   Ordre: {app.order}'')\n    if app.code == ''chat'':\n        print(f''   🔍 DÉTAILS CHAT:'')\n        print(f''      - is_enabled: {app.is_enabled}'')\n        print(f''      - installable: {app.installable}'')\n        print(f''      - order: {app.order}'')\n    print()\n\")"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   },
   "enableAllProjectMcpServers": false
 }

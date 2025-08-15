@@ -31,6 +31,21 @@ class CommunityMainView(LoginRequiredMixin, TemplateView):
             'route_path': '/community/'
         }
         
+        # Check if user is new (no friends yet)
+        is_new_user = profile.friends.count() == 0
+        
+        # Get smart friend suggestions
+        suggested_friends = profile.suggest_friends(limit=6)
+        
+        # Get perfect language exchange partners for new users
+        suggested_partners = []
+        if is_new_user and hasattr(self.request.user, 'native_language') and hasattr(self.request.user, 'target_language'):
+            # Find perfect language exchange matches
+            suggested_partners = Profile.objects.filter(
+                user__native_language=self.request.user.target_language,
+                user__target_language=self.request.user.native_language
+            ).exclude(id=profile.id)[:3]
+        
         context.update({
             'current_app': current_app_info,
             'profile': profile,
@@ -38,8 +53,14 @@ class CommunityMainView(LoginRequiredMixin, TemplateView):
             'friends_count': profile.friends.count(),
             'recent_posts': Post.objects.filter(
                 author__in=[f.user for f in profile.friends.all()]
-            )[:5],
-            'suggested_friends': profile.suggest_friends()[:3],
+            )[:5] if not is_new_user else [],
+            'suggested_friends': suggested_friends,
+            'is_new_user': is_new_user,
+            'suggested_partners': suggested_partners,
+            'has_profile_completed': bool(
+                getattr(self.request.user, 'native_language', None) and 
+                getattr(self.request.user, 'target_language', None)
+            ),
         })
         return context
 
@@ -130,21 +151,6 @@ class FriendRequestsView(LoginRequiredMixin, TemplateView):
         })
         return context
 
-
-class MessagesView(LoginRequiredMixin, TemplateView):
-    """Page des messages privés"""
-    template_name = 'community/messages.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        profile, created = Profile.objects.get_or_create(user=self.request.user)
-        
-        context.update({
-            'conversations': profile.conversations.all(),
-            'unread_count': profile.unread_messages().count(),
-        })
-        return context
 
 
 class GroupsView(LoginRequiredMixin, ListView):

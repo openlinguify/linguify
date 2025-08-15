@@ -9,36 +9,37 @@
 
 {% block content %}
 <div class="community-page">
-    <div class="container">
+    <div class="community-container">
         <!-- Header simple -->
         <div class="community-header">
-            <div class="container">
-                <h1 class="h3 mb-3">
-                    <i class="bi bi-search me-2"></i>
-                    {% trans "Discover Language Partners" %}
-                </h1>
-                
-                <!-- Navigation simple -->
-                <div class="community-nav">
-                    <a href="{% url 'community:main' %}" class="nav-button">
-                        <i class="bi bi-house me-1"></i>
-                        {% trans "Overview" %}
-                    </a>
-                    <a href="{% url 'community:discover' %}" class="nav-button active">
-                        <i class="bi bi-search me-1"></i>
-                        {% trans "Discover" %}
-                    </a>
-                    <a href="{% url 'community:friends' %}" class="nav-button">
-                        <i class="bi bi-person-heart me-1"></i>
-                        {% trans "Friends" %}
-                    </a>
-                    <a href="{% url 'community:groups' %}" class="nav-button">
-                        <i class="bi bi-people me-1"></i>
-                        {% trans "Groups" %}
-                    </a>
-                </div>
+            <h1 class="h3 mb-3">
+                <i class="bi bi-search me-2"></i>
+                {% trans "Discover Language Partners" %}
+            </h1>
+            
+            <!-- Navigation simple -->
+            <div class="community-nav">
+                <a href="{% url 'community:main' %}" class="nav-button">
+                    <i class="bi bi-house me-1"></i>
+                    {% trans "Overview" %}
+                </a>
+                <a href="{% url 'community:discover' %}" class="nav-button active">
+                    <i class="bi bi-search me-1"></i>
+                    {% trans "Discover" %}
+                </a>
+                <a href="{% url 'community:friends' %}" class="nav-button">
+                    <i class="bi bi-person-heart me-1"></i>
+                    {% trans "Friends" %}
+                </a>
+                <a href="{% url 'community:groups' %}" class="nav-button">
+                    <i class="bi bi-people me-1"></i>
+                    {% trans "Groups" %}
+                </a>
             </div>
         </div>
+
+        <!-- Main scrollable content -->
+        <div class="community-main">
 
         <!-- Recherche simple -->
         <div class="search-section">
@@ -192,6 +193,7 @@
                 {% endif %}
             </div>
         {% endif %}
+        </div> <!-- End community-main -->
     </div>
 </div>
 

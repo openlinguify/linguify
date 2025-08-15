@@ -42,8 +42,35 @@
 .community-page {
     background: var(--linguify-gray-50);
     min-height: calc(100vh - var(--header-height));
-    padding: 20px 0;
+    padding: 0;
     color: #6B7280;
+}
+
+/* Full width container like other apps */
+.community-container {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1;
+    background: var(--linguify-gray-50);
+}
+
+/* Legacy containers (if still used) */
+.community-page .container {
+    width: 100%;
+    margin: 0;
+    padding: 0 20px;
+}
+
+.community-page .container-fluid {
+    width: 100%;
+    margin: 0;
+    padding: 0 20px;
 }
 
 /* Gradients avec couleurs officielles */
@@ -62,8 +89,16 @@
 .community-header {
     background: var(--linguify-white);
     border-bottom: 1px solid var(--linguify-gray-200);
-    padding: 20px 0;
-    margin-bottom: 24px;
+    padding: 20px;
+    flex-shrink: 0;
+    width: 100%;
+}
+
+.community-main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: var(--linguify-gray-50);
 }
 
 /* ======================================
@@ -635,13 +670,17 @@
 }
 
 @media (max-width: 768px) {
-    .community-page {
-        padding: 16px 0;
+    .community-container {
+        position: fixed;
+        top: 64px;
     }
     
     .community-header {
-        padding: 16px 0;
-        margin-bottom: 20px;
+        padding: 16px 20px;
+    }
+    
+    .community-main {
+        padding: 16px;
     }
     
     .form-row {

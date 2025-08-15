@@ -9,37 +9,37 @@
 
 {% block content %}
 <div class="community-page">
-    <div class="container">
+    <div class="community-container">
         <!-- Header simple -->
         <div class="community-header">
-            <div class="container">
-                <h1 class="h3 mb-3">
-                    <i class="bi bi-people me-2"></i>
-                    {% trans "Community" %}
-                </h1>
-                
-                <!-- Navigation simple -->
-                <div class="community-nav">
-                    <a href="{% url 'community:main' %}" class="nav-button active">
-                        <i class="bi bi-house me-1"></i>
-                        {% trans "Overview" %}
-                    </a>
-                    <a href="{% url 'community:discover' %}" class="nav-button">
-                        <i class="bi bi-search me-1"></i>
-                        {% trans "Discover" %}
-                    </a>
-                    <a href="{% url 'community:friends' %}" class="nav-button">
-                        <i class="bi bi-person-heart me-1"></i>
-                        {% trans "Friends" %}
-                    </a>
-                    <a href="{% url 'community:groups' %}" class="nav-button">
-                        <i class="bi bi-people me-1"></i>
-                        {% trans "Groups" %}
-                    </a>
-                </div>
+            <h1 class="h3 mb-3">
+                <i class="bi bi-people me-2"></i>
+                {% trans "Community" %}
+            </h1>
+            
+            <!-- Navigation simple -->
+            <div class="community-nav">
+                <a href="{% url 'community:main' %}" class="nav-button active">
+                    <i class="bi bi-house me-1"></i>
+                    {% trans "Overview" %}
+                </a>
+                <a href="{% url 'community:discover' %}" class="nav-button">
+                    <i class="bi bi-search me-1"></i>
+                    {% trans "Discover" %}
+                </a>
+                <a href="{% url 'community:friends' %}" class="nav-button">
+                    <i class="bi bi-person-heart me-1"></i>
+                    {% trans "Friends" %}
+                </a>
+                <a href="{% url 'community:groups' %}" class="nav-button">
+                    <i class="bi bi-people me-1"></i>
+                    {% trans "Groups" %}
+                </a>
             </div>
         </div>
 
+        <!-- Main scrollable content -->
+        <div class="community-main">
         <!-- Stats simples -->
         <div class="stats-row">
             <div class="stat-card">
@@ -55,8 +55,8 @@
                 <div class="stat-label">{% trans "Groups" %}</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">12</div>
-                <div class="stat-label">{% trans "Messages" %}</div>
+                <div class="stat-number">8</div>
+                <div class="stat-label">{% trans "Active Today" %}</div>
             </div>
         </div>
 
@@ -78,7 +78,7 @@
                 <div class="action-description">{% trans "Practice with groups of learners" %}</div>
             </a>
             
-            <a href="{% url 'community:messages' %}" class="action-card">
+            <a href="{% url 'chat:chat_home' %}" class="action-card">
                 <div class="action-icon">
                     <i class="bi bi-chat-dots"></i>
                 </div>
@@ -95,6 +95,15 @@
             </a>
         </div>
 
+        <!-- Show discovery banner for users with few friends -->
+        {% if friends_count < 5 and not is_new_user %}
+            {% include 'community/partials/friend_discovery_banner.html' %}
+        {% endif %}
+
+        <!-- Show onboarding for new users -->
+        {% if is_new_user %}
+            {% include 'community/partials/empty_state_new_user.html' %}
+        {% else %}
         <!-- Community Feed -->
         <div class="main-content">
             <div class="row">
@@ -295,6 +304,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <!-- Amis suggérés -->
         {% if suggested_friends %}
@@ -397,6 +407,7 @@
                 {% endif %}
             </div>
         </div>
+        </div> <!-- End community-main -->
     </div>
 </div>
 
