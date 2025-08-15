@@ -199,14 +199,27 @@ def send_group_message(request, group_id):
             message=message_text
         )
         
-        # Retourner le message créé
+        # Retourner le message créé avec avatar de l'utilisateur
+        # Priorité: profile_picture du User > avatar du Profile Community > initiales
+        avatar_url = None
+        if group_message.sender.user.profile_picture:
+            avatar_url = group_message.sender.user.profile_picture.url
+        elif group_message.sender.avatar:
+            avatar_url = group_message.sender.avatar.url
+        
+        # Debug print pour vérifier l'avatar URL
+        print(f"DEBUG: User {group_message.sender.user.username} avatar_url: {avatar_url}")
+        print(f"DEBUG: Has profile_picture: {bool(group_message.sender.user.profile_picture)}")
+        if group_message.sender.user.profile_picture:
+            print(f"DEBUG: Profile picture URL: {group_message.sender.user.profile_picture.url}")
+            
         return JsonResponse({
             'success': True,
             'message': {
                 'id': group_message.id,
                 'sender_name': group_message.sender.user.get_full_name() or group_message.sender.user.username,
                 'sender_avatar': group_message.sender.user.username[0].upper(),
-                'sender_avatar_url': group_message.sender.avatar.url if group_message.sender.avatar else None,
+                'sender_avatar_url': avatar_url,
                 'message': group_message.message,
                 'timestamp': group_message.timestamp.isoformat(),
                 'time_display': 'now'

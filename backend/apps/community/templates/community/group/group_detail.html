@@ -122,9 +122,11 @@
                         <div class="messages-area" id="messagesArea">
                             <!-- Vrais messages de la base de données -->
                             {% for message in recent_messages reversed %}
-                            <div class="message">
+                            <div class="message {% if message.sender.user == user %}message-own{% else %}message-other{% endif %}">
                                 <div class="message-avatar">
-                                    {% if message.sender.avatar %}
+                                    {% if message.sender.user.profile_picture %}
+                                    <img src="{{ message.sender.user.profile_picture.url }}" alt="{{ message.sender.user.username }}" class="user-avatar-img">
+                                    {% elif message.sender.avatar %}
                                     <img src="{{ message.sender.avatar.url }}" alt="{{ message.sender.user.username }}" class="user-avatar-img">
                                     {% else %}
                                     {{ message.sender.user.username.0|upper }}
@@ -180,7 +182,9 @@
                             {% for member in online_members %}
                             <div class="member-item">
                                 <div class="member-avatar">
-                                    {% if member.avatar %}
+                                    {% if member.user.profile_picture %}
+                                    <img src="{{ member.user.profile_picture.url }}" alt="{{ member.user.username }}" class="user-avatar-img">
+                                    {% elif member.avatar %}
                                     <img src="{{ member.avatar.url }}" alt="{{ member.user.username }}" class="user-avatar-img">
                                     {% else %}
                                     {{ member.user.first_name.0|upper|default:member.user.username.0|upper }}
@@ -214,6 +218,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Variables pour l'avatar utilisateur - côté Django
+    const currentUserAvatar = `{% if user.profile_picture %}<img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="user-avatar-img">{% else %}{{ user.username.0|upper|default:"U" }}{% endif %}`;
+    const currentUserName = `{{ user.get_full_name|default:user.username }}`;
+    
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
     const messagesArea = document.getElementById('messagesArea');
@@ -244,19 +252,19 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Ajouter le message à l'interface
+                // Ajouter le message à l'interface avec la classe CSS appropriée
                 const messageDiv = document.createElement('div');
-                messageDiv.className = 'message';
+                messageDiv.className = 'message message-own'; // Toujours message-own car c'est l'utilisateur actuel qui envoie
                 messageDiv.innerHTML = `
                     <div class="message-avatar">
                         ${data.message.sender_avatar_url ? 
                             `<img src="${data.message.sender_avatar_url}" alt="${data.message.sender_name}" class="user-avatar-img">` :
-                            data.message.sender_avatar
+                            currentUserAvatar
                         }
                     </div>
                     <div class="message-content">
                         <div class="message-header">
-                            <strong>${data.message.sender_name}</strong>
+                            <strong>${currentUserName}</strong>
                             <span class="message-time">${data.message.time_display}</span>
                         </div>
                         <div class="message-text">${data.message.message}</div>
@@ -321,12 +329,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const messageDiv = document.createElement('div');
-                messageDiv.className = 'message';
+                messageDiv.className = 'message message-own'; // Message de l'utilisateur actuel
                 messageDiv.innerHTML = `
-                    <div class="message-avatar">{{ user.username.0|upper|default:"U" }}</div>
+                    <div class="message-avatar">
+                        ${currentUserAvatar}
+                    </div>
                     <div class="message-content">
                         <div class="message-header">
-                            <strong>{{ user.get_full_name|default:user.username }}</strong>
+                            <strong>${currentUserName}</strong>
                             <span class="message-time">{% trans "now" %}</span>
                         </div>
                         <div class="message-photo">
@@ -358,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
         testMessages.forEach((msg, index) => {
             setTimeout(() => {
                 const messageDiv = document.createElement('div');
-                messageDiv.className = 'message';
+                messageDiv.className = 'message message-other'; // Message des autres (Claude AI)
                 messageDiv.innerHTML = `
                     <div class="message-avatar" style="background: linear-gradient(135deg, #10b981, #059669);">🤖</div>
                     <div class="message-content">
@@ -378,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Ajouter un message d'explication
         setTimeout(() => {
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message';
+            messageDiv.className = 'message message-other'; // Message système (pas de l'utilisateur)
             messageDiv.innerHTML = `
                 <div class="message-avatar" style="background: linear-gradient(135deg, #f59e0b, #d97706);">ℹ️</div>
                 <div class="message-content">

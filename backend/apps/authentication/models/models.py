@@ -627,6 +627,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def name(self):
         return f"{self.first_name} {self.last_name}"
     
+    def get_full_name(self):
+        """Return the user's full name"""
+        full_name = f"{self.first_name} {self.last_name}".strip()
+        return full_name if full_name else self.username
+    
     @property
     def age(self):
         """Calculate age from birthday"""

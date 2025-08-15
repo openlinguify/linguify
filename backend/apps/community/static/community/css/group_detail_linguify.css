@@ -204,6 +204,37 @@
     max-width: 85%;
 }
 
+/* 💬 Messages des autres utilisateurs (alignés à gauche) */
+.message-other {
+    align-self: flex-start;
+    flex-direction: row;
+}
+
+/* 📱 Messages de l'utilisateur actuel (alignés à droite - style WhatsApp) */
+.message-own {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+    margin-left: auto;
+}
+
+.message-own .message-content {
+    background: linear-gradient(135deg, #2D5BBA, #1e40af);
+    color: white;
+    border: 1px solid rgba(45, 91, 186, 0.2);
+}
+
+.message-own .message-header strong {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.message-own .message-time {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.message-own .message-text {
+    color: white;
+}
+
 .message-avatar {
     width: 40px;
     height: 40px;
