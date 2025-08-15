@@ -16,6 +16,8 @@ from .community_views import (
     accept_friend_request,
     reject_friend_request,
     create_group,
+    send_group_message,
+    get_group_messages,
 )
 
 __all__ = [
@@ -33,4 +35,6 @@ __all__ = [
     'accept_friend_request',
     'reject_friend_request',
     'create_group',
+    'send_group_message',
+    'get_group_messages',
 ]

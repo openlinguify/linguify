@@ -1,0 +1,319 @@
+{% extends "saas_web/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Manage" %} {{ group.name }} | Open Linguify{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/group_detail_linguify.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="community-page">
+    <div class="community-container">
+        <!-- Header avec navbar intégrée -->
+        <div class="community-header">
+            <!-- Navigation unifiée -->
+            {% include 'community/components/navbar.html' %}
+        </div>
+
+        <!-- Main scrollable content -->
+        <div class="community-main">
+            
+            <!-- En-tête du groupe - Style Navbar -->
+            <div class="group-navbar-container d-flex align-items-center justify-content-between gap-3">
+                <!-- Gauche: Info groupe compacte -->
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Nom du groupe -->
+                    <div class="group-name-section">
+                        <h2 class="group-name-compact">{{ group.name }} - {% trans "Management" %}</h2>
+                    </div>
+                    
+                    <!-- Badges info compacts -->
+                    <div class="d-flex align-items-center gap-2">
+                        {% if group.language %}
+                        <div class="group-info-badge language">
+                            <i class="bi bi-translate me-1"></i>
+                            {{ group.get_language_display }}
+                        </div>
+                        {% endif %}
+                        
+                        {% if group.level %}
+                        <div class="group-info-badge level">
+                            <i class="bi bi-award me-1"></i>
+                            {{ group.get_level_display }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Droite: Stats + Actions -->
+                <div class="d-flex align-items-center gap-2 flex-nowrap">
+                    <!-- Stats compactes -->
+                    <div class="group-stats-compact d-flex align-items-center gap-3">
+                        <div class="stat-compact">
+                            <span class="stat-number-compact">{{ members.count }}</span>
+                            <span class="stat-label-compact">{% trans "members" %}</span>
+                        </div>
+                        <div class="stat-compact">
+                            <span class="stat-number-compact">{{ group_stats.active_members }}</span>
+                            <span class="stat-label-compact">{% trans "active" %}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <a href="{% url 'community:group_detail' group.id %}" class="btn-outline-custom btn-sm">
+                        <i class="bi bi-arrow-left"></i>
+                        <span class="d-none d-xl-inline ms-1">{% trans "Back to Chat" %}</span>
+                    </a>
+                    
+                    <button class="btn-gradient btn-sm px-2" id="saveSettingsBtn">
+                        <i class="bi bi-check"></i>
+                        <span class="d-none d-xl-inline ms-1">{% trans "Save" %}</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenu de gestion en colonnes -->
+            <div class="group-chat-main">
+                <!-- Section principale: Paramètres du groupe -->
+                <div class="chat-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-gear me-2"></i>
+                            {% trans "Group Settings" %}
+                        </h3>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="manage-content">
+                            <!-- Informations générales -->
+                            <div class="settings-section">
+                                <h4>{% trans "General Information" %}</h4>
+                                <form id="groupSettingsForm">
+                                    <div class="mb-3">
+                                        <label for="groupName" class="form-label">{% trans "Group Name" %}</label>
+                                        <input type="text" class="form-control" id="groupName" value="{{ group.name }}">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="groupDescription" class="form-label">{% trans "Description" %}</label>
+                                        <textarea class="form-control" id="groupDescription" rows="3">{{ group.description }}</textarea>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="groupLanguage" class="form-label">{% trans "Language" %}</label>
+                                                <select class="form-select" id="groupLanguage">
+                                                    <option value="EN" {% if group.language == 'EN' %}selected{% endif %}>🇬🇧 English</option>
+                                                    <option value="FR" {% if group.language == 'FR' %}selected{% endif %}>🇫🇷 Français</option>
+                                                    <option value="ES" {% if group.language == 'ES' %}selected{% endif %}>🇪🇸 Español</option>
+                                                    <option value="DE" {% if group.language == 'DE' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="groupLevel" class="form-label">{% trans "Level" %}</label>
+                                                <select class="form-select" id="groupLevel">
+                                                    <option value="beginner" {% if group.level == 'beginner' %}selected{% endif %}>{% trans "Beginner" %}</option>
+                                                    <option value="intermediate" {% if group.level == 'intermediate' %}selected{% endif %}>{% trans "Intermediate" %}</option>
+                                                    <option value="advanced" {% if group.level == 'advanced' %}selected{% endif %}>{% trans "Advanced" %}</option>
+                                                    <option value="mixed" {% if group.level == 'mixed' %}selected{% endif %}>{% trans "Mixed" %}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Statistiques -->
+                            <div class="settings-section">
+                                <h4>{% trans "Group Statistics" %}</h4>
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-icon">👥</div>
+                                        <div class="stat-info">
+                                            <div class="stat-number">{{ group_stats.total_members }}</div>
+                                            <div class="stat-label">{% trans "Total Members" %}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="stat-card">
+                                        <div class="stat-icon">💬</div>
+                                        <div class="stat-info">
+                                            <div class="stat-number">{{ group_stats.total_messages }}</div>
+                                            <div class="stat-label">{% trans "Messages" %}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="stat-card">
+                                        <div class="stat-icon">🟢</div>
+                                        <div class="stat-info">
+                                            <div class="stat-number">{{ group_stats.active_members }}</div>
+                                            <div class="stat-label">{% trans "Active Today" %}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sidebar: Gestion des membres -->
+                <div class="members-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-people me-2"></i>
+                            {% trans "Members" %} ({{ members.count }})
+                        </h3>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="members-list">
+                            {% for member in members %}
+                            <div class="member-item member-manage">
+                                <div class="member-avatar">
+                                    {{ member.user.first_name.0|upper|default:member.user.username.0|upper }}
+                                </div>
+                                <div class="member-info">
+                                    <div class="member-name">
+                                        {{ member.user.get_full_name|default:member.user.username }}
+                                        {% if member == group.created_by %}
+                                        <span class="badge bg-primary">{% trans "Creator" %}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="member-status {% if member.is_online %}online{% else %}offline{% endif %}">
+                                        <span class="status-dot"></span>
+                                        {% if member.is_online %}{% trans "Online" %}{% else %}{% trans "Offline" %}{% endif %}
+                                    </div>
+                                </div>
+                                {% if member != group.created_by and is_creator %}
+                                <div class="member-actions">
+                                    <button class="btn-icon btn-danger btn-sm" onclick="removeMember({{ member.id }})" title="{% trans 'Remove Member' %}">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% empty %}
+                            <div class="empty-state">
+                                <i class="bi bi-people large-icon"></i>
+                                <p>{% trans "No members" %}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.manage-content {
+    padding: 1.5rem;
+}
+
+.settings-section {
+    background: #f8f9ff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+.settings-section h4 {
+    color: #2D5BBA;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(45, 91, 186, 0.1);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    text-align: center;
+}
+
+.stat-info .stat-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2D5BBA;
+    line-height: 1;
+}
+
+.stat-info .stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.member-manage {
+    position: relative;
+}
+
+.member-actions {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sauvegarder les paramètres
+    document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+        const formData = {
+            name: document.getElementById('groupName').value,
+            description: document.getElementById('groupDescription').value,
+            language: document.getElementById('groupLanguage').value,
+            level: document.getElementById('groupLevel').value,
+        };
+        
+        // Ici vous pourriez ajouter un appel AJAX pour sauvegarder
+        alert('{% trans "Settings saved!" %}');
+    });
+});
+
+// Fonction pour retirer un membre
+function removeMember(memberId) {
+    if (confirm('{% trans "Are you sure you want to remove this member?" %}')) {
+        // Ici vous pourriez ajouter un appel AJAX pour retirer le membre
+        alert('{% trans "Member removed!" %}');
+    }
+}
+</script>
+{% endblock %}

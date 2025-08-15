@@ -12,6 +12,8 @@ urlpatterns = [
     path('groups/', views.GroupsView.as_view(), name='groups'),
     path('groups/<int:group_id>/', views.GroupDetailView.as_view(), name='group_detail'),
     path('groups/<int:group_id>/manage/', views.GroupManageView.as_view(), name='group_manage'),
+    path('groups/<int:group_id>/send-message/', views.send_group_message, name='send_group_message'),
+    path('groups/<int:group_id>/messages/', views.get_group_messages, name='get_group_messages'),
     path('feed/', views.ActivityFeedView.as_view(), name='feed'),
     path('profile/<str:username>/', views.UserProfileView.as_view(), name='user_profile'),
     

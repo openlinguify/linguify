@@ -6,7 +6,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
 <link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
-<link rel="stylesheet" href="{% static 'community/css/group_detail.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/group_detail_linguify.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -20,274 +20,167 @@
 
         <!-- Main scrollable content -->
         <div class="community-main">
-
-        <!-- Group Header -->
-        <div class="group-header-section">
-            <div class="group-info">
-                <div class="group-title-area">
-                    <h1 class="group-title">{{ group.name }}</h1>
-                    <div class="group-badges">
+            
+            <!-- En-tête du groupe - Style Navbar -->
+            <div class="group-navbar-container d-flex align-items-center justify-content-between gap-3">
+                <!-- Gauche: Info groupe compacte -->
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Nom du groupe -->
+                    <div class="group-name-section">
+                        <h2 class="group-name-compact">{{ group.name }}</h2>
+                    </div>
+                    
+                    <!-- Badges info compacts -->
+                    <div class="d-flex align-items-center gap-2">
                         {% if group.language %}
-                        <span class="group-badge language">{{ group.get_language_display }}</span>
+                        <div class="group-info-badge language">
+                            <i class="bi bi-translate me-1"></i>
+                            {{ group.get_language_display }}
+                        </div>
                         {% endif %}
+                        
                         {% if group.level %}
-                        <span class="group-badge level">{{ group.get_level_display }}</span>
+                        <div class="group-info-badge level">
+                            <i class="bi bi-award me-1"></i>
+                            {{ group.get_level_display }}
+                        </div>
                         {% endif %}
+                        
                         {% if group.group_type %}
-                        <span class="group-badge type">{{ group.get_group_type_display }}</span>
+                        <div class="group-info-badge type">
+                            <i class="bi bi-bookmark me-1"></i>
+                            {{ group.get_group_type_display }}
+                        </div>
                         {% endif %}
                     </div>
+                    
+                    {% if group.description %}
+                    <div class="group-description-compact">
+                        {{ group.description|truncatewords:8 }}
+                    </div>
+                    {% endif %}
                 </div>
                 
-                <div class="group-stats">
-                    <div class="stat-item">
-                        <div class="stat-number">{{ members_count }}</div>
-                        <div class="stat-label">{% trans "Members" %}</div>
+                <!-- Droite: Stats + Actions -->
+                <div class="d-flex align-items-center gap-2 flex-nowrap">
+                    <!-- Stats compactes -->
+                    <div class="group-stats-compact d-flex align-items-center gap-3">
+                        <div class="stat-compact">
+                            <span class="stat-number-compact">{{ members_count }}</span>
+                            <span class="stat-label-compact">{% trans "members" %}</span>
+                        </div>
+                        <div class="stat-compact">
+                            <span class="stat-number-compact">{{ online_members.count }}</span>
+                            <span class="stat-label-compact">{% trans "online" %}</span>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">{{ online_members.count }}</div>
-                        <div class="stat-label">{% trans "Online" %}</div>
-                    </div>
-                </div>
-                
-                <div class="group-actions">
+                    
+                    <!-- Actions -->
                     {% if is_creator %}
-                    <a href="{% url 'community:group_manage' group.id %}" class="btn-simple btn-sm">
-                        <i class="bi bi-gear me-1"></i>
-                        {% trans "Manage Group" %}
+                    <a href="{% url 'community:group_manage' group.id %}" class="btn-outline-custom btn-sm">
+                        <i class="bi bi-gear"></i>
+                        <span class="d-none d-xl-inline ms-1">{% trans "Manage" %}</span>
                     </a>
                     {% endif %}
                     
-                    <button class="btn-simple btn-secondary btn-sm" id="inviteFriendsBtn">
-                        <i class="bi bi-person-plus me-1"></i>
-                        {% trans "Invite Friends" %}
+                    <button class="btn-gradient btn-sm px-2" id="inviteBtn">
+                        <i class="bi bi-person-plus"></i>
+                        <span class="d-none d-xl-inline ms-1">{% trans "Invite" %}</span>
                     </button>
                 </div>
             </div>
-            
-            {% if group.description %}
-            <div class="group-description">
-                <p>{{ group.description }}</p>
-            </div>
-            {% endif %}
-        </div>
 
-        <!-- 🚀 FONCTIONNALITÉ RÉVOLUTIONNAIRE: Smart Language Rotation Chat -->
-        <div class="smart-chat-section">
-            <div class="chat-header">
-                <h3 class="chat-title">
-                    <i class="bi bi-chat-dots me-2"></i>
-                    {% trans "Smart Language Rotation Chat" %}
-                    <span class="beta-badge">BETA</span>
-                </h3>
-                
-                <!-- Rotation Timer -->
-                <div class="language-rotation-indicator">
-                    <div class="current-language">
-                        <span class="language-flag">🇫🇷</span>
-                        <span class="language-name">{% trans "French" %}</span>
-                        <div class="rotation-timer">
-                            <div class="timer-circle">
-                                <span class="timer-text">2:34</span>
-                            </div>
+            <!-- Layout en 2 colonnes pour le chat -->
+            <div class="group-chat-main">
+                <!-- 💬 CHAT PRINCIPAL -->
+                <div class="chat-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-chat-dots me-2"></i>
+                            {% trans "Group Chat" %}
+                        </h3>
+                        <div class="chat-options">
+                            <button class="btn-simple btn-sm btn-secondary" id="testClaudeBtn" title="{% trans 'Test with Claude AI' %}">
+                                <i class="bi bi-robot me-1"></i>{% trans "AI Test" %}
+                            </button>
                         </div>
                     </div>
-                    <div class="next-language">
-                        {% trans "Next" %}: <span class="language-flag">🇬🇧</span> {% trans "English" %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Smart Chat Features Panel -->
-            <div class="smart-features-panel">
-                <div class="feature-toggle">
-                    <input type="checkbox" id="autoCorrection" checked>
-                    <label for="autoCorrection">
-                        <i class="bi bi-magic"></i>
-                        {% trans "AI Auto-Correction" %}
-                    </label>
-                </div>
-                
-                <div class="feature-toggle">
-                    <input type="checkbox" id="rotationMode" checked>
-                    <label for="rotationMode">
-                        <i class="bi bi-arrow-repeat"></i>
-                        {% trans "Language Rotation" %}
-                    </label>
-                </div>
-                
-                <div class="feature-toggle">
-                    <input type="checkbox" id="progressTracking" checked>
-                    <label for="progressTracking">
-                        <i class="bi bi-graph-up"></i>
-                        {% trans "Progress Tracking" %}
-                    </label>
-                </div>
-                
-                <button class="btn-simple btn-sm" id="rotationSettings">
-                    <i class="bi bi-sliders me-1"></i>
-                    {% trans "Settings" %}
-                </button>
-            </div>
-
-            <!-- Chat Messages Area -->
-            <div class="smart-chat-messages" id="chatMessages">
-                <!-- System Messages -->
-                <div class="system-message">
-                    <i class="bi bi-info-circle"></i>
-                    {% trans "Smart Language Rotation is active. The language will switch every 3 minutes." %}
-                </div>
-                
-                <div class="system-message rotation-message">
-                    <i class="bi bi-arrow-repeat text-primary"></i>
-                    {% trans "Language switched to French. Practice time!" %}
-                </div>
-
-                <!-- Example Messages avec correction en temps réel -->
-                <div class="message-group">
-                    <div class="message user-message">
-                        <div class="message-avatar">L</div>
-                        <div class="message-content">
-                            <div class="message-text">
-                                Je suis <span class="correction-highlight" data-correction="content">contente</span> de être ici!
-                                <div class="ai-correction">
-                                    <i class="bi bi-magic"></i>
-                                    {% trans "AI suggestion" %}: "Je suis content<strong>e</strong> d'être ici!"
-                                    <button class="accept-correction">{% trans "Accept" %}</button>
+                    
+                    <div class="section-content">
+                        <!-- Messages -->
+                        <div class="messages-area" id="messagesArea">
+                            <!-- Vrais messages de la base de données -->
+                            {% for message in recent_messages reversed %}
+                            <div class="message">
+                                <div class="message-avatar">{{ message.sender.user.username.0|upper }}</div>
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <strong>{{ message.sender.user.get_full_name|default:message.sender.user.username }}</strong>
+                                        <span class="message-time">{{ message.timestamp|timesince }} ago</span>
+                                    </div>
+                                    <div class="message-text">{{ message.message }}</div>
                                 </div>
                             </div>
-                            <div class="message-time">{% trans "now" %}</div>
+                            {% empty %}
+                            <div class="empty-state">
+                                <i class="bi bi-chat large-icon"></i>
+                                <p>{% trans "No messages yet. Be the first to say hello!" %}</p>
+                            </div>
+                            {% endfor %}
                         </div>
-                    </div>
-                </div>
-
-                <div class="message-group">
-                    <div class="message other-message">
-                        <div class="message-avatar">M</div>
-                        <div class="message-content">
-                            <div class="message-text">
-                                Salut ! Bienvenue dans le groupe. Comment tu vas ?
-                                <div class="language-help">
-                                    <i class="bi bi-translate"></i>
-                                    <span class="translation">{% trans "Hello! Welcome to the group. How are you?" %}</span>
+                        
+                        <!-- Input -->
+                        <div class="chat-input">
+                            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+                            <div class="input-area">
+                                <textarea id="messageInput" 
+                                          placeholder="{% trans 'Type your message...' %}" 
+                                          rows="2" class="form-control"></textarea>
+                                <div class="input-actions">
+                                    <button class="btn-icon" id="photoBtn" title="{% trans 'Add Photo' %}">
+                                        <i class="bi bi-image"></i>
+                                    </button>
+                                    <button class="btn-simple btn-sm" id="sendBtn">
+                                        <i class="bi bi-send me-1"></i>{% trans "Send" %}
+                                    </button>
                                 </div>
                             </div>
-                            <div class="message-time">{% trans "1 min ago" %}</div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Smart Chat Input -->
-            <div class="smart-chat-input">
-                <div class="input-header">
-                    <div class="current-language-indicator">
-                        <span class="language-flag">🇫🇷</span>
-                        {% trans "Currently practicing French" %}
-                    </div>
-                    <div class="ai-helper">
-                        <i class="bi bi-lightbulb"></i>
-                        {% trans "AI is ready to help" %}
-                    </div>
-                </div>
                 
-                <div class="input-area">
-                    <textarea class="chat-textarea" placeholder="{% trans 'Type your message in French...' %}" 
-                              id="chatInput" rows="2"></textarea>
+                <!-- 👥 SIDEBAR MEMBRES -->
+                <div class="members-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-people me-2"></i>
+                            {% trans "Online" %} ({{ online_members.count }})
+                        </h3>
+                    </div>
                     
-                    <div class="input-actions">
-                        <button class="btn-icon" id="voiceInputBtn" title="{% trans 'Voice Input' %}">
-                            <i class="bi bi-mic"></i>
-                        </button>
-                        
-                        <button class="btn-icon" id="translateBtn" title="{% trans 'Quick Translate' %}">
-                            <i class="bi bi-translate"></i>
-                        </button>
-                        
-                        <button class="btn-simple btn-sm" id="sendMessageBtn">
-                            <i class="bi bi-send me-1"></i>
-                            {% trans "Send" %}
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="ai-suggestions" id="aiSuggestions">
-                    <div class="suggestion-item">
-                        <i class="bi bi-lightbulb"></i>
-                        {% trans "Try" %}: "Je voudrais améliorer mon français."
-                    </div>
-                    <div class="suggestion-item">
-                        <i class="bi bi-lightbulb"></i>
-                        {% trans "Try" %}: "Pouvez-vous m'aider avec la grammaire ?"
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Members Sidebar -->
-        <div class="members-sidebar">
-            <div class="sidebar-section">
-                <h4 class="sidebar-title">
-                    <i class="bi bi-people me-1"></i>
-                    {% trans "Members Online" %} ({{ online_members.count }})
-                </h4>
-                
-                <div class="members-list">
-                    {% for member in online_members %}
-                    <div class="member-item">
-                        <div class="member-avatar">
-                            {{ member.user.first_name.0|upper|default:member.user.username.0|upper }}
-                        </div>
-                        <div class="member-info">
-                            <div class="member-name">{{ member.user.get_full_name|default:member.user.username }}</div>
-                            <div class="member-status online">
-                                <span class="status-indicator"></span>
-                                {% trans "Online" %}
+                    <div class="section-content">
+                        <div class="members-list">
+                            {% for member in online_members %}
+                            <div class="member-item">
+                                <div class="member-avatar">
+                                    {{ member.user.first_name.0|upper|default:member.user.username.0|upper }}
+                                </div>
+                                <div class="member-info">
+                                    <div class="member-name">
+                                        {{ member.user.get_full_name|default:member.user.username }}
+                                    </div>
+                                    <div class="member-status online">
+                                        <span class="status-dot"></span>
+                                        {% trans "Online" %}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="member-score">
-                            <i class="bi bi-trophy"></i>
-                            <span>{{ member.get_chat_score|default:0 }}</span>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="empty-members">
-                        <i class="bi bi-person-slash"></i>
-                        <p>{% trans "No members online" %}</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Progress Dashboard -->
-            <div class="sidebar-section">
-                <h4 class="sidebar-title">
-                    <i class="bi bi-graph-up me-1"></i>
-                    {% trans "Your Progress Today" %}
-                </h4>
-                
-                <div class="progress-stats">
-                    <div class="progress-item">
-                        <div class="progress-icon">🗣️</div>
-                        <div class="progress-info">
-                            <div class="progress-label">{% trans "Speaking Time" %}</div>
-                            <div class="progress-value">12 min</div>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-item">
-                        <div class="progress-icon">✅</div>
-                        <div class="progress-info">
-                            <div class="progress-label">{% trans "Corrections Learned" %}</div>
-                            <div class="progress-value">8</div>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-item">
-                        <div class="progress-icon">🎯</div>
-                        <div class="progress-info">
-                            <div class="progress-label">{% trans "Accuracy" %}</div>
-                            <div class="progress-value">85%</div>
+                            {% empty %}
+                            <div class="empty-state">
+                                <i class="bi bi-person-slash large-icon"></i>
+                                <p>{% trans "No one online" %}</p>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -300,149 +193,182 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Smart Language Rotation Timer
-    let rotationTimer = 180; // 3 minutes in seconds
-    let currentLanguage = 'fr';
-    let languages = ['fr', 'en'];
-    let currentIndex = 0;
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const messagesArea = document.getElementById('messagesArea');
+    const photoBtn = document.getElementById('photoBtn');
+    const photoInput = document.getElementById('photoInput');
+    const testClaudeBtn = document.getElementById('testClaudeBtn');
     
-    function updateRotationTimer() {
-        const minutes = Math.floor(rotationTimer / 60);
-        const seconds = rotationTimer % 60;
-        document.querySelector('.timer-text').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
-        // Update progress circle
-        const progress = ((180 - rotationTimer) / 180) * 283; // 283 is circumference of circle
-        document.querySelector('.timer-circle').style.setProperty('--progress', progress + 'px');
-        
-        rotationTimer--;
-        
-        if (rotationTimer < 0) {
-            switchLanguage();
-            rotationTimer = 180; // Reset timer
-        }
-    }
-    
-    function switchLanguage() {
-        currentIndex = (currentIndex + 1) % languages.length;
-        currentLanguage = languages[currentIndex];
-        
-        // Update UI
-        const languageNames = { 'fr': 'French', 'en': 'English' };
-        const languageFlags = { 'fr': '🇫🇷', 'en': '🇬🇧' };
-        
-        document.querySelector('.current-language .language-name').textContent = languageNames[currentLanguage];
-        document.querySelector('.current-language .language-flag').textContent = languageFlags[currentLanguage];
-        
-        // Show rotation message
-        const chatMessages = document.getElementById('chatMessages');
-        const rotationMessage = document.createElement('div');
-        rotationMessage.className = 'system-message rotation-message';
-        rotationMessage.innerHTML = `
-            <i class="bi bi-arrow-repeat text-primary"></i>
-            {% trans "Language switched to" %} ${languageNames[currentLanguage]}. {% trans "Practice time!" %}
-        `;
-        chatMessages.appendChild(rotationMessage);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-        // Update placeholder
-        const placeholders = {
-            'fr': '{% trans "Type your message in French..." %}',
-            'en': '{% trans "Type your message in English..." %}'
-        };
-        document.getElementById('chatInput').placeholder = placeholders[currentLanguage];
-    }
-    
-    // Start rotation timer if enabled
-    if (document.getElementById('rotationMode').checked) {
-        setInterval(updateRotationTimer, 1000);
-    }
-    
-    // AI Auto-correction simulation
-    const chatInput = document.getElementById('chatInput');
-    chatInput.addEventListener('input', function() {
-        if (!document.getElementById('autoCorrection').checked) return;
-        
-        const text = this.value;
-        // Simple correction simulation
-        if (text.includes('je suis content de')) {
-            showAISuggestion("Try: 'Je suis content d\\'être...' (d'être instead of de être)");
-        }
-    });
-    
-    function showAISuggestion(suggestion) {
-        const suggestionsContainer = document.getElementById('aiSuggestions');
-        suggestionsContainer.innerHTML = `
-            <div class="suggestion-item active">
-                <i class="bi bi-magic"></i>
-                ${suggestion}
-            </div>
-        `;
-    }
-    
-    // Send message functionality
-    document.getElementById('sendMessageBtn').addEventListener('click', function() {
-        const input = document.getElementById('chatInput');
-        const message = input.value.trim();
-        
+    // Envoyer un message (sauvegarde en base de données)
+    function sendMessage() {
+        const message = messageInput.value.trim();
         if (!message) return;
         
-        // Add message to chat
-        const chatMessages = document.getElementById('chatMessages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message-group';
-        messageDiv.innerHTML = `
-            <div class="message user-message">
-                <div class="message-avatar">{{ user.username.0|upper|default:"U" }}</div>
-                <div class="message-content">
-                    <div class="message-text">${message}</div>
-                    <div class="message-time">{% trans "now" %}</div>
-                </div>
-            </div>
-        `;
+        // Désactiver l'input pendant l'envoi
+        messageInput.disabled = true;
+        sendBtn.disabled = true;
         
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-        // Clear input
-        input.value = '';
-        
-        // Simulate AI response after 1-2 seconds
-        setTimeout(simulateAIResponse, 1500);
-    });
-    
-    function simulateAIResponse() {
-        const responses = [
-            "Excellent ! Your French is improving. 👏",
-            "Good job! Try to use more complex sentences next time.",
-            "Perfect! I can see you're getting more confident."
-        ];
-        
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        const chatMessages = document.getElementById('chatMessages');
-        
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message-group';
-        messageDiv.innerHTML = `
-            <div class="message other-message">
-                <div class="message-avatar">AI</div>
-                <div class="message-content">
-                    <div class="message-text">${randomResponse}</div>
-                    <div class="message-time">{% trans "now" %}</div>
-                </div>
-            </div>
-        `;
-        
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        // Envoyer le message au backend
+        fetch('{% url "community:send_group_message" group.id %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                message: message
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Ajouter le message à l'interface
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${data.message.sender_avatar}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <strong>${data.message.sender_name}</strong>
+                            <span class="message-time">${data.message.time_display}</span>
+                        </div>
+                        <div class="message-text">${data.message.message}</div>
+                    </div>
+                `;
+                
+                messagesArea.appendChild(messageDiv);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+                
+                // Vider l'input
+                messageInput.value = '';
+            } else {
+                alert('Erreur: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de l\'envoi du message');
+        })
+        .finally(() => {
+            // Réactiver l'input
+            messageInput.disabled = false;
+            sendBtn.disabled = false;
+            messageInput.focus();
+        });
     }
     
-    // Enter key to send message
-    chatInput.addEventListener('keydown', function(e) {
+    // Fonction pour récupérer le cookie CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Event listeners
+    sendBtn.addEventListener('click', sendMessage);
+    
+    messageInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            document.getElementById('sendMessageBtn').click();
+            sendMessage();
         }
+    });
+    
+    // Partage de photo
+    photoBtn.addEventListener('click', function() {
+        photoInput.click();
+    });
+    
+    photoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">{{ user.username.0|upper|default:"U" }}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <strong>{{ user.get_full_name|default:user.username }}</strong>
+                            <span class="message-time">{% trans "now" %}</span>
+                        </div>
+                        <div class="message-photo">
+                            <img src="${e.target.result}" alt="Photo partagée" style="max-width: 200px; border-radius: 8px;">
+                        </div>
+                    </div>
+                `;
+                
+                messagesArea.appendChild(messageDiv);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Test avec Claude AI
+    testClaudeBtn.addEventListener('click', function() {
+        const testMessages = [
+            {
+                text: "Bonjour ! Je suis Claude, votre assistant IA. Comment puis-je vous aider avec l'apprentissage des langues ?",
+                type: "claude"
+            },
+            {
+                text: "Vous pouvez me poser des questions sur la grammaire, demander des traductions, ou pratiquer une conversation !",
+                type: "claude"
+            }
+        ];
+        
+        testMessages.forEach((msg, index) => {
+            setTimeout(() => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                messageDiv.innerHTML = `
+                    <div class="message-avatar" style="background: linear-gradient(135deg, #10b981, #059669);">🤖</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <strong>Claude AI</strong>
+                            <span class="message-time">{% trans "now" %}</span>
+                        </div>
+                        <div class="message-text">${msg.text}</div>
+                    </div>
+                `;
+                
+                messagesArea.appendChild(messageDiv);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            }, index * 1000);
+        });
+        
+        // Ajouter un message d'explication
+        setTimeout(() => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.innerHTML = `
+                <div class="message-avatar" style="background: linear-gradient(135deg, #f59e0b, #d97706);">ℹ️</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <strong>Système</strong>
+                        <span class="message-time">{% trans "now" %}</span>
+                    </div>
+                    <div class="message-text">
+                        <em>Ceci est une simulation. Dans la vraie version, Claude AI pourrait répondre automatiquement à vos messages pour vous aider à apprendre !</em>
+                    </div>
+                </div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }, 2500);
     });
 });
 </script>

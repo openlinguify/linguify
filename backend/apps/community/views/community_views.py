@@ -10,7 +10,7 @@ from django.utils.decorators import method_decorator
 
 from apps.authentication.models import User
 from ..models import (Profile, FriendRequest, Post, Group, ActivityFeed, Recommendation,
-                     LanguageExchangeSession, StudySession, LanguagePartnerMatch)
+                     LanguageExchangeSession, StudySession, LanguagePartnerMatch, GroupMessage)
 
 
 class CommunityMainView(LoginRequiredMixin, TemplateView):
@@ -434,19 +434,102 @@ class GroupDetailView(LoginRequiredMixin, TemplateView):
                 profile.groups.add(group)
                 is_member = True
                 
+            # Récupérer les vrais messages du groupe
+            recent_messages = group.messages.select_related('sender__user').order_by('-timestamp')[:50]
+            
             context.update({
                 'group': group,
                 'is_member': is_member,
                 'is_creator': is_creator,
                 'members_count': group.members.count(),
                 'online_members': group.members.filter(is_online=True),
-                'recent_messages': group.messages.all().order_by('-timestamp')[:50] if hasattr(group, 'messages') else [],
+                'recent_messages': recent_messages,
             })
             
         except Group.DoesNotExist:
             raise Http404("Group not found")
             
         return context
+
+
+@login_required
+@require_POST
+def send_group_message(request, group_id):
+    """Envoyer un message dans un groupe"""
+    try:
+        import json
+        data = json.loads(request.body)
+        
+        message_text = data.get('message', '').strip()
+        if not message_text:
+            return JsonResponse({'error': 'Message cannot be empty'}, status=400)
+            
+        # Vérifier que le groupe existe
+        group = get_object_or_404(Group, id=group_id)
+        
+        # Vérifier que l'utilisateur est membre du groupe
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+        if profile not in group.members.all():
+            return JsonResponse({'error': 'You are not a member of this group'}, status=403)
+            
+        # Créer le message
+        group_message = GroupMessage.objects.create(
+            group=group,
+            sender=profile,
+            message=message_text
+        )
+        
+        # Retourner le message créé
+        return JsonResponse({
+            'success': True,
+            'message': {
+                'id': group_message.id,
+                'sender_name': group_message.sender.user.get_full_name() or group_message.sender.user.username,
+                'sender_avatar': group_message.sender.user.username[0].upper(),
+                'message': group_message.message,
+                'timestamp': group_message.timestamp.isoformat(),
+                'time_display': 'now'
+            }
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def get_group_messages(request, group_id):
+    """Récupérer les messages d'un groupe"""
+    try:
+        group = get_object_or_404(Group, id=group_id)
+        
+        # Vérifier que l'utilisateur est membre du groupe
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+        if profile not in group.members.all():
+            return JsonResponse({'error': 'You are not a member of this group'}, status=403)
+            
+        # Récupérer les messages
+        messages = group.messages.select_related('sender__user').order_by('timestamp')
+        
+        messages_data = []
+        for msg in messages:
+            messages_data.append({
+                'id': msg.id,
+                'sender_name': msg.sender.user.get_full_name() or msg.sender.user.username,
+                'sender_avatar': msg.sender.user.username[0].upper(),
+                'message': msg.message,
+                'timestamp': msg.timestamp.isoformat(),
+                'is_own': msg.sender == profile
+            })
+            
+        return JsonResponse({
+            'success': True,
+            'messages': messages_data
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 class GroupManageView(LoginRequiredMixin, TemplateView):
