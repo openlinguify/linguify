@@ -51,9 +51,7 @@ class CommunityMainView(LoginRequiredMixin, TemplateView):
             'profile': profile,
             'friend_requests_count': profile.friend_requests_received().filter(status='pending').count(),
             'friends_count': profile.friends.count(),
-            'recent_posts': Post.objects.filter(
-                author__in=[f.user for f in profile.friends.all()]
-            )[:5] if not is_new_user else [],
+            'recent_posts': Post.objects.all().select_related('author')[:10],
             'suggested_friends': suggested_friends,
             'is_new_user': is_new_user,
             'suggested_partners': suggested_partners,
@@ -127,11 +125,15 @@ class FriendsListView(LoginRequiredMixin, TemplateView):
         # Obtenir ou créer le profil utilisateur
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         
+        friends = profile.friends.all()
+        online_friends_count = sum(1 for friend in friends if friend.is_online)
+        
         context.update({
             'profile': profile,
-            'friends': profile.friends.all(),
+            'friends': friends,
             'pending_requests': profile.friend_requests_received().filter(status='pending'),
             'sent_requests': profile.friend_requests_sent().filter(status='pending'),
+            'online_friends_count': online_friends_count,
         })
         return context
 
@@ -353,3 +355,133 @@ def reject_friend_request(request, request_id):
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def create_group(request):
+    """Créer un nouveau groupe d'étude"""
+    try:
+        import json
+        data = json.loads(request.body)
+        
+        name = data.get('name', '').strip()
+        description = data.get('description', '').strip()
+        language = data.get('language', '').strip()
+        difficulty_level = data.get('difficulty_level', '').strip()
+        group_type = data.get('group_type', '').strip()
+        
+        # Validation
+        if not name:
+            return JsonResponse({'error': 'Group name is required'}, status=400)
+        if not description:
+            return JsonResponse({'error': 'Description is required'}, status=400)
+        if not language:
+            return JsonResponse({'error': 'Language is required'}, status=400)
+            
+        # Obtenir ou créer le profil utilisateur
+        creator_profile, _ = Profile.objects.get_or_create(user=request.user)
+        
+        # Créer le groupe
+        group = Group.objects.create(
+            name=name,
+            description=description,
+            language=language.upper(),  # Le modèle utilise des codes en majuscules
+            level=difficulty_level or 'mixed',
+            group_type=group_type or 'general',
+            created_by=creator_profile
+        )
+        
+        # Ajouter le créateur comme membre du groupe
+        creator_profile.groups.add(group)
+        
+        return JsonResponse({
+            'success': True, 
+            'message': 'Group created successfully!',
+            'group': {
+                'id': group.id,
+                'name': group.name,
+                'description': group.description,
+                'language': group.get_language_display() if hasattr(group, 'get_language_display') else group.language,
+                'members_count': group.members.count()
+            }
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+class GroupDetailView(LoginRequiredMixin, TemplateView):
+    """Vue détaillée d'un groupe avec chat intelligent"""
+    template_name = 'community/group_detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        group_id = kwargs.get('group_id')
+        
+        try:
+            group = get_object_or_404(Group, id=group_id)
+            profile, _ = Profile.objects.get_or_create(user=self.request.user)
+            
+            # Vérifier si l'utilisateur est membre du groupe
+            is_member = profile in group.members.all()
+            is_creator = group.created_by == profile
+            
+            if not is_member and not group.is_private:
+                # Auto-join pour les groupes publics
+                profile.groups.add(group)
+                is_member = True
+                
+            context.update({
+                'group': group,
+                'is_member': is_member,
+                'is_creator': is_creator,
+                'members_count': group.members.count(),
+                'online_members': group.members.filter(is_online=True),
+                'recent_messages': group.messages.all().order_by('-timestamp')[:50] if hasattr(group, 'messages') else [],
+            })
+            
+        except Group.DoesNotExist:
+            raise Http404("Group not found")
+            
+        return context
+
+
+class GroupManageView(LoginRequiredMixin, TemplateView):
+    """Vue de gestion d'un groupe (pour les créateurs/modérateurs)"""
+    template_name = 'community/group_manage.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        group_id = kwargs.get('group_id')
+        
+        try:
+            group = get_object_or_404(Group, id=group_id)
+            profile, _ = Profile.objects.get_or_create(user=self.request.user)
+            
+            # Vérifier les permissions
+            is_creator = group.created_by == profile
+            is_moderator = profile in group.moderators.all()
+            
+            if not (is_creator or is_moderator):
+                raise Http404("You don't have permission to manage this group")
+                
+            context.update({
+                'group': group,
+                'is_creator': is_creator,
+                'is_moderator': is_moderator,
+                'members': group.members.all(),
+                'pending_requests': [],  # TODO: Implémenter les demandes d'adhésion
+                'group_stats': {
+                    'total_messages': group.messages.count() if hasattr(group, 'messages') else 0,
+                    'active_members': group.members.filter(is_online=True).count(),
+                    'total_members': group.members.count(),
+                }
+            })
+            
+        except Group.DoesNotExist:
+            raise Http404("Group not found")
+            
+        return context

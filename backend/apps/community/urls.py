@@ -10,6 +10,8 @@ urlpatterns = [
     path('friends/', views.FriendsListView.as_view(), name='friends'),
     path('friends/requests/', views.FriendRequestsView.as_view(), name='friend_requests'),
     path('groups/', views.GroupsView.as_view(), name='groups'),
+    path('groups/<int:group_id>/', views.GroupDetailView.as_view(), name='group_detail'),
+    path('groups/<int:group_id>/manage/', views.GroupManageView.as_view(), name='group_manage'),
     path('feed/', views.ActivityFeedView.as_view(), name='feed'),
     path('profile/<str:username>/', views.UserProfileView.as_view(), name='user_profile'),
     
@@ -17,6 +19,9 @@ urlpatterns = [
     path('api/send-friend-request/<int:user_id>/', views.send_friend_request, name='send_friend_request'),
     path('api/accept-friend-request/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
     path('api/reject-friend-request/<int:request_id>/', views.reject_friend_request, name='reject_friend_request'),
+    
+    # Group management API endpoints
+    path('api/create-group/', views.create_group, name='create_group'),
     
     # Messaging API endpoints
     path('api/conversations/', api_views.get_conversations, name='get_conversations'),

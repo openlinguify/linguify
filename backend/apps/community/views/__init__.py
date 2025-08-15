@@ -8,11 +8,14 @@ from .community_views import (
     FriendsListView,
     FriendRequestsView,
     GroupsView,
+    GroupDetailView,
+    GroupManageView,
     ActivityFeedView,
     UserProfileView,
     send_friend_request,
     accept_friend_request,
     reject_friend_request,
+    create_group,
 )
 
 __all__ = [
@@ -22,9 +25,12 @@ __all__ = [
     'FriendsListView',
     'FriendRequestsView',
     'GroupsView',
+    'GroupDetailView',
+    'GroupManageView',
     'ActivityFeedView',
     'UserProfileView',
     'send_friend_request',
     'accept_friend_request',
     'reject_friend_request',
+    'create_group',
 ]
