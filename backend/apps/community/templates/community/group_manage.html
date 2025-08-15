@@ -252,6 +252,39 @@
     </div>
 </div>
 
+<!-- Modal de confirmation personnalisé -->
+<div id="confirmModal" class="custom-modal" style="display: none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4><i class="bi bi-exclamation-triangle text-warning me-2"></i>Confirm Action</h4>
+        </div>
+        <div class="modal-body">
+            <p id="confirmMessage">Are you sure you want to delete this group? This action cannot be undone!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="confirmCancel">Cancel</button>
+            <button class="btn-danger" id="confirmOk">Delete Group</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de succès personnalisé -->
+<div id="successModal" class="custom-modal" style="display: none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4><i class="bi bi-check-circle text-success me-2"></i>Success</h4>
+        </div>
+        <div class="modal-body">
+            <p id="successMessage">Action completed successfully!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-gradient" id="successOk">OK</button>
+        </div>
+    </div>
+</div>
+
 <style>
 .manage-content {
     padding: 1.5rem;
@@ -389,6 +422,105 @@
     color: white;
     font-size: 2rem;
 }
+
+/* 🎨 Custom Modals */
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    z-index: 1;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h4 {
+    margin: 0;
+    color: #1f2937;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 1rem 1.5rem;
+}
+
+.modal-body p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+    transform: translateY(-1px);
+}
+
+.text-warning {
+    color: #f59e0b !important;
+}
+
+.text-success {
+    color: #10b981 !important;
+}
 </style>
 
 <script>
@@ -463,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Supprimer le groupe
     {% if is_creator %}
     document.getElementById('deleteGroupBtn').addEventListener('click', function() {
-        if (confirm('{% trans "Are you sure you want to delete this group? This action cannot be undone!" %}')) {
+        showConfirmModal('Are you sure you want to delete this group? This action cannot be undone!', function() {
             fetch('{% url "community:delete_group" group.id %}', {
                 method: 'POST',
                 headers: {
@@ -474,17 +606,18 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
-                    window.location.href = data.redirect_url; // Rediriger vers la liste des groupes
+                    showSuccessModal(data.message, function() {
+                        window.location.href = data.redirect_url; // Rediriger vers la liste des groupes
+                    });
                 } else {
-                    alert('Error: ' + data.error);
+                    showSuccessModal('Error: ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while deleting the group');
+                showSuccessModal('An error occurred while deleting the group');
             });
-        }
+        });
     });
     {% endif %}
 });
@@ -581,6 +714,42 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+// 🎨 Fonctions pour les modals personnalisés
+function showConfirmModal(message, onConfirm) {
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmModal').style.display = 'flex';
+    
+    document.getElementById('confirmOk').onclick = function() {
+        document.getElementById('confirmModal').style.display = 'none';
+        if (onConfirm) onConfirm();
+    };
+    
+    document.getElementById('confirmCancel').onclick = function() {
+        document.getElementById('confirmModal').style.display = 'none';
+    };
+    
+    // Fermer en cliquant sur l'overlay
+    document.querySelector('#confirmModal .modal-overlay').onclick = function() {
+        document.getElementById('confirmModal').style.display = 'none';
+    };
+}
+
+function showSuccessModal(message, onOk) {
+    document.getElementById('successMessage').textContent = message;
+    document.getElementById('successModal').style.display = 'flex';
+    
+    document.getElementById('successOk').onclick = function() {
+        document.getElementById('successModal').style.display = 'none';
+        if (onOk) onOk();
+    };
+    
+    // Fermer en cliquant sur l'overlay
+    document.querySelector('#successModal .modal-overlay').onclick = function() {
+        document.getElementById('successModal').style.display = 'none';
+        if (onOk) onOk();
+    };
 }
 </script>
 {% endblock %}
