@@ -1,3 +1,22 @@
+/* 🎨 Force Linguify colors for dashboard */
+.welcome-banner {
+    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important;
+}
+
+.btn-primary {
+    background: #2D5BBA !important;
+    border-color: #2D5BBA !important;
+}
+
+.btn-primary:hover {
+    background: #1E3A8A !important;
+    border-color: #1E3A8A !important;
+}
+
+.text-primary {
+    color: #2D5BBA !important;
+}
+
 .content-area {
     padding: 2rem;
     max-width: 1400px;
@@ -179,21 +198,34 @@
     margin-bottom: 1rem;
 }
 
+
 .app-card-simple {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    background: transparent;
+    border: none;
     transition: all 0.2s ease;
-    padding: 1.5rem 1rem;
+    padding: 0.5rem;
     text-align: center;
     cursor: pointer;
-    height: 100%;
+    height: auto;
+    display: inline-block;
+    width: auto;
 }
 
 .app-card-simple:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary-color);
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 🎯 Force transparent background for all app card states */
+.app-card-simple, 
+.app-card-simple:hover, 
+.app-card-simple:focus, 
+.app-card-simple:active {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .app-icon-simple {

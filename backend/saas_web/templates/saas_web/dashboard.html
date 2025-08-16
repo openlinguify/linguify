@@ -5,30 +5,6 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'saas_web/css/dashboard.css' %}">
-<style>
-    /* Force Linguify colors for dashboard */
-    .welcome-banner {
-        background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important;
-    }
-    
-    .app-card-simple:hover {
-        border-color: #2D5BBA !important;
-    }
-    
-    .btn-primary {
-        background: #2D5BBA !important;
-        border-color: #2D5BBA !important;
-    }
-    
-    .btn-primary:hover {
-        background: #1E3A8A !important;
-        border-color: #1E3A8A !important;
-    }
-    
-    .text-primary {
-        color: #2D5BBA !important;
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -43,7 +19,7 @@
     {% if installed_apps %}
     <div class="row g-3 mb-5 justify-content-center" id="installedApps">
         {% for app in installed_apps %}
-        <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+        <div class="col-lg-2 col-md-3 col-sm-4 col-6 d-flex justify-content-center">
             <a href="{{ app.url }}" class="text-decoration-none">
                 <div class="app-card-simple">
                     <div class="app-icon-simple" {% if not app.static_icon %}data-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)' }}"{% else %}style="background: transparent; border: 1px solid #e2e8f0;"{% endif %}>
@@ -81,37 +57,4 @@
 
 {% block extra_js %}
 <script src="{% static 'saas_web/js/dashboard.js' %}"></script>
-<script>
-// Force apply Linguify gradients to app icons
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Applying Linguify gradients...');
-    
-    // Apply gradient only to app icons that don't have static images
-    const appIcons = document.querySelectorAll('.app-icon-simple');
-    appIcons.forEach(function(icon) {
-        // Check if this icon has a static image (transparent background)
-        const hasStaticIcon = icon.style.background === 'transparent' || 
-                             icon.style.background.includes('transparent') ||
-                             icon.querySelector('img');
-        
-        if (!hasStaticIcon) {
-            // Only apply gradient if no static icon
-            const customGradient = icon.getAttribute('data-gradient');
-            if (!customGradient || customGradient.includes('#667eea')) {
-                icon.style.background = 'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)';
-                console.log('Applied Linguify gradient to icon without static image');
-            }
-        } else {
-            console.log('Skipped icon with static image');
-        }
-    });
-    
-    // Force welcome banner gradient
-    const welcomeBanner = document.querySelector('.welcome-banner');
-    if (welcomeBanner) {
-        welcomeBanner.style.background = 'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)';
-        console.log('Applied Linguify gradient to welcome banner');
-    }
-});
-</script>
 {% endblock %}

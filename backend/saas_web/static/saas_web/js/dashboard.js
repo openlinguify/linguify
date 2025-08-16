@@ -26,13 +26,35 @@ function initializeChatVariables() {
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize chat variables first
     initializeChatVariables();
-    const appIcons = document.querySelectorAll('.app-icon[data-gradient], .app-icon-simple[data-gradient]');
-    appIcons.forEach(icon => {
-        const gradient = icon.getAttribute('data-gradient');
-        if (gradient) {
-            icon.style.background = gradient;
+    
+    console.log('Applying Linguify gradients...');
+    
+    // Apply gradient only to app icons that don't have static images
+    const appIcons = document.querySelectorAll('.app-icon-simple');
+    appIcons.forEach(function(icon) {
+        // Check if this icon has a static image (transparent background)
+        const hasStaticIcon = icon.style.background === 'transparent' || 
+                             icon.style.background.includes('transparent') ||
+                             icon.querySelector('img');
+        
+        if (!hasStaticIcon) {
+            // Only apply gradient if no static icon
+            const customGradient = icon.getAttribute('data-gradient');
+            if (!customGradient || customGradient.includes('#667eea')) {
+                icon.style.background = 'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)';
+                console.log('Applied Linguify gradient to icon without static image');
+            }
+        } else {
+            console.log('Skipped icon with static image');
         }
     });
+    
+    // Force welcome banner gradient
+    const welcomeBanner = document.querySelector('.welcome-banner');
+    if (welcomeBanner) {
+        welcomeBanner.style.background = 'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)';
+        console.log('Applied Linguify gradient to welcome banner');
+    }
 
     // Handle image fallback for static icons
     const staticIcons = document.querySelectorAll('.app-static-icon');
