@@ -324,3 +324,74 @@
         max-width: 80px;
     }
 }
+
+/* Specific improvements for background text contrast */
+
+/* Enhanced app card visibility on colored backgrounds */
+body.bg-linguify-light .app-card-simple,
+body.bg-linguify-accent .app-card-simple,
+body.bg-linguify-purple .app-card-simple,
+body.bg-warm .app-card-simple,
+body.bg-cool .app-card-simple,
+body.bg-nature .app-card-simple {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+body.bg-dark .app-card-simple,
+body.bg-dark-blue .app-card-simple {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px);
+}
+
+/* Enhanced text contrast on app icons */
+body.bg-dark .app-icon-simple,
+body.bg-dark-blue .app-icon-simple {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Better section titles visibility */
+body.bg-linguify-light .section-title,
+body.bg-linguify-accent .section-title,
+body.bg-linguify-purple .section-title,
+body.bg-warm .section-title,
+body.bg-cool .section-title,
+body.bg-nature .section-title {
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+    font-weight: 700;
+}
+
+body.bg-dark .section-title,
+body.bg-dark-blue .section-title {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+/* Empty state improvements */
+body.bg-dark .empty-state,
+body.bg-dark-blue .empty-state {
+    color: #e2e8f0;
+}
+
+body.bg-dark .empty-state i,
+body.bg-dark-blue .empty-state i {
+    opacity: 0.5;
+}
+
+/* Welcome banner adjustments for different backgrounds */
+body.bg-dark .welcome-banner,
+body.bg-dark-blue .welcome-banner {
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.9) 0%, rgba(0, 212, 170, 0.9) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.bg-linguify-light .welcome-banner,
+body.bg-linguify-accent .welcome-banner,
+body.bg-linguify-purple .welcome-banner {
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.95) 0%, rgba(0, 212, 170, 0.95) 100%) !important;
+    box-shadow: 0 8px 32px rgba(45, 91, 186, 0.2);
+}

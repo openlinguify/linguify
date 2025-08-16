@@ -27,10 +27,27 @@ function loadDashboardBackground() {
     const savedBackground = localStorage.getItem('dashboard_background') || 'default';
     
     const backgroundColors = {
+        // Couleurs neutres
         'default': '#f8fafc',
         'white': '#ffffff',
+        'gray-light': '#f9fafb',
         'gray': '#f3f4f6',
+        
+        // Couleurs Linguify
+        'linguify-light': 'linear-gradient(135deg, #f0f4ff 0%, #e0f2fe 100%)',
+        'linguify-accent': 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+        'linguify-purple': 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)',
+        
+        // Couleurs premium
+        'warm': 'linear-gradient(135deg, #fefbf3 0%, #fef7ed 100%)',
+        'cool': 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+        'nature': 'linear-gradient(135deg, #f7fee7 0%, #ecfccb 100%)',
+        
+        // Mode sombre
         'dark': '#1f2937',
+        'dark-blue': 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+        
+        // Compatibilité ancienne version
         'blue': '#eff6ff',
         'green': '#f0fdf4',
         'purple': '#faf5ff'
@@ -44,6 +61,19 @@ function loadDashboardBackground() {
     if (contentArea) {
         contentArea.style.background = 'transparent';
     }
+    
+    // Remove all background classes first
+    document.body.classList.remove(
+        'bg-default', 'bg-white', 'bg-gray-light', 'bg-gray',
+        'bg-linguify-light', 'bg-linguify-accent', 'bg-linguify-purple',
+        'bg-warm', 'bg-cool', 'bg-nature', 
+        'bg-dark', 'bg-dark-blue',
+        'bg-blue', 'bg-green', 'bg-purple', // compatibility
+        'dark-background' // old class
+    );
+    
+    // Apply specific background class for automatic text color adaptation
+    document.body.classList.add('bg-' + savedBackground);
     
     console.log('[Dashboard] Background applied:', savedBackground, color);
 }

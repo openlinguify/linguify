@@ -59,6 +59,129 @@
             transition: background-color 0.3s ease;
         }
         
+        /* Background-specific text adaptations */
+        
+        /* Dark backgrounds - White text */
+        body.bg-dark,
+        body.bg-dark-blue {
+            color: #f1f5f9;
+        }
+        
+        body.bg-dark .page-title,
+        body.bg-dark .section-title,
+        body.bg-dark h1, body.bg-dark h2, body.bg-dark h3, 
+        body.bg-dark h4, body.bg-dark h5, body.bg-dark h6,
+        body.bg-dark-blue .page-title,
+        body.bg-dark-blue .section-title,
+        body.bg-dark-blue h1, body.bg-dark-blue h2, body.bg-dark-blue h3, 
+        body.bg-dark-blue h4, body.bg-dark-blue h5, body.bg-dark-blue h6 {
+            color: #f1f5f9 !important;
+        }
+        
+        body.bg-dark .app-name-simple,
+        body.bg-dark-blue .app-name-simple {
+            color: #e2e8f0 !important;
+        }
+        
+        /* Light backgrounds with color tints - Darker text for better contrast */
+        body.bg-linguify-light,
+        body.bg-linguify-accent,
+        body.bg-linguify-purple,
+        body.bg-warm,
+        body.bg-cool,
+        body.bg-nature {
+            color: #1f2937;
+        }
+        
+        body.bg-linguify-light .page-title,
+        body.bg-linguify-light .section-title,
+        body.bg-linguify-light h1, body.bg-linguify-light h2, body.bg-linguify-light h3,
+        body.bg-linguify-light h4, body.bg-linguify-light h5, body.bg-linguify-light h6,
+        body.bg-linguify-accent .page-title,
+        body.bg-linguify-accent .section-title,
+        body.bg-linguify-accent h1, body.bg-linguify-accent h2, body.bg-linguify-accent h3,
+        body.bg-linguify-accent h4, body.bg-linguify-accent h5, body.bg-linguify-accent h6,
+        body.bg-linguify-purple .page-title,
+        body.bg-linguify-purple .section-title,
+        body.bg-linguify-purple h1, body.bg-linguify-purple h2, body.bg-linguify-purple h3,
+        body.bg-linguify-purple h4, body.bg-linguify-purple h5, body.bg-linguify-purple h6,
+        body.bg-warm .page-title,
+        body.bg-warm .section-title,
+        body.bg-warm h1, body.bg-warm h2, body.bg-warm h3,
+        body.bg-warm h4, body.bg-warm h5, body.bg-warm h6,
+        body.bg-cool .page-title,
+        body.bg-cool .section-title,
+        body.bg-cool h1, body.bg-cool h2, body.bg-cool h3,
+        body.bg-cool h4, body.bg-cool h5, body.bg-cool h6,
+        body.bg-nature .page-title,
+        body.bg-nature .section-title,
+        body.bg-nature h1, body.bg-nature h2, body.bg-nature h3,
+        body.bg-nature h4, body.bg-nature h5, body.bg-nature h6 {
+            color: #111827 !important;
+        }
+        
+        body.bg-linguify-light .app-name-simple,
+        body.bg-linguify-accent .app-name-simple,
+        body.bg-linguify-purple .app-name-simple,
+        body.bg-warm .app-name-simple,
+        body.bg-cool .app-name-simple,
+        body.bg-nature .app-name-simple {
+            color: #374151 !important;
+        }
+        
+        /* Neutral backgrounds - Standard dark text */
+        body.bg-default,
+        body.bg-white,
+        body.bg-gray-light,
+        body.bg-gray {
+            color: #374151;
+        }
+        
+        body.bg-default .page-title,
+        body.bg-default .section-title,
+        body.bg-default h1, body.bg-default h2, body.bg-default h3,
+        body.bg-default h4, body.bg-default h5, body.bg-default h6,
+        body.bg-white .page-title,
+        body.bg-white .section-title,
+        body.bg-white h1, body.bg-white h2, body.bg-white h3,
+        body.bg-white h4, body.bg-white h5, body.bg-white h6,
+        body.bg-gray-light .page-title,
+        body.bg-gray-light .section-title,
+        body.bg-gray-light h1, body.bg-gray-light h2, body.bg-gray-light h3,
+        body.bg-gray-light h4, body.bg-gray-light h5, body.bg-gray-light h6,
+        body.bg-gray .page-title,
+        body.bg-gray .section-title,
+        body.bg-gray h1, body.bg-gray h2, body.bg-gray h3,
+        body.bg-gray h4, body.bg-gray h5, body.bg-gray h6 {
+            color: #111827 !important;
+        }
+        
+        body.bg-default .app-name-simple,
+        body.bg-white .app-name-simple,
+        body.bg-gray-light .app-name-simple,
+        body.bg-gray .app-name-simple {
+            color: #1e293b !important;
+        }
+        
+        /* Card adjustments for colored backgrounds */
+        body.bg-linguify-light .app-card-simple,
+        body.bg-linguify-accent .app-card-simple,
+        body.bg-linguify-purple .app-card-simple,
+        body.bg-warm .app-card-simple,
+        body.bg-cool .app-card-simple,
+        body.bg-nature .app-card-simple {
+            background: rgba(255, 255, 255, 0.8) !important;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        body.bg-dark .app-card-simple,
+        body.bg-dark-blue .app-card-simple {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
         .main-content {
             min-height: calc(100vh - 70px);
         }
@@ -157,17 +280,48 @@
     (function() {
         const savedBackground = localStorage.getItem('dashboard_background') || 'default';
         const backgroundColors = {
+            // Couleurs neutres
             'default': '#f8fafc',
             'white': '#ffffff',
+            'gray-light': '#f9fafb',
             'gray': '#f3f4f6',
+            
+            // Couleurs Linguify
+            'linguify-light': 'linear-gradient(135deg, #f0f4ff 0%, #e0f2fe 100%)',
+            'linguify-accent': 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+            'linguify-purple': 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)',
+            
+            // Couleurs premium
+            'warm': 'linear-gradient(135deg, #fefbf3 0%, #fef7ed 100%)',
+            'cool': 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+            'nature': 'linear-gradient(135deg, #f7fee7 0%, #ecfccb 100%)',
+            
+            // Mode sombre
             'dark': '#1f2937',
+            'dark-blue': 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+            
+            // Compatibilité ancienne version
             'blue': '#eff6ff',
             'green': '#f0fdf4',
             'purple': '#faf5ff'
         };
+        
         const color = backgroundColors[savedBackground] || backgroundColors['default'];
         document.body.style.background = color;
         document.body.classList.add('dashboard-bg-loaded');
+        
+        // Remove all background classes first
+        document.body.classList.remove(
+            'bg-default', 'bg-white', 'bg-gray-light', 'bg-gray',
+            'bg-linguify-light', 'bg-linguify-accent', 'bg-linguify-purple',
+            'bg-warm', 'bg-cool', 'bg-nature', 
+            'bg-dark', 'bg-dark-blue',
+            'bg-blue', 'bg-green', 'bg-purple', // compatibility
+            'dark-background' // old class
+        );
+        
+        // Apply specific background class for text adaptation
+        document.body.classList.add('bg-' + savedBackground);
     })();
     </script>
     
