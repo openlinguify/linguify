@@ -314,7 +314,7 @@ function setDashboardBackground(backgroundValue) {
     };
     
     const color = backgroundColors[backgroundValue] || backgroundColors['default'];
-    document.body.style.background = color;
+    document.body.style.setProperty('background', color, 'important');
     
     // Also apply to dashboard content area if it exists
     const contentArea = document.querySelector('.content-area');

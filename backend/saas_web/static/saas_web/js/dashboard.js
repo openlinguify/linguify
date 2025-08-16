@@ -54,7 +54,7 @@ function loadDashboardBackground() {
     };
     
     const color = backgroundColors[savedBackground] || backgroundColors['default'];
-    document.body.style.background = color;
+    document.body.style.setProperty('background', color, 'important');
     
     // Also apply to content area if it exists
     const contentArea = document.querySelector('.content-area');

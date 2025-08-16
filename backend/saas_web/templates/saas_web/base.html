@@ -307,7 +307,7 @@
         };
         
         const color = backgroundColors[savedBackground] || backgroundColors['default'];
-        document.body.style.background = color;
+        document.body.style.setProperty('background', color, 'important');
         document.body.classList.add('dashboard-bg-loaded');
         
         // Remove all background classes first
