@@ -212,8 +212,8 @@
                             {% for member in members %}
                             <div class="member-item member-manage">
                                 <div class="member-avatar">
-                                    {% if member.user.profile_picture %}
-                                    <img src="{{ member.user.profile_picture.url }}" alt="{{ member.user.username }}" class="user-avatar-img">
+                                    {% if member.user.get_profile_picture_url %}
+                                    <img src="{{ member.user.get_profile_picture_url }}" alt="{{ member.user.username }}" class="user-avatar-img">
                                     {% elif member.avatar %}
                                     <img src="{{ member.avatar.url }}" alt="{{ member.user.username }}" class="user-avatar-img">
                                     {% else %}

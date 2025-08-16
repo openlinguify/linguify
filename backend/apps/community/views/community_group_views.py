@@ -199,19 +199,12 @@ def send_group_message(request, group_id):
             message=message_text
         )
         
-        # Retourner le message créé avec avatar de l'utilisateur
-        # Priorité: profile_picture du User > avatar du Profile Community > initiales
-        avatar_url = None
-        if group_message.sender.user.profile_picture:
-            avatar_url = group_message.sender.user.profile_picture.url
-        elif group_message.sender.avatar:
+        # Retourner le message créé avec avatar de l'utilisateur (même méthode que le header)
+        # Utiliser get_profile_picture_url qui priorise Supabase puis le stockage local
+        avatar_url = group_message.sender.user.get_profile_picture_url
+        if not avatar_url and group_message.sender.avatar:
             avatar_url = group_message.sender.avatar.url
         
-        # Debug print pour vérifier l'avatar URL
-        print(f"DEBUG: User {group_message.sender.user.username} avatar_url: {avatar_url}")
-        print(f"DEBUG: Has profile_picture: {bool(group_message.sender.user.profile_picture)}")
-        if group_message.sender.user.profile_picture:
-            print(f"DEBUG: Profile picture URL: {group_message.sender.user.profile_picture.url}")
             
         return JsonResponse({
             'success': True,

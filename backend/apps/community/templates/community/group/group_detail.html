@@ -124,8 +124,8 @@
                             {% for message in recent_messages reversed %}
                             <div class="message {% if message.sender.user == user %}message-own{% else %}message-other{% endif %}">
                                 <div class="message-avatar">
-                                    {% if message.sender.user.profile_picture %}
-                                    <img src="{{ message.sender.user.profile_picture.url }}" alt="{{ message.sender.user.username }}" class="user-avatar-img">
+                                    {% if message.sender.user.get_profile_picture_url %}
+                                    <img src="{{ message.sender.user.get_profile_picture_url }}" alt="{{ message.sender.user.username }}" class="user-avatar-img">
                                     {% elif message.sender.avatar %}
                                     <img src="{{ message.sender.avatar.url }}" alt="{{ message.sender.user.username }}" class="user-avatar-img">
                                     {% else %}
@@ -182,8 +182,8 @@
                             {% for member in online_members %}
                             <div class="member-item">
                                 <div class="member-avatar">
-                                    {% if member.user.profile_picture %}
-                                    <img src="{{ member.user.profile_picture.url }}" alt="{{ member.user.username }}" class="user-avatar-img">
+                                    {% if member.user.get_profile_picture_url %}
+                                    <img src="{{ member.user.get_profile_picture_url }}" alt="{{ member.user.username }}" class="user-avatar-img">
                                     {% elif member.avatar %}
                                     <img src="{{ member.avatar.url }}" alt="{{ member.user.username }}" class="user-avatar-img">
                                     {% else %}
@@ -218,8 +218,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Variables pour l'avatar utilisateur - côté Django
-    const currentUserAvatar = `{% if user.profile_picture %}<img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="user-avatar-img">{% else %}{{ user.username.0|upper|default:"U" }}{% endif %}`;
+    // Variables pour l'avatar utilisateur - côté Django (même méthode que le header)
+    const currentUserAvatar = `{% if user.get_profile_picture_url %}<img src="{{ user.get_profile_picture_url }}" alt="{{ user.username }}" class="user-avatar-img">{% else %}{{ user.username.0|upper|default:"U" }}{% endif %}`;
     const currentUserName = `{{ user.get_full_name|default:user.username }}`;
     
     const messageInput = document.getElementById('messageInput');
