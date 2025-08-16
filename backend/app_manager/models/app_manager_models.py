@@ -260,6 +260,13 @@ class UserAppSettings(models.Model):
         help_text="Applications enabled by this user"
     )
     
+    # Custom app order for this user (JSON field)
+    app_order = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Custom order of apps for this user (array of app display names)"
+    )
+    
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -327,6 +334,67 @@ class UserAppSettings(models.Model):
             return True
         except App.DoesNotExist:
             return False
+    
+    def update_app_order(self, app_display_names):
+        """
+        Updates the custom app order for this user
+        
+        Args:
+            app_display_names: List of app display names in desired order
+        
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            # Validate that all provided app names exist and are enabled for this user
+            enabled_app_names = list(self.enabled_apps.values_list('display_name', flat=True))
+            
+            # Filter out any invalid app names
+            valid_app_names = [name for name in app_display_names if name in enabled_app_names]
+            
+            # Add any missing apps that are enabled but not in the provided order
+            missing_apps = [name for name in enabled_app_names if name not in valid_app_names]
+            final_order = valid_app_names + missing_apps
+            
+            self.app_order = final_order
+            self.save(update_fields=['app_order', 'updated_at'])
+            
+            return True
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to update app order: {e}")
+            return False
+    
+    def get_ordered_enabled_apps(self):
+        """
+        Returns enabled apps in the user's custom order
+        
+        Returns:
+            QuerySet: Ordered enabled apps
+        """
+        enabled_apps = self.enabled_apps.filter(is_enabled=True)
+        
+        if not self.app_order:
+            # Return apps in default order (by order field, then name)
+            return enabled_apps.order_by('order', 'display_name')
+        
+        # Create a dictionary for quick lookup
+        apps_dict = {app.display_name: app for app in enabled_apps}
+        
+        # Build ordered list based on saved order
+        ordered_apps = []
+        for app_name in self.app_order:
+            if app_name in apps_dict:
+                ordered_apps.append(apps_dict[app_name])
+                del apps_dict[app_name]  # Remove to avoid duplicates
+        
+        # Add any remaining apps that weren't in the saved order
+        remaining_apps = list(apps_dict.values())
+        remaining_apps.sort(key=lambda x: (x.order, x.display_name))
+        ordered_apps.extend(remaining_apps)
+        
+        return ordered_apps
 
 
 class AppDataRetention(models.Model):

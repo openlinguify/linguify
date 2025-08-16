@@ -419,3 +419,158 @@ body.bg-linguify-purple .welcome-banner {
     background: linear-gradient(135deg, rgba(45, 91, 186, 0.95) 0%, rgba(0, 212, 170, 0.95) 100%) !important;
     box-shadow: 0 8px 32px rgba(45, 91, 186, 0.2);
 }
+
+/* 🎯 Drag & Drop Styles */
+
+/* Draggable cursor and initial state */
+.app-link[draggable="true"] {
+    cursor: grab;
+    user-select: none;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.app-link[draggable="true"]:hover {
+    transform: translateY(-2px);
+}
+
+.app-link[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+.app-link[draggable="true"] .app-card-simple {
+    transition: all 0.2s ease;
+    user-select: none;
+    cursor: grab;
+}
+
+/* Subtle indicator that the item is draggable */
+.app-link[draggable="true"]:hover .app-card-simple {
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.2);
+    border: 1px solid rgba(45, 91, 186, 0.2);
+}
+
+.app-link[draggable="true"]:hover .app-card-simple::after {
+    content: '⋮⋮';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(45, 91, 186, 0.4);
+    font-size: 12px;
+    line-height: 1;
+    font-weight: bold;
+}
+
+/* Dragging state */
+.app-card-simple.dragging {
+    opacity: 0.6;
+    transform: rotate(2deg) scale(0.95);
+    z-index: 1000;
+    cursor: grabbing !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 2px dashed #2D5BBA !important;
+    border-radius: 12px !important;
+}
+
+/* Drop zone highlighting */
+.app-link.drag-over {
+    position: relative;
+}
+
+.app-link.drag-over::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border: 2px dashed #2D5BBA;
+    border-radius: 16px;
+    background: rgba(45, 91, 186, 0.1);
+    animation: dragHighlight 0.5s ease-in-out infinite alternate;
+    z-index: 1;
+}
+
+@keyframes dragHighlight {
+    0% {
+        background: rgba(45, 91, 186, 0.05);
+        border-color: rgba(45, 91, 186, 0.3);
+    }
+    100% {
+        background: rgba(45, 91, 186, 0.15);
+        border-color: rgba(45, 91, 186, 0.6);
+    }
+}
+
+/* Different background adaptations for drag highlights */
+body.bg-dark .app-link.drag-over::before,
+body.bg-dark-blue .app-link.drag-over::before {
+    border-color: #00D4AA;
+    background: rgba(0, 212, 170, 0.1);
+}
+
+@keyframes dragHighlightDark {
+    0% {
+        background: rgba(0, 212, 170, 0.05);
+        border-color: rgba(0, 212, 170, 0.3);
+    }
+    100% {
+        background: rgba(0, 212, 170, 0.15);
+        border-color: rgba(0, 212, 170, 0.6);
+    }
+}
+
+body.bg-dark .app-link.drag-over::before,
+body.bg-dark-blue .app-link.drag-over::before {
+    animation: dragHighlightDark 0.5s ease-in-out infinite alternate;
+}
+
+/* Drag preview ghost image styling */
+.app-card-simple.dragging .app-icon-simple {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.app-card-simple.dragging .app-name-simple {
+    color: #64748b;
+}
+
+/* Smooth transitions for reordering */
+.app-link {
+    transition: transform 0.2s ease;
+}
+
+/* Visual feedback for drag start */
+.apps-grid-container.drag-active {
+    background: rgba(45, 91, 186, 0.02);
+    border-radius: 16px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+/* Mobile drag adjustments */
+@media (max-width: 768px) {
+    .app-link.drag-over::before {
+        top: -8px;
+        left: -8px;
+        right: -8px;
+        bottom: -8px;
+        border-width: 2px;
+    }
+    
+    .app-card-simple.dragging {
+        transform: rotate(3deg) scale(0.9);
+    }
+}
+
+/* Touch device drag improvements */
+@media (pointer: coarse) {
+    .app-card-simple[draggable="true"] {
+        cursor: default;
+    }
+    
+    .app-link.drag-over::before {
+        border-width: 3px;
+        animation-duration: 0.3s;
+    }
+}
