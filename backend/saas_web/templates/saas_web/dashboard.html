@@ -17,25 +17,23 @@
     <!-- Installed Apps Section -->
 
     {% if installed_apps %}
-    <div class="row g-3 mb-5 justify-content-center" id="installedApps">
+    <div class="apps-grid-container" id="installedApps">
         {% for app in installed_apps %}
-        <div class="col-lg-2 col-md-3 col-sm-4 col-6 d-flex justify-content-center">
-            <a href="{{ app.url }}" class="text-decoration-none">
-                <div class="app-card-simple">
-                    <div class="app-icon-simple" {% if not app.static_icon %}data-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)' }}"{% else %}style="background: transparent; border: 1px solid #e2e8f0;"{% endif %}>
-                        {% if app.static_icon %}
-                        <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon"
-                            style="width: 48px; height: 48px; object-fit: cover; border-radius: 10px;"
-                            class="app-static-icon" data-fallback-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)' }}" data-fallback-icon="{{ app.icon|default:'bi-app' }}">
-                        <i class="bi {{ app.icon|default:'bi-app' }}" style="display: none; color: white;"></i>
-                        {% else %}
-                        <i class="bi {{ app.icon|default:'bi-app' }}" style="color: white;"></i>
-                        {% endif %}
-                    </div>
-                    <h6 class="app-name-simple">{{ app.display_name|default:app.name }}</h6>
+        <a href="{{ app.url }}" class="text-decoration-none app-link">
+            <div class="app-card-simple">
+                <div class="app-icon-simple" {% if not app.static_icon %}data-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)' }}"{% else %}style="background: transparent; border: 1px solid #e2e8f0;"{% endif %}>
+                    {% if app.static_icon %}
+                    <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon"
+                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 10px;"
+                        class="app-static-icon" data-fallback-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)' }}" data-fallback-icon="{{ app.icon|default:'bi-app' }}">
+                    <i class="bi {{ app.icon|default:'bi-app' }}" style="display: none; color: white;"></i>
+                    {% else %}
+                    <i class="bi {{ app.icon|default:'bi-app' }}" style="color: white;"></i>
+                    {% endif %}
                 </div>
-            </a>
-        </div>
+                <h6 class="app-name-simple">{{ app.display_name|default:app.name }}</h6>
+            </div>
+        </a>
         {% endfor %}
     </div>
     {% else %}
