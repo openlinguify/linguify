@@ -27,9 +27,9 @@ class UserAppService:
         """
         user_settings, created = UserAppSettings.objects.get_or_create(user=user)
         
-        # If user has no apps enabled, enable some default featured apps
+        # If user has no apps enabled, enable some default apps
         if created or user_settings.enabled_apps.count() == 0:
-            default_apps = App.objects.filter(is_published=True, is_featured=True)[:3]
+            default_apps = App.objects.filter(is_enabled=True, installable=True)[:3]
             if default_apps.exists():
                 user_settings.enabled_apps.set(default_apps)
                 logger.info(f"Enabled {default_apps.count()} default apps for user {user.id}")
@@ -113,7 +113,7 @@ class UserAppService:
                     
                     for rec_app_code in recommendations:
                         try:
-                            rec_app = App.objects.get(code=rec_app_code, is_published=True)
+                            rec_app = App.objects.get(code=rec_app_code, is_enabled=True)
                             app_recommendations.append({
                                 'display_name': rec_app.display_name,
                                 'description': rec_app.description[:100] + '...' if rec_app.description else '',
