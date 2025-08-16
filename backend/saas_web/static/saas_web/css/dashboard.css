@@ -327,7 +327,30 @@
 
 /* Specific improvements for background text contrast */
 
-/* Enhanced app card visibility on colored backgrounds */
+/* Enhanced app card visibility on ALL backgrounds */
+
+/* Neutral backgrounds - Minimal card distinction for consistency */
+body.bg-default .app-card-simple,
+body.bg-gray-light .app-card-simple,
+body.bg-gray .app-card-simple {
+    background: rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    backdrop-filter: blur(3px);
+}
+
+/* Pure white background - Completely transparent cards for perfect blend */
+body.bg-white .app-card-simple,
+body.bg-white .app-card-simple:hover,
+body.bg-white .app-card-simple:focus,
+body.bg-white .app-card-simple:active {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+}
+
+/* Colored backgrounds - Higher contrast cards */
 body.bg-linguify-light .app-card-simple,
 body.bg-linguify-accent .app-card-simple,
 body.bg-linguify-purple .app-card-simple,
@@ -340,6 +363,7 @@ body.bg-nature .app-card-simple {
     backdrop-filter: blur(10px);
 }
 
+/* Dark backgrounds - Translucent cards */
 body.bg-dark .app-card-simple,
 body.bg-dark-blue .app-card-simple {
     background: rgba(255, 255, 255, 0.1) !important;

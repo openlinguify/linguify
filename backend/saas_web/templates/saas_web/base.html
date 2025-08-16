@@ -163,7 +163,30 @@
             color: #1e293b !important;
         }
         
-        /* Card adjustments for colored backgrounds */
+        /* Card adjustments for all backgrounds */
+        
+        /* Pure white background - Invisible cards */
+        body.bg-white .app-card-simple,
+        body.bg-white .app-card-simple:hover,
+        body.bg-white .app-card-simple:focus,
+        body.bg-white .app-card-simple:active {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            border-radius: 12px;
+        }
+        
+        /* Neutral backgrounds */
+        body.bg-default .app-card-simple,
+        body.bg-gray-light .app-card-simple,
+        body.bg-gray .app-card-simple {
+            background: rgba(255, 255, 255, 0.4) !important;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Colored backgrounds */
         body.bg-linguify-light .app-card-simple,
         body.bg-linguify-accent .app-card-simple,
         body.bg-linguify-purple .app-card-simple,
@@ -175,6 +198,7 @@
             backdrop-filter: blur(10px);
         }
         
+        /* Dark backgrounds */
         body.bg-dark .app-card-simple,
         body.bg-dark-blue .app-card-simple {
             background: rgba(0, 0, 0, 0.3) !important;
