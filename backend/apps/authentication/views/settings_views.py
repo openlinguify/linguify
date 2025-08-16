@@ -43,10 +43,6 @@ class UserSettingsView(View):
             # Get dynamic settings tabs and categories (filtered by user activation)
             settings_categories, settings_tabs = AppSettingsService.get_all_settings_tabs(user=request.user)
             
-            # DEBUG: Force add all missing tabs and categories
-            logger.info(f"DEBUG: Current categories: {list(settings_categories.keys())}")
-            logger.info(f"DEBUG: Current tabs: {[tab.get('id') for tab in settings_tabs]}")
-            
             # Ensure all basic categories exist
             if 'interface' not in settings_categories:
                 settings_categories['interface'] = {
@@ -94,8 +90,6 @@ class UserSettingsView(View):
                 settings_tabs.append(revision_tab)
                 settings_categories['applications']['tabs'].append(revision_tab)
             
-            logger.info(f"DEBUG: After adding - Categories: {list(settings_categories.keys())}")
-            logger.info(f"DEBUG: After adding - Tabs: {[tab.get('id') for tab in settings_tabs]}")
             
             # Mark the profile tab as active by default (since this is the main settings view)
             for tab in settings_tabs:
@@ -173,10 +167,8 @@ class UserSettingsView(View):
         """Handle settings updates with auto-save support"""
         setting_type = request.POST.get('setting_type')
         
-        # Debug logging
-        logger.info(f"UserSettingsView POST - setting_type: {setting_type}")
-        logger.info(f"UserSettingsView POST - POST data: {dict(request.POST)}")
-        logger.info(f"UserSettingsView POST - FILES: {list(request.FILES.keys())}")
+        # Log only the setting type for debugging
+        logger.debug(f"UserSettingsView POST - setting_type: {setting_type}")
         
         # Check if it's an AJAX request for auto-save
         is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
@@ -185,23 +177,72 @@ class UserSettingsView(View):
         if (request.FILES.get('profile_picture') or 
             any(key.startswith('profile_') for key in request.POST.keys()) or 
             setting_type == 'profile'):
-            logger.info("Delegating to ProfileSettingsView")
+            logger.debug("Delegating to ProfileSettingsView")
             # Delegate to ProfileSettingsView
             view = ProfileSettingsView()
             view.request = request
             return view.post(request)
         elif setting_type == 'general':
-            logger.info("Delegating to GeneralSettingsView")
+            logger.debug("Delegating to GeneralSettingsView")
             # Delegate to GeneralSettingsView
             view = GeneralSettingsView()
             view.request = request
             return view.post(request)
         elif setting_type == 'privacy':
-            logger.info("Delegating to PrivacySettingsView")
+            logger.debug("Delegating to PrivacySettingsView")
             # Delegate to PrivacySettingsView
             view = PrivacySettingsView()
             view.request = request
             return view.post(request)
+        elif setting_type == 'audio':
+            logger.debug("Delegating to revision audio settings")
+            # Delegate to revision audio settings via API
+            from apps.revision.views.revision_settings_views import RevisionSettingsViewSet
+            
+            try:
+                # Transform POST data to match the revision API format
+                audio_data = {
+                    'audio_enabled': request.POST.get('audio_enabled') == 'on',
+                    'audio_speed': float(request.POST.get('audio_speed', 1.0)),
+                    'preferred_gender_french': request.POST.get('preferred_gender_french', 'female'),
+                    'preferred_gender_english': request.POST.get('preferred_gender_english', 'female'),
+                    'preferred_gender_spanish': request.POST.get('preferred_gender_spanish', 'female'),
+                    'preferred_gender_italian': request.POST.get('preferred_gender_italian', 'female'),
+                    'preferred_gender_german': request.POST.get('preferred_gender_german', 'female'),
+                }
+                
+                # Create a temporary request for the revision viewset
+                from django.test import RequestFactory
+                factory = RequestFactory()
+                revision_request = factory.post('/api/v1/revision/user-settings/', data=audio_data)
+                revision_request.user = request.user
+                revision_request.META = request.META
+                
+                # Call the revision settings update
+                viewset = RevisionSettingsViewSet()
+                viewset.request = revision_request
+                viewset.format_kwarg = None
+                
+                # Update the settings
+                response = viewset.update_user_settings(revision_request)
+                
+                if hasattr(response, 'data') and response.data.get('success', False):
+                    return JsonResponse({
+                        'success': True,
+                        'message': 'Paramètres audio mis à jour avec succès'
+                    })
+                else:
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'Erreur lors de la mise à jour des paramètres audio'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                    
+            except Exception as e:
+                logger.error(f"Error updating audio settings: {e}")
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Erreur lors de la mise à jour: {str(e)}'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             logger.error(f"Unknown setting_type: {setting_type}")
             return JsonResponse({
