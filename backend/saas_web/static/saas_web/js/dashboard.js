@@ -22,10 +22,39 @@ function initializeChatVariables() {
     }
 }
 
+// Load and apply saved dashboard background
+function loadDashboardBackground() {
+    const savedBackground = localStorage.getItem('dashboard_background') || 'default';
+    
+    const backgroundColors = {
+        'default': '#f8fafc',
+        'white': '#ffffff',
+        'gray': '#f3f4f6',
+        'dark': '#1f2937',
+        'blue': '#eff6ff',
+        'green': '#f0fdf4',
+        'purple': '#faf5ff'
+    };
+    
+    const color = backgroundColors[savedBackground] || backgroundColors['default'];
+    document.body.style.background = color;
+    
+    // Also apply to content area if it exists
+    const contentArea = document.querySelector('.content-area');
+    if (contentArea) {
+        contentArea.style.background = 'transparent';
+    }
+    
+    console.log('[Dashboard] Background applied:', savedBackground, color);
+}
+
 // Apply app icon gradients from data attributes
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize chat variables first
     initializeChatVariables();
+    
+    // Load dashboard background
+    loadDashboardBackground();
     
     console.log('Applying Linguify gradients...');
     

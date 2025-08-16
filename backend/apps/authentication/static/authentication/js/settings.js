@@ -188,6 +188,70 @@ async function deleteAccount() {
     }
 }
 
+// Dashboard background handling
+function initDashboardBackgroundOptions() {
+    const backgroundOptions = document.querySelectorAll('.background-option');
+    const hiddenInput = document.getElementById('dashboard-background-input');
+    
+    // Load saved background from localStorage or default
+    const savedBackground = localStorage.getItem('dashboard_background') || 'default';
+    setDashboardBackground(savedBackground);
+    
+    // Set active option based on saved value
+    backgroundOptions.forEach(option => {
+        option.classList.remove('active');
+        if (option.dataset.background === savedBackground) {
+            option.classList.add('active');
+        }
+    });
+    
+    // Add click handlers
+    backgroundOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            const backgroundValue = option.dataset.background;
+            
+            // Update UI
+            backgroundOptions.forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+            
+            // Update hidden input
+            if (hiddenInput) {
+                hiddenInput.value = backgroundValue;
+            }
+            
+            // Apply background immediately
+            setDashboardBackground(backgroundValue);
+            
+            // Save to localStorage
+            localStorage.setItem('dashboard_background', backgroundValue);
+            
+            // Show success message
+            showTemporaryMessage('Arrière-plan du dashboard modifié avec succès', 'success');
+        });
+    });
+}
+
+function setDashboardBackground(backgroundValue) {
+    const backgroundColors = {
+        'default': '#f8fafc',
+        'white': '#ffffff',
+        'gray': '#f3f4f6',
+        'dark': '#1f2937',
+        'blue': '#eff6ff',
+        'green': '#f0fdf4',
+        'purple': '#faf5ff'
+    };
+    
+    const color = backgroundColors[backgroundValue] || backgroundColors['default'];
+    document.body.style.background = color;
+    
+    // Also apply to dashboard content area if it exists
+    const contentArea = document.querySelector('.content-area');
+    if (contentArea) {
+        contentArea.style.background = 'transparent';
+    }
+}
+
 // Initialize authentication settings
 document.addEventListener('DOMContentLoaded', () => {
     console.log('[Authentication Settings] Initializing...');
@@ -197,6 +261,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (profilePictureInput) {
         profilePictureInput.addEventListener('change', validateProfilePicture);
     }
+    
+    // Setup dashboard background options
+    initDashboardBackgroundOptions();
     
     console.log('[Authentication Settings] Initialized successfully');
 });
