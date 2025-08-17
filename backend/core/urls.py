@@ -84,6 +84,7 @@ urlpatterns = [
     path('revision/', include('apps.revision.urls_web', namespace='revision_web')),
     path('learning/', include('apps.course.urls', namespace='course')),
     path('quizz/', include('apps.quizz.urls_web', namespace='quizz_web')),
+    path('todo/', include('apps.todo.urls_web', namespace='todo_web')),
     path('language_ai/', include('apps.language_ai.urls_web', namespace='language_ai_web')),
     path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
@@ -97,6 +98,7 @@ urlpatterns = [
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     # path('api/v1/course/', include('apps.course.api.urls', namespace='course_api')),  # TODO: Create course API URLs
     path('api/v1/quizz/', include('apps.quizz.urls', namespace='quizz')),
+    path('api/v1/todo/', include('apps.todo.urls', namespace='todo')),
     
     # Compatibility redirect for old /course/ URL
     path('course/', RedirectView.as_view(url='/learning/', permanent=True)),

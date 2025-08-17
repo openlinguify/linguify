@@ -114,6 +114,7 @@ INSTALLED_APPS = [
     # New apps for marketplace
     # 'apps.learning',  # Fusionné dans apps.course (Learning Platform)
     'apps.teaching',
+    'apps.todo',
     'apps.cms_sync',
     
     # Web interfaces

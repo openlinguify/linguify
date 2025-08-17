@@ -1,0 +1,467 @@
+{% extends 'public_web/public_base.html' %}
+{% load static %}
+{% load app_tags %}
+{% load i18n %}
+
+{% block title %}{% trans "Todo & Productivity" %} - Open Linguify{% endblock %}
+
+{% block meta_description %}{% trans "Organize your tasks and ideas like Notion with our powerful productivity app. Task management, note-taking, projects, kanban boards and more." %}{% endblock %}
+
+{% block meta_keywords %}{% trans "todo app, task management, productivity, notion alternative, project management, note taking, kanban board, open source" %}{% endblock %}
+
+{% block og_title %}{% trans "Todo & Productivity - Task Management Like Notion" %}{% endblock %}
+
+{% block og_description %}{% trans "Powerful productivity app with task management, note-taking, projects, kanban boards. Organize everything in one place like Notion." %}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section hero-gradient">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="app-icon-large mb-4">
+                    <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo & Productivity" class="img-fluid">
+                </div>
+                <h1 class="display-4 fw-bold mb-4">
+                    {% trans "Todo & Productivity" %}
+                </h1>
+                <p class="lead mb-4">
+                    {% trans "Organize your tasks, projects, and ideas like Notion. A complete productivity workspace with kanban boards, note-taking, project management and more." %}
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{% backend_url '/todo/' %}" class="btn btn-light btn-lg">
+                        <i class="bi bi-check2-square me-2"></i>{% trans "Start Organizing" %}
+                    </a>
+                    {% if not user.is_authenticated %}
+                        <a href="{% backend_url '/auth/register/' %}" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>{% trans "Sign Up Free" %}
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <!-- App Status Badge -->
+                <div class="mt-4">
+                    <span class="badge bg-success px-3 py-2">
+                        <i class="bi bi-check-circle me-1"></i>{% trans "Production Ready" %}
+                    </span>
+                    <span class="badge bg-primary px-3 py-2">
+                        <i class="bi bi-code-square me-1"></i>{% trans "Open Source" %}
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image">
+                    <div class="app-preview">
+                        <!-- Todo App Preview -->
+                        <div class="mock-browser">
+                            <div class="browser-header">
+                                <div class="browser-dots">
+                                    <span class="dot red"></span>
+                                    <span class="dot yellow"></span>
+                                    <span class="dot green"></span>
+                                </div>
+                                <div class="browser-title">Todo & Productivity</div>
+                            </div>
+                            <div class="browser-content p-0">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 300px; display: flex; align-items: center; justify-content: center;">
+                                    <div class="text-center text-white">
+                                        <i class="bi bi-kanban" style="font-size: 4rem; opacity: 0.8;"></i>
+                                        <h4 class="mt-3">{% trans "Powerful Task Management" %}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">{% trans "Everything You Need for Productivity" %}</h2>
+            <p class="lead text-muted">{% trans "A complete workspace to organize your tasks, projects, and ideas" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-list-task"></i>
+                    </div>
+                    <h3>{% trans "Smart Task Management" %}</h3>
+                    <p>{% trans "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive." %}</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-kanban"></i>
+                    </div>
+                    <h3>{% trans "Kanban Boards" %}</h3>
+                    <p>{% trans "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress." %}</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-folder"></i>
+                    </div>
+                    <h3>{% trans "Project Organization" %}</h3>
+                    <p>{% trans "Group related tasks into projects with progress tracking, deadlines, and team collaboration features." %}</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                    <h3>{% trans "Rich Note-Taking" %}</h3>
+                    <p>{% trans "Take notes with markdown support, attach them to tasks or projects, and organize with tags and categories." %}</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+                    <h3>{% trans "Calendar Integration" %}</h3>
+                    <p>{% trans "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines." %}</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-bell"></i>
+                    </div>
+                    <h3>{% trans "Smart Reminders" %}</h3>
+                    <p>{% trans "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track." %}</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-tags"></i>
+                    </div>
+                    <h3>{% trans "Tags & Categories" %}</h3>
+                    <p>{% trans "Organize tasks and notes with flexible tagging system and categories for better organization and filtering." %}</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <h3>{% trans "Analytics Dashboard" %}</h3>
+                    <p>{% trans "Track your productivity with detailed analytics, completion rates, and progress insights." %}</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h3>{% trans "Team Collaboration" %}</h3>
+                    <p>{% trans "Share projects and tasks with team members. Collaborate on shared workspaces and track team progress." %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Use Cases Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">{% trans "Perfect For Every Use Case" %}</h2>
+            <p class="lead text-muted">{% trans "Whether you're a student, professional, or team leader" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="bi bi-mortarboard"></i>
+                    </div>
+                    <h4>{% trans "Students" %}</h4>
+                    <p>{% trans "Organize assignments, track study progress, manage course projects, and plan your academic schedule." %}</p>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Assignment tracking" %}</li>
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Study planning" %}</li>
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Course organization" %}</li>
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Research notes" %}</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h4>{% trans "Professionals" %}</h4>
+                    <p>{% trans "Manage work projects, track deadlines, organize meeting notes, and boost your productivity." %}</p>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Project management" %}</li>
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Deadline tracking" %}</li>
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Meeting notes" %}</li>
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Goal setting" %}</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h4>{% trans "Teams" %}</h4>
+                    <p>{% trans "Collaborate on shared projects, assign tasks to team members, and track collective progress." %}</p>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Shared workspaces" %}</li>
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Task assignment" %}</li>
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Progress tracking" %}</li>
+                        <li><i class="bi bi-check text-success me-2"></i>{% trans "Team analytics" %}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Getting Started Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">{% trans "Get Started in Minutes" %}</h2>
+            <p class="lead text-muted">{% trans "Simple setup process to get you organized right away" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="text-center">
+                    <div class="step-number">1</div>
+                    <h4>{% trans "Create Account" %}</h4>
+                    <p>{% trans "Sign up for free and access the todo app from your dashboard." %}</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="text-center">
+                    <div class="step-number">2</div>
+                    <h4>{% trans "Set Up Projects" %}</h4>
+                    <p>{% trans "Create your first project and organize tasks by categories and priorities." %}</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="text-center">
+                    <div class="step-number">3</div>
+                    <h4>{% trans "Start Organizing" %}</h4>
+                    <p>{% trans "Add tasks, set deadlines, take notes, and watch your productivity soar." %}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% backend_url '/todo/' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-rocket me-2"></i>{% trans "Launch Todo App" %}
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Integration Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">{% trans "Seamless Integration" %}</h2>
+            <p class="lead text-muted">{% trans "Works perfectly with other Open Linguify apps" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="integration-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{% static 'img/app_icon/revision.png' %}" alt="Revision" class="integration-icon me-3">
+                        <div>
+                            <h5>{% trans "Revision & Flashcards" %}</h5>
+                            <p class="text-muted mb-0">{% trans "Create study tasks for flashcard reviews" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="integration-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{% static 'img/app_icon/course.png' %}" alt="Courses" class="integration-icon me-3">
+                        <div>
+                            <h5>{% trans "Learning Platform" %}</h5>
+                            <p class="text-muted mb-0">{% trans "Convert course assignments to tasks" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="integration-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{% static 'img/app_icon/community.png' %}" alt="Community" class="integration-icon me-3">
+                        <div>
+                            <h5>{% trans "Community" %}</h5>
+                            <p class="text-muted mb-0">{% trans "Collaborative project management" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="integration-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" class="integration-icon me-3">
+                        <div>
+                            <h5>{% trans "Notebook" %}</h5>
+                            <p class="text-muted mb-0">{% trans "Link notes to tasks and projects" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">{% trans "Ready to Get Organized?" %}</h2>
+        <p class="lead mb-4">{% trans "Join thousands of users who have transformed their productivity with our todo app." %}</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="{% backend_url '/todo/' %}" class="btn btn-light btn-lg">
+                <i class="bi bi-check2-square me-2"></i>{% trans "Start Now - It's Free" %}
+            </a>
+            <a href="{% url 'public_web:apps' %}" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-grid-3x3-gap me-2"></i>{% trans "Explore All Apps" %}
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.app-icon-large img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.app-preview {
+    position: relative;
+    transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+    transition: transform 0.3s ease;
+}
+
+.app-preview:hover {
+    transform: perspective(1000px) rotateY(-10deg) rotateX(2deg);
+}
+
+.mock-browser {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.browser-header {
+    background: #f5f5f5;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.browser-dots {
+    display: flex;
+    gap: 6px;
+    margin-right: 16px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.dot.red { background: #ff5f57; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #28ca42; }
+
+.browser-title {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.use-case-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.use-case-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--bs-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.use-case-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: var(--bs-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.integration-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.integration-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,235 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Todo & Productivity" %} - {% trans "Organize your tasks like Notion" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'todo/css/todo.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block content %}
+<div class="todo-app" id="todoApp">
+    <!-- Sidebar Navigation -->
+    <div class="todo-sidebar">
+        <div class="mb-4">
+            <h4 class="text-primary">
+                <i class="bi bi-check2-square me-2"></i>
+                {% trans "Todo & Productivity" %}
+            </h4>
+            <p class="text-muted small">{% trans "Organize like Notion" %}</p>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="todo-nav">
+            <a href="#" class="todo-nav-item active" data-nav="dashboard">
+                <i class="bi bi-speedometer2"></i>
+                {% trans "Dashboard" %}
+            </a>
+            
+            <a href="#" class="todo-nav-item" data-nav="tasks">
+                <i class="bi bi-list-task"></i>
+                {% trans "Tasks" %}
+                <span class="todo-nav-badge" id="taskCount">0</span>
+            </a>
+            
+            <a href="#" class="todo-nav-item" data-nav="projects">
+                <i class="bi bi-folder"></i>
+                {% trans "Projects" %}
+                <span class="todo-nav-badge" id="projectCount">0</span>
+            </a>
+            
+            <a href="#" class="todo-nav-item" data-nav="notes">
+                <i class="bi bi-journal-text"></i>
+                {% trans "Notes" %}
+                <span class="todo-nav-badge" id="noteCount">0</span>
+            </a>
+            
+            <a href="#" class="todo-nav-item" data-nav="calendar">
+                <i class="bi bi-calendar3"></i>
+                {% trans "Calendar" %}
+            </a>
+            
+            <a href="#" class="todo-nav-item" data-nav="kanban">
+                <i class="bi bi-kanban"></i>
+                {% trans "Kanban Board" %}
+            </a>
+
+            <hr class="my-3">
+
+            <!-- Quick Filters -->
+            <div class="mb-3">
+                <h6 class="text-muted small text-uppercase">{% trans "Quick Filters" %}</h6>
+            </div>
+            
+            <a href="#" class="todo-nav-item" data-nav="tasks" data-filter="due_today">
+                <i class="bi bi-calendar-day"></i>
+                {% trans "Due Today" %}
+                <span class="todo-nav-badge" id="dueTodayCount">0</span>
+            </a>
+            
+            <a href="#" class="todo-nav-item" data-nav="tasks" data-filter="overdue">
+                <i class="bi bi-exclamation-triangle"></i>
+                {% trans "Overdue" %}
+                <span class="todo-nav-badge bg-danger" id="overdueCount">0</span>
+            </a>
+            
+            <a href="#" class="todo-nav-item" data-nav="tasks" data-filter="important">
+                <i class="bi bi-star"></i>
+                {% trans "Important" %}
+                <span class="todo-nav-badge" id="importantCount">0</span>
+            </a>
+            
+            <a href="#" class="todo-nav-item" data-nav="tasks" data-filter="completed">
+                <i class="bi bi-check-all"></i>
+                {% trans "Completed" %}
+                <span class="todo-nav-badge bg-success" id="completedCount">0</span>
+            </a>
+
+            <hr class="my-3">
+
+            <!-- Categories & Tags -->
+            <div class="mb-3">
+                <h6 class="text-muted small text-uppercase d-flex justify-content-between align-items-center">
+                    {% trans "Categories" %}
+                    <button class="btn btn-sm btn-outline-primary" onclick="todoApp.showCategoryForm()">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </h6>
+            </div>
+            
+            <div id="categoriesList">
+                <!-- Categories will be loaded here -->
+            </div>
+
+            <div class="mb-3 mt-4">
+                <h6 class="text-muted small text-uppercase d-flex justify-content-between align-items-center">
+                    {% trans "Tags" %}
+                    <button class="btn btn-sm btn-outline-primary" onclick="todoApp.showTagForm()">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </h6>
+            </div>
+            
+            <div id="tagsList">
+                <!-- Popular tags will be loaded here -->
+            </div>
+        </nav>
+
+        <!-- Settings & User -->
+        <div class="mt-auto pt-4">
+            <hr>
+            <a href="#" class="todo-nav-item" onclick="todoApp.showSettings()">
+                <i class="bi bi-gear"></i>
+                {% trans "Settings" %}
+            </a>
+            
+            <a href="#" class="todo-nav-item" onclick="todoApp.showHelp()">
+                <i class="bi bi-question-circle"></i>
+                {% trans "Help" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="todo-main">
+        <!-- Content will be loaded here dynamically -->
+        <div class="todo-loading">
+            <div class="todo-spinner"></div>
+            <p>{% trans "Loading..." %}</p>
+        </div>
+    </div>
+
+    <!-- Quick Add Button -->
+    <button class="todo-quick-add" title="{% trans 'Quick Add (Ctrl+Enter)' %}">
+        <i class="bi bi-plus"></i>
+    </button>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="btn btn-primary d-md-none position-fixed" 
+            style="top: 1rem; left: 1rem; z-index: 1001;"
+            onclick="document.querySelector('.todo-sidebar').classList.toggle('open')">
+        <i class="bi bi-list"></i>
+    </button>
+</div>
+
+<!-- Modals and Forms will be added here -->
+<div id="todoModals">
+    <!-- Dynamic modals will be inserted here -->
+</div>
+
+<!-- CSRF Token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'todo/js/todo.js' %}"></script>
+<script>
+// Translations for JavaScript
+window.todoTranslations = {
+    'loading': '{% trans "Loading..." %}',
+    'error': '{% trans "An error occurred" %}',
+    'success': '{% trans "Success!" %}',
+    'confirm_delete': '{% trans "Are you sure you want to delete this item?" %}',
+    'task_completed': '{% trans "Task marked as completed!" %}',
+    'task_created': '{% trans "Task created successfully!" %}',
+    'project_created': '{% trans "Project created successfully!" %}',
+    'settings_saved': '{% trans "Settings saved successfully!" %}',
+    'due_today': '{% trans "Due Today" %}',
+    'overdue': '{% trans "Overdue" %}',
+    'completed': '{% trans "Completed" %}',
+    'in_progress': '{% trans "In Progress" %}',
+    'todo': '{% trans "To Do" %}',
+    'high_priority': '{% trans "High Priority" %}',
+    'medium_priority': '{% trans "Medium Priority" %}',
+    'low_priority': '{% trans "Low Priority" %}',
+    'urgent_priority': '{% trans "Urgent Priority" %}',
+    'no_tasks': '{% trans "No tasks found" %}',
+    'no_projects': '{% trans "No projects found" %}',
+    'no_notes': '{% trans "No notes found" %}',
+    'search_placeholder': '{% trans "Search tasks, projects, notes..." %}',
+    'quick_add_placeholder': '{% trans "What needs to be done?" %}',
+    'new_task': '{% trans "New Task" %}',
+    'new_project': '{% trans "New Project" %}',
+    'new_note': '{% trans "New Note" %}',
+    'edit_task': '{% trans "Edit Task" %}',
+    'edit_project': '{% trans "Edit Project" %}',
+    'edit_note': '{% trans "Edit Note" %}',
+    'delete': '{% trans "Delete" %}',
+    'cancel': '{% trans "Cancel" %}',
+    'save': '{% trans "Save" %}',
+    'create': '{% trans "Create" %}',
+    'update': '{% trans "Update" %}',
+};
+
+// User preferences from server
+window.todoUserSettings = {
+    theme: '{{ user.todo_settings.theme|default:"auto" }}',
+    language: '{{ LANGUAGE_CODE }}',
+    timezone: '{{ TIME_ZONE }}',
+    date_format: '{{ user.todo_settings.date_format|default:"MMM DD, YYYY" }}',
+    time_format: '{{ user.todo_settings.time_format|default:"12" }}',
+    first_day_of_week: {{ user.todo_settings.first_day_of_week|default:0 }},
+    enable_sounds: {{ user.todo_settings.enable_sounds|yesno:"true,false" }},
+    enable_animations: {{ user.todo_settings.enable_animations|yesno:"true,false" }},
+    default_reminder: {{ user.todo_settings.default_reminder_minutes|default:15 }},
+    pomodoro_duration: {{ user.todo_settings.pomodoro_duration|default:25 }},
+    break_duration: {{ user.todo_settings.break_duration|default:5 }},
+};
+
+// API endpoints
+window.todoAPIEndpoints = {
+    tasks: '{% url "todo:task-list" %}',
+    projects: '{% url "todo:project-list" %}',
+    notes: '{% url "todo:note-list" %}',
+    categories: '{% url "todo:category-list" %}',
+    tags: '{% url "todo:tag-list" %}',
+    reminders: '{% url "todo:reminder-list" %}',
+    templates: '{% url "todo:template-list" %}',
+    dashboard: '{% url "todo:dashboard" %}',
+    settings: '{% url "todo:settings" %}',
+    preferences: '{% url "todo:preferences" %}',
+};
+</script>
+{% endblock %}
