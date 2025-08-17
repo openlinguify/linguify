@@ -8,7 +8,7 @@ This module provides comprehensive task management, note-taking, and productivit
 """
 
 __manifest__ = {
-    'name': 'Todo & Productivity',
+    'name': 'To-do',
     'version': '1.0.0',
     'category': 'Productivity',
     'summary': 'Organisez vos tâches et idées comme dans Notion',
