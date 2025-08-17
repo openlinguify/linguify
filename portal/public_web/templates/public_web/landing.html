@@ -188,15 +188,17 @@
                         </div>
                     </div>
                     
-                    <div class="d-flex gap-3 flex-wrap animate-on-scroll delay-3 hero-cta-enhanced justify-content-center">
-                        <a href="#features" class="btn-hero secondary">
-                            <i class="fas fa-globe"></i>
-                            {% trans "Discover our apps" %}
-                        </a>
-                        <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-hero primary pulse">
-                            <i class="fab fa-github"></i>
-                            {% trans "View Source Code" %}
-                        </a>
+                    <div class="text-center mt-4 animate-on-scroll delay-3">
+                        <div class="d-flex gap-3 flex-wrap hero-cta-enhanced justify-content-center align-items-center">
+                            <a href="#features" class="btn-hero secondary mb-2">
+                                <i class="fas fa-globe"></i>
+                                {% trans "Discover our apps" %}
+                            </a>
+                            <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-hero primary pulse mb-2">
+                                <i class="fab fa-github"></i>
+                                {% trans "View Source Code" %}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -207,26 +209,14 @@
     <!-- Stats Section -->
     <section class="stats-section">
         <div class="container">
-            <div class="row g-4">
-                <div class="col-6 col-md-3 animate-on-scroll">
+            <div class="row g-4 justify-content-center">
+                <div class="col-6 col-md-4 col-lg-3 animate-on-scroll">
                     <div class="stat-card">
-                        <span class="stat-number" data-count="7">0</span>
-                        <div class="stat-label">{% trans "Educational Apps" %}</div>
+                        <span class="stat-number" data-count="9">0</span>
+                        <div class="stat-label">{% trans "Educational Useful Apps for the students" %}</div>
                     </div>
                 </div>
-                <div class="col-6 col-md-3 animate-on-scroll delay-1">
-                    <div class="stat-card">
-                        <span class="stat-number" data-count="1000">0</span><span class="stat-number">+</span>
-                        <div class="stat-label">{% trans "Flashcards Created" %}</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3 animate-on-scroll delay-2">
-                    <div class="stat-card">
-                        <span class="stat-number" data-count="500">0</span><span class="stat-number">+</span>
-                        <div class="stat-label">{% trans "Quizzes Generated" %}</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3 animate-on-scroll delay-3">
+                <div class="col-6 col-md-4 col-lg-3 animate-on-scroll delay-3">
                     <div class="stat-card">
                         <span class="stat-number" data-count="100">0</span><span class="stat-number">%</span>
                         <div class="stat-label">{% trans "Open Source" %}</div>
@@ -436,7 +426,7 @@
                         </div>
                         
                         <div class="contribute-actions">
-                            <a href="{% url 'docs:home' %}" class="btn btn-primary btn-lg me-3 mb-2" style="border-radius: 25px; padding: 12px 24px;">
+                            <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn btn-primary btn-lg me-3 mb-2" style="border-radius: 25px; padding: 12px 24px;">
                                 <i class="bi bi-code-slash me-2"></i>{% trans "Start Contributing" %}
                             </a>
                             <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn btn-outline-primary btn-lg me-3 mb-2" style="border-radius: 25px; padding: 12px 24px;">
@@ -542,7 +532,7 @@
                                     {% trans "Absolutely! As an open source project, we welcome contributions from developers, translators, educators, and users. You can contribute code, report bugs, suggest features, help with translations, or create educational content." %}
                                     
                                     <div class="mt-3 d-flex flex-wrap gap-2">
-                                        <a href="{% url 'docs:home' %}" class="btn btn-outline-primary btn-sm">
+                                        <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn btn-outline-primary btn-sm">
                                             <i class="bi bi-code-slash me-1"></i>
                                             {% trans "Open Source Guide" %}
                                         </a>
