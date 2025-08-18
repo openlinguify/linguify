@@ -1,9 +1,10 @@
 {% extends "calendar/base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Calendar Providers - Calendar{% endblock %}
+{% block title %}{% trans "Calendar Providers" %} - {% trans "Calendar" %}{% endblock %}
 
-{% block extra_css %}
+{% block extra_calendar_css %}
 <style>
     .providers-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -88,7 +89,7 @@
 </style>
 {% endblock %}
 
-{% block content %}
+{% block calendar_content %}
 <div class="providers-header">
     <div class="container">
         <div class="row">

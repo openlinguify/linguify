@@ -1,8 +1,9 @@
 {% extends "calendar/base.html" %}
+{% load i18n %}
 
-{% block title %}{% if is_create %}Create Event{% else %}Edit Event{% endif %} - Calendar{% endblock %}
+{% block title %}{% if is_create %}{% trans "Create Event" %}{% else %}{% trans "Edit Event" %}{% endif %} - {% trans "Calendar" %}{% endblock %}
 
-{% block content %}
+{% block calendar_content %}
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">

@@ -1,8 +1,9 @@
 {% extends "calendar/base.html" %}
+{% load i18n %}
 
-{% block title %}{{ event.name }} - Calendar{% endblock %}
+{% block title %}{{ event.name }} - {% trans "Calendar" %}{% endblock %}
 
-{% block content %}
+{% block calendar_content %}
 <div class="container">
     <div class="row">
         <div class="col-12">

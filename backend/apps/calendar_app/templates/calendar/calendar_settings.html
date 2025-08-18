@@ -1,14 +1,15 @@
 {% extends "calendar/base.html" %}
+{% load i18n %}
 
-{% block title %}Calendar Settings{% endblock %}
+{% block title %}{% trans "Calendar Settings" %}{% endblock %}
 
-{% block content %}
+{% block calendar_content %}
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h3>Calendar Settings</h3>
+                    <h3>{% trans "Calendar Settings" %}</h3>
                 </div>
                 <div class="card-body">
                     <form method="post">
