@@ -4,25 +4,19 @@
 
 {% block title %}{{ page_title|default:"Calendar" }} - Linguify{% endblock %}
 
-{% block extra_head %}
+{% block extra_css %}
     <!-- CSS spécifique au calendrier -->
     <link rel="stylesheet" href="{% static 'calendar/css/calendar.css' %}">
     
     <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     
-    {% block extra_css %}{% endblock %}
+    {% block extra_calendar_css %}{% endblock %}
 {% endblock %}
-
-{% block app_navigation %}
-    <!-- Calendar app navigation is included separately below the main header -->
-{% endblock %}
-
-{% block body_class %}calendar-body{% endblock %}
 
 {% block content %}
-    <!-- Include Calendar App Navigation -->
-    {% include 'calendar/components/navbar.html' %}
+    <!-- Include calendar-specific header navigation -->
+    {% include 'components/calendar_header.html' %}
     
     <!-- Main Content Container -->
     <div class="calendar-container">
@@ -32,7 +26,7 @@
     </div>
 {% endblock %}
 
-{% block extra_scripts %}
+{% block extra_js %}
     <!-- Simple Calendar Fallback -->
     <script src="{% static 'calendar/js/simple-calendar.js' %}"></script>
     
@@ -92,5 +86,5 @@
         };
     </script>
     
-    {% block extra_js %}{% endblock %}
+    {% block calendar_extra_js %}{% endblock %}
 {% endblock %}

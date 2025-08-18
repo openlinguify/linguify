@@ -134,114 +134,37 @@
     padding: 0;
 }
 
-/* Calendar App Navigation Bar */
-.calendar-app-navbar {
-    background: var(--calendar-bg-white);
-    border-bottom: 1px solid var(--calendar-border);
-    box-shadow: var(--calendar-shadow);
-    padding: 0.75rem 1.5rem;
-    margin-bottom: 0;
+/* Calendar specific button styling (for calendar context only) */
+.calendar-body .btn-success.header-btn {
+    background: linear-gradient(135deg, var(--calendar-primary) 0%, var(--calendar-secondary) 100%) !important;
+    border-color: var(--calendar-primary) !important;
+    color: white !important;
 }
 
-.navbar-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1400px;
-    margin: 0 auto;
+.calendar-body .btn-success.header-btn:hover {
+    background: linear-gradient(135deg, var(--calendar-primary-dark) 0%, var(--calendar-secondary) 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+    color: white !important;
 }
 
-.nav-left,
-.nav-right {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.nav-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
-    border: none;
-    cursor: pointer;
-    background: transparent;
-}
-
-.nav-btn-secondary {
-    color: var(--calendar-text-light);
-    border: 1px solid var(--calendar-border);
-    background: var(--calendar-bg-white);
-}
-
-.nav-btn-secondary:hover {
-    color: var(--calendar-primary);
-    border-color: var(--calendar-primary);
-    background: rgba(102, 126, 234, 0.05);
-    text-decoration: none;
-}
-
-.nav-btn-secondary.active {
-    color: var(--calendar-primary);
-    background: rgba(102, 126, 234, 0.1);
-    border-color: var(--calendar-primary);
-}
-
-.nav-btn-primary {
-    color: white;
-    background: linear-gradient(135deg, var(--calendar-primary) 0%, var(--calendar-secondary) 100%);
-    border: 1px solid transparent;
-}
-
-.nav-btn-primary:hover {
-    background: linear-gradient(135deg, var(--calendar-primary-dark) 0%, var(--calendar-secondary) 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    color: white;
-    text-decoration: none;
-}
-
-.nav-text {
-    font-size: 0.875rem;
-}
-
-/* Responsive design for navbar */
-@media (max-width: 768px) {
-    .calendar-app-navbar {
-        padding: 0.5rem 1rem;
+/* Animation pour l'icône de refresh */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
     }
-    
-    .navbar-content {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .nav-left,
-    .nav-right {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .nav-text {
-        display: none;
-    }
-    
-    .nav-btn {
-        padding: 0.5rem;
-        min-width: 44px;
-        justify-content: center;
+    to {
+        transform: rotate(360deg);
     }
 }
 
-@media (max-width: 992px) {
-    .nav-text:not(.d-none) {
-        display: none;
-    }
+/* Style pour le bouton refresh actif */
+.calendar-body #refreshCalendar:active {
+    transform: translateY(0) !important;
+}
+
+.calendar-body #refreshCalendar i.spinning {
+    animation: spin 1s linear infinite;
 }
 
 /* Calendar Context Navigation Bar (view switchers, etc.) */

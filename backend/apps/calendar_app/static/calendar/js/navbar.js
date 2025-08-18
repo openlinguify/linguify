@@ -24,14 +24,32 @@ function initAppNavbar() {
     if (refreshBtn) {
         refreshBtn.addEventListener('click', function() {
             console.log('[Calendar] Refresh button clicked');
+            
+            // Add visual feedback
+            const originalIcon = this.querySelector('i');
+            const originalClass = originalIcon.className;
+            
+            // Animate refresh icon
+            originalIcon.className = 'bi bi-arrow-clockwise me-1';
+            originalIcon.style.animation = 'spin 1s linear infinite';
+            
             if (window.calendar && window.calendar.refetchEvents) {
                 window.calendar.refetchEvents();
             } else {
-                location.reload();
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
             }
+            
             if (window.notificationService) {
-                window.notificationService.info('Calendar refreshed');
+                window.notificationService.success('📅 Calendar refreshed');
             }
+            
+            // Reset icon after animation
+            setTimeout(() => {
+                originalIcon.style.animation = '';
+                originalIcon.className = originalClass;
+            }, 1000);
         });
     }
 }

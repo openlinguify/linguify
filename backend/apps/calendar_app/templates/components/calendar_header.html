@@ -1,0 +1,68 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Calendar-specific navigation bar -->
+<div class="calendar-navigation-bar bg-white border-bottom py-2 mb-3">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- Left side: Calendar navigation -->
+            <div class="d-flex align-items-center gap-2">
+                <!-- Standard navigation -->
+                {% if request.resolver_match.url_name != 'dashboard' %}
+                <a href="{% url 'saas_web:dashboard' %}" 
+                   class="btn btn-outline-secondary btn-sm"
+                   aria-label="{% trans 'Go to dashboard' %}">
+                    <i class="bi bi-house me-1" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">{% trans "Dashboard" %}</span>
+                </a>
+                {% endif %}
+                
+                <!-- Calendar-specific navigation buttons -->
+                <a href="{% url 'calendar:main' %}" 
+                   class="btn btn-outline-primary btn-sm {% if request.resolver_match.url_name == 'main' %}active{% endif %}"
+                   aria-label="{% trans 'Calendar view' %}">
+                    <i class="bi bi-calendar-month me-1" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">{% trans "Calendar" %}</span>
+                </a>
+                
+                <a href="{% url 'calendar:agenda' %}" 
+                   class="btn btn-outline-secondary btn-sm {% if request.resolver_match.url_name == 'agenda' %}active{% endif %}"
+                   aria-label="{% trans 'Agenda view' %}">
+                    <i class="bi bi-list-ul me-1" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">{% trans "Agenda" %}</span>
+                </a>
+                
+                <a href="{% url 'calendar:providers' %}" 
+                   class="btn btn-outline-secondary btn-sm {% if request.resolver_match.url_name == 'providers' %}active{% endif %}"
+                   aria-label="{% trans 'Calendar providers' %}">
+                    <i class="bi bi-cloud me-1" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">{% trans "Providers" %}</span>
+                </a>
+                
+                <a href="{% url 'calendar:settings' %}" 
+                   class="btn btn-outline-secondary btn-sm {% if request.resolver_match.url_name == 'settings' %}active{% endif %}"
+                   aria-label="{% trans 'Calendar settings' %}">
+                    <i class="bi bi-gear me-1" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">{% trans "Settings" %}</span>
+                </a>
+            </div>
+            
+            <!-- Right side: Action buttons -->
+            <div class="d-flex align-items-center gap-2">
+                <button id="refreshCalendar" 
+                        class="btn btn-outline-secondary btn-sm"
+                        aria-label="{% trans 'Refresh calendar' %}">
+                    <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">{% trans "Refresh" %}</span>
+                </button>
+                
+                <a href="{% url 'calendar:event_create' %}" 
+                   class="btn btn-success btn-sm"
+                   aria-label="{% trans 'Create new event' %}">
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">{% trans "New Event" %}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
