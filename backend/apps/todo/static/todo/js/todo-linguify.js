@@ -56,6 +56,16 @@ class TodoApp {
         
         // Load more button
         document.getElementById('loadMoreBtn')?.addEventListener('click', () => this.loadMoreTasks());
+        
+        // Mobile sidebar controls
+        document.getElementById('sidebarToggle')?.addEventListener('click', () => this.toggleSidebar());
+        document.getElementById('sidebarClose')?.addEventListener('click', () => this.closeSidebar());
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => this.handleKeyboardShortcuts(e));
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => this.handleOutsideClick(e));
     }
 
     async loadInitialData() {
@@ -201,6 +211,9 @@ class TodoApp {
         tasksList.querySelectorAll('.task-item').forEach((item, index) => {
             item.addEventListener('click', () => this.selectTask(this.tasks[index]));
         });
+        
+        // Update task counts
+        this.updateTaskCounts();
     }
 
     renderTaskItem(task) {
@@ -534,18 +547,110 @@ class TodoApp {
             tasksEmpty.style.display = 'block';
             welcomeState.style.display = 'block';
         }
+        
+        // Update task counts
+        this.updateTaskCounts();
+    }
+
+    updateTaskCounts() {
+        const totalCount = this.tasks.length;
+        const completedCount = this.tasks.filter(task => task.state === '1_done').length;
+        
+        const totalElement = document.getElementById('totalTasksCount');
+        const completedElement = document.getElementById('completedTasksCount');
+        
+        if (totalElement) totalElement.textContent = totalCount;
+        if (completedElement) completedElement.textContent = completedCount;
+    }
+
+    toggleSidebar() {
+        const sidebar = document.getElementById('todoSidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('show');
+        }
+    }
+
+    closeSidebar() {
+        const sidebar = document.getElementById('todoSidebar');
+        if (sidebar) {
+            sidebar.classList.remove('show');
+        }
+    }
+
+    handleKeyboardShortcuts(event) {
+        // Ctrl+N or Cmd+N for new task
+        if ((event.ctrlKey || event.metaKey) && event.key === 'n') {
+            event.preventDefault();
+            this.createNewTask();
+            return;
+        }
+        
+        // Escape to close sidebar on mobile
+        if (event.key === 'Escape') {
+            this.closeSidebar();
+        }
+        
+        // F5 or Ctrl+R for refresh (allow default but also update our data)
+        if (event.key === 'F5' || ((event.ctrlKey || event.metaKey) && event.key === 'r')) {
+            setTimeout(() => this.refreshTasks(), 100);
+        }
+    }
+
+    handleOutsideClick(event) {
+        const sidebar = document.getElementById('todoSidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        
+        if (window.innerWidth <= 991.98 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(event.target) && !sidebarToggle?.contains(event.target)) {
+                this.closeSidebar();
+            }
+        }
     }
 
     showSuccess(message) {
-        // Simple success notification - can be enhanced with a proper toast system
-        console.log('Success:', message);
-        // TODO: Show toast notification
+        this.showToast(message, 'success');
     }
 
     showError(message) {
-        // Simple error notification - can be enhanced with a proper toast system
-        console.error('Error:', message);
-        // TODO: Show toast notification
+        this.showToast(message, 'error');
+    }
+
+    showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) return;
+
+        const toastId = 'toast-' + Date.now();
+        const iconClass = type === 'success' ? 'bi-check-circle' : 
+                         type === 'error' ? 'bi-exclamation-triangle' : 'bi-info-circle';
+        const bgClass = type === 'success' ? 'bg-success' : 
+                       type === 'error' ? 'bg-danger' : 'bg-primary';
+
+        const toastHtml = `
+            <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body d-flex align-items-center">
+                        <i class="bi ${iconClass} me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+
+        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+        
+        const toastElement = document.getElementById(toastId);
+        const bsToast = new bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: type === 'error' ? 5000 : 3000
+        });
+        
+        bsToast.show();
+        
+        // Remove toast element after hiding
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            toastElement.remove();
+        });
     }
 }
 
