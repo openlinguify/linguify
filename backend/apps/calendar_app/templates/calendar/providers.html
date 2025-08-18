@@ -1,0 +1,672 @@
+{% extends "calendar/base.html" %}
+{% load static %}
+
+{% block title %}Calendar Providers - Calendar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .providers-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .provider-card {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: transform 0.2s;
+    }
+    
+    .provider-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .provider-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+    }
+    
+    .provider-google { background: linear-gradient(135deg, #4285f4 0%, #34a853 100%); color: white; }
+    .provider-outlook { background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%); color: white; }
+    .provider-office365 { background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%); color: white; }
+    .provider-apple { background: linear-gradient(135deg, #000000 0%, #333333 100%); color: white; }
+    .provider-caldav { background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; }
+    
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        margin-left: 0.5rem;
+    }
+    
+    .status-connected { background: #d4edda; color: #155724; }
+    .status-error { background: #f8d7da; color: #721c24; }
+    .status-syncing { background: #d1ecf1; color: #0c5460; }
+    .status-inactive { background: #e2e3e5; color: #6c757d; }
+    
+    .sync-stats {
+        background: #f8f9fa;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .add-provider-card {
+        border: 2px dashed #dee2e6;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 150px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .add-provider-card:hover {
+        border-color: #007bff;
+        background: #e7f3ff;
+    }
+    
+    .provider-setup {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="providers-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-0">
+                    <i class="bi bi-cloud-arrow-up-down me-3"></i>
+                    Calendar Providers
+                </h1>
+                <p class="mb-0 mt-2 opacity-75">Connect and sync with external calendars</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Provider Management Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4>Connected Providers</h4>
+                    <p class="text-muted">Manage your external calendar connections</p>
+                </div>
+                <div>
+                    <button class="btn btn-outline-primary me-2" onclick="syncAllProviders()">
+                        <i class="bi bi-arrow-repeat me-1"></i>Sync All
+                    </button>
+                    <button class="btn btn-primary" onclick="showAddProvider()">
+                        <i class="bi bi-plus me-1"></i>Add Provider
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Providers Grid -->
+    <div class="row" id="providersGrid">
+        <!-- Providers will be loaded here -->
+    </div>
+    
+    <!-- Add Provider Card -->
+    <div class="row">
+        <div class="col-md-6 col-lg-4">
+            <div class="provider-card add-provider-card" onclick="showAddProvider()">
+                <div class="text-center">
+                    <i class="bi bi-plus-circle display-4 text-muted mb-2"></i>
+                    <h5 class="text-muted">Add Calendar Provider</h5>
+                    <p class="text-muted small">Connect Google, Outlook, or CalDAV</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Provider Setup Section -->
+    <div class="provider-setup" id="providerSetup" style="display: none;">
+        <h5><i class="bi bi-gear me-2"></i>Add New Provider</h5>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <form id="providerForm">
+                    <div class="mb-3">
+                        <label for="providerName" class="form-label">Provider Name</label>
+                        <input type="text" class="form-control" id="providerName" placeholder="e.g., Work Calendar" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="providerType" class="form-label">Provider Type</label>
+                        <select class="form-select" id="providerType" required onchange="updateProviderFields()">
+                            <option value="">Select provider type</option>
+                            <option value="google">Google Calendar</option>
+                            <option value="outlook">Microsoft Outlook</option>
+                            <option value="office365">Office 365</option>
+                            <option value="caldav">CalDAV</option>
+                            <option value="apple">Apple iCloud</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Dynamic fields based on provider type -->
+                    <div id="providerFields"></div>
+                    
+                    <div class="mb-3">
+                        <label for="syncDirection" class="form-label">Sync Direction</label>
+                        <select class="form-select" id="syncDirection">
+                            <option value="bidirectional">Bidirectional (recommended)</option>
+                            <option value="import_only">Import Only (External → Linguify)</option>
+                            <option value="export_only">Export Only (Linguify → External)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="syncFrequency" class="form-label">Sync Frequency</label>
+                        <select class="form-select" id="syncFrequency">
+                            <option value="1hour">Every hour (recommended)</option>
+                            <option value="15min">Every 15 minutes</option>
+                            <option value="30min">Every 30 minutes</option>
+                            <option value="6hours">Every 6 hours</option>
+                            <option value="daily">Daily</option>
+                            <option value="manual">Manual only</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check me-1"></i>Add Provider
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="hideAddProvider()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="alert alert-info">
+                    <h6><i class="bi bi-info-circle me-2"></i>Setup Instructions</h6>
+                    <div id="setupInstructions">
+                        <p>Select a provider type to see setup instructions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Provider Details Modal -->
+    <div class="modal fade" id="providerModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Provider Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="providerModalBody">
+                    <!-- Provider details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="syncProviderBtn" onclick="syncProvider()">
+                        <i class="bi bi-arrow-repeat me-1"></i>Sync Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{% url 'calendar:main' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Calendar
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Global variables
+let providers = [];
+let currentProviderId = null;
+
+// Load providers on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadProviders();
+});
+
+// Load all providers
+function loadProviders() {
+    fetch('/calendar/api/providers/')
+        .then(response => response.json())
+        .then(data => {
+            providers = data;
+            renderProviders();
+        })
+        .catch(error => {
+            console.error('Error loading providers:', error);
+            showAlert('error', 'Failed to load providers');
+        });
+}
+
+// Render providers grid
+function renderProviders() {
+    const grid = document.getElementById('providersGrid');
+    
+    if (providers.length === 0) {
+        grid.innerHTML = `
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="bi bi-cloud-x display-1 text-muted"></i>
+                    <h4 class="mt-3">No Providers Connected</h4>
+                    <p class="text-muted">Connect your first external calendar to get started.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    const providerCards = providers.map(provider => {
+        const iconClass = getProviderIcon(provider.provider_type);
+        const statusBadge = getStatusBadge(provider);
+        
+        return `
+            <div class="col-md-6 col-lg-4">
+                <div class="provider-card">
+                    <div class="d-flex align-items-start">
+                        <div class="provider-icon provider-${provider.provider_type}">
+                            <i class="${iconClass}"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h6 class="mb-1">${provider.name}</h6>
+                                ${statusBadge}
+                            </div>
+                            <p class="text-muted small mb-2">${provider.provider_type_display}</p>
+                            <div class="small text-muted">
+                                <div>Direction: ${provider.sync_direction_display}</div>
+                                <div>Frequency: ${provider.sync_frequency_display}</div>
+                                ${provider.last_sync_at ? `<div>Last sync: ${formatDate(provider.last_sync_at)}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sync-stats">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="small text-muted">Syncs</div>
+                                <div class="fw-bold">${provider.sync_count}</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="small text-muted">Status</div>
+                                <div class="fw-bold">${provider.status_display}</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="small text-muted">Active</div>
+                                <div class="fw-bold">${provider.active ? 'Yes' : 'No'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <button class="btn btn-outline-primary btn-sm me-2" onclick="viewProvider('${provider.id}')">
+                            <i class="bi bi-eye me-1"></i>View
+                        </button>
+                        <button class="btn btn-outline-success btn-sm me-2" onclick="testProvider('${provider.id}')">
+                            <i class="bi bi-check-circle me-1"></i>Test
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" onclick="syncProvider('${provider.id}')">
+                            <i class="bi bi-arrow-repeat me-1"></i>Sync
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    grid.innerHTML = providerCards;
+}
+
+// Get provider icon class
+function getProviderIcon(providerType) {
+    const icons = {
+        'google': 'bi-google',
+        'outlook': 'bi-microsoft',
+        'office365': 'bi-microsoft',
+        'apple': 'bi-apple',
+        'caldav': 'bi-calendar-check',
+    };
+    return icons[providerType] || 'bi-calendar';
+}
+
+// Get status badge HTML
+function getStatusBadge(provider) {
+    if (!provider.active) {
+        return '<span class="status-badge status-inactive">Inactive</span>';
+    }
+    
+    if (!provider.connection_verified) {
+        return '<span class="status-badge status-error">Error</span>';
+    }
+    
+    if (provider.last_sync_status === 'success') {
+        return '<span class="status-badge status-connected">Connected</span>';
+    } else if (provider.last_sync_status === 'error') {
+        return '<span class="status-badge status-error">Sync Error</span>';
+    } else {
+        return '<span class="status-badge status-inactive">Never Synced</span>';
+    }
+}
+
+// Show add provider section
+function showAddProvider() {
+    document.getElementById('providerSetup').style.display = 'block';
+    document.getElementById('providerSetup').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Hide add provider section
+function hideAddProvider() {
+    document.getElementById('providerSetup').style.display = 'none';
+    document.getElementById('providerForm').reset();
+    document.getElementById('providerFields').innerHTML = '';
+}
+
+// Update provider fields based on type
+function updateProviderFields() {
+    const providerType = document.getElementById('providerType').value;
+    const fieldsContainer = document.getElementById('providerFields');
+    const instructionsContainer = document.getElementById('setupInstructions');
+    
+    let fields = '';
+    let instructions = '';
+    
+    switch (providerType) {
+        case 'google':
+            fields = `
+                <div class="mb-3">
+                    <label for="clientId" class="form-label">Client ID</label>
+                    <input type="text" class="form-control" id="clientId" placeholder="Google OAuth Client ID" required>
+                </div>
+                <div class="mb-3">
+                    <label for="clientSecret" class="form-label">Client Secret</label>
+                    <input type="password" class="form-control" id="clientSecret" placeholder="Google OAuth Client Secret" required>
+                </div>
+            `;
+            instructions = `
+                <ol class="small">
+                    <li>Go to <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a></li>
+                    <li>Create a new project or select existing one</li>
+                    <li>Enable the Google Calendar API</li>
+                    <li>Create OAuth 2.0 credentials</li>
+                    <li>Add your domain to authorized origins</li>
+                    <li>Copy Client ID and Secret here</li>
+                </ol>
+            `;
+            break;
+            
+        case 'outlook':
+        case 'office365':
+            fields = `
+                <div class="mb-3">
+                    <label for="clientId" class="form-label">Application ID</label>
+                    <input type="text" class="form-control" id="clientId" placeholder="Microsoft Application ID" required>
+                </div>
+                <div class="mb-3">
+                    <label for="clientSecret" class="form-label">Client Secret</label>
+                    <input type="password" class="form-control" id="clientSecret" placeholder="Microsoft Client Secret" required>
+                </div>
+            `;
+            instructions = `
+                <ol class="small">
+                    <li>Go to <a href="https://portal.azure.com/" target="_blank">Azure Portal</a></li>
+                    <li>Navigate to App registrations</li>
+                    <li>Create a new registration</li>
+                    <li>Add Microsoft Graph API permissions</li>
+                    <li>Generate a client secret</li>
+                    <li>Copy Application ID and Secret here</li>
+                </ol>
+            `;
+            break;
+            
+        case 'caldav':
+            fields = `
+                <div class="mb-3">
+                    <label for="serverUrl" class="form-label">Server URL</label>
+                    <input type="url" class="form-control" id="serverUrl" placeholder="https://cal.example.com/dav/" required>
+                </div>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" placeholder="your-username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="your-password" required>
+                </div>
+            `;
+            instructions = `
+                <ol class="small">
+                    <li>Get CalDAV server URL from your provider</li>
+                    <li>Common providers: Nextcloud, Zimbra, Radicale</li>
+                    <li>URL format: https://server.com/path/to/caldav/</li>
+                    <li>Use your regular login credentials</li>
+                    <li>Test connection will verify settings</li>
+                </ol>
+            `;
+            break;
+            
+        default:
+            instructions = '<p>Select a provider type to see setup instructions.</p>';
+    }
+    
+    fieldsContainer.innerHTML = fields;
+    instructionsContainer.innerHTML = instructions;
+}
+
+// Submit provider form
+document.getElementById('providerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const providerData = {
+        name: document.getElementById('providerName').value,
+        provider_type: document.getElementById('providerType').value,
+        sync_direction: document.getElementById('syncDirection').value,
+        sync_frequency: document.getElementById('syncFrequency').value,
+    };
+    
+    // Add provider-specific fields
+    const providerType = providerData.provider_type;
+    if (['google', 'outlook', 'office365'].includes(providerType)) {
+        providerData.client_id = document.getElementById('clientId').value;
+        providerData.client_secret = document.getElementById('clientSecret').value;
+    } else if (providerType === 'caldav') {
+        providerData.server_url = document.getElementById('serverUrl').value;
+        providerData.username = document.getElementById('username').value;
+        providerData.password = document.getElementById('password').value;
+    }
+    
+    // Submit to API
+    fetch('/calendar/api/providers/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(providerData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'Provider added successfully!');
+            hideAddProvider();
+            loadProviders();
+        } else {
+            showAlert('error', 'Failed to add provider: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error adding provider:', error);
+        showAlert('error', 'Failed to add provider');
+    });
+});
+
+// View provider details
+function viewProvider(providerId) {
+    currentProviderId = providerId;
+    
+    fetch(`/calendar/api/providers/${providerId}/`)
+        .then(response => response.json())
+        .then(provider => {
+            document.getElementById('providerModalBody').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Basic Information</h6>
+                        <table class="table table-sm">
+                            <tr><td>Name</td><td>${provider.name}</td></tr>
+                            <tr><td>Type</td><td>${provider.provider_type_display}</td></tr>
+                            <tr><td>Status</td><td>${getStatusBadge(provider)}</td></tr>
+                            <tr><td>Active</td><td>${provider.active ? 'Yes' : 'No'}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Sync Configuration</h6>
+                        <table class="table table-sm">
+                            <tr><td>Direction</td><td>${provider.sync_direction_display}</td></tr>
+                            <tr><td>Frequency</td><td>${provider.sync_frequency_display}</td></tr>
+                            <tr><td>Auto Sync</td><td>${provider.auto_sync_enabled ? 'Enabled' : 'Disabled'}</td></tr>
+                            <tr><td>Total Syncs</td><td>${provider.sync_count}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                
+                ${provider.last_sync_at ? `
+                <div class="mt-3">
+                    <h6>Last Sync</h6>
+                    <p><strong>Time:</strong> ${formatDate(provider.last_sync_at)}</p>
+                    <p><strong>Status:</strong> ${provider.last_sync_status}</p>
+                    ${provider.last_sync_error ? `<p><strong>Error:</strong> ${provider.last_sync_error}</p>` : ''}
+                </div>
+                ` : ''}
+            `;
+            
+            const modal = new bootstrap.Modal(document.getElementById('providerModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error loading provider:', error);
+            showAlert('error', 'Failed to load provider details');
+        });
+}
+
+// Test provider connection
+function testProvider(providerId) {
+    fetch(`/calendar/api/providers/${providerId}/test/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'Connection test successful!');
+            loadProviders(); // Refresh to show updated status
+        } else {
+            showAlert('error', 'Connection test failed: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error testing provider:', error);
+        showAlert('error', 'Failed to test connection');
+    });
+}
+
+// Sync single provider
+function syncProvider(providerId = null) {
+    const id = providerId || currentProviderId;
+    if (!id) return;
+    
+    fetch(`/calendar/api/providers/${id}/sync/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'Sync completed successfully!');
+            loadProviders();
+        } else {
+            showAlert('error', 'Sync failed: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error syncing provider:', error);
+        showAlert('error', 'Failed to sync provider');
+    });
+}
+
+// Sync all providers
+function syncAllProviders() {
+    fetch('/calendar/api/providers/sync-all/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', `Sync completed! ${data.successful_syncs} successful, ${data.failed_syncs} failed.`);
+            loadProviders();
+        } else {
+            showAlert('error', 'Sync failed: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error syncing all providers:', error);
+        showAlert('error', 'Failed to sync providers');
+    });
+}
+
+// Utility functions
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleString();
+}
+
+function showAlert(type, message) {
+    const alertClass = type === 'error' ? 'alert-danger' : `alert-${type}`;
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    const container = document.querySelector('.container');
+    container.insertAdjacentHTML('afterbegin', alertHtml);
+}
+
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+</script>
+{% endblock %}
