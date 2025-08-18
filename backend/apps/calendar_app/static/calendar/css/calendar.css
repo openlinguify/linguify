@@ -18,6 +18,110 @@
     --calendar-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
+/* Calendar Stats Dashboard */
+.calendar-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--calendar-bg-white);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: var(--calendar-shadow);
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    box-shadow: var(--calendar-shadow-lg);
+    transform: translateY(-2px);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--calendar-primary);
+}
+
+.stat-label {
+    color: var(--calendar-text-light);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* Legacy Calendar Navigation (for compatibility) */
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    background: var(--calendar-bg-white);
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: var(--calendar-shadow);
+}
+
+.calendar-nav-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--calendar-text);
+}
+
+/* Quick Add Button */
+.quick-add-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--calendar-primary) 0%, var(--calendar-secondary) 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    z-index: 1040;
+}
+
+.quick-add-btn:hover {
+    background: linear-gradient(135deg, var(--calendar-primary-dark) 0%, var(--calendar-secondary) 100%);
+    transform: scale(1.1);
+    color: white;
+}
+
+/* FullCalendar Container */
+.fullcalendar-container {
+    background: var(--calendar-bg-white);
+    border-radius: 0.75rem;
+    box-shadow: var(--calendar-shadow);
+    padding: 1.5rem;
+    overflow: hidden;
+    min-height: 600px;
+}
+
+/* Ensure FullCalendar is properly sized */
+#calendar {
+    min-height: 500px;
+}
+
+/* Calendar secondary nav styling (legacy compatibility) */
+.calendar-secondary-nav .btn {
+    display: inline-flex !important;
+    align-items: center;
+    margin-right: 0.5rem;
+}
+
+/* Fix responsive classes that might hide elements */
+.d-none.d-sm-inline,
+.d-none.d-md-inline,
+.d-none.d-lg-inline {
+    display: inline !important;
+}
+
 /* Body and layout */
 .calendar-body {
     background-color: var(--calendar-bg);
@@ -30,7 +134,184 @@
     padding: 0;
 }
 
-/* Secondary navigation styles */
+/* Calendar App Navigation Bar */
+.calendar-app-navbar {
+    background: var(--calendar-bg-white);
+    border-bottom: 1px solid var(--calendar-border);
+    box-shadow: var(--calendar-shadow);
+    padding: 0.75rem 1.5rem;
+    margin-bottom: 0;
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.nav-left,
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+}
+
+.nav-btn-secondary {
+    color: var(--calendar-text-light);
+    border: 1px solid var(--calendar-border);
+    background: var(--calendar-bg-white);
+}
+
+.nav-btn-secondary:hover {
+    color: var(--calendar-primary);
+    border-color: var(--calendar-primary);
+    background: rgba(102, 126, 234, 0.05);
+    text-decoration: none;
+}
+
+.nav-btn-secondary.active {
+    color: var(--calendar-primary);
+    background: rgba(102, 126, 234, 0.1);
+    border-color: var(--calendar-primary);
+}
+
+.nav-btn-primary {
+    color: white;
+    background: linear-gradient(135deg, var(--calendar-primary) 0%, var(--calendar-secondary) 100%);
+    border: 1px solid transparent;
+}
+
+.nav-btn-primary:hover {
+    background: linear-gradient(135deg, var(--calendar-primary-dark) 0%, var(--calendar-secondary) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.nav-text {
+    font-size: 0.875rem;
+}
+
+/* Responsive design for navbar */
+@media (max-width: 768px) {
+    .calendar-app-navbar {
+        padding: 0.5rem 1rem;
+    }
+    
+    .navbar-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nav-left,
+    .nav-right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .nav-text {
+        display: none;
+    }
+    
+    .nav-btn {
+        padding: 0.5rem;
+        min-width: 44px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 992px) {
+    .nav-text:not(.d-none) {
+        display: none;
+    }
+}
+
+/* Calendar Context Navigation Bar (view switchers, etc.) */
+.calendar-context-navbar {
+    background: var(--calendar-bg-white);
+    border-radius: 0.5rem;
+    box-shadow: var(--calendar-shadow);
+    padding: 1rem 1.5rem;
+    margin: 1rem;
+}
+
+.context-navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.context-nav-left,
+.context-nav-center,
+.context-nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.current-period {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.period-title {
+    font-weight: 600;
+    color: var(--calendar-text);
+    font-size: 1.125rem;
+    min-width: 150px;
+    text-align: center;
+}
+
+/* Responsive design for context navbar */
+@media (max-width: 768px) {
+    .calendar-context-navbar {
+        padding: 0.75rem 1rem;
+    }
+    
+    .context-navbar-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .context-nav-center {
+        order: 1;
+    }
+    
+    .context-nav-left {
+        order: 2;
+    }
+    
+    .context-nav-right {
+        order: 3;
+    }
+    
+    .period-title {
+        font-size: 1rem;
+        min-width: auto;
+    }
+}
+
+/* Secondary navigation styles (legacy - keep for compatibility) */
 .calendar-secondary-nav {
     background: var(--calendar-bg-white);
     border-radius: 0.5rem;

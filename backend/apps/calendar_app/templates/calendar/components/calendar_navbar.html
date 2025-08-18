@@ -1,32 +1,44 @@
-{% extends "components/header/app_header.html" %}
-{% load static %}
 {% load i18n %}
-
-{% block app_navigation %}
-<div class="d-none d-lg-flex align-items-center gap-2">
-    <!-- Standard navigation -->
-    {% if request.resolver_match.url_name != 'dashboard' %}
-    <a href="{% url 'saas_web:dashboard' %}" 
-       class="btn btn-outline-secondary btn-sm header-btn"
-       aria-label="{% trans 'Go to dashboard' %}">
-        <i class="bi bi-house me-1" aria-hidden="true"></i>
-        <span class="d-none d-xl-inline">{% trans "Dashboard" %}</span>
-    </a>
-    {% endif %}
-    
-    <!-- Revision-specific navigation buttons -->
-    <a href="{% url 'revision_web:study_hub' %}" 
-       class="btn btn-outline-primary btn-sm header-btn"
-       aria-label="{% trans 'Study modes' %}">
-        <i class="bi bi-lightning me-1" aria-hidden="true"></i>
-        <span class="d-none d-xl-inline">{% trans "Study" %}</span>
-    </a>
-    
-    <a href="{% url 'revision_web:stats_dashboard' %}" 
-       class="btn btn-outline-secondary btn-sm header-btn"
-       aria-label="{% trans 'Statistics' %}">
-        <i class="bi bi-graph-up me-1" aria-hidden="true"></i>
-        <span class="d-none d-xl-inline">{% trans "Stats" %}</span>
-    </a>
+<!-- Calendar Context Navigation Bar (view switchers, etc.) -->
+<div class="calendar-context-navbar">
+    <div class="context-navbar-content">
+        <!-- Left: View Switcher -->
+        <div class="context-nav-left">
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-primary active" data-view="month">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    <span class="d-none d-sm-inline">{% trans "Month" %}</span>
+                </button>
+                <button type="button" class="btn btn-outline-primary" data-view="week">
+                    <i class="bi bi-calendar-week me-1"></i>
+                    <span class="d-none d-sm-inline">{% trans "Week" %}</span>
+                </button>
+                <button type="button" class="btn btn-outline-primary" data-view="day">
+                    <i class="bi bi-calendar-day me-1"></i>
+                    <span class="d-none d-sm-inline">{% trans "Day" %}</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Center: Current Period -->
+        <div class="context-nav-center">
+            <div class="current-period">
+                <button id="prevPeriod" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <span class="period-title" id="currentPeriod">{{ current_date|date:"F Y" }}</span>
+                <button id="nextPeriod" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Right: Actions -->
+        <div class="context-nav-right">
+            <button id="todayBtn" class="btn btn-primary btn-sm">
+                <i class="bi bi-dot me-1"></i>
+                <span class="d-none d-lg-inline">{% trans "Today" %}</span>
+            </button>
+        </div>
+    </div>
 </div>
-{% endblock %}

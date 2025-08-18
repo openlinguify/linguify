@@ -7,161 +7,13 @@
 {% block page_title %}{% trans "Calendar" %}{% endblock %}
 
 {% block extra_css %}
-<style>
-    /* Ensure CSS variables are defined */
-    :root {
-        --calendar-primary: #667eea;
-        --calendar-primary-dark: #5a67d8;
-        --calendar-secondary: #764ba2;
-        --calendar-success: #48bb78;
-        --calendar-warning: #ed8936;
-        --calendar-error: #f56565;
-        --calendar-info: #4299e1;
-        --calendar-text: #2d3748;
-        --calendar-text-light: #718096;
-        --calendar-bg: #f7fafc;
-        --calendar-bg-white: #ffffff;
-        --calendar-border: #e2e8f0;
-        --calendar-border-light: #f1f5f9;
-        --calendar-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        --calendar-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-    
-    .calendar-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-    
-    .stat-card {
-        background: var(--calendar-bg-white);
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        box-shadow: var(--calendar-shadow);
-        text-align: center;
-        transition: all 0.2s ease;
-    }
-    
-    .stat-card:hover {
-        box-shadow: var(--calendar-shadow-lg);
-        transform: translateY(-2px);
-    }
-    
-    .stat-number {
-        font-size: 2rem;
-        font-weight: bold;
-        color: var(--calendar-primary);
-    }
-    
-    .stat-label {
-        color: var(--calendar-text-light);
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
-    }
-    
-    .calendar-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        background: var(--calendar-bg-white);
-        padding: 1rem 1.5rem;
-        border-radius: 0.75rem;
-        box-shadow: var(--calendar-shadow);
-    }
-    
-    .calendar-nav-title {
-        font-weight: 600;
-        font-size: 1.25rem;
-        color: var(--calendar-text);
-    }
-    
-    .quick-add-btn {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--calendar-primary) 0%, var(--calendar-secondary) 100%);
-        color: white;
-        border: none;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        font-size: 1.5rem;
-        transition: all 0.3s ease;
-        z-index: 1040;
-    }
-    
-    .quick-add-btn:hover {
-        background: linear-gradient(135deg, var(--calendar-primary-dark) 0%, var(--calendar-secondary) 100%);
-        transform: scale(1.1);
-        color: white;
-    }
-    
-    .fullcalendar-container {
-        background: var(--calendar-bg-white);
-        border-radius: 0.75rem;
-        box-shadow: var(--calendar-shadow);
-        padding: 1.5rem;
-        overflow: hidden;
-        min-height: 600px;
-    }
-    
-    /* Ensure FullCalendar is properly sized */
-    #calendar {
-        min-height: 500px;
-    }
-    
-    /* Calendar secondary nav styling */
-    .calendar-secondary-nav {
-        background: var(--calendar-bg-white);
-        border-radius: 0.5rem;
-        box-shadow: var(--calendar-shadow);
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-    }
-</style>
+<!-- Page-specific styles are now in calendar.css -->
 {% endblock %}
 
 {% block calendar_content %}
 <div class="container-fluid">
-    <!-- Secondary Navigation for Calendar Context -->
-    <div class="calendar-secondary-nav">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-                <!-- View Switcher -->
-                <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-primary active" data-view="month">
-                        <i class="bi bi-calendar3 me-1"></i>
-                        <span class="d-none d-sm-inline">Month</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" data-view="week">
-                        <i class="bi bi-calendar-week me-1"></i>
-                        <span class="d-none d-sm-inline">Week</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" data-view="day">
-                        <i class="bi bi-calendar-day me-1"></i>
-                        <span class="d-none d-sm-inline">Day</span>
-                    </button>
-                </div>
-                
-                <!-- Today Button -->
-                <button id="todayBtn" class="btn btn-sm btn-primary">
-                    <i class="bi bi-dot me-1"></i>
-                    {% trans "Today" %}
-                </button>
-            </div>
-            
-            <div class="d-flex align-items-center gap-2">
-                <!-- Refresh Button -->
-                <button id="refreshCalendar" class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-arrow-clockwise me-1"></i>
-                    <span class="d-none d-md-inline">{% trans "Refresh" %}</span>
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- Include Calendar Context Navigation -->
+    {% include 'calendar/components/calendar_navbar.html' %}
 
 <div class="calendar-main-content fade-in">
     <!-- Calendar Stats -->
@@ -184,24 +36,6 @@
         </div>
     </div>
 
-    <!-- Calendar Navigation -->
-    <div class="calendar-nav">
-        <div class="d-flex align-items-center gap-3">
-            <button id="prevMonth" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-chevron-left"></i>
-            </button>
-            <span class="calendar-nav-title" id="calendarTitle">{{ current_date|date:"F Y" }}</span>
-            <button id="nextMonth" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-chevron-right"></i>
-            </button>
-        </div>
-        
-        <div class="d-flex align-items-center gap-2">
-            <button id="todayBtn" class="btn btn-primary btn-sm">
-                {% trans "Today" %}
-            </button>
-        </div>
-    </div>
 
     <!-- Calendar Container -->
     <div class="fullcalendar-container">
@@ -503,513 +337,126 @@ setTimeout(() => {
 {% endblock %}
 
 {% block extra_js %}
+<!-- Calendar Month View JavaScript -->
+<script src="{% static 'calendar/js/calendar_month.js' %}"></script>
+
+<!-- Quick Event Form Handler -->
 <script>
-console.log('[Calendar] Script loaded, DOM ready state:', document.readyState);
-
-function initializeCalendarApp() {
-    console.log('[Calendar] Initialization starting...');
-    console.log('[Calendar] User data:', window.USER_DATA);
-    console.log('[Calendar] Current user ID:', window.currentUserId);
-    
-    const calendarEl = document.getElementById('calendar');
-    
-    if (!calendarEl) {
-        console.error('[Calendar] Calendar element not found!');
-        return;
-    }
-    
-    console.log('[Calendar] Calendar element found:', calendarEl);
-    
-    // Wait for calendar library to load
-    const fullCalendarAvailable = await window.calendarLoaded;
-    
-    if (fullCalendarAvailable && typeof FullCalendar !== 'undefined') {
-        console.log('[Calendar] Using FullCalendar');
-        document.getElementById('calendar-type').textContent = 'FullCalendar (CDN)';
-        initializeFullCalendar(calendarEl);
-    } else {
-        console.log('[Calendar] Using Simple Calendar fallback');
-        document.getElementById('calendar-type').textContent = 'SimpleCalendar (Fallback)';
-        initializeSimpleCalendar(calendarEl);
-    }
-}
-
-// Try multiple ways to ensure the script runs
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeCalendarApp);
-} else {
-    // DOM is already loaded
-    initializeCalendarApp();
-}
-
-// Also try with window.onload as backup
-window.addEventListener('load', function() {
-    console.log('[Calendar] Window loaded, checking if calendar initialized...');
-    if (!window.calendar) {
-        console.log('[Calendar] Calendar not initialized, trying again...');
-        setTimeout(initializeCalendarApp, 100);
-    }
-});
-
-function initializeFullCalendar(calendarEl) {
-    console.log('Creating FullCalendar instance...');
-    
-    // Initialize FullCalendar
-    try {
-        window.calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            headerToolbar: false, // We use our custom header
-            height: 'auto',
-            locale: '{{ LANGUAGE_CODE|default:"en" }}',
-            
-            // Data source
-            events: '{% url "calendar:json" %}',
-            
-            // Event styling and display
-            eventDisplay: 'block',
-            dayMaxEvents: 3,
-            moreLinkClick: 'popover',
-            
-            // Interaction
-            selectable: true,
-            selectMirror: true,
-            editable: false,
-            
-            // Custom colors and styling
-            eventColor: '#667eea',
-            eventBorderColor: '#667eea',
-            eventTextColor: '#ffffff',
-        
-        // Event handlers
-        select: function(info) {
-            // Set modal form dates
-            const startInput = document.getElementById('eventStart');
-            const endInput = document.getElementById('eventEnd');
-            
-            if (info.allDay) {
-                startInput.value = info.startStr;
-                endInput.value = info.endStr || info.startStr;
-                document.getElementById('allDay').checked = true;
-                startInput.type = 'date';
-                endInput.type = 'date';
-            } else {
-                startInput.value = info.startStr;
-                endInput.value = info.endStr || info.startStr;
-            }
-            
-            // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('createEventModal'));
-            modal.show();
-            
-            calendar.unselect();
-        },
-        
-        eventClick: function(info) {
-            info.jsEvent.preventDefault();
-            
-            // Navigate to event detail or show event popup
-            if (info.event.url) {
-                window.open(info.event.url, '_blank');
-            } else {
-                // Show event details in a modal or navigate to detail page
-                window.location.href = '/calendar/event/' + info.event.id + '/';
-            }
-        },
-        
-        // Date click
-        dateClick: function(info) {
-            // Quick add event for clicked date
-            const startInput = document.getElementById('eventStart');
-            const endInput = document.getElementById('eventEnd');
-            
-            // Set default times (current time + 1 hour)
-            const startDate = new Date(info.dateStr + 'T09:00:00');
-            const endDate = new Date(info.dateStr + 'T10:00:00');
-            
-            startInput.value = startDate.toISOString().slice(0, 16);
-            endInput.value = endDate.toISOString().slice(0, 16);
-            
-            // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('createEventModal'));
-            modal.show();
-        },
-        
-        // Event rendering
-        eventDidMount: function(info) {
-            // Add tooltip
-            info.el.setAttribute('title', 
-                info.event.title + 
-                (info.event.extendedProps.location ? ' - ' + info.event.extendedProps.location : '')
-            );
-        },
-        
-            // Responsive design
-            windowResize: function() {
-                calendar.updateSize();
-            }
-        });
-        
-        console.log('Calendar instance created successfully');
-        console.log('Rendering calendar...');
-        calendar.render();
-        console.log('Calendar rendered successfully');
-        
-    } catch (error) {
-        console.error('Error creating FullCalendar:', error);
-        document.getElementById('calendar').innerHTML = '<div class="alert alert-danger">Error initializing calendar: ' + error.message + '</div>';
-        return;
-    }
-    
-    // Update debug time
-    document.getElementById('debug-time').textContent = new Date().toLocaleString();
-    
-    setupCalendarNavigation();
-}
-
-function initializeSimpleCalendar(calendarEl) {
-    console.log('[Calendar] Creating Simple Calendar instance...');
-    
-    // Simple inline calendar implementation
-    const currentDate = new Date();
-    
-    function renderCalendar() {
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-        const today = new Date();
-        
-        const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-                           'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-        
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const startDate = new Date(firstDay);
-        
-        // Adjust to start on Monday
-        const dayOfWeek = (firstDay.getDay() + 6) % 7;
-        startDate.setDate(firstDay.getDate() - dayOfWeek);
-        
-        let html = `
-            <div class="simple-calendar">
-                <div class="calendar-grid">
-                    <div class="week-header">
-                        <div class="day-header">Lun</div>
-                        <div class="day-header">Mar</div>
-                        <div class="day-header">Mer</div>
-                        <div class="day-header">Jeu</div>
-                        <div class="day-header">Ven</div>
-                        <div class="day-header">Sam</div>
-                        <div class="day-header">Dim</div>
-                    </div>
-        `;
-        
-        for (let week = 0; week < 6; week++) {
-            html += '<div class="calendar-week">';
-            for (let day = 0; day < 7; day++) {
-                const date = new Date(startDate);
-                date.setDate(startDate.getDate() + (week * 7) + day);
-                
-                const isCurrentMonth = date.getMonth() === month;
-                const isToday = date.toDateString() === today.toDateString();
-                
-                let classes = 'calendar-day';
-                if (!isCurrentMonth) classes += ' other-month';
-                if (isToday) classes += ' today';
-                
-                html += `
-                    <div class="${classes}" data-date="${date.toISOString().split('T')[0]}">
-                        <div class="day-number">${date.getDate()}</div>
-                    </div>
-                `;
-            }
-            html += '</div>';
-        }
-        
-        html += '</div></div>';
-        
-        // Add CSS
-        html += `
-            <style>
-            .simple-calendar { background: white; border-radius: 8px; overflow: hidden; }
-            .calendar-grid { min-height: 400px; }
-            .week-header { display: grid; grid-template-columns: repeat(7, 1fr); background: #e9ecef; }
-            .day-header { padding: 0.75rem; text-align: center; font-weight: 600; color: #6c757d; border-right: 1px solid #dee2e6; }
-            .calendar-week { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid #dee2e6; }
-            .calendar-day { min-height: 80px; padding: 0.5rem; border-right: 1px solid #dee2e6; cursor: pointer; transition: background-color 0.2s; }
-            .calendar-day:hover { background-color: #f8f9fa; }
-            .calendar-day.today { background-color: rgba(102, 126, 234, 0.1); border: 2px solid #667eea; }
-            .calendar-day.other-month { background-color: #fafafa; color: #adb5bd; }
-            .day-number { font-weight: 600; margin-bottom: 0.25rem; }
-            </style>
-        `;
-        
-        return html;
-    }
-    
-    // Remove debug content
-    const debugElements = calendarEl.parentElement.querySelectorAll('.calendar-header-debug, .calendar-debug-info');
-    debugElements.forEach(el => el.remove());
-    
-    // Render calendar
-    calendarEl.innerHTML = renderCalendar();
-    
-    // Create calendar object
-    window.calendar = {
-        currentDate: currentDate,
-        prev: function() {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            calendarEl.innerHTML = renderCalendar();
-            this.updateTitle();
-        },
-        next: function() {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            calendarEl.innerHTML = renderCalendar();
-            this.updateTitle();
-        },
-        today: function() {
-            currentDate.setTime(new Date().getTime());
-            calendarEl.innerHTML = renderCalendar();
-            this.updateTitle();
-        },
-        updateTitle: function() {
-            const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-                               'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-            const title = monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
-            const titleElement = document.getElementById('calendarTitle');
-            if (titleElement) {
-                titleElement.textContent = title;
-            }
-        },
-        refetchEvents: function() {
-            console.log('[Calendar] Refresh requested');
-        }
-    };
-    
-    // Add click handlers
-    calendarEl.addEventListener('click', function(e) {
-        const dayElement = e.target.closest('.calendar-day');
-        if (dayElement) {
-            const date = dayElement.dataset.date;
-            console.log('[Calendar] Date clicked:', date);
-            
-            // Open modal if available
-            const modal = document.getElementById('createEventModal');
-            if (modal) {
-                const startInput = document.getElementById('eventStart');
-                const endInput = document.getElementById('eventEnd');
-                
-                if (startInput && endInput) {
-                    startInput.value = date + 'T09:00';
-                    endInput.value = date + 'T10:00';
-                }
-                
-                if (typeof bootstrap !== 'undefined') {
-                    const bootstrapModal = new bootstrap.Modal(modal);
-                    bootstrapModal.show();
-                }
-            }
-        }
-    });
-    
-    console.log('[Calendar] Simple Calendar initialized successfully');
-    
-    setupCalendarNavigation();
-}
-
-function setupCalendarNavigation() {
-    // Navigation buttons
-    const prevBtn = document.getElementById('prevMonth');
-    const nextBtn = document.getElementById('nextMonth');
-    const todayBtn = document.getElementById('todayBtn');
-    
-    if (prevBtn) {
-        prevBtn.addEventListener('click', function() {
-            if (calendar.prev) {
-                calendar.prev();
-                updateCalendarTitle();
-            }
-        });
-    }
-    
-    if (nextBtn) {
-        nextBtn.addEventListener('click', function() {
-            if (calendar.next) {
-                calendar.next();
-                updateCalendarTitle();
-            }
-        });
-    }
-    
-    if (todayBtn) {
-        todayBtn.addEventListener('click', function() {
-            if (calendar.today) {
-                calendar.today();
-                updateCalendarTitle();
-            }
-        });
-    }
-    
-    // View switcher buttons
-    const viewBtns = document.querySelectorAll('[data-view]');
-    viewBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Update active state
-            viewBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Change calendar view
-            const view = this.dataset.view;
-            if (calendar.changeView) {
-                if (view === 'month') {
-                    calendar.changeView('dayGridMonth');
-                } else if (view === 'week') {
-                    calendar.changeView('timeGridWeek');
-                } else if (view === 'day') {
-                    calendar.changeView('timeGridDay');
-                }
-            }
-        });
-    });
-    
-    // Refresh button
-    const refreshBtn = document.getElementById('refreshCalendar');
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', function() {
-            if (calendar.refetchEvents) {
-                calendar.refetchEvents();
-            }
-            if (window.notificationService) {
-                window.notificationService.info('{% trans "Calendar refreshed" %}');
-            }
-        });
-    }
-    
-    // Update calendar title
-    function updateCalendarTitle() {
-        let currentDate;
-        if (calendar.getDate) {
-            currentDate = calendar.getDate();
-        } else if (calendar.currentDate) {
-            currentDate = calendar.currentDate;
-        } else {
-            currentDate = new Date();
-        }
-        
-        const monthNames = ["{% trans 'January' %}", "{% trans 'February' %}", "{% trans 'March' %}", "{% trans 'April' %}", "{% trans 'May' %}", "{% trans 'June' %}", "{% trans 'July' %}", "{% trans 'August' %}", "{% trans 'September' %}", "{% trans 'October' %}", "{% trans 'November' %}", "{% trans 'December' %}"];
-        const title = monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
-        const titleElement = document.getElementById('calendarTitle');
-        if (titleElement) {
-            titleElement.textContent = title;
-        }
-    }
-    
-    // Initialize calendar title
-    updateCalendarTitle();
-}
-    
+document.addEventListener('DOMContentLoaded', function() {
     // Quick event form submission
-    document.getElementById('quickEventForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        
-        // Show loading state
-        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>{% trans "Creating..." %}';
-        submitBtn.disabled = true;
-        
-        const formData = new FormData(this);
-        
-        fetch('{% url "calendar:quick_create" %}', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Close modal
-                bootstrap.Modal.getInstance(document.getElementById('createEventModal')).hide();
-                
-                // Add event to calendar
-                calendar.addEvent(data.event);
-                
-                // Reset form
-                this.reset();
-                
-                // Show success message
-                if (window.notificationService) {
-                    window.notificationService.success('{% trans "Event created successfully!" %}');
+    const quickForm = document.getElementById('quickEventForm');
+    if (quickForm) {
+        quickForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>{% trans "Creating..." %}';
+            submitBtn.disabled = true;
+            
+            const formData = new FormData(this);
+            
+            fetch('{% url "calendar:quick_create" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                 }
-                
-                // Refresh calendar
-                calendar.refetchEvents();
-            } else {
-                if (window.notificationService) {
-                    window.notificationService.error('{% trans "Error creating event" %}: ' + (data.error || JSON.stringify(data.errors)));
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('createEventModal')).hide();
+                    
+                    // Add event to calendar
+                    if (window.calendar && window.calendar.addEvent) {
+                        window.calendar.addEvent(data.event);
+                    }
+                    
+                    // Reset form
+                    this.reset();
+                    
+                    // Show success message
+                    if (window.notificationService) {
+                        window.notificationService.success('{% trans "Event created successfully!" %}');
+                    }
+                    
+                    // Refresh calendar
+                    if (window.calendar && window.calendar.refetchEvents) {
+                        window.calendar.refetchEvents();
+                    }
+                } else {
+                    if (window.notificationService) {
+                        window.notificationService.error('{% trans "Error creating event" %}: ' + (data.error || JSON.stringify(data.errors)));
+                    }
                 }
-            }
-        })
-        .catch(error => {
-            if (window.notificationService) {
-                window.notificationService.error('{% trans "Error creating event" %}');
-            }
-            console.error('Error:', error);
-        })
-        .finally(() => {
-            // Restore button state
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
+            })
+            .catch(error => {
+                if (window.notificationService) {
+                    window.notificationService.error('{% trans "Error creating event" %}');
+                }
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                // Restore button state
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
         });
-    });
+    }
     
     // All day checkbox handler
-    document.getElementById('allDay').addEventListener('change', function() {
-        const startInput = document.getElementById('eventStart');
-        const endInput = document.getElementById('eventEnd');
-        
-        if (this.checked) {
-            // Convert to date inputs
-            const startDate = new Date(startInput.value);
-            const endDate = new Date(endInput.value);
+    const allDayCheckbox = document.getElementById('allDay');
+    if (allDayCheckbox) {
+        allDayCheckbox.addEventListener('change', function() {
+            const startInput = document.getElementById('eventStart');
+            const endInput = document.getElementById('eventEnd');
             
-            startInput.type = 'date';
-            endInput.type = 'date';
-            startInput.value = startDate.toISOString().split('T')[0];
-            endInput.value = endDate.toISOString().split('T')[0];
-        } else {
-            // Convert to datetime-local inputs
-            startInput.type = 'datetime-local';
-            endInput.type = 'datetime-local';
-            
-            if (startInput.value) {
-                startInput.value = startInput.value + 'T09:00';
+            if (this.checked) {
+                // Convert to date inputs
+                const startDate = new Date(startInput.value);
+                const endDate = new Date(endInput.value);
+                
+                startInput.type = 'date';
+                endInput.type = 'date';
+                startInput.value = startDate.toISOString().split('T')[0];
+                endInput.value = endDate.toISOString().split('T')[0];
+            } else {
+                // Convert to datetime-local inputs
+                startInput.type = 'datetime-local';
+                endInput.type = 'datetime-local';
+                
+                if (startInput.value) {
+                    startInput.value = startInput.value + 'T09:00';
+                }
+                if (endInput.value) {
+                    endInput.value = endInput.value + 'T10:00';
+                }
             }
-            if (endInput.value) {
-                endInput.value = endInput.value + 'T10:00';
-            }
-        }
-    });
+        });
+    }
     
     // Set default end time when start time changes
-    document.getElementById('eventStart').addEventListener('change', function() {
-        const endInput = document.getElementById('eventEnd');
-        const allDayCheckbox = document.getElementById('allDay');
-        
-        if (!endInput.value && this.value) {
-            if (allDayCheckbox.checked) {
-                endInput.value = this.value;
-            } else {
-                const startDate = new Date(this.value);
-                startDate.setHours(startDate.getHours() + 1);
-                endInput.value = startDate.toISOString().slice(0, 16);
+    const eventStartInput = document.getElementById('eventStart');
+    if (eventStartInput) {
+        eventStartInput.addEventListener('change', function() {
+            const endInput = document.getElementById('eventEnd');
+            const allDayCheckbox = document.getElementById('allDay');
+            
+            if (!endInput.value && this.value) {
+                if (allDayCheckbox && allDayCheckbox.checked) {
+                    endInput.value = this.value;
+                } else {
+                    const startDate = new Date(this.value);
+                    startDate.setHours(startDate.getHours() + 1);
+                    endInput.value = startDate.toISOString().slice(0, 16);
+                }
             }
-        }
-    });
-    
-    // Initialize calendar title
-    updateCalendarTitle();
+        });
+    }
 });
 </script>
 {% endblock %}

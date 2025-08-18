@@ -15,43 +15,15 @@
 {% endblock %}
 
 {% block app_navigation %}
-    <!-- Navigation spécifique à l'app calendrier -->
-    <div class="d-none d-lg-flex align-items-center gap-2">
-        <a href="{% url 'calendar:main' %}" 
-           class="btn btn-outline-secondary btn-sm header-btn {% if request.resolver_match.url_name == 'main' %}active{% endif %}">
-            <i class="bi bi-calendar-month me-1"></i>
-            <span class="d-none d-xl-inline">{% trans "Calendar" %}</span>
-        </a>
-        
-        <a href="{% url 'calendar:agenda' %}" 
-           class="btn btn-outline-secondary btn-sm header-btn {% if request.resolver_match.url_name == 'agenda' %}active{% endif %}">
-            <i class="bi bi-list-ul me-1"></i>
-            <span class="d-none d-xl-inline">{% trans "Agenda" %}</span>
-        </a>
-        
-        <a href="{% url 'calendar:providers' %}" 
-           class="btn btn-outline-secondary btn-sm header-btn {% if request.resolver_match.url_name == 'providers' %}active{% endif %}">
-            <i class="bi bi-cloud me-1"></i>
-            <span class="d-none d-xl-inline">{% trans "Providers" %}</span>
-        </a>
-        
-        <a href="{% url 'calendar:settings' %}" 
-           class="btn btn-outline-secondary btn-sm header-btn {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
-            <i class="bi bi-gear me-1"></i>
-            <span class="d-none d-xl-inline">{% trans "Settings" %}</span>
-        </a>
-        
-        <a href="{% url 'calendar:event_create' %}" 
-           class="btn btn-primary btn-sm header-btn">
-            <i class="bi bi-plus-circle me-1"></i>
-            <span class="d-none d-xl-inline">{% trans "New Event" %}</span>
-        </a>
-    </div>
+    <!-- Calendar app navigation is included separately below the main header -->
 {% endblock %}
 
 {% block body_class %}calendar-body{% endblock %}
 
 {% block content %}
+    <!-- Include Calendar App Navigation -->
+    {% include 'calendar/components/navbar.html' %}
+    
     <!-- Main Content Container -->
     <div class="calendar-container">
         {% block calendar_content %}
@@ -85,13 +57,19 @@
         window.calendarLoaded = loadFullCalendar();
     </script>
     
-    <!-- Scripts globaux pour le calendrier -->
+    <!-- Calendar Base Services -->
+    <script src="{% static 'calendar/js/base.js' %}"></script>
+    
+    <!-- Calendar Navigation -->
+    <script src="{% static 'calendar/js/navbar.js' %}"></script>
+    
+    <!-- Dynamic Configuration from Django -->
     <script>
-        // Configuration globale pour l'application
+        // Set dynamic configuration from Django template
         window.DEBUG = {{ debug|yesno:"true,false" }};
         window.API_BASE_URL = '{{ api_base_url }}';
         
-        // Données utilisateur - vérifier si l'utilisateur est authentifié
+        // User data
         {% if user.is_authenticated %}
         window.USER_DATA = {{ user_data|safe }};
         window.currentUserId = {{ user.id }};
@@ -103,116 +81,14 @@
         console.log('[Calendar] User not authenticated');
         {% endif %}
         
-        // Configuration spécifique au calendrier
+        // Calendar specific configuration
         window.CALENDAR_CONFIG = {
+            ...window.CALENDAR_CONFIG,
             apiBaseUrl: '{{ api_base_url }}',
             {% if event_id %}eventId: {{ event_id }},{% endif %}
             {% if view_type %}viewType: '{{ view_type }}',{% endif %}
             locale: '{{ LANGUAGE_CODE|default:"en" }}',
-            timezone: '{{ timezone|default:"UTC" }}',
-            ...window.CALENDAR_CONFIG
-        };
-        
-        // Services globaux
-        window.userService = {
-            getAuthToken: function() {
-                return localStorage.getItem('auth_token') || 
-                       sessionStorage.getItem('auth_token') ||
-                       this.getCookie('csrftoken');
-            },
-            
-            getCookie: function(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            },
-            
-            getCurrentUser: function() {
-                return window.USER_DATA;
-            }
-        };
-        
-        window.notificationService = {
-            success: function(message) {
-                this.show(message, 'success');
-            },
-            
-            error: function(message) {
-                this.show(message, 'error');
-            },
-            
-            info: function(message) {
-                this.show(message, 'info');
-            },
-            
-            show: function(message, type = 'info') {
-                const notification = document.createElement('div');
-                notification.className = `notification notification-${type}`;
-                notification.textContent = message;
-                
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 15px 20px;
-                    border-radius: 8px;
-                    color: white;
-                    font-weight: 500;
-                    z-index: 10000;
-                    max-width: 400px;
-                    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-                    transition: all 0.3s ease;
-                `;
-                
-                switch (type) {
-                    case 'success':
-                        notification.style.backgroundColor = '#10b981';
-                        break;
-                    case 'error':
-                        notification.style.backgroundColor = '#ef4444';
-                        break;
-                    case 'info':
-                    default:
-                        notification.style.backgroundColor = '#6366f1';
-                        break;
-                }
-                
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.style.transform = 'translateX(0)';
-                    notification.style.opacity = '1';
-                }, 10);
-                
-                setTimeout(() => {
-                    notification.style.transform = 'translateX(100%)';
-                    notification.style.opacity = '0';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                }, 5000);
-                
-                notification.addEventListener('click', () => {
-                    notification.style.transform = 'translateX(100%)';
-                    notification.style.opacity = '0';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                });
-            }
+            timezone: '{{ timezone|default:"UTC" }}'
         };
     </script>
     
