@@ -1,14 +1,14 @@
 """
-Django signals for calendar events
-Handles automatic email sending for invitations, updates, etc.
+Calendar signals for automatic notification sending
 """
-from django.db.models.signals import post_save, pre_delete, m2m_changed
+from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
-from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 import logging
 
-from .models import CalendarEvent, CalendarAttendee
-from .services.email_service import CalendarEmailService
+from .models import CalendarEvent, CalendarAttendee, CalendarProvider, CalendarProviderSync
+from .services.notification_service import CalendarNotificationService
 
 logger = logging.getLogger(__name__)
 
@@ -16,151 +16,231 @@ logger = logging.getLogger(__name__)
 @receiver(post_save, sender=CalendarEvent)
 def handle_event_created_or_updated(sender, instance, created, **kwargs):
     """
-    Handle event creation or update
-    Send invitations for new events, updates for modified events
+    Handle event creation and updates to send appropriate notifications
     """
-    # Skip if in test mode or email sending is disabled
-    if getattr(settings, 'CALENDAR_DISABLE_EMAIL_SIGNALS', False):
-        return
+    try:
+        if created:
+            # New event created - send invitations if there are attendees
+            attendees = instance.attendee_ids.all()
+            if attendees.exists():
+                attendee_emails = [attendee.email for attendee in attendees]
+                CalendarNotificationService.send_event_invitation(
+                    event=instance,
+                    attendee_emails=attendee_emails
+                )
+                logger.info(f"Invitations sent for new event {instance.id}")
+        
+        else:
+            # Event updated - detect changes and send update notifications
+            # Only send updates if event has attendees and is not too far in the future
+            if instance.attendee_ids.exists() and instance.start:
+                time_until_event = instance.start - timezone.now()
+                if timedelta(0) <= time_until_event <= timedelta(days=30):
+                    # Event is between now and 30 days - worth notifying about changes
+                    CalendarNotificationService.send_event_update(
+                        event=instance,
+                        changes={'updated': True}  # In production, track specific changes
+                    )
+                    logger.info(f"Update notifications sent for event {instance.id}")
     
-    if created:
-        # New event created - send invitations to attendees
-        send_event_invitations.delay(instance.id)
-    else:
-        # Event updated - send update notifications
-        # Note: We should track what fields changed for better notifications
-        send_event_updates.delay(instance.id)
+    except Exception as e:
+        logger.error(f"Error handling event save signal for event {instance.id}: {str(e)}")
+
+
+@receiver(post_delete, sender=CalendarEvent)
+def handle_event_deleted(sender, instance, **kwargs):
+    """
+    Handle event deletion to send cancellation notifications
+    """
+    try:
+        # Send cancellation notifications to attendees
+        if hasattr(instance, '_attendees_before_delete'):
+            # If we cached attendees before deletion
+            attendees = instance._attendees_before_delete
+        else:
+            # Fallback - try to get attendees (might not work if cascade deleted)
+            attendees = []
+        
+        if attendees:
+            # Create a temporary event-like object for notification
+            CalendarNotificationService.send_event_cancellation(
+                event=instance,
+                cancellation_reason="Event has been cancelled"
+            )
+            logger.info(f"Cancellation notifications sent for deleted event {instance.id}")
+    
+    except Exception as e:
+        logger.error(f"Error handling event deletion signal for event {instance.id}: {str(e)}")
+
+
+@receiver(pre_save, sender=CalendarEvent)
+def cache_attendees_before_event_change(sender, instance, **kwargs):
+    """
+    Cache attendees before event changes for comparison and notification purposes
+    """
+    try:
+        if instance.pk:  # Only for existing events
+            # Cache current attendees in case the event gets deleted
+            instance._attendees_before_delete = list(instance.attendee_ids.all())
+    except Exception as e:
+        logger.error(f"Error caching attendees for event {instance.id}: {str(e)}")
 
 
 @receiver(post_save, sender=CalendarAttendee)
-def handle_attendee_added(sender, instance, created, **kwargs):
+def handle_attendee_response(sender, instance, created, **kwargs):
     """
-    Handle new attendee added to event
+    Handle attendee RSVP responses to send notifications to organizer
     """
-    if getattr(settings, 'CALENDAR_DISABLE_EMAIL_SIGNALS', False):
-        return
+    try:
+        if not created and hasattr(instance, '_previous_state'):
+            # Attendee state changed - send RSVP response notification
+            previous_state = instance._previous_state
+            if previous_state != instance.state and instance.state in ['accepted', 'declined', 'tentative']:
+                CalendarNotificationService.send_rsvp_response(
+                    event=instance.event_id,
+                    attendee=instance,
+                    response=instance.state
+                )
+                logger.info(f"RSVP response notification sent for attendee {instance.email} to event {instance.event_id.id}")
     
-    if created:
-        # New attendee added - send invitation
-        send_attendee_invitation.delay(instance.id)
+    except Exception as e:
+        logger.error(f"Error handling attendee response signal for {instance.email}: {str(e)}")
 
 
-@receiver(pre_delete, sender=CalendarEvent)
-def handle_event_deletion(sender, instance, **kwargs):
+@receiver(pre_save, sender=CalendarAttendee)
+def cache_attendee_state(sender, instance, **kwargs):
     """
-    Handle event deletion - send cancellation notifications
+    Cache attendee state before changes for comparison
     """
-    if getattr(settings, 'CALENDAR_DISABLE_EMAIL_SIGNALS', False):
-        return
+    try:
+        if instance.pk:
+            # Get the current state from database
+            try:
+                current = CalendarAttendee.objects.get(pk=instance.pk)
+                instance._previous_state = current.state
+            except CalendarAttendee.DoesNotExist:
+                instance._previous_state = None
+    except Exception as e:
+        logger.error(f"Error caching attendee state for {instance.email}: {str(e)}")
+
+
+@receiver(post_save, sender=CalendarProviderSync)
+def handle_provider_sync_completed(sender, instance, created, **kwargs):
+    """
+    Handle provider sync completion to send sync notifications
+    """
+    try:
+        if created and instance.completed_at:
+            # Sync completed - send notification if it was significant or failed
+            
+            # Prepare sync result data
+            sync_result = {
+                'success': instance.success,
+                'error': instance.error_message if not instance.success else None,
+                'imported': instance.events_imported,
+                'exported': instance.events_exported,
+                'updated': instance.events_updated,
+                'deleted': instance.events_deleted,
+                'skipped': instance.events_skipped,
+                'duration': instance.duration_seconds,
+            }
+            
+            # Only send notification for failed syncs or significant successful syncs
+            total_changes = instance.events_imported + instance.events_exported + instance.events_updated
+            
+            if not instance.success or total_changes >= 5:  # Failed or 5+ changes
+                CalendarNotificationService.send_sync_notification(
+                    user=instance.provider.user,
+                    provider_name=instance.provider.name,
+                    sync_result=sync_result
+                )
+                logger.info(f"Sync notification sent for provider {instance.provider.name}")
     
-    # Send cancellation emails to all attendees
-    send_event_cancellation.delay(instance.id, "Event has been cancelled")
-
-
-# Task functions (would be Celery tasks in production)
-def send_event_invitations(event_id):
-    """Send invitations to all attendees of an event"""
-    try:
-        event = CalendarEvent.objects.get(id=event_id)
-        attendees = event.attendee_ids.filter(state='needsAction')
-        
-        if attendees.exists():
-            email_service = CalendarEmailService()
-            results = email_service.send_bulk_invitations(event, list(attendees))
-            
-            success_count = sum(1 for result in results if result)
-            logger.info(f"Sent {success_count}/{len(results)} invitations for event {event.name}")
-        
-    except CalendarEvent.DoesNotExist:
-        logger.error(f"Event {event_id} not found for sending invitations")
     except Exception as e:
-        logger.error(f"Error sending invitations for event {event_id}: {str(e)}")
+        logger.error(f"Error handling provider sync signal for {instance.provider.name}: {str(e)}")
 
 
-def send_event_updates(event_id):
-    """Send update notifications to attendees"""
+# Utility functions for periodic tasks
+def check_and_send_event_reminders():
+    """
+    Check for events that need reminders and send them
+    This should be called by a periodic task (cron job, celery task, etc.)
+    """
     try:
-        event = CalendarEvent.objects.get(id=event_id)
-        attendees = event.attendee_ids.filter(state__in=['accepted', 'tentative'])
+        from datetime import datetime, timedelta
+        from django.utils import timezone
         
-        if attendees.exists():
-            email_service = CalendarEmailService()
-            changes = ["Event details have been updated"]  # TODO: Track actual changes
-            success = email_service.send_update_notification(event, list(attendees), changes)
-            
-            if success:
-                logger.info(f"Sent update notifications for event {event.name}")
-            else:
-                logger.error(f"Failed to send update notifications for event {event.name}")
+        # Get events that start in the next 30 minutes and don't have recent reminders
+        now = timezone.now()
+        reminder_window_start = now + timedelta(minutes=10)
+        reminder_window_end = now + timedelta(minutes=30)
         
-    except CalendarEvent.DoesNotExist:
-        logger.error(f"Event {event_id} not found for sending updates")
+        upcoming_events = CalendarEvent.objects.filter(
+            start__gte=reminder_window_start,
+            start__lte=reminder_window_end,
+            active=True
+        ).select_related('user_id').prefetch_related('attendee_ids')
+        
+        reminder_count = 0
+        for event in upcoming_events:
+            try:
+                # Calculate exact reminder timing
+                minutes_until_event = int((event.start - now).total_seconds() / 60)
+                
+                # Send reminder for events starting in 15 minutes (with 5-minute tolerance)
+                if 10 <= minutes_until_event <= 20:
+                    result = CalendarNotificationService.send_event_reminder(
+                        event=event,
+                        reminder_minutes=minutes_until_event
+                    )
+                    if result:
+                        reminder_count += 1
+                        
+            except Exception as e:
+                logger.error(f"Error sending reminder for event {event.id}: {str(e)}")
+        
+        logger.info(f"Sent {reminder_count} event reminders")
+        return reminder_count
+        
     except Exception as e:
-        logger.error(f"Error sending updates for event {event_id}: {str(e)}")
+        logger.error(f"Error in reminder check task: {str(e)}")
+        return 0
 
 
-def send_attendee_invitation(attendee_id):
-    """Send invitation to a specific attendee"""
+def send_daily_agenda_notifications():
+    """
+    Send daily agenda notifications to users
+    This should be called by a daily task (e.g., at 8 AM)
+    """
     try:
-        attendee = CalendarAttendee.objects.get(id=attendee_id)
-        event = attendee.event_id
+        from django.contrib.auth import get_user_model
+        from .services.notification_service import send_daily_agenda
         
-        email_service = CalendarEmailService()
-        success = email_service.send_invitation(event, attendee)
+        User = get_user_model()
         
-        if success:
-            logger.info(f"Sent invitation to {attendee.email} for event {event.name}")
-        else:
-            logger.error(f"Failed to send invitation to {attendee.email} for event {event.name}")
+        # Get users who have calendar events today and want agenda notifications
+        today = timezone.now().date()
+        start_of_day = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = start_of_day + timedelta(days=1)
         
-    except CalendarAttendee.DoesNotExist:
-        logger.error(f"Attendee {attendee_id} not found for sending invitation")
+        users_with_events = User.objects.filter(
+            calendar_events__start__gte=start_of_day,
+            calendar_events__start__lt=end_of_day,
+            calendar_events__active=True
+        ).distinct()
+        
+        agenda_count = 0
+        for user in users_with_events:
+            try:
+                result = send_daily_agenda(user, today)
+                if result:
+                    agenda_count += 1
+            except Exception as e:
+                logger.error(f"Error sending daily agenda to user {user.id}: {str(e)}")
+        
+        logger.info(f"Sent {agenda_count} daily agenda notifications")
+        return agenda_count
+        
     except Exception as e:
-        logger.error(f"Error sending invitation to attendee {attendee_id}: {str(e)}")
-
-
-def send_event_cancellation(event_id, reason=""):
-    """Send cancellation notifications"""
-    try:
-        event = CalendarEvent.objects.get(id=event_id)
-        attendees = event.attendee_ids.all()
-        
-        if attendees.exists():
-            email_service = CalendarEmailService()
-            success = email_service.send_cancellation_notification(event, list(attendees), reason)
-            
-            if success:
-                logger.info(f"Sent cancellation notifications for event {event.name}")
-            else:
-                logger.error(f"Failed to send cancellation notifications for event {event.name}")
-        
-    except CalendarEvent.DoesNotExist:
-        logger.error(f"Event {event_id} not found for sending cancellation")
-    except Exception as e:
-        logger.error(f"Error sending cancellation for event {event_id}: {str(e)}")
-
-
-# For production, replace with actual Celery tasks:
-"""
-from celery import shared_task
-
-@shared_task
-def send_event_invitations(event_id):
-    # Implementation here
-    pass
-
-@shared_task  
-def send_event_updates(event_id):
-    # Implementation here
-    pass
-
-@shared_task
-def send_attendee_invitation(attendee_id):
-    # Implementation here
-    pass
-
-@shared_task
-def send_event_cancellation(event_id, reason=""):
-    # Implementation here
-    pass
-"""
+        logger.error(f"Error in daily agenda task: {str(e)}")
+        return 0
