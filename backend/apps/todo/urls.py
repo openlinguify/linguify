@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    CategoryViewSet, TagViewSet, ProjectViewSet, TaskViewSet,
+    PersonalStageTypeViewSet, CategoryViewSet, TagViewSet, ProjectViewSet, TaskViewSet,
     NoteViewSet, ReminderViewSet, TaskTemplateViewSet,
     TodoSettingsView, TodoUserPreferencesView, TodoDashboardView
 )
@@ -10,6 +10,7 @@ app_name = 'todo'
 
 # API Router for ViewSets
 router = DefaultRouter()
+router.register(r'stages', PersonalStageTypeViewSet, basename='stage')
 router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'tags', TagViewSet, basename='tag')
 router.register(r'projects', ProjectViewSet, basename='project')

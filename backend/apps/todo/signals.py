@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-from .models import Task, Project, Category, Tag
+from .models import Task, Project, Category, Tag, PersonalStageType
 
 User = get_user_model()
 
@@ -21,9 +21,13 @@ def update_project_progress_on_delete(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=User)
-def create_default_categories(sender, instance, created, **kwargs):
-    """Create default categories for new users"""
+def create_default_categories_and_onboarding(sender, instance, created, **kwargs):
+    """Create default categories and onboarding for new users - Odoo inspired"""
     if created:
+        # Create personal stages first
+        PersonalStageType.create_default_stages(instance)
+        
+        # Create default categories
         default_categories = [
             {'name': 'Personal', 'color': '#6366f1', 'icon': 'bi-person'},
             {'name': 'Work', 'color': '#059669', 'icon': 'bi-briefcase'},
@@ -37,6 +41,9 @@ def create_default_categories(sender, instance, created, **kwargs):
                 user=instance,
                 **cat_data
             )
+        
+        # Create onboarding todo
+        Task.ensure_onboarding_todo(instance)
 
 
 @receiver(post_save, sender=User)

@@ -4,13 +4,41 @@ from rest_framework.response import Response
 from django.db.models import Q, Count, Avg
 from django.utils import timezone
 from datetime import timedelta
-from ..models import Project, Task, Note, Category, Tag, Reminder, TaskTemplate
+from ..models import Project, Task, Note, Category, Tag, Reminder, TaskTemplate, PersonalStageType
 from ..serializers import (
     ProjectListSerializer, ProjectDetailSerializer,
-    TaskListSerializer, TaskDetailSerializer,
+    TaskListSerializer, TaskDetailSerializer, TaskKanbanSerializer,
+    TaskQuickCreateSerializer, TaskToggleSerializer, DashboardStatsSerializer,
     NoteSerializer, CategorySerializer, TagSerializer,
-    ReminderSerializer, TaskTemplateSerializer
+    ReminderSerializer, TaskTemplateSerializer, PersonalStageTypeSerializer
 )
+
+
+class PersonalStageTypeViewSet(viewsets.ModelViewSet):
+    """ViewSet for personal stage types - Odoo inspired"""
+    serializer_class = PersonalStageTypeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return PersonalStageType.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
+    @action(detail=False, methods=['post'])
+    def reorder(self, request):
+        """Reorder stages by sequence"""
+        stage_ids = request.data.get('stage_ids', [])
+        
+        for index, stage_id in enumerate(stage_ids):
+            try:
+                stage = self.get_queryset().get(id=stage_id)
+                stage.sequence = (index + 1) * 10
+                stage.save()
+            except PersonalStageType.DoesNotExist:
+                continue
+        
+        return Response({'message': 'Stages reordered successfully'})
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -142,20 +170,31 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 
 class TaskViewSet(viewsets.ModelViewSet):
+    """ViewSet for tasks - enhanced with Odoo-inspired features"""
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        queryset = Task.objects.filter(user=self.request.user)
+        queryset = Task.objects.filter(user=self.request.user, active=True)
         
         # Filter by project
         project = self.request.query_params.get('project')
         if project:
             queryset = queryset.filter(project_id=project)
         
+        # Filter by personal stage
+        stage = self.request.query_params.get('stage')
+        if stage:
+            queryset = queryset.filter(personal_stage_type_id=stage)
+        
         # Filter by status
         status_filter = self.request.query_params.get('status')
         if status_filter:
             queryset = queryset.filter(status=status_filter)
+        
+        # Filter by state (Odoo style)
+        state_filter = self.request.query_params.get('state')
+        if state_filter:
+            queryset = queryset.filter(state=state_filter)
         
         # Filter by priority
         priority = self.request.query_params.get('priority')
@@ -172,7 +211,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         if overdue == 'true':
             queryset = queryset.filter(
                 due_date__lt=timezone.now(),
-                status__in=['todo', 'in_progress']
+                state__in=['1_todo', '1_in_progress']
             )
         
         # Filter by tags
@@ -181,42 +220,164 @@ class TaskViewSet(viewsets.ModelViewSet):
             tag_list = tags.split(',')
             queryset = queryset.filter(tags__id__in=tag_list).distinct()
         
-        # Filter important tasks
+        # Filter important tasks (starred)
         important_only = self.request.query_params.get('important')
         if important_only == 'true':
-            queryset = queryset.filter(is_important=True)
+            queryset = queryset.filter(priority='1')  # Odoo style starred
+        
+        # Filter closed/open tasks
+        open_tasks = self.request.query_params.get('open_tasks')
+        if open_tasks == 'true':
+            queryset = queryset.exclude(state__in=['1_done', '1_canceled'])
+        
+        closed_tasks = self.request.query_params.get('closed_tasks')
+        if closed_tasks == 'true':
+            queryset = queryset.filter(state__in=['1_done', '1_canceled'])
         
         return queryset
     
     def get_serializer_class(self):
         if self.action == 'list':
             return TaskListSerializer
+        elif self.action == 'kanban':
+            return TaskKanbanSerializer
+        elif self.action == 'quick_create':
+            return TaskQuickCreateSerializer
+        elif self.action in ['toggle_state', 'toggle_completed']:
+            return TaskToggleSerializer
         return TaskDetailSerializer
     
     def perform_create(self, serializer):
+        # Ensure onboarding todo exists for new users
+        Task.ensure_onboarding_todo(self.request.user)
         serializer.save(user=self.request.user)
     
     @action(detail=True, methods=['post'])
     def toggle_completed(self, request, pk=None):
-        """Toggle task completion status"""
+        """Toggle task completion status - Odoo style"""
         task = self.get_object()
+        task.toggle_state()
         
-        if task.status == 'completed':
-            task.mark_incomplete()
-        else:
-            task.mark_completed()
+        serializer = TaskToggleSerializer(task)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def toggle_state(self, request, pk=None):
+        """Toggle task state - Odoo done checkmark style"""
+        task = self.get_object()
+        task.toggle_state()
         
-        serializer = self.get_serializer(task)
+        serializer = TaskToggleSerializer(task)
         return Response(serializer.data)
     
     @action(detail=True, methods=['post'])
     def toggle_important(self, request, pk=None):
-        """Toggle task important status"""
+        """Toggle task starred/important status - Odoo style"""
         task = self.get_object()
-        task.is_important = not task.is_important
+        task.priority = '1' if task.priority == '0' else '0'
         task.save()
         
         serializer = self.get_serializer(task)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'])
+    def quick_create(self, request):
+        """Quick create task - Odoo kanban style"""
+        serializer = TaskQuickCreateSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            task = serializer.save()
+            response_serializer = TaskListSerializer(task)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['get'])
+    def kanban(self, request):
+        """Kanban view data - grouped by personal stages"""
+        tasks = self.get_queryset()
+        stages = PersonalStageType.objects.filter(user=request.user).order_by('sequence')
+        
+        kanban_data = {}
+        for stage in stages:
+            stage_tasks = tasks.filter(personal_stage_type=stage)
+            kanban_data[str(stage.id)] = {
+                'stage': PersonalStageTypeSerializer(stage).data,
+                'tasks': TaskKanbanSerializer(stage_tasks, many=True).data
+            }
+        
+        return Response(kanban_data)
+    
+    @action(detail=False, methods=['get'])
+    def dashboard(self, request):
+        """Dashboard statistics - Odoo inspired"""
+        user = request.user
+        tasks = self.get_queryset()
+        
+        # Basic stats
+        total_tasks = tasks.count()
+        completed_tasks = tasks.filter(state='1_done').count()
+        starred_tasks = tasks.filter(priority='1').count()
+        
+        # Due date stats
+        today = timezone.now().date()
+        due_today = tasks.filter(due_date__date=today).count()
+        overdue = tasks.filter(
+            due_date__lt=timezone.now(),
+            state__in=['1_todo', '1_in_progress']
+        ).count()
+        
+        # Stage breakdown
+        stages = PersonalStageType.objects.filter(user=user)
+        by_stage = {}
+        for stage in stages:
+            by_stage[stage.name] = tasks.filter(personal_stage_type=stage).count()
+        
+        # Priority breakdown  
+        by_priority = {
+            'normal': tasks.filter(priority='0').count(),
+            'starred': tasks.filter(priority='1').count(),
+        }
+        
+        # Recent activity
+        recent_completed = tasks.filter(
+            state='1_done',
+            completed_at__gte=timezone.now() - timedelta(days=7)
+        ).count()
+        
+        recent_created = tasks.filter(
+            created_at__gte=timezone.now() - timedelta(days=7)
+        ).count()
+        
+        activity = {
+            'tasks_completed_this_week': recent_completed,
+            'tasks_created_this_week': recent_created,
+        }
+        
+        # Quick access
+        important_tasks = tasks.filter(priority='1', state__in=['1_todo', '1_in_progress'])[:5]
+        upcoming_tasks = tasks.filter(
+            due_date__gte=timezone.now(),
+            due_date__lte=timezone.now() + timedelta(days=7),
+            state__in=['1_todo', '1_in_progress']
+        ).order_by('due_date')[:5]
+        
+        quick_access = {
+            'important_tasks': TaskListSerializer(important_tasks, many=True).data,
+            'upcoming_tasks': TaskListSerializer(upcoming_tasks, many=True).data,
+        }
+        
+        stats_data = {
+            'total_tasks': total_tasks,
+            'completed_tasks': completed_tasks,
+            'due_today': due_today,
+            'overdue': overdue,
+            'important': starred_tasks,
+            'by_stage': by_stage,
+            'by_priority': by_priority,
+            'activity': activity,
+            'quick_access': quick_access,
+        }
+        
+        serializer = DashboardStatsSerializer(stats_data)
         return Response(serializer.data)
     
     @action(detail=False, methods=['get'])

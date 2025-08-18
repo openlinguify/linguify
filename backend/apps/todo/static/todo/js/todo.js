@@ -159,18 +159,84 @@ class TodoApp {
 
     // Dashboard
     async loadDashboard() {
-        const mainContent = document.querySelector('.todo-main');
-        mainContent.innerHTML = '<div class="todo-loading"><div class="todo-spinner"></div></div>';
-
+        // Show loading state
+        const loading = document.getElementById('todoLoading');
+        const content = document.getElementById('todoMainContent');
+        const emptyState = document.getElementById('todoEmptyState');
+        
+        if (loading) loading.style.display = 'block';
+        if (content) content.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'none';
+        
         try {
             const response = await fetch('/api/v1/todo/api/dashboard/');
             const data = await response.json();
             
-            mainContent.innerHTML = this.renderDashboard(data);
+            // Show dashboard content
+            if (loading) loading.style.display = 'none';
+            if (content) {
+                content.style.display = 'block';
+                content.innerHTML = this.renderDashboard(data);
+            }
+            
+            // Update navigation and sidebar counts
+            this.updateNavigationCounts(data.stats || {});
+            this.updateSidebarStats(data.stats || {});
+            
         } catch (error) {
             console.error('Failed to load dashboard:', error);
-            mainContent.innerHTML = '<div class="alert alert-danger">Failed to load dashboard</div>';
+            
+            // Show error state with basic dashboard
+            if (loading) loading.style.display = 'none';
+            if (content) {
+                content.style.display = 'block';
+                content.innerHTML = this.renderDashboard({
+                    stats: { total_tasks: 0, completed_tasks: 0, due_today: 0, overdue: 0 },
+                    activity: {},
+                    quick_access: {}
+                });
+            }
+            this.updateNavigationCounts({ total_tasks: 0, projects: 0, notes: 0, due_today: 0, overdue: 0, important: 0, completed: 0 });
+            this.updateSidebarStats({ total_tasks: 0, completed_tasks: 0, due_today: 0, overdue: 0 });
         }
+    }
+
+    updateNavigationCounts(stats) {
+        // Update badge counts in navigation
+        const badges = {
+            'taskCountNav': stats.total_tasks || 0,
+            'projectCountNav': stats.projects || 0,
+            'dueTodayNavCount': stats.due_today || 0,
+            'overdueNavCount': stats.overdue || 0,
+            'importantNavCount': stats.important || 0,
+            'completedNavCount': stats.completed || 0
+        };
+        
+        Object.entries(badges).forEach(([id, count]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = count;
+                // Hide badge if count is 0
+                element.style.display = count > 0 ? 'inline-block' : 'none';
+            }
+        });
+    }
+
+    updateSidebarStats(stats) {
+        // Update stats cards in sidebar
+        const statCards = {
+            'totalTasksCount': stats.total_tasks || 0,
+            'completedTasksCount': stats.completed_tasks || 0,
+            'dueTodayCount': stats.due_today || 0,
+            'overdueCount': stats.overdue || 0
+        };
+        
+        Object.entries(statCards).forEach(([id, count]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = count;
+            }
+        });
     }
 
     renderDashboard(data) {
@@ -179,30 +245,60 @@ class TodoApp {
         const quickAccess = data.quick_access || {};
 
         return `
-            <div class="todo-dashboard">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1>Dashboard</h1>
-                    <button class="todo-btn todo-btn-primary" onclick="todoApp.showQuickAdd()">
-                        <i class="bi bi-plus"></i> Quick Add
-                    </button>
+            <div class="dashboard-content">
+                <!-- Welcome Section -->
+                <div class="mb-4">
+                    <h2 class="h4 mb-1" style="color: var(--linguify-primary); font-weight: 600;">
+                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                    </h2>
+                    <p class="text-muted mb-0">Overview of your tasks and productivity</p>
                 </div>
 
-                <div class="todo-dashboard-grid">
-                    <div class="todo-stat-card">
-                        <div class="todo-stat-number">${stats.total_tasks || 0}</div>
-                        <div class="todo-stat-label">Total Tasks</div>
+                <!-- Quick Actions -->
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-secondary) 100%);">
+                            <div class="card-body text-white text-center">
+                                <i class="bi bi-plus-circle fs-2 mb-2"></i>
+                                <h6 class="card-title">New Task</h6>
+                                <button class="btn btn-light btn-sm" onclick="todoApp.showCreateTaskForm()">
+                                    Create
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="todo-stat-card">
-                        <div class="todo-stat-number">${stats.completed_tasks || 0}</div>
-                        <div class="todo-stat-label">Completed</div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, var(--linguify-accent) 0%, #00B894 100%);">
+                            <div class="card-body text-white text-center">
+                                <i class="bi bi-folder-plus fs-2 mb-2"></i>
+                                <h6 class="card-title">New Project</h6>
+                                <button class="btn btn-light btn-sm" onclick="todoApp.showProjectForm()">
+                                    Create
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="todo-stat-card">
-                        <div class="todo-stat-number">${stats.today_tasks || 0}</div>
-                        <div class="todo-stat-label">Due Today</div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, var(--linguify-warning) 0%, #FF9F43 100%);">
+                            <div class="card-body text-white text-center">
+                                <i class="bi bi-kanban fs-2 mb-2"></i>
+                                <h6 class="card-title">Kanban View</h6>
+                                <button class="btn btn-light btn-sm" onclick="todoApp.setView('kanban')">
+                                    Open
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="todo-stat-card">
-                        <div class="todo-stat-number" style="color: var(--todo-danger)">${stats.overdue_tasks || 0}</div>
-                        <div class="todo-stat-label">Overdue</div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);">
+                            <div class="card-body text-white text-center">
+                                <i class="bi bi-calendar3 fs-2 mb-2"></i>
+                                <h6 class="card-title">Calendar View</h6>
+                                <button class="btn btn-light btn-sm" onclick="todoApp.setView('calendar')">
+                                    Open
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

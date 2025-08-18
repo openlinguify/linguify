@@ -2,9 +2,52 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
+from django.utils.html import strip_tags
 import uuid
+import re
 
 User = get_user_model()
+
+
+class PersonalStageType(models.Model):
+    """Personal task stages - inspired by Odoo's personal_stage_type_id"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='personal_stages')
+    name = models.CharField(max_length=50)
+    sequence = models.IntegerField(default=10)
+    fold = models.BooleanField(default=False, help_text="Fold this stage in kanban view")
+    color = models.CharField(max_length=7, default='#6c757d')
+    is_closed = models.BooleanField(default=False, help_text="Tasks in this stage are considered closed")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = 'Personal Stage'
+        verbose_name_plural = 'Personal Stages'
+        unique_together = ['user', 'name']
+        ordering = ['sequence', 'name']
+    
+    def __str__(self):
+        return f"{self.name} ({self.user.username})"
+    
+    @classmethod
+    def create_default_stages(cls, user):
+        """Create default stages for new users - Odoo inspired onboarding"""
+        default_stages = [
+            {'name': 'To Do', 'sequence': 1, 'color': '#6c757d', 'is_closed': False},
+            {'name': 'In Progress', 'sequence': 2, 'color': '#007bff', 'is_closed': False},
+            {'name': 'Waiting', 'sequence': 3, 'color': '#ffc107', 'is_closed': False},
+            {'name': 'Done', 'sequence': 4, 'color': '#28a745', 'is_closed': True},
+        ]
+        
+        stages = []
+        for stage_data in default_stages:
+            stage, created = cls.objects.get_or_create(
+                user=user,
+                name=stage_data['name'],
+                defaults=stage_data
+            )
+            stages.append(stage)
+        return stages
 
 
 class Category(models.Model):
@@ -114,7 +157,7 @@ class Project(models.Model):
 
 
 class Task(models.Model):
-    """Individual tasks"""
+    """Individual tasks - inspired by Odoo's project.task"""
     STATUS_CHOICES = [
         ('todo', 'To Do'),
         ('in_progress', 'In Progress'),
@@ -123,10 +166,16 @@ class Task(models.Model):
     ]
     
     PRIORITY_CHOICES = [
-        ('low', 'Low'),
-        ('medium', 'Medium'),
-        ('high', 'High'),
-        ('urgent', 'Urgent'),
+        ('0', 'Normal'),
+        ('1', 'Starred'),  # Odoo-style priority (0=normal, 1=starred)
+    ]
+    
+    STATE_CHOICES = [
+        ('1_draft', 'Draft'),
+        ('1_todo', 'To Do'),
+        ('1_in_progress', 'In Progress'),
+        ('1_done', 'Done'),
+        ('1_canceled', 'Canceled'),
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -134,11 +183,24 @@ class Task(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks', null=True, blank=True)
     parent_task = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks')
     
+    # Personal stages - Odoo inspired
+    personal_stage_type = models.ForeignKey(
+        PersonalStageType, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='tasks'
+    )
+    
     # Basic info
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, blank=True)  # Allow blank for auto-generation
     description = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='todo')
-    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
+    state = models.CharField(max_length=20, choices=STATE_CHOICES, default='1_todo')  # Odoo style state
+    priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default='0')
+    
+    # Color for kanban cards
+    color = models.IntegerField(default=0, help_text="Color index for kanban cards (0-11)")
     
     # Organization
     tags = models.ManyToManyField(Tag, blank=True, related_name='tasks')
@@ -165,20 +227,64 @@ class Task(models.Model):
     is_important = models.BooleanField(default=False)
     is_recurring = models.BooleanField(default=False)
     reminder_set = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)  # Odoo style active field
+    sequence = models.IntegerField(default=10)  # For ordering within stages
     
     class Meta:
         verbose_name = 'Task'
         verbose_name_plural = 'Tasks'
-        ordering = ['-is_important', 'due_date', 'priority', 'order', '-created_at']
+        ordering = ['state', '-priority', 'due_date', 'sequence', 'id']
     
     def __str__(self):
-        return self.title
+        return self.title or 'Untitled Task'
+    
+    def save(self, *args, **kwargs):
+        """Override save to implement Odoo-style auto-naming"""
+        # Auto-generate title from description if empty (Odoo inspired)
+        if not self.title and self.description:
+            # Extract first line from description, clean it up
+            text = strip_tags(self.description).strip()
+            # Remove markdown-style formatting
+            text = re.sub(r'[*_`#]', '', text)
+            # Get first line
+            first_line = text.partition('\n')[0]
+            if first_line:
+                # Truncate if too long
+                self.title = (first_line[:97] + '...') if len(first_line) > 100 else first_line
+            else:
+                self.title = 'Untitled Task'
+        elif not self.title:
+            self.title = 'Untitled Task'
+        
+        # Set personal stage if not set
+        if not self.personal_stage_type and self.user:
+            default_stage = self.user.personal_stages.filter(name='To Do').first()
+            if not default_stage:
+                # Create default stages if they don't exist
+                PersonalStageType.create_default_stages(self.user)
+                default_stage = self.user.personal_stages.filter(name='To Do').first()
+            self.personal_stage_type = default_stage
+        
+        # Sync state with personal stage (only for new tasks or when stage changes)
+        if self.personal_stage_type and not self.pk:  # Only for new tasks
+            if self.personal_stage_type.is_closed:
+                self.state = '1_done'
+                self.status = 'completed'
+        
+        super().save(*args, **kwargs)
     
     @property
     def is_overdue(self):
-        if self.due_date and self.status != 'completed':
+        if self.due_date and self.state not in ('1_done', '1_canceled'):
             return timezone.now() > self.due_date
         return False
+    
+    @property
+    def is_closed(self):
+        """Check if task is in a closed state"""
+        return self.state in ('1_done', '1_canceled') or (
+            self.personal_stage_type and self.personal_stage_type.is_closed
+        )
     
     @property
     def subtask_count(self):
@@ -186,10 +292,39 @@ class Task(models.Model):
     
     @property
     def completed_subtask_count(self):
-        return self.subtasks.filter(status='completed').count()
+        return self.subtasks.filter(state='1_done').count()
+    
+    @property
+    def name_with_subtask_count(self):
+        """Odoo-style title with subtask count"""
+        subtask_count = self.subtask_count
+        if subtask_count > 0:
+            return f"{self.title} ({subtask_count})"
+        return self.title
+    
+    def toggle_state(self):
+        """Toggle between done and todo states - Odoo style"""
+        if self.state == '1_done':
+            # Move to todo state
+            self.state = '1_todo'
+            self.status = 'todo'
+            self.completed_at = None
+            self.progress_percentage = 0
+        else:
+            # Move to done state
+            self.state = '1_done'
+            self.status = 'completed'
+            self.completed_at = timezone.now()
+            self.progress_percentage = 100
+        self.save()
+        
+        # Update project progress if task belongs to a project
+        if self.project:
+            self.project.update_progress()
     
     def mark_completed(self):
         """Mark task as completed and update timestamps"""
+        self.state = '1_done'
         self.status = 'completed'
         self.completed_at = timezone.now()
         self.progress_percentage = 100
@@ -201,6 +336,7 @@ class Task(models.Model):
     
     def mark_incomplete(self):
         """Mark task as incomplete"""
+        self.state = '1_todo'
         self.status = 'todo'
         self.completed_at = None
         self.save()
@@ -208,6 +344,60 @@ class Task(models.Model):
         # Update project progress if task belongs to a project
         if self.project:
             self.project.update_progress()
+    
+    @classmethod
+    def ensure_onboarding_todo(cls, user):
+        """Create onboarding todo for new users - Odoo inspired"""
+        if user.todo_tasks.filter(title__icontains='Welcome').exists():
+            return  # Already has onboarding todo
+        
+        # Create onboarding task
+        welcome_title = f"Welcome {user.first_name or user.username}!"
+        welcome_description = f"""
+        <h3>🎉 Welcome to your personal Todo app!</h3>
+        <p>This is your first task. Here's how to get started:</p>
+        <ul>
+            <li>✅ <strong>Mark tasks as done</strong> by clicking the checkmark</li>
+            <li>📋 <strong>Create new tasks</strong> with the "New Task" button</li>
+            <li>🏷️ <strong>Organize with tags</strong> and personal stages</li>
+            <li>📅 <strong>Set due dates</strong> to stay on track</li>
+            <li>⭐ <strong>Star important tasks</strong> to prioritize them</li>
+        </ul>
+        <p>Try marking this welcome task as done when you're ready to start!</p>
+        """
+        
+        # Ensure user has personal stages
+        PersonalStageType.create_default_stages(user)
+        
+        cls.objects.create(
+            user=user,
+            title=welcome_title,
+            description=welcome_description,
+            priority='1',  # Starred
+            state='1_todo'
+        )
+    
+    @classmethod
+    def get_todo_views_data(cls):
+        """Return view configuration for different todo views - Odoo inspired"""
+        return {
+            'kanban': {
+                'default_group_by': 'personal_stage_type',
+                'highlight_color': 'color',
+                'sample_data': True,
+            },
+            'list': {
+                'editable': 'bottom',
+                'multi_edit': True,
+                'open_form_view': True,
+            },
+            'form': {
+                'js_class': 'todo_form',
+            },
+            'activity': {
+                'string': 'To-dos',
+            }
+        }
 
 
 class Note(models.Model):

@@ -1,8 +1,21 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from ..models import Project, Task, Note, Category, Tag, Reminder, TaskTemplate
+from ..models import Project, Task, Note, Category, Tag, Reminder, TaskTemplate, PersonalStageType
 
 User = get_user_model()
+
+
+class PersonalStageTypeSerializer(serializers.ModelSerializer):
+    """Serializer for personal stage types - Odoo inspired"""
+    task_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = PersonalStageType
+        fields = ['id', 'name', 'sequence', 'fold', 'color', 'is_closed', 'task_count', 'created_at']
+        read_only_fields = ['id', 'created_at']
+    
+    def get_task_count(self, obj):
+        return obj.tasks.filter(active=True).count()
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -80,30 +93,36 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
 
 
 class TaskListSerializer(serializers.ModelSerializer):
-    """Simplified serializer for task lists"""
+    """Simplified serializer for task lists - Odoo inspired"""
     project_name = serializers.CharField(source='project.name', read_only=True)
     tags = TagSerializer(many=True, read_only=True)
+    personal_stage_type = PersonalStageTypeSerializer(read_only=True)
     subtask_count = serializers.ReadOnlyField()
     completed_subtask_count = serializers.ReadOnlyField()
     is_overdue = serializers.ReadOnlyField()
+    is_closed = serializers.ReadOnlyField()
+    name_with_subtask_count = serializers.ReadOnlyField()
     
     class Meta:
         model = Task
         fields = [
-            'id', 'title', 'status', 'priority', 'progress_percentage',
-            'due_date', 'is_important', 'is_overdue', 'project_name',
-            'tags', 'subtask_count', 'completed_subtask_count',
-            'created_at', 'updated_at'
+            'id', 'title', 'status', 'state', 'priority', 'color', 'sequence',
+            'progress_percentage', 'due_date', 'is_important', 'is_overdue', 
+            'is_closed', 'active', 'project_name', 'personal_stage_type',
+            'tags', 'subtask_count', 'completed_subtask_count', 
+            'name_with_subtask_count', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):
-    """Detailed serializer for task details"""
+    """Detailed serializer for task details - Odoo inspired"""
     project = ProjectListSerializer(read_only=True)
     project_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
     parent_task = TaskListSerializer(read_only=True)
     parent_task_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    personal_stage_type = PersonalStageTypeSerializer(read_only=True)
+    personal_stage_type_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
     tags = TagSerializer(many=True, read_only=True)
     tag_ids = serializers.ListField(
         child=serializers.UUIDField(),
@@ -114,22 +133,27 @@ class TaskDetailSerializer(serializers.ModelSerializer):
     subtask_count = serializers.ReadOnlyField()
     completed_subtask_count = serializers.ReadOnlyField()
     is_overdue = serializers.ReadOnlyField()
+    is_closed = serializers.ReadOnlyField()
+    name_with_subtask_count = serializers.ReadOnlyField()
     
     class Meta:
         model = Task
         fields = [
-            'id', 'title', 'description', 'status', 'priority', 'progress_percentage',
-            'project', 'project_id', 'parent_task', 'parent_task_id',
+            'id', 'title', 'description', 'status', 'state', 'priority', 'color',
+            'sequence', 'progress_percentage', 'project', 'project_id', 
+            'parent_task', 'parent_task_id', 'personal_stage_type', 'personal_stage_type_id',
             'tags', 'tag_ids', 'order', 'due_date', 'start_date',
             'estimated_time', 'actual_time', 'is_important', 'is_recurring',
-            'reminder_set', 'is_overdue', 'subtasks', 'subtask_count',
-            'completed_subtask_count', 'created_at', 'updated_at', 'completed_at'
+            'reminder_set', 'active', 'is_overdue', 'is_closed', 'subtasks', 
+            'subtask_count', 'completed_subtask_count', 'name_with_subtask_count',
+            'created_at', 'updated_at', 'completed_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
     
     def create(self, validated_data):
         project_id = validated_data.pop('project_id', None)
         parent_task_id = validated_data.pop('parent_task_id', None)
+        personal_stage_type_id = validated_data.pop('personal_stage_type_id', None)
         tag_ids = validated_data.pop('tag_ids', [])
         
         task = Task.objects.create(**validated_data)
@@ -152,6 +176,15 @@ class TaskDetailSerializer(serializers.ModelSerializer):
             except Task.DoesNotExist:
                 pass
         
+        # Set personal stage
+        if personal_stage_type_id:
+            try:
+                stage = PersonalStageType.objects.get(id=personal_stage_type_id, user=task.user)
+                task.personal_stage_type = stage
+                task.save()
+            except PersonalStageType.DoesNotExist:
+                pass
+        
         # Set tags
         if tag_ids:
             tags = Tag.objects.filter(id__in=tag_ids, user=task.user)
@@ -162,6 +195,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         project_id = validated_data.pop('project_id', None)
         parent_task_id = validated_data.pop('parent_task_id', None)
+        personal_stage_type_id = validated_data.pop('personal_stage_type_id', None)
         tag_ids = validated_data.pop('tag_ids', None)
         
         # Update project
@@ -179,6 +213,14 @@ class TaskDetailSerializer(serializers.ModelSerializer):
                 validated_data['parent_task'] = parent_task
             except Task.DoesNotExist:
                 validated_data['parent_task'] = None
+        
+        # Update personal stage
+        if personal_stage_type_id:
+            try:
+                stage = PersonalStageType.objects.get(id=personal_stage_type_id, user=instance.user)
+                validated_data['personal_stage_type'] = stage
+            except PersonalStageType.DoesNotExist:
+                validated_data['personal_stage_type'] = None
         
         # Update tags
         if tag_ids is not None:
@@ -292,3 +334,66 @@ class TaskTemplateSerializer(serializers.ModelSerializer):
             'is_featured', 'usage_count', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'usage_count', 'created_at', 'updated_at']
+
+
+# Odoo-inspired specialized serializers
+
+class TaskKanbanSerializer(serializers.ModelSerializer):
+    """Kanban-specific serializer for tasks - optimized for kanban view"""
+    tags = TagSerializer(many=True, read_only=True)
+    personal_stage_type = PersonalStageTypeSerializer(read_only=True)
+    subtask_count = serializers.ReadOnlyField()
+    name_with_subtask_count = serializers.ReadOnlyField()
+    is_overdue = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = Task
+        fields = [
+            'id', 'title', 'name_with_subtask_count', 'description', 'state', 
+            'priority', 'color', 'sequence', 'due_date', 'is_important',
+            'is_overdue', 'active', 'personal_stage_type', 'tags', 'subtask_count'
+        ]
+        read_only_fields = ['id']
+
+
+class TaskQuickCreateSerializer(serializers.ModelSerializer):
+    """Quick create serializer for tasks - Odoo inspired"""
+    
+    class Meta:
+        model = Task
+        fields = ['title', 'description']
+    
+    def create(self, validated_data):
+        # Auto-set user from request context
+        user = self.context['request'].user
+        validated_data['user'] = user
+        return super().create(validated_data)
+
+
+class TaskToggleSerializer(serializers.ModelSerializer):
+    """Serializer for toggling task state - Odoo done checkmark style"""
+    
+    class Meta:
+        model = Task
+        fields = ['id', 'state', 'status', 'completed_at']
+        read_only_fields = ['id', 'completed_at']
+    
+    def update(self, instance, validated_data):
+        # Use the toggle_state method for consistent behavior
+        if 'state' in validated_data:
+            instance.toggle_state()
+            return instance
+        return super().update(instance, validated_data)
+
+
+class DashboardStatsSerializer(serializers.Serializer):
+    """Dashboard statistics serializer - Odoo inspired"""
+    total_tasks = serializers.IntegerField()
+    completed_tasks = serializers.IntegerField()
+    due_today = serializers.IntegerField()
+    overdue = serializers.IntegerField()
+    important = serializers.IntegerField()
+    by_stage = serializers.DictField()
+    by_priority = serializers.DictField()
+    activity = serializers.DictField()
+    quick_access = serializers.DictField()

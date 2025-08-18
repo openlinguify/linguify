@@ -2,27 +2,175 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{% trans "Todo & Productivity" %} - {% trans "Organize your tasks like Notion" %}{% endblock %}
+{% block title %}{% trans "To-do" %} - {% trans "Organize your tasks like Notion" %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'todo/css/todo.css' %}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="{% static 'todo/css/todo-linguify.css' %}">
+<style>
+/* App-specific header brand styling */
+.app-brand-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.app-brand-main {
+    color: var(--linguify-primary, #2D5BBA);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    position: relative;
+}
+
+.app-brand-main:hover {
+    background-color: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary, #2D5BBA);
+}
+
+.app-brand-breadcrumb {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+.app-brand-container:hover .app-brand-breadcrumb {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.breadcrumb-link {
+    color: var(--linguify-text-secondary, #64748b);
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+    color: var(--linguify-primary, #2D5BBA);
+}
+
+.breadcrumb-arrow {
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+}
+
+.breadcrumb-link:hover .breadcrumb-arrow {
+    transform: translateX(-2px);
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="todo-app" id="todoApp">
-    <!-- Sidebar Navigation -->
-    <div class="todo-sidebar">
-        <div class="mb-4">
-            <h4 class="text-primary">
-                <i class="bi bi-check2-square me-2"></i>
-                {% trans "Todo & Productivity" %}
-            </h4>
-            <p class="text-muted small">{% trans "Organize like Notion" %}</p>
+<!-- Header Section like notebook/revision -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-gradient btn-sm" onclick="todoApp.showCreateTaskForm()">
+            <i class="bi bi-plus"></i>
+            {% trans "New Task" %}
+        </button>
+        
+        <div class="input-group input-group-sm" style="width: 300px;">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="{% trans 'Search tasks...' %}" 
+                   id="searchInput" onkeyup="todoApp.debounceSearch()">
+        </div>
+        
+        <select class="form-select form-select-sm" style="width: auto;" 
+                id="statusFilter" onchange="todoApp.filterTasks()">
+            <option value="">{% trans "All Status" %}</option>
+            <option value="todo">{% trans "To Do" %}</option>
+            <option value="in_progress">{% trans "In Progress" %}</option>
+            <option value="completed">{% trans "Completed" %}</option>
+        </select>
+        
+        <select class="form-select form-select-sm" style="width: auto;" 
+                id="priorityFilter" onchange="todoApp.filterTasks()">
+            <option value="">{% trans "All Priorities" %}</option>
+            <option value="low">{% trans "Low" %}</option>
+            <option value="medium">{% trans "Medium" %}</option>
+            <option value="high">{% trans "High" %}</option>
+            <option value="urgent">{% trans "Urgent" %}</option>
+        </select>
+        
+        <button class="btn btn-outline-primary btn-sm" onclick="todoApp.showProjectForm()">
+            <i class="bi bi-folder-plus"></i>
+            <span class="d-none d-lg-inline ms-1">{% trans "New Project" %}</span>
+        </button>
+    </div>
+    
+    <div class="d-flex align-items-center gap-2">
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary" onclick="todoApp.setView('list')" id="listViewBtn" title="{% trans 'List View' %}">
+                <i class="bi bi-list"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" onclick="todoApp.setView('kanban')" id="kanbanViewBtn" title="{% trans 'Kanban View' %}">
+                <i class="bi bi-kanban"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" onclick="todoApp.setView('calendar')" id="calendarViewBtn" title="{% trans 'Calendar View' %}">
+                <i class="bi bi-calendar3"></i>
+            </button>
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="todoApp.refreshData()" title="{% trans 'Refresh' %}">
+            <i class="bi bi-arrow-clockwise"></i>
+        </button>
+    </div>
+</div>
+
+<div class="todo-workspace d-flex h-100">
+    <!-- Sidebar with navigation -->
+    <div class="todo-sidebar" id="todoSidebar">
+        <!-- Quick Stats -->
+        <div class="sidebar-stats mb-4">
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalTasksCount">0</div>
+                        <div class="stat-label">{% trans "Total" %}</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="stat-card">
+                        <div class="stat-number text-success" id="completedTasksCount">0</div>
+                        <div class="stat-label">{% trans "Completed" %}</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="stat-card">
+                        <div class="stat-number text-warning" id="dueTodayCount">0</div>
+                        <div class="stat-label">{% trans "Due Today" %}</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="stat-card">
+                        <div class="stat-number text-danger" id="overdueCount">0</div>
+                        <div class="stat-label">{% trans "Overdue" %}</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Navigation Menu -->
         <nav class="todo-nav">
+            <h6 class="nav-section-title">{% trans "Views" %}</h6>
             <a href="#" class="todo-nav-item active" data-nav="dashboard">
                 <i class="bi bi-speedometer2"></i>
                 {% trans "Dashboard" %}
@@ -31,128 +179,88 @@
             <a href="#" class="todo-nav-item" data-nav="tasks">
                 <i class="bi bi-list-task"></i>
                 {% trans "Tasks" %}
-                <span class="todo-nav-badge" id="taskCount">0</span>
+                <span class="nav-badge" id="taskCountNav">0</span>
             </a>
             
             <a href="#" class="todo-nav-item" data-nav="projects">
                 <i class="bi bi-folder"></i>
                 {% trans "Projects" %}
-                <span class="todo-nav-badge" id="projectCount">0</span>
-            </a>
-            
-            <a href="#" class="todo-nav-item" data-nav="notes">
-                <i class="bi bi-journal-text"></i>
-                {% trans "Notes" %}
-                <span class="todo-nav-badge" id="noteCount">0</span>
-            </a>
-            
-            <a href="#" class="todo-nav-item" data-nav="calendar">
-                <i class="bi bi-calendar3"></i>
-                {% trans "Calendar" %}
-            </a>
-            
-            <a href="#" class="todo-nav-item" data-nav="kanban">
-                <i class="bi bi-kanban"></i>
-                {% trans "Kanban Board" %}
+                <span class="nav-badge" id="projectCountNav">0</span>
             </a>
 
-            <hr class="my-3">
-
-            <!-- Quick Filters -->
-            <div class="mb-3">
-                <h6 class="text-muted small text-uppercase">{% trans "Quick Filters" %}</h6>
-            </div>
+            <h6 class="nav-section-title mt-4">{% trans "Quick Filters" %}</h6>
             
-            <a href="#" class="todo-nav-item" data-nav="tasks" data-filter="due_today">
-                <i class="bi bi-calendar-day"></i>
+            <a href="#" class="todo-nav-item" data-filter="due_today">
+                <i class="bi bi-calendar-day text-warning"></i>
                 {% trans "Due Today" %}
-                <span class="todo-nav-badge" id="dueTodayCount">0</span>
+                <span class="nav-badge" id="dueTodayNavCount">0</span>
             </a>
             
-            <a href="#" class="todo-nav-item" data-nav="tasks" data-filter="overdue">
-                <i class="bi bi-exclamation-triangle"></i>
+            <a href="#" class="todo-nav-item" data-filter="overdue">
+                <i class="bi bi-exclamation-triangle text-danger"></i>
                 {% trans "Overdue" %}
-                <span class="todo-nav-badge bg-danger" id="overdueCount">0</span>
+                <span class="nav-badge bg-danger" id="overdueNavCount">0</span>
             </a>
             
-            <a href="#" class="todo-nav-item" data-nav="tasks" data-filter="important">
-                <i class="bi bi-star"></i>
+            <a href="#" class="todo-nav-item" data-filter="important">
+                <i class="bi bi-star text-primary"></i>
                 {% trans "Important" %}
-                <span class="todo-nav-badge" id="importantCount">0</span>
+                <span class="nav-badge" id="importantNavCount">0</span>
             </a>
             
-            <a href="#" class="todo-nav-item" data-nav="tasks" data-filter="completed">
-                <i class="bi bi-check-all"></i>
+            <a href="#" class="todo-nav-item" data-filter="completed">
+                <i class="bi bi-check-all text-success"></i>
                 {% trans "Completed" %}
-                <span class="todo-nav-badge bg-success" id="completedCount">0</span>
+                <span class="nav-badge bg-success" id="completedNavCount">0</span>
             </a>
 
-            <hr class="my-3">
-
-            <!-- Categories & Tags -->
-            <div class="mb-3">
-                <h6 class="text-muted small text-uppercase d-flex justify-content-between align-items-center">
-                    {% trans "Categories" %}
-                    <button class="btn btn-sm btn-outline-primary" onclick="todoApp.showCategoryForm()">
-                        <i class="bi bi-plus"></i>
-                    </button>
-                </h6>
+            <h6 class="nav-section-title mt-4">{% trans "Organization" %}</h6>
+            
+            <div id="projectsList">
+                <!-- Projects will be loaded here -->
             </div>
             
             <div id="categoriesList">
                 <!-- Categories will be loaded here -->
             </div>
-
-            <div class="mb-3 mt-4">
-                <h6 class="text-muted small text-uppercase d-flex justify-content-between align-items-center">
-                    {% trans "Tags" %}
-                    <button class="btn btn-sm btn-outline-primary" onclick="todoApp.showTagForm()">
-                        <i class="bi bi-plus"></i>
-                    </button>
-                </h6>
-            </div>
-            
-            <div id="tagsList">
-                <!-- Popular tags will be loaded here -->
-            </div>
         </nav>
-
-        <!-- Settings & User -->
-        <div class="mt-auto pt-4">
-            <hr>
-            <a href="#" class="todo-nav-item" onclick="todoApp.showSettings()">
-                <i class="bi bi-gear"></i>
-                {% trans "Settings" %}
-            </a>
-            
-            <a href="#" class="todo-nav-item" onclick="todoApp.showHelp()">
-                <i class="bi bi-question-circle"></i>
-                {% trans "Help" %}
-            </a>
-        </div>
     </div>
 
     <!-- Main Content Area -->
-    <div class="todo-main">
-        <!-- Content will be loaded here dynamically -->
-        <div class="todo-loading">
-            <div class="todo-spinner"></div>
-            <p>{% trans "Loading..." %}</p>
+    <div class="todo-main flex-grow-1">
+        <!-- Loading state -->
+        <div class="todo-loading" id="todoLoading">
+            <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">{% trans "Loading..." %}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main content container -->
+        <div id="todoMainContent" style="display: none;">
+            <!-- Dynamic content will be inserted here -->
+        </div>
+        
+        <!-- Empty state for first visit -->
+        <div id="todoEmptyState" class="text-center py-5" style="display: none;">
+            <i class="bi bi-check2-square text-muted" style="font-size: 4rem;"></i>
+            <h3 class="mt-3 text-muted">{% trans "Welcome to To-do!" %}</h3>
+            <p class="text-muted">{% trans "Start organizing your tasks and boost your productivity" %}</p>
+            <button class="btn btn-gradient" onclick="todoApp.showCreateTaskForm()">
+                <i class="bi bi-plus"></i>
+                {% trans "Create your first task" %}
+            </button>
         </div>
     </div>
-
-    <!-- Quick Add Button -->
-    <button class="todo-quick-add" title="{% trans 'Quick Add (Ctrl+Enter)' %}">
-        <i class="bi bi-plus"></i>
-    </button>
-
-    <!-- Mobile Menu Toggle -->
-    <button class="btn btn-primary d-md-none position-fixed" 
-            style="top: 1rem; left: 1rem; z-index: 1001;"
-            onclick="document.querySelector('.todo-sidebar').classList.toggle('open')">
-        <i class="bi bi-list"></i>
-    </button>
 </div>
+
+<!-- Quick Add Floating Button -->
+<button class="btn btn-gradient position-fixed" id="quickAddBtn" 
+        style="bottom: 2rem; right: 2rem; width: 56px; height: 56px; border-radius: 50%; z-index: 1000;"
+        onclick="todoApp.showQuickAddForm()" title="{% trans 'Quick Add (Ctrl+Enter)' %}">
+    <i class="bi bi-plus fs-4"></i>
+</button>
 
 <!-- Modals and Forms will be added here -->
 <div id="todoModals">
@@ -166,6 +274,28 @@
 {% block extra_js %}
 <script src="{% static 'todo/js/todo.js' %}"></script>
 <script>
+// Dynamic header brand transformation for Todo app
+document.addEventListener('DOMContentLoaded', function() {
+    const navbarBrand = document.querySelector('.navbar-brand');
+    if (navbarBrand) {
+        // Replace the brand content with our custom structure
+        navbarBrand.innerHTML = `
+            <div class="app-brand-container">
+                <span class="app-brand-main">Todo</span>
+                <div class="app-brand-breadcrumb">
+                    <a href="{% url 'saas_web:dashboard' %}" class="breadcrumb-link">
+                        <span class="breadcrumb-arrow">←</span>
+                        Retour au Dashboard
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        // Keep the original href for accessibility
+        navbarBrand.setAttribute('href', '{% url "saas_web:dashboard" %}');
+    }
+});
+
 // Translations for JavaScript
 window.todoTranslations = {
     'loading': '{% trans "Loading..." %}',
