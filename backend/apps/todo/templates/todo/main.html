@@ -59,105 +59,107 @@
 {% endblock %}
 
 {% block content %}
-<!-- Sidebar -->
-<div id="todoSidebar" class="todo-sidebar">
-    <div class="sidebar-content">
-        <!-- Tasks list -->
-        <ul id="tasksList" class="task-list"></ul>
-        
-        <!-- Empty state -->
-        <div id="tasksEmpty" class="empty-state empty-state-hidden">
-            <i class="bi bi-check2-square empty-state-icon"></i>
-            <div class="empty-state-title">{% trans "No tasks yet" %}</div>
-            <div class="empty-state-description">{% trans "Create your first task to start organizing your work" %}</div>
-            <button class="btn btn-gradient create-task-btn">
-                <i class="bi bi-plus-lg me-1"></i>
-                {% trans "Create task" %}
-            </button>
-        </div>
-        
-        <!-- Load more -->
-        <div id="loadMoreContainer" class="p-3 text-center load-more-container">
-            <button id="loadMoreBtn" class="btn btn-outline-custom">
-                <i class="bi bi-arrow-down-circle me-1"></i>
-                {% trans "Load more" %}
-            </button>
+<div class="todo-workspace d-flex">
+    <!-- Sidebar -->
+    <div id="todoSidebar" class="todo-sidebar">
+        <div class="sidebar-content">
+            <!-- Tasks list -->
+            <ul id="tasksList" class="task-list list-unstyled"></ul>
+            
+            <!-- Empty state -->
+            <div id="tasksEmpty" class="empty-state text-center p-4" style="display: none;">
+                <i class="bi bi-check2-square text-muted mb-3" style="font-size: 3rem;"></i>
+                <div class="h5 mb-2">{% trans "No tasks yet" %}</div>
+                <div class="text-muted mb-3">{% trans "Create your first task to start organizing your work" %}</div>
+                <button class="btn btn-primary create-task-btn">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    {% trans "Create task" %}
+                </button>
+            </div>
+            
+            <!-- Load more -->
+            <div id="loadMoreContainer" class="p-3 text-center" style="display: none;">
+                <button id="loadMoreBtn" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-arrow-down-circle me-1"></i>
+                    {% trans "Load more" %}
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Task Work Area -->
-<div class="todo-study">
-    <!-- Welcome state -->
-    <div id="welcomeState" class="empty-state">
-        <i class="bi bi-lightning-charge empty-state-icon"></i>
-        <div class="empty-state-title">{% trans "Welcome to your Todo workspace" %}</div>
-        <div class="empty-state-description">
-            {% trans "Select a task from the list or create a new one to start organizing your work" %}
-        </div>
-        <div class="d-flex gap-2 justify-content-center">
-            <button class="btn btn-gradient create-task-btn">
-                <i class="bi bi-plus-lg me-1"></i>
-                {% trans "Create task" %}
-            </button>
-            <button class="btn btn-outline-custom" onclick="setView('kanban')">
-                <i class="bi bi-kanban me-1"></i>
-                {% trans "Kanban view" %}
-            </button>
-        </div>
-    </div>
-    
-    <!-- Task Details -->
-    <div id="taskDetails" class="task-details-hidden">
-        <!-- Task Header -->
-        <div class="study-header">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                    <button id="backToList" class="btn btn-outline-custom btn-sm d-md-none">
-                        <i class="bi bi-arrow-left"></i>
-                    </button>
-                    <div>
-                        <h4 id="taskName" class="mb-0">{% trans "Task name" %}</h4>
-                        <small id="taskProject" class="text-muted">{% trans "Project" %}</small>
-                        <div id="taskTagsDisplay" class="task-tags mt-1"></div>
-                    </div>
-                </div>
-                
-                <div class="d-flex align-items-center gap-2">
-                    <!-- Progress -->
-                    <div class="d-flex align-items-center gap-2 me-3 d-none d-md-flex">
-                        <span id="taskProgress" class="badge task-badge">{% trans "To Do" %}</span>
-                        <div class="priority-indicator" id="taskPriority">
-                            <i class="bi bi-star"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Actions -->
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-custom" onclick="editTask()" title="{% trans 'Edit task' %}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-outline-custom" onclick="toggleTaskComplete()" id="toggleCompleteBtn" title="{% trans 'Mark as done' %}">
-                            <i class="bi bi-check2"></i>
-                        </button>
-                        <button class="btn btn-outline-custom" onclick="deleteTask()" title="{% trans 'Delete task' %}">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
+    <!-- Main Work Area -->
+    <div class="todo-content flex-fill">
+        <!-- Welcome state -->
+        <div id="welcomeState" class="empty-state text-center p-5">
+            <i class="bi bi-lightning-charge text-primary mb-3" style="font-size: 4rem;"></i>
+            <div class="h3 mb-3">{% trans "Welcome to your Todo workspace" %}</div>
+            <div class="text-muted mb-4">
+                {% trans "Select a task from the list or create a new one to start organizing your work" %}
+            </div>
+            <div class="d-flex gap-2 justify-content-center">
+                <button class="btn btn-primary create-task-btn">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    {% trans "Create task" %}
+                </button>
+                <button class="btn btn-outline-primary" onclick="setView('kanban')">
+                    <i class="bi bi-kanban me-1"></i>
+                    {% trans "Kanban view" %}
+                </button>
             </div>
         </div>
         
-        <!-- Task Content -->
-        <div id="taskContent" class="task-content">
-            <!-- Task description will be loaded here -->
+        <!-- Task Details -->
+        <div id="taskDetails" class="task-details" style="display: none;">
+            <!-- Task Header -->
+            <div class="border-bottom pb-3 mb-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <button id="backToList" class="btn btn-outline-secondary btn-sm d-md-none">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <div>
+                            <h4 id="taskName" class="mb-0">{% trans "Task name" %}</h4>
+                            <small id="taskProject" class="text-muted">{% trans "Project" %}</small>
+                            <div id="taskTagsDisplay" class="task-tags mt-1"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Progress -->
+                        <div class="d-flex align-items-center gap-2 me-3">
+                            <span id="taskProgress" class="badge bg-primary">{% trans "To Do" %}</span>
+                            <div class="text-warning" id="taskPriority" style="display: none;">
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-secondary" onclick="editTask()" title="{% trans 'Edit task' %}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-outline-success" onclick="toggleTaskComplete()" id="toggleCompleteBtn" title="{% trans 'Mark as done' %}">
+                                <i class="bi bi-check2"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteTask()" title="{% trans 'Delete task' %}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Task Content -->
+            <div id="taskContent" class="task-content">
+                <!-- Task description will be loaded here -->
+            </div>
         </div>
-    </div>
-    
-    <!-- Kanban View -->
-    <div id="kanbanView" class="kanban-view-hidden">
-        <div class="kanban-board" id="kanbanBoard">
-            <!-- Kanban columns will be loaded here -->
+        
+        <!-- Kanban View -->
+        <div id="kanbanView" class="kanban-view" style="display: none;">
+            <div class="kanban-board row g-3" id="kanbanBoard">
+                <!-- Kanban columns will be loaded here -->
+            </div>
         </div>
     </div>
 </div>
@@ -169,6 +171,68 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'todo/css/todo-linguify.css' %}">
 <style>
+/* Todo App Custom Styles */
+.todo-workspace {
+    min-height: calc(100vh - 120px);
+    background-color: #f8fafc;
+}
+
+.todo-sidebar {
+    width: 350px;
+    background: white;
+    border-right: 1px solid #e2e8f0;
+    padding: 1.5rem;
+    min-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+.todo-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: #f8fafc;
+    overflow-y: auto;
+}
+
+.task-item {
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0 !important;
+    background: white;
+}
+
+.task-item:hover {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.task-item.active {
+    border-color: #3b82f6 !important;
+    background-color: #eff6ff;
+}
+
+.kanban-view .card {
+    border: 1px solid #e2e8f0;
+}
+
+.kanban-view .card-header {
+    background-color: #3b82f6;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.task-details {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.empty-state {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin: 2rem;
+}
+
 /* Dynamic header brand styling */
 .app-brand-container {
     position: relative;

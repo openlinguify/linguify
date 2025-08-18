@@ -20,11 +20,11 @@ router.register(r'reminders', ReminderViewSet, basename='reminder')
 router.register(r'templates', TaskTemplateViewSet, basename='template')
 
 urlpatterns = [
-    # API endpoints
-    path('api/', include(router.urls)),
+    # API endpoints (router includes all CRUD operations)
+    path('', include(router.urls)),
     
     # Settings endpoints
-    path('api/settings/', TodoSettingsView.as_view(), name='settings'),
-    path('api/preferences/', TodoUserPreferencesView.as_view(), name='preferences'),
-    path('api/dashboard/', TodoDashboardView.as_view(), name='dashboard'),
+    path('settings/', TodoSettingsView.as_view(), name='settings'),
+    path('preferences/', TodoUserPreferencesView.as_view(), name='preferences'),
+    path('dashboard/', TodoDashboardView.as_view(), name='dashboard'),
 ]

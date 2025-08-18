@@ -78,7 +78,7 @@ class TodoApp {
 
     async loadTasks() {
         try {
-            const response = await fetch('/todo/api/tasks/', {
+            const response = await fetch('/api/v1/todo/tasks/', {
                 headers: {
                     'X-CSRFToken': this.csrfToken,
                     'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ class TodoApp {
 
     async loadStages() {
         try {
-            const response = await fetch('/todo/api/stages/', {
+            const response = await fetch('/api/v1/todo/stages/', {
                 headers: {
                     'X-CSRFToken': this.csrfToken,
                     'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ class TodoApp {
 
     async loadTags() {
         try {
-            const response = await fetch('/todo/api/tags/', {
+            const response = await fetch('/api/v1/todo/tags/', {
                 headers: {
                     'X-CSRFToken': this.csrfToken,
                     'Content-Type': 'application/json',
@@ -139,9 +139,9 @@ class TodoApp {
         });
         
         // Hide all views
-        document.getElementById('taskDetails')?.classList.add('task-details-hidden');
-        document.getElementById('kanbanView')?.classList.add('kanban-view-hidden');
-        document.getElementById('welcomeState')?.classList.remove('empty-state-hidden');
+        document.getElementById('taskDetails').style.display = 'none';
+        document.getElementById('kanbanView').style.display = 'none';
+        document.getElementById('welcomeState').style.display = 'block';
         
         switch (viewType) {
             case 'list':
@@ -160,18 +160,18 @@ class TodoApp {
     }
 
     showTasksList() {
-        document.getElementById('welcomeState')?.classList.remove('empty-state-hidden');
-        document.getElementById('taskDetails')?.classList.add('task-details-hidden');
-        document.getElementById('kanbanView')?.classList.add('kanban-view-hidden');
+        document.getElementById('welcomeState').style.display = 'block';
+        document.getElementById('taskDetails').style.display = 'none';
+        document.getElementById('kanbanView').style.display = 'none';
         
         // Show sidebar on mobile
         document.getElementById('todoSidebar')?.classList.remove('d-none');
     }
 
     showKanbanView() {
-        document.getElementById('welcomeState')?.classList.add('empty-state-hidden');
-        document.getElementById('taskDetails')?.classList.add('task-details-hidden');
-        document.getElementById('kanbanView')?.classList.remove('kanban-view-hidden');
+        document.getElementById('welcomeState').style.display = 'none';
+        document.getElementById('taskDetails').style.display = 'none';
+        document.getElementById('kanbanView').style.display = 'block';
         
         this.renderKanbanBoard();
     }
@@ -189,11 +189,11 @@ class TodoApp {
         
         if (this.tasks.length === 0) {
             tasksList.innerHTML = '';
-            tasksEmpty?.classList.remove('empty-state-hidden');
+            tasksEmpty.style.display = 'block';
             return;
         }
         
-        tasksEmpty?.classList.add('empty-state-hidden');
+        tasksEmpty.style.display = 'none';
         
         tasksList.innerHTML = this.tasks.map(task => this.renderTaskItem(task)).join('');
         
@@ -205,32 +205,34 @@ class TodoApp {
 
     renderTaskItem(task) {
         const priorityIcon = task.priority === '1' ? '⭐' : '';
-        const stateClass = task.state === '1_done' ? 'completed' : '';
+        const stateClass = task.state === '1_done' ? 'text-muted' : '';
         const progressPercent = task.progress_percentage || 0;
         
         return `
-            <li class="task-item ${stateClass}" data-task-id="${task.id}" data-priority="${task.priority}" data-state="${task.state}">
-                <div class="task-header">
-                    <div class="d-flex align-items-center">
-                        <div class="task-checkbox ${task.state === '1_done' ? 'checked' : ''}" 
-                             onclick="todoApp.toggleTask('${task.id}', event)"></div>
-                        <div>
-                            <div class="task-name">${priorityIcon}${task.title || 'Untitled Task'}</div>
-                            ${task.project_name ? `<small class="text-muted">${task.project_name}</small>` : ''}
+            <li class="task-item list-group-item border-0 mb-2 rounded shadow-sm cursor-pointer ${stateClass}" data-task-id="${task.id}" data-priority="${task.priority}" data-state="${task.state}" style="cursor: pointer;">
+                <div class="d-flex align-items-start">
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" ${task.state === '1_done' ? 'checked' : ''} 
+                               onclick="todoApp.toggleTask('${task.id}', event)" style="margin-top: 0.125rem;">
+                    </div>
+                    <div class="flex-fill">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <h6 class="mb-0 fw-bold">${priorityIcon}${task.title || 'Untitled Task'}</h6>
+                            ${task.subtask_count > 0 ? `<span class="badge bg-secondary">${task.completed_subtask_count}/${task.subtask_count}</span>` : ''}
+                        </div>
+                        ${task.project_name ? `<small class="text-muted d-block mb-1">${task.project_name}</small>` : ''}
+                        ${task.description ? `<p class="text-muted small mb-2">${task.description.substring(0, 100)}${task.description.length > 100 ? '...' : ''}</p>` : ''}
+                        ${progressPercent > 0 ? `
+                            <div class="progress mb-2" style="height: 4px;">
+                                <div class="progress-bar" style="width: ${progressPercent}%"></div>
+                            </div>
+                        ` : ''}
+                        <div class="d-flex align-items-center text-muted small">
+                            ${task.due_date ? `<span class="me-3"><i class="bi bi-calendar me-1"></i>${new Date(task.due_date).toLocaleDateString()}</span>` : ''}
+                            ${task.is_overdue ? '<span class="text-danger me-3"><i class="bi bi-exclamation-triangle me-1"></i>Overdue</span>' : ''}
+                            <span><i class="bi bi-clock me-1"></i>${new Date(task.created_at).toLocaleDateString()}</span>
                         </div>
                     </div>
-                    <div class="task-stats">
-                        ${task.subtask_count > 0 ? `<span class="task-badge">${task.completed_subtask_count}/${task.subtask_count}</span>` : ''}
-                    </div>
-                </div>
-                ${task.description ? `<div class="task-description">${task.description.substring(0, 100)}${task.description.length > 100 ? '...' : ''}</div>` : ''}
-                <div class="task-progress">
-                    <div class="task-progress-bar" style="width: ${progressPercent}%"></div>
-                </div>
-                <div class="task-meta">
-                    ${task.due_date ? `<span><i class="bi bi-calendar"></i> ${new Date(task.due_date).toLocaleDateString()}</span>` : ''}
-                    ${task.is_overdue ? '<span class="text-danger"><i class="bi bi-exclamation-triangle"></i> Overdue</span>' : ''}
-                    <span><i class="bi bi-clock"></i> ${new Date(task.created_at).toLocaleDateString()}</span>
                 </div>
             </li>
         `;
@@ -245,13 +247,15 @@ class TodoApp {
         kanbanBoard.innerHTML = this.stages.map(stage => {
             const stageTasks = tasksByStage[stage.id] || [];
             return `
-                <div class="kanban-column">
-                    <div class="kanban-header">
-                        <h6 class="kanban-title">${stage.name}</h6>
-                        <span class="kanban-count">${stageTasks.length}</span>
-                    </div>
-                    <div class="kanban-tasks">
-                        ${stageTasks.map(task => this.renderKanbanTask(task)).join('')}
+                <div class="col-md-3">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+                            <h6 class="mb-0">${stage.name}</h6>
+                            <span class="badge bg-light text-dark">${stageTasks.length}</span>
+                        </div>
+                        <div class="card-body p-2">
+                            ${stageTasks.map(task => this.renderKanbanTask(task)).join('')}
+                        </div>
                     </div>
                 </div>
             `;
@@ -262,14 +266,16 @@ class TodoApp {
         const priorityIcon = task.priority === '1' ? '⭐' : '';
         
         return `
-            <div class="kanban-task" data-task-id="${task.id}" onclick="todoApp.selectTask(todoApp.getTaskById('${task.id}'))">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="fw-bold">${priorityIcon}${task.title || 'Untitled Task'}</span>
-                    <div class="task-checkbox ${task.state === '1_done' ? 'checked' : ''}" 
-                         onclick="todoApp.toggleTask('${task.id}', event)"></div>
+            <div class="card mb-2 shadow-sm" data-task-id="${task.id}" onclick="todoApp.selectTask(todoApp.getTaskById('${task.id}'))" style="cursor: pointer;">
+                <div class="card-body p-2">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="fw-bold small">${priorityIcon}${task.title || 'Untitled Task'}</span>
+                        <input class="form-check-input" type="checkbox" ${task.state === '1_done' ? 'checked' : ''} 
+                               onclick="todoApp.toggleTask('${task.id}', event)">
+                    </div>
+                    ${task.description ? `<p class="text-muted small mb-1">${task.description.substring(0, 60)}${task.description.length > 60 ? '...' : ''}</p>` : ''}
+                    ${task.due_date ? `<small class="text-muted"><i class="bi bi-calendar me-1"></i>${new Date(task.due_date).toLocaleDateString()}</small>` : ''}
                 </div>
-                ${task.description ? `<p class="text-muted small mb-2">${task.description.substring(0, 80)}${task.description.length > 80 ? '...' : ''}</p>` : ''}
-                ${task.due_date ? `<small class="text-muted"><i class="bi bi-calendar"></i> ${new Date(task.due_date).toLocaleDateString()}</small>` : ''}
             </div>
         `;
     }
@@ -322,9 +328,9 @@ class TodoApp {
     }
 
     showTaskDetails(task) {
-        document.getElementById('welcomeState')?.classList.add('empty-state-hidden');
-        document.getElementById('taskDetails')?.classList.remove('task-details-hidden');
-        document.getElementById('kanbanView')?.classList.add('kanban-view-hidden');
+        document.getElementById('welcomeState').style.display = 'none';
+        document.getElementById('taskDetails').style.display = 'block';
+        document.getElementById('kanbanView').style.display = 'none';
         
         // Update task details
         document.getElementById('taskName').textContent = task.title || 'Untitled Task';
@@ -333,7 +339,7 @@ class TodoApp {
         const progressBadge = document.getElementById('taskProgress');
         if (progressBadge) {
             progressBadge.textContent = this.getStateLabel(task.state);
-            progressBadge.className = `badge task-badge ${this.getStateBadgeClass(task.state)}`;
+            progressBadge.className = `badge ${this.getStateBadgeClass(task.state)}`;
         }
         
         const priorityIndicator = document.getElementById('taskPriority');
@@ -350,7 +356,7 @@ class TodoApp {
                 </div>
                 ${task.tags && task.tags.length > 0 ? `
                     <div class="task-tags-display mt-3">
-                        ${task.tags.map(tag => `<span class="task-tag-item">${tag.name}</span>`).join('')}
+                        ${task.tags.map(tag => `<span class="badge bg-secondary me-1">${tag.name}</span>`).join('')}
                     </div>
                 ` : ''}
             `;
@@ -380,7 +386,7 @@ class TodoApp {
         const badgeClasses = {
             '1_draft': 'bg-secondary',
             '1_todo': 'bg-primary',
-            '1_in_progress': 'bg-warning',
+            '1_in_progress': 'bg-warning text-dark',
             '1_done': 'bg-success',
             '1_canceled': 'bg-danger'
         };
@@ -393,7 +399,7 @@ class TodoApp {
         }
         
         try {
-            const response = await fetch(`/todo/api/tasks/${taskId}/toggle_state/`, {
+            const response = await fetch(`/api/v1/todo/tasks/${taskId}/toggle_state/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': this.csrfToken,
@@ -437,7 +443,7 @@ class TodoApp {
         if (!title) return;
         
         try {
-            const response = await fetch('/todo/api/tasks/quick_create/', {
+            const response = await fetch('/api/v1/todo/tasks/quick_create/', {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': this.csrfToken,
@@ -522,9 +528,11 @@ class TodoApp {
         const tasksEmpty = document.getElementById('tasksEmpty');
         
         if (hasAnyTasks) {
-            tasksEmpty?.classList.add('empty-state-hidden');
+            tasksEmpty.style.display = 'none';
+            welcomeState.style.display = 'block';
         } else {
-            tasksEmpty?.classList.remove('empty-state-hidden');
+            tasksEmpty.style.display = 'block';
+            welcomeState.style.display = 'block';
         }
     }
 
