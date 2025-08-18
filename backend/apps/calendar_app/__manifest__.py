@@ -3,7 +3,7 @@
 Calendar Module Manifest for Linguify
 Complete calendar application with event management, recurring events, attendees, and notifications
 
-Based on Odoo calendar module architecture
+Based on Open Linguify calendar module architecture
 """
 
 __manifest__ = {
@@ -58,7 +58,7 @@ Integration:
 - Responsive design with Bootstrap integration
 
 Technical Implementation:
-- Based on Odoo calendar module architecture
+- Based on Open Linguify calendar module architecture
 - Uses python-dateutil for recurrence calculations
 - UUID-based primary keys for better performance
 - Proper database indexing for large datasets
@@ -144,7 +144,7 @@ Technical Implementation:
         'backend_complete': True,      # All backend functionality implemented
         'frontend_complete': False,    # Frontend templates need to be created
         'tests_passing': False,        # Tests need to be written
-        'security_reviewed': True,     # Security patterns from Odoo
+        'security_reviewed': True,     # Security patterns from Open Linguify
         'performance_optimized': True, # Database indexes and queries optimized
         'documentation_complete': False, # User docs to be written
         'admin_tools_ready': True,     # Django admin interface complete

@@ -9,11 +9,11 @@ User = get_user_model()
 
 class CalendarAttendee(models.Model):
     """
-    Calendar attendee model based on Odoo's calendar.attendee
+    Calendar attendee model based on Open Linguify's calendar.attendee
     Manages event attendees and their response status
     """
     
-    # Attendee response states based on Odoo
+    # Attendee response states based on Open Linguify
     STATE_CHOICES = [
         ('needsAction', 'Needs Action'),
         ('accepted', 'Accepted'),
@@ -145,7 +145,7 @@ class CalendarAttendee(models.Model):
         }
         return colors.get(self.state, 'text-muted')
     
-    # Response methods based on Odoo
+    # Response methods based on Open Linguify
     def do_accept(self):
         """Accept the event invitation"""
         self.state = 'accepted'

@@ -1,0 +1,408 @@
+{% extends "calendar/base.html" %}
+{% load static %}
+
+{% block title %}Import/Export Calendar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .import-export-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .feature-card {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: transform 0.2s;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        color: #007bff;
+        margin-bottom: 1rem;
+    }
+    
+    .upload-zone {
+        border: 2px dashed #dee2e6;
+        border-radius: 0.5rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: border-color 0.2s;
+        background: #f8f9fa;
+    }
+    
+    .upload-zone.dragover {
+        border-color: #007bff;
+        background: #e7f3ff;
+    }
+    
+    .upload-zone input[type="file"] {
+        display: none;
+    }
+    
+    .progress {
+        height: 0.5rem;
+        margin-top: 1rem;
+        display: none;
+    }
+    
+    .alert {
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="import-export-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-0">
+                    <i class="bi bi-arrow-down-up me-3"></i>
+                    Import / Export Calendar
+                </h1>
+                <p class="mb-0 mt-2 opacity-75">Synchronize your calendar with other applications</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Export Section -->
+        <div class="col-md-6">
+            <div class="feature-card">
+                <div class="text-center">
+                    <i class="bi bi-download feature-icon"></i>
+                    <h3>Export Calendar</h3>
+                    <p class="text-muted">Download your calendar events as an iCal (.ics) file that can be imported into other calendar applications.</p>
+                </div>
+                
+                <div class="export-options">
+                    <h5>Export Options</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="exportStartDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="exportStartDate">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="exportEndDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="exportEndDate">
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="exportRecurring" checked>
+                        <label class="form-check-label" for="exportRecurring">
+                            Include recurring events
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="exportPrivate">
+                        <label class="form-check-label" for="exportPrivate">
+                            Include private events
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-lg" onclick="exportCalendar()">
+                        <i class="bi bi-download me-2"></i>
+                        Download Calendar (.ics)
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="exportCalendar(true)">
+                        <i class="bi bi-calendar-range me-2"></i>
+                        Export Current Month Only
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Import Section -->
+        <div class="col-md-6">
+            <div class="feature-card">
+                <div class="text-center">
+                    <i class="bi bi-upload feature-icon"></i>
+                    <h3>Import Calendar</h3>
+                    <p class="text-muted">Upload an iCal (.ics) file from another calendar application to import events.</p>
+                </div>
+                
+                <div class="upload-zone" id="uploadZone">
+                    <i class="bi bi-cloud-upload display-4 text-muted"></i>
+                    <h5 class="mt-3">Drop your .ics file here</h5>
+                    <p class="text-muted">or <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('icalFile').click()">browse to select</button></p>
+                    <input type="file" id="icalFile" accept=".ics,.ical" onchange="handleFileSelect(event)">
+                    <div class="mt-2">
+                        <small class="text-muted">Supported formats: .ics, .ical (max 10MB)</small>
+                    </div>
+                </div>
+                
+                <div class="progress" id="uploadProgress">
+                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+                
+                <div id="importResults"></div>
+                
+                <div class="import-info mt-4">
+                    <h6>Compatible with:</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-check-circle text-success me-2"></i>Google Calendar</li>
+                        <li><i class="bi bi-check-circle text-success me-2"></i>Microsoft Outlook</li>
+                        <li><i class="bi bi-check-circle text-success me-2"></i>Apple Calendar</li>
+                        <li><i class="bi bi-check-circle text-success me-2"></i>Mozilla Thunderbird</li>
+                        <li><i class="bi bi-check-circle text-success me-2"></i>Any RFC 5545 compliant calendar</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Help Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="feature-card">
+                <h4><i class="bi bi-question-circle me-2"></i>Help & Information</h4>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Export Information</h6>
+                        <ul>
+                            <li>Exported files are in standard iCalendar (.ics) format</li>
+                            <li>All event details are preserved (title, description, location, attendees)</li>
+                            <li>Recurring events and alarms are included</li>
+                            <li>Privacy settings are maintained</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Import Information</h6>
+                        <ul>
+                            <li>Duplicate events (same UID) will be updated</li>
+                            <li>Attendees will receive new invitations if email differs</li>
+                            <li>Recurring patterns are automatically converted</li>
+                            <li>Invalid events are skipped with error reports</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Tip:</strong> When importing from Google Calendar, make sure to export the full calendar, not just individual events, for best compatibility.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{% url 'calendar:main' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Calendar
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Export functionality
+function exportCalendar(currentMonthOnly = false) {
+    let exportUrl = '/calendar/api/events/export_ical/';
+    const params = new URLSearchParams();
+    
+    if (currentMonthOnly) {
+        // Current month
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        
+        params.append('start', startOfMonth.toISOString());
+        params.append('end', endOfMonth.toISOString());
+    } else {
+        // Custom date range
+        const startDate = document.getElementById('exportStartDate').value;
+        const endDate = document.getElementById('exportEndDate').value;
+        
+        if (startDate) {
+            params.append('start', new Date(startDate).toISOString());
+        }
+        if (endDate) {
+            params.append('end', new Date(endDate).toISOString());
+        }
+    }
+    
+    if (params.toString()) {
+        exportUrl += '?' + params.toString();
+    }
+    
+    // Create a temporary link to trigger download
+    const link = document.createElement('a');
+    link.href = exportUrl;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Drag and drop functionality
+const uploadZone = document.getElementById('uploadZone');
+
+uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+});
+
+uploadZone.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+});
+
+uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFile(files[0]);
+    }
+});
+
+// File selection
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        handleFile(file);
+    }
+}
+
+// File processing
+function handleFile(file) {
+    // Validate file
+    if (!file.name.toLowerCase().endsWith('.ics') && !file.name.toLowerCase().endsWith('.ical')) {
+        showAlert('error', 'Please select a valid iCalendar file (.ics or .ical)');
+        return;
+    }
+    
+    if (file.size > 10 * 1024 * 1024) {
+        showAlert('error', 'File is too large. Maximum size is 10MB.');
+        return;
+    }
+    
+    // Show progress
+    const progress = document.getElementById('uploadProgress');
+    const progressBar = progress.querySelector('.progress-bar');
+    progress.style.display = 'block';
+    progressBar.style.width = '0%';
+    
+    // Create form data
+    const formData = new FormData();
+    formData.append('ical_file', file);
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    // Upload file
+    fetch('/calendar/api/events/import_ical/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+        },
+        body: formData
+    })
+    .then(response => {
+        progressBar.style.width = '50%';
+        return response.json();
+    })
+    .then(data => {
+        progressBar.style.width = '100%';
+        
+        setTimeout(() => {
+            progress.style.display = 'none';
+            showImportResults(data);
+        }, 500);
+    })
+    .catch(error => {
+        progress.style.display = 'none';
+        showAlert('error', 'Import failed: ' + error.message);
+    });
+}
+
+// Show import results
+function showImportResults(data) {
+    const resultsDiv = document.getElementById('importResults');
+    
+    if (data.success) {
+        let html = `
+            <div class="alert alert-success">
+                <h6><i class="bi bi-check-circle me-2"></i>Import Completed Successfully!</h6>
+                <ul class="mb-0">
+                    <li><strong>${data.imported_events}</strong> events imported</li>
+                    <li><strong>${data.skipped_events}</strong> events skipped</li>
+                    <li><strong>${data.total_processed}</strong> total events processed</li>
+                </ul>
+            </div>
+        `;
+        
+        if (data.errors && data.errors.length > 0) {
+            html += `
+                <div class="alert alert-warning">
+                    <h6><i class="bi bi-exclamation-triangle me-2"></i>Import Warnings</h6>
+                    <ul class="mb-0">
+            `;
+            data.errors.forEach(error => {
+                html += `<li>${error}</li>`;
+            });
+            html += `
+                    </ul>
+                </div>
+            `;
+        }
+        
+        resultsDiv.innerHTML = html;
+        
+        // Auto-refresh calendar after 2 seconds
+        setTimeout(() => {
+            if (confirm('Import completed! Would you like to view your calendar now?')) {
+                window.location.href = '{% url "calendar:main" %}';
+            }
+        }, 2000);
+        
+    } else {
+        showAlert('error', 'Import failed. Please check your file and try again.');
+    }
+}
+
+// Utility function to show alerts
+function showAlert(type, message) {
+    const resultsDiv = document.getElementById('importResults');
+    const alertClass = type === 'error' ? 'alert-danger' : 'alert-info';
+    const icon = type === 'error' ? 'bi-x-circle' : 'bi-info-circle';
+    
+    resultsDiv.innerHTML = `
+        <div class="alert ${alertClass}">
+            <i class="${icon} me-2"></i>${message}
+        </div>
+    `;
+}
+
+// Set default dates
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+    const oneMonthLater = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+    
+    document.getElementById('exportStartDate').value = oneMonthAgo.toISOString().split('T')[0];
+    document.getElementById('exportEndDate').value = oneMonthLater.toISOString().split('T')[0];
+});
+</script>
+{% endblock %}

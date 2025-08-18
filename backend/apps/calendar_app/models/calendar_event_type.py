@@ -8,7 +8,7 @@ User = get_user_model()
 
 class CalendarEventType(models.Model):
     """
-    Calendar event type model based on Odoo's calendar.event.type
+    Calendar event type model based on Open Linguify's calendar.event.type
     Defines categories and visual styling for calendar events
     """
     

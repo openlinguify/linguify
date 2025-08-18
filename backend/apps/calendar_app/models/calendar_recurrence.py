@@ -14,7 +14,7 @@ User = get_user_model()
 
 class CalendarRecurrence(models.Model):
     """
-    Calendar recurrence model based on Odoo's calendar.recurrence
+    Calendar recurrence model based on Open Linguify's calendar.recurrence
     Manages recurring event patterns and generation
     """
     
@@ -283,7 +283,7 @@ class CalendarRecurrence(models.Model):
     def apply_recurrence(self, limit=100):
         """
         Apply recurrence rule to generate calendar events
-        Based on Odoo's _apply_recurrence method
+        Based on Open Linguify's _apply_recurrence method
         """
         from .calendar_event import CalendarEvent
         

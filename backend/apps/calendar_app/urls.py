@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import calendar_views, event_views, api_views
+from .views import calendar_views, event_views, api_views, email_views
 
 app_name = 'calendar'
 
@@ -12,6 +12,8 @@ router.register(r'event-types', api_views.CalendarEventTypeViewSet, basename='ev
 router.register(r'alarms', api_views.CalendarAlarmViewSet, basename='alarm')
 router.register(r'attendees', api_views.CalendarAttendeeViewSet, basename='attendee')
 router.register(r'recurrences', api_views.CalendarRecurrenceViewSet, basename='recurrence')
+router.register(r'email-templates', email_views.CalendarEmailTemplateViewSet, basename='emailtemplate')
+router.register(r'email-logs', email_views.CalendarEmailLogViewSet, basename='emaillog')
 
 # Main URL patterns
 urlpatterns = [
@@ -19,6 +21,8 @@ urlpatterns = [
     path('', calendar_views.calendar_main, name='main'),
     path('agenda/', calendar_views.calendar_agenda, name='agenda'),
     path('settings/', calendar_views.calendar_settings, name='settings'),
+    path('import-export/', calendar_views.import_export, name='import_export'),
+    path('email-templates/', email_views.email_templates, name='email_templates'),
     
     # Calendar JSON API for FullCalendar
     path('json/', calendar_views.calendar_json, name='json'),

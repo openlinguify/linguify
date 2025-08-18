@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db.models import Q
+from django.http import HttpResponse
 from datetime import datetime, timedelta
 import json
 
@@ -16,6 +17,7 @@ from ..serializers import (
     CalendarAlarmSerializer, CalendarAttendeeSerializer,
     CalendarRecurrenceSerializer
 )
+from ..utils.ical_utils import ICalendarExporter, ICalendarImporter
 
 
 class CalendarEventViewSet(viewsets.ModelViewSet):
@@ -179,6 +181,105 @@ class CalendarEventViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(events, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def export_ical(self, request):
+        """
+        Export user's calendar as iCal (.ics) file
+        """
+        # Get date range if specified
+        start_str = request.query_params.get('start')
+        end_str = request.query_params.get('end')
+        
+        queryset = self.get_queryset().filter(active=True)
+        
+        if start_str:
+            try:
+                start_date = datetime.fromisoformat(start_str.replace('Z', '+00:00'))
+                queryset = queryset.filter(start__gte=start_date)
+            except ValueError:
+                pass
+        
+        if end_str:
+            try:
+                end_date = datetime.fromisoformat(end_str.replace('Z', '+00:00'))
+                queryset = queryset.filter(start__lt=end_date)
+            except ValueError:
+                pass
+        
+        # Export events
+        events = list(queryset.select_related('user_id', 'event_type', 'recurrence_id')
+                     .prefetch_related('attendees', 'alarms'))
+        
+        exporter = ICalendarExporter()
+        calendar_name = f"{request.user.get_full_name()}'s Calendar" if request.user.get_full_name() else f"{request.user.username}'s Calendar"
+        ical_content = exporter.export_events(events, calendar_name)
+        
+        # Create response with proper headers
+        response = HttpResponse(ical_content, content_type='text/calendar; charset=utf-8')
+        filename = f"calendar_{request.user.username}_{timezone.now().strftime('%Y%m%d')}.ics"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response['Content-Length'] = len(ical_content.encode('utf-8'))
+        
+        return response
+    
+    @action(detail=False, methods=['post'])
+    def import_ical(self, request):
+        """
+        Import events from iCal (.ics) file
+        """
+        # Check if file was uploaded
+        if 'ical_file' not in request.FILES:
+            return Response({'error': 'No iCal file provided'}, status=400)
+        
+        ical_file = request.FILES['ical_file']
+        
+        # Validate file size (max 10MB)
+        if ical_file.size > 10 * 1024 * 1024:
+            return Response({'error': 'File too large (max 10MB)'}, status=400)
+        
+        # Validate file extension
+        if not ical_file.name.lower().endswith(('.ics', '.ical')):
+            return Response({'error': 'Invalid file format. Please upload an .ics file'}, status=400)
+        
+        try:
+            # Read file content
+            ical_content = ical_file.read().decode('utf-8')
+        except UnicodeDecodeError:
+            try:
+                ical_content = ical_file.read().decode('latin-1')
+            except UnicodeDecodeError:
+                return Response({'error': 'Unable to decode file. Please ensure it\'s a valid text file.'}, status=400)
+        
+        # Import events
+        importer = ICalendarImporter(request.user)
+        result = importer.import_ical(ical_content)
+        
+        return Response({
+            'success': True,
+            'imported_events': result['imported'],
+            'skipped_events': result['skipped'],
+            'errors': result['errors'],
+            'total_processed': result['imported'] + result['skipped']
+        })
+    
+    @action(detail=True, methods=['get'])
+    def export_single_ical(self, request, pk=None):
+        """
+        Export single event as iCal (.ics) file
+        """
+        event = self.get_object()
+        
+        exporter = ICalendarExporter()
+        ical_content = exporter.export_event(event)
+        
+        # Create response with proper headers
+        response = HttpResponse(ical_content, content_type='text/calendar; charset=utf-8')
+        filename = f"event_{event.name.replace(' ', '_')}_{timezone.now().strftime('%Y%m%d')}.ics"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response['Content-Length'] = len(ical_content.encode('utf-8'))
+        
+        return response
     
     def get_event_color(self, event):
         """Get color for an event"""

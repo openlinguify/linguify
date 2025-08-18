@@ -10,11 +10,11 @@ User = get_user_model()
 
 class CalendarAlarm(models.Model):
     """
-    Calendar alarm model based on Odoo's calendar.alarm
+    Calendar alarm model based on Open Linguify's calendar.alarm
     Manages event notifications and reminders
     """
     
-    # Alarm type choices based on Odoo
+    # Alarm type choices based on Open Linguify
     ALARM_TYPE_CHOICES = [
         ('notification', 'Notification'),
         ('email', 'Email'),

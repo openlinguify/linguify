@@ -6,7 +6,8 @@ from django.utils.safestring import mark_safe
 from .models import (
     CalendarEvent, CalendarEventType, CalendarAlarm, CalendarAttendee,
     CalendarRecurrence, CalendarRecurrenceException, CalendarInvitation,
-    CalendarAlarmInstance, CalendarEventTypeCategory, CalendarEventTypeExtension
+    CalendarAlarmInstance, CalendarEventTypeCategory, CalendarEventTypeExtension,
+    CalendarEmailTemplate, CalendarEmailLog
 )
 
 
@@ -291,6 +292,107 @@ class CalendarEventTypeExtensionAdmin(admin.ModelAdmin):
     list_filter = ['is_featured', 'category']
     search_fields = ['event_type__name']
     ordering = ['order_in_category']
+
+
+@admin.register(CalendarEmailTemplate)
+class CalendarEmailTemplateAdmin(admin.ModelAdmin):
+    list_display = [
+        'name', 'template_type', 'language', 'is_default', 'active', 
+        'created_by', 'created_at'
+    ]
+    list_filter = ['template_type', 'language', 'is_default', 'active', 'created_at']
+    search_fields = ['name', 'subject_template']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Template Information', {
+            'fields': ('name', 'template_type', 'language', 'created_by')
+        }),
+        ('Email Content', {
+            'fields': ('subject_template', 'body_html_template', 'body_text_template')
+        }),
+        ('Settings', {
+            'fields': ('active', 'is_default')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
+    )
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('created_by')
+    
+    actions = ['make_default', 'make_active', 'make_inactive', 'preview_template']
+    
+    def make_default(self, request, queryset):
+        for template in queryset:
+            # Make this template default (will handle uniqueness in save method)
+            template.is_default = True
+            template.save()
+        self.message_user(request, f"{queryset.count()} templates marked as default")
+    make_default.short_description = "Mark selected templates as default"
+    
+    def make_active(self, request, queryset):
+        queryset.update(active=True)
+        self.message_user(request, f"{queryset.count()} templates activated")
+    make_active.short_description = "Activate selected templates"
+    
+    def make_inactive(self, request, queryset):
+        queryset.update(active=False)
+        self.message_user(request, f"{queryset.count()} templates deactivated")
+    make_inactive.short_description = "Deactivate selected templates"
+
+
+@admin.register(CalendarEmailLog)
+class CalendarEmailLogAdmin(admin.ModelAdmin):
+    list_display = [
+        'subject', 'recipient_email', 'template', 'event_name', 
+        'status', 'sent_at', 'opens_count', 'clicks_count'
+    ]
+    list_filter = ['status', 'sent_at', 'created_at', 'template__template_type']
+    search_fields = ['recipient_email', 'recipient_name', 'subject', 'event__name']
+    readonly_fields = [
+        'template', 'event', 'recipient_email', 'recipient_name',
+        'subject', 'body_html', 'body_text', 'sent_at', 'error_message',
+        'email_provider_id', 'opens_count', 'clicks_count', 'created_at', 'updated_at'
+    ]
+    date_hierarchy = 'sent_at'
+    
+    fieldsets = (
+        ('Email Details', {
+            'fields': ('template', 'event', 'recipient_email', 'recipient_name', 'subject')
+        }),
+        ('Status', {
+            'fields': ('status', 'sent_at', 'error_message', 'email_provider_id')
+        }),
+        ('Content', {
+            'fields': ('body_html', 'body_text'),
+            'classes': ('collapse',)
+        }),
+        ('Tracking', {
+            'fields': ('opens_count', 'clicks_count')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
+    )
+    
+    def event_name(self, obj):
+        return obj.event.name if obj.event else '-'
+    event_name.short_description = 'Event'
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('template', 'event')
+    
+    def has_add_permission(self, request):
+        # Don't allow manual creation of email logs
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        # Don't allow editing of email logs
+        return False
 
 
 # Custom admin site configuration

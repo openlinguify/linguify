@@ -13,11 +13,11 @@ User = get_user_model()
 
 class CalendarEvent(models.Model):
     """
-    Calendar event model based on Odoo's calendar.event
+    Calendar event model based on Open Linguify's calendar.event
     Represents calendar events with support for recurrence, attendees, and notifications
     """
     
-    # Privacy choices based on Odoo
+    # Privacy choices based on Open Linguify
     PRIVACY_CHOICES = [
         ('public', 'Public'),
         ('private', 'Private'),

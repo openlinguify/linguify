@@ -17,7 +17,7 @@ from ..forms import CalendarEventForm, QuickEventForm
 def calendar_main(request):
     """
     Main calendar view with month/week/day views
-    Based on Odoo's calendar interface
+    Based on Open Linguify's calendar interface
     """
     # Get view type from query params
     view_type = request.GET.get('view', 'month')
@@ -175,6 +175,16 @@ def calendar_json(request):
         calendar_events.append(calendar_event)
     
     return JsonResponse(calendar_events, safe=False)
+
+
+@login_required
+def import_export(request):
+    """
+    Import/Export calendar page
+    """
+    return render(request, 'calendar/import_export.html', {
+        'page_title': 'Import/Export Calendar'
+    })
 
 
 def get_month_events(user, current_date):

@@ -3,3 +3,4 @@ from .calendar_attendee import *
 from .calendar_recurrence import *
 from .calendar_alarm import *
 from .calendar_event_type import *
+from .calendar_email_template import *
