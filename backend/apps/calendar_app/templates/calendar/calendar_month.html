@@ -1,16 +1,44 @@
 {% extends "calendar/base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Calendar - {{ current_date|date:"F Y" }}{% endblock %}
+{% block title %}{% trans "Calendar" %} - {{ current_date|date:"F Y" }}{% endblock %}
+
+{% block page_title %}{% trans "Calendar" %}{% endblock %}
 
 {% block extra_css %}
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
 <style>
-    .calendar-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 2rem 0;
+    .calendar-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
         margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--calendar-bg-white);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: var(--calendar-shadow);
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    
+    .stat-card:hover {
+        box-shadow: var(--calendar-shadow-lg);
+        transform: translateY(-2px);
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--calendar-primary);
+    }
+    
+    .stat-label {
+        color: var(--calendar-text-light);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
     }
     
     .calendar-nav {
@@ -18,43 +46,16 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1rem;
+        background: var(--calendar-bg-white);
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: var(--calendar-shadow);
     }
     
-    .calendar-views {
-        display: flex;
-        gap: 0.5rem;
-    }
-    
-    .view-btn {
-        padding: 0.5rem 1rem;
-        border: none;
-        background: #f8f9fa;
-        color: #495057;
-        text-decoration: none;
-        border-radius: 0.375rem;
-        transition: all 0.2s;
-    }
-    
-    .view-btn.active,
-    .view-btn:hover {
-        background: #007bff;
-        color: white;
-    }
-    
-    .calendar-container {
-        background: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        padding: 1.5rem;
-    }
-    
-    .fc-event {
-        border: none !important;
-        border-radius: 0.25rem !important;
-    }
-    
-    .fc-event-title {
-        font-weight: 500;
+    .calendar-nav-title {
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: var(--calendar-text);
     }
     
     .quick-add-btn {
@@ -64,165 +65,166 @@
         width: 56px;
         height: 56px;
         border-radius: 50%;
-        background: #007bff;
+        background: linear-gradient(135deg, var(--calendar-primary) 0%, var(--calendar-secondary) 100%);
         color: white;
         border: none;
-        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         font-size: 1.5rem;
-        transition: all 0.3s;
+        transition: all 0.3s ease;
+        z-index: 1040;
     }
     
     .quick-add-btn:hover {
-        background: #0056b3;
+        background: linear-gradient(135deg, var(--calendar-primary-dark) 0%, var(--calendar-secondary) 100%);
         transform: scale(1.1);
+        color: white;
     }
     
-    .calendar-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-    
-    .stat-card {
-        background: white;
+    .fullcalendar-container {
+        background: var(--calendar-bg-white);
+        border-radius: 0.75rem;
+        box-shadow: var(--calendar-shadow);
         padding: 1.5rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        text-align: center;
+        overflow: hidden;
     }
     
-    .stat-number {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #007bff;
-    }
-    
-    .stat-label {
-        color: #6c757d;
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
+    .calendar-container {
+        margin: 1rem;
     }
 </style>
 {% endblock %}
 
-{% block content %}
-<div class="calendar-header">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h1 class="mb-0">
-                    <i class="bi bi-calendar-event me-3"></i>
-                    Calendar
-                </h1>
-                <p class="mb-0 mt-2 opacity-75">Manage your events and schedule</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container">
+{% block calendar_content %}
+<div class="calendar-main-content fade-in">
     <!-- Calendar Stats -->
     <div class="calendar-stats">
         <div class="stat-card">
-            <div class="stat-number">{{ events|length }}</div>
-            <div class="stat-label">Events This Month</div>
+            <div class="stat-number">{{ events|length|default:0 }}</div>
+            <div class="stat-label">{% trans "Events This Month" %}</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">3</div>
-            <div class="stat-label">Upcoming Events</div>
+            <div class="stat-number">{{ upcoming_events|length|default:3 }}</div>
+            <div class="stat-label">{% trans "Upcoming Events" %}</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">5</div>
-            <div class="stat-label">Event Types</div>
+            <div class="stat-number">{{ event_types|length|default:5 }}</div>
+            <div class="stat-label">{% trans "Event Types" %}</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">12</div>
-            <div class="stat-label">Total Attendees</div>
+            <div class="stat-number">{{ total_attendees|default:12 }}</div>
+            <div class="stat-label">{% trans "Total Attendees" %}</div>
         </div>
     </div>
 
     <!-- Calendar Navigation -->
     <div class="calendar-nav">
-        <div>
-            <a href="?date={{ current_date|date:'Y-m-d' }}&view=month" class="btn btn-outline-primary me-2">
-                <i class="bi bi-arrow-left"></i> Previous
-            </a>
-            <span class="fw-bold fs-5">{{ current_date|date:"F Y" }}</span>
-            <a href="?date={{ current_date|date:'Y-m-d' }}&view=month" class="btn btn-outline-primary ms-2">
-                Next <i class="bi bi-arrow-right"></i>
-            </a>
+        <div class="d-flex align-items-center gap-3">
+            <button id="prevMonth" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="calendar-nav-title" id="calendarTitle">{{ current_date|date:"F Y" }}</span>
+            <button id="nextMonth" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-chevron-right"></i>
+            </button>
         </div>
         
-        <div class="calendar-views">
-            <a href="?view=month&date={{ current_date|date:'Y-m-d' }}" 
-               class="view-btn {% if view_type == 'month' %}active{% endif %}">
-                Month
-            </a>
-            <a href="?view=week&date={{ current_date|date:'Y-m-d' }}" 
-               class="view-btn {% if view_type == 'week' %}active{% endif %}">
-                Week
-            </a>
-            <a href="?view=day&date={{ current_date|date:'Y-m-d' }}" 
-               class="view-btn {% if view_type == 'day' %}active{% endif %}">
-                Day
-            </a>
-            <a href="{% url 'calendar:agenda' %}" 
-               class="view-btn {% if view_type == 'agenda' %}active{% endif %}">
-                Agenda
-            </a>
+        <div class="d-flex align-items-center gap-2">
+            <button id="todayBtn" class="btn btn-primary btn-sm">
+                {% trans "Today" %}
+            </button>
         </div>
     </div>
 
     <!-- Calendar Container -->
-    <div class="calendar-container">
+    <div class="fullcalendar-container">
         <div id="calendar"></div>
     </div>
 
     <!-- Quick Add Button -->
-    <button class="quick-add-btn" data-bs-toggle="modal" data-bs-target="#quickEventModal">
+    <button class="quick-add-btn" data-bs-toggle="modal" data-bs-target="#createEventModal" title="{% trans 'Quick Add Event' %}">
         <i class="bi bi-plus"></i>
     </button>
 </div>
 
-<!-- Quick Event Modal -->
-<div class="modal fade" id="quickEventModal" tabindex="-1">
-    <div class="modal-dialog">
+<!-- Create Event Modal -->
+<div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Quick Add Event</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="createEventModalLabel">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    {% trans "Create New Event" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
             </div>
             <form id="quickEventForm">
                 <div class="modal-body">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="eventTitle" class="form-label">Event Title</label>
-                        <input type="text" class="form-control" id="eventTitle" name="name" required>
-                    </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <label for="eventStart" class="form-label">Start</label>
-                            <input type="datetime-local" class="form-control" id="eventStart" name="start" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="eventEnd" class="form-label">End</label>
-                            <input type="datetime-local" class="form-control" id="eventEnd" name="stop" required>
+                        <div class="col-12 mb-3">
+                            <label for="eventTitle" class="form-label">{% trans "Event Title" %}</label>
+                            <input type="text" class="form-control form-control-calendar" id="eventTitle" name="name" required placeholder="{% trans 'Enter event title...' %}">
                         </div>
                     </div>
-                    <div class="mt-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="allDay" name="allday">
-                            <label class="form-check-label" for="allDay">
-                                All day event
-                            </label>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="eventStart" class="form-label">{% trans "Start Date & Time" %}</label>
+                            <input type="datetime-local" class="form-control form-control-calendar" id="eventStart" name="start" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="eventEnd" class="form-label">{% trans "End Date & Time" %}</label>
+                            <input type="datetime-local" class="form-control form-control-calendar" id="eventEnd" name="stop" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="eventDescription" class="form-label">{% trans "Description" %}</label>
+                            <textarea class="form-control form-control-calendar" id="eventDescription" name="description" rows="3" placeholder="{% trans 'Event description (optional)...' %}"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="eventLocation" class="form-label">{% trans "Location" %}</label>
+                            <input type="text" class="form-control form-control-calendar" id="eventLocation" name="location" placeholder="{% trans 'Event location (optional)...' %}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="eventType" class="form-label">{% trans "Event Type" %}</label>
+                            <select class="form-select form-control-calendar" id="eventType" name="event_type">
+                                <option value="">{% trans "Select type..." %}</option>
+                                <option value="meeting">{% trans "Meeting" %}</option>
+                                <option value="personal">{% trans "Personal" %}</option>
+                                <option value="work">{% trans "Work" %}</option>
+                                <option value="reminder">{% trans "Reminder" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="allDay" name="allday">
+                                <label class="form-check-label" for="allDay">
+                                    {% trans "All day event" %}
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Event</button>
-                    <a href="{% url 'calendar:event_create' %}" class="btn btn-outline-primary">More Options</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {% trans "Cancel" %}
+                    </button>
+                    <button type="submit" class="btn btn-calendar-primary">
+                        <i class="bi bi-check-lg me-1"></i>
+                        {% trans "Create Event" %}
+                    </button>
+                    <a href="{% url 'calendar:event_create' %}" class="btn btn-calendar-outline">
+                        <i class="bi bi-gear me-1"></i>
+                        {% trans "Advanced Options" %}
+                    </a>
                 </div>
             </form>
         </div>
@@ -231,18 +233,21 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
     
-    const calendar = new FullCalendar.Calendar(calendarEl, {
+    // Initialize FullCalendar
+    window.calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         headerToolbar: false, // We use our custom header
         height: 'auto',
+        locale: '{{ LANGUAGE_CODE|default:"en" }}',
+        
+        // Data source
         events: '{% url "calendar:json" %}',
         
-        // Event styling
+        // Event styling and display
         eventDisplay: 'block',
         dayMaxEvents: 3,
         moreLinkClick: 'popover',
@@ -250,22 +255,74 @@ document.addEventListener('DOMContentLoaded', function() {
         // Interaction
         selectable: true,
         selectMirror: true,
+        editable: false,
+        
+        // Custom colors and styling
+        eventColor: '#667eea',
+        eventBorderColor: '#667eea',
+        eventTextColor: '#ffffff',
         
         // Event handlers
         select: function(info) {
             // Set modal form dates
-            document.getElementById('eventStart').value = info.startStr;
-            document.getElementById('eventEnd').value = info.endStr || info.startStr;
+            const startInput = document.getElementById('eventStart');
+            const endInput = document.getElementById('eventEnd');
+            
+            if (info.allDay) {
+                startInput.value = info.startStr;
+                endInput.value = info.endStr || info.startStr;
+                document.getElementById('allDay').checked = true;
+                startInput.type = 'date';
+                endInput.type = 'date';
+            } else {
+                startInput.value = info.startStr;
+                endInput.value = info.endStr || info.startStr;
+            }
             
             // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('quickEventModal'));
+            const modal = new bootstrap.Modal(document.getElementById('createEventModal'));
             modal.show();
             
             calendar.unselect();
         },
         
         eventClick: function(info) {
-            window.location.href = '/calendar/event/' + info.event.id + '/';
+            info.jsEvent.preventDefault();
+            
+            // Navigate to event detail or show event popup
+            if (info.event.url) {
+                window.open(info.event.url, '_blank');
+            } else {
+                // Show event details in a modal or navigate to detail page
+                window.location.href = '/calendar/event/' + info.event.id + '/';
+            }
+        },
+        
+        // Date click
+        dateClick: function(info) {
+            // Quick add event for clicked date
+            const startInput = document.getElementById('eventStart');
+            const endInput = document.getElementById('eventEnd');
+            
+            // Set default times (current time + 1 hour)
+            const startDate = new Date(info.dateStr + 'T09:00:00');
+            const endDate = new Date(info.dateStr + 'T10:00:00');
+            
+            startInput.value = startDate.toISOString().slice(0, 16);
+            endInput.value = endDate.toISOString().slice(0, 16);
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('createEventModal'));
+            modal.show();
+        },
+        
+        // Event rendering
+        eventDidMount: function(info) {
+            // Add tooltip
+            info.el.setAttribute('title', 
+                info.event.title + 
+                (info.event.extendedProps.location ? ' - ' + info.event.extendedProps.location : '')
+            );
         },
         
         // Responsive design
@@ -276,9 +333,40 @@ document.addEventListener('DOMContentLoaded', function() {
     
     calendar.render();
     
+    // Navigation buttons
+    document.getElementById('prevMonth').addEventListener('click', function() {
+        calendar.prev();
+        updateCalendarTitle();
+    });
+    
+    document.getElementById('nextMonth').addEventListener('click', function() {
+        calendar.next();
+        updateCalendarTitle();
+    });
+    
+    document.getElementById('todayBtn').addEventListener('click', function() {
+        calendar.today();
+        updateCalendarTitle();
+    });
+    
+    // Update calendar title
+    function updateCalendarTitle() {
+        const currentDate = calendar.getDate();
+        const monthNames = ["{% trans 'January' %}", "{% trans 'February' %}", "{% trans 'March' %}", "{% trans 'April' %}", "{% trans 'May' %}", "{% trans 'June' %}", "{% trans 'July' %}", "{% trans 'August' %}", "{% trans 'September' %}", "{% trans 'October' %}", "{% trans 'November' %}", "{% trans 'December' %}"];
+        const title = monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+        document.getElementById('calendarTitle').textContent = title;
+    }
+    
     // Quick event form submission
     document.getElementById('quickEventForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
+        // Show loading state
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>{% trans "Creating..." %}';
+        submitBtn.disabled = true;
         
         const formData = new FormData(this);
         
@@ -293,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 // Close modal
-                bootstrap.Modal.getInstance(document.getElementById('quickEventModal')).hide();
+                bootstrap.Modal.getInstance(document.getElementById('createEventModal')).hide();
                 
                 // Add event to calendar
                 calendar.addEvent(data.event);
@@ -302,14 +390,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.reset();
                 
                 // Show success message
-                showNotification('Event created successfully!', 'success');
+                if (window.notificationService) {
+                    window.notificationService.success('{% trans "Event created successfully!" %}');
+                }
+                
+                // Refresh calendar
+                calendar.refetchEvents();
             } else {
-                showNotification('Error creating event: ' + JSON.stringify(data.errors), 'error');
+                if (window.notificationService) {
+                    window.notificationService.error('{% trans "Error creating event" %}: ' + (data.error || JSON.stringify(data.errors)));
+                }
             }
         })
         .catch(error => {
-            showNotification('Error creating event', 'error');
+            if (window.notificationService) {
+                window.notificationService.error('{% trans "Error creating event" %}');
+            }
             console.error('Error:', error);
+        })
+        .finally(() => {
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         });
     });
     
@@ -320,28 +422,45 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (this.checked) {
             // Convert to date inputs
+            const startDate = new Date(startInput.value);
+            const endDate = new Date(endInput.value);
+            
             startInput.type = 'date';
             endInput.type = 'date';
+            startInput.value = startDate.toISOString().split('T')[0];
+            endInput.value = endDate.toISOString().split('T')[0];
         } else {
             // Convert to datetime-local inputs
             startInput.type = 'datetime-local';
             endInput.type = 'datetime-local';
+            
+            if (startInput.value) {
+                startInput.value = startInput.value + 'T09:00';
+            }
+            if (endInput.value) {
+                endInput.value = endInput.value + 'T10:00';
+            }
         }
     });
+    
+    // Set default end time when start time changes
+    document.getElementById('eventStart').addEventListener('change', function() {
+        const endInput = document.getElementById('eventEnd');
+        const allDayCheckbox = document.getElementById('allDay');
+        
+        if (!endInput.value && this.value) {
+            if (allDayCheckbox.checked) {
+                endInput.value = this.value;
+            } else {
+                const startDate = new Date(this.value);
+                startDate.setHours(startDate.getHours() + 1);
+                endInput.value = startDate.toISOString().slice(0, 16);
+            }
+        }
+    });
+    
+    // Initialize calendar title
+    updateCalendarTitle();
 });
-
-function showNotification(message, type) {
-    // Simple notification system
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
-    toast.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-    toast.textContent = message;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.remove();
-    }, 5000);
-}
 </script>
 {% endblock %}

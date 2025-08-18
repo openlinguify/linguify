@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
+from django.conf import settings
 from datetime import datetime, timedelta, date
 import calendar as python_calendar
 import json
@@ -52,6 +53,18 @@ def calendar_main(request):
     event_types = CalendarEventType.get_user_types(request.user)
     default_alarms = CalendarAlarm.get_default_alarms()
     
+    # Calculate additional stats
+    upcoming_events = CalendarEvent.objects.filter(
+        user_id=request.user,
+        start__gte=timezone.now(),
+        active=True
+    ).order_by('start')[:5]
+    
+    total_attendees = CalendarAttendee.objects.filter(
+        event_id__user_id=request.user,
+        event_id__active=True
+    ).count()
+    
     context = {
         'events': events,
         'current_date': current_date,
@@ -61,6 +74,16 @@ def calendar_main(request):
         'default_alarms': default_alarms,
         'calendar_colors': get_calendar_colors(),
         'today': timezone.now().date(),
+        'upcoming_events': upcoming_events,
+        'total_attendees': total_attendees,
+        'page_title': 'Calendar',
+        'api_base_url': request.build_absolute_uri('/'),
+        'user_data': json.dumps({
+            'id': request.user.id,
+            'username': request.user.username,
+            'email': request.user.email,
+        }),
+        'debug': settings.DEBUG if hasattr(settings, 'DEBUG') else False,
     }
     
     return render(request, template, context)
