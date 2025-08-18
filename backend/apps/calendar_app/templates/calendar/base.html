@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'calendar/css/calendar.css' %}">
     
     <!-- FullCalendar CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     
     {% block extra_css %}{% endblock %}
 {% endblock %}
@@ -29,6 +29,18 @@
             <span class="d-none d-xl-inline">{% trans "Agenda" %}</span>
         </a>
         
+        <a href="{% url 'calendar:providers' %}" 
+           class="btn btn-outline-secondary btn-sm header-btn {% if request.resolver_match.url_name == 'providers' %}active{% endif %}">
+            <i class="bi bi-cloud me-1"></i>
+            <span class="d-none d-xl-inline">{% trans "Providers" %}</span>
+        </a>
+        
+        <a href="{% url 'calendar:settings' %}" 
+           class="btn btn-outline-secondary btn-sm header-btn {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+            <i class="bi bi-gear me-1"></i>
+            <span class="d-none d-xl-inline">{% trans "Settings" %}</span>
+        </a>
+        
         <a href="{% url 'calendar:event_create' %}" 
            class="btn btn-primary btn-sm header-btn">
             <i class="bi bi-plus-circle me-1"></i>
@@ -40,9 +52,6 @@
 {% block body_class %}calendar-body{% endblock %}
 
 {% block content %}
-    <!-- Header avec navigation intégrée -->
-    {% include 'calendar/components/navbar.html' %}
-    
     <!-- Main Content Container -->
     <div class="calendar-container">
         {% block calendar_content %}
@@ -52,8 +61,29 @@
 {% endblock %}
 
 {% block extra_scripts %}
-    <!-- FullCalendar JS -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <!-- Simple Calendar Fallback -->
+    <script src="{% static 'calendar/js/simple-calendar.js' %}"></script>
+    
+    <!-- Try to load FullCalendar from CDN -->
+    <script>
+        function loadFullCalendar() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js';
+                script.onload = () => {
+                    console.log('FullCalendar loaded successfully');
+                    resolve(true);
+                };
+                script.onerror = () => {
+                    console.warn('FullCalendar failed to load from CDN, using fallback');
+                    resolve(false);
+                };
+                document.head.appendChild(script);
+            });
+        }
+        
+        window.calendarLoaded = loadFullCalendar();
+    </script>
     
     <!-- Scripts globaux pour le calendrier -->
     <script>
@@ -61,8 +91,17 @@
         window.DEBUG = {{ debug|yesno:"true,false" }};
         window.API_BASE_URL = '{{ api_base_url }}';
         
-        // Données utilisateur
+        // Données utilisateur - vérifier si l'utilisateur est authentifié
+        {% if user.is_authenticated %}
         window.USER_DATA = {{ user_data|safe }};
+        window.currentUserId = {{ user.id }};
+        window.currentUsername = '{{ user.username }}';
+        {% else %}
+        window.USER_DATA = null;
+        window.currentUserId = undefined;
+        window.currentUsername = undefined;
+        console.log('[Calendar] User not authenticated');
+        {% endif %}
         
         // Configuration spécifique au calendrier
         window.CALENDAR_CONFIG = {

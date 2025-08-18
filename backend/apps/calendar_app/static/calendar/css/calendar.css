@@ -27,6 +27,16 @@
 .calendar-container {
     min-height: calc(100vh - 120px);
     background-color: var(--calendar-bg);
+    padding: 0;
+}
+
+/* Secondary navigation styles */
+.calendar-secondary-nav {
+    background: var(--calendar-bg-white);
+    border-radius: 0.5rem;
+    box-shadow: var(--calendar-shadow);
+    padding: 1rem;
+    margin: 1rem;
 }
 
 /* Header overrides - Make "Linguify" say "Calendar" in app header */
@@ -51,7 +61,7 @@
 
 /* Main content area */
 .calendar-main-content {
-    padding: 2rem;
+    padding: 1.5rem;
     background: var(--calendar-bg-white);
     margin: 1rem;
     border-radius: 0.75rem;
