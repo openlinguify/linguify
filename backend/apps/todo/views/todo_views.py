@@ -15,7 +15,7 @@ from ..serializers import (
 
 
 class PersonalStageTypeViewSet(viewsets.ModelViewSet):
-    """ViewSet for personal stage types - Odoo inspired"""
+    """ViewSet for personal stage types - Open Linguify inspired"""
     serializer_class = PersonalStageTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
     
@@ -170,7 +170,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    """ViewSet for tasks - enhanced with Odoo-inspired features"""
+    """ViewSet for tasks - enhanced with Open Linguify-inspired features"""
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
@@ -191,7 +191,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         if status_filter:
             queryset = queryset.filter(status=status_filter)
         
-        # Filter by state (Odoo style)
+        # Filter by state (Open Linguify style)
         state_filter = self.request.query_params.get('state')
         if state_filter:
             queryset = queryset.filter(state=state_filter)
@@ -223,7 +223,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         # Filter important tasks (starred)
         important_only = self.request.query_params.get('important')
         if important_only == 'true':
-            queryset = queryset.filter(priority='1')  # Odoo style starred
+            queryset = queryset.filter(priority='1')  # Open Linguify style starred
         
         # Filter closed/open tasks
         open_tasks = self.request.query_params.get('open_tasks')
@@ -254,7 +254,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def toggle_completed(self, request, pk=None):
-        """Toggle task completion status - Odoo style"""
+        """Toggle task completion status - Open Linguify style"""
         task = self.get_object()
         task.toggle_state()
         
@@ -263,7 +263,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def toggle_state(self, request, pk=None):
-        """Toggle task state - Odoo done checkmark style"""
+        """Toggle task state - Open Linguify done checkmark style"""
         task = self.get_object()
         task.toggle_state()
         
@@ -272,7 +272,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def toggle_important(self, request, pk=None):
-        """Toggle task starred/important status - Odoo style"""
+        """Toggle task starred/important status - Open Linguify style"""
         task = self.get_object()
         task.priority = '1' if task.priority == '0' else '0'
         task.save()
@@ -282,7 +282,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['post'])
     def quick_create(self, request):
-        """Quick create task - Odoo kanban style"""
+        """Quick create task - Open Linguify kanban style"""
         serializer = TaskQuickCreateSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             task = serializer.save()
@@ -308,7 +308,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def dashboard(self, request):
-        """Dashboard statistics - Odoo inspired"""
+        """Dashboard statistics - Open Linguify inspired"""
         user = request.user
         tasks = self.get_queryset()
         

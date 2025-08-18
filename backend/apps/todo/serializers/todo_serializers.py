@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 class PersonalStageTypeSerializer(serializers.ModelSerializer):
-    """Serializer for personal stage types - Odoo inspired"""
+    """Serializer for personal stage types - Open Linguify inspired"""
     task_count = serializers.SerializerMethodField()
     
     class Meta:
@@ -93,7 +93,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
 
 
 class TaskListSerializer(serializers.ModelSerializer):
-    """Simplified serializer for task lists - Odoo inspired"""
+    """Simplified serializer for task lists - Open Linguify inspired"""
     project_name = serializers.CharField(source='project.name', read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     personal_stage_type = PersonalStageTypeSerializer(read_only=True)
@@ -116,7 +116,7 @@ class TaskListSerializer(serializers.ModelSerializer):
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):
-    """Detailed serializer for task details - Odoo inspired"""
+    """Detailed serializer for task details - Open Linguify inspired"""
     project = ProjectListSerializer(read_only=True)
     project_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
     parent_task = TaskListSerializer(read_only=True)
@@ -336,7 +336,7 @@ class TaskTemplateSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'usage_count', 'created_at', 'updated_at']
 
 
-# Odoo-inspired specialized serializers
+# Open Linguify-inspired specialized serializers
 
 class TaskKanbanSerializer(serializers.ModelSerializer):
     """Kanban-specific serializer for tasks - optimized for kanban view"""
@@ -357,7 +357,7 @@ class TaskKanbanSerializer(serializers.ModelSerializer):
 
 
 class TaskQuickCreateSerializer(serializers.ModelSerializer):
-    """Quick create serializer for tasks - Odoo inspired"""
+    """Quick create serializer for tasks - Open Linguify inspired"""
     
     class Meta:
         model = Task
@@ -371,7 +371,7 @@ class TaskQuickCreateSerializer(serializers.ModelSerializer):
 
 
 class TaskToggleSerializer(serializers.ModelSerializer):
-    """Serializer for toggling task state - Odoo done checkmark style"""
+    """Serializer for toggling task state - Open Linguify done checkmark style"""
     
     class Meta:
         model = Task
@@ -387,7 +387,7 @@ class TaskToggleSerializer(serializers.ModelSerializer):
 
 
 class DashboardStatsSerializer(serializers.Serializer):
-    """Dashboard statistics serializer - Odoo inspired"""
+    """Dashboard statistics serializer - Open Linguify inspired"""
     total_tasks = serializers.IntegerField()
     completed_tasks = serializers.IntegerField()
     due_today = serializers.IntegerField()

@@ -1,8 +1,10 @@
-/* Todo & Productivity App - Linguify Design System */
+/* apps/todo/static/todo/css/todo-linguify.css */
+/* CSS unifié suivant exactement le design Linguify */
 
+/* Variables CSS unifiées pour le thème todo - identique à revision */
 :root {
-    /* Couleurs Linguify */
-    --linguify-primary: #2D5BBA;
+    /* Couleurs OpenLinguify */
+    --linguify-primary: #2D5BBA;        /* Bleu royal moderne - confiance et professionnalisme */
     --linguify-secondary: #8B5CF6;
     --linguify-accent: #00D4AA;
     --linguify-success: #10b981;

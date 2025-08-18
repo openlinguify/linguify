@@ -10,7 +10,7 @@ User = get_user_model()
 
 
 class PersonalStageType(models.Model):
-    """Personal task stages - inspired by Odoo's personal_stage_type_id"""
+    """Personal task stages - inspired by Open Linguify's personal_stage_type_id"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='personal_stages')
     name = models.CharField(max_length=50)
@@ -31,7 +31,7 @@ class PersonalStageType(models.Model):
     
     @classmethod
     def create_default_stages(cls, user):
-        """Create default stages for new users - Odoo inspired onboarding"""
+        """Create default stages for new users - Open Linguify inspired onboarding"""
         default_stages = [
             {'name': 'To Do', 'sequence': 1, 'color': '#6c757d', 'is_closed': False},
             {'name': 'In Progress', 'sequence': 2, 'color': '#007bff', 'is_closed': False},
@@ -157,7 +157,7 @@ class Project(models.Model):
 
 
 class Task(models.Model):
-    """Individual tasks - inspired by Odoo's project.task"""
+    """Individual tasks - inspired by Open Linguify's project.task"""
     STATUS_CHOICES = [
         ('todo', 'To Do'),
         ('in_progress', 'In Progress'),
@@ -167,7 +167,7 @@ class Task(models.Model):
     
     PRIORITY_CHOICES = [
         ('0', 'Normal'),
-        ('1', 'Starred'),  # Odoo-style priority (0=normal, 1=starred)
+        ('1', 'Starred'),  # Open Linguify-style priority (0=normal, 1=starred)
     ]
     
     STATE_CHOICES = [
@@ -183,7 +183,7 @@ class Task(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks', null=True, blank=True)
     parent_task = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks')
     
-    # Personal stages - Odoo inspired
+    # Personal stages - Open Linguify inspired
     personal_stage_type = models.ForeignKey(
         PersonalStageType, 
         on_delete=models.SET_NULL, 
@@ -196,7 +196,7 @@ class Task(models.Model):
     title = models.CharField(max_length=200, blank=True)  # Allow blank for auto-generation
     description = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='todo')
-    state = models.CharField(max_length=20, choices=STATE_CHOICES, default='1_todo')  # Odoo style state
+    state = models.CharField(max_length=20, choices=STATE_CHOICES, default='1_todo')  # Open Linguify style state
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default='0')
     
     # Color for kanban cards
@@ -227,7 +227,7 @@ class Task(models.Model):
     is_important = models.BooleanField(default=False)
     is_recurring = models.BooleanField(default=False)
     reminder_set = models.BooleanField(default=False)
-    active = models.BooleanField(default=True)  # Odoo style active field
+    active = models.BooleanField(default=True)  # Open Linguify style active field
     sequence = models.IntegerField(default=10)  # For ordering within stages
     
     class Meta:
@@ -239,8 +239,8 @@ class Task(models.Model):
         return self.title or 'Untitled Task'
     
     def save(self, *args, **kwargs):
-        """Override save to implement Odoo-style auto-naming"""
-        # Auto-generate title from description if empty (Odoo inspired)
+        """Override save to implement Open Linguify-style auto-naming"""
+        # Auto-generate title from description if empty (Open Linguify inspired)
         if not self.title and self.description:
             # Extract first line from description, clean it up
             text = strip_tags(self.description).strip()
@@ -296,14 +296,14 @@ class Task(models.Model):
     
     @property
     def name_with_subtask_count(self):
-        """Odoo-style title with subtask count"""
+        """Open Linguify-style title with subtask count"""
         subtask_count = self.subtask_count
         if subtask_count > 0:
             return f"{self.title} ({subtask_count})"
         return self.title
     
     def toggle_state(self):
-        """Toggle between done and todo states - Odoo style"""
+        """Toggle between done and todo states - Open Linguify style"""
         if self.state == '1_done':
             # Move to todo state
             self.state = '1_todo'
@@ -347,7 +347,7 @@ class Task(models.Model):
     
     @classmethod
     def ensure_onboarding_todo(cls, user):
-        """Create onboarding todo for new users - Odoo inspired"""
+        """Create onboarding todo for new users - Open Linguify inspired"""
         if user.todo_tasks.filter(title__icontains='Welcome').exists():
             return  # Already has onboarding todo
         
@@ -379,7 +379,7 @@ class Task(models.Model):
     
     @classmethod
     def get_todo_views_data(cls):
-        """Return view configuration for different todo views - Odoo inspired"""
+        """Return view configuration for different todo views - Open Linguify inspired"""
         return {
             'kanban': {
                 'default_group_by': 'personal_stage_type',

@@ -22,7 +22,7 @@ def update_project_progress_on_delete(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 def create_default_categories_and_onboarding(sender, instance, created, **kwargs):
-    """Create default categories and onboarding for new users - Odoo inspired"""
+    """Create default categories and onboarding for new users - Open Linguify inspired"""
     if created:
         # Create personal stages first
         PersonalStageType.create_default_stages(instance)
