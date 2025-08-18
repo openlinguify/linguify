@@ -7,16 +7,6 @@
         <div class="d-flex justify-content-between align-items-center">
             <!-- Left side: Calendar navigation -->
             <div class="d-flex align-items-center gap-2">
-                <!-- Standard navigation -->
-                {% if request.resolver_match.url_name != 'dashboard' %}
-                <a href="{% url 'saas_web:dashboard' %}" 
-                   class="btn btn-outline-secondary btn-sm"
-                   aria-label="{% trans 'Go to dashboard' %}">
-                    <i class="bi bi-house me-1" aria-hidden="true"></i>
-                    <span class="d-none d-lg-inline">{% trans "Dashboard" %}</span>
-                </a>
-                {% endif %}
-                
                 <!-- Calendar-specific navigation buttons -->
                 <a href="{% url 'calendar:main' %}" 
                    class="btn btn-outline-primary btn-sm {% if request.resolver_match.url_name == 'main' %}active{% endif %}"

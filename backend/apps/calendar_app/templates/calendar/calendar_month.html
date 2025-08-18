@@ -6,14 +6,55 @@
 
 {% block page_title %}{% trans "Calendar" %}{% endblock %}
 
-{% block extra_css %}
+{% block extra_calendar_css %}
 <!-- Page-specific styles are now in calendar.css -->
 {% endblock %}
 
 {% block calendar_content %}
 <div class="container-fluid">
-    <!-- Include Calendar Context Navigation -->
-    {% include 'calendar/components/calendar_navbar.html' %}
+    <!-- Calendar Context Navigation (Month, Week, Day switchers) -->
+    <div class="calendar-context-navbar">
+        <div class="context-navbar-content">
+            <!-- Left: View Switcher -->
+            <div class="context-nav-left">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-primary active" data-view="month">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        <span class="d-none d-sm-inline">{% trans "Month" %}</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-view="week">
+                        <i class="bi bi-calendar-week me-1"></i>
+                        <span class="d-none d-sm-inline">{% trans "Week" %}</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-view="day">
+                        <i class="bi bi-calendar-day me-1"></i>
+                        <span class="d-none d-sm-inline">{% trans "Day" %}</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Center: Current Period -->
+            <div class="context-nav-center">
+                <div class="current-period">
+                    <button id="prevPeriod" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <span class="period-title" id="currentPeriod">{{ current_date|date:"F Y" }}</span>
+                    <button id="nextPeriod" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Right: Actions -->
+            <div class="context-nav-right">
+                <button id="todayBtn" class="btn btn-primary btn-sm">
+                    <i class="bi bi-dot me-1"></i>
+                    <span class="d-none d-lg-inline">{% trans "Today" %}</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
 <div class="calendar-main-content fade-in">
     <!-- Calendar Stats -->

@@ -11,12 +11,39 @@
     <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     
+    <!-- Override for Linguify design system variables -->
+    <style>
+        :root {
+            --linguify-primary: #2D5BBA;
+            --linguify-secondary: #8B5CF6;
+            --linguify-accent: #00D4AA;
+            --linguify-gray: #6B7280;
+            --linguify-primary-light: #4F7BD9;
+            --linguify-primary-dark: #1E4A8C;
+            --linguify-secondary-light: #A78BFA;
+            --linguify-secondary-dark: #7C3AED;
+            --linguify-accent-light: #26E4B8;
+            --linguify-accent-dark: #00B894;
+            --linguify-success: #10B981;
+            --linguify-warning: #F59E0B;
+            --linguify-error: #EF4444;
+            --linguify-white: #FFFFFF;
+            --linguify-gray-50: #F9FAFB;
+            --linguify-gray-100: #F3F4F6;
+            --linguify-gray-200: #E5E7EB;
+            --linguify-gray-300: #D1D5DB;
+            --linguify-gray-700: #374151;
+            --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+            --header-height: 64px;
+        }
+    </style>
+    
     {% block extra_calendar_css %}{% endblock %}
 {% endblock %}
 
 {% block content %}
     <!-- Include calendar-specific header navigation -->
-    {% include 'components/calendar_header.html' %}
+    {% include 'calendar/components/calendar_header.html' %}
     
     <!-- Main Content Container -->
     <div class="calendar-container">
