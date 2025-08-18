@@ -1,0 +1,30 @@
+{% extends "calendar/base.html" %}
+
+{% block title %}{% if is_create %}Create Event{% else %}Edit Event{% endif %} - Calendar{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>{% if is_create %}Create New Event{% else %}Edit Event{% endif %}</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                {% if is_create %}Create Event{% else %}Save Changes{% endif %}
+                            </button>
+                            <a href="{% url 'calendar:main' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

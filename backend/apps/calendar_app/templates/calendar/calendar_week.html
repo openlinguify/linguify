@@ -1,0 +1,51 @@
+{% extends "calendar/calendar_month.html" %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+// Override the calendar initialization for week view
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        headerToolbar: false,
+        height: 'auto',
+        events: '{% url "calendar:json" %}',
+        
+        // Week-specific settings
+        slotMinTime: '06:00:00',
+        slotMaxTime: '24:00:00',
+        allDaySlot: true,
+        
+        // Event styling
+        eventDisplay: 'block',
+        
+        // Interaction
+        selectable: true,
+        selectMirror: true,
+        
+        // Event handlers (same as month view)
+        select: function(info) {
+            document.getElementById('eventStart').value = info.startStr;
+            document.getElementById('eventEnd').value = info.endStr || info.startStr;
+            
+            const modal = new bootstrap.Modal(document.getElementById('quickEventModal'));
+            modal.show();
+            
+            calendar.unselect();
+        },
+        
+        eventClick: function(info) {
+            window.location.href = '/calendar/event/' + info.event.id + '/';
+        },
+        
+        windowResize: function() {
+            calendar.updateSize();
+        }
+    });
+    
+    calendar.render();
+});
+</script>
+{% endblock %}

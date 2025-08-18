@@ -1,0 +1,347 @@
+{% extends "calendar/base.html" %}
+{% load static %}
+
+{% block title %}Calendar - {{ current_date|date:"F Y" }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+<style>
+    .calendar-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .calendar-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .calendar-views {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .view-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        background: #f8f9fa;
+        color: #495057;
+        text-decoration: none;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+    }
+    
+    .view-btn.active,
+    .view-btn:hover {
+        background: #007bff;
+        color: white;
+    }
+    
+    .calendar-container {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        padding: 1.5rem;
+    }
+    
+    .fc-event {
+        border: none !important;
+        border-radius: 0.25rem !important;
+    }
+    
+    .fc-event-title {
+        font-weight: 500;
+    }
+    
+    .quick-add-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #007bff;
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        font-size: 1.5rem;
+        transition: all 0.3s;
+    }
+    
+    .quick-add-btn:hover {
+        background: #0056b3;
+        transform: scale(1.1);
+    }
+    
+    .calendar-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="calendar-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-0">
+                    <i class="bi bi-calendar-event me-3"></i>
+                    Calendar
+                </h1>
+                <p class="mb-0 mt-2 opacity-75">Manage your events and schedule</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Calendar Stats -->
+    <div class="calendar-stats">
+        <div class="stat-card">
+            <div class="stat-number">{{ events|length }}</div>
+            <div class="stat-label">Events This Month</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Upcoming Events</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">5</div>
+            <div class="stat-label">Event Types</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">12</div>
+            <div class="stat-label">Total Attendees</div>
+        </div>
+    </div>
+
+    <!-- Calendar Navigation -->
+    <div class="calendar-nav">
+        <div>
+            <a href="?date={{ current_date|date:'Y-m-d' }}&view=month" class="btn btn-outline-primary me-2">
+                <i class="bi bi-arrow-left"></i> Previous
+            </a>
+            <span class="fw-bold fs-5">{{ current_date|date:"F Y" }}</span>
+            <a href="?date={{ current_date|date:'Y-m-d' }}&view=month" class="btn btn-outline-primary ms-2">
+                Next <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="calendar-views">
+            <a href="?view=month&date={{ current_date|date:'Y-m-d' }}" 
+               class="view-btn {% if view_type == 'month' %}active{% endif %}">
+                Month
+            </a>
+            <a href="?view=week&date={{ current_date|date:'Y-m-d' }}" 
+               class="view-btn {% if view_type == 'week' %}active{% endif %}">
+                Week
+            </a>
+            <a href="?view=day&date={{ current_date|date:'Y-m-d' }}" 
+               class="view-btn {% if view_type == 'day' %}active{% endif %}">
+                Day
+            </a>
+            <a href="{% url 'calendar:agenda' %}" 
+               class="view-btn {% if view_type == 'agenda' %}active{% endif %}">
+                Agenda
+            </a>
+        </div>
+    </div>
+
+    <!-- Calendar Container -->
+    <div class="calendar-container">
+        <div id="calendar"></div>
+    </div>
+
+    <!-- Quick Add Button -->
+    <button class="quick-add-btn" data-bs-toggle="modal" data-bs-target="#quickEventModal">
+        <i class="bi bi-plus"></i>
+    </button>
+</div>
+
+<!-- Quick Event Modal -->
+<div class="modal fade" id="quickEventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Quick Add Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="quickEventForm">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="eventTitle" class="form-label">Event Title</label>
+                        <input type="text" class="form-control" id="eventTitle" name="name" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="eventStart" class="form-label">Start</label>
+                            <input type="datetime-local" class="form-control" id="eventStart" name="start" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="eventEnd" class="form-label">End</label>
+                            <input type="datetime-local" class="form-control" id="eventEnd" name="stop" required>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="allDay" name="allday">
+                            <label class="form-check-label" for="allDay">
+                                All day event
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Event</button>
+                    <a href="{% url 'calendar:event_create' %}" class="btn btn-outline-primary">More Options</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: false, // We use our custom header
+        height: 'auto',
+        events: '{% url "calendar:json" %}',
+        
+        // Event styling
+        eventDisplay: 'block',
+        dayMaxEvents: 3,
+        moreLinkClick: 'popover',
+        
+        // Interaction
+        selectable: true,
+        selectMirror: true,
+        
+        // Event handlers
+        select: function(info) {
+            // Set modal form dates
+            document.getElementById('eventStart').value = info.startStr;
+            document.getElementById('eventEnd').value = info.endStr || info.startStr;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('quickEventModal'));
+            modal.show();
+            
+            calendar.unselect();
+        },
+        
+        eventClick: function(info) {
+            window.location.href = '/calendar/event/' + info.event.id + '/';
+        },
+        
+        // Responsive design
+        windowResize: function() {
+            calendar.updateSize();
+        }
+    });
+    
+    calendar.render();
+    
+    // Quick event form submission
+    document.getElementById('quickEventForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('{% url "calendar:quick_create" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('quickEventModal')).hide();
+                
+                // Add event to calendar
+                calendar.addEvent(data.event);
+                
+                // Reset form
+                this.reset();
+                
+                // Show success message
+                showNotification('Event created successfully!', 'success');
+            } else {
+                showNotification('Error creating event: ' + JSON.stringify(data.errors), 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Error creating event', 'error');
+            console.error('Error:', error);
+        });
+    });
+    
+    // All day checkbox handler
+    document.getElementById('allDay').addEventListener('change', function() {
+        const startInput = document.getElementById('eventStart');
+        const endInput = document.getElementById('eventEnd');
+        
+        if (this.checked) {
+            // Convert to date inputs
+            startInput.type = 'date';
+            endInput.type = 'date';
+        } else {
+            // Convert to datetime-local inputs
+            startInput.type = 'datetime-local';
+            endInput.type = 'datetime-local';
+        }
+    });
+});
+
+function showNotification(message, type) {
+    // Simple notification system
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

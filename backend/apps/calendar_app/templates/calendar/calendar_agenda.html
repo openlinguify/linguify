@@ -1,0 +1,302 @@
+{% extends "calendar/base.html" %}
+{% load static %}
+
+{% block title %}Calendar - Agenda View{% endblock %}
+
+{% block extra_css %}
+<style>
+    .calendar-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .agenda-container {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .date-group {
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .date-header {
+        background: #f8f9fa;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .event-item {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f8f9fa;
+        transition: background-color 0.2s;
+    }
+    
+    .event-item:hover {
+        background: #f8f9fa;
+    }
+    
+    .event-item:last-child {
+        border-bottom: none;
+    }
+    
+    .event-time {
+        font-weight: 500;
+        color: #007bff;
+        min-width: 100px;
+    }
+    
+    .event-title {
+        font-weight: 600;
+        color: #212529;
+    }
+    
+    .event-location {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .event-attendees {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+    
+    .event-type-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+    }
+    
+    .no-events {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+    
+    .filters {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="calendar-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-0">
+                    <i class="bi bi-list-ul me-3"></i>
+                    Agenda View
+                </h1>
+                <p class="mb-0 mt-2 opacity-75">Upcoming events in chronological order</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Filters -->
+    <div class="filters">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="dateFrom" class="form-label">From</label>
+                        <input type="date" class="form-control" id="dateFrom" value="{{ start_date|date:'Y-m-d' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="dateTo" class="form-label">To</label>
+                        <input type="date" class="form-control" id="dateTo" value="{{ end_date|date:'Y-m-d' }}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex gap-2 justify-content-md-end">
+                    <a href="?view=month&date={{ start_date|date:'Y-m-d' }}" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar-month"></i> Month
+                    </a>
+                    <a href="?view=week&date={{ start_date|date:'Y-m-d' }}" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar-week"></i> Week
+                    </a>
+                    <a href="{% url 'calendar:event_create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus"></i> New Event
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agenda Content -->
+    <div class="agenda-container">
+        {% if events_by_date %}
+            {% for date, day_events in events_by_date.items %}
+                <div class="date-group">
+                    <div class="date-header">
+                        <i class="bi bi-calendar-date me-2"></i>
+                        {{ date|date:"l, F j, Y" }}
+                        {% if date == today %}
+                            <span class="badge bg-primary ms-2">Today</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% for event in day_events %}
+                        <div class="event-item">
+                            <div class="d-flex align-items-start">
+                                <div class="event-time me-3">
+                                    {% if event.allday %}
+                                        <i class="bi bi-calendar-day text-muted"></i>
+                                        All day
+                                    {% else %}
+                                        <i class="bi bi-clock text-muted me-1"></i>
+                                        {{ event.start|date:"H:i" }}
+                                        {% if event.duration %}
+                                            <div class="text-muted small">{{ event.get_duration_display }}</div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="event-title">
+                                                <a href="{% url 'calendar:event_detail' event.id %}" class="text-decoration-none">
+                                                    {{ event.name }}
+                                                </a>
+                                                {% if event.privacy == 'private' %}
+                                                    <i class="bi bi-lock text-muted ms-1"></i>
+                                                {% elif event.privacy == 'confidential' %}
+                                                    <i class="bi bi-eye-slash text-muted ms-1"></i>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            {% if event.location %}
+                                                <div class="event-location">
+                                                    <i class="bi bi-geo-alt me-1"></i>
+                                                    {{ event.location }}
+                                                </div>
+                                            {% endif %}
+                                            
+                                            {% if event.get_attendees_count > 0 %}
+                                                <div class="event-attendees">
+                                                    <i class="bi bi-people me-1"></i>
+                                                    {{ event.get_confirmed_attendees_count }}/{{ event.get_attendees_count }} attendees
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="text-end">
+                                            {% if event.event_type %}
+                                                <span class="badge event-type-badge" style="background-color: {{ event.event_type.get_bootstrap_color }};">
+                                                    {{ event.event_type.name }}
+                                                </span>
+                                            {% endif %}
+                                            
+                                            <div class="dropdown mt-2">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a class="dropdown-item" href="{% url 'calendar:event_detail' event.id %}">
+                                                            <i class="bi bi-eye me-2"></i>View
+                                                        </a>
+                                                    </li>
+                                                    {% if event.can_edit %}
+                                                        <li>
+                                                            <a class="dropdown-item" href="{% url 'calendar:event_edit' event.id %}">
+                                                                <i class="bi bi-pencil me-2"></i>Edit
+                                                            </a>
+                                                        </li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <a class="dropdown-item text-danger" href="{% url 'calendar:event_delete' event.id %}">
+                                                                <i class="bi bi-trash me-2"></i>Delete
+                                                            </a>
+                                                        </li>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <div class="d-flex justify-content-center p-3">
+                    <nav>
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="no-events">
+                <i class="bi bi-calendar-x display-1 text-muted mb-3"></i>
+                <h3>No events found</h3>
+                <p class="text-muted">No events scheduled for the selected period.</p>
+                <a href="{% url 'calendar:event_create' %}" class="btn btn-primary mt-3">
+                    <i class="bi bi-plus"></i> Create your first event
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Date filter handlers
+document.getElementById('dateFrom').addEventListener('change', function() {
+    updateFilter();
+});
+
+document.getElementById('dateTo').addEventListener('change', function() {
+    updateFilter();
+});
+
+function updateFilter() {
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    
+    if (dateFrom && dateTo) {
+        window.location.href = `?from=${dateFrom}&to=${dateTo}`;
+    }
+}
+</script>
+{% endblock %}
