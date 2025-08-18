@@ -116,6 +116,7 @@ INSTALLED_APPS = [
     'apps.teaching',
     'apps.todo',
     'apps.cms_sync',
+    'apps.calendar_app',
     
     # Web interfaces
     'saas_web',
