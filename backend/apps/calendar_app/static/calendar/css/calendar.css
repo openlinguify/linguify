@@ -240,6 +240,30 @@
     pointer-events: auto !important;
 }
 
+/* Fix header padding to match dashboard */
+.calendar-body .fixed-header .container-fluid {
+    padding-left: var(--bs-gutter-x, 0.75rem) !important; /* Use default Bootstrap gutter */
+    padding-right: var(--bs-gutter-x, 0.75rem) !important; /* Use default Bootstrap gutter */
+}
+
+/* Fix dropdown z-index issues - ensure they appear above everything */
+.calendar-body .fixed-header .dropdown-menu {
+    z-index: 9999 !important; /* Very high z-index for header dropdowns */
+}
+
+.calendar-body .calendar-navbar-container .dropdown-menu {
+    z-index: 9998 !important; /* High z-index for calendar navigation dropdowns */
+}
+
+.calendar-body .odoo-calendar-toolbar .dropdown-menu {
+    z-index: 9997 !important; /* High z-index for Odoo toolbar dropdowns */
+}
+
+/* Ensure header has higher z-index than other fixed elements */
+.calendar-body .fixed-header {
+    z-index: 1050 !important; /* Higher than calendar elements */
+}
+
 /* Navigation tabs (same as revision) */
 .nav-tab {
     padding: 0.5rem 1rem;
