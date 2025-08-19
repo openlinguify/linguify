@@ -1072,29 +1072,45 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%; /* Use full width */
     height: 100%;
+    padding: 0 24px; /* More padding for better spacing */
 }
 
-.toolbar-left,
-.toolbar-center,
+.toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1; /* Take available space */
+    justify-content: flex-start;
+}
+
+.toolbar-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1; /* Take available space */
+    min-width: 200px;
+}
+
 .toolbar-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
+    flex: 1; /* Take available space */
+    justify-content: flex-end;
 }
 
 .view-switcher {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 16px;
 }
 
 .period-navigation {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 24px;
 }
 
 .period-title {
@@ -1103,12 +1119,13 @@
     font-size: 1.125rem;
     min-width: 180px;
     text-align: center;
+    white-space: nowrap;
 }
 
 .action-buttons {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 16px;
 }
 
 /* Calendar Main Layout - Full Height */
@@ -1383,10 +1400,31 @@
     }
     
     .toolbar-content {
-        flex-direction: column;
-        gap: 8px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
         height: auto;
-        padding: 8px 0;
+        padding: 12px 16px;
+        justify-content: space-around;
+    }
+    
+    .toolbar-left,
+    .toolbar-center,
+    .toolbar-right {
+        flex: 0 1 auto; /* Allow shrinking on mobile */
+        min-width: fit-content;
+    }
+    
+    .toolbar-left {
+        order: 1;
+    }
+    
+    .toolbar-center {
+        order: 2;
+    }
+    
+    .toolbar-right {
+        order: 3;
     }
     
     .odoo-calendar-toolbar {
