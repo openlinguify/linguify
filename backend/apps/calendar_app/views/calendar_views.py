@@ -176,11 +176,34 @@ def calendar_json(request):
     # Convert to FullCalendar format
     calendar_events = []
     for event in events:
+        # Handle timezone issues for events
+        if event.allday:
+            # For all-day events, we need to preserve the date intention 
+            # without timezone conversion affecting the date
+            if hasattr(event.start, 'date'):
+                # Extract date in UTC to avoid local timezone shifting
+                start_date = event.start.replace(tzinfo=None).date() if event.start.tzinfo else event.start.date()
+            else:
+                start_date = event.start
+                
+            if hasattr(event.stop, 'date'):
+                # Extract date in UTC to avoid local timezone shifting
+                end_date = event.stop.replace(tzinfo=None).date() if event.stop.tzinfo else event.stop.date()
+            else:
+                end_date = event.stop
+                
+            start_str = start_date.strftime('%Y-%m-%d')
+            end_str = end_date.strftime('%Y-%m-%d')
+        else:
+            # For timed events, use local timezone (remove timezone info to let frontend handle it)
+            start_str = event.start.replace(tzinfo=None).isoformat() if event.start.tzinfo else event.start.isoformat()
+            end_str = event.stop.replace(tzinfo=None).isoformat() if event.stop.tzinfo else event.stop.isoformat()
+        
         calendar_event = {
             'id': str(event.id),
             'title': event.name,
-            'start': event.start.isoformat(),
-            'end': event.stop.isoformat(),
+            'start': start_str,
+            'end': end_str,
             'allDay': event.allday,
             'url': f'/calendar/event/{event.id}/',
             'backgroundColor': get_event_color(event),

@@ -263,6 +263,17 @@ function forceInitializeCalendar() {
                 
                 const data = await response.json();
                 console.log('[Calendar] API Response:', data);
+                
+                // Debug each event's dates
+                data.forEach((event, index) => {
+                    console.log(`[Calendar] Event ${index+1}: "${event.title}" start="${event.start}" end="${event.end}" allDay=${event.allDay}`);
+                    
+                    // Check for problem events
+                    if (event.title.includes('ffff') || event.title.includes('azerty')) {
+                        console.warn(`[Calendar] PROBLEM EVENT: "${event.title}" dates: ${event.start} -> ${event.end}`);
+                    }
+                });
+                
                 return data;
             } catch (error) {
                 console.error('[Calendar] API Error:', error);
@@ -301,9 +312,14 @@ function getDayEvents(date) {
                             String(eventEnd.getMonth() + 1).padStart(2, '0') + '-' + 
                             String(eventEnd.getDate()).padStart(2, '0');
         
-        // Debug logging
-        if (event.title && (eventStartDate === targetDate || eventEndDate === targetDate)) {
-            console.log(`[Calendar] Event "${event.title}": ${event.start} -> ${eventStartDate}, target: ${targetDate}`);
+        // Debug logging for date matching
+        if (event.title && (event.title.includes('ffff') || event.title.includes('azerty'))) {
+            console.log(`[Calendar] DEBUG Event "${event.title}":`);
+            console.log(`  - Raw start: ${event.start}`);
+            console.log(`  - Parsed start: ${eventStart}`);
+            console.log(`  - Formatted start: ${eventStartDate}`);
+            console.log(`  - Target date: ${targetDate}`);
+            console.log(`  - Match: ${eventStartDate === targetDate}`);
         }
         
         // Check if event occurs on this date
@@ -593,12 +609,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!endInput.value && this.value) {
                 if (allDayCheckbox && allDayCheckbox.checked) {
+                    // For all-day events, end date should be same as start date
                     endInput.value = this.value;
                 } else {
+                    // For timed events, add 1 hour
                     const startDate = new Date(this.value);
                     startDate.setHours(startDate.getHours() + 1);
                     endInput.value = startDate.toISOString().slice(0, 16);
                 }
+            } else if (allDayCheckbox && allDayCheckbox.checked && this.value) {
+                // When changing start date for all-day event, update end date too
+                endInput.value = this.value;
             }
         });
     }
