@@ -93,19 +93,20 @@
                 
                 <!-- Droite: Actions et filtres contextuels -->
                 <div class="d-flex align-items-center gap-1 flex-nowrap">
-                    <input type="text" id="searchInput" class="form-control form-control-sm search-input" placeholder="{% trans 'Rechercher...' %}" style="width: 140px; min-width: 100px;">
+                    <input type="text" id="calendarSearchInput" class="form-control form-control-sm search-input" placeholder="{% trans 'Rechercher événements...' %}" style="width: 160px; min-width: 120px;">
                     
-                    <select id="statusFilter" class="form-select form-select-sm filter-select" style="width: 110px; min-width: 90px;">
-                        <option value="">{% trans "Tous les statuts" %}</option>
-                        <option value="confirmed">{% trans "Confirmés" %}</option>
-                        <option value="tentative">{% trans "Tentatives" %}</option>
-                        <option value="cancelled">{% trans "Annulés" %}</option>
+                    <select id="calendarTypeFilter" class="form-select form-select-sm filter-select" style="width: 120px; min-width: 100px;">
+                        <option value="">{% trans "Tous les calendriers" %}</option>
+                        <option value="personal">{% trans "Personnel" %}</option>
+                        <option value="work">{% trans "Travail" %}</option>
+                        <option value="shared">{% trans "Partagé" %}</option>
                     </select>
                     
-                    <select id="sortFilter" class="form-select form-select-sm filter-select" style="width: 110px; min-width: 90px;">
-                        <option value="date_desc">{% trans "Plus récents" %}</option>
-                        <option value="date_asc">{% trans "Plus anciens" %}</option>
-                        <option value="title_asc">{% trans "A-Z" %}</option>
+                    <select id="calendarViewFilter" class="form-select form-select-sm filter-select" style="width: 100px; min-width: 90px;">
+                        <option value="month" data-view="month">{% trans "Mois" %}</option>
+                        <option value="week" data-view="week">{% trans "Semaine" %}</option>
+                        <option value="day" data-view="day">{% trans "Jour" %}</option>
+                        <option value="agenda" data-view="agenda">{% trans "Agenda" %}</option>
                     </select>
                     
                     <!-- Actions -->
@@ -119,6 +120,78 @@
     </div>
     
     {% block calendar_main_content %}{% endblock %}
+    
+    <!-- Calendar navbar keyboard shortcuts -->
+    <script>
+        // Keyboard shortcuts for calendar navbar
+        document.addEventListener('keydown', function(e) {
+            // Only if no input is focused
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') {
+                return;
+            }
+            
+            switch(e.key) {
+                case 'r':
+                case 'R':
+                    if (e.ctrlKey || e.metaKey) return; // Don't interfere with browser refresh
+                    e.preventDefault();
+                    document.getElementById('refreshCalendar')?.click();
+                    break;
+                case '/':
+                    e.preventDefault();
+                    document.getElementById('calendarSearchInput')?.focus();
+                    break;
+                case 'n':
+                case 'N':
+                    if (e.ctrlKey || e.metaKey) return;
+                    e.preventDefault();
+                    window.location.href = '{% url "calendar:event_create" %}';
+                    break;
+                case '1':
+                    e.preventDefault();
+                    document.querySelector('a[href="{% url "calendar:main" %}"]')?.click();
+                    break;
+                case '2':
+                    e.preventDefault();
+                    document.querySelector('a[href="{% url "calendar:agenda" %}"]')?.click();
+                    break;
+                case '3':
+                    e.preventDefault();
+                    document.querySelector('a[href="{% url "calendar:providers" %}"]')?.click();
+                    break;
+                case '4':
+                    e.preventDefault();
+                    document.querySelector('a[href="{% url "calendar:settings" %}"]')?.click();
+                    break;
+            }
+        });
+        
+        // Show keyboard shortcuts help
+        function showKeyboardShortcuts() {
+            if (window.notificationService) {
+                window.notificationService.info(`
+                    ⌨️ Raccourcis clavier:<br>
+                    R = Actualiser<br>
+                    / = Rechercher<br>
+                    N = Nouvel événement<br>
+                    1-4 = Navigation tabs
+                `);
+            }
+        }
+        
+        // Add help button to navbar
+        document.addEventListener('DOMContentLoaded', function() {
+            const refreshBtn = document.getElementById('refreshCalendar');
+            if (refreshBtn && refreshBtn.parentNode) {
+                const helpBtn = document.createElement('button');
+                helpBtn.className = 'btn btn-outline-custom btn-sm';
+                helpBtn.innerHTML = '<i class="bi bi-question-circle"></i>';
+                helpBtn.title = 'Raccourcis clavier (?)';
+                helpBtn.onclick = showKeyboardShortcuts;
+                refreshBtn.parentNode.insertBefore(helpBtn, refreshBtn);
+            }
+        });
+    </script>
 {% endblock %}
 
 {% block app_navigation %}
