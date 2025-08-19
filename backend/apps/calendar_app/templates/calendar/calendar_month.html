@@ -281,13 +281,34 @@ function forceInitializeCalendar() {
 function getDayEvents(date) {
     if (!window.calendar || !window.calendar.events) return [];
     
-    const targetDate = date.toISOString().split('T')[0];
+    // Format target date in local timezone (YYYY-MM-DD)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const targetDate = `${year}-${month}-${day}`;
     
     return window.calendar.events.filter(event => {
-        const eventStart = new Date(event.start).toISOString().split('T')[0];
-        const eventEnd = new Date(event.end).toISOString().split('T')[0];
+        // Parse event dates in local timezone to avoid UTC conversion issues
+        const eventStart = new Date(event.start);
+        const eventEnd = new Date(event.end);
         
-        return eventStart === targetDate || (eventStart <= targetDate && eventEnd >= targetDate);
+        // Format event dates in local timezone
+        const eventStartDate = eventStart.getFullYear() + '-' + 
+                              String(eventStart.getMonth() + 1).padStart(2, '0') + '-' + 
+                              String(eventStart.getDate()).padStart(2, '0');
+        
+        const eventEndDate = eventEnd.getFullYear() + '-' + 
+                            String(eventEnd.getMonth() + 1).padStart(2, '0') + '-' + 
+                            String(eventEnd.getDate()).padStart(2, '0');
+        
+        // Debug logging
+        if (event.title && (eventStartDate === targetDate || eventEndDate === targetDate)) {
+            console.log(`[Calendar] Event "${event.title}": ${event.start} -> ${eventStartDate}, target: ${targetDate}`);
+        }
+        
+        // Check if event occurs on this date
+        return eventStartDate === targetDate || 
+               (eventStartDate <= targetDate && eventEndDate >= targetDate);
     });
 }
 
