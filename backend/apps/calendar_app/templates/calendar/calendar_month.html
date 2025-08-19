@@ -7,83 +7,133 @@
 {% block page_title %}{% trans "Calendar" %}{% endblock %}
 
 {% block extra_calendar_css %}
-<!-- Page-specific styles are now in calendar.css -->
+<!-- Odoo-style layout CSS is now integrated in calendar.css -->
 {% endblock %}
 
 {% block calendar_content %}
 <div class="container-fluid">
-    <!-- Calendar Context Navigation (Month, Week, Day switchers) -->
-    <div class="calendar-context-navbar">
-        <div class="context-navbar-content">
-            <!-- Left: View Switcher -->
-            <div class="context-nav-left">
-                <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-primary {% if view_type == 'month' %}active{% endif %}" data-view="month">
-                        <i class="bi bi-calendar3 me-1"></i>
-                        <span class="d-none d-sm-inline">{% trans "Month" %}</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary {% if view_type == 'week' %}active{% endif %}" data-view="week">
-                        <i class="bi bi-calendar-week me-1"></i>
-                        <span class="d-none d-sm-inline">{% trans "Week" %}</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary {% if view_type == 'day' %}active{% endif %}" data-view="day">
-                        <i class="bi bi-calendar-day me-1"></i>
-                        <span class="d-none d-sm-inline">{% trans "Day" %}</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary {% if view_type == 'list' %}active{% endif %}" data-view="list">
-                        <i class="bi bi-list-ul me-1"></i>
-                        <span class="d-none d-sm-inline">{% trans "List" %}</span>
+    <!-- Odoo-style Calendar Toolbar -->
+    <div class="odoo-calendar-toolbar">
+        <div class="toolbar-content">
+            <!-- Left: View Switcher - Odoo Style -->
+            <div class="toolbar-left">
+                <div class="view-switcher">
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            {% if view_type == 'month' %}Mois{% elif view_type == 'week' %}Semaine{% elif view_type == 'day' %}Jour{% else %}Liste{% endif %}
+                            <i class="bi bi-chevron-down ms-1"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item {% if view_type == 'month' %}active{% endif %}" href="#" data-view="month">Mois</a></li>
+                            <li><a class="dropdown-item {% if view_type == 'week' %}active{% endif %}" href="#" data-view="week">Semaine</a></li>
+                            <li><a class="dropdown-item {% if view_type == 'day' %}active{% endif %}" href="#" data-view="day">Jour</a></li>
+                            <li><a class="dropdown-item {% if view_type == 'list' %}active{% endif %}" href="#" data-view="list">Liste</a></li>
+                        </ul>
+                    </div>
+                    
+                    <button id="todayBtn" class="btn btn-outline-secondary ms-2">
+                        Aujourd'hui
                     </button>
                 </div>
             </div>
             
-            <!-- Center: Current Period -->
-            <div class="context-nav-center">
-                <div class="current-period">
-                    <button id="prevPeriod" class="btn btn-outline-secondary btn-sm">
+            <!-- Center: Navigation - Odoo Style -->
+            <div class="toolbar-center">
+                <div class="period-navigation">
+                    <button id="prevPeriod" class="btn btn-light">
                         <i class="bi bi-chevron-left"></i>
                     </button>
                     <span class="period-title" id="currentPeriod">{{ current_date|date:"F Y" }}</span>
-                    <button id="nextPeriod" class="btn btn-outline-secondary btn-sm">
+                    <button id="nextPeriod" class="btn btn-light">
                         <i class="bi bi-chevron-right"></i>
                     </button>
                 </div>
             </div>
             
-            <!-- Right: Actions -->
-            <div class="context-nav-right">
-                <button id="todayBtn" class="btn btn-primary btn-sm">
-                    <i class="bi bi-dot me-1"></i>
-                    <span class="d-none d-lg-inline">{% trans "Today" %}</span>
-                </button>
+            <!-- Right: Actions - Odoo Style -->
+            <div class="toolbar-right">
+                <div class="action-buttons">
+                    <button class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#createEventModal">
+                        <i class="bi bi-plus"></i> Nouveau
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'calendar:import_export' %}"><i class="bi bi-download me-2"></i>Importer</a></li>
+                            <li><a class="dropdown-item" href="{% url 'calendar:import_export' %}"><i class="bi bi-upload me-2"></i>Exporter</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'calendar:settings' %}"><i class="bi bi-gear me-2"></i>Paramètres</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-<div class="calendar-main-content fade-in">
-    <!-- Calendar Container -->
-    <div class="fullcalendar-container">
-        <div class="calendar-header-debug">
-            <h4>Calendar Loading...</h4>
-            {% if user.is_authenticated %}
-                <p>✅ Logged in as: {{ user.username }}</p>
-            {% else %}
-                <p>⚠️ Not logged in - showing demo calendar</p>
-            {% endif %}
-        </div>
-        <div id="calendar"></div>
-        <div class="calendar-debug-info" style="margin-top: 1rem; padding: 1rem; background: #f0f0f0; border-radius: 0.5rem;">
-            <strong>Debug Info:</strong>
-            <div>Calendar Type: <span id="calendar-type">Loading...</span></div>
-            <div>User ID: <span id="user-id">{{ user.id|default:"Not logged in" }}</span></div>
-            <div>Current time: <span id="debug-time"></span></div>
+<!-- Odoo-style Full Height Layout -->
+<div class="calendar-main-row">
+    <!-- Main Calendar Area -->
+    <div class="calendar-column">
+        <div class="odoo-calendar-grid">
+            <!-- Calendar Header -->
+            <div class="odoo-calendar-header">
+                <div class="odoo-day-header">LUN</div>
+                <div class="odoo-day-header">MAR</div>
+                <div class="odoo-day-header">MER</div>
+                <div class="odoo-day-header">JEU</div>
+                <div class="odoo-day-header">VEN</div>
+                <div class="odoo-day-header">SAM</div>
+                <div class="odoo-day-header">DIM</div>
+            </div>
+            
+            <!-- Calendar Body -->
+            <div class="odoo-calendar-body" id="calendar"></div>
         </div>
     </div>
-
-    <!-- Quick Add Button -->
-    <button class="quick-add-btn" data-bs-toggle="modal" data-bs-target="#createEventModal" title="{% trans 'Quick Add Event' %}">
-        <i class="bi bi-plus"></i>
-    </button>
+    
+    <!-- Right Sidebar -->
+    <div class="sidebar-column">
+        <div class="odoo-sidebar">
+            <!-- Mini Calendar -->
+            <div class="mini-calendar">
+                <h6>{{ current_date|date:"F Y"|title }}</h6>
+                <div class="mini-calendar-grid" id="miniCalendar">
+                    <!-- Mini calendar will be generated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Participants Section -->
+            <div class="participants-section">
+                <h6><i class="bi bi-people me-2"></i>Participants</h6>
+                <div class="participant-item">
+                    <div class="participant-avatar">
+                        {{ user.get_full_name|first|upper|default:user.username|first|upper }}
+                    </div>
+                    <div class="participant-info">
+                        <div class="participant-name">{{ user.get_full_name|default:user.username }}</div>
+                    </div>
+                </div>
+                {% if upcoming_events %}
+                    <div class="mt-3">
+                        <small class="text-muted">Prochains événements:</small>
+                        {% for event in upcoming_events|slice:":3" %}
+                            <div class="participant-item">
+                                <div class="participant-avatar" style="background: {% if event.event_type %}{{ event.event_type.color }}{% else %}#6c757d{% endif %};">
+                                    <i class="bi bi-calendar-event"></i>
+                                </div>
+                                <div class="participant-info">
+                                    <div class="participant-name">{{ event.name|truncatechars:20 }}</div>
+                                    <small class="text-muted">{{ event.start|date:"j M" }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 </div>
 
@@ -191,12 +241,82 @@ function forceInitializeCalendar() {
         return html;
     }
     
+    function renderOdooCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const today = new Date();
+        
+        const firstDay = new Date(year, month, 1);
+        const startDate = new Date(firstDay);
+        
+        // Adjust to start on Monday
+        const dayOfWeek = (firstDay.getDay() + 6) % 7;
+        startDate.setDate(firstDay.getDate() - dayOfWeek);
+        
+        let html = '';
+        
+        for (let week = 0; week < 6; week++) {
+            for (let day = 0; day < 7; day++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + (week * 7) + day);
+                
+                const isCurrentMonth = date.getMonth() === month;
+                const isToday = date.toDateString() === today.toDateString();
+                
+                let cellClasses = 'odoo-calendar-cell';
+                if (!isCurrentMonth) cellClasses += ' other-month';
+                if (isToday) cellClasses += ' today';
+                
+                const dateString = date.getFullYear() + '-' + 
+                                  String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                                  String(date.getDate()).padStart(2, '0');
+                
+                // Get events for this date
+                const dayEvents = getDayEvents(date);
+                let eventsHtml = '';
+                
+                if (dayEvents.length > 0) {
+                    dayEvents.slice(0, 4).forEach(event => {
+                        const eventType = event.extendedProps?.type || 'default';
+                        const eventTitle = event.title.length > 20 ? event.title.substring(0, 20) + '...' : event.title;
+                        
+                        let eventClass = 'odoo-event';
+                        if (eventType === 'meeting') eventClass += ' event-type-meeting';
+                        else if (eventType === 'personal') eventClass += ' event-type-personal';
+                        else if (eventType === 'work') eventClass += ' event-type-work';
+                        
+                        const eventTime = event.allDay ? '' : (event.start.split('T')[1]?.substring(0,5) + ' ');
+                        
+                        eventsHtml += `
+                            <div class="${eventClass}" onclick="event.stopPropagation(); showEventDetails('${event.id}')" title="${event.title}">
+                                ${eventTime}${eventTitle}
+                            </div>
+                        `;
+                    });
+                    
+                    if (dayEvents.length > 4) {
+                        eventsHtml += `<div class="odoo-event" style="opacity: 0.7; font-size: 0.65rem;">+${dayEvents.length - 4} plus</div>`;
+                    }
+                }
+                
+                html += `
+                    <div class="${cellClasses}" onclick="handleDateClick('${dateString}')">
+                        <div class="odoo-day-number">${date.getDate()}</div>
+                        <div class="odoo-events-container">${eventsHtml}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        return html;
+    }
+    
     // Remove debug content
     const debugElements = calendarEl.parentElement.querySelectorAll('.calendar-header-debug, .calendar-debug-info');
     debugElements.forEach(el => el.remove());
     
-    // Render calendar
-    calendarEl.innerHTML = renderSimpleCalendar();
+    // Render Odoo-style calendar
+    calendarEl.innerHTML = renderOdooCalendar();
     
     // Create global calendar object
     window.calendar = {
@@ -237,11 +357,11 @@ function forceInitializeCalendar() {
         loadAndRender: async function() {
             try {
                 this.events = await this.loadEvents();
-                calendarEl.innerHTML = renderSimpleCalendar();
+                calendarEl.innerHTML = renderOdooCalendar();
                 console.log('[Calendar] Rendered with events:', this.events.length);
             } catch (error) {
                 console.error('[Calendar] Error loading events:', error);
-                calendarEl.innerHTML = renderSimpleCalendar();
+                calendarEl.innerHTML = renderOdooCalendar();
             }
         },
         loadEvents: async function() {
