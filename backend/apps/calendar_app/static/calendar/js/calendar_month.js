@@ -73,8 +73,14 @@ function forceInitializeCalendar() {
                 if (!isCurrentMonth) style += ' background-color: #fafafa; color: #adb5bd;';
                 if (isToday) style += ' background-color: rgba(102, 126, 234, 0.1); border: 2px solid #667eea;';
                 
+                // Format date correctly for local timezone
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const localDateString = `${year}-${month}-${day}`;
+                
                 html += `
-                    <div style="${style}" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='${isToday ? 'rgba(102, 126, 234, 0.1)' : (isCurrentMonth ? 'white' : '#fafafa')}'" onclick="handleDateClick('${date.toISOString().split('T')[0]}')">
+                    <div style="${style}" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='${isToday ? 'rgba(102, 126, 234, 0.1)' : (isCurrentMonth ? 'white' : '#fafafa')}'" onclick="handleDateClick('${localDateString}')">
                         <div style="font-weight: 600; margin-bottom: 0.25rem;">${date.getDate()}</div>
                     </div>
                 `;
@@ -139,7 +145,7 @@ function updateCalendarTitle() {
 
 /**
  * Handle date click events
- * @param {string} date - Date in ISO format
+ * @param {string} date - Date in YYYY-MM-DD format (local timezone)
  */
 function handleDateClick(date) {
     console.log('[Calendar] Date clicked:', date);
@@ -150,8 +156,10 @@ function handleDateClick(date) {
         const endInput = document.getElementById('eventEnd');
         
         if (startInput && endInput) {
+            // Date is already in YYYY-MM-DD format, just add time
             startInput.value = date + 'T09:00';
             endInput.value = date + 'T10:00';
+            console.log('[Calendar] Form dates set:', startInput.value, endInput.value);
         }
         
         if (typeof bootstrap !== 'undefined') {
