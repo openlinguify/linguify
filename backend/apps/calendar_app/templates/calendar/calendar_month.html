@@ -149,8 +149,12 @@ function forceInitializeCalendar() {
                 if (!isCurrentMonth) style += ' background-color: #fafafa; color: #adb5bd;';
                 if (isToday) style += ' background-color: rgba(102, 126, 234, 0.1); border: 2px solid #667eea;';
                 
+                const dateString = date.getFullYear() + '-' + 
+                                  String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                                  String(date.getDate()).padStart(2, '0');
+                
                 html += `
-                    <div style="${style}" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='${isToday ? 'rgba(102, 126, 234, 0.1)' : (isCurrentMonth ? 'white' : '#fafafa')}'" onclick="handleDateClick('${date.toISOString().split('T')[0]}')">
+                    <div style="${style}" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='${isToday ? 'rgba(102, 126, 234, 0.1)' : (isCurrentMonth ? 'white' : '#fafafa')}'" onclick="handleDateClick('${dateString}')">
                         <div style="font-weight: 600; margin-bottom: 0.25rem;">${date.getDate()}</div>
                     </div>
                 `;

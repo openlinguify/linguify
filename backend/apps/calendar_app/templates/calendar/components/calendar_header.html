@@ -1,58 +1,134 @@
+{% extends "saas_web/base.html" %}
 {% load static %}
 {% load i18n %}
 
-<!-- Calendar-specific navigation bar -->
-<div class="calendar-navigation-bar bg-white border-bottom py-2 mb-3">
-    <div class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center">
-            <!-- Left side: Calendar navigation -->
-            <div class="d-flex align-items-center gap-2">
-                <!-- Calendar-specific navigation buttons -->
-                <a href="{% url 'calendar:main' %}" 
-                   class="btn btn-outline-primary btn-sm {% if request.resolver_match.url_name == 'main' %}active{% endif %}"
-                   aria-label="{% trans 'Calendar view' %}">
-                    <i class="bi bi-calendar-month me-1" aria-hidden="true"></i>
-                    <span class="d-none d-lg-inline">{% trans "Calendar" %}</span>
-                </a>
+{% block extra_css %}
+    <!-- CSS spécifique au calendrier -->
+    <link rel="stylesheet" href="{% static 'calendar/css/calendar.css' %}">
+    
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    
+    <!-- Override for Linguify design system variables -->
+    <style>
+        :root {
+            --linguify-primary: #2D5BBA;
+            --linguify-secondary: #8B5CF6;
+            --linguify-accent: #00D4AA;
+            --linguify-gray: #6B7280;
+            --linguify-primary-light: #4F7BD9;
+            --linguify-primary-dark: #1E4A8C;
+            --linguify-secondary-light: #A78BFA;
+            --linguify-secondary-dark: #7C3AED;
+            --linguify-accent-light: #26E4B8;
+            --linguify-accent-dark: #00B894;
+            --linguify-success: #10B981;
+            --linguify-warning: #F59E0B;
+            --linguify-error: #EF4444;
+            --linguify-white: #FFFFFF;
+            --linguify-gray-50: #F9FAFB;
+            --linguify-gray-100: #F3F4F6;
+            --linguify-gray-200: #E5E7EB;
+            --linguify-gray-300: #D1D5DB;
+            --linguify-gray-700: #374151;
+            --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+            --header-height: 64px;
+        }
+        
+        /* Add calendar-body class to body */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        body.calendar-body {
+            background-color: var(--calendar-bg, #F9FAFB);
+        }
+    </style>
+    
+    {% block extra_calendar_css %}{% endblock %}
+{% endblock %}
+
+
+{% block content %}
+    <!-- Add calendar-body class to body element -->
+    <script>document.body.classList.add('calendar-body');</script>
+    
+    <!-- Calendar Secondary Navigation Bar -->
+    <div class="calendar-secondary-navbar bg-white border-bottom py-2 mb-3 sticky-top" style="top: var(--header-height, 64px); z-index: 100;">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Left side: Calendar navigation -->
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'calendar:main' %}" 
+                       class="btn btn-outline-primary btn-sm {% if request.resolver_match.url_name == 'main' %}active{% endif %}"
+                       aria-label="{% trans 'Calendar view' %}">
+                        <i class="bi bi-calendar-month me-1" aria-hidden="true"></i>
+                        <span class="d-none d-lg-inline">{% trans "Calendar" %}</span>
+                    </a>
+                    
+                    <a href="{% url 'calendar:agenda' %}" 
+                       class="btn btn-outline-secondary btn-sm {% if request.resolver_match.url_name == 'agenda' %}active{% endif %}"
+                       aria-label="{% trans 'Agenda view' %}">
+                        <i class="bi bi-list-ul me-1" aria-hidden="true"></i>
+                        <span class="d-none d-lg-inline">{% trans "Agenda" %}</span>
+                    </a>
+                    
+                    <a href="{% url 'calendar:providers' %}" 
+                       class="btn btn-outline-secondary btn-sm {% if request.resolver_match.url_name == 'providers' %}active{% endif %}"
+                       aria-label="{% trans 'Calendar providers' %}">
+                        <i class="bi bi-cloud me-1" aria-hidden="true"></i>
+                        <span class="d-none d-lg-inline">{% trans "Providers" %}</span>
+                    </a>
+                    
+                    <a href="{% url 'calendar:settings' %}" 
+                       class="btn btn-outline-secondary btn-sm {% if request.resolver_match.url_name == 'settings' %}active{% endif %}"
+                       aria-label="{% trans 'Calendar settings' %}">
+                        <i class="bi bi-gear me-1" aria-hidden="true"></i>
+                        <span class="d-none d-lg-inline">{% trans "Settings" %}</span>
+                    </a>
+                </div>
                 
-                <a href="{% url 'calendar:agenda' %}" 
-                   class="btn btn-outline-secondary btn-sm {% if request.resolver_match.url_name == 'agenda' %}active{% endif %}"
-                   aria-label="{% trans 'Agenda view' %}">
-                    <i class="bi bi-list-ul me-1" aria-hidden="true"></i>
-                    <span class="d-none d-lg-inline">{% trans "Agenda" %}</span>
-                </a>
-                
-                <a href="{% url 'calendar:providers' %}" 
-                   class="btn btn-outline-secondary btn-sm {% if request.resolver_match.url_name == 'providers' %}active{% endif %}"
-                   aria-label="{% trans 'Calendar providers' %}">
-                    <i class="bi bi-cloud me-1" aria-hidden="true"></i>
-                    <span class="d-none d-lg-inline">{% trans "Providers" %}</span>
-                </a>
-                
-                <a href="{% url 'calendar:settings' %}" 
-                   class="btn btn-outline-secondary btn-sm {% if request.resolver_match.url_name == 'settings' %}active{% endif %}"
-                   aria-label="{% trans 'Calendar settings' %}">
-                    <i class="bi bi-gear me-1" aria-hidden="true"></i>
-                    <span class="d-none d-lg-inline">{% trans "Settings" %}</span>
-                </a>
-            </div>
-            
-            <!-- Right side: Action buttons -->
-            <div class="d-flex align-items-center gap-2">
-                <button id="refreshCalendar" 
-                        class="btn btn-outline-secondary btn-sm"
-                        aria-label="{% trans 'Refresh calendar' %}">
-                    <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>
-                    <span class="d-none d-lg-inline">{% trans "Refresh" %}</span>
-                </button>
-                
-                <a href="{% url 'calendar:event_create' %}" 
-                   class="btn btn-success btn-sm"
-                   aria-label="{% trans 'Create new event' %}">
-                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                    <span class="d-none d-lg-inline">{% trans "New Event" %}</span>
-                </a>
+                <!-- Right side: Action buttons -->
+                <div class="d-flex align-items-center gap-2">
+                    <button id="refreshCalendar" 
+                            class="btn btn-outline-secondary btn-sm"
+                            aria-label="{% trans 'Refresh calendar' %}">
+                        <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>
+                        <span class="d-none d-lg-inline">{% trans "Refresh" %}</span>
+                    </button>
+                    
+                    <a href="{% url 'calendar:event_create' %}" 
+                       class="btn btn-success btn-sm"
+                       aria-label="{% trans 'Create new event' %}">
+                        <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                        <span class="d-none d-lg-inline">{% trans "New Event" %}</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
+    
+    {% block calendar_main_content %}{% endblock %}
+{% endblock %}
+
+{% block app_navigation %}
+<div class="d-none d-lg-flex align-items-center gap-2">
+    <!-- Standard navigation -->
+    {% if request.resolver_match.url_name != 'dashboard' %}
+    <a href="{% url 'saas_web:dashboard' %}" 
+       class="btn btn-outline-secondary btn-sm header-btn"
+       aria-label="{% trans 'Go to dashboard' %}">
+        <i class="bi bi-house me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Dashboard" %}</span>
+    </a>
+    {% endif %}
+    
+    <!-- Calendar main link in header -->
+    <a href="{% url 'calendar:main' %}" 
+       class="btn btn-outline-primary btn-sm header-btn active"
+       aria-label="{% trans 'Calendar app' %}">
+        <i class="bi bi-calendar me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Calendar" %}</span>
+    </a>
 </div>
+{% endblock %}
