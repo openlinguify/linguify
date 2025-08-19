@@ -21,6 +21,7 @@
     --calendar-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     --calendar-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     --calendar-gradient: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%));
+    --calendar-secondary-navbar-height: 64px;
 }
 
 /* Calendar Stats Dashboard */
@@ -134,16 +135,18 @@
     border-bottom: 1px solid var(--calendar-border);
     box-shadow: var(--calendar-shadow);
     position: fixed;
-    top: var(--header-height, 64px);
+    top: 64px;
     left: 0;
     right: 0;
     z-index: 99;
+    height: var(--calendar-secondary-navbar-height);
+    padding: 8px 0;
 }
 
 .calendar-secondary-navbar .btn {
     font-weight: 500;
     border-radius: 8px;
-    padding: 8px 16px;
+    padding: 10px 16px;
     transition: all 0.2s ease;
     border: 1px solid transparent;
     font-size: 0.875rem;
@@ -209,13 +212,96 @@
 .calendar-body {
     background-color: var(--calendar-bg);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    padding-top: calc(64px + 64px);
 }
 
 .calendar-container {
-    min-height: calc(100vh - var(--header-height, 64px) - 60px);
+    min-height: calc(100vh - 64px - 64px);
     background-color: var(--calendar-bg);
-    padding: 1rem;
-    margin-top: calc(var(--header-height, 64px) + 60px);
+    padding: 0.5rem 1rem;
+}
+
+/* Calendar Navbar Container (Revision style) */
+.calendar-navbar-container {
+    height: 64px;
+    display: flex;
+    align-items: center;
+}
+
+/* Navigation tabs (same as revision) */
+.nav-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: var(--calendar-text);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav-tab:hover {
+    color: var(--calendar-primary);
+    background: #f8fafc;
+    text-decoration: none;
+}
+
+.nav-tab.active {
+    background: var(--calendar-gradient);
+    color: white;
+    text-decoration: none;
+}
+
+/* Buttons with Revision styling */
+.btn-outline-custom {
+    border: 1px solid var(--calendar-border);
+    color: var(--calendar-text);
+    background: transparent;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-custom:hover {
+    background: var(--calendar-primary);
+    border-color: var(--calendar-primary);
+    color: white;
+}
+
+.btn-gradient {
+    background: var(--calendar-gradient);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(135deg, var(--calendar-primary-dark) 0%, var(--calendar-accent) 100%);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+/* Form elements */
+.search-input,
+.filter-select {
+    border: 1px solid var(--calendar-border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus,
+.filter-select:focus {
+    border-color: var(--calendar-primary);
+    box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+    outline: none;
 }
 
 /* Calendar specific button styling (for calendar context only) */
