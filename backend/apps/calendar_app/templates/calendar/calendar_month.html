@@ -153,9 +153,30 @@ function forceInitializeCalendar() {
                                   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
                                   String(date.getDate()).padStart(2, '0');
                 
+                // Get events for this date
+                const dayEvents = getDayEvents(date);
+                let eventsHtml = '';
+                
+                if (dayEvents.length > 0) {
+                    dayEvents.slice(0, 3).forEach(event => {
+                        const eventColor = event.backgroundColor || '#007bff';
+                        const eventTitle = event.title.length > 12 ? event.title.substring(0, 12) + '...' : event.title;
+                        eventsHtml += `
+                            <div style="background: ${eventColor}; color: white; font-size: 0.65rem; padding: 1px 3px; margin-bottom: 1px; border-radius: 2px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" title="${event.title}">
+                                ${eventTitle}
+                            </div>
+                        `;
+                    });
+                    
+                    if (dayEvents.length > 3) {
+                        eventsHtml += `<div style="font-size: 0.6rem; color: #6c757d; text-align: center;">+${dayEvents.length - 3}</div>`;
+                    }
+                }
+                
                 html += `
                     <div style="${style}" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='${isToday ? 'rgba(102, 126, 234, 0.1)' : (isCurrentMonth ? 'white' : '#fafafa')}'" onclick="handleDateClick('${dateString}')">
                         <div style="font-weight: 600; margin-bottom: 0.25rem;">${date.getDate()}</div>
+                        ${eventsHtml}
                     </div>
                 `;
             }
@@ -176,24 +197,98 @@ function forceInitializeCalendar() {
     // Create global calendar object
     window.calendar = {
         currentDate: currentDate,
+        events: [],
         prev: function() {
             currentDate.setMonth(currentDate.getMonth() - 1);
-            calendarEl.innerHTML = renderSimpleCalendar();
+            this.loadAndRender();
         },
         next: function() {
             currentDate.setMonth(currentDate.getMonth() + 1);
-            calendarEl.innerHTML = renderSimpleCalendar();
+            this.loadAndRender();
         },
         today: function() {
             currentDate.setTime(new Date().getTime());
-            calendarEl.innerHTML = renderSimpleCalendar();
+            this.loadAndRender();
         },
         refetchEvents: function() {
             console.log('[Calendar] Refresh requested');
+            this.loadAndRender();
+        },
+        getEvents: function() {
+            return this.events;
+        },
+        loadAndRender: async function() {
+            try {
+                this.events = await this.loadEvents();
+                calendarEl.innerHTML = renderSimpleCalendar();
+                console.log('[Calendar] Rendered with events:', this.events.length);
+            } catch (error) {
+                console.error('[Calendar] Error loading events:', error);
+                calendarEl.innerHTML = renderSimpleCalendar();
+            }
+        },
+        loadEvents: async function() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Calculate date range for the month view
+            const startDate = new Date(year, month, 1);
+            startDate.setDate(startDate.getDate() - 7);
+            
+            const endDate = new Date(year, month + 1, 0);
+            endDate.setDate(endDate.getDate() + 7);
+            
+            const start = startDate.toISOString();
+            const end = endDate.toISOString();
+            
+            try {
+                console.log('[Calendar] Fetching from:', `/calendar/json/?start=${start}&end=${end}`);
+                const response = await fetch(`/calendar/json/?start=${start}&end=${end}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                    },
+                    credentials: 'same-origin'
+                });
+                
+                console.log('[Calendar] Response status:', response.status);
+                console.log('[Calendar] Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('[Calendar] Error response:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                console.log('[Calendar] API Response:', data);
+                return data;
+            } catch (error) {
+                console.error('[Calendar] API Error:', error);
+                return [];
+            }
         }
     };
     
     console.log('[Calendar] Simple calendar initialized successfully!');
+    
+    // Load events initially
+    window.calendar.loadAndRender();
+}
+
+// Utility function to get events for a specific date
+function getDayEvents(date) {
+    if (!window.calendar || !window.calendar.events) return [];
+    
+    const targetDate = date.toISOString().split('T')[0];
+    
+    return window.calendar.events.filter(event => {
+        const eventStart = new Date(event.start).toISOString().split('T')[0];
+        const eventEnd = new Date(event.end).toISOString().split('T')[0];
+        
+        return eventStart === targetDate || (eventStart <= targetDate && eventEnd >= targetDate);
+    });
 }
 
 // Global function for date clicks
@@ -411,6 +506,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Refresh calendar
                     if (window.calendar && window.calendar.refetchEvents) {
                         window.calendar.refetchEvents();
+                    } else {
+                        // Fallback: reload page
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
                     }
                 } else {
                     if (window.notificationService) {

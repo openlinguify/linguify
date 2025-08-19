@@ -79,9 +79,50 @@ function forceInitializeCalendar() {
                 const day = String(date.getDate()).padStart(2, '0');
                 const localDateString = `${year}-${month}-${day}`;
                 
+                // Get events for this date
+                const dayEvents = getDayEvents(date);
+                let eventsHtml = '';
+                
+                if (dayEvents.length > 0) {
+                    dayEvents.slice(0, 3).forEach(event => { // Show max 3 events
+                        const eventColor = event.backgroundColor || '#007bff';
+                        const eventTitle = event.title.length > 15 ? event.title.substring(0, 15) + '...' : event.title;
+                        eventsHtml += `
+                            <div style="
+                                background: ${eventColor}; 
+                                color: white; 
+                                font-size: 0.7rem; 
+                                padding: 1px 4px; 
+                                margin-bottom: 1px; 
+                                border-radius: 2px; 
+                                cursor: pointer;
+                                overflow: hidden;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                            " onclick="event.stopPropagation(); showEventDetails('${event.id}')" title="${event.title}">
+                                ${eventTitle}
+                            </div>
+                        `;
+                    });
+                    
+                    if (dayEvents.length > 3) {
+                        eventsHtml += `
+                            <div style="
+                                font-size: 0.6rem; 
+                                color: #6c757d; 
+                                text-align: center;
+                                margin-top: 2px;
+                            ">
+                                +${dayEvents.length - 3} plus
+                            </div>
+                        `;
+                    }
+                }
+                
                 html += `
                     <div style="${style}" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='${isToday ? 'rgba(102, 126, 234, 0.1)' : (isCurrentMonth ? 'white' : '#fafafa')}'" onclick="handleDateClick('${localDateString}')">
                         <div style="font-weight: 600; margin-bottom: 0.25rem;">${date.getDate()}</div>
+                        ${eventsHtml}
                     </div>
                 `;
             }
@@ -102,32 +143,103 @@ function forceInitializeCalendar() {
     // Create global calendar object
     window.calendar = {
         currentDate: currentDate,
+        events: [],
         prev: function() {
             currentDate.setMonth(currentDate.getMonth() - 1);
-            calendarEl.innerHTML = renderSimpleCalendar();
+            loadAndRenderCalendar();
             updateCalendarTitle();
         },
         next: function() {
             currentDate.setMonth(currentDate.getMonth() + 1);
-            calendarEl.innerHTML = renderSimpleCalendar();
+            loadAndRenderCalendar();
             updateCalendarTitle();
         },
         today: function() {
             currentDate.setTime(new Date().getTime());
-            calendarEl.innerHTML = renderSimpleCalendar();
+            loadAndRenderCalendar();
             updateCalendarTitle();
         },
         refetchEvents: function() {
             console.log('[Calendar] Refresh requested');
-            // Could implement actual event fetching here
+            loadAndRenderCalendar();
+        },
+        getEvents: function() {
+            return this.events;
         }
     };
+    
+    // Load events and render calendar
+    async function loadAndRenderCalendar() {
+        try {
+            const events = await loadCalendarEvents();
+            window.calendar.events = events;
+            calendarEl.innerHTML = renderSimpleCalendar();
+        } catch (error) {
+            console.error('[Calendar] Error loading events:', error);
+            calendarEl.innerHTML = renderSimpleCalendar(); // Render without events
+        }
+    }
     
     calendarInstance = window.calendar;
     console.log('[Calendar] Simple calendar initialized successfully!');
     
     // Update the period title in navbar
     updateCalendarTitle();
+    
+    // Load events initially
+    loadAndRenderCalendar();
+}
+
+/**
+ * Load calendar events from the API
+ */
+async function loadCalendarEvents() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    // Calculate date range for the month view (including prev/next month days)
+    const startDate = new Date(year, month, 1);
+    startDate.setDate(startDate.getDate() - startDate.getDay() - 7); // Start from week before
+    
+    const endDate = new Date(year, month + 1, 0);
+    endDate.setDate(endDate.getDate() + (7 - endDate.getDay()) + 7); // End week after
+    
+    const start = startDate.toISOString();
+    const end = endDate.toISOString();
+    
+    console.log('[Calendar] Loading events for range:', start, 'to', end);
+    
+    try {
+        const response = await fetch(`/calendar/json/?start=${start}&end=${end}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRFToken': getCsrfToken(),
+            },
+            credentials: 'same-origin'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const events = await response.json();
+        console.log('[Calendar] Loaded events:', events);
+        return events;
+        
+    } catch (error) {
+        console.error('[Calendar] Error loading events:', error);
+        return [];
+    }
+}
+
+/**
+ * Get CSRF token for API requests
+ */
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+           document.querySelector('meta[name="csrf-token"]')?.content ||
+           document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
 }
 
 /**
@@ -187,9 +299,78 @@ setTimeout(() => {
     }
 }, 1000);
 
+/**
+ * Get events for a specific date
+ * @param {Date} date - The date to get events for
+ */
+function getDayEvents(date) {
+    if (!window.calendar.events) return [];
+    
+    const targetDate = date.toISOString().split('T')[0];
+    
+    return window.calendar.events.filter(event => {
+        const eventStart = new Date(event.start).toISOString().split('T')[0];
+        const eventEnd = new Date(event.end).toISOString().split('T')[0];
+        
+        // Check if event starts on this date or spans across this date
+        return eventStart === targetDate || (eventStart <= targetDate && eventEnd >= targetDate);
+    });
+}
+
+/**
+ * Show event details modal or popup
+ * @param {string} eventId - ID of the event to show
+ */
+function showEventDetails(eventId) {
+    const event = window.calendar.events.find(e => e.id === eventId);
+    if (!event) return;
+    
+    console.log('[Calendar] Showing event details for:', event);
+    
+    // Create a simple modal or alert for now
+    const details = `
+📅 ${event.title}
+⏰ ${formatEventTime(event)}
+${event.extendedProps.location ? '📍 ' + event.extendedProps.location : ''}
+${event.extendedProps.description ? '📝 ' + event.extendedProps.description : ''}
+👤 ${event.extendedProps.organizer || 'Vous'}
+    `.trim();
+    
+    if (window.notificationService) {
+        window.notificationService.info(details.replace(/\n/g, '<br>'));
+    } else {
+        alert(details);
+    }
+}
+
+/**
+ * Format event time for display
+ * @param {Object} event - Event object
+ */
+function formatEventTime(event) {
+    const start = new Date(event.start);
+    const end = new Date(event.end);
+    
+    if (event.allDay) {
+        return 'Toute la journée';
+    }
+    
+    const startTime = start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const endTime = end.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    
+    if (start.toDateString() === end.toDateString()) {
+        return `${startTime} - ${endTime}`;
+    } else {
+        return `${start.toLocaleDateString('fr-FR')} ${startTime} - ${end.toLocaleDateString('fr-FR')} ${endTime}`;
+    }
+}
+
 // Export functions for global use
 window.CalendarMonth = {
     forceInitializeCalendar,
     updateCalendarTitle,
-    handleDateClick
+    handleDateClick,
+    getDayEvents,
+    showEventDetails,
+    formatEventTime
 };
