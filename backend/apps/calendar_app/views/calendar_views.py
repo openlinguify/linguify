@@ -43,6 +43,9 @@ def calendar_main(request):
     elif view_type == 'day':
         events, date_range = get_day_events(request.user, current_date)
         template = 'calendar/calendar_day.html'
+    elif view_type == 'list':
+        events, date_range = get_list_events(request.user, current_date)
+        template = 'calendar/calendar_list.html'
     else:
         # Default to month view
         events, date_range = get_month_events(request.user, current_date)
@@ -308,6 +311,24 @@ def get_day_events(user, current_date):
     ).distinct().select_related('user_id', 'event_type').order_by('start')
     
     return events, (current_date, current_date)
+
+
+def get_list_events(user, current_date):
+    """Get events for list view (next 30 days)"""
+    start_date = current_date
+    end_date = current_date + timedelta(days=30)
+    
+    start_datetime = datetime.combine(start_date, datetime.min.time())
+    end_datetime = datetime.combine(end_date, datetime.max.time())
+    
+    events = CalendarEvent.objects.filter(
+        Q(user_id=user) | Q(attendee_ids__partner_id=user),
+        start__gte=start_datetime,
+        start__lte=end_datetime,
+        active=True
+    ).distinct().select_related('user_id', 'event_type').order_by('start')
+    
+    return events, (start_date, end_date)
 
 
 def get_calendar_colors():

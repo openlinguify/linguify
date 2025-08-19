@@ -18,17 +18,21 @@
             <!-- Left: View Switcher -->
             <div class="context-nav-left">
                 <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-primary active" data-view="month">
+                    <button type="button" class="btn btn-outline-primary {% if view_type == 'month' %}active{% endif %}" data-view="month">
                         <i class="bi bi-calendar3 me-1"></i>
                         <span class="d-none d-sm-inline">{% trans "Month" %}</span>
                     </button>
-                    <button type="button" class="btn btn-outline-primary" data-view="week">
+                    <button type="button" class="btn btn-outline-primary {% if view_type == 'week' %}active{% endif %}" data-view="week">
                         <i class="bi bi-calendar-week me-1"></i>
                         <span class="d-none d-sm-inline">{% trans "Week" %}</span>
                     </button>
-                    <button type="button" class="btn btn-outline-primary" data-view="day">
+                    <button type="button" class="btn btn-outline-primary {% if view_type == 'day' %}active{% endif %}" data-view="day">
                         <i class="bi bi-calendar-day me-1"></i>
                         <span class="d-none d-sm-inline">{% trans "Day" %}</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary {% if view_type == 'list' %}active{% endif %}" data-view="list">
+                        <i class="bi bi-list-ul me-1"></i>
+                        <span class="d-none d-sm-inline">{% trans "List" %}</span>
                     </button>
                 </div>
             </div>
@@ -201,14 +205,17 @@ function forceInitializeCalendar() {
         prev: function() {
             currentDate.setMonth(currentDate.getMonth() - 1);
             this.loadAndRender();
+            this.updateTitle();
         },
         next: function() {
             currentDate.setMonth(currentDate.getMonth() + 1);
             this.loadAndRender();
+            this.updateTitle();
         },
         today: function() {
             currentDate.setTime(new Date().getTime());
             this.loadAndRender();
+            this.updateTitle();
         },
         refetchEvents: function() {
             console.log('[Calendar] Refresh requested');
@@ -216,6 +223,16 @@ function forceInitializeCalendar() {
         },
         getEvents: function() {
             return this.events;
+        },
+        updateTitle: function() {
+            const titleElement = document.getElementById('currentPeriod');
+            if (titleElement) {
+                const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                                   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+                const title = monthNames[this.currentDate.getMonth()] + ' ' + this.currentDate.getFullYear();
+                titleElement.textContent = title;
+                console.log('[Calendar] Title updated to:', title);
+            }
         },
         loadAndRender: async function() {
             try {
@@ -284,7 +301,8 @@ function forceInitializeCalendar() {
     
     console.log('[Calendar] Simple calendar initialized successfully!');
     
-    // Load events initially
+    // Set initial title and load events
+    window.calendar.updateTitle();
     window.calendar.loadAndRender();
 }
 
@@ -369,6 +387,28 @@ setTimeout(() => {
 setTimeout(() => {
     console.log('[Calendar] Setting up navigation...');
     
+    // Previous month button
+    const prevBtn = document.getElementById('prevPeriod');
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
+            console.log('[Calendar] Previous month button clicked');
+            if (window.calendar && window.calendar.prev) {
+                window.calendar.prev();
+            }
+        });
+    }
+    
+    // Next month button
+    const nextBtn = document.getElementById('nextPeriod');
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+            console.log('[Calendar] Next month button clicked');
+            if (window.calendar && window.calendar.next) {
+                window.calendar.next();
+            }
+        });
+    }
+    
     // Today button in secondary nav
     const todayBtn = document.getElementById('todayBtn');
     if (todayBtn) {
@@ -395,10 +435,28 @@ setTimeout(() => {
     const viewBtns = document.querySelectorAll('[data-view]');
     viewBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            console.log('[Calendar] View button clicked:', this.dataset.view);
+            const view = this.dataset.view;
+            console.log('[Calendar] View button clicked:', view);
+            
             // Update active state
             viewBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
+            
+            // Navigate to the selected view
+            const currentDate = window.calendar ? window.calendar.currentDate : new Date();
+            const dateStr = currentDate.getFullYear() + '-' + 
+                           String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                           String(currentDate.getDate()).padStart(2, '0');
+            
+            if (view === 'month') {
+                window.location.href = `/calendar/?view=month&date=${dateStr}`;
+            } else if (view === 'week') {
+                window.location.href = `/calendar/?view=week&date=${dateStr}`;
+            } else if (view === 'day') {
+                window.location.href = `/calendar/?view=day&date=${dateStr}`;
+            } else if (view === 'list') {
+                window.location.href = `/calendar/?view=list&date=${dateStr}`;
+            }
         });
     });
     
