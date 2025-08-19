@@ -138,7 +138,7 @@
     top: 64px;
     left: 0;
     right: 0;
-    z-index: 99;
+    z-index: 1030; /* Higher z-index to ensure visibility */
     height: var(--calendar-secondary-navbar-height);
     padding: 8px 0;
 }
@@ -221,11 +221,23 @@
     padding: 0.5rem 1rem;
 }
 
-/* Calendar Navbar Container (Revision style) */
+/* Calendar Navbar Container (Revision style) - FINAL VERSION */
 .calendar-navbar-container {
-    height: 64px;
-    display: flex;
-    align-items: center;
+    height: 64px !important;
+    display: flex !important;
+    align-items: center !important;
+    position: fixed !important;
+    top: 64px !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1040 !important; /* High z-index to ensure visibility */
+    background: var(--calendar-bg-white) !important;
+    border-bottom: 1px solid var(--calendar-border) !important;
+    box-shadow: var(--calendar-shadow) !important;
+    padding: 12px 24px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
 }
 
 /* Navigation tabs (same as revision) */
@@ -1051,7 +1063,7 @@
     top: calc(64px + 64px); /* After main header + calendar header */
     left: 0;
     right: 0;
-    z-index: 98;
+    z-index: 1020; /* Higher z-index to ensure visibility */
     height: 60px;
     padding: 8px 16px;
 }
@@ -1106,6 +1118,9 @@
     margin-top: calc(64px + 64px + 60px); /* Offset for fixed headers */
     background: var(--calendar-bg);
     gap: 1px;
+    overflow: hidden; /* Prevent scroll on calendar content only */
+    position: relative;
+    z-index: 1; /* Lower z-index than headers */
 }
 
 .calendar-column {
@@ -1164,7 +1179,9 @@
     transition: background-color 0.2s ease;
     overflow: hidden;
     position: relative;
-    min-height: 100px;
+    min-height: 0; /* Allow flex to control height */
+    display: flex;
+    flex-direction: column;
 }
 
 .odoo-calendar-cell:hover {
@@ -1231,7 +1248,8 @@
 .odoo-sidebar {
     padding: 16px;
     height: 100%;
-    overflow-y: auto;
+    overflow-y: auto; /* Allow scroll in sidebar only */
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -1329,30 +1347,39 @@
 @media (max-width: 768px) {
     .calendar-main-row {
         flex-direction: column;
-        height: auto;
-        min-height: calc(100vh - 64px - 64px - 60px);
+        height: calc(100vh - 64px - 64px - 80px) !important; /* Adjusted for mobile toolbar */
+        margin-top: calc(64px + 64px + 80px) !important; /* Adjusted for taller mobile toolbar */
+        overflow: hidden !important;
     }
     
     .sidebar-column {
         width: 100%;
         order: -1;
-        height: auto;
+        height: 120px; /* Fixed height for mobile */
         border-left: none;
         border-bottom: 1px solid var(--calendar-border);
+        flex-shrink: 0;
+    }
+    
+    .calendar-column {
+        flex: 1;
+        min-height: 0; /* Allow flex to shrink */
     }
     
     .odoo-sidebar {
         flex-direction: row;
-        height: auto;
+        height: 100%;
         padding: 12px;
         gap: 16px;
         overflow-x: auto;
+        overflow-y: hidden;
     }
     
     .mini-calendar,
     .participants-section {
         min-width: 200px;
         flex-shrink: 0;
+        height: auto;
     }
     
     .toolbar-content {
@@ -1363,16 +1390,12 @@
     }
     
     .odoo-calendar-toolbar {
-        height: auto;
+        height: 80px !important; /* Taller for mobile */
         padding: 12px 16px;
     }
     
-    .calendar-main-row {
-        margin-top: calc(64px + 64px + 80px); /* Adjusted for taller mobile toolbar */
-    }
-    
     .odoo-calendar-cell {
-        min-height: 60px;
+        min-height: 0; /* Let flex control height */
         padding: 4px;
     }
     
@@ -1386,21 +1409,27 @@
     }
 }
 
-/* Fix for calendar body positioning */
+/* Simple approach - ensure headers are visible */
 .calendar-body {
-    padding-top: 0; /* Remove default padding since we use fixed positioning */
+    padding-top: 0 !important;
+    margin: 0 !important;
+    height: 100vh !important;
+    position: relative !important;
+    overflow: hidden !important; /* Prevent any scroll on the body */
 }
 
 .calendar-container {
-    min-height: 100vh;
-    padding: 0; /* Remove padding for full-height layout */
-    margin: 0; /* Remove margins */
+    height: 100vh !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important; /* Prevent scroll on calendar container */
 }
 
 /* Override container fluid for full width */
 .calendar-body .container-fluid {
-    padding: 0;
-    max-width: none;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
 }
 
 /* Print styles */
