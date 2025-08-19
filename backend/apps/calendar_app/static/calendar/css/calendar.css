@@ -722,18 +722,133 @@
     border: 1px solid var(--calendar-border);
 }
 
-/* Provider styles */
+/* Provider styles with Linguify design system */
+.providers-header {
+    background: var(--calendar-gradient);
+    color: var(--calendar-bg-white);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0 0 12px 12px;
+}
+
 .provider-card {
     border: 1px solid var(--calendar-border);
-    border-radius: 0.75rem;
+    border-radius: 12px;
     padding: 1.5rem;
     background: var(--calendar-bg-white);
     transition: all 0.2s ease;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--calendar-shadow);
 }
 
 .provider-card:hover {
     border-color: var(--calendar-primary);
     box-shadow: var(--calendar-shadow-lg);
+    transform: translateY(-2px);
+}
+
+.provider-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+/* Provider-specific icon colors */
+.provider-google { 
+    background: linear-gradient(135deg, #4285f4 0%, #34a853 100%); 
+    color: var(--calendar-bg-white); 
+}
+
+.provider-outlook { 
+    background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%); 
+    color: var(--calendar-bg-white); 
+}
+
+.provider-office365 { 
+    background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%); 
+    color: var(--calendar-bg-white); 
+}
+
+.provider-apple { 
+    background: linear-gradient(135deg, #000000 0%, #333333 100%); 
+    color: var(--calendar-bg-white); 
+}
+
+.provider-caldav { 
+    background: linear-gradient(135deg, var(--calendar-text-light) 0%, var(--calendar-text) 100%); 
+    color: var(--calendar-bg-white); 
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    margin-left: 0.5rem;
+    font-weight: 500;
+}
+
+.status-connected { 
+    background: rgba(16, 185, 129, 0.1); 
+    color: var(--calendar-success); 
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-error { 
+    background: rgba(239, 68, 68, 0.1); 
+    color: var(--calendar-error); 
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.status-syncing { 
+    background: rgba(45, 91, 186, 0.1); 
+    color: var(--calendar-primary); 
+    border: 1px solid rgba(45, 91, 186, 0.2);
+}
+
+.status-inactive { 
+    background: rgba(107, 114, 128, 0.1); 
+    color: var(--calendar-text-light); 
+    border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+.sync-stats {
+    background: var(--calendar-border-light);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    border: 1px solid var(--calendar-border);
+}
+
+.add-provider-card {
+    border: 2px dashed var(--calendar-border);
+    background: var(--calendar-border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 12px;
+}
+
+.add-provider-card:hover {
+    border-color: var(--calendar-primary);
+    background: rgba(45, 91, 186, 0.05);
+    transform: translateY(-1px);
+}
+
+.provider-setup {
+    background: var(--calendar-bg-white);
+    border-radius: 12px;
+    box-shadow: var(--calendar-shadow);
+    border: 1px solid var(--calendar-border);
+    padding: 2rem;
+    margin-top: 2rem;
 }
 
 .provider-status {
