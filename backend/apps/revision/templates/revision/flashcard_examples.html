@@ -1,0 +1,450 @@
+{% extends "revision/base.html" %}
+{% load static %}
+
+{% block page_title %}Flashcard Examples - Tailwind + HTMX{% endblock %}
+
+{% block revision_content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
+    <!-- Header -->
+    <div class="max-w-6xl mx-auto mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-linguify-primary mb-4">
+            Flashcard Components with Tailwind & HTMX
+        </h1>
+        <p class="text-lg text-gray-600">Interactive examples of flashcard components using modern web technologies</p>
+    </div>
+
+    <!-- Examples Grid -->
+    <div class="max-w-6xl mx-auto space-y-12">
+        
+        <!-- 1. Basic Flashcard with Flip Animation -->
+        <section class="bg-white rounded-card shadow-card p-6 md:p-8">
+            <h2 class="text-2xl font-semibold text-linguify-primary mb-4">1. Basic Flip Card</h2>
+            <p class="text-gray-600 mb-6">Click the card to see the flip animation built with Tailwind CSS</p>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-2">What is Django?</h3>
+                                <p class="text-sm opacity-80">Click to reveal answer</p>
+                            </div>
+                        </div>
+                        <div class="flashcard-back">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-2">Django is a high-level Python web framework</h3>
+                                <p class="text-sm opacity-80">Click to flip back</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-form p-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">Features:</h4>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>✅ CSS-only 3D flip animation</li>
+                            <li>✅ Responsive design</li>
+                            <li>✅ Custom Tailwind components</li>
+                            <li>✅ Accessible keyboard navigation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. HTMX-powered Interactive Cards -->
+        <section class="bg-white rounded-card shadow-card p-6 md:p-8">
+            <h2 class="text-2xl font-semibold text-linguify-primary mb-4">2. HTMX Interactive Cards</h2>
+            <p class="text-gray-600 mb-6">Cards that load content dynamically with HTMX</p>
+            
+            <div class="grid md:grid-cols-3 gap-6" id="htmx-cards-container">
+                <div class="deck-card" 
+                     hx-get="/revision/api/cards/sample/1/" 
+                     hx-target="#card-detail-modal" 
+                     hx-trigger="click">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-linguify-primary rounded-form flex items-center justify-center text-white font-bold">
+                            EN
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">English Vocabulary</h3>
+                            <p class="text-sm text-gray-500">24 cards</p>
+                        </div>
+                    </div>
+                    <div class="progress-ring mb-3">
+                        <svg class="w-16 h-16 transform -rotate-90">
+                            <circle class="progress-ring-bg" cx="32" cy="32" r="28" stroke-width="4"></circle>
+                            <circle class="progress-ring-progress" cx="32" cy="32" r="28" stroke-width="4" 
+                                    style="stroke-dasharray: 175.9; stroke-dashoffset: 70.4;"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-sm font-semibold text-linguify-primary">60%</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">Last studied: 2 hours ago</p>
+                    <div class="htmx-indicator loading-spinner mx-auto mt-2"></div>
+                </div>
+                
+                <div class="deck-card" 
+                     hx-get="/revision/api/cards/sample/2/" 
+                     hx-target="#card-detail-modal" 
+                     hx-trigger="click">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-linguify-accent rounded-form flex items-center justify-center text-white font-bold">
+                            FR
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">French Verbs</h3>
+                            <p class="text-sm text-gray-500">18 cards</p>
+                        </div>
+                    </div>
+                    <div class="progress-ring mb-3">
+                        <svg class="w-16 h-16 transform -rotate-90">
+                            <circle class="progress-ring-bg" cx="32" cy="32" r="28" stroke-width="4"></circle>
+                            <circle class="progress-ring-progress" cx="32" cy="32" r="28" stroke-width="4" 
+                                    style="stroke-dasharray: 175.9; stroke-dashoffset: 105.5;"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-sm font-semibold text-linguify-primary">40%</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">Last studied: 1 day ago</p>
+                    <div class="htmx-indicator loading-spinner mx-auto mt-2"></div>
+                </div>
+                
+                <div class="deck-card" 
+                     hx-get="/revision/api/cards/sample/3/" 
+                     hx-target="#card-detail-modal" 
+                     hx-trigger="click">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-linguify-secondary rounded-form flex items-center justify-center text-white font-bold">
+                            ES
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Spanish Phrases</h3>
+                            <p class="text-sm text-gray-500">32 cards</p>
+                        </div>
+                    </div>
+                    <div class="progress-ring mb-3">
+                        <svg class="w-16 h-16 transform -rotate-90">
+                            <circle class="progress-ring-bg" cx="32" cy="32" r="28" stroke-width="4"></circle>
+                            <circle class="progress-ring-progress" cx="32" cy="32" r="28" stroke-width="4" 
+                                    style="stroke-dasharray: 175.9; stroke-dashoffset: 35.2;"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-sm font-semibold text-linguify-primary">80%</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">Last studied: 3 hours ago</p>
+                    <div class="htmx-indicator loading-spinner mx-auto mt-2"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Study Mode Selection -->
+        <section class="bg-white rounded-card shadow-card p-6 md:p-8">
+            <h2 class="text-2xl font-semibold text-linguify-primary mb-4">3. Study Mode Selection</h2>
+            <p class="text-gray-600 mb-6">Choose your study mode with dynamic content loading</p>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" id="study-modes">
+                <div class="study-mode-card" 
+                     hx-get="/revision/api/study/flashcards/" 
+                     hx-target="#study-area" 
+                     hx-trigger="click"
+                     hx-swap="innerHTML"
+                     role="button" tabindex="0">
+                    <div class="study-mode-icon">🔄</div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Flashcards</h3>
+                    <p class="text-sm text-gray-600 mb-4">Traditional card review with spaced repetition</p>
+                    <div class="htmx-indicator loading-spinner mx-auto"></div>
+                </div>
+                
+                <div class="study-mode-card" 
+                     hx-get="/revision/api/study/quiz/" 
+                     hx-target="#study-area" 
+                     hx-trigger="click"
+                     hx-swap="innerHTML"
+                     role="button" tabindex="0">
+                    <div class="study-mode-icon">🎯</div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Quiz Mode</h3>
+                    <p class="text-sm text-gray-600 mb-4">Multiple choice questions for active recall</p>
+                    <div class="htmx-indicator loading-spinner mx-auto"></div>
+                </div>
+                
+                <div class="study-mode-card" 
+                     hx-get="/revision/api/study/match/" 
+                     hx-target="#study-area" 
+                     hx-trigger="click"
+                     hx-swap="innerHTML"
+                     role="button" tabindex="0">
+                    <div class="study-mode-icon">🧩</div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Match Game</h3>
+                    <p class="text-sm text-gray-600 mb-4">Match terms with definitions in a game format</p>
+                    <div class="htmx-indicator loading-spinner mx-auto"></div>
+                </div>
+                
+                <div class="study-mode-card" 
+                     hx-get="/revision/api/study/write/" 
+                     hx-target="#study-area" 
+                     hx-trigger="click"
+                     hx-swap="innerHTML"
+                     role="button" tabindex="0">
+                    <div class="study-mode-icon">✍️</div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Write Mode</h3>
+                    <p class="text-sm text-gray-600 mb-4">Type the correct answer to improve retention</p>
+                    <div class="htmx-indicator loading-spinner mx-auto"></div>
+                </div>
+            </div>
+            
+            <!-- Study Area - Where content loads -->
+            <div id="study-area" class="mt-8 p-6 bg-gray-50 rounded-form min-h-96">
+                <div class="text-center text-gray-500 py-12">
+                    <div class="text-6xl mb-4">📚</div>
+                    <p class="text-lg">Select a study mode above to begin</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Interactive Form with HTMX -->
+        <section class="bg-white rounded-card shadow-card p-6 md:p-8">
+            <h2 class="text-2xl font-semibold text-linguify-primary mb-4">4. Create Card Form</h2>
+            <p class="text-gray-600 mb-6">Dynamic form with real-time validation and preview</p>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <form hx-post="/revision/api/cards/create/" 
+                          hx-target="#form-feedback" 
+                          hx-swap="innerHTML"
+                          hx-trigger="submit"
+                          class="space-y-4">
+                        {% csrf_token %}
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Front (Question)
+                            </label>
+                            <textarea name="front" 
+                                     class="form-textarea h-20"
+                                     placeholder="What is the capital of France?"
+                                     hx-get="/revision/api/cards/preview/" 
+                                     hx-target="#card-preview" 
+                                     hx-trigger="keyup changed delay:500ms"
+                                     hx-include="[name='back']"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Back (Answer)
+                            </label>
+                            <textarea name="back" 
+                                     class="form-textarea h-20"
+                                     placeholder="Paris"
+                                     hx-get="/revision/api/cards/preview/" 
+                                     hx-target="#card-preview" 
+                                     hx-trigger="keyup changed delay:500ms"
+                                     hx-include="[name='front']"></textarea>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button type="submit" class="btn-linguify">
+                                <span class="htmx-indicator loading-spinner mr-2"></span>
+                                Create Card
+                            </button>
+                            <button type="reset" class="btn-linguify-outline">
+                                Clear Form
+                            </button>
+                        </div>
+                        
+                        <div id="form-feedback" class="mt-4">
+                            <!-- HTMX will load success/error messages here -->
+                        </div>
+                    </form>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Live Preview</h3>
+                    <div id="card-preview" class="flashcard">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <div class="text-center text-white/70">
+                                    <p>Type in the form to see preview</p>
+                                </div>
+                            </div>
+                            <div class="flashcard-back">
+                                <div class="text-center text-white/70">
+                                    <p>Answer will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Filter and Search -->
+        <section class="bg-white rounded-card shadow-card p-6 md:p-8">
+            <h2 class="text-2xl font-semibold text-linguify-primary mb-4">5. Dynamic Filtering</h2>
+            <p class="text-gray-600 mb-6">Search and filter cards with instant results</p>
+            
+            <div class="mb-6">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <input type="text" 
+                               class="form-input"
+                               placeholder="Search cards..."
+                               hx-get="/revision/api/cards/search/"
+                               hx-target="#cards-results"
+                               hx-trigger="keyup changed delay:300ms"
+                               hx-indicator="#search-indicator">
+                    </div>
+                    <div class="flex gap-2">
+                        <select class="form-input"
+                                hx-get="/revision/api/cards/filter/"
+                                hx-target="#cards-results"
+                                hx-trigger="change"
+                                hx-include="[name='search']">
+                            <option value="">All Categories</option>
+                            <option value="vocabulary">Vocabulary</option>
+                            <option value="grammar">Grammar</option>
+                            <option value="phrases">Phrases</option>
+                        </select>
+                        <button class="btn-linguify-outline" 
+                                hx-get="/revision/api/cards/all/"
+                                hx-target="#cards-results">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+                <div id="search-indicator" class="htmx-indicator mt-2">
+                    <div class="flex items-center space-x-2 text-linguify-primary">
+                        <div class="loading-spinner"></div>
+                        <span class="text-sm">Searching...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="cards-results" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Default content -->
+                <div class="deck-card">
+                    <h3 class="font-semibold mb-2">Sample Card 1</h3>
+                    <p class="text-sm text-gray-600">What is HTML?</p>
+                    <span class="tag tag-primary mt-2">Web Development</span>
+                </div>
+                <div class="deck-card">
+                    <h3 class="font-semibold mb-2">Sample Card 2</h3>
+                    <p class="text-sm text-gray-600">Explain CSS flexbox</p>
+                    <span class="tag tag-accent mt-2">CSS</span>
+                </div>
+                <div class="deck-card">
+                    <h3 class="font-semibold mb-2">Sample Card 3</h3>
+                    <p class="text-sm text-gray-600">What is JavaScript?</p>
+                    <span class="tag tag-primary mt-2">Programming</span>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Modal for card details (HTMX target) -->
+<div id="card-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-card p-6 m-4 max-w-md w-full">
+        <div class="text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p>Loading card details...</p>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Additional styles for this demo page */
+.progress-ring {
+    position: relative;
+    display: inline-flex;
+}
+
+.progress-ring svg {
+    width: 4rem;
+    height: 4rem;
+}
+
+/* Custom animations */
+@keyframes slideInFromTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.htmx-settling {
+    animation: slideInFromTop 0.3s ease-out;
+}
+
+/* Enhance focus states for accessibility */
+.study-mode-card:focus,
+.deck-card:focus {
+    outline: 2px solid #2D5BBA;
+    outline-offset: 2px;
+}
+
+/* Mobile swipe hint */
+@media (max-width: 768px) {
+    .flashcard::after {
+        content: "Tap to flip";
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.75rem;
+        pointer-events: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Additional JavaScript for enhanced interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Add keyboard support for study mode cards
+    document.querySelectorAll('.study-mode-card[role="button"]').forEach(function(card) {
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                htmx.trigger(this, 'click');
+            }
+        });
+    });
+    
+    // Handle modal display for card details
+    document.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.target.id === 'card-detail-modal') {
+            document.getElementById('card-detail-modal').classList.remove('hidden');
+            document.getElementById('card-detail-modal').classList.add('flex');
+        }
+    });
+    
+    // Close modal on click outside
+    document.getElementById('card-detail-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+            this.classList.remove('flex');
+        }
+    });
+    
+    // Add success notifications
+    document.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.xhr.status === 201) {
+            window.notificationService?.success('Card created successfully!');
+        }
+    });
+    
+    console.log('🎴 Flashcard examples page loaded with Tailwind + HTMX');
+});
+</script>
+{% endblock %}
