@@ -29,7 +29,4 @@ urlpatterns = [
     # Exploration des decks publics
     path('explore/', views_web.revision_explore, name='explore'),
     path('explore/deck/<int:deck_id>/', views_web.revision_public_deck, name='public_deck'),
-    
-    # Exemples Tailwind + HTMX
-    path('examples/tailwind-htmx/', views_web.examples_tailwind_htmx, name='examples_tailwind_htmx'),
 ]

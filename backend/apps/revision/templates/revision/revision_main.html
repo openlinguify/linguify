@@ -102,30 +102,6 @@
 
 {% block extra_js %}
 <!-- Import des modules JavaScript pour la révision -->
-<script type="module">
-    // Import du module principal de révision
-    import('{% static "src/js/app.js" %}')
-        .then(module => {
-            console.log('📚 Module révision chargé avec succès');
-        })
-        .catch(error => {
-            console.error('❌ Erreur lors du chargement du module révision:', error);
-            
-            // Affichage d'un message d'erreur user-friendly
-            const container = document.getElementById('revision-app');
-            if (container) {
-                container.innerHTML = `
-                    <div style="padding: 40px; text-align: center; background: white; margin: 20px; border-radius: 8px; border: 1px solid #fecaca; background: #fef2f2;">
-                        <h2 style="color: #ef4444; margin: 0 0 15px;">❌ Erreur de chargement</h2>
-                        <p style="color: #6b7280; margin-bottom: 20px;">Impossible de charger l'application de révision.</p>
-                        <button onclick="window.location.reload()" style="background: #6366f1; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
-                            🔄 Recharger la page
-                        </button>
-                    </div>
-                `;
-            }
-        });
-</script>
 
 <!-- Configuration spécifique à la page -->
 <script>
