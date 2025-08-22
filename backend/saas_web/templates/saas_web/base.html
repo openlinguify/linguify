@@ -15,6 +15,9 @@
     
     {% load static %}
     
+    <!-- Tailwind CSS Global -->
+    <link rel="stylesheet" href="{% static 'css/tailwind-built.css' %}">
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'saas_web/css/main.css' %}">
     <link rel="stylesheet" href="{% static 'saas_web/css/app_header.css' %}">
@@ -357,6 +360,9 @@
         {% block content %}{% endblock %}
     </main>
     
+    <!-- HTMX Global Integration -->
+    <script src="https://unpkg.com/htmx.org@2.0.3/dist/htmx.min.js"></script>
+    
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -365,6 +371,84 @@
     
     <!-- Custom JS -->
     <script src="{% static 'saas_web/js/main.js' %}"></script>
+    
+    <!-- HTMX Global Configuration -->
+    <script>
+        // Configure HTMX globally for Linguify
+        document.addEventListener('DOMContentLoaded', function() {
+            // CSRF Token configuration for HTMX
+            htmx.config.getCacheBusterParam = false;
+            
+            // Add CSRF token to all HTMX requests
+            document.body.addEventListener('htmx:configRequest', function(evt) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                if (csrfToken) {
+                    evt.detail.headers['X-CSRFToken'] = csrfToken;
+                }
+            });
+            
+            // Global loading states
+            document.body.addEventListener('htmx:beforeRequest', function(evt) {
+                const target = evt.detail.elt;
+                // Add loading class
+                target.classList.add('htmx-loading');
+                
+                // Show loading indicator if element has loading target
+                const loadingTarget = target.getAttribute('hx-indicator') || target.querySelector('.htmx-indicator');
+                if (loadingTarget) {
+                    if (typeof loadingTarget === 'string') {
+                        const indicator = document.querySelector(loadingTarget);
+                        if (indicator) indicator.style.display = 'block';
+                    } else {
+                        loadingTarget.style.display = 'block';
+                    }
+                }
+            });
+            
+            document.body.addEventListener('htmx:afterRequest', function(evt) {
+                const target = evt.detail.elt;
+                // Remove loading class
+                target.classList.remove('htmx-loading');
+                
+                // Hide loading indicator
+                const loadingTarget = target.getAttribute('hx-indicator') || target.querySelector('.htmx-indicator');
+                if (loadingTarget) {
+                    if (typeof loadingTarget === 'string') {
+                        const indicator = document.querySelector(loadingTarget);
+                        if (indicator) indicator.style.display = 'none';
+                    } else {
+                        loadingTarget.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Error handling
+            document.body.addEventListener('htmx:responseError', function(evt) {
+                console.error('HTMX Error:', evt.detail);
+                
+                // Show user-friendly error message
+                if (window.notificationService) {
+                    window.notificationService.error('Une erreur s\'est produite. Veuillez réessayer.');
+                } else {
+                    alert('Une erreur s\'est produite. Veuillez réessayer.');
+                }
+            });
+            
+            // Success notifications for common actions
+            document.body.addEventListener('htmx:afterSwap', function(evt) {
+                // Check if the response contains a success message
+                const response = evt.detail.xhr.response;
+                if (response && response.includes('success-message')) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(response, 'text/html');
+                    const successMsg = doc.querySelector('.success-message');
+                    if (successMsg && window.notificationService) {
+                        window.notificationService.success(successMsg.textContent);
+                    }
+                }
+            });
+        });
+    </script>
     
     <!-- Language switching -->
     <script>

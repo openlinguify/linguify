@@ -385,6 +385,26 @@ def stats_dashboard(request):
     return render(request, 'revision/stats_dashboard.html', context)
 
 
+@login_required
+def examples_tailwind_htmx(request):
+    """
+    Page d'exemples démontrant l'utilisation de Tailwind CSS et HTMX
+    """
+    context = {
+        'page_title': 'Révision - Exemples Tailwind + HTMX',
+        'app_name': 'revision',
+        'view_type': 'examples',
+        'user_data': {
+            'id': request.user.id,
+            'username': request.user.username,
+        },
+        'api_base_url': '/api/v1/revision',
+        'debug': settings.DEBUG,
+    }
+    
+    return render(request, 'revision/examples_tailwind_htmx.html', context)
+
+
 def health_check(request):
     """
     Simple health check pour l'application revision
