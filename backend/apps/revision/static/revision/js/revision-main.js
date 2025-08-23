@@ -441,33 +441,33 @@ function renderDecksList() {
     decksList.innerHTML = filteredDecks.map(deck => {
         const progress = calculateProgress(deck);
         return `
-        <li class="deck-item ${appState.selectedDeck?.id === deck.id ? 'active' : ''}" 
+        <li class="deck-card ${appState.selectedDeck?.id === deck.id ? 'active' : ''}" 
             onclick="selectDeck(${deck.id})">
-            <div class="deck-header">
-                <div class="deck-name">${deck.name || 'Sans nom'}</div>
-                <div class="deck-stats">
-                    <span class="deck-badge">${deck.cards_count || 0}</span>
-                    ${deck.is_public ? '<i class="bi bi-globe2" title="Public"></i>' : ''}
-                    ${deck.is_archived ? '<i class="bi bi-archive" title="Archivé"></i>' : ''}
+            <div class="deck-card-header">
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="deck-card-title">${deck.name || 'Sans nom'}</h4>
+                    <div class="flex items-center gap-2">
+                        <span class="badge-linguify">${deck.cards_count || 0}</span>
+                        ${deck.is_public ? '<i class="bi bi-globe2 text-linguify-accent" title="Public"></i>' : ''}
+                        ${deck.is_archived ? '<i class="bi bi-archive text-gray-400" title="Archivé"></i>' : ''}
+                    </div>
                 </div>
             </div>
-            <div class="deck-description">${deck.description || 'Aucune description'}</div>
-            <div class="deck-tags-container">
+            <div class="deck-card-description">${deck.description || 'Aucune description'}</div>
+            <div class="deck-card-tags">
                 <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ''}</div>
-                <button class="btn-add-tag" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="Ajouter des tags">
+                <button class="btn-link-linguify text-sm" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="Ajouter des tags">
                     <i class="bi bi-tag"></i>
                 </button>
             </div>
-            <div class="deck-meta">
-                <div class="deck-progress">
-                    <span>${deck.learned_count || 0}/${deck.cards_count || 0}</span>
-                    <div class="progress-bar-custom">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
-                    </div>
-                    <span>${progress}%</span>
+            <div class="deck-progress">
+                <div class="progress-text">${deck.learned_count || 0}/${deck.cards_count || 0}</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: ${progress}%"></div>
                 </div>
-                <span>${formatDate(deck.updated_at)}</span>
+                <div class="progress-text">${progress}%</div>
             </div>
+            <div class="deck-date">${formatDate(deck.updated_at)}</div>
         </li>
     `;
     }).join('');

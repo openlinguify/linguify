@@ -298,21 +298,21 @@ function displayDeckTags(deck) {
         return '<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag"></i> pour en ajouter</span>';
     }
 
-    // Couleurs des tags (style OpenLinguify)
-    const tagColors = [
-        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-        'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-        'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+    // Classes Tailwind pour les couleurs des tags (style Linguify)
+    const tagClasses = [
+        'tag-linguify-purple',
+        'tag-linguify-pink',
+        'tag-linguify-blue',
+        'tag-linguify-green',
+        'tag-linguify-orange',
+        'tag-linguify-teal',
+        'tag-linguify-yellow',
+        'tag-linguify-indigo'
     ];
 
     return deck.tags.map((tag, index) => {
-        const colorIndex = index % tagColors.length;
-        return `<span class="deck-tag" style="background: ${tagColors[colorIndex]}">${tag}</span>`;
+        const classIndex = index % tagClasses.length;
+        return `<span class="tag-linguify ${tagClasses[classIndex]}">${tag}</span>`;
     }).join('');
 }
 
