@@ -4,7 +4,7 @@
     <div class="navbar-section">
         <!-- Bouton toggle sidebar mobile pour autres pages -->
         {% if view_type != 'explore' %}
-        <button id="toggleSidebar" class="btn-navbar btn-navbar-outline d-md-none">
+        <button id="toggleSidebar" class="btn-navbar-outline d-md-none">
             <i class="bi bi-list"></i>
         </button>
         {% endif %}
@@ -29,18 +29,17 @@
         </div>
         
         <!-- Refresh -->
-        <button id="refreshDecks" class="btn-navbar btn-navbar-outline" title="Actualiser la liste des decks">
+        <button id="refreshDecks" class="btn-navbar-outline" title="Actualiser la liste des decks">
             <i class="bi bi-arrow-clockwise"></i>
             <span class="d-none d-xl-inline">Actualiser</span>
         </button>
     </div>
     
-    
     <!-- Droite: Actions et filtres contextuels -->
     <div class="navbar-section-right">
         {% if view_type == 'explore' %}
         <!-- Bouton toggle sidebar pour Explorer -->
-        <button id="toggleSidebar" class="btn-navbar btn-navbar-outline" onclick="toggleSidebar()">
+        <button id="toggleSidebar" class="btn-navbar-outline" onclick="toggleSidebar()">
             <i class="bi bi-layout-sidebar"></i>
             <span class="d-none d-lg-inline">Filtres</span>
         </button>
@@ -62,7 +61,7 @@
         </select>
         
         <!-- Bouton retour vers mes decks -->
-        <a href="{% url 'revision_web:main' %}" class="btn-navbar btn-navbar-outline">
+        <a href="{% url 'revision_web:main' %}" class="btn-navbar-outline">
             <i class="bi bi-arrow-left"></i>
             <span class="d-none d-xxl-inline">Mes Decks</span>
         </a>
@@ -96,12 +95,12 @@
         </div>
         
         <!-- Actions -->
-        <button id="importDeck" class="btn-navbar btn-navbar-outline">
+        <button id="importDeck" class="btn-navbar-outline">
             <i class="bi bi-upload"></i>
             <span class="d-none d-xxl-inline">Importer</span>
         </button>
         
-        <button id="createDeck" class="btn-navbar btn-navbar-primary">
+        <button id="createDeck" class="btn-navbar-primary">
             <i class="bi bi-plus-lg"></i>
             <span class="d-none d-xxl-inline">Nouveau</span>
         </button>

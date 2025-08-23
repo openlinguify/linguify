@@ -5,7 +5,6 @@ const API_CACHE = 'linguify-api-v1';
 
 // Resources to cache on install
 const STATIC_RESOURCES = [
-    '/static/revision/css/explore-enhanced.css',
     '/static/revision/js/revision-explore.js',
     '/static/revision/images/explore-hero.webp',
     '/static/revision/images/community-icon.svg',
