@@ -3152,57 +3152,20 @@ async function loadTagsFilter() {
         }
         
         dropdown.innerHTML = `
-            <div class="tags-filter-header" style="
-                padding: 12px 16px;
-                border-bottom: 1px solid #e5e7eb;
-                font-weight: 600;
-                font-size: 14px;
-                color: #374151;
-                background-color: #f9fafb;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            ">
+            <div class="tags-filter-header">
                 <span>Filtrer par tags</span>
-                <button class="btn btn-link btn-sm p-0" onclick="clearTagsFilter()" style="
-                    background: none;
-                    border: none;
-                    color: #6b7280;
-                    cursor: pointer;
-                    padding: 4px;
-                ">
+                <button onclick="clearTagsFilter()" class="tags-filter-clear">
                     <i class="bi bi-x-circle"></i>
                 </button>
             </div>
-            <div class="tags-filter-list" style="padding: 8px 0;">
+            <div class="tags-filter-content">
                 ${tagsArray.map(tag => `
-                    <div class="tags-filter-item ${appState.filters.tags.includes(tag) ? 'active' : ''}" 
-                         onclick="toggleTagFilter('${tag}')" style="
-                         display: flex;
-                         align-items: center;
-                         padding: 8px 16px;
-                         cursor: pointer;
-                         font-size: 14px;
-                         color: #374151;
-                         transition: background-color 0.15s ease;
-                         ${appState.filters.tags.includes(tag) ? 'background-color: #eff6ff; color: #2563eb;' : ''}
-                    " onmouseover="this.style.backgroundColor='#f3f4f6'" 
-                       onmouseout="this.style.backgroundColor='${appState.filters.tags.includes(tag) ? '#eff6ff' : 'transparent'}'">
-                        <div style="
-                            margin-right: 8px;
-                            width: 16px;
-                            height: 16px;
-                            border: 1px solid #d1d5db;
-                            border-radius: 3px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            flex-shrink: 0;
-                            ${appState.filters.tags.includes(tag) ? 'background-color: #2D5BBA; border-color: #2D5BBA; color: white;' : ''}
-                        ">
+                    <div class="tags-filter-item ${appState.filters.tags.includes(tag) ? 'selected' : ''}" 
+                         onclick="toggleTagFilter('${tag}')">
+                        <div class="tags-filter-checkbox ${appState.filters.tags.includes(tag) ? 'checked' : ''}">
                             ${appState.filters.tags.includes(tag) ? '<i class="bi bi-check" style="font-size: 10px;"></i>' : ''}
                         </div>
-                        <div style="flex: 1;">${tag}</div>
+                        <div class="tags-filter-label">${tag}</div>
                     </div>
                 `).join('')}
             </div>

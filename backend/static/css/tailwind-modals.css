@@ -2917,6 +2917,9 @@ button.bg-linguify-gradient:hover,
   font-size: 14px;
   color: #374151;
   background-color: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .tags-filter-content {
