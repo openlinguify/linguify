@@ -279,6 +279,7 @@
 }
 
 /* Additional hardcoded color overrides for specific elements */
+.bg-linguify-gradient,
 .bg-linguify-gradient button,
 button.bg-linguify-gradient,
 .btn-linguify-gradient {
@@ -287,9 +288,24 @@ button.bg-linguify-gradient,
   color: white !important;
 }
 
+.bg-linguify-gradient:hover,
 .bg-linguify-gradient button:hover,
 button.bg-linguify-gradient:hover,
-.btn-linguify-gradient:hover {
+.btn-linguify-gradient:hover,
+.hover\:bg-accent-light:hover {
+  background: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%) !important;
+}
+
+/* Specific styling for modal action buttons to use Linguify gradient */
+#makeDeckPrivateBtn,
+#makeDeckPublicBtn {
+  background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important;
+  border: none !important;
+  color: white !important;
+}
+
+#makeDeckPrivateBtn:hover,
+#makeDeckPublicBtn:hover {
   background: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%) !important;
 }
 
