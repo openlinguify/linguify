@@ -12,7 +12,7 @@
 <div id="exploreSidebar" class="revision-sidebar show">
         <div class="sidebar-content">
         <!-- Filtres avancés -->
-        <div class="sidebar-header">
+        <div class="sidebar-header-linguify">
             <h6 class="mb-0">
                 <i class="bi bi-funnel me-2"></i>
                 Filtres avancés
@@ -26,7 +26,7 @@
                     <i class="bi bi-folder me-1"></i>
                     Catégorie
                 </label>
-                <select id="categoryFilter" class="form-select form-select-sm">
+                <select id="categoryFilter" class="form-select-linguify form-select-sm">
                     <option value="">Toutes les catégories</option>
                     <option value="languages">🌐 Langues</option>
                     <option value="science">🔬 Sciences</option>
@@ -47,7 +47,7 @@
                     <i class="bi bi-translate me-1"></i>
                     Langue
                 </label>
-                <select id="languageFilter" class="form-select form-select-sm">
+                <select id="languageFilter" class="form-select-linguify form-select-sm">
                     <option value="">Toutes les langues</option>
                     <option value="fr">🇫🇷 Français</option>
                     <option value="en">🇺🇸 Anglais</option>
@@ -67,7 +67,7 @@
                     <i class="bi bi-bar-chart me-1"></i>
                     Niveau
                 </label>
-                <select id="levelFilter" class="form-select form-select-sm">
+                <select id="levelFilter" class="form-select-linguify form-select-sm">
                     <option value="">Tous les niveaux</option>
                     <option value="beginner">🟢 Débutant</option>
                     <option value="intermediate">🟡 Intermédiaire</option>
@@ -82,7 +82,7 @@
                     <i class="bi bi-person me-1"></i>
                     Auteur
                 </label>
-                <input type="text" id="authorFilter" class="form-control form-control-sm" 
+                <input type="text" id="authorFilter" class="form-control-linguify form-control-sm" 
                        placeholder="Nom d'utilisateur...">
             </div>
             
@@ -93,9 +93,9 @@
                     Nombre de cartes
                 </label>
                 <div class="d-flex gap-1">
-                    <input type="number" id="minCards" class="form-control form-control-sm" 
+                    <input type="number" id="minCards" class="form-control-linguify form-control-sm" 
                            placeholder="Min" min="1">
-                    <input type="number" id="maxCards" class="form-control form-control-sm" 
+                    <input type="number" id="maxCards" class="form-control-linguify form-control-sm" 
                            placeholder="Max" min="1">
                 </div>
             </div>
@@ -106,7 +106,7 @@
                     <i class="bi bi-star me-1"></i>
                     Note minimale
                 </label>
-                <select id="ratingFilter" class="form-select form-select-sm">
+                <select id="ratingFilter" class="form-select-linguify form-select-sm">
                     <option value="">Toutes les notes</option>
                     <option value="4">⭐⭐⭐⭐ 4+ étoiles</option>
                     <option value="3">⭐⭐⭐ 3+ étoiles</option>
@@ -117,11 +117,11 @@
             
             <!-- Actions -->
             <div class="d-flex gap-2">
-                <button id="applyFilters" class="btn btn-gradient btn-sm flex-1">
+                <button id="applyFilters" class="btn-linguify btn-sm flex-1">
                     <i class="bi bi-search me-1"></i>
                     Appliquer
                 </button>
-                <button id="clearFilters" class="btn btn-outline-custom btn-sm">
+                <button id="clearFilters" class="btn-linguify-secondary btn-sm">
                     <i class="bi bi-x-circle me-1"></i>
                     Effacer
                 </button>
@@ -129,7 +129,7 @@
         </div>
         
         <!-- Collections personnelles -->
-        <div class="sidebar-header">
+        <div class="sidebar-header-linguify">
             <h6 class="mb-0">
                 <i class="bi bi-heart me-2 text-linguify-accent"></i>
                 Mes Collections
@@ -144,7 +144,7 @@
         </div>
 
         <!-- Favoris -->
-        <div class="sidebar-header">
+        <div class="sidebar-header-linguify">
             <h6 class="mb-0">
                 <i class="bi bi-bookmark me-2 text-linguify-secondary"></i>
                 Favoris
@@ -157,7 +157,7 @@
         </div>
 
         <!-- Decks populaires -->
-        <div class="sidebar-header">
+        <div class="sidebar-header-linguify">
             <h6 class="mb-0">
                 <i class="bi bi-fire me-2 text-linguify-warning"></i>
                 Trending cette semaine
@@ -169,7 +169,7 @@
         </div>
 
         <!-- Statistiques globales -->
-        <div class="sidebar-header">
+        <div class="sidebar-header-linguify">
             <h6 class="mb-0">
                 <i class="bi bi-graph-up me-2 text-linguify-success"></i>
                 Communauté
@@ -212,7 +212,7 @@
             
             <div class="row g-3 justify-content-center">
                 <div class="col-md-4">
-                    <div class="card h-100 border-0 bg-gradient-subtle-linguify">
+                    <div class="card-linguify h-100">
                         <div class="card-body text-center p-4">
                             <i class="bi bi-search text-linguify-primary mb-3" style="font-size: 2rem;"></i>
                             <h5 class="card-title text-linguify-primary">Recherche avancée</h5>
@@ -223,7 +223,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card h-100 border-0 bg-gradient-subtle-linguify">
+                    <div class="card-linguify h-100">
                         <div class="card-body text-center p-4">
                             <i class="bi bi-download text-linguify-accent mb-3" style="font-size: 2rem;"></i>
                             <h5 class="card-title text-linguify-accent">Import facile</h5>
@@ -234,7 +234,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card h-100 border-0 bg-gradient-subtle-linguify">
+                    <div class="card-linguify h-100">
                         <div class="card-body text-center p-4">
                             <i class="bi bi-people text-linguify-secondary mb-3" style="font-size: 2rem;"></i>
                             <h5 class="card-title text-linguify-secondary">Communauté</h5>
@@ -246,7 +246,7 @@
                 </div>
             </div>
             
-            <button id="startExploring" class="btn btn-gradient btn-lg mt-4">
+            <button id="startExploring" class="btn-linguify btn-lg mt-4">
                 <i class="bi bi-rocket me-2"></i>
                 Commencer l'exploration
             </button>
@@ -260,7 +260,7 @@
             <div class="search-input-wrapper">
                 <div class="search-input-group">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="text" id="exploreSearchInput" class="form-control search-input" 
+                    <input type="text" id="exploreSearchInput" class="form-control-linguify search-input" 
                            placeholder="Rechercher des decks par titre, description, tags..." 
                            autocomplete="off">
                     <div class="search-actions">
@@ -383,17 +383,17 @@
                     <!-- Vue -->
                     <div class="btn-group btn-group-sm" role="group" aria-label="Vue">
                         <input type="radio" class="btn-check" name="viewMode" id="gridView" autocomplete="off" checked>
-                        <label class="btn btn-outline-custom" for="gridView" title="Vue grille">
+                        <label class="btn-linguify-secondary" for="gridView" title="Vue grille">
                             <i class="bi bi-grid"></i>
                         </label>
                         <input type="radio" class="btn-check" name="viewMode" id="listView" autocomplete="off">
-                        <label class="btn btn-outline-custom" for="listView" title="Vue liste">
+                        <label class="btn-linguify-secondary" for="listView" title="Vue liste">
                             <i class="bi bi-list"></i>
                         </label>
                     </div>
                     
                     <!-- Tri -->
-                    <select id="sortBy" class="form-select form-select-sm" style="width: auto;">
+                    <select id="sortBy" class="form-select-linguify form-select-sm" style="width: auto;">
                         <option value="created_at">➡️ Plus récents</option>
                         <option value="name">📝 A-Z</option>
                         <option value="popularity">🔥 Popularité</option>
@@ -402,7 +402,7 @@
                         <option value="downloads">⬇️ Plus téléchargés</option>
                     </select>
                     
-                    <button id="backToWelcome" class="btn btn-outline-custom btn-sm">
+                    <button id="backToWelcome" class="btn-linguify-secondary btn-sm">
                         <i class="bi bi-arrow-left"></i>
                         Retour
                     </button>
@@ -429,7 +429,7 @@
                 <i class="bi bi-search text-muted mb-4" style="font-size: 4rem;"></i>
                 <h4 class="text-muted">Aucun deck trouvé</h4>
                 <p class="text-muted">Essayez d'ajuster vos critères de recherche.</p>
-                <button id="clearSearch" class="btn btn-outline-custom">
+                <button id="clearSearch" class="btn-linguify-secondary">
                     <i class="bi bi-arrow-clockwise me-1"></i>
                     Effacer la recherche
                 </button>
@@ -447,7 +447,7 @@
         <div class="study-header">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-2">
-                    <button id="backToResults" class="btn btn-outline-custom btn-sm">
+                    <button id="backToResults" class="btn-linguify-secondary btn-sm">
                         <i class="bi bi-arrow-left"></i>
                     </button>
                     <div>
@@ -458,7 +458,7 @@
                 
                 <div class="d-flex align-items-center gap-2">
                     <span id="publicDeckStats" class="badge bg-primary"></span>
-                    <button id="importPublicDeck" class="btn btn-gradient btn-sm">
+                    <button id="importPublicDeck" class="btn-linguify btn-sm">
                         <i class="bi bi-download me-1"></i>
                         Importer ce deck
                     </button>
@@ -470,7 +470,7 @@
             <div class="p-4">
                 <div class="row">
                     <div class="col-md-8">
-                        <div class="card">
+                        <div class="card-linguify">
                             <div class="card-header">
                                 <h6 class="mb-0">
                                     <i class="bi bi-card-list me-2"></i>
@@ -485,7 +485,7 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card">
+                        <div class="card-linguify">
                             <div class="card-header">
                                 <h6 class="mb-0">
                                     <i class="bi bi-info-circle me-2"></i>
@@ -500,7 +500,7 @@
                         </div>
                         
                         <!-- Rating & Reviews Section -->
-                        <div class="card mt-3">
+                        <div class="card-linguify mt-3">
                             <div class="card-header">
                                 <h6 class="mb-0">
                                     <i class="bi bi-star me-2"></i>
@@ -533,7 +533,7 @@
                                 </div>
                                 
                                 <div class="text-center mt-3">
-                                    <button class="btn btn-outline-primary btn-sm" id="loadMoreReviews">
+                                    <button class="btn-linguify-secondary btn-sm" id="loadMoreReviews">
                                         <i class="bi bi-arrow-down-circle me-1"></i>
                                         Voir plus d'avis
                                     </button>
@@ -542,7 +542,7 @@
                         </div>
                         
                         <!-- Author Profile Section -->
-                        <div class="card mt-3">
+                        <div class="card-linguify mt-3">
                             <div class="card-header">
                                 <h6 class="mb-0">
                                     <i class="bi bi-person-circle me-2"></i>
@@ -563,39 +563,52 @@
 </div>
 
 <!-- Modal d'importation -->
-<div id="importModal" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal-overlay" id="importModal" aria-hidden="true">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" aria-hidden="true"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-download me-2"></i>
-                    Importer un deck public
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-primary">
+                        <i class="bi bi-download text-linguify-primary text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title">Importer un deck public</h3>
+                        <p class="modal-subtitle">Ajouter ce deck à votre collection</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label">Nom du deck dans votre collection</label>
-                    <input type="text" id="importDeckName" class="form-control" 
+                    <input type="text" id="importDeckName" class="form-control-linguify" 
                            placeholder="Nom personnalisé (optionnel)">
                     <div class="form-text">
                         Si vide, le nom original sera utilisé avec "(Copie)" ajouté.
                     </div>
                 </div>
                 
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>Information :</strong> Une copie complète du deck sera créée dans votre collection personnelle.
-                    Vous pourrez la modifier librement sans affecter le deck original.
+                <div class="alert-box alert-primary">
+                    <div class="alert-content">
+                        <div class="alert-icon">
+                            <i class="bi bi-info-circle-fill text-linguify-primary text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-linguify-primary-dark">Information</h4>
+                            <p class="mt-1 text-sm text-linguify-primary">Une copie complète du deck sera créée dans votre collection personnelle. Vous pourrez la modifier librement sans affecter le deck original.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    Annuler
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Annuler
                 </button>
-                <button type="button" id="confirmImportDeck" class="btn btn-primary">
-                    <i class="bi bi-download me-1"></i>
-                    Importer
+                <button type="button" id="confirmImportDeck" class="btn-linguify">
+                    <i class="bi bi-download"></i>Importer
                 </button>
             </div>
         </div>
@@ -603,25 +616,33 @@
 </div>
 
 <!-- Modal de création de collection -->
-<div id="createCollectionModal" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal-overlay" id="createCollectionModal" aria-hidden="true">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" aria-hidden="true"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-heart me-2"></i>
-                    Nouvelle Collection
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-accent">
+                        <i class="bi bi-heart text-linguify-accent text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title">Nouvelle Collection</h3>
+                        <p class="modal-subtitle">Organisez vos decks favoris</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label">Nom de la collection</label>
-                    <input type="text" id="collectionName" class="form-control" 
+                    <input type="text" id="collectionName" class="form-control-linguify" 
                            placeholder="Ex: Vocabulaire Anglais, Sciences Niveau 3...">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Description (optionnelle)</label>
-                    <textarea id="collectionDescription" class="form-control" rows="2"
+                    <textarea id="collectionDescription" class="form-control-linguify" rows="2"
                               placeholder="Décrivez brièvement cette collection..."></textarea>
                 </div>
                 <div class="mb-3">
@@ -641,9 +662,11 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" id="createCollectionConfirm" class="btn btn-gradient">
-                    <i class="bi bi-plus me-1"></i>Créer la collection
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Annuler
+                </button>
+                <button type="button" id="createCollectionConfirm" class="btn-linguify">
+                    <i class="bi bi-plus"></i>Créer la collection
                 </button>
             </div>
         </div>
@@ -651,15 +674,23 @@
 </div>
 
 <!-- Modal d'ajout à une collection -->
-<div id="addToCollectionModal" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal-overlay" id="addToCollectionModal" aria-hidden="true">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" aria-hidden="true"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Ajouter à une collection
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-success">
+                        <i class="bi bi-plus-circle text-linguify-success text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title">Ajouter à une collection</h3>
+                        <p class="modal-subtitle">Organisez vos decks préférés</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div id="selectedDeckInfo" class="mb-3">
@@ -674,15 +705,17 @@
                 </div>
                 
                 <div class="text-center">
-                    <button type="button" class="btn btn-outline-primary btn-sm" id="createNewCollectionFromModal">
+                    <button type="button" class="btn-linguify-secondary btn-sm" id="createNewCollectionFromModal">
                         <i class="bi bi-plus me-1"></i>Créer une nouvelle collection
                     </button>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" id="addToCollectionConfirm" class="btn btn-gradient" disabled>
-                    <i class="bi bi-check me-1"></i>Ajouter
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Annuler
+                </button>
+                <button type="button" id="addToCollectionConfirm" class="btn-linguify" disabled>
+                    <i class="bi bi-check"></i>Ajouter
                 </button>
             </div>
         </div>
@@ -690,15 +723,23 @@
 </div>
 
 <!-- Modal de gestion des collections -->
-<div id="manageCollectionModal" class="modal fade modal-lg" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
+<div class="modal-overlay" id="manageCollectionModal" aria-hidden="true">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" aria-hidden="true"></div>
+        <div class="modal-content modal-lg">
             <div class="modal-header">
-                <h5 class="modal-title" id="manageCollectionTitle">
-                    <i class="bi bi-gear me-2"></i>
-                    Gérer la collection
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-gray">
+                        <i class="bi bi-gear text-gray-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title" id="manageCollectionTitle">Gérer la collection</h3>
+                        <p class="modal-subtitle">Modifier et organiser</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -707,15 +748,15 @@
                             <h6>Informations de la collection</h6>
                             <div class="mb-3">
                                 <label class="form-label small">Nom</label>
-                                <input type="text" id="editCollectionName" class="form-control form-control-sm">
+                                <input type="text" id="editCollectionName" class="form-control-linguify form-control-sm">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small">Description</label>
-                                <textarea id="editCollectionDescription" class="form-control form-control-sm" rows="2"></textarea>
+                                <textarea id="editCollectionDescription" class="form-control-linguify form-control-sm" rows="2"></textarea>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small">Visibilité</label>
-                                <select id="editCollectionVisibility" class="form-select form-select-sm">
+                                <select id="editCollectionVisibility" class="form-select-linguify form-select-sm">
                                     <option value="private">🔒 Privée</option>
                                     <option value="public">🌐 Publique</option>
                                 </select>
@@ -733,12 +774,14 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-danger" id="deleteCollectionBtn">
-                    <i class="bi bi-trash me-1"></i>Supprimer la collection
+                <button type="button" class="btn-linguify-danger" id="deleteCollectionBtn">
+                    <i class="bi bi-trash"></i>Supprimer la collection
                 </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" id="saveCollectionChanges" class="btn btn-gradient">
-                    <i class="bi bi-check me-1"></i>Sauvegarder
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Fermer
+                </button>
+                <button type="button" id="saveCollectionChanges" class="btn-linguify">
+                    <i class="bi bi-check"></i>Sauvegarder
                 </button>
             </div>
         </div>
@@ -746,15 +789,23 @@
 </div>
 
 <!-- Modal de paramètres de notifications -->
-<div id="notificationSettingsModal" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal-overlay" id="notificationSettingsModal" aria-hidden="true">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" aria-hidden="true"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-bell-fill me-2 text-linguify-primary"></i>
-                    Paramètres des notifications
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-primary">
+                        <i class="bi bi-bell-fill text-linguify-primary text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title">Paramètres des notifications</h3>
+                        <p class="modal-subtitle">Personnalisez vos alertes</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="mb-4">
@@ -873,7 +924,7 @@
                         Fréquence des notifications
                     </h6>
                     
-                    <select id="notificationFrequency" class="form-select">
+                    <select id="notificationFrequency" class="form-select-linguify">
                         <option value="realtime">En temps réel</option>
                         <option value="hourly">Toutes les heures</option>
                         <option value="daily" selected>Quotidienne</option>
@@ -882,10 +933,11 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-linguify-primary" onclick="saveNotificationSettings()">
-                    <i class="bi bi-check-lg me-1"></i>
-                    Sauvegarder
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Annuler
+                </button>
+                <button type="button" class="btn-linguify" onclick="saveNotificationSettings()">
+                    <i class="bi bi-check-lg"></i>Sauvegarder
                 </button>
             </div>
         </div>
@@ -893,15 +945,23 @@
 </div>
 
 <!-- Modal pour toutes les notifications -->
-<div id="allNotificationsModal" class="modal fade" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+<div class="modal-overlay" id="allNotificationsModal" aria-hidden="true">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" aria-hidden="true"></div>
+        <div class="modal-content modal-lg">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-bell-fill me-2 text-linguify-primary"></i>
-                    Toutes les notifications
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-primary">
+                        <i class="bi bi-bell-fill text-linguify-primary text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title">Toutes les notifications</h3>
+                        <p class="modal-subtitle">Historique complet</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="notification-full-list" id="notificationFullList">
@@ -909,10 +969,11 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-linguify-primary" onclick="markAllNotificationsRead()">
-                    <i class="bi bi-check2-all me-1"></i>
-                    Marquer tout comme lu
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Fermer
+                </button>
+                <button type="button" class="btn-linguify" onclick="markAllNotificationsRead()">
+                    <i class="bi bi-check2-all"></i>Marquer tout comme lu
                 </button>
             </div>
         </div>
