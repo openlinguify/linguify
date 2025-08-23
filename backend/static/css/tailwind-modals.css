@@ -131,6 +131,7 @@
 .text-linguify-primary { color: var(--linguify-primary); }
 .text-linguify-primary-light { color: var(--linguify-primary-light); }
 .text-linguify-primary-dark { color: var(--linguify-primary-dark); }
+.text-linguify-secondary { color: var(--linguify-secondary); }
 .text-linguify-accent { color: var(--linguify-accent); }
 .text-linguify-accent-light { color: var(--linguify-accent-light); }
 .text-linguify-accent-dark { color: var(--linguify-accent-dark); }
@@ -141,6 +142,7 @@
 /* Text Colors Hardcoded Fallback */
 .text-linguify-primary { color: #2D5BBA !important; }
 .text-linguify-primary-dark { color: #1E4A8C !important; }
+.text-linguify-secondary { color: #8B5CF6 !important; }
 .text-linguify-accent { color: #00D4AA !important; }
 .text-linguify-success { color: #10B981 !important; }
 .text-linguify-warning { color: #F59E0B !important; }
@@ -193,7 +195,29 @@
 
 /* Layout */
 .block { display: block; }
+.hidden { display: none !important; }
 .overflow-hidden { overflow: hidden; }
+.overflow-y-auto { overflow-y: auto; }
+.overflow-y-scroll { overflow-y: scroll; }
+.overflow-x-hidden { overflow-x: hidden; }
+
+/* REMOVE AGGRESSIVE DISPLAY OVERRIDES - Let original CSS handle display states */
+
+/* Consistent smooth scrolling for all containers */
+.study-content {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--linguify-gray-300, #d1d5db) var(--linguify-gray-50, #f9fafb);
+}
+
+#publicDecksGrid {
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--linguify-gray-300, #d1d5db) var(--linguify-gray-50, #f9fafb);
+}
 
 /* Spacing Utilities */
 .space-y-2 > * + * { margin-top: 0.5rem; }
@@ -1213,8 +1237,12 @@ button.bg-linguify-gradient:hover,
   gap: 0.5rem;
   min-height: 40px;
   overflow-x: auto;
-  position: relative;
-  z-index: 1000;
+  position: relative; /* Back to relative positioning */
+  z-index: 1100;
+  height: auto; /* Let natural height determine */
+  background: transparent; /* Don't override background */
+  border: none; /* Don't add extra borders */
+  padding: 0; /* Don't add extra padding */
 }
 
 .navbar-section {
@@ -1604,8 +1632,48 @@ button.bg-linguify-gradient:hover,
   margin: 0;
 }
 
-.sidebar-content {
-  padding: 1rem;
+/* ONLY keep essential scrollbar styles for Tailwind consistency */
+
+/* Remove mobile overrides entirely */
+
+/* Universal scrollbar styling - Linguify design system */
+.sidebar-content::-webkit-scrollbar,
+.study-content::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-y-scroll::-webkit-scrollbar,
+#publicDecksGrid::-webkit-scrollbar,
+.notification-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-content::-webkit-scrollbar-track,
+.study-content::-webkit-scrollbar-track,
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-y-scroll::-webkit-scrollbar-track,
+#publicDecksGrid::-webkit-scrollbar-track,
+.notification-list::-webkit-scrollbar-track {
+  background: var(--linguify-gray-50, #f9fafb);
+  border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb,
+.study-content::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-y-scroll::-webkit-scrollbar-thumb,
+#publicDecksGrid::-webkit-scrollbar-thumb,
+.notification-list::-webkit-scrollbar-thumb {
+  background: var(--linguify-gray-300, #d1d5db);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover,
+.study-content::-webkit-scrollbar-thumb:hover,
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.overflow-y-scroll::-webkit-scrollbar-thumb:hover,
+#publicDecksGrid::-webkit-scrollbar-thumb:hover,
+.notification-list::-webkit-scrollbar-thumb:hover {
+  background: var(--linguify-gray-400, #9ca3af);
 }
 
 .welcome-state {
@@ -1722,6 +1790,11 @@ button.bg-linguify-gradient:hover,
   color: #2D5BBA !important;
 }
 
+.text-linguify-accent i,
+.text-linguify-secondary i,
+.text-linguify-secondary *:not(.btn):not(button) {
+  color: #8B5CF6 !important;
+}
 .text-linguify-accent i,
 .text-linguify-accent *:not(.btn):not(button) {
   color: #00D4AA !important;
