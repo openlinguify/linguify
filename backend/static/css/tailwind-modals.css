@@ -573,6 +573,178 @@ button.bg-linguify-gradient:hover,
   flex-shrink: 0;
 }
 
+/* Share Modal Specific Components */
+.share-url-input {
+  flex: 1 1 0%;
+  padding: 0.5rem 0.75rem;
+  background-color: rgb(249 250 251);
+  border: 1px solid rgb(209 213 219);
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.share-url-input:focus {
+  outline: none;
+  --tw-ring-inset: inset;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: #00D4AA;
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow);
+  border-color: transparent;
+}
+
+.share-copy-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: white;
+  background-color: #00D4AA;
+  border: 1px solid #00D4AA;
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  transition: background-color 150ms ease-in-out;
+}
+
+.share-copy-btn:hover {
+  background-color: #26E4B8;
+}
+
+.share-copy-btn:focus {
+  outline: none;
+  --tw-ring-inset: inset;
+  --tw-ring-offset-width: 2px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: #00D4AA;
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow);
+}
+
+.share-buttons-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.share-btn {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  transition: all 150ms ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.share-btn i {
+  margin-right: 0.25rem;
+}
+
+.share-btn-success {
+  color: #10B981;
+  background-color: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.share-btn-success:hover {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.share-btn-success:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #10B981;
+}
+
+.share-btn-primary {
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.05);
+  border: 1px solid rgba(45, 91, 186, 0.2);
+}
+
+.share-btn-primary:hover {
+  background-color: rgba(45, 91, 186, 0.1);
+}
+
+.share-btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #2D5BBA;
+}
+
+.share-btn-accent {
+  color: #00D4AA;
+  background-color: rgba(0, 212, 170, 0.05);
+  border: 1px solid rgba(0, 212, 170, 0.2);
+}
+
+.share-btn-accent:hover {
+  background-color: rgba(0, 212, 170, 0.1);
+}
+
+.share-btn-accent:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #00D4AA;
+}
+
+.share-btn-gray {
+  color: #374151;
+  background-color: rgb(249 250 251);
+  border: 1px solid rgb(209 213 219);
+}
+
+.share-btn-gray:hover {
+  background-color: rgb(249 250 251);
+}
+
+.share-btn-gray:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #6B7280;
+}
+
+.success-message {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #10B981;
+  display: none;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease-in-out;
+}
+
+.success-message.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Auto-hide after 3 seconds with fade out */
+.success-message.fade-out {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+
+/* Input group styling */
+.input-group {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: rgb(17 24 39);
+  margin-bottom: 0.5rem;
+}
+
 /* Ensure icons and text within Linguify elements use correct colors */
 .text-linguify-primary i,
 .text-linguify-primary *:not(.btn):not(button) {
