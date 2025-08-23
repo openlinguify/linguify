@@ -38,9 +38,36 @@
     {% block extra_css %}{% endblock %}
     
     <style>
-        /* Ajustement minimal pour le header fixe */
+        /* Layout full-screen spécifique à revision-body */
         body.revision-body {
-            padding-top: 64px; /* Hauteur standard du header */
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        body.revision-body .revision-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        body.revision-body .revision-header {
+            flex-shrink: 0;
+            position: sticky;
+            top: 64px;
+            z-index: 999;
+            background: white;
+        }
+        
+        body.revision-body .revision-main {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         /* Cacher l'ancienne navigation de révision */

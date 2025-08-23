@@ -352,6 +352,13 @@ button.bg-linguify-gradient:hover,
   justify-content: center;
 }
 
+.btn-linguify.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+}
+
 .btn-linguify:hover {
   background: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%);
   transform: translateY(-1px);
@@ -387,6 +394,14 @@ button.bg-linguify-gradient:hover,
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
+}
+
+.btn-linguify-secondary.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
 }
 
 .btn-linguify-secondary:hover {
@@ -1238,6 +1253,8 @@ button.bg-linguify-gradient:hover,
   background: white;
   border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  position: relative;
+  z-index: 1000;
 }
 
 .navbar-section {
@@ -1597,6 +1614,7 @@ button.bg-linguify-gradient:hover,
   width: 320px;
   height: 100%;
   overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .sidebar-header {
@@ -1664,10 +1682,13 @@ button.bg-linguify-gradient:hover,
 
 /* Hide deck creation/editing elements */
 .create-deck-form-hidden,
+.create-card-form-hidden,
 .edit-card-form-hidden,
+.deck-details-hidden,
 .empty-state-hidden,
 .no-cards-message-hidden,
-.study-session-hidden {
+.study-session-hidden,
+.display-none {
   display: none;
 }
 
@@ -1762,31 +1783,37 @@ button.bg-linguify-gradient:hover,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2rem;
+  padding: 4rem 2rem;
   text-align: center;
-  min-height: 400px;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.03) 0%, rgba(0, 212, 170, 0.03) 100%);
 }
 
 .welcome-state-icon {
-  width: 4rem;
-  height: 4rem;
-  color: rgba(45, 91, 186, 0.3);
-  margin-bottom: 1rem;
+  width: 5rem;
+  height: 5rem;
+  color: var(--linguify-primary);
+  margin-bottom: 1.5rem;
+  font-size: 5rem;
+  opacity: 0.8;
 }
 
 .welcome-state-title {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  font-weight: 600;
-  color: rgb(17 24 39);
-  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--linguify-primary);
+  margin-bottom: 1rem;
+  letter-spacing: -0.025em;
 }
 
 .welcome-state-description {
-  color: rgb(107 114 128);
-  font-size: 0.875rem;
-  line-height: 1.5rem;
-  max-width: 24rem;
+  color: var(--linguify-gray);
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  max-width: 32rem;
+  margin-bottom: 2rem;
+  font-weight: 400;
 }
 
 /* Study Mode Cards */

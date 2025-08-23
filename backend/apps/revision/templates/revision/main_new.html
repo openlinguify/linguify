@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="flex h-screen">
+<div class="flex flex-1">
     <!-- Sidebar -->
     <div id="revisionSidebar" class="sidebar-linguify">
         <div class="sidebar-content">
@@ -37,7 +37,7 @@
     </div>
 
     <!-- Study Area -->
-    <div class="flex-1 revision-study">
+    <div class="flex-1 revision-study" style="overflow-y: auto; height: 100%;">
     <!-- Welcome state -->
     <div id="welcomeState" class="welcome-state">
         <i class="bi bi-lightning-charge welcome-state-icon"></i>
@@ -45,13 +45,13 @@
         <div class="welcome-state-description">
             Sélectionnez un deck dans la liste ou créez-en un nouveau pour commencer à réviser avec les flashcards
         </div>
-        <div class="flex gap-2 justify-content-center">
-            <button class="btn-linguify create-deck-btn">
-                <i class="bi bi-plus-lg mr-1"></i>
+        <div class="flex flex-wrap gap-4 justify-center">
+            <button class="btn-linguify btn-lg create-deck-btn">
+                <i class="bi bi-plus-lg mr-2"></i>
                 Créer un deck
             </button>
-            <a href="{% url 'revision_web:explore' %}" class="btn-linguify-secondary">
-                <i class="bi bi-globe2 mr-1"></i>
+            <a href="{% url 'revision_web:explore' %}" class="btn-linguify-secondary btn-lg">
+                <i class="bi bi-globe2 mr-2"></i>
                 Explorer les decks publics
             </a>
         </div>
@@ -867,9 +867,6 @@
 <style>
 /* Assurer que la barre d'en-tête reste au premier plan */
 .revision-header {
-    position: relative;
-    z-index: 999;
-    background: white;
     border-bottom: 1px solid #e9ecef;
 }
 
