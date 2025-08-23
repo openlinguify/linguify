@@ -1,4 +1,7 @@
-# revision/views.py
+# apps/revision/views/session_views.py
+"""
+ViewSets for revision sessions and vocabulary management
+"""
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -22,7 +25,8 @@ class RevisionSessionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return RevisionSession.objects.filter(user=self.request.user)
+        # Optimize with select_related for better performance
+        return RevisionSession.objects.select_related('user').filter(user=self.request.user)
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -86,7 +90,8 @@ class VocabularyWordViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
-        queryset = VocabularyWord.objects.filter(user=self.request.user)
+        # Optimize with select_related for better performance
+        queryset = VocabularyWord.objects.select_related('user').filter(user=self.request.user)
         
         # Filtrage par langue
         source_lang = self.request.query_params.get('source_language')
@@ -197,7 +202,8 @@ class VocabularyListViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return VocabularyList.objects.filter(user=self.request.user)
+        # Optimize with select_related and prefetch_related for better performance
+        return VocabularyList.objects.select_related('user').prefetch_related('words').filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

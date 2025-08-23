@@ -256,7 +256,7 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
 
     def get_queryset(self):
         """
-        Retourne les decks appropriés selon le contexte et l'action
+        Retourne les decks appropriés selon le contexte et l'action avec optimisations
         """
         user = self.request.user
         
@@ -265,16 +265,32 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
         if not user.is_authenticated:
             return FlashcardDeck.objects.none()
         
-        # For list actions, only show user's own decks (no public decks from others)
+        # Use optimized querysets based on action
         if self.action == 'list':
             show_archived = self.request.query_params.get('archived', 'false').lower() == 'true'
+            base_queryset = self.get_list_optimized_queryset()
             if show_archived:
-                return FlashcardDeck.objects.filter(user=user, is_archived=True)
+                return base_queryset.filter(user=user, is_archived=True)
             else:
-                return FlashcardDeck.objects.filter(user=user, is_archived=False)
+                return base_queryset.filter(user=user, is_archived=False)
         
-        # For retrieve/update/delete actions, allow access to user's decks + public decks
-        return FlashcardDeck.objects.filter(
+        elif self.action == 'retrieve':
+            # Use detail optimized queryset for single deck retrieval
+            base_queryset = self.get_detail_optimized_queryset()
+            return base_queryset.filter(
+                Q(user=user) | Q(is_public=True, is_archived=False)
+            )
+        
+        elif self.action in ['stats', 'deck_stats']:
+            # Use stats-only queryset for performance endpoints
+            base_queryset = self.get_stats_only_queryset()
+            return base_queryset.filter(
+                Q(user=user) | Q(is_public=True, is_archived=False)
+            )
+        
+        # For other actions, use base optimized queryset
+        base_queryset = self.get_base_deck_queryset()
+        return base_queryset.filter(
             Q(user=user) | Q(is_public=True, is_archived=False)
         )
 

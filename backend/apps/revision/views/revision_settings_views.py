@@ -425,8 +425,8 @@ class RevisionSettingsViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        """Filtre les paramètres par utilisateur connecté"""
-        return RevisionSettings.objects.filter(user=self.request.user)
+        """Filtre les paramètres par utilisateur connecté avec optimisation"""
+        return RevisionSettings.objects.select_related('user').filter(user=self.request.user)
     
     def get_object(self):
         """Récupère ou crée les paramètres pour l'utilisateur connecté"""
@@ -657,8 +657,8 @@ class RevisionSessionConfigViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        """Filtre les configurations par utilisateur connecté"""
-        return RevisionSessionConfig.objects.filter(user=self.request.user)
+        """Filtre les configurations par utilisateur connecté avec optimisation"""
+        return RevisionSessionConfig.objects.select_related('user').filter(user=self.request.user)
     
     def perform_create(self, serializer):
         """Associe la configuration à l'utilisateur connecté"""

@@ -1,4 +1,4 @@
-# apps/revision/urls.py - API URLs only
+# apps/revision/urls.py - API URLs (REST endpoints)
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
@@ -18,7 +18,7 @@ from .views.revision_settings_views import (
     RevisionSettingsViewSet,
     RevisionSessionConfigViewSet
 )
-from .views_web import (
+from .views.stats_api_views import (
     get_user_revision_stats, 
     get_detailed_stats, 
     get_recent_sessions, 
@@ -28,7 +28,7 @@ from .views_web import (
 
 app_name = 'revision'
 
-# Router for REST API
+# REST API Router
 router = DefaultRouter()
 router.register(r'decks', FlashcardDeckViewSet, basename='deck')
 router.register(r'flashcards', FlashcardViewSet, basename='flashcard')
@@ -37,15 +37,15 @@ router.register(r'revision-sessions', RevisionSessionViewSet, basename='revision
 router.register(r'vocabulary', VocabularyWordViewSet, basename='vocabulary-word')
 router.register(r'vocabulary-lists', VocabularyListViewSet, basename='vocabulary-list')
 
-# Settings router (consolidated from old urls_settings.py)
+# Settings Router (consolidated from old urls_settings.py)
 settings_router = DefaultRouter()
 settings_router.register(r'settings', RevisionSettingsViewSet, basename='revision-settings')
 settings_router.register(r'session-configs', RevisionSessionConfigViewSet, basename='revision-session-configs')
 
 urlpatterns = [
-    # === REST API (accessed via /api/v1/revision/) ===
+    # === REST API ENDPOINTS ===
     
-    # Stats endpoints - MUST be before router.urls
+    # Stats endpoints - MUST be before router.urls to avoid conflicts
     path('decks/stats/', get_user_revision_stats, name='deck-stats'),
     path('stats/', get_detailed_stats, name='detailed-stats'),
     path('sessions/recent/', get_recent_sessions, name='recent-sessions'),
@@ -59,7 +59,7 @@ urlpatterns = [
     path('word-stats/', WordStatsAPIView.as_view(), name='word-stats-api'),
     path('user-settings/', get_user_revision_settings, name='user-settings'),
     
-    # Settings API (consolidated from urls_settings.py)
+    # Settings API
     path('settings/api/', include(settings_router.urls)),
     path('settings/config/', RevisionSettingsViewSet.as_view({
         'get': 'list',
