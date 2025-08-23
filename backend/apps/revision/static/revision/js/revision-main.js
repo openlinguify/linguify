@@ -1892,12 +1892,21 @@ async function saveEditDeck() {
         // Mettre à jour l'état local
         appState.selectedDeck = updatedDeck;
         
+        // Update the deck in the decks list to reflect the changes
+        const deckIndex = appState.decks.findIndex(d => d.id === updatedDeck.id);
+        if (deckIndex !== -1) {
+            appState.decks[deckIndex] = { ...appState.decks[deckIndex], ...updatedDeck };
+        }
+        
         // Update share button in case visibility changed
         updateShareButtonText();
         
-        // Recharger la liste des decks et sélectionner le deck modifié
-        await loadDecks();
-        await selectDeck(updatedDeck.id);
+        // Re-render the decks list to show any changes (public icon, name, etc.)
+        renderDecksList();
+        
+        // No need to reload everything, just update the view
+        // await loadDecks();
+        // await selectDeck(updatedDeck.id);
         
         hideEditDeckForm();
         
@@ -1973,15 +1982,47 @@ async function makePrivate() {
         return;
     }
     
-    // Confirmation avant de rendre privé
-    const confirmed = confirm(
-        `Êtes-vous sûr de vouloir rendre le deck "${appState.selectedDeck.name}" privé ?\n\n` +
-        `• Il ne sera plus visible dans la section "Explorer"\n` +
-        `• Les liens de partage existants ne fonctionneront plus\n` +
-        `• Vous pourrez le rendre public à nouveau plus tard`
-    );
+    // Afficher le modal de confirmation personnalisé
+    let modalElement = document.getElementById('makePrivateModal');
     
-    if (!confirmed) return;
+    if (!modalElement) {
+        console.log('makePrivateModal not found, creating it dynamically...');
+        // Create the modal dynamically
+        ensureModalsExist();
+        
+        // Give a brief moment for DOM to update
+        await new Promise(resolve => setTimeout(resolve, 100));
+        modalElement = document.getElementById('makePrivateModal');
+        
+        if (!modalElement) {
+            window.notificationService.error('Erreur: Impossible de créer le modal de confirmation');
+            return;
+        }
+    }
+    
+    console.log('Opening makePrivateModal:', modalElement);
+    
+    try {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        } else {
+            // Fallback manuel
+            modalElement.style.display = 'block';
+            modalElement.classList.add('show');
+            document.body.classList.add('modal-open');
+        }
+    } catch (error) {
+        console.error('Error opening makePrivateModal:', error);
+        window.notificationService.error('Erreur lors de l\'ouverture du modal');
+    }
+}
+
+async function executeMakePrivate() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
     
     try {
         const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
@@ -1990,13 +2031,25 @@ async function makePrivate() {
         
         appState.selectedDeck = updatedDeck;
         
+        // Update the deck in the decks list to reflect the change
+        const deckIndex = appState.decks.findIndex(d => d.id === updatedDeck.id);
+        if (deckIndex !== -1) {
+            appState.decks[deckIndex] = { ...appState.decks[deckIndex], ...updatedDeck };
+        }
+        
         // Update the share button text since the deck is now private
         updateShareButtonText();
         
-        window.notificationService.success('Deck rendu privé avec succès');
+        // Re-render the decks list to hide the public icon
+        renderDecksList();
         
-        // Refresh the deck list to update the public icon
-        await loadDecks();
+        // Fermer le modal
+        const makePrivateModal = bootstrap.Modal.getInstance(document.getElementById('makePrivateModal'));
+        if (makePrivateModal) {
+            makePrivateModal.hide();
+        }
+        
+        window.notificationService.success('Deck rendu privé avec succès');
         
     } catch (error) {
         console.error('Error making deck private:', error);
@@ -2172,8 +2225,17 @@ function setupShareModalEventHandlers() {
                 
                 appState.selectedDeck = updatedDeck;
                 
+                // Update the deck in the decks list to reflect the change
+                const deckIndex = appState.decks.findIndex(d => d.id === updatedDeck.id);
+                if (deckIndex !== -1) {
+                    appState.decks[deckIndex] = { ...appState.decks[deckIndex], ...updatedDeck };
+                }
+                
                 // Update the share button text since the deck is now public
                 updateShareButtonText();
+                
+                // Re-render the decks list to show the public icon
+                renderDecksList();
                 
                 window.notificationService.success('Jeu de cartes rendu public avec succès !');
                 
@@ -2187,6 +2249,25 @@ function setupShareModalEventHandlers() {
             } catch (error) {
                 console.error('Error making deck public:', error);
                 window.notificationService.error('Erreur lors de la publication du jeu de cartes');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+        
+        // Handler pour le bouton "Rendre privé"
+        if (e.target.id === 'makeDeckPrivateBtn' || e.target.closest('#makeDeckPrivateBtn')) {
+            e.preventDefault();
+            const button = e.target.closest('#makeDeckPrivateBtn') || e.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Mise à jour...';
+            button.disabled = true;
+            
+            try {
+                await executeMakePrivate();
+            } catch (error) {
+                console.error('Error making deck private:', error);
+                window.notificationService.error('Erreur lors de la mise en privé du deck');
+            } finally {
                 button.innerHTML = originalText;
                 button.disabled = false;
             }
@@ -2699,11 +2780,20 @@ async function executeArchiveDeck(shouldArchive) {
         
         appState.selectedDeck = updatedDeck;
         
+        // Update the deck in the decks list to reflect the change
+        const deckIndex = appState.decks.findIndex(d => d.id === updatedDeck.id);
+        if (deckIndex !== -1) {
+            appState.decks[deckIndex] = { ...appState.decks[deckIndex], ...updatedDeck };
+        }
+        
+        // Update archive button text
+        updateArchiveButton();
+        
+        // Re-render the decks list to show/hide the archive icon
+        renderDecksList();
+        
         const message = updatedDeck.is_archived ? 'Deck archivé' : 'Deck désarchivé';
         window.notificationService.success(message);
-        
-        // Recharger la liste des decks
-        await loadDecks();
         
         // Si le deck est archivé, revenir à la vue d'accueil
         if (updatedDeck.is_archived) {
@@ -3362,14 +3452,16 @@ function ensureModalsExist() {
     // Check if modals already exist
     const makePublicModal = document.getElementById('makePublicModal');
     const shareModal = document.getElementById('shareModal');
+    const makePrivateModal = document.getElementById('makePrivateModal');
     
     console.log('Checking modals existence:', {
         makePublicModal: !!makePublicModal,
-        shareModal: !!shareModal
+        shareModal: !!shareModal,
+        makePrivateModal: !!makePrivateModal
     });
     
-    if (makePublicModal && shareModal) {
-        console.log('Modals already exist in DOM');
+    if (makePublicModal && shareModal && makePrivateModal) {
+        console.log('All modals already exist in DOM');
         return;
     }
     
@@ -3496,11 +3588,79 @@ function ensureModalsExist() {
         </div>
     `;
     
+    // Create makePrivateModal
+    const makePrivateModalHTML = `
+        <div class="modal fade" id="makePrivateModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 me-3 share-modal-icon-bg">
+                                <i class="bi bi-lock share-modal-icon"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title mb-0 share-modal-title">Rendre votre deck privé</h5>
+                                <p class="text-muted mb-0 small">Retirer ce deck de la section publique</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <div class="alert border-0 share-modal-alert">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-exclamation-triangle-fill me-2 mt-1" style="color: #f59e0b;"></i>
+                                <div>
+                                    <strong class="share-modal-alert-title">Attention</strong><br>
+                                    <span class="share-modal-alert-text">Cette action rendra votre deck privé. Il ne sera plus accessible publiquement.</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="fw-semibold mb-2 share-modal-section-title">
+                                <i class="bi bi-eye-slash me-1" style="color: #f59e0b;"></i>
+                                Ce qui va changer :
+                            </h6>
+                            <ul class="list-unstyled ms-3">
+                                <li class="mb-1 share-modal-list-item">
+                                    <i class="bi bi-x-circle me-2" style="color: #ef4444;"></i>
+                                    Il ne sera plus visible dans la section "Explorer"
+                                </li>
+                                <li class="mb-1 share-modal-list-item">
+                                    <i class="bi bi-x-circle me-2" style="color: #ef4444;"></i>
+                                    Les liens de partage existants ne fonctionneront plus
+                                </li>
+                                <li class="mb-1 share-modal-list-item">
+                                    <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
+                                    Vous restez propriétaire et gardez tous vos droits
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="small share-modal-info-text">
+                            <i class="bi bi-shield-check me-1 share-modal-accent-icon"></i>
+                            Vous pourrez rendre ce deck public à nouveau plus tard si vous le souhaitez.
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary share-modal-cancel-btn" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-1"></i>Annuler
+                        </button>
+                        <button type="button" class="btn" id="makeDeckPrivateBtn" style="background-color: #6b7280; border-color: #6b7280; color: white;">
+                            <i class="bi bi-lock me-1"></i>Rendre privé
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
     // Add modals to DOM
     document.body.insertAdjacentHTML('beforeend', makePublicModalHTML);
     document.body.insertAdjacentHTML('beforeend', shareModalHTML);
+    document.body.insertAdjacentHTML('beforeend', makePrivateModalHTML);
     
-    console.log('Modals created successfully');
+    console.log('All modals created successfully (including makePrivateModal)');
 }
 
 // Debug function to check DOM state
@@ -3620,6 +3780,7 @@ window.revisionMain = {
     exportDeck,
     shareDeck,
     makePrivate,
+    executeMakePrivate,
     archiveDeck,
     showArchiveConfirmationModal,
     executeArchiveDeck,

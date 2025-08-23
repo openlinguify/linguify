@@ -66,6 +66,71 @@
     </div>
 </div>
 
+<!-- Modal de confirmation - Rendre privé -->
+<div class="modal fade" id="makePrivateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle p-2 me-3 share-modal-icon-bg">
+                        <i class="bi bi-lock share-modal-icon"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0 share-modal-title">Rendre votre deck privé</h5>
+                        <p class="text-muted mb-0 small">Retirer ce deck de la section publique</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-2">
+                <div class="alert border-0 share-modal-alert">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-exclamation-triangle-fill me-2 mt-1" style="color: #f59e0b;"></i>
+                        <div>
+                            <strong class="share-modal-alert-title">Attention</strong><br>
+                            <span class="share-modal-alert-text">Cette action rendra votre deck privé. Il ne sera plus accessible publiquement.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="fw-semibold mb-2 share-modal-section-title">
+                        <i class="bi bi-eye-slash me-1" style="color: #f59e0b;"></i>
+                        Ce qui va changer :
+                    </h6>
+                    <ul class="list-unstyled ms-3">
+                        <li class="mb-1 share-modal-list-item">
+                            <i class="bi bi-x-circle me-2" style="color: #ef4444;"></i>
+                            Il ne sera plus visible dans la section "Explorer"
+                        </li>
+                        <li class="mb-1 share-modal-list-item">
+                            <i class="bi bi-x-circle me-2" style="color: #ef4444;"></i>
+                            Les liens de partage existants ne fonctionneront plus
+                        </li>
+                        <li class="mb-1 share-modal-list-item">
+                            <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
+                            Vous restez propriétaire et gardez tous vos droits
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="small share-modal-info-text">
+                    <i class="bi bi-shield-check me-1 share-modal-accent-icon"></i>
+                    Vous pourrez rendre ce deck public à nouveau plus tard si vous le souhaitez.
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary share-modal-cancel-btn" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Annuler
+                </button>
+                <button type="button" class="btn" id="makeDeckPrivateBtn" style="background-color: #6b7280; border-color: #6b7280; color: white;">
+                    <i class="bi bi-lock me-1"></i>Rendre privé
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal de partage - Jeu de cartes public -->
 <div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
