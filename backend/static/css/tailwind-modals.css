@@ -1229,20 +1229,15 @@ button.bg-linguify-gradient:hover,
   margin-bottom: 0.5rem;
 }
 
-/* Navbar Components - Linguify Design System */
+/* Navbar Components - Linguify Design System - Tailwind approach */
 .navbar-linguify {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  min-height: 40px;
-  overflow-x: auto;
-  position: relative; /* Back to relative positioning */
-  z-index: 1100;
-  height: auto; /* Let natural height determine */
-  background: transparent; /* Don't override background */
-  border: none; /* Don't add extra borders */
-  padding: 0; /* Don't add extra padding */
+  padding: 0.75rem 1rem;
+  background: white;
+  border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .navbar-section {
@@ -1632,7 +1627,49 @@ button.bg-linguify-gradient:hover,
   margin: 0;
 }
 
-/* ONLY keep essential scrollbar styles for Tailwind consistency */
+/* Tailwind utility classes for revision app state management */
+.hidden { 
+  display: none; 
+}
+
+.block { 
+  display: block; 
+}
+
+/* Force hide deck-related content by default with higher specificity */
+#deckDetails {
+  display: none;
+}
+
+#createDeckForm {
+  display: none;
+}
+
+#createCardForm {
+  display: none;
+}
+
+#editCardForm {
+  display: none;
+}
+
+/* Hide all study mode sections */
+#flashcardStudyMode,
+#quizStudyMode,
+#matchingStudyMode,
+#spacedStudyMode,
+#writeStudyMode {
+  display: none;
+}
+
+/* Hide deck creation/editing elements */
+.create-deck-form-hidden,
+.edit-card-form-hidden,
+.empty-state-hidden,
+.no-cards-message-hidden,
+.study-session-hidden {
+  display: none;
+}
 
 /* Remove mobile overrides entirely */
 
