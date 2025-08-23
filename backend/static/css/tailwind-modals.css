@@ -2197,7 +2197,7 @@ button.bg-linguify-gradient:hover,
   display: block;
 }
 
-/* Matching Study Mode - Association Game */
+/* Matching Study Mode - Linguify Design System */
 #matchingStudyMode {
   height: 100vh;
   overflow: hidden;
@@ -2211,6 +2211,11 @@ button.bg-linguify-gradient:hover,
   position: relative;
   display: flex;
   flex-direction: column;
+}
+
+#matchingStudyMode .study-stats {
+  flex-shrink: 0;
+  display: flex;
 }
 
 .matching-game-area {

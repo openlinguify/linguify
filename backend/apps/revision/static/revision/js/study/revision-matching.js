@@ -188,7 +188,7 @@ class MatchingStudyMode {
             <div class="matching-item ${item.type}" 
                  data-id="${item.id}" 
                  data-pair-id="${item.pairId}"
-                 onclick="window.matchingMode.selectItem('${item.id}')">
+                 onclick="console.log('Click on item:', '${item.id}'); window.matchingMode.selectItem('${item.id}')">
                 <div class="matching-item-content">
                     <div class="matching-item-type">
                         ${item.type === 'term' ? '🔤' : '💡'}
@@ -197,36 +197,56 @@ class MatchingStudyMode {
                 </div>
             </div>
         `).join('');
+        
+        // Initialize stats display
+        this.updateGameStats();
     }
 
     selectItem(itemId) {
+        console.log('Selecting item:', itemId, 'Game completed:', this.gameCompleted);
+        
         if (this.gameCompleted) return;
         
         const item = this.matchingItems.find(i => i.id === itemId);
-        if (!item) return;
+        if (!item) {
+            console.log('Item not found:', itemId);
+            return;
+        }
         
         const itemElement = document.querySelector(`[data-id="${itemId}"]`);
-        if (!itemElement) return;
+        if (!itemElement) {
+            console.log('Element not found for item:', itemId);
+            return;
+        }
+        
+        console.log('Item classes:', itemElement.className);
+        console.log('Currently selected items:', this.selectedItems.length);
         
         // Check if item is already matched
-        if (this.matchedPairs.some(pair => pair.includes(item.pairId))) {
+        if (itemElement.classList.contains('matched')) {
+            console.log('Item already matched, ignoring');
             return;
         }
         
         // Check if item is already selected
         if (this.selectedItems.find(selected => selected.id === itemId)) {
             // Deselect item
+            console.log('Deselecting item');
             this.selectedItems = this.selectedItems.filter(selected => selected.id !== itemId);
             itemElement.classList.remove('selected');
             return;
         }
         
         // Add to selected items
+        console.log('Adding item to selection');
         this.selectedItems.push(item);
         itemElement.classList.add('selected');
         
+        console.log('Selected items count:', this.selectedItems.length);
+        
         // Check if we have 2 selected items
         if (this.selectedItems.length === 2) {
+            console.log('Two items selected, checking match');
             this.attempts++;
             this.checkMatch();
         }
@@ -258,11 +278,13 @@ class MatchingStudyMode {
             item1Element.classList.add('matched');
             item2Element.classList.add('matched');
             
-            // Clear selected items
+            // Clear selected items immediately
             this.selectedItems = [];
             
             // Update stats
             this.updateGameStats();
+            
+            console.log('Match successful! Matched pairs:', this.matchedPairs.length, 'Total cards:', this.matchingCards.length);
             
             // Check if game is complete
             if (this.matchedPairs.length === this.matchingCards.length) {
@@ -292,13 +314,25 @@ class MatchingStudyMode {
     }
 
     updateGameStats() {
-        document.getElementById('matchingPairs').textContent = this.matchedPairs.length;
-        document.getElementById('matchingTotal').textContent = this.matchingCards.length;
-        document.getElementById('matchingAttempts').textContent = this.attempts;
+        const pairsElement = document.getElementById('matchingPairs');
+        const totalElement = document.getElementById('matchingTotal');
+        const attemptsElement = document.getElementById('matchingAttempts');
+        const accuracyElement = document.getElementById('matchingAccuracy');
+        
+        if (pairsElement) pairsElement.textContent = this.matchedPairs.length;
+        if (totalElement) totalElement.textContent = this.matchingCards.length;
+        if (attemptsElement) attemptsElement.textContent = this.attempts;
         
         // Calculate accuracy
         const accuracy = this.attempts > 0 ? Math.round((this.matchedPairs.length / this.attempts) * 100) : 100;
-        document.getElementById('matchingAccuracy').textContent = `${accuracy}%`;
+        if (accuracyElement) accuracyElement.textContent = `${accuracy}%`;
+        
+        console.log('Stats updated:', {
+            pairs: this.matchedPairs.length,
+            total: this.matchingCards.length,
+            attempts: this.attempts,
+            accuracy: accuracy
+        });
     }
 
     completeGame() {
@@ -312,7 +346,7 @@ class MatchingStudyMode {
         let performanceClass = '';
         
         if (accuracy >= 90 && timeElapsed <= 60) {
-            performanceMessage = 'Performance exceptionnelle !';
+            performanceMessage = 'Excellent';
             performanceClass = 'text-linguify-accent';
         } else if (accuracy >= 70) {
             performanceMessage = 'Bon travail !';
@@ -433,7 +467,9 @@ class MatchingStudyMode {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎯 Initializing MatchingStudyMode...');
     window.matchingMode = new MatchingStudyMode();
+    console.log('✅ MatchingStudyMode initialized successfully');
 });
 
 // Export for module usage
