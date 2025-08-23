@@ -1212,88 +1212,39 @@ body {
     color: var(--linguify-accent) !important;
 }
 
-/* Classes utilitaires pour remplacer les styles inline */
-.w-200px { width: 200px; }
-.w-auto { width: auto; }
-.w-0 { width: 0%; }
-.w-100 { width: 100%; }
-.min-h-400 { min-height: 400px; }
-.min-h-500 { min-height: 500px; }
-.h-300 { height: 300px; }
-.h-400 { height: 400px; }
-.font-size-1-5rem { font-size: 1.5rem; }
-.font-size-3rem { font-size: 3rem; }
-.font-size-4rem { font-size: 4rem; }
-.display-none { display: none; }
-.display-block { display: block; }
-.display-inline-block { display: inline-block; }
-.overflow-auto { overflow: auto; }
-.max-h-300 { max-height: 300px; }
-.max-w-600 { max-width: 600px; }
-.border-radius-8 { border-radius: 8px; }
-.resize-none { resize: none; }
+/* Classes utilitaires -> MIGRÉES vers Tailwind CSS natif */
+/* Les classes suivantes sont remplacées par Tailwind :
+ * .w-200px -> .w-52 ou style="width: 200px"
+ * .w-auto -> .w-auto
+ * .w-0 -> .w-0
+ * .w-100 -> .w-full
+ * .min-h-400 -> .min-h-96 ou style="min-height: 400px"
+ * .h-300 -> .h-72 ou style="height: 300px"
+ * .font-size-* -> .text-2xl, .text-5xl, etc.
+ * .display-* -> .hidden, .block, .inline-block
+ * .overflow-auto -> .overflow-auto
+ * .max-h-300 -> .max-h-72
+ * .border-radius-8 -> .rounded-lg
+ * .resize-none -> .resize-none
+ */
 
-/* Classes spécifiques aux composants */
-.search-input {
-    width: 200px;
-}
-
-.filter-select {
-    width: auto;
-}
-
-.tags-filter-count {
-    display: none;
-}
-
-/* Règle supprimée - gérée par JavaScript */
-
-.empty-state-hidden {
-    display: none;
-}
-
-.load-more-container {
-    display: none;
-}
-
-.deck-details-hidden {
-    display: none;
-}
+/* Classes d'état -> MIGRÉES vers Tailwind CSS */
+/* Les classes suivantes sont remplacées par Tailwind et form-control-linguify :
+ * .search-input -> .form-control-linguify + width Tailwind
+ * .filter-select -> .form-select-linguify
+ * .*-hidden -> .hidden
+ * .progress-fill -> conservé (logique métier spécifique)
+ */
 
 .progress-fill {
     transition: width 0.3s ease;
     height: 100%;
 }
 
-.create-deck-form-hidden {
-    display: none;
-}
+/* Classes d'état hidden -> MIGRÉES vers .hidden Tailwind */
+/* .edit-card-form-hidden, .study-mode-hidden, .study-actions-hidden -> .hidden */
 
-.view-all-cards-hidden {
-    display: none;
-}
-
-.no-cards-message-hidden {
-    display: none;
-}
-
-.create-card-form-hidden {
-    display: none;
-}
-
-.edit-card-form-hidden {
-    display: none;
-}
-
-
-.study-mode-hidden {
-    display: none;
-}
-
-.study-actions-hidden {
-    display: none;
-}
-
+/* Zones d'étude - Heights spécifiques métier conservées */
 .study-area {
     min-height: 400px;
 }
@@ -1310,18 +1261,9 @@ body {
     min-height: 400px;
 }
 
-.import-modal-body {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.deck-content-area {
-    height: 300px;
-    overflow-y: auto;
-    border: 1px solid var(--gray-300);
-    border-radius: 8px;
-    padding: 1rem;
-}
+/* Modal et zones de contenu -> Peuvent être remplacées par Tailwind */
+/* .import-modal-body -> .max-h-96 .overflow-y-auto */
+/* .deck-content-area -> .h-72 .overflow-y-auto .border .border-gray-300 .rounded-lg .p-4 */
 
 .tag-color-preview {
     background: var(--linguify-primary);
@@ -1333,10 +1275,8 @@ body {
 }
 
 /* Classes pour les largeurs de colonnes */
-.w-50px { width: 50px; }
-.w-80px { width: 80px; }
-.w-100px { width: 100px; }
-.w-120px { width: 120px; }
+/* Largeurs spécifiques -> MIGRÉES vers Tailwind CSS */
+/* .w-50px -> .w-12, .w-80px -> .w-20, .w-100px -> .w-24, .w-120px -> .w-30 */
 
 /* ===== STYLES POUR L'IMPORT AMÉLIORÉ ===== */
 
@@ -2505,60 +2445,14 @@ body {
     border-color: var(--linguify-error);
 }
 
-/* Styles pour les modals natives (sans Bootstrap) */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1050;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: none;
-}
-
-.modal.show {
-    display: block !important;
-}
-
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1040;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-backdrop.fade.show {
-    opacity: 1;
-}
-
-.modal-dialog {
-    position: relative;
-    width: auto;
-    margin: 1.75rem auto;
-    pointer-events: none;
-    max-height: calc(100% - 3.5rem);
-}
-
-.modal-content {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    pointer-events: auto;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 0.3rem;
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.5);
-}
-
-body.modal-open {
-    overflow: hidden;
-}
+/* Modaux natifs -> MIGRÉS vers tailwind-modals.css */
+/* Les styles Bootstrap modaux sont remplacés par nos composants Tailwind :
+ * .modal -> .modal-overlay
+ * .modal-backdrop -> .modal-overlay-bg
+ * .modal-dialog -> .modal-backdrop
+ * .modal-content -> .modal-content
+ * body.modal-open -> géré par JavaScript
+ */
 
 /* Styles spécifiques pour les tags assignés (style OpenLinguify) */
 .tag-row.table-success {
