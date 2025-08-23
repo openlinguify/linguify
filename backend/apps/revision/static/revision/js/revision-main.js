@@ -953,14 +953,20 @@ function backToDeckView() {
 
 // Study mode functions
 function startFlashcardsMode() {
+    console.log('🔄 Starting flashcards mode...');
+    console.log('📦 Selected deck:', appState.selectedDeck);
+    console.log('🔧 window.flashcardMode exists:', !!window.flashcardMode);
+    
     if (!appState.selectedDeck) {
         window.notificationService.error('Veuillez sélectionner un deck d\'abord');
         return;
     }
     
     if (window.flashcardMode) {
+        console.log('✅ Starting flashcard study...');
         window.flashcardMode.startStudy(appState.selectedDeck);
     } else {
+        console.error('❌ window.flashcardMode is not available');
         window.notificationService.error('Mode Flashcards non disponible');
     }
 }

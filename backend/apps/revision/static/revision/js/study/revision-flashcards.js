@@ -137,20 +137,45 @@ class FlashcardStudyMode {
     }
 
     showStudyInterface() {
+        console.log('🎯 showStudyInterface called');
+        
         // Hide all sections using centralized function
         if (window.revisionMain && window.revisionMain.hideAllSections) {
+            console.log('📦 Calling hideAllSections...');
             window.revisionMain.hideAllSections();
         }
         
-        // Show flashcard study mode
-        document.getElementById('flashcardStudyMode').style.display = 'block';
+        // Check if flashcard element exists
+        const flashcardElement = document.getElementById('flashcardStudyMode');
+        console.log('🔍 flashcardStudyMode element:', flashcardElement);
+        console.log('🔍 flashcardStudyMode exists:', !!flashcardElement);
+        
+        if (flashcardElement) {
+            console.log('✅ Removing study-mode-hidden class and setting display to flex...');
+            // Remove the hidden class that forces display: none !important
+            flashcardElement.classList.remove('study-mode-hidden');
+            // Set the display style
+            flashcardElement.style.display = 'flex';
+            console.log('🎨 Element style after setting:', flashcardElement.style.display);
+            console.log('🎨 Element computed style:', window.getComputedStyle(flashcardElement).display);
+            console.log('🏷️ Element classes:', flashcardElement.className);
+        } else {
+            console.error('❌ flashcardStudyMode element not found in DOM!');
+            return;
+        }
         
         // Set deck name
-        document.getElementById('studyDeckName').textContent = this.currentDeck.name;
+        const deckNameElement = document.getElementById('studyDeckName');
+        if (deckNameElement && this.currentDeck) {
+            deckNameElement.textContent = this.currentDeck.name;
+            console.log('📝 Deck name set to:', this.currentDeck.name);
+        }
         
         // Update progress
         this.updateProgress();
         this.updateStats();
+        
+        console.log('🎯 showStudyInterface completed');
     }
 
     showNoCardsMessage() {
@@ -504,7 +529,11 @@ class FlashcardStudyMode {
         this.stopSpeech();
         
         // Hide study mode
-        document.getElementById('flashcardStudyMode').style.display = 'none';
+        const flashcardElement = document.getElementById('flashcardStudyMode');
+        if (flashcardElement) {
+            flashcardElement.style.display = 'none';
+            flashcardElement.classList.add('study-mode-hidden');
+        }
         
         // Show deck details using centralized function
         if (window.revisionMain.appState.selectedDeck) {
@@ -1327,7 +1356,13 @@ function flipCard() {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    window.flashcardMode = new FlashcardStudyMode();
+    console.log('🔄 Initializing FlashcardStudyMode...');
+    try {
+        window.flashcardMode = new FlashcardStudyMode();
+        console.log('✅ FlashcardStudyMode initialized successfully');
+    } catch (error) {
+        console.error('❌ Error initializing FlashcardStudyMode:', error);
+    }
 });
 
 // Export for module usage

@@ -3,7 +3,7 @@
 :root {
     --linguify-primary: #2D5BBA;
     --linguify-secondary: #8B5CF6;
-    --linguify-accent: #00D4AA;
+    --linguify-accent: #017E84;
     --linguify-gray: #6B7280;
     --linguify-primary-light: #4F7BD9;
     --linguify-primary-dark: #1E4A8C;
@@ -30,7 +30,7 @@
     --linguify-gray-900: #111827;
     
     /* Gradient officiel */
-    --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+    --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
 }
 
 /* Layout & Positioning */
@@ -115,11 +115,11 @@
 
 /* Hardcoded Colors as Fallback */
 .bg-linguify-primary { background-color: #2D5BBA !important; }
-.bg-linguify-accent { background-color: #00D4AA !important; }
+.bg-linguify-accent { background-color: #017E84 !important; }
 .bg-linguify-success { background-color: #10B981 !important; }
 .bg-linguify-warning { background-color: #F59E0B !important; }
 .bg-linguify-error { background-color: #EF4444 !important; }
-.bg-linguify-gradient { background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important; }
+.bg-linguify-gradient { background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%) !important; }
 
 /* Colors - Text (Linguify Design System) */
 .text-white { color: var(--linguify-white); }
@@ -143,7 +143,7 @@
 .text-linguify-primary { color: #2D5BBA !important; }
 .text-linguify-primary-dark { color: #1E4A8C !important; }
 .text-linguify-secondary { color: #8B5CF6 !important; }
-.text-linguify-accent { color: #00D4AA !important; }
+.text-linguify-accent { color: #017E84 !important; }
 .text-linguify-success { color: #10B981 !important; }
 .text-linguify-warning { color: #F59E0B !important; }
 .text-linguify-error { color: #EF4444 !important; }
@@ -173,7 +173,7 @@
 
 /* Border Colors Hardcoded Fallback */
 .border-linguify-primary { border-color: #2D5BBA !important; }
-.border-linguify-accent { border-color: #00D4AA !important; }
+.border-linguify-accent { border-color: #017E84 !important; }
 .border-linguify-success { border-color: #10B981 !important; }
 .border-linguify-warning { border-color: #F59E0B !important; }
 .border-linguify-error { border-color: #EF4444 !important; }
@@ -283,8 +283,8 @@
   box-shadow: 0 0 0 2px #2D5BBA !important;
 }
 .focus\:ring-linguify-accent:focus { 
-  --tw-ring-color: #00D4AA !important; 
-  box-shadow: 0 0 0 2px #00D4AA !important;
+  --tw-ring-color: #017E84 !important; 
+  box-shadow: 0 0 0 2px #017E84 !important;
 }
 .focus\:ring-linguify-success:focus { 
   --tw-ring-color: #10B981 !important; 
@@ -308,7 +308,7 @@
 .bg-linguify-gradient button,
 button.bg-linguify-gradient,
 .btn-linguify-gradient {
-  background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important;
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%) !important;
   border: none !important;
   color: white !important;
 }
@@ -324,7 +324,7 @@ button.bg-linguify-gradient:hover,
 /* Specific styling for modal action buttons to use Linguify gradient */
 #makeDeckPrivateBtn,
 #makeDeckPublicBtn {
-  background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important;
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%) !important;
   border: none !important;
   color: white !important;
 }
@@ -341,7 +341,7 @@ button.bg-linguify-gradient:hover,
   line-height: 1.25rem;
   font-weight: 500;
   color: white;
-  background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
   border: none;
   border-radius: 0.375rem;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -367,7 +367,7 @@ button.bg-linguify-gradient:hover,
 
 .btn-linguify:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #00D4AA;
+  box-shadow: 0 0 0 2px #017E84;
 }
 
 .btn-linguify:active {
@@ -483,7 +483,7 @@ button.bg-linguify-gradient:hover,
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 9999px;
-  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)) !important;
+  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #017E84 100%)) !important;
   color: white !important;
   text-transform: uppercase;
   letter-spacing: 0.025em;
@@ -609,7 +609,7 @@ button.bg-linguify-gradient:hover,
   border-right: none;
 }
 .btn-group-linguify input:checked + label {
-  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)) !important;
+  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #017E84 100%)) !important;
   color: white !important;
 }
 
@@ -679,7 +679,7 @@ button.bg-linguify-gradient:hover,
 }
 
 .notification-filter.active {
-  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)) !important;
+  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #017E84 100%)) !important;
   border-color: var(--linguify-primary, #2D5BBA) !important;
   color: white !important;
 }
@@ -1089,7 +1089,7 @@ button.bg-linguify-gradient:hover,
   --tw-ring-inset: inset;
   --tw-ring-offset-width: 0px;
   --tw-ring-offset-color: #fff;
-  --tw-ring-color: #00D4AA;
+  --tw-ring-color: #017E84;
   --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow);
@@ -1102,8 +1102,8 @@ button.bg-linguify-gradient:hover,
   line-height: 1.25rem;
   font-weight: 500;
   color: white;
-  background-color: #00D4AA;
-  border: 1px solid #00D4AA;
+  background-color: #017E84;
+  border: 1px solid #017E84;
   border-top-right-radius: 0.375rem;
   border-bottom-right-radius: 0.375rem;
   transition: background-color 150ms ease-in-out;
@@ -1118,7 +1118,7 @@ button.bg-linguify-gradient:hover,
   --tw-ring-inset: inset;
   --tw-ring-offset-width: 2px;
   --tw-ring-offset-color: #fff;
-  --tw-ring-color: #00D4AA;
+  --tw-ring-color: #017E84;
   --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow);
@@ -1177,7 +1177,7 @@ button.bg-linguify-gradient:hover,
 }
 
 .share-btn-accent {
-  color: #00D4AA;
+  color: #017E84;
   background-color: rgba(0, 212, 170, 0.05);
   border: 1px solid rgba(0, 212, 170, 0.2);
 }
@@ -1188,7 +1188,7 @@ button.bg-linguify-gradient:hover,
 
 .share-btn-accent:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #00D4AA;
+  box-shadow: 0 0 0 2px #017E84;
 }
 
 .share-btn-gray {
@@ -1334,7 +1334,7 @@ button.bg-linguify-gradient:hover,
 
 .btn-navbar-primary {
   color: white;
-  background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
   border: none;
 }
 
@@ -1587,7 +1587,7 @@ button.bg-linguify-gradient:hover,
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
   border-radius: 0.25rem;
   transition: width 0.3s ease;
 }
@@ -1640,7 +1640,7 @@ button.bg-linguify-gradient:hover,
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%));
+  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #017E84 100%));
 }
 .sidebar-header-linguify h6 {
   color: var(--linguify-primary-dark, #1E4A8C) !important;
@@ -1713,13 +1713,13 @@ button.bg-linguify-gradient:hover,
 }
 
 .flashcard-front {
-  background: linear-gradient(to bottom right, rgb(239 246 255), white);
-  border-color: rgb(191 219 254);
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
+  border-color: rgba(45, 91, 186, 0.3);
 }
 
 .flashcard-back {
-  background: linear-gradient(to bottom right, rgb(236 253 245), white);
-  border-color: rgb(167 243 208);
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
+  border-color: rgba(0, 212, 170, 0.3);
   transform: rotateY(180deg);
 }
 
@@ -1767,22 +1767,138 @@ button.bg-linguify-gradient:hover,
   display: none;
 }
 
+/* Flashcard Study Mode Layout */
+#flashcardStudyMode {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#flashcardStudyMode.study-mode-hidden {
+  display: none !important;
+}
+
 .study-header {
   padding: 1rem;
   border-bottom: 1px solid rgb(229 231 235);
-  background: rgb(249 250 251);
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(0, 212, 170, 0.03) 100%);
+  flex-shrink: 0;
 }
 
 .study-content {
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(249, 250, 251, 0.8) 0%, rgba(255, 255, 255, 1) 100%);
 }
 
 .study-area {
-  min-height: 24rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+  padding: 2rem;
+  overflow-y: auto;
 }
 
-/* Study Stats */
+/* Flashcard Return Button - Linguify Accent */
+.flashcard-btn-return {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  border: 2px solid #017E84;
+  background: white;
+  color: #017E84;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flashcard-btn-return:hover {
+  background: #017E84;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(1, 126, 132, 0.2);
+}
+
+.flashcard-btn-return:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(1, 126, 132, 0.2);
+}
+
+/* Flashcard Action Buttons - Linguify Design */
+.flashcard-btn-difficult,
+.flashcard-btn-medium,
+.flashcard-btn-easy {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: 2px solid;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.flashcard-btn-difficult {
+  background: linear-gradient(135deg, #fee2e2 0%, #ffffff 100%);
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.flashcard-btn-difficult:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.flashcard-btn-medium {
+  background: linear-gradient(135deg, #fef3c7 0%, #ffffff 100%);
+  border-color: #f59e0b;
+  color: #d97706;
+}
+
+.flashcard-btn-medium:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.flashcard-btn-easy {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+  border-color: #10b981;
+  color: #059669;
+}
+
+.flashcard-btn-easy:hover {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Study Stats - Fixed at bottom */
+.study-stats {
+  flex-shrink: 0;
+  border-top: 2px solid rgba(45, 91, 186, 0.1);
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.02) 0%, rgba(255, 255, 255, 1) 100%);
+  backdrop-filter: blur(10px);
+}
+
 .stat-value {
   font-size: 1.5rem;
   line-height: 2rem;
@@ -1798,8 +1914,7 @@ button.bg-linguify-gradient:hover,
   letter-spacing: 0.05em;
 }
 
-/* Hide all study mode sections */
-#flashcardStudyMode,
+/* Hide quiz and other study mode sections by default */
 #quizStudyMode,
 #matchingStudyMode,
 #spacedStudyMode,
@@ -2046,7 +2161,7 @@ button.bg-linguify-gradient:hover,
   font-size: 0.875rem;
   font-weight: 600;
   border-radius: 9999px;
-  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)) !important;
+  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #017E84 100%)) !important;
   color: white !important;
   text-transform: none;
   letter-spacing: normal;
@@ -2152,7 +2267,7 @@ button.bg-linguify-gradient:hover,
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--linguify-primary, #2D5BBA) 0%, var(--linguify-accent, #00D4AA) 100%);
+  background: linear-gradient(90deg, var(--linguify-primary, #2D5BBA) 0%, var(--linguify-accent, #017E84) 100%);
   border-radius: 9999px;
   transition: all 0.3s ease-in-out;
 }
@@ -2216,7 +2331,7 @@ button.bg-linguify-gradient:hover,
 .btn-link-linguify {
   background: none;
   border: none;
-  color: var(--linguify-accent, #00D4AA);
+  color: var(--linguify-accent, #017E84);
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 0.25rem;
@@ -2282,7 +2397,7 @@ button.bg-linguify-gradient:hover,
 }
 .text-linguify-accent i,
 .text-linguify-accent *:not(.btn):not(button) {
-  color: #00D4AA !important;
+  color: #017E84 !important;
 }
 
 .text-linguify-success i,
