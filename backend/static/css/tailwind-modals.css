@@ -2157,14 +2157,28 @@ button.bg-linguify-gradient:hover,
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
+}
+
+.study-stats .row {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.study-stats .col {
+  text-align: center;
+  flex: 1;
 }
 
 .stat-value {
   font-size: 1.125rem;
   line-height: 1.5rem;
   font-weight: 700;
-  margin-bottom: 0.125rem;
+  margin: 0;
+  display: block;
 }
 
 .stat-label {
@@ -2173,6 +2187,8 @@ button.bg-linguify-gradient:hover,
   color: rgb(107 114 128);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  margin: 0;
+  display: block;
 }
 
 /* Hide other study mode sections by default */
