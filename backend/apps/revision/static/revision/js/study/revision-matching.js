@@ -50,14 +50,43 @@ class MatchingStudyMode {
                 return;
             }
             
-            // Filter cards that need study (not learned)
-            const cardsNeedingReview = allCards.filter(card => !card.learned);
+            // Smart card selection for matching game - prioritize unlearned cards
+            const unlearnedCards = allCards.filter(card => !card.learned);
+            const learnedCards = allCards.filter(card => card.learned);
             
-            // Use cards that need review, or all cards if none need review
-            const cardsToUse = cardsNeedingReview.length > 0 ? cardsNeedingReview : allCards;
+            console.log(`📊 Cartes disponibles: ${allCards.length} total (${unlearnedCards.length} non-apprises, ${learnedCards.length} apprises)`);
             
-            // Prepare matching cards (limit to 8 pairs for better UX)
-            this.matchingCards = cardsToUse.slice(0, 8);
+            let cardsToUse = [];
+            
+            // Debug: Show card learning status
+            console.log('📋 Détail des cartes:');
+            allCards.forEach((card, i) => {
+                console.log(`  ${i+1}. "${card.front_text.substring(0, 20)}..." - ${card.learned ? '✅ Apprise' : '❌ Non-apprise'}`);
+            });
+            
+            if (unlearnedCards.length >= 6) {
+                // Priorité absolue aux cartes non-apprises (6 cartes)
+                cardsToUse = unlearnedCards.slice(0, 6);
+                console.log(`🎯 Mode focus: ${cardsToUse.length} cartes non-apprises uniquement`);
+            } else if (unlearnedCards.length >= 3) {
+                // Mélanger cartes non-apprises avec quelques apprises (max 8 total)
+                cardsToUse = [...unlearnedCards];
+                const needed = Math.min(3, 8 - unlearnedCards.length); // Max 3 cartes apprises
+                cardsToUse = cardsToUse.concat(learnedCards.slice(0, needed));
+                console.log(`🔄 Mode mixte: ${unlearnedCards.length} non-apprises + ${needed} apprises`);
+            } else if (unlearnedCards.length > 0) {
+                // Peu de cartes non-apprises, compléter avec apprises
+                cardsToUse = [...unlearnedCards];
+                cardsToUse = cardsToUse.concat(learnedCards.slice(0, 8 - unlearnedCards.length));
+                console.log(`⚖️ Mode équilibré: ${unlearnedCards.length} non-apprises + ${8 - unlearnedCards.length} apprises`);
+            } else {
+                // Toutes apprises - mode révision (max 6 pour garder de la difficulté)
+                cardsToUse = learnedCards.slice(0, 6);
+                console.log(`📚 Mode révision: ${cardsToUse.length} cartes apprises (révision)`);
+            }
+            
+            // Préparer les cartes matching (mélanger l'ordre)
+            this.matchingCards = this.shuffleArray([...cardsToUse]);
             
             // If no cards available after filtering, show practice message
             if (this.matchingCards.length < 3) {
@@ -94,7 +123,7 @@ class MatchingStudyMode {
             window.revisionMain.hideAllSections();
         }
         
-        // Show matching mode with proper flex layout
+        // Show matching mode with proper layout (same as flashcards/quiz)
         const matchingElement = document.getElementById('matchingStudyMode');
         if (matchingElement) {
             matchingElement.classList.remove('study-mode-hidden');
@@ -190,9 +219,6 @@ class MatchingStudyMode {
                  data-pair-id="${item.pairId}"
                  onclick="console.log('Click on item:', '${item.id}'); window.matchingMode.selectItem('${item.id}')">
                 <div class="matching-item-content">
-                    <div class="matching-item-type">
-                        ${item.type === 'term' ? '🔤' : '💡'}
-                    </div>
                     <div class="matching-item-text">${item.text}</div>
                 </div>
             </div>

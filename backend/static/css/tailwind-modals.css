@@ -2199,10 +2199,13 @@ button.bg-linguify-gradient:hover,
 
 /* Matching Study Mode - Linguify Design System */
 #matchingStudyMode {
-  height: 100vh;
-  overflow: hidden;
+  height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+#matchingStudyMode.study-mode-hidden {
+  display: none !important;
 }
 
 #matchingStudyMode .study-content {
@@ -2222,22 +2225,25 @@ button.bg-linguify-gradient:hover,
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
-  overflow: hidden;
-  max-width: 1200px;
+  padding: 1rem;
   margin: 0 auto;
-  width: 100%;
+  height: 100%;
+  max-width: 900px;
+  overflow: hidden;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .matching-instructions {
   flex: 0 0 auto;
   background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.05) 100%);
   border: 1px solid rgba(45, 91, 186, 0.15);
-  border-radius: 0.75rem;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
   color: #2D5BBA;
   font-weight: 500;
+  font-size: 0.875rem;
   display: flex;
   align-items: center;
 }
@@ -2246,24 +2252,27 @@ button.bg-linguify-gradient:hover,
   flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-  padding: 1rem 0;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
   overflow-y: auto;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: rgba(45, 91, 186, 0.3) transparent;
+  max-height: 100%;
+  width: 100%;
 }
 
 .matching-item {
   background: white;
   border: 2px solid rgba(45, 91, 186, 0.12);
-  border-radius: 1rem;
-  padding: 1.25rem;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(45, 91, 186, 0.08);
   position: relative;
-  min-height: 100px;
+  min-height: 70px;
+  height: 80px;
   display: flex;
   align-items: center;
 }
@@ -2305,16 +2314,16 @@ button.bg-linguify-gradient:hover,
   display: flex;
   align-items: center;
   width: 100%;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .matching-item-type {
   flex-shrink: 0;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
   color: white;
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -2332,11 +2341,15 @@ button.bg-linguify-gradient:hover,
 
 .matching-item-text {
   flex: 1;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #1f2937;
-  line-height: 1.4;
+  line-height: 1.3;
   word-break: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .matching-item.term {
@@ -2351,22 +2364,23 @@ button.bg-linguify-gradient:hover,
 @media (max-width: 768px) {
   .matching-board {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
   
   .matching-item {
-    min-height: 80px;
-    padding: 1rem;
+    min-height: 60px;
+    height: 70px;
+    padding: 0.5rem;
   }
   
   .matching-item-type {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.25rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
   }
   
   .matching-item-text {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 }
 
