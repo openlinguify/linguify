@@ -264,14 +264,14 @@
                            placeholder="Rechercher des decks par titre, description, tags..." 
                            autocomplete="off">
                     <div class="search-actions">
-                        <button id="notificationBtn" class="btn-link-linguify notification-btn" title="Notifications" onclick="toggleNotificationCenter()">
+                        <button id="notificationBtn" class="btn-link-linguify notification-btn" title="Notifications">
                             <i class="bi bi-bell notification-icon"></i>
-                            <span id="notificationBadge" class="notification-badge-linguify" style="display: none;">0</span>
+                            <span id="notificationBadge" class="notification-badge-linguify">5</span>
                         </button>
                         <button id="voiceSearchBtn" class="btn-link-linguify search-voice" title="Recherche vocale">
                             <i class="bi bi-mic"></i>
                         </button>
-                        <button id="sidebarToggle" class="btn-link-linguify search-sidebar" title="Filtres et collections" onclick="toggleSidebar()">
+                        <button id="sidebarToggle" class="btn-link-linguify search-sidebar" title="Filtres et collections">
                             <i class="bi bi-funnel"></i>
                         </button>
                         <button id="advancedSearchToggle" class="btn-link-linguify search-advanced" title="Recherche avancée">
@@ -286,17 +286,18 @@
                 </div>
                 
                 <!-- Notification Center -->
-                <div id="notificationCenter" class="notification-center" style="display: block;">
+                <div id="notificationOverlay" class="notification-overlay"></div>
+                <div id="notificationCenter" class="notification-center" style="display: none;">
                     <div class="notification-header">
                         <h6 class="mb-0">
                             <i class="bi bi-bell me-2"></i>
                             Notifications
                         </h6>
                         <div class="notification-actions">
-                            <button class="btn-link-linguify btn-sm" onclick="markAllNotificationsRead()" title="Marquer tout comme lu">
+                            <button class="btn-link-linguify btn-sm" title="Marquer tout comme lu">
                                 <i class="bi bi-check2-all"></i>
                             </button>
-                            <button class="btn-link-linguify btn-sm" onclick="showNotificationSettings()" title="Paramètres">
+                            <button class="btn-link-linguify btn-sm" title="Paramètres">
                                 <i class="bi bi-gear"></i>
                             </button>
                         </div>
@@ -399,7 +400,7 @@
                     </div>
                     
                     <div class="notification-footer">
-                        <button class="btn-linguify btn-sm w-100" onclick="showAllNotifications()">
+                        <button class="btn-linguify btn-sm w-100">
                             Voir toutes les notifications
                         </button>
                     </div>
@@ -1000,7 +1001,7 @@
                 <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i>Annuler
                 </button>
-                <button type="button" class="btn-linguify" onclick="saveNotificationSettings()">
+                <button type="button" class="btn-linguify" id="saveNotificationSettingsBtn">
                     <i class="bi bi-check-lg"></i>Sauvegarder
                 </button>
             </div>
@@ -1036,7 +1037,7 @@
                 <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i>Fermer
                 </button>
-                <button type="button" class="btn-linguify" onclick="markAllNotificationsRead()">
+                <button type="button" class="btn-linguify" id="markAllNotificationsReadBtn">
                     <i class="bi bi-check2-all"></i>Marquer tout comme lu
                 </button>
             </div>
@@ -1045,7 +1046,7 @@
 </div>
 
 <!-- Sidebar Overlay -->
-<div id="sidebarOverlay" class="sidebar-overlay" style="display: none;" onclick="toggleSidebar()"></div>
+<div id="sidebarOverlay" class="sidebar-overlay" style="display: none;"></div>
 
 {% endblock %}
 
@@ -1055,70 +1056,11 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Notification Center Script -->
-<script>
-// Simple notification center functionality
-function toggleNotificationCenter() {
-    const center = document.getElementById('notificationCenter');
-    const isVisible = center.style.display !== 'none';
-    center.style.display = isVisible ? 'none' : 'block';
-}
+<!-- Explore New Functionality -->
+<script src="{% static 'revision/js/explore_new.js' %}?v=20250823"></script>
 
-// Filter notifications
-document.addEventListener('DOMContentLoaded', function() {
-    const filters = document.querySelectorAll('.notification-filter');
-    const items = document.querySelectorAll('.notification-item');
-    
-    filters.forEach(filter => {
-        filter.addEventListener('click', function() {
-            // Remove active class from all filters
-            filters.forEach(f => f.classList.remove('active'));
-            // Add active class to clicked filter
-            this.classList.add('active');
-            
-            const filterType = this.getAttribute('data-filter');
-            
-            // Show/hide notifications based on filter
-            items.forEach(item => {
-                const itemType = item.getAttribute('data-type');
-                if (filterType === 'all' || itemType === filterType) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-    });
-});
-
-// Placeholder functions for missing handlers
-function markAllNotificationsRead() {
-    console.log('Marking all notifications as read...');
-}
-
-function showNotificationSettings() {
-    console.log('Opening notification settings...');
-}
-
-function showAllNotifications() {
-    console.log('Opening all notifications modal...');
-}
-</script>
-
-<!-- Service Worker Registration -->
-<script>
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        navigator.serviceWorker.register("{% static 'revision/js/explorer/sw.js' %}", {
-            scope: '{% static "revision/" %}'
-        }).then(function(registration) {
-            console.log('🚀 Service Worker registered successfully:', registration.scope);
-        }).catch(function(error) {
-            console.warn('⚠️ Service Worker registration failed:', error);
-        });
-    });
-}
-</script>
+<!-- Explorer Utilities (Service Worker, Performance, Error Tracking) -->
+<script src="{% static 'revision/js/explorer/utils.js' %}?v=20250823"></script>
 
 <!-- Main Explorer JavaScript -->
 <script src="{% static 'revision/js/explorer/main.js' %}?v=20250111-optimized"></script>
@@ -1127,95 +1069,4 @@ if ('serviceWorker' in navigator) {
 {% if debug or request.GET.test %}
 <script src="{% static 'revision/js/explorer/test-suite.js' %}"></script>
 {% endif %}
-
-<!-- Performance monitoring script -->
-<script>
-// Critical Web Vitals monitoring
-function measureWebVitals() {
-    if ('web-vital' in window) return;
-    
-    // First Contentful Paint
-    new PerformanceObserver((entryList) => {
-        for (const entry of entryList.getEntries()) {
-            if (entry.name === 'first-contentful-paint') {
-                console.log('🎨 FCP:', entry.startTime);
-                if (window.trackEvent) {
-                    window.trackEvent('web_vital_fcp', { value: entry.startTime });
-                }
-            }
-        }
-    }).observe({ entryTypes: ['paint'] });
-    
-    // Largest Contentful Paint
-    new PerformanceObserver((entryList) => {
-        const entries = entryList.getEntries();
-        const lastEntry = entries[entries.length - 1];
-        console.log('🖼️ LCP:', lastEntry.startTime);
-        if (window.trackEvent) {
-            window.trackEvent('web_vital_lcp', { value: lastEntry.startTime });
-        }
-    }).observe({ entryTypes: ['largest-contentful-paint'] });
-    
-    // Cumulative Layout Shift
-    let clsValue = 0;
-    new PerformanceObserver((entryList) => {
-        for (const entry of entryList.getEntries()) {
-            if (!entry.hadRecentInput) {
-                clsValue += entry.value;
-            }
-        }
-        console.log('📏 CLS:', clsValue);
-        if (window.trackEvent) {
-            window.trackEvent('web_vital_cls', { value: clsValue });
-        }
-    }).observe({ entryTypes: ['layout-shift'] });
-    
-    // First Input Delay (FID) simulation via click event
-    document.addEventListener('click', function measureFID() {
-        const startTime = performance.now();
-        requestAnimationFrame(() => {
-            const endTime = performance.now();
-            const fid = endTime - startTime;
-            console.log('⚡ FID (estimated):', fid);
-            if (window.trackEvent) {
-                window.trackEvent('web_vital_fid', { value: fid });
-            }
-        });
-        document.removeEventListener('click', measureFID, { once: true });
-    }, { once: true });
-}
-
-// Start monitoring when page loads
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', measureWebVitals);
-} else {
-    measureWebVitals();
-}
-</script>
-
-<!-- Error boundary for JavaScript errors -->
-<script>
-window.addEventListener('error', function(event) {
-    console.error('🚨 JavaScript Error:', event.error);
-    if (window.trackEvent) {
-        window.trackEvent('javascript_error', {
-            message: event.message,
-            filename: event.filename,
-            line: event.lineno,
-            column: event.colno,
-            stack: event.error ? event.error.stack : null
-        });
-    }
-});
-
-window.addEventListener('unhandledrejection', function(event) {
-    console.error('🚨 Unhandled Promise Rejection:', event.reason);
-    if (window.trackEvent) {
-        window.trackEvent('promise_rejection', {
-            reason: event.reason.toString(),
-            stack: event.reason.stack
-        });
-    }
-});
-</script>
 {% endblock %}

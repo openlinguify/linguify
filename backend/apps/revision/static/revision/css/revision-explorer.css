@@ -47,7 +47,8 @@
     --gray-700: #374151;
     --gray-800: #1f2937;
     --gray-900: #111827;
-    
+}
+
     /* Dimensions layout - exactes */
     --sidebar-width: 320px;
     --sidebar-width-mobile: 100%;

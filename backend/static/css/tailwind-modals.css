@@ -576,16 +576,16 @@ button.bg-linguify-gradient:hover,
 
 /* Notification Center Components */
 .notification-center {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
+  position: fixed !important;
+  top: 70px !important;
+  right: 20px !important;
   width: 380px;
   max-height: 500px;
   background: white;
   border: 1px solid var(--linguify-gray-200, #e5e7eb);
   border-radius: 0.75rem;
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
-  z-index: 50;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25), 0 20px 25px -5px rgb(0 0 0 / 0.1) !important;
+  z-index: 9999 !important;
   overflow: hidden;
   animation: slideInDown 0.2s ease-out;
 }
@@ -805,6 +805,36 @@ button.bg-linguify-gradient:hover,
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Notification Overlay */
+.notification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+}
+
+.notification-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Notification Button Positioning */
+.notification-btn {
+  position: relative !important;
+  z-index: 10000 !important;
+}
+
+.search-actions {
+  position: relative;
+  z-index: 100;
 }
 
 /* Modal Layout Components */
