@@ -3156,30 +3156,28 @@ function toggleTagFilter(tag) {
         appState.filters.tags.splice(index, 1);
     }
     
-    updateTagsFilterCounter();
+    updateTagsFilterText();
     loadDecks();
     loadTagsFilter(); // Refresh the filter display
 }
 
 function clearTagsFilter() {
     appState.filters.tags = [];
-    updateTagsFilterCounter();
+    updateTagsFilterText();
     loadDecks();
     loadTagsFilter(); // Refresh the filter display
 }
 
-function updateTagsFilterCounter() {
-    const countElement = document.getElementById('tagsFilterCount');
-    const toggleButton = document.getElementById('tagsFilterToggle');
+function updateTagsFilterText() {
+    const textElement = document.getElementById('tagsFilterText');
     const count = appState.filters.tags.length;
     
-    if (count > 0) {
-        countElement.textContent = count;
-        countElement.style.display = 'inline-block';
-        toggleButton.classList.add('active');
+    if (count === 0) {
+        textElement.textContent = 'Tous les tags';
+    } else if (count === 1) {
+        textElement.textContent = appState.filters.tags[0];
     } else {
-        countElement.style.display = 'none';
-        toggleButton.classList.remove('active');
+        textElement.textContent = `${count} tags`;
     }
 }
 

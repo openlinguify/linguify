@@ -1454,63 +1454,8 @@ button.bg-linguify-gradient:hover,
   transform: rotate(180deg);
 }
 
-/* Tags Filter Component */
-.tags-filter-container {
-  position: relative;
-}
-
-.btn-tags-filter {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: rgb(107 114 128);
-  background-color: white;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 0.375rem;
-  transition: all 0.15s ease-in-out;
-  cursor: pointer;
-  height: 2.25rem; /* Force exact height */
-  box-sizing: border-box;
-}
-
-.btn-tags-filter:hover {
-  color: #2D5BBA;
-  background-color: rgba(45, 91, 186, 0.05);
-  border-color: rgba(45, 91, 186, 0.2);
-}
-
-.tags-filter-count {
-  margin-left: 0.25rem;
-  padding: 0.125rem 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: white;
-  background-color: #2D5BBA;
-  border-radius: 0.375rem;
-  min-width: 1.25rem;
-  text-align: center;
-}
-
-.tags-filter-dropdown {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  min-width: 12rem;
-  max-width: 20rem;
-  background-color: white;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 0.375rem;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  z-index: 1050;
-  display: none;
-}
-
-.tags-filter-dropdown.show {
-  display: block;
-}
+/* Tags Filter Component - Now unified with other filters using Bootstrap */
+/* Old custom styles removed - now uses .btn-outline-linguify and Bootstrap .dropdown-menu */
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
