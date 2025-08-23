@@ -3426,8 +3426,8 @@ function ensureModalsExist() {
                     <!-- Header -->
                     <div class="flex items-start justify-between p-6 pb-3">
                         <div class="flex items-center">
-                            <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mr-4">
-                                <i class="bi bi-globe2 text-blue-600 text-xl"></i>
+                            <div class="flex items-center justify-center w-12 h-12 bg-primary-100 rounded-full mr-4">
+                                <i class="bi bi-globe2 text-linguify-primary text-xl"></i>
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900 mb-1">Rendre votre deck public</h3>
