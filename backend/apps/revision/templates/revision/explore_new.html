@@ -1056,16 +1056,17 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Explore New Functionality -->
-<script src="{% static 'revision/js/explore_new.js' %}?v=20250823"></script>
-
-<!-- Explorer Utilities (Service Worker, Performance, Error Tracking) -->
+<!-- Explorer Core Scripts -->
+<!-- 1. Utilities first (Service Worker, Performance, Error Tracking) -->
 <script src="{% static 'revision/js/explorer/utils.js' %}?v=20250823"></script>
 
-<!-- Main Explorer JavaScript -->
+<!-- 2. Main Explorer functionality -->
 <script src="{% static 'revision/js/explorer/main.js' %}?v=20250111-optimized"></script>
 
-<!-- Load test suite in development/test mode -->
+<!-- 3. Page-specific functionality (Notifications, UI interactions) -->
+<script src="{% static 'revision/js/explorer/explore_new.js' %}?v=20250823"></script>
+
+<!-- 4. Development tools -->
 {% if debug or request.GET.test %}
 <script src="{% static 'revision/js/explorer/test-suite.js' %}"></script>
 {% endif %}
