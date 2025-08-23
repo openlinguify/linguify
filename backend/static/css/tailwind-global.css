@@ -53,24 +53,24 @@
     @apply text-blue-600 bg-blue-50 rounded-md;
   }
   
-  /* Flashcard Components */
+  /* Basic Flashcard Components for other apps */
   .flashcard-3d {
     @apply relative w-full h-64 cursor-pointer;
     perspective: 1000px;
   }
   
-  .flashcard-inner {
+  .flashcard-3d .flashcard-inner {
     @apply relative w-full h-full transition-transform duration-500;
     transform-style: preserve-3d;
   }
   
-  .flashcard-front,
-  .flashcard-back {
+  .flashcard-3d .flashcard-front,
+  .flashcard-3d .flashcard-back {
     @apply absolute inset-0 w-full h-full rounded-xl border border-gray-200 bg-white flex items-center justify-center p-6 text-center;
     backface-visibility: hidden;
   }
   
-  .flashcard-back {
+  .flashcard-3d .flashcard-back {
     @apply bg-blue-50;
     transform: rotateY(180deg);
   }

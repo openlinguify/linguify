@@ -1674,6 +1674,130 @@ button.bg-linguify-gradient:hover,
   display: none;
 }
 
+/* Flashcard Study Mode Components */
+.flashcard {
+  position: relative;
+  cursor: pointer;
+  width: 400px;
+  height: 250px;
+  perspective: 1000px;
+  max-width: 90vw;
+  margin: 0 auto;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+  transform-style: preserve-3d;
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  border: 2px solid rgb(229 231 235);
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  backface-visibility: hidden;
+}
+
+.flashcard-front {
+  background: linear-gradient(to bottom right, rgb(239 246 255), white);
+  border-color: rgb(191 219 254);
+}
+
+.flashcard-back {
+  background: linear-gradient(to bottom right, rgb(236 253 245), white);
+  border-color: rgb(167 243 208);
+  transform: rotateY(180deg);
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-text {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 500;
+  color: rgb(31 41 55);
+  word-wrap: break-word;
+}
+
+/* Speak Buttons */
+.speak-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgb(209 213 219);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(107 114 128);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.speak-btn:hover {
+  color: #2D5BBA;
+  background: rgb(239 246 255);
+  border-color: rgb(191 219 254);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  transform: scale(1.05);
+}
+
+/* Study Mode Layout */
+.study-mode-hidden,
+.study-actions-hidden {
+  display: none;
+}
+
+.study-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgb(229 231 235);
+  background: rgb(249 250 251);
+}
+
+.study-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.study-area {
+  min-height: 24rem;
+}
+
+/* Study Stats */
+.stat-value {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(107 114 128);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 /* Hide all study mode sections */
 #flashcardStudyMode,
 #quizStudyMode,
