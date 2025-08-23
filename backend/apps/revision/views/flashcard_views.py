@@ -558,6 +558,38 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
             })
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=['post'], permission_classes=[])
+    def reset_progress(self, request, pk=None):
+        """Réinitialiser la progression de toutes les cartes d'un deck."""
+        if not request.user.is_authenticated:
+            return Response(
+                {"detail": "Authentication credentials were not provided."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        deck = self.get_object()
+        
+        # Vérifier que l'utilisateur est propriétaire du deck
+        if deck.user != request.user:
+            return Response(
+                {"detail": "You don't have permission to modify this deck's progress"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Réinitialiser la progression de toutes les cartes du deck
+        cards_count = 0
+        for card in deck.flashcards.all():
+            card.reset_progress()
+            cards_count += 1
+        
+        return Response({
+            "success": True,
+            "message": f"Progression réinitialisée pour {cards_count} carte(s)",
+            "cards_reset": cards_count,
+            "deck_id": deck.id,
+            "deck_name": deck.name
+        })
 
 class FlashcardViewSet(viewsets.ModelViewSet):
     serializer_class = FlashcardSerializer

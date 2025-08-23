@@ -2656,6 +2656,124 @@ async function saveDeckLanguagePreferences() {
     }
 }
 
+// Reset Progress functionality
+async function resetDeckProgress() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    const deckName = appState.selectedDeck.name;
+    const cardsCount = appState.selectedDeck.total_cards || 0;
+    
+    showResetProgressConfirmationModal(deckName, cardsCount);
+}
+
+function showResetProgressConfirmationModal(deckName, cardsCount) {
+    // Remove any existing modal
+    const existingModal = document.querySelector('.reset-progress-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'reset-progress-modal';
+    modal.innerHTML = `
+        <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 me-3" style="background-color: #fff3cd;">
+                                <i class="bi bi-arrow-clockwise" style="font-size: 1.5rem; color: #856404;"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title mb-0" style="color: #856404;">Réinitialiser la progression</h5>
+                                <p class="text-muted mb-0 small">Cette action remettra toutes les cartes à zéro</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" onclick="document.querySelector('.reset-progress-modal').remove()"></button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <div class="alert alert-warning border-warning">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Attention !</strong> Cette action va réinitialiser la progression de toutes les cartes du deck.
+                        </div>
+                        <p class="mb-3">
+                            <strong>Deck :</strong> "${deckName}"<br>
+                            <strong>Cartes concernées :</strong> ${cardsCount} carte(s)
+                        </p>
+                        <p class="mb-0">Après réinitialisation :</p>
+                        <ul class="mb-3">
+                            <li>Toutes les cartes seront marquées comme "non apprises"</li>
+                            <li>Le compteur de révisions sera remis à zéro</li>
+                            <li>L'historique d'apprentissage sera effacé</li>
+                        </ul>
+                        <p class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Cette action est irréversible.
+                        </p>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary" onclick="document.querySelector('.reset-progress-modal').remove()">
+                            <i class="bi bi-x-lg me-1"></i>Annuler
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="window.confirmResetProgress()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Réinitialiser
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+async function confirmResetProgress() {
+    if (!appState.selectedDeck) return;
+    
+    try {
+        // Fermer la modal
+        const modal = document.querySelector('.reset-progress-modal');
+        if (modal) modal.remove();
+        
+        // Notification de chargement
+        window.notificationService.info('Réinitialisation en cours...', 2000);
+        
+        // Obtenir le CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                         document.querySelector('meta[name="csrf-token"]')?.content;
+        
+        // Appeler l'API
+        const response = await fetch(`/api/v1/revision/decks/${appState.selectedDeck.id}/reset_progress/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            window.notificationService.success(data.message || 'Progression réinitialisée avec succès');
+            
+            // Recharger les détails du deck pour rafraîchir l'affichage
+            await selectDeck(appState.selectedDeck.id);
+            
+            // Recharger la liste des decks pour mettre à jour les stats
+            await loadDecks(true);
+            
+        } else {
+            window.notificationService.error('Erreur lors de la réinitialisation');
+        }
+    } catch (error) {
+        console.error('Erreur lors de la réinitialisation:', error);
+        window.notificationService.error('Erreur lors de la réinitialisation : ' + error.message);
+    }
+}
+
 async function archiveDeck() {
     if (!appState.selectedDeck) {
         window.notificationService.error('Aucun deck sélectionné');
@@ -3411,6 +3529,7 @@ function setupEventListeners() {
         console.log('Make private button not found in DOM');
     }
     
+    document.getElementById('resetProgress')?.addEventListener('click', resetDeckProgress);
     document.getElementById('archiveDeck')?.addEventListener('click', archiveDeck);
     document.getElementById('deleteDeck')?.addEventListener('click', deleteDeckConfirm);
     
@@ -3890,6 +4009,9 @@ function hideTailwindModal(modalElement) {
     
     // Clean up event listeners is handled automatically by removing the modal from DOM or using modern event handling
 }
+
+// Export global functions for modal onclick handlers
+window.confirmResetProgress = confirmResetProgress;
 
 // Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeApp);
