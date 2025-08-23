@@ -1613,6 +1613,8 @@ button.bg-linguify-gradient:hover,
   border-right: 1px solid rgb(229 231 235);
   width: 320px;
   flex: 0 0 320px;
+  height: 100vh;
+  max-height: calc(100vh - 64px - 60px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;

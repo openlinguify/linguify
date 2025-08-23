@@ -61,7 +61,7 @@
         }
         
         .revision-container {
-            height: 100%;
+            height: calc(100vh - 64px);
             display: flex;
             flex-direction: column;
         }
@@ -77,9 +77,8 @@
         
         .revision-main {
             flex: 1;
+            min-height: 0;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
         
         /* Cacher l'ancienne navigation de révision */
