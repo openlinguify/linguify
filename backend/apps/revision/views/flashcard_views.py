@@ -169,7 +169,7 @@ class OptimizedQuerysetMixin:
         return self.get_base_deck_queryset().prefetch_related(
             Prefetch(
                 'flashcards',
-                queryset=Flashcard.objects.select_related('user')[:max_cards]
+                queryset=Flashcard.objects.select_related('user').order_by('id')  # Remove slice to fix filtering issue
             )
         ).annotate(
             cards_count=Count('flashcards'),

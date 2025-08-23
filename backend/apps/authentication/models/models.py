@@ -378,18 +378,33 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def get_profile_picture_url(self):
         """
-        Retourne l'URL de la photo de profil en priorisant Supabase sur le stockage local
+        Retourne l'URL de la photo de profil avec fallback pour les problèmes réseau
         """
-        # Prioriser Supabase Storage
-        if self.profile_picture_url:
-            return self.profile_picture_url
+        from django.conf import settings
         
-        # Fallback vers le stockage local Django
-        if self.profile_picture:
-            try:
-                return self.profile_picture.url
-            except Exception:
-                return None
+        # En développement, prioriser le stockage local pour éviter les erreurs réseau
+        if getattr(settings, 'DEBUG', False):
+            # Prioriser le stockage local Django en développement
+            if self.profile_picture:
+                try:
+                    return self.profile_picture.url
+                except Exception:
+                    pass
+            
+            # Fallback vers Supabase seulement si pas d'image locale
+            if self.profile_picture_url:
+                return self.profile_picture_url
+        else:
+            # En production, prioriser Supabase Storage
+            if self.profile_picture_url:
+                return self.profile_picture_url
+            
+            # Fallback vers le stockage local Django
+            if self.profile_picture:
+                try:
+                    return self.profile_picture.url
+                except Exception:
+                    pass
         
         return None
     

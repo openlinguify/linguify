@@ -265,10 +265,10 @@ CACHES = {
 # }
 
 
-# Configuration de session - ajoutez ou modifiez cette section
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+# Configuration de session - temporarily using DB for debugging
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Changed from cache to db for debugging
 SESSION_CACHE_ALIAS = 'default'
-SESSION_COOKIE_NAME = 'linguify_session'
+SESSION_COOKIE_NAME = 'sessionid'  # Changed back to default for debugging
 SESSION_COOKIE_AGE = 86400  # 1 jour en secondes
 SESSION_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_HTTPONLY = True

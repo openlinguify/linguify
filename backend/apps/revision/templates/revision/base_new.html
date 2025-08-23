@@ -141,9 +141,17 @@
                         'Content-Type': 'application/json',
                         'X-CSRFToken': this.getCSRFToken(),
                     },
+                    credentials: 'include', // Changed from 'same-origin' to 'include' for cross-origin cookies
                 };
                 
-                const response = await fetch(url, { ...defaultOptions, ...options });
+                const finalOptions = { ...defaultOptions, ...options };
+                console.log(`🌐 Fetching: ${url}`, finalOptions);
+                console.log(`🍪 CSRF Token:`, this.getCSRFToken());
+                console.log(`🍪 Document cookies:`, document.cookie);
+                
+                const response = await fetch(url, finalOptions);
+                console.log(`📡 Response:`, response.status, response.statusText);
+                console.log(`📡 Response headers:`, Object.fromEntries(response.headers.entries()));
                 
                 if (!response.ok) {
                     let errorMessage = `HTTP error! status: ${response.status}`;

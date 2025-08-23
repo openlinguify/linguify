@@ -54,6 +54,10 @@ class RevisionMainView(TemplateView):
         except Exception as e:
             print(f"Warning: Could not load audio settings: {e}")
         
+        # Convert audio_settings to JSON to avoid JavaScript syntax errors
+        import json
+        audio_settings_json = json.dumps(audio_settings) if audio_settings else "{}"
+        
         context.update({
             'current_app': current_app_info,
             'page_title': 'Révision - Mes Flashcards',
@@ -63,7 +67,7 @@ class RevisionMainView(TemplateView):
                 'username': self.request.user.username,
                 'email': self.request.user.email,
             },
-            'audio_settings': audio_settings,
+            'audio_settings_json': audio_settings_json,
             'api_base_url': '/api/v1/revision',
             'debug': settings.DEBUG,
         })

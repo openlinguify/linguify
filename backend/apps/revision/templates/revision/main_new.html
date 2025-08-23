@@ -1038,7 +1038,7 @@ window.updatePreview = window.revisionMain.updatePreview;
 window.clearSelectedFile = window.revisionMain.clearSelectedFile;
 
 // Paramètres audio utilisateur depuis le serveur
-window.userAudioSettings = {{ audio_settings|default:"{}" }};
+window.userAudioSettings = {{ audio_settings_json|safe }};
 console.log('🎵 Paramètres audio chargés depuis le serveur:', window.userAudioSettings);
 </script>
 {% endblock %}

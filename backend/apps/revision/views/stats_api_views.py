@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models.revision_flashcard import FlashcardDeck, Flashcard
-from ..models.revision_models import RevisionSession
+from ..models.revision_schedule import RevisionSession
 
 import logging
 logger = logging.getLogger(__name__)

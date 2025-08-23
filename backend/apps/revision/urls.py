@@ -1,5 +1,6 @@
 # apps/revision/urls.py - API URLs (REST endpoints)
 from django.urls import path, include
+from django.http import JsonResponse
 from rest_framework.routers import DefaultRouter
 
 # Import API views
@@ -58,6 +59,18 @@ urlpatterns = [
     path('tags/', TagsAPIView.as_view(), name='tags-api'),
     path('word-stats/', WordStatsAPIView.as_view(), name='word-stats-api'),
     path('user-settings/', get_user_revision_settings, name='user-settings'),
+    
+    # Debug endpoint
+    path('debug/auth/', lambda request: JsonResponse({
+        'authenticated': request.user.is_authenticated,
+        'user': request.user.username if request.user.is_authenticated else None,
+        'user_id': request.user.id if request.user.is_authenticated else None,
+        'session_key': request.session.session_key if hasattr(request, 'session') else None,
+        'session_data': dict(request.session.items()) if hasattr(request, 'session') else None,
+        'cookies': dict(request.COOKIES) if hasattr(request, 'COOKIES') else None,
+        'method': request.method,
+        'headers': dict(request.headers) if hasattr(request, 'headers') else None,
+    }), name='debug-auth'),
     
     # Settings API
     path('settings/api/', include(settings_router.urls)),

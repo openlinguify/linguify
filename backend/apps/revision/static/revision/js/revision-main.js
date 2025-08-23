@@ -32,7 +32,17 @@ const revisionAPI = {
     },
     
     async getDeck(id) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`);
+        console.log(`🔍 Requesting deck with ID: ${id}`);
+        const url = `/api/v1/revision/decks/${id}/`;
+        console.log(`🔍 Full URL: ${url}`);
+        try {
+            const result = await window.apiService.request(url);
+            console.log(`✅ Deck loaded successfully:`, result);
+            return result;
+        } catch (error) {
+            console.error(`❌ Failed to load deck ${id}:`, error);
+            throw error;
+        }
     },
     
     async createDeck(data) {
@@ -334,6 +344,21 @@ function hideAllSections() {
 // UI Management Functions
 async function selectDeck(deckId) {
     try {
+        // Check authentication first
+        const authCheck = await window.apiService.request('/api/v1/revision/debug/auth/');
+        console.log('🔐 Auth check:', authCheck);
+        
+        if (!authCheck.authenticated) {
+            console.error('❌ User not authenticated');
+            window.notificationService.error(
+                'Vous devez être connecté pour accéder à vos decks. ' +
+                '<a href="/login/" style="color: white; text-decoration: underline;">Se connecter</a>'
+            );
+            return;
+        }
+        
+        console.log(`✅ User authenticated as: ${authCheck.user} (ID: ${authCheck.user_id})`);
+        
         const deck = await revisionAPI.getDeck(deckId);
         appState.selectedDeck = deck;
         
@@ -389,7 +414,23 @@ async function selectDeck(deckId) {
         
     } catch (error) {
         console.error('Error loading deck:', error);
-        window.notificationService.error('Erreur lors du chargement du deck');
+        
+        if (error.status === 404) {
+            window.notificationService.error(
+                `Deck non trouvé ou accès refusé (ID: ${deckId}). Vérifiez que vous êtes connecté et que vous avez accès à ce deck.`
+            );
+        } else if (error.status === 403) {
+            window.notificationService.error(
+                `Accès refusé à ce deck. Vérifiez vos permissions.`
+            );
+        } else if (error.status === 401) {
+            window.notificationService.error(
+                'Session expirée. Veuillez vous reconnecter. ' +
+                '<a href="/login/" style="color: white; text-decoration: underline;">Se connecter</a>'
+            );
+        } else {
+            window.notificationService.error(`Erreur lors du chargement du deck: ${error.message}`);
+        }
     }
 }
 
