@@ -3379,3 +3379,35 @@ button, input[type="button"], input[type="submit"] {
         font-size: 0.65rem;
     }
 }
+
+/* === Refresh Button Animation === */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Refresh button improvements */
+#refreshDecks {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+#refreshDecks:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#refreshDecks:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#refreshDecks i {
+    transition: transform 0.2s ease;
+}
+
+/* Spin animation will be applied via JavaScript */

@@ -95,14 +95,20 @@
         window.USER_DATA = djangoData.USER_DATA;
         window.REVISION_CONFIG = djangoData.REVISION_CONFIG;
         
-        // Service de notifications global
+        // Enhanced notification service with better error handling
         window.notificationService = {
             success: function(message) {
                 this.show(message, 'success');
             },
             
-            error: function(message) {
-                this.show(message, 'error');
+            error: function(message, options = {}) {
+                // Add retry functionality for errors if specified
+                if (options.retryFn) {
+                    const retryMessage = `${message} <button onclick="(${options.retryFn.toString()})(); this.parentElement.parentElement.remove();" class="btn btn-sm btn-light ms-2">Réessayer</button>`;
+                    this.show(retryMessage, 'error', 8000); // Longer duration for retry
+                } else {
+                    this.show(message, 'error');
+                }
             },
             
             info: function(message) {
@@ -113,7 +119,30 @@
                 this.show(message, 'warning');
             },
             
-            show: function(message, type = 'info') {
+            // New method for handling API errors with context
+            handleApiError: function(error, context = '', retryFn = null) {
+                console.error(`API Error in ${context}:`, error);
+                
+                let message = error.message || 'Une erreur est survenue';
+                
+                // Add context if provided
+                if (context) {
+                    message = `${context}: ${message}`;
+                }
+                
+                // Show different messages based on error type
+                if (error.isNetworkError) {
+                    this.error(`${message}. Vérifiez votre connexion internet.`, { retryFn });
+                } else if (error.status === 401) {
+                    this.error(`${message}. <a href="/login/" style="color: white; text-decoration: underline;">Se reconnecter</a>`);
+                } else if (error.status >= 500) {
+                    this.error(`${message}. Le serveur rencontre des difficultés.`, { retryFn });
+                } else {
+                    this.error(message, { retryFn });
+                }
+            },
+            
+            show: function(message, type = 'info', duration = 5000) {
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
                 notification.innerHTML = `
@@ -129,11 +158,11 @@
                     if (notification.parentNode) {
                         notification.remove();
                     }
-                }, 5000);
+                }, duration);
             }
         };
         
-        // Service API simplifié
+        // Enhanced API service with better error handling
         window.apiService = {
             async request(url, options = {}) {
                 const defaultOptions = {
@@ -141,7 +170,7 @@
                         'Content-Type': 'application/json',
                         'X-CSRFToken': this.getCSRFToken(),
                     },
-                    credentials: 'include', // Changed from 'same-origin' to 'include' for cross-origin cookies
+                    credentials: 'include', // Include cookies for authentication
                 };
                 
                 const finalOptions = { ...defaultOptions, ...options };
@@ -149,53 +178,107 @@
                 console.log(`🍪 CSRF Token:`, this.getCSRFToken());
                 console.log(`🍪 Document cookies:`, document.cookie);
                 
-                const response = await fetch(url, finalOptions);
-                console.log(`📡 Response:`, response.status, response.statusText);
-                console.log(`📡 Response headers:`, Object.fromEntries(response.headers.entries()));
-                
-                if (!response.ok) {
-                    let errorMessage = `HTTP error! status: ${response.status}`;
-                    let errorData = null;
+                try {
+                    const response = await fetch(url, finalOptions);
+                    console.log(`📡 Response:`, response.status, response.statusText);
+                    console.log(`📡 Response headers:`, Object.fromEntries(response.headers.entries()));
                     
-                    // Try to get error details from response
-                    try {
-                        const contentType = response.headers.get('content-type');
-                        if (contentType && contentType.includes('application/json')) {
-                            errorData = await response.json();
-                            // Check for various error message formats
-                            if (errorData.detail) {
-                                errorMessage = errorData.detail;
-                            } else if (errorData.message) {
-                                errorMessage = errorData.message;
-                            } else if (errorData.error) {
-                                errorMessage = errorData.error;
-                            } else if (errorData.name && errorData.name[0]) {
-                                errorMessage = errorData.name[0];
-                            }
-                        }
-                    } catch (e) {
-                        // If parsing fails, keep the default error message
+                    if (!response.ok) {
+                        const error = await this.handleApiError(response);
+                        throw error;
                     }
                     
-                    const error = new Error(errorMessage);
-                    error.status = response.status;
-                    error.response = response;
-                    error.data = errorData;
-                    throw error;
+                    // Handle 204 No Content responses
+                    if (response.status === 204) {
+                        return null;
+                    }
+                    
+                    // Handle responses with content
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    } else {
+                        return response.text();
+                    }
+                } catch (networkError) {
+                    // Handle network errors (no connection, timeout, etc.)
+                    if (networkError instanceof TypeError && networkError.message.includes('fetch')) {
+                        const error = new Error('Erreur de connexion - Vérifiez votre connexion internet');
+                        error.status = 'NETWORK_ERROR';
+                        error.isNetworkError = true;
+                        throw error;
+                    }
+                    // Re-throw API errors and other errors as-is
+                    throw networkError;
+                }
+            },
+            
+            async handleApiError(response) {
+                let errorMessage = `HTTP error! status: ${response.status}`;
+                let errorData = null;
+                
+                // Provide user-friendly error messages based on status codes
+                switch (response.status) {
+                    case 400:
+                        errorMessage = 'Requête invalide - Vérifiez les données envoyées';
+                        break;
+                    case 401:
+                        errorMessage = 'Session expirée - Veuillez vous reconnecter';
+                        break;
+                    case 403:
+                        errorMessage = 'Accès refusé - Permissions insuffisantes';
+                        break;
+                    case 404:
+                        errorMessage = 'Ressource non trouvée';
+                        break;
+                    case 409:
+                        errorMessage = 'Conflit - Une ressource similaire existe déjà';
+                        break;
+                    case 422:
+                        errorMessage = 'Données invalides';
+                        break;
+                    case 429:
+                        errorMessage = 'Trop de requêtes - Veuillez patienter';
+                        break;
+                    case 500:
+                        errorMessage = 'Erreur serveur - Veuillez réessayer plus tard';
+                        break;
+                    case 502:
+                    case 503:
+                    case 504:
+                        errorMessage = 'Service temporairement indisponible';
+                        break;
                 }
                 
-                // Handle 204 No Content responses
-                if (response.status === 204) {
-                    return null; // or return empty object {}
+                // Try to get more specific error details from response
+                try {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        errorData = await response.json();
+                        
+                        // Check for various error message formats
+                        if (errorData.detail) {
+                            errorMessage = errorData.detail;
+                        } else if (errorData.message) {
+                            errorMessage = errorData.message;
+                        } else if (errorData.error) {
+                            errorMessage = errorData.error;
+                        } else if (errorData.name && errorData.name[0]) {
+                            errorMessage = errorData.name[0];
+                        } else if (errorData.non_field_errors && errorData.non_field_errors[0]) {
+                            errorMessage = errorData.non_field_errors[0];
+                        }
+                    }
+                } catch (e) {
+                    // If parsing fails, keep the default error message
+                    console.warn('Failed to parse error response:', e);
                 }
                 
-                // Handle responses with content
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json();
-                } else {
-                    return response.text();
-                }
+                const error = new Error(errorMessage);
+                error.status = response.status;
+                error.response = response;
+                error.data = errorData;
+                return error;
             },
             
             getCSRFToken() {

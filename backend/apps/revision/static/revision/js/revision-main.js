@@ -4,6 +4,7 @@ let appState = {
     decks: [],
     selectedDeck: null,
     isLoading: false,
+    isRefreshing: false, // New state for refresh operations
     currentPage: 1,
     hasMore: true,
     stats: {
@@ -232,10 +233,125 @@ async function loadDecks(reset = true) {
         
     } catch (error) {
         console.error('Error loading decks:', error);
-        window.notificationService.error('Erreur lors du chargement des decks');
+        
+        // Use enhanced error handling with retry
+        window.notificationService.handleApiError(
+            error, 
+            'Chargement des decks',
+            () => loadDecks(reset) // Retry with same parameters
+        );
     } finally {
         appState.isLoading = false;
     }
+}
+
+// Improved refresh function with visual feedback and error handling
+async function handleRefreshDecks() {
+    const refreshBtn = document.getElementById('refreshDecks');
+    const refreshIcon = refreshBtn?.querySelector('i');
+    
+    if (!refreshBtn || appState.isRefreshing) {
+        return; // Prevent multiple simultaneous refreshes
+    }
+    
+    try {
+        // Set refreshing state
+        appState.isRefreshing = true;
+        refreshBtn.disabled = true;
+        
+        // Add spinning animation to icon
+        if (refreshIcon) {
+            refreshIcon.style.animation = 'spin 1s linear infinite';
+        }
+        
+        // Show loading notification
+        console.log('🔄 Actualisation en cours...');
+        
+        // Reset filters if they might be causing issues
+        const isFiltered = appState.filters.search || appState.filters.status || 
+                          appState.filters.sort !== 'updated_desc' || 
+                          (appState.filters.tags && appState.filters.tags.length > 0);
+        
+        // Perform comprehensive refresh
+        await Promise.all([
+            loadDecks(true), // Full reload of decks
+            // If we have a selected deck, refresh its data too
+            appState.selectedDeck ? refreshSelectedDeck() : Promise.resolve()
+        ]);
+        
+        // Success feedback
+        window.notificationService.success(
+            isFiltered ? 
+            'Liste actualisée (filtres conservés)' : 
+            'Liste actualisée avec succès'
+        );
+        
+        console.log('✅ Actualisation terminée avec succès');
+        
+    } catch (error) {
+        console.error('❌ Erreur lors de l\'actualisation:', error);
+        
+        // Use the enhanced error handling with retry functionality
+        window.notificationService.handleApiError(
+            error, 
+            'Actualisation', 
+            () => handleRefreshDecks() // Retry function
+        );
+    } finally {
+        // Reset refreshing state
+        appState.isRefreshing = false;
+        refreshBtn.disabled = false;
+        
+        // Remove spinning animation
+        if (refreshIcon) {
+            refreshIcon.style.animation = '';
+        }
+    }
+}
+
+// Helper function to refresh the currently selected deck
+async function refreshSelectedDeck() {
+    if (!appState.selectedDeck) return;
+    
+    try {
+        console.log(`🔄 Actualisation du deck sélectionné: ${appState.selectedDeck.name}`);
+        const freshDeck = await revisionAPI.getDeck(appState.selectedDeck.id);
+        appState.selectedDeck = freshDeck;
+        
+        // Refresh the deck view if we're currently viewing it
+        const deckDetails = document.getElementById('deckDetails');
+        if (deckDetails && deckDetails.style.display !== 'none') {
+            // Update deck details display
+            updateDeckDetailsDisplay(freshDeck);
+            // Reload cards if cards are currently displayed
+            await loadDeckCards();
+        }
+        
+        console.log('✅ Deck sélectionné actualisé');
+    } catch (error) {
+        console.error('❌ Erreur lors de l\'actualisation du deck sélectionné:', error);
+        // Don't show error for this, as the main refresh might still succeed
+    }
+}
+
+// Helper function to update deck details display
+function updateDeckDetailsDisplay(deck) {
+    const elements = getElements();
+    if (!elements.deckDetails || elements.deckDetails.style.display === 'none') return;
+    
+    // Update basic deck info
+    if (elements.deckName) elements.deckName.textContent = deck.name || 'Sans nom';
+    if (elements.deckDescription) elements.deckDescription.textContent = deck.description || 'Aucune description';
+    
+    // Update progress
+    const progress = calculateProgress(deck);
+    if (elements.deckProgress) elements.deckProgress.textContent = `${deck.learned_count || 0}/${deck.cards_count || 0}`;
+    if (elements.deckProgressBar) elements.deckProgressBar.style.width = `${progress}%`;
+    
+    // Update cards count
+    updateCardsCount();
+    
+    console.log('✅ Affichage du deck mis à jour');
 }
 
 function updateStats() {
@@ -2936,6 +3052,28 @@ function setupEventListeners() {
     elements.statusFilter?.addEventListener('change', handleStatusFilter);
     elements.sortFilter?.addEventListener('change', handleSortFilter);
     
+    // Keyboard shortcut for refresh (F5 or Ctrl+R)
+    document.addEventListener('keydown', (event) => {
+        // Check if user pressed F5 or Ctrl+R (but not Ctrl+Shift+R which is hard refresh)
+        if (event.key === 'F5' || 
+            ((event.ctrlKey || event.metaKey) && event.key === 'r' && !event.shiftKey)) {
+            
+            // Only intercept if we're focused on the revision app (not in input fields)
+            const activeElement = document.activeElement;
+            const isInInputField = activeElement && (
+                activeElement.tagName === 'INPUT' || 
+                activeElement.tagName === 'TEXTAREA' || 
+                activeElement.contentEditable === 'true'
+            );
+            
+            if (!isInInputField) {
+                event.preventDefault(); // Prevent page reload
+                console.log('🔄 Raccourci clavier détecté - actualisation...');
+                handleRefreshDecks(); // Call our custom refresh
+            }
+        }
+    });
+    
     // Tags filter
     document.getElementById('tagsFilterToggle')?.addEventListener('click', toggleTagsFilter);
     document.addEventListener('click', handleTagsFilterOutsideClick);
@@ -2943,7 +3081,7 @@ function setupEventListeners() {
     // Buttons
     elements.createDeck?.addEventListener('click', showCreateForm);
     elements.importDeck?.addEventListener('click', showImportForm);
-    elements.refreshDecks?.addEventListener('click', loadDecks);
+    elements.refreshDecks?.addEventListener('click', handleRefreshDecks);
     elements.backToList?.addEventListener('click', backToList);
     elements.addCard?.addEventListener('click', showCreateCardForm);
     
