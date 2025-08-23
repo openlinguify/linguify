@@ -586,8 +586,8 @@ async function selectDeck(deckId) {
             elements.sidebar.classList.remove('show');
         }
         
-        // Hide general actions when deck is selected
-        updateNavbarActions(false);
+        // Keep general actions visible when deck is selected
+        updateNavbarActions(true);
         
     } catch (error) {
         console.error('Error loading deck:', error);
@@ -640,8 +640,8 @@ function hideCreateForm() {
     
     if (appState.selectedDeck) {
         elements.deckDetails.style.display = 'block';
-        // Hide general actions when deck is selected
-        updateNavbarActions(false);
+        // Keep general actions visible when deck is selected
+        updateNavbarActions(true);
     } else {
         elements.welcomeState.style.display = 'block';
         // Show general actions in welcome state
