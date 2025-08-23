@@ -2436,6 +2436,22 @@ button.bg-linguify-gradient:hover,
   color: var(--linguify-error, #EF4444) !important;
 }
 
+/* Active (selected) dropdown items - No special color, same as normal */
+.dropdown-item.active {
+  background: transparent !important;
+  color: var(--linguify-gray-700, #374151) !important;
+}
+
+.dropdown-item.active:hover {
+  background: var(--linguify-gray-50, #f9fafb) !important;
+  color: var(--linguify-primary, #2D5BBA) !important;
+}
+
+.dropdown-item.active:focus {
+  background: var(--linguify-gray-50, #f9fafb) !important;
+  color: var(--linguify-primary, #2D5BBA) !important;
+}
+
 .dropdown-divider {
   margin: 0.5rem 0 !important;
   border-color: var(--linguify-gray-200, #e5e7eb) !important;
