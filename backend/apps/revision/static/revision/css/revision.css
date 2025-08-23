@@ -176,140 +176,12 @@ body {
     height: 32px;
 }
 
-.nav-tabs-custom {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.nav-tab {
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    text-decoration: none;
-    color: var(--linguify-gray);
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.nav-tab:hover {
-    color: var(--primary-color);
-    background: #f8fafc;
-}
-
-.nav-tab.active {
-    background: var(--primary-gradient);
-    color: white;
-}
-
-/* Boutons */
-.btn {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1px solid transparent;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-primary {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-    background: var(--primary-dark);
-}
-
-.btn-secondary {
-    background: var(--gray-100);
-    color: var(--gray-700);
-    border-color: var(--gray-300);
-}
-
-.btn-secondary:hover {
-    background: var(--gray-200);
-}
-
-.btn-outline {
-    background: transparent;
-    color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.btn-outline:hover {
-    background: var(--primary-color);
-    color: white;
-}
-
-.btn-gradient {
-    background: var(--primary-gradient);
-    border: none;
-    color: white;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.btn-gradient:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
-    color: white;
-}
-
-.btn-outline-custom {
-    border: 1px solid #e2e8f0;
-    background: white;
-    color: var(--linguify-gray);
-    transition: all 0.2s ease;
-}
-
-.btn-outline-custom:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    background: #f8fafc;
-}
-
-.btn-back {
-    background: var(--gray-100);
-    border: 1px solid var(--gray-300);
-    color: var(--gray-700);
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s;
-}
-
-.btn-back:hover {
-    background: var(--gray-200);
-}
-
-.btn-sm {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
-}
-
-.btn-action {
-    background: none;
-    border: none;
-    padding: 4px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s;
-}
-
-.btn-action:hover {
-    background: var(--gray-100);
-}
-
-.btn-action.btn-danger:hover {
-    background: var(--danger-color);
-    color: white;
-}
+/* Navigation et boutons -> MIGRÉS vers tailwind-modals.css */
+/* Les classes suivantes ont été remplacées par les composants Tailwind Linguify :
+ * .nav-tabs-custom -> .nav-tabs-group
+ * .nav-tab -> .nav-tab
+ * .btn-* -> .btn-linguify, .btn-navbar-*, etc.
+ */
 
 /* Main content layout */
 .revision-main {
@@ -1258,87 +1130,10 @@ body {
     display: block;
 }
 
-/* Modal Share Styles - OpenLinguify */
-.share-modal-icon-bg {
-    background-color: rgba(var(--linguify-primary-rgb, 45, 91, 186), 0.1);
-}
-
-.share-modal-icon {
-    font-size: 1.5rem;
-    color: var(--linguify-primary, #2D5BBA);
-}
-
-.share-modal-title {
-    color: var(--linguify-primary, #2D5BBA);
-}
-
-.share-modal-alert {
-    background-color: rgba(var(--linguify-primary-rgb, 45, 91, 186), 0.08);
-    border-left: 4px solid var(--linguify-primary, #2D5BBA) !important;
-}
-
-.share-modal-alert-icon {
-    color: var(--linguify-primary, #2D5BBA);
-}
-
-.share-modal-alert-title {
-    color: var(--linguify-primary, #2D5BBA);
-}
-
-.share-modal-alert-text {
-    color: var(--linguify-gray, #6B7280);
-}
-
-.share-modal-section-title {
-    color: var(--linguify-gray, #6B7280);
-}
-
-.share-modal-accent-icon {
-    color: var(--linguify-accent, #017e84);
-}
-
-.share-modal-list-item {
-    color: var(--linguify-gray, #6B7280);
-}
-
-.share-modal-info-text {
-    color: var(--linguify-gray, #6B7280);
-}
-
-.share-modal-cancel-btn {
-    border-color: var(--linguify-gray, #6B7280);
-    color: var(--linguify-gray, #6B7280);
-}
-
-.share-modal-primary-btn {
-    background-color: var(--linguify-primary, #2D5BBA);
-    border-color: var(--linguify-primary, #2D5BBA);
-    color: white;
-}
-
-.share-modal-public-icon-bg {
-    background-color: rgba(var(--linguify-accent-rgb, 0, 212, 170), 0.1);
-}
-
-.share-modal-public-icon {
-    font-size: 1.5rem;
-    color: var(--linguify-accent, #017e84);
-}
-
-.share-modal-public-title {
-    color: var(--linguify-accent, #017e84);
-}
-
-.share-modal-url-input {
-    background-color: #f8f9fa;
-    border-color: var(--linguify-primary, #2D5BBA);
-}
-
-.share-modal-social-btn {
-    border: 1px solid var(--linguify-secondary, #8B5CF6);
-    color: var(--linguify-secondary, #8B5CF6);
-    background-color: rgba(var(--linguify-secondary-rgb, 139, 92, 246), 0.05);
-}
+/* Modal Share Styles -> MIGRÉS vers tailwind-modals.css */
+/* Les classes suivantes ont été remplacées par les composants modaux Tailwind Linguify :
+ * .share-modal-* -> .modal-*, .alert-*, .share-btn-*, etc.
+ */
 
 /* Classes de couleurs OpenLinguify pour remplacer Bootstrap */
 .text-linguify-primary {
@@ -2287,55 +2082,10 @@ body {
     display: inline-block;  /* S'assurer que le conteneur ne prend que l'espace nécessaire */
 }
 
-.btn-tags-filter {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%);
-    color: white !important;   /* Force la couleur blanche */
-    border: none;
-    /* Ajuster pour correspondre exactement aux form-select-sm */
-    padding: 0.25rem 0.5rem;   /* Même padding que form-select-sm */
-    border-radius: 0.25rem;    /* Même border-radius que form-select-sm */
-    font-size: 0.875rem;       /* Même font-size que form-select-sm */
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;              /* Espace réduit entre les éléments */
-    /* Dimensions plus compactes */
-    width: auto;               /* Largeur automatique basée sur le contenu */
-    min-width: 70px;           /* Largeur minimale réduite */
-    max-width: 90px;           /* Largeur maximale pour éviter d'être trop large */
-    height: calc(1.5em + 0.5rem + 2px); /* Hauteur exacte de form-select-sm */
-    position: relative;
-    justify-content: center;   /* Centrage du contenu */
-}
-
-.btn-tags-filter:hover {
-    background: linear-gradient(135deg, var(--linguify-primary-dark) 0%, var(--linguify-primary-dark) 100%) !important;
-    color: white !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(var(--linguify-primary-rgb), 0.3);
-}
-
-.btn-tags-filter:focus,
-.btn-tags-filter:focus-visible {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal) 100%) !important;
-    color: white !important;
-    outline: none;
-    box-shadow: 0 0 0 0.2rem rgba(var(--linguify-primary-rgb), 0.25);
-}
-
-.btn-tags-filter:active,
-.btn-tags-filter.active {
-    background: linear-gradient(135deg, var(--linguify-primary-dark) 0%, var(--linguify-primary-dark) 100%) !important;
-    color: white !important;
-    transform: translateY(0);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.tags-filter-label {
-    white-space: nowrap;
-}
+/* Boutons tags -> MIGRÉS vers tailwind-modals.css */
+/* Les classes suivantes ont été remplacées par les composants Tailwind Linguify :
+ * .btn-tags-filter -> .btn-tags-filter (dans tailwind-modals.css)
+ */
 
 .tags-filter-count {
     background: rgba(255, 255, 255, 0.9);
@@ -3156,52 +2906,11 @@ button, input[type="button"], input[type="submit"] {
 }
 
 /* Boutons Linguify */
-.btn-linguify-primary {
-    background-color: var(--linguify-primary, #2D5BBA);
-    border-color: var(--linguify-primary, #2D5BBA);
-    color: white;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn-linguify-primary:hover {
-    background-color: var(--linguify-primary-dark, #1E4A8C);
-    border-color: var(--linguify-primary-dark, #1E4A8C);
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);
-}
-
-.btn-outline-linguify-primary {
-    background-color: transparent;
-    border-color: var(--linguify-primary, #2D5BBA);
-    color: var(--linguify-primary, #2D5BBA);
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-linguify-primary:hover {
-    background-color: var(--linguify-primary, #2D5BBA);
-    border-color: var(--linguify-primary, #2D5BBA);
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.2);
-}
-
-.btn-outline-linguify-gray {
-    background-color: transparent;
-    border-color: var(--linguify-gray, #6B7280);
-    color: var(--linguify-gray, #6B7280);
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-linguify-gray:hover {
-    background-color: var(--linguify-gray, #6B7280);
-    border-color: var(--linguify-gray, #6B7280);
-    color: white;
-    transform: translateY(-1px);
-}
+/* Boutons Linguify -> MIGRÉS vers tailwind-modals.css */
+/* Les classes suivantes ont été remplacées par les composants Tailwind Linguify :
+ * .btn-linguify-primary -> .btn-linguify
+ * .btn-outline-linguify-* -> .btn-navbar-outline, .btn-linguify-secondary
+ */
 
 /* Layout spécifique pour la page de statistiques pleine largeur */
 .stats-full-width {

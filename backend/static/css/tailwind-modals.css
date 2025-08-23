@@ -745,6 +745,244 @@ button.bg-linguify-gradient:hover,
   margin-bottom: 0.5rem;
 }
 
+/* Navbar Components - Linguify Design System */
+.navbar-linguify {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 40px;
+  overflow-x: auto;
+  position: relative;
+  z-index: 1000;
+}
+
+.navbar-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar-section-right {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: nowrap;
+}
+
+/* Navigation Tabs */
+.nav-tabs-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(107 114 128);
+  text-decoration: none;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+}
+
+.nav-tab:hover {
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.05);
+  text-decoration: none;
+}
+
+.nav-tab.active {
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.1);
+  font-weight: 600;
+}
+
+.nav-tab i {
+  margin-right: 0.25rem;
+}
+
+/* Buttons - Linguify Navbar Variants */
+.btn-navbar {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+}
+
+.btn-navbar-outline {
+  color: rgb(107 114 128);
+  background-color: transparent;
+  border: 1px solid rgb(209 213 219);
+}
+
+.btn-navbar-outline:hover {
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.05);
+  border-color: rgba(45, 91, 186, 0.2);
+}
+
+.btn-navbar-primary {
+  color: white;
+  background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+  border: none;
+}
+
+.btn-navbar-primary:hover {
+  background: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%);
+  transform: translateY(-1px);
+}
+
+.btn-navbar i {
+  margin-right: 0.25rem;
+}
+
+.btn-navbar .d-none {
+  display: none !important;
+}
+
+@media (min-width: 1200px) {
+  .btn-navbar .d-none.d-xl-inline {
+    display: inline !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .btn-navbar .d-none.d-xxl-inline {
+    display: inline !important;
+  }
+}
+
+/* Form Controls - Linguify Style */
+.form-control-linguify {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(17 24 39);
+  background-color: white;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.form-control-linguify:focus {
+  outline: none;
+  border-color: #2D5BBA;
+  box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+}
+
+.form-control-linguify::placeholder {
+  color: rgb(156 163 175);
+}
+
+.form-select-linguify {
+  padding: 0.375rem 0.75rem;
+  padding-right: 2rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(17 24 39);
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.form-select-linguify:focus {
+  outline: none;
+  border-color: #2D5BBA;
+  box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+}
+
+/* Tags Filter Component */
+.tags-filter-container {
+  position: relative;
+}
+
+.btn-tags-filter {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(107 114 128);
+  background-color: transparent;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.btn-tags-filter:hover {
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.05);
+  border-color: rgba(45, 91, 186, 0.2);
+}
+
+.tags-filter-count {
+  margin-left: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  background-color: #2D5BBA;
+  border-radius: 0.375rem;
+  min-width: 1.25rem;
+  text-align: center;
+}
+
+.tags-filter-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 12rem;
+  max-width: 20rem;
+  background-color: white;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  z-index: 1050;
+  display: none;
+}
+
+.tags-filter-dropdown.show {
+  display: block;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .navbar-linguify {
+    gap: 0.25rem;
+  }
+  
+  .navbar-section {
+    gap: 0.5rem;
+  }
+  
+  .btn-navbar {
+    padding: 0.375rem 0.5rem;
+  }
+  
+  .form-control-linguify,
+  .form-select-linguify {
+    padding: 0.25rem 0.5rem;
+  }
+}
+
 /* Ensure icons and text within Linguify elements use correct colors */
 .text-linguify-primary i,
 .text-linguify-primary *:not(.btn):not(button) {
