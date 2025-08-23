@@ -2404,6 +2404,7 @@ button.bg-linguify-gradient:hover,
   box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
   padding: 0.5rem 0 !important;
   margin-top: 0.25rem !important;
+  z-index: 10001 !important; /* Ensure dropdown appears above all deck content */
 }
 
 .dropdown-item {

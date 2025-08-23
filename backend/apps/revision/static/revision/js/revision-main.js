@@ -3057,59 +3057,7 @@ function handleSortFilter() {
     loadDecks();
 }
 
-// Tags filter functions
-// Enhanced Tags Filter with Advanced Error Handling
-function toggleTagsFilter() {
-    try {
-        console.log('🏷️ toggleTagsFilter called');
-        
-        // Advanced element validation with detailed error reporting
-        const dropdown = document.getElementById('tagsFilterDropdown');
-        const toggle = document.getElementById('tagsFilterToggle');
-        
-        if (!dropdown) {
-            throw new Error('CRITICAL: tagsFilterDropdown element not found in DOM');
-        }
-        if (!toggle) {
-            throw new Error('CRITICAL: tagsFilterToggle button not found in DOM');
-        }
-        
-        console.log('✅ Elements validated successfully');
-        
-        // Always load tags when dropdown is about to be shown (Bootstrap event handling)
-        loadTagsFilter().catch(error => {
-            console.error('❌ Error loading tags for dropdown:', error);
-            showNavbarError('Erreur lors du chargement des tags', 'error');
-        });
-        
-        console.log('✅ Tags loading initiated for Bootstrap dropdown');
-        
-    } catch (error) {
-        console.error('❌ CRITICAL ERROR in toggleTagsFilter:', error.message);
-        showNavbarError('Erreur critique dans les filtres tags', 'critical');
-        
-        // Advanced error recovery - try to reset the tags filter
-        try {
-            const dropdown = document.querySelector('#tagsFilterDropdown');
-            if (dropdown) {
-                dropdown.innerHTML = '<li><a class="dropdown-item text-muted" href="#">Erreur - Réessayez</a></li>';
-            }
-        } catch (recoveryError) {
-            console.error('❌ Recovery failed:', recoveryError.message);
-        }
-    }
-}
-
-function handleTagsFilterOutsideClick(event) {
-    const dropdown = document.getElementById('tagsFilterDropdown');
-    const toggle = document.getElementById('tagsFilterToggle');
-    
-    if (!dropdown.contains(event.target) && !toggle.contains(event.target)) {
-        dropdown.classList.remove('show');
-        dropdown.style.display = 'none';
-        toggle.classList.remove('active');
-    }
-}
+// Tags filter functions - now handled entirely by Bootstrap events in setupFilterDropdowns()
 
 async function loadTagsFilter() {
     const dropdown = document.getElementById('tagsFilterDropdown');
@@ -3478,6 +3426,12 @@ function performNavbarHealthCheck() {
 
 // Enhanced Bootstrap Dropdowns with Advanced Error Handling
 function setupFilterDropdowns() {
+    // Prevent multiple initializations
+    if (window.dropdownsInitialized) {
+        console.log('🔄 Dropdowns already initialized - skipping setup');
+        return;
+    }
+
     try {
         console.log('🔧 Setting up Bootstrap dropdowns with error handling...');
         
@@ -3543,6 +3497,8 @@ function setupFilterDropdowns() {
             }
         });
         
+        // Mark as initialized
+        window.dropdownsInitialized = true;
         console.log('✅ Bootstrap dropdowns initialized with advanced error handling');
         
     } catch (error) {
@@ -3674,6 +3630,21 @@ function toggleSidebar() {
 function backToList() {
     const elements = getElements();
     elements.sidebar.classList.add('show');
+    
+    // Hide deck details when returning to list
+    hideAllSections();
+    
+    // Show welcome state
+    const welcomeState = document.getElementById('welcomeState');
+    if (welcomeState) {
+        welcomeState.style.display = 'block';
+    }
+    
+    // Clear selected deck from state
+    appState.selectedDeck = null;
+    
+    // Show general actions (create/import buttons)
+    updateNavbarActions(true);
 }
 
 // Helper function to get DOM elements
@@ -3816,19 +3787,8 @@ function setupEventListeners() {
         }
     });
     
-    // Tags filter
-    const tagsToggleElement = document.getElementById('tagsFilterToggle');
-    console.log('Tags toggle element found:', tagsToggleElement);
-    if (tagsToggleElement) {
-        tagsToggleElement.addEventListener('click', function(e) {
-            console.log('Tags filter clicked!');
-            toggleTagsFilter();
-        });
-        console.log('Tags filter event listener attached');
-    } else {
-        console.error('tagsFilterToggle element not found');
-    }
-    document.addEventListener('click', handleTagsFilterOutsideClick);
+    // Tags filter - now handled entirely by Bootstrap events in setupFilterDropdowns()
+    console.log('Tags filter configured via Bootstrap events in setupFilterDropdowns()');
     
     // Buttons
     elements.createDeck?.addEventListener('click', showCreateForm);
