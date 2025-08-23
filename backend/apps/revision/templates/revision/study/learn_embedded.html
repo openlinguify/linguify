@@ -2,10 +2,10 @@
 <div id="quizStudyMode" class="study-mode-hidden">
     <div class="study-header">
         <div class="d-flex align-items-center justify-content-between">
-            <h5 class="mb-0">Mode Questionnaire - <span id="quizDeckName"></span></h5>
+            <h5 class="mb-0 text-linguify-primary font-weight-600">Mode Questionnaire - <span id="quizDeckName"></span></h5>
             <div class="d-flex align-items-center gap-2">
-                <span id="quizProgress" class="badge bg-primary">0/0</span>
-                <button id="exitQuizMode" class="btn btn-outline-custom btn-sm">
+                <span id="quizProgress" class="badge bg-linguify-gradient text-white px-3 py-2 rounded-lg">0/0</span>
+                <button id="exitQuizMode" class="flashcard-btn-return">
                     <i class="bi bi-arrow-left"></i>
                     Retour au deck
                 </button>
@@ -13,8 +13,8 @@
         </div>
         
         <!-- Progress Bar -->
-        <div class="progress mt-2 progress-thin">
-            <div id="quizProgressBar" class="progress-bar bg-primary w-0"></div>
+        <div class="quiz-progress-container mt-2">
+            <div id="quizProgressBar" class="quiz-progress-bar w-0"></div>
         </div>
     </div>
     
@@ -23,7 +23,7 @@
         <div id="quizArea" class="p-4">
             <!-- Question -->
             <div class="quiz-question-container mb-4">
-                <h4 id="quizQuestion" class="quiz-question text-center p-4 border rounded bg-light">Question</h4>
+                <h4 id="quizQuestion" class="quiz-question-linguify text-center p-4">Question</h4>
             </div>
             
             <!-- Options -->
@@ -38,7 +38,7 @@
             
             <!-- Next Button -->
             <div class="text-center">
-                <button id="nextQuestion" class="btn btn-gradient display-none">
+                <button id="nextQuestion" class="quiz-btn-next display-none">
                     <i class="bi bi-arrow-right me-1"></i>
                     Question suivante
                 </button>
@@ -48,15 +48,15 @@
         <!-- No Cards Message -->
         <div id="noQuizCards" class="empty-state empty-state-hidden">
             <i class="bi bi-question-circle text-muted font-size-4rem"></i>
-            <h4 class="mt-3">Pas assez de cartes</h4>
-            <p class="text-muted">Ce deck doit contenir au moins 4 cartes pour le mode questionnaire.</p>
-            <button class="btn btn-gradient" onclick="window.quizMode.exitQuizMode()">
+            <h4 class="mt-3 text-linguify-primary">Pas assez de cartes</h4>
+            <p class="text-gray-600">Ce deck doit contenir au moins 4 cartes pour le mode questionnaire.</p>
+            <button class="flashcard-btn-return" onclick="window.quizMode.exitQuizMode()">
                 Retour au deck
             </button>
         </div>
         
         <!-- Quiz Stats -->
-        <div class="border-top p-3">
+        <div class="study-stats">
             <div class="row text-center">
                 <div class="col">
                     <div class="stat-value text-linguify-success" id="quizCorrect">0</div>

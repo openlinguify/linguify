@@ -117,8 +117,12 @@ class QuizStudyMode {
             window.revisionMain.hideAllSections();
         }
         
-        // Show quiz mode
-        document.getElementById('quizStudyMode').style.display = 'block';
+        // Show quiz mode with proper flex layout
+        const quizElement = document.getElementById('quizStudyMode');
+        if (quizElement) {
+            quizElement.classList.remove('study-mode-hidden');
+            quizElement.style.display = 'flex';
+        }
         
         // Set deck name
         document.getElementById('quizDeckName').textContent = this.currentDeck.name;
@@ -174,12 +178,10 @@ class QuizStudyMode {
         
         quizCard.options.forEach((option, index) => {
             const optionElement = document.createElement('button');
-            optionElement.className = 'quiz-option btn btn-outline-secondary w-100 mb-2 text-start p-3';
+            optionElement.className = 'quiz-option';
             optionElement.innerHTML = `
-                <div class="d-flex align-items-center">
-                    <span class="quiz-option-letter me-3">${String.fromCharCode(65 + index)}</span>
-                    <span class="quiz-option-text">${option}</span>
-                </div>
+                <span class="quiz-option-letter">${String.fromCharCode(65 + index)}</span>
+                <span class="quiz-option-text">${option}</span>
             `;
             
             optionElement.addEventListener('click', () => this.selectAnswer(option, optionElement));
@@ -430,7 +432,12 @@ class QuizStudyMode {
 
     exitQuizMode() {
         // Hide quiz mode
-        document.getElementById('quizStudyMode').style.display = 'none';
+        // Hide quiz mode
+        const quizElement = document.getElementById('quizStudyMode');
+        if (quizElement) {
+            quizElement.style.display = 'none';
+            quizElement.classList.add('study-mode-hidden');
+        }
         
         // Show deck details using centralized function
         if (window.revisionMain.appState.selectedDeck) {
