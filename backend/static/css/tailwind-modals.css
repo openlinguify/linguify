@@ -1837,6 +1837,20 @@ button.bg-linguify-gradient:hover,
   box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);
 }
 
+/* Quiz Study Area - Override centering */
+.quiz-study-area {
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.quiz-study-area > * {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 /* Quiz-specific components */
 .quiz-progress-container {
   height: 0.5rem;
