@@ -205,6 +205,44 @@ function calculateProgress(deck) {
     return Math.round((deck.learned_count || 0) / deck.cards_count * 100);
 }
 
+// Update the share/privacy buttons based on the selected deck's visibility
+function updateShareButtonText() {
+    const shareButton = document.getElementById('shareDeck');
+    const makePrivateButton = document.getElementById('makePrivateDeck');
+    if (!shareButton || !appState.selectedDeck) return;
+    
+    const shareIcon = shareButton.querySelector('i');
+    const shareTextNode = shareButton.childNodes[shareButton.childNodes.length - 1];
+    
+    if (appState.selectedDeck.is_public) {
+        // Deck is already public - show share option and make private option
+        if (shareIcon) {
+            shareIcon.className = 'bi bi-share me-2';
+        }
+        if (shareTextNode) {
+            shareTextNode.textContent = 'Partager';
+        }
+        
+        // Show "Rendre privé" option
+        if (makePrivateButton) {
+            makePrivateButton.style.display = 'block';
+        }
+    } else {
+        // Deck is private - show make public option and hide make private option
+        if (shareIcon) {
+            shareIcon.className = 'bi bi-globe2 me-2';
+        }
+        if (shareTextNode) {
+            shareTextNode.textContent = 'Rendre public';
+        }
+        
+        // Hide "Rendre privé" option
+        if (makePrivateButton) {
+            makePrivateButton.style.display = 'none';
+        }
+    }
+}
+
 // Core functions
 async function loadDecks(reset = true) {
     try {
@@ -481,6 +519,9 @@ async function selectDeck(deckId) {
         
         const deck = await revisionAPI.getDeck(deckId);
         appState.selectedDeck = deck;
+        
+        // Update share button text based on deck visibility
+        updateShareButtonText();
         
         // Hide all sections first
         hideAllSections();
@@ -1851,6 +1892,9 @@ async function saveEditDeck() {
         // Mettre à jour l'état local
         appState.selectedDeck = updatedDeck;
         
+        // Update share button in case visibility changed
+        updateShareButtonText();
+        
         // Recharger la liste des decks et sélectionner le deck modifié
         await loadDecks();
         await selectDeck(updatedDeck.id);
@@ -1913,6 +1957,50 @@ async function exportDeck() {
     } catch (error) {
         console.error('Error exporting deck:', error);
         window.notificationService.error('Erreur lors de l\'exportation du deck');
+    }
+}
+
+async function makePrivate() {
+    console.log('makePrivate called, selectedDeck:', appState.selectedDeck);
+    
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    if (!appState.selectedDeck.is_public) {
+        window.notificationService.info('Ce deck est déjà privé');
+        return;
+    }
+    
+    // Confirmation avant de rendre privé
+    const confirmed = confirm(
+        `Êtes-vous sûr de vouloir rendre le deck "${appState.selectedDeck.name}" privé ?\n\n` +
+        `• Il ne sera plus visible dans la section "Explorer"\n` +
+        `• Les liens de partage existants ne fonctionneront plus\n` +
+        `• Vous pourrez le rendre public à nouveau plus tard`
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+        const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
+            is_public: false
+        });
+        
+        appState.selectedDeck = updatedDeck;
+        
+        // Update the share button text since the deck is now private
+        updateShareButtonText();
+        
+        window.notificationService.success('Deck rendu privé avec succès');
+        
+        // Refresh the deck list to update the public icon
+        await loadDecks();
+        
+    } catch (error) {
+        console.error('Error making deck private:', error);
+        window.notificationService.error('Erreur lors de la mise en privé du deck');
     }
 }
 
@@ -2083,6 +2171,10 @@ function setupShareModalEventHandlers() {
                 });
                 
                 appState.selectedDeck = updatedDeck;
+                
+                // Update the share button text since the deck is now public
+                updateShareButtonText();
+                
                 window.notificationService.success('Jeu de cartes rendu public avec succès !');
                 
                 // Fermer la modal actuelle et afficher la modal de partage
@@ -2117,6 +2209,15 @@ function setupShareModalEventHandlers() {
                 button.style.backgroundColor = 'var(--linguify-accent, #017e84)';
                 button.style.borderColor = 'var(--linguify-accent, #017e84)';
                 
+                // Show success message
+                const successMessage = document.getElementById('copySuccessMessage');
+                if (successMessage) {
+                    successMessage.style.display = 'block';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000);
+                }
+                
                 setTimeout(() => {
                     button.innerHTML = originalText;
                     button.style.backgroundColor = 'var(--linguify-primary, #2D5BBA)';
@@ -2130,6 +2231,35 @@ function setupShareModalEventHandlers() {
             }
         }
         
+        // Handlers pour les nouveaux boutons de partage rapide
+        if (e.target.id === 'shareByEmailBtn' || e.target.closest('#shareByEmailBtn')) {
+            e.preventDefault();
+            const shareUrlInput = document.getElementById('shareUrl');
+            if (!shareUrlInput) return;
+            shareByEmail(shareUrlInput.value);
+        }
+        
+        if (e.target.id === 'shareByWhatsAppBtn' || e.target.closest('#shareByWhatsAppBtn')) {
+            e.preventDefault();
+            const shareUrlInput = document.getElementById('shareUrl');
+            if (!shareUrlInput) return;
+            shareByWhatsApp(shareUrlInput.value);
+        }
+        
+        if (e.target.id === 'shareByMessengerBtn' || e.target.closest('#shareByMessengerBtn')) {
+            e.preventDefault();
+            const shareUrlInput = document.getElementById('shareUrl');
+            if (!shareUrlInput) return;
+            shareByMessenger(shareUrlInput.value);
+        }
+        
+        if (e.target.id === 'shareBySMSBtn' || e.target.closest('#shareBySMSBtn')) {
+            e.preventDefault();
+            const shareUrlInput = document.getElementById('shareUrl');
+            if (!shareUrlInput) return;
+            shareBySMS(shareUrlInput.value);
+        }
+
         // Handlers pour les boutons de partage social
         if (e.target.classList.contains('social-share-btn') || e.target.closest('.social-share-btn')) {
             e.preventDefault();
@@ -2163,11 +2293,65 @@ function shareOnSocial(platform, url) {
         case 'linkedin':
             shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
             break;
+        case 'reddit':
+            shareUrl = `https://reddit.com/submit?title=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+            break;
         default:
             return;
     }
     
     window.open(shareUrl, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
+}
+
+// Nouvelles fonctions de partage rapide
+function shareByEmail(url) {
+    const deckName = appState.selectedDeck.name || 'Jeu de cartes de révision';
+    const subject = encodeURIComponent(`Découvrez mon deck de révision: ${deckName}`);
+    const body = encodeURIComponent(
+        `Salut !\n\n` +
+        `Je voulais partager avec toi mon deck de révision "${deckName}" sur OpenLinguify.\n\n` +
+        `Tu peux le consulter ici: ${url}\n\n` +
+        `Bonne révision ! 📚`
+    );
+    
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+
+function shareByWhatsApp(url) {
+    const deckName = appState.selectedDeck.name || 'Jeu de cartes de révision';
+    const text = encodeURIComponent(
+        `Salut ! 👋\n\n` +
+        `Découvre mon deck de révision "${deckName}" sur OpenLinguify :\n\n` +
+        `${url}\n\n` +
+        `Parfait pour réviser ! 📚✨`
+    );
+    
+    // Détecter si on est sur mobile ou desktop
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const whatsappUrl = isMobile 
+        ? `whatsapp://send?text=${text}`
+        : `https://web.whatsapp.com/send?text=${text}`;
+        
+    window.open(whatsappUrl, '_blank');
+}
+
+function shareByMessenger(url) {
+    const deckName = appState.selectedDeck.name || 'Jeu de cartes de révision';
+    const text = encodeURIComponent(`Découvre mon deck "${deckName}" : ${url}`);
+    
+    // Facebook Messenger partage
+    const messengerUrl = `https://www.messenger.com/new/?text=${text}`;
+    window.open(messengerUrl, '_blank');
+}
+
+function shareBySMS(url) {
+    const deckName = appState.selectedDeck.name || 'Jeu de cartes de révision';
+    const text = encodeURIComponent(
+        `Salut ! Découvre mon deck de révision "${deckName}" : ${url}`
+    );
+    
+    // Lien SMS universel
+    window.location.href = `sms:?body=${text}`;
 }
 
 function updateArchiveButton() {
@@ -3147,6 +3331,20 @@ function setupEventListeners() {
     } else {
         console.log('Share button not found in DOM');
     }
+    
+    // Make private button
+    const makePrivateButton = document.getElementById('makePrivateDeck');
+    if (makePrivateButton) {
+        makePrivateButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Make private button clicked');
+            makePrivate();
+        });
+        console.log('Make private button event listener attached');
+    } else {
+        console.log('Make private button not found in DOM');
+    }
+    
     document.getElementById('archiveDeck')?.addEventListener('click', archiveDeck);
     document.getElementById('deleteDeck')?.addEventListener('click', deleteDeckConfirm);
     
@@ -3421,6 +3619,7 @@ window.revisionMain = {
     saveEditDeck,
     exportDeck,
     shareDeck,
+    makePrivate,
     archiveDeck,
     showArchiveConfirmationModal,
     executeArchiveDeck,
@@ -3431,7 +3630,11 @@ window.revisionMain = {
     // Share functions
     showShareModal,
     setupShareModalEventHandlers,
-    shareOnSocial
+    shareOnSocial,
+    shareByEmail,
+    shareByWhatsApp,
+    shareByMessenger,
+    shareBySMS
 };
 
 // Auto-initialize when DOM is ready

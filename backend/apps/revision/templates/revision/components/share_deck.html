@@ -8,11 +8,11 @@
             <div class="modal-header border-0 pb-0">
                 <div class="d-flex align-items-center">
                     <div class="rounded-circle p-2 me-3 share-modal-icon-bg">
-                        <i class="bi bi-share share-modal-icon"></i>
+                        <i class="bi bi-globe2 share-modal-icon"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0 share-modal-title">Partager votre jeu de cartes</h5>
-                        <p class="text-muted mb-0 small">Rendez votre jeu de cartes visible à tous</p>
+                        <h5 class="modal-title mb-0 share-modal-title">Rendre votre deck public</h5>
+                        <p class="text-muted mb-0 small">Permettez à d'autres utilisateurs de le découvrir et l'utiliser</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -22,8 +22,8 @@
                     <div class="d-flex align-items-start">
                         <i class="bi bi-info-circle-fill me-2 mt-1 share-modal-alert-icon"></i>
                         <div>
-                            <strong class="share-modal-alert-title">Jeu de cartes privé</strong><br>
-                            <span class="share-modal-alert-text">Ce jeu de cartes est actuellement privé. Pour le partager, vous devez le rendre public.</span>
+                            <strong class="share-modal-alert-title">Deck actuellement privé</strong><br>
+                            <span class="share-modal-alert-text">Ce deck n'est visible que par vous. Rendez-le public pour le partager avec d'autres personnes.</span>
                         </div>
                     </div>
                 </div>
@@ -31,27 +31,27 @@
                 <div class="mb-3">
                     <h6 class="fw-semibold mb-2 share-modal-section-title">
                         <i class="bi bi-eye me-1 share-modal-accent-icon"></i>
-                        En rendant ce jeu de cartes public :
+                        Ce qui se passera en rendant ce deck public :
                     </h6>
                     <ul class="list-unstyled ms-3">
                         <li class="mb-1 share-modal-list-item">
                             <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
-                            Autres utilisateurs pourront le découvrir
+                            Il apparaîtra dans la section "Explorer" pour tous
                         </li>
                         <li class="mb-1 share-modal-list-item">
                             <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
-                            Vous pourrez partager le lien
+                            Vous obtiendrez un lien partageable
                         </li>
                         <li class="mb-1 share-modal-list-item">
                             <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
-                            Vous restez propriétaire et pouvez le modifier
+                            Vous restez propriétaire et gardez tous vos droits
                         </li>
                     </ul>
                 </div>
                 
                 <div class="small share-modal-info-text">
                     <i class="bi bi-shield-check me-1 share-modal-accent-icon"></i>
-                    Vous pourrez toujours rendre le jeu de cartes privé plus tard si nécessaire.
+                    Vous pourrez toujours rendre votre deck privé plus tard en un clic.
                 </div>
             </div>
             <div class="modal-footer border-0 pt-0">
@@ -59,7 +59,7 @@
                     <i class="bi bi-x-circle me-1"></i>Annuler
                 </button>
                 <button type="button" class="btn share-modal-primary-btn" id="makeDeckPublicBtn">
-                    <i class="bi bi-share me-1"></i>Rendre public et partager
+                    <i class="bi bi-globe2 me-1"></i>Rendre public
                 </button>
             </div>
         </div>
@@ -73,17 +73,17 @@
             <div class="modal-header border-0 pb-0">
                 <div class="d-flex align-items-center">
                     <div class="rounded-circle p-2 me-3 share-modal-public-icon-bg">
-                        <i class="bi bi-share share-modal-public-icon"></i>
+                        <i class="bi bi-globe2 share-modal-public-icon"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0 share-modal-public-title">Partager votre jeu de cartes</h5>
+                        <h5 class="modal-title mb-0 share-modal-public-title">Partager ce deck</h5>
                         <p class="text-muted mb-0 small" id="shareModalDeckName">"Nom du jeu de cartes"</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body pt-2">
-                <p class="mb-3 share-modal-info-text">Partagez ce lien avec vos amis ou sur les réseaux sociaux :</p>
+                <p class="mb-3 share-modal-info-text">Votre deck est public ! Partagez ce lien avec qui vous voulez :</p>
                 
                 <div class="mb-3">
                     <label class="form-label fw-semibold share-modal-section-title">
@@ -95,18 +95,52 @@
                             <i class="bi bi-clipboard me-1"></i>Copier
                         </button>
                     </div>
+                    <small class="text-success mt-1" id="copySuccessMessage" style="display: none;">
+                        <i class="bi bi-check-circle me-1"></i>Le lien a été copié !
+                    </small>
                 </div>
                 
-                <div class="d-flex gap-2 flex-wrap">
-                    <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="twitter" type="button">
-                        <i class="bi bi-twitter me-1"></i>Twitter
-                    </button>
-                    <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="facebook" type="button">
-                        <i class="bi bi-facebook me-1"></i>Facebook
-                    </button>
-                    <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="linkedin" type="button">
-                        <i class="bi bi-linkedin me-1"></i>LinkedIn
-                    </button>
+                <div class="mb-4">
+                    <h6 class="fw-semibold mb-2 share-modal-section-title">
+                        <i class="bi bi-send me-1 share-modal-accent-icon"></i>
+                        Partager rapidement
+                    </h6>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <!-- Boutons de partage direct -->
+                        <button class="btn btn-outline-success btn-sm" id="shareByEmailBtn" type="button">
+                            <i class="bi bi-envelope me-1"></i>Email
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" id="shareByWhatsAppBtn" type="button">
+                            <i class="bi bi-whatsapp me-1"></i>WhatsApp
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" id="shareByMessengerBtn" type="button">
+                            <i class="bi bi-messenger me-1"></i>Messenger
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm" id="shareBySMSBtn" type="button">
+                            <i class="bi bi-chat-text me-1"></i>SMS
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="fw-semibold mb-2 share-modal-section-title">
+                        <i class="bi bi-share me-1 share-modal-accent-icon"></i>
+                        Réseaux sociaux
+                    </h6>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="twitter" type="button">
+                            <i class="bi bi-twitter me-1"></i>Twitter
+                        </button>
+                        <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="facebook" type="button">
+                            <i class="bi bi-facebook me-1"></i>Facebook
+                        </button>
+                        <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="linkedin" type="button">
+                            <i class="bi bi-linkedin me-1"></i>LinkedIn
+                        </button>
+                        <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="reddit" type="button">
+                            <i class="bi bi-reddit me-1"></i>Reddit
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer border-0 pt-0">
