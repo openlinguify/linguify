@@ -1880,12 +1880,13 @@ button.bg-linguify-gradient:hover,
 .quiz-study-area {
   display: flex;
   flex-direction: column;
-  padding: 0;
-  margin: 0;
+  padding: 1.5rem;
+  margin: 0 auto;
   height: 100%;
   max-width: 900px;
-  margin: 0 auto;
   overflow: hidden;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Question Section - Fixed proportion */
@@ -1896,6 +1897,7 @@ button.bg-linguify-gradient:hover,
   justify-content: center;
   padding: 1rem;
   margin: 0;
+  width: 100%;
 }
 
 /* Override Bootstrap margins */
@@ -1910,9 +1912,11 @@ button.bg-linguify-gradient:hover,
   flex-direction: column;
   gap: 0.5rem;
   justify-content: center;
-  padding: 0 1.5rem;
+  padding: 0;
   margin: 0;
   overflow: hidden;
+  width: 100%;
+  max-width: 700px;
 }
 
 /* Override Bootstrap margins */
@@ -1922,17 +1926,19 @@ button.bg-linguify-gradient:hover,
 
 /* Actions Section - Fixed bottom section */
 .quiz-actions-area {
-  flex: 0 0 100px;
+  flex: 0 0 120px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem;
+  padding: 1rem;
   border-top: 1px solid rgba(45, 91, 186, 0.08);
   overflow: hidden;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 700px;
 }
 
 /* Quiz feedback - Compact design */
