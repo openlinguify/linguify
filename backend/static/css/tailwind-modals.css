@@ -1503,12 +1503,12 @@ button.bg-linguify-gradient:hover,
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .deck-card-title {
-  font-size: 1rem;
-  line-height: 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
   font-weight: 600;
   color: rgb(17 24 39);
   margin-bottom: 0.25rem;
@@ -1525,16 +1525,16 @@ button.bg-linguify-gradient:hover,
 
 .deck-card-description {
   color: rgb(75 85 99);
-  font-size: 0.8rem;
-  line-height: 1.2rem;
-  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .deck-card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .deck-tag {
@@ -1573,7 +1573,7 @@ button.bg-linguify-gradient:hover,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 0.75rem;
+  margin-top: 1rem;
 }
 
 .progress-bar-container {
@@ -1601,10 +1601,10 @@ button.bg-linguify-gradient:hover,
 }
 
 .deck-date {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   line-height: 1rem;
   color: rgb(156 163 175);
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
 }
 
 /* Sidebar - Linguify Design System */
@@ -1930,7 +1930,6 @@ button.bg-linguify-gradient:hover,
 .deck-list {
   list-style: none;
   padding: 1rem;
-  padding-bottom: 3rem;
   margin: 0;
   flex: 1;
   min-height: 0;
@@ -1949,8 +1948,8 @@ button.bg-linguify-gradient:hover,
   background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   list-style: none;
