@@ -38,19 +38,6 @@
     {% block extra_css %}{% endblock %}
     
     <style>
-        /* Layout full-height pour revision app */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body.revision-body {
-            height: 100vh;
-            padding-top: 64px;
-            overflow: hidden;
-        }
-        
         /* Header app global fixe en haut */
         .app-header {
             position: fixed;
@@ -60,47 +47,26 @@
             z-index: 1001;
         }
         
-        .revision-container {
-            height: calc(100vh - 64px);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .revision-header {
-            flex-shrink: 0;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            background: white;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .revision-main {
-            flex: 1;
-            min-height: 0;
-            overflow: hidden;
-        }
-        
         /* Cacher l'ancienne navigation de révision */
         .revision-nav {
             display: none;
         }
     </style>
 </head>
-<body class="revision-body">
+<body class="app-body-layout">
     <!-- Include the unified app header -->
     {% include 'components/header/app_header.html' %}
     
-    <div class="revision-container">
+    <div class="app-container-layout">
         <!-- App-specific header section (below main header) -->
-        <div class="revision-header">
+        <div class="app-header-layout">
             <div class="header-content">
                 {% block header_content %}{% endblock %}
             </div>
         </div>
         
         <!-- Main Content -->
-        <div class="revision-main">
+        <div class="app-main-layout">
             {% block content %}{% endblock %}
         </div>
     </div>

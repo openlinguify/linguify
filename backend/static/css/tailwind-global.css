@@ -122,6 +122,44 @@
   .notification-warning {
     @apply border-l-4 border-l-yellow-500;
   }
+
+  /* App Layout System - Desktop Software Style */
+  .app-body-layout {
+    @apply h-screen overflow-hidden;
+    padding-top: 64px; /* Header Linguify standard */
+  }
+  
+  .app-container-layout {
+    @apply flex flex-col;
+    height: calc(100vh - 64px);
+  }
+  
+  .app-header-layout {
+    @apply flex-shrink-0 sticky top-0 z-50 bg-white border-b border-gray-200;
+  }
+  
+  .app-main-layout {
+    @apply flex-1 overflow-hidden;
+    min-height: 0; /* Critical for flexbox shrinking */
+  }
+  
+  .app-sidebar-layout {
+    @apply bg-white border-r border-gray-200 flex flex-col overflow-y-auto;
+    width: 320px;
+    flex: 0 0 320px;
+    height: 100vh;
+    max-height: calc(100vh - 64px - 60px); /* Header + typical navbar */
+  }
+  
+  .app-content-layout {
+    @apply flex-1 overflow-y-auto h-full;
+  }
+  
+  .app-flex-container {
+    @apply flex;
+    height: 100%;
+    min-height: 100%;
+  }
 }
 
 /* Custom utilities */
