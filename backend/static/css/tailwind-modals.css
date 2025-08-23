@@ -2197,8 +2197,175 @@ button.bg-linguify-gradient:hover,
   display: block;
 }
 
+/* Matching Study Mode - Association Game */
+#matchingStudyMode {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#matchingStudyMode .study-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.matching-game-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  overflow: hidden;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.matching-instructions {
+  flex: 0 0 auto;
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.05) 100%);
+  border: 1px solid rgba(45, 91, 186, 0.15);
+  border-radius: 0.75rem;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #2D5BBA;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.matching-board {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  padding: 1rem 0;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45, 91, 186, 0.3) transparent;
+}
+
+.matching-item {
+  background: white;
+  border: 2px solid rgba(45, 91, 186, 0.12);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(45, 91, 186, 0.08);
+  position: relative;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+}
+
+.matching-item:hover {
+  border-color: rgba(45, 91, 186, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(45, 91, 186, 0.15);
+}
+
+.matching-item.selected {
+  border-color: #2D5BBA;
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.03) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(45, 91, 186, 0.2);
+}
+
+.matching-item.matched {
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
+  transform: none;
+  cursor: default;
+  opacity: 0.8;
+}
+
+.matching-item.error {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.matching-item-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+}
+
+.matching-item-type {
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+  color: white;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(45, 91, 186, 0.2);
+}
+
+.matching-item.matched .matching-item-type {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.matching-item.error .matching-item-type {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.matching-item-text {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.matching-item.term {
+  border-left: 4px solid #2D5BBA;
+}
+
+.matching-item.definition {
+  border-left: 4px solid #017E84;
+}
+
+/* Responsive matching board */
+@media (max-width: 768px) {
+  .matching-board {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .matching-item {
+    min-height: 80px;
+    padding: 1rem;
+  }
+  
+  .matching-item-type {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.25rem;
+  }
+  
+  .matching-item-text {
+    font-size: 0.9rem;
+  }
+}
+
 /* Hide other study mode sections by default */
-#matchingStudyMode,
 #spacedStudyMode,
 #writeStudyMode {
   display: none;

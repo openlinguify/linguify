@@ -94,8 +94,12 @@ class MatchingStudyMode {
             window.revisionMain.hideAllSections();
         }
         
-        // Show matching mode
-        document.getElementById('matchingStudyMode').style.display = 'block';
+        // Show matching mode with proper flex layout
+        const matchingElement = document.getElementById('matchingStudyMode');
+        if (matchingElement) {
+            matchingElement.classList.remove('study-mode-hidden');
+            matchingElement.style.display = 'flex';
+        }
         
         // Set deck name
         document.getElementById('matchingDeckName').textContent = this.currentDeck.name;
@@ -408,7 +412,11 @@ class MatchingStudyMode {
 
     exitMatchingMode() {
         // Hide matching mode
-        document.getElementById('matchingStudyMode').style.display = 'none';
+        const matchingElement = document.getElementById('matchingStudyMode');
+        if (matchingElement) {
+            matchingElement.style.display = 'none';
+            matchingElement.classList.add('study-mode-hidden');
+        }
         
         // Show deck details using centralized function
         if (window.revisionMain.appState.selectedDeck) {
