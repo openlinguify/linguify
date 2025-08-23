@@ -38,32 +38,44 @@
     {% block extra_css %}{% endblock %}
     
     <style>
-        /* Layout full-screen spécifique à revision-body */
-        body.revision-body {
-            height: 100vh;
+        /* Layout full-height pour revision app */
+        html, body {
+            height: 100%;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
+        }
+        
+        body.revision-body {
+            height: 100vh;
+            padding-top: 64px;
             overflow: hidden;
         }
         
-        body.revision-body .revision-container {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            overflow: hidden;
+        /* Header app global fixe en haut */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
         }
         
-        body.revision-body .revision-header {
+        .revision-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .revision-header {
             flex-shrink: 0;
             position: sticky;
-            top: 64px;
+            top: 0;
             z-index: 999;
             background: white;
+            border-bottom: 1px solid #e9ecef;
         }
         
-        body.revision-body .revision-main {
+        .revision-main {
             flex: 1;
             overflow: hidden;
             display: flex;
