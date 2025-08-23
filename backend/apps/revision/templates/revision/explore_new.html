@@ -286,7 +286,7 @@
                 </div>
                 
                 <!-- Notification Center -->
-                <div id="notificationCenter" class="notification-center" style="display: none;">
+                <div id="notificationCenter" class="notification-center" style="display: block;">
                     <div class="notification-header">
                         <h6 class="mb-0">
                             <i class="bi bi-bell me-2"></i>
@@ -304,32 +304,96 @@
                     
                     <div class="notification-filters">
                         <button class="notification-filter active" data-filter="all">
-                            Toutes <span class="filter-count" id="allNotificationsCount">0</span>
+                            Toutes <span class="filter-count" id="allNotificationsCount">5</span>
                         </button>
                         <button class="notification-filter" data-filter="new-decks">
-                            Nouveaux decks <span class="filter-count" id="newDecksCount">0</span>
+                            Nouveaux decks <span class="filter-count" id="newDecksCount">1</span>
                         </button>
                         <button class="notification-filter" data-filter="favorites-updates">
-                            Favoris <span class="filter-count" id="favoritesUpdatesCount">0</span>
+                            Favoris <span class="filter-count" id="favoritesUpdatesCount">1</span>
                         </button>
                         <button class="notification-filter" data-filter="collections-activity">
-                            Collections <span class="filter-count" id="collectionsActivityCount">0</span>
+                            Collections <span class="filter-count" id="collectionsActivityCount">1</span>
                         </button>
                         <button class="notification-filter" data-filter="system">
-                            Système <span class="filter-count" id="systemNotificationsCount">0</span>
+                            Système <span class="filter-count" id="systemNotificationsCount">1</span>
                         </button>
                     </div>
                     
                     <div class="notification-list" id="notificationList">
-                        <!-- Notifications will be populated by JavaScript -->
-                        <div class="notification-item placeholder">
-                            <div class="notification-icon">
-                                <i class="bi bi-info-circle text-muted"></i>
+                        <!-- Sample notifications for testing -->
+                        <div class="notification-item" data-type="new-decks">
+                            <div class="notification-icon new-deck">
+                                <i class="bi bi-plus-circle"></i>
                             </div>
                             <div class="notification-content">
-                                <p class="notification-title">Aucune notification</p>
-                                <p class="notification-text">Vous êtes à jour avec toutes les nouveautés!</p>
-                                <small class="notification-time text-muted">Maintenant</small>
+                                <p class="notification-title">Nouveaux decks d'anglais disponibles</p>
+                                <p class="notification-text">5 nouveaux decks de vocabulaire anglais ont été ajoutés par la communauté</p>
+                                <small class="notification-time">2h</small>
+                                <div class="notification-actions-item">
+                                    <button class="notification-action-btn primary">Voir</button>
+                                    <button class="notification-action-btn secondary">Ignorer</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item" data-type="favorites-updates">
+                            <div class="notification-icon favorite-update">
+                                <i class="bi bi-heart-fill"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="notification-title">Mise à jour d'un favori</p>
+                                <p class="notification-text">Le deck "Vocabulaire Espagnol A2" a été mis à jour avec 20 nouvelles cartes</p>
+                                <small class="notification-time">6h</small>
+                                <div class="notification-actions-item">
+                                    <button class="notification-action-btn primary">Voir</button>
+                                    <button class="notification-action-btn secondary">Ignorer</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item" data-type="collections-activity">
+                            <div class="notification-icon collection-activity">
+                                <i class="bi bi-collection"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="notification-title">Activité dans vos collections</p>
+                                <p class="notification-text">Un nouveau deck a été ajouté à votre collection "Langues Européennes"</p>
+                                <small class="notification-time">12h</small>
+                                <div class="notification-actions-item">
+                                    <button class="notification-action-btn primary">Voir</button>
+                                    <button class="notification-action-btn secondary">Ignorer</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item" data-type="recommendations">
+                            <div class="notification-icon recommendation">
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="notification-title">Recommandation personnalisée</p>
+                                <p class="notification-text">Basé sur votre activité, nous vous recommandons "Grammaire Française Avancée"</p>
+                                <small class="notification-time">1j</small>
+                                <div class="notification-actions-item">
+                                    <button class="notification-action-btn primary">Voir</button>
+                                    <button class="notification-action-btn secondary">Ignorer</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item" data-type="system">
+                            <div class="notification-icon system">
+                                <i class="bi bi-gear-fill"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="notification-title">Nouvelles fonctionnalités</p>
+                                <p class="notification-text">Découvrez les nouvelles options de recherche vocale et de filtres avancés</p>
+                                <small class="notification-time">2j</small>
+                                <div class="notification-actions-item">
+                                    <button class="notification-action-btn primary">Voir</button>
+                                    <button class="notification-action-btn secondary">Ignorer</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -991,6 +1055,56 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Notification Center Script -->
+<script>
+// Simple notification center functionality
+function toggleNotificationCenter() {
+    const center = document.getElementById('notificationCenter');
+    const isVisible = center.style.display !== 'none';
+    center.style.display = isVisible ? 'none' : 'block';
+}
+
+// Filter notifications
+document.addEventListener('DOMContentLoaded', function() {
+    const filters = document.querySelectorAll('.notification-filter');
+    const items = document.querySelectorAll('.notification-item');
+    
+    filters.forEach(filter => {
+        filter.addEventListener('click', function() {
+            // Remove active class from all filters
+            filters.forEach(f => f.classList.remove('active'));
+            // Add active class to clicked filter
+            this.classList.add('active');
+            
+            const filterType = this.getAttribute('data-filter');
+            
+            // Show/hide notifications based on filter
+            items.forEach(item => {
+                const itemType = item.getAttribute('data-type');
+                if (filterType === 'all' || itemType === filterType) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+
+// Placeholder functions for missing handlers
+function markAllNotificationsRead() {
+    console.log('Marking all notifications as read...');
+}
+
+function showNotificationSettings() {
+    console.log('Opening notification settings...');
+}
+
+function showAllNotifications() {
+    console.log('Opening all notifications modal...');
+}
+</script>
+
 <!-- Service Worker Registration -->
 <script>
 if ('serviceWorker' in navigator) {
