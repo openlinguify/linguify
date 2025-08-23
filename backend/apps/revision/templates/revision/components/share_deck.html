@@ -2,34 +2,34 @@
 <!-- DEBUG: share_deck.html component is being included -->
 <div id="share-component-debug-marker" style="display: none;">share_deck.html included</div>
 <!-- Modal de partage - Jeu de cartes privé -->
-<div class="fixed inset-0 z-50 hidden" id="makePublicModal" aria-hidden="true">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-        <div class="relative bg-white rounded-lg max-w-lg w-full mx-auto shadow-xl">
+<div class="modal-overlay" id="makePublicModal" aria-hidden="true">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" aria-hidden="true"></div>
+        <div class="modal-content">
             <!-- Header -->
-            <div class="flex items-start justify-between p-6 pb-3">
-                <div class="flex items-center">
-                    <div class="flex items-center justify-center w-12 h-12 bg-primary-100 rounded-full mr-4">
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-primary">
                         <i class="bi bi-globe2 text-linguify-primary text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-1">Rendre votre deck public</h3>
-                        <p class="text-sm text-gray-500">Permettez à d'autres utilisateurs de le découvrir et l'utiliser</p>
+                        <h3 class="modal-title">Rendre votre deck public</h3>
+                        <p class="modal-subtitle">Permettez à d'autres utilisateurs de le découvrir et l'utiliser</p>
                     </div>
                 </div>
-                <button type="button" class="text-gray-400 hover:text-gray-600" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
                     <i class="bi bi-x-lg text-xl"></i>
                 </button>
             </div>
             
             <!-- Body -->
-            <div class="px-6 pb-4">
-                <div class="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-4">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
+            <div class="modal-body">
+                <div class="alert-box alert-primary">
+                    <div class="alert-content">
+                        <div class="alert-icon">
                             <i class="bi bi-info-circle-fill text-linguify-primary text-lg"></i>
                         </div>
-                        <div class="ml-3">
+                        <div>
                             <h4 class="text-sm font-medium text-linguify-primary-dark">Deck actuellement privé</h4>
                             <p class="mt-1 text-sm text-linguify-primary">Ce deck n'est visible que par vous. Rendez-le public pour le partager avec d'autres personnes.</p>
                         </div>
@@ -37,39 +37,39 @@
                 </div>
                 
                 <div class="mb-4">
-                    <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
-                        <i class="bi bi-eye text-linguify-primary mr-2"></i>
+                    <h4 class="section-title">
+                        <i class="bi bi-eye text-linguify-primary"></i>
                         Ce qui se passera en rendant ce deck public :
                     </h4>
-                    <ul class="space-y-2">
-                        <li class="flex items-start">
-                            <i class="bi bi-check-circle text-linguify-success mr-3 mt-0.5 flex-shrink-0"></i>
-                            <span class="text-sm text-gray-700">Il apparaîtra dans la section "Explorer" pour tous</span>
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
+                            <span class="feature-text">Il apparaîtra dans la section "Explorer" pour tous</span>
                         </li>
-                        <li class="flex items-start">
-                            <i class="bi bi-check-circle text-linguify-success mr-3 mt-0.5 flex-shrink-0"></i>
-                            <span class="text-sm text-gray-700">Vous obtiendrez un lien partageable</span>
+                        <li class="feature-item">
+                            <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
+                            <span class="feature-text">Vous obtiendrez un lien partageable</span>
                         </li>
-                        <li class="flex items-start">
-                            <i class="bi bi-check-circle text-linguify-success mr-3 mt-0.5 flex-shrink-0"></i>
-                            <span class="text-sm text-gray-700">Vous restez propriétaire et gardez tous vos droits</span>
+                        <li class="feature-item">
+                            <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
+                            <span class="feature-text">Vous restez propriétaire et gardez tous vos droits</span>
                         </li>
                     </ul>
                 </div>
                 
-                <div class="flex items-start text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
-                    <i class="bi bi-shield-check text-linguify-success mr-2 mt-0.5 flex-shrink-0"></i>
+                <div class="info-text">
+                    <i class="bi bi-shield-check text-linguify-success"></i>
                     <span>Vous pourrez toujours rendre votre deck privé plus tard en un clic.</span>
                 </div>
             </div>
             
             <!-- Footer -->
-            <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 rounded-b-lg">
-                <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle mr-2"></i>Annuler
+            <div class="modal-footer">
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Annuler
                 </button>
-                <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-linguify-gradient border border-transparent rounded-md shadow-sm hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-linguify-accent focus:ring-offset-2" id="makeDeckPublicBtn">
-                    <i class="bi bi-globe2 mr-2"></i>Rendre public
+                <button type="button" class="btn-linguify" id="makeDeckPublicBtn">
+                    <i class="bi bi-globe2"></i>Rendre public
                 </button>
             </div>
         </div>
@@ -140,11 +140,11 @@
             
             <!-- Footer -->
             <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 rounded-b-lg">
-                <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle mr-2"></i>Annuler
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Annuler
                 </button>
-                <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-linguify-gradient border border-transparent rounded-md shadow-sm hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-linguify-accent focus:ring-offset-2" id="makeDeckPrivateBtn">
-                    <i class="bi bi-lock mr-2"></i>Rendre privé
+                <button type="button" class="btn-linguify" id="makeDeckPrivateBtn">
+                    <i class="bi bi-lock"></i>Rendre privé
                 </button>
             </div>
         </div>
@@ -236,8 +236,8 @@
             
             <!-- Footer -->
             <div class="flex justify-end px-6 py-4 bg-gray-50 rounded-b-lg">
-                <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle mr-2"></i>Fermer
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Fermer
                 </button>
             </div>
         </div>
