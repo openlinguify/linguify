@@ -3059,30 +3059,49 @@ function handleSortFilter() {
 
 // Tags filter functions
 function toggleTagsFilter() {
+    console.log('toggleTagsFilter called');
     const dropdown = document.getElementById('tagsFilterDropdown');
     const toggle = document.getElementById('tagsFilterToggle');
+    
+    console.log('Dropdown element:', dropdown);
+    console.log('Toggle element:', toggle);
+    
+    if (!dropdown || !toggle) {
+        console.error('Required elements not found for tags filter');
+        return;
+    }
     
     // Check if dropdown is visible using computed style, not inline style
     const isVisible = dropdown.classList.contains('show') || 
                      (window.getComputedStyle(dropdown).display !== 'none' && dropdown.style.display !== 'none');
     
+    console.log('Is dropdown visible:', isVisible);
+    
     if (!isVisible) {
+        console.log('Opening dropdown');
         loadTagsFilter();
         
-        // Position the dropdown using fixed positioning
-        const rect = toggle.getBoundingClientRect();
-        dropdown.style.top = (rect.bottom + 4) + 'px';  // 4px gap below button
-        dropdown.style.left = (rect.right - 200) + 'px'; // Align right edge with dropdown width
-        
-        // S'assurer que le dropdown ne dépasse pas de l'écran
-        const dropdownWidth = 200;
-        if (rect.right - dropdownWidth < 0) {
-            dropdown.style.left = '10px'; // Marge minimale du bord gauche
-        }
+        // Force styles directly in JavaScript
+        dropdown.style.cssText = `
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            min-width: 280px;
+            max-width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: block;
+            margin-top: 4px;
+        `;
         
         dropdown.classList.add('show');
-        dropdown.style.display = 'block';
         toggle.classList.add('active');
+        console.log('Dropdown should now be visible');
     } else {
         dropdown.classList.remove('show');
         dropdown.style.display = 'none';
@@ -3105,21 +3124,85 @@ async function loadTagsFilter() {
     const dropdown = document.getElementById('tagsFilterDropdown');
     
     try {
-        const response = await window.apiService.request('/api/v1/revision/tags/');
-        const tags = response.tags || [];
+        // Get tags from loaded decks instead of API call
+        const tags = new Set();
+        if (appState.decks) {
+            appState.decks.forEach(deck => {
+                if (deck.tags && Array.isArray(deck.tags)) {
+                    deck.tags.forEach(tag => tags.add(tag));
+                }
+            });
+        }
+        
+        const tagsArray = Array.from(tags).sort();
+        
+        if (tagsArray.length === 0) {
+            dropdown.innerHTML = `
+                <div class="tags-filter-empty" style="
+                    padding: 24px 16px;
+                    text-align: center;
+                    color: #9ca3af;
+                    font-size: 14px;
+                ">
+                    <i class="bi bi-tags" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+                    <div>Aucun tag disponible</div>
+                </div>
+            `;
+            return;
+        }
         
         dropdown.innerHTML = `
-            <div class="tags-filter-header">
+            <div class="tags-filter-header" style="
+                padding: 12px 16px;
+                border-bottom: 1px solid #e5e7eb;
+                font-weight: 600;
+                font-size: 14px;
+                color: #374151;
+                background-color: #f9fafb;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            ">
                 <span>Filtrer par tags</span>
-                <button class="btn btn-link btn-sm p-0" onclick="clearTagsFilter()">
+                <button class="btn btn-link btn-sm p-0" onclick="clearTagsFilter()" style="
+                    background: none;
+                    border: none;
+                    color: #6b7280;
+                    cursor: pointer;
+                    padding: 4px;
+                ">
                     <i class="bi bi-x-circle"></i>
                 </button>
             </div>
-            <div class="tags-filter-list">
-                ${tags.map(tag => `
+            <div class="tags-filter-list" style="padding: 8px 0;">
+                ${tagsArray.map(tag => `
                     <div class="tags-filter-item ${appState.filters.tags.includes(tag) ? 'active' : ''}" 
-                         onclick="toggleTagFilter('${tag}')">
-                        ${tag}
+                         onclick="toggleTagFilter('${tag}')" style="
+                         display: flex;
+                         align-items: center;
+                         padding: 8px 16px;
+                         cursor: pointer;
+                         font-size: 14px;
+                         color: #374151;
+                         transition: background-color 0.15s ease;
+                         ${appState.filters.tags.includes(tag) ? 'background-color: #eff6ff; color: #2563eb;' : ''}
+                    " onmouseover="this.style.backgroundColor='#f3f4f6'" 
+                       onmouseout="this.style.backgroundColor='${appState.filters.tags.includes(tag) ? '#eff6ff' : 'transparent'}'">
+                        <div style="
+                            margin-right: 8px;
+                            width: 16px;
+                            height: 16px;
+                            border: 1px solid #d1d5db;
+                            border-radius: 3px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            ${appState.filters.tags.includes(tag) ? 'background-color: #2D5BBA; border-color: #2D5BBA; color: white;' : ''}
+                        ">
+                            ${appState.filters.tags.includes(tag) ? '<i class="bi bi-check" style="font-size: 10px;"></i>' : ''}
+                        </div>
+                        <div style="flex: 1;">${tag}</div>
                     </div>
                 `).join('')}
             </div>
@@ -3450,7 +3533,17 @@ function setupEventListeners() {
     });
     
     // Tags filter
-    document.getElementById('tagsFilterToggle')?.addEventListener('click', toggleTagsFilter);
+    const tagsToggleElement = document.getElementById('tagsFilterToggle');
+    console.log('Tags toggle element found:', tagsToggleElement);
+    if (tagsToggleElement) {
+        tagsToggleElement.addEventListener('click', function(e) {
+            console.log('Tags filter clicked!');
+            toggleTagsFilter();
+        });
+        console.log('Tags filter event listener attached');
+    } else {
+        console.error('tagsFilterToggle element not found');
+    }
     document.addEventListener('click', handleTagsFilterOutsideClick);
     
     // Buttons
