@@ -3061,9 +3061,6 @@ function handleSortFilter() {
 function toggleTagsFilter() {
     console.log('toggleTagsFilter called');
     
-    // Close all other dropdowns first
-    closeAllFilterDropdowns();
-    
     const dropdown = document.getElementById('tagsFilterDropdown');
     const toggle = document.getElementById('tagsFilterToggle');
     
@@ -3082,34 +3079,9 @@ function toggleTagsFilter() {
     console.log('Is dropdown visible:', isVisible);
     
     if (!isVisible) {
-        console.log('Opening dropdown');
+        // Load tags when dropdown is opened (Bootstrap handles the rest)
         loadTagsFilter();
-        
-        // Force styles directly in JavaScript
-        dropdown.style.cssText = `
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            min-width: 280px;
-            max-width: 320px;
-            max-height: 400px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: block;
-            margin-top: 4px;
-        `;
-        
-        dropdown.classList.add('show');
-        toggle.classList.add('active');
-        console.log('Dropdown should now be visible');
-    } else {
-        dropdown.classList.remove('show');
-        dropdown.style.display = 'none';
-        toggle.classList.remove('active');
+        console.log('Tags loaded for Bootstrap dropdown');
     }
 }
 
@@ -3156,23 +3128,18 @@ async function loadTagsFilter() {
         }
         
         dropdown.innerHTML = `
-            <div class="tags-filter-header">
-                <span>Filtrer par tags</span>
-                <button onclick="clearTagsFilter()" class="tags-filter-clear">
+            <li><h6 class="dropdown-header">Filtrer par tags 
+                <button onclick="clearTagsFilter()" class="btn btn-sm btn-link p-0 float-end">
                     <i class="bi bi-x-circle"></i>
                 </button>
-            </div>
-            <div class="tags-filter-content">
-                ${tagsArray.map(tag => `
-                    <div class="tags-filter-item ${appState.filters.tags.includes(tag) ? 'selected' : ''}" 
-                         onclick="toggleTagFilter('${tag}')">
-                        <div class="tags-filter-checkbox ${appState.filters.tags.includes(tag) ? 'checked' : ''}">
-                            ${appState.filters.tags.includes(tag) ? '<i class="bi bi-check" style="font-size: 10px;"></i>' : ''}
-                        </div>
-                        <div class="tags-filter-label">${tag}</div>
-                    </div>
-                `).join('')}
-            </div>
+            </h6></li>
+            ${tagsArray.map(tag => `
+                <li><a class="dropdown-item ${appState.filters.tags.includes(tag) ? 'active' : ''}" 
+                       href="#" onclick="toggleTagFilter('${tag}')">
+                    <i class="bi ${appState.filters.tags.includes(tag) ? 'bi-check-square' : 'bi-square'} me-2"></i>
+                    ${tag}
+                </a></li>
+            `).join('')}
         `;
     } catch (error) {
         console.error('Erreur lors du chargement des tags:', error);
@@ -3348,71 +3315,15 @@ function loadMoreDecks() {
     }
 }
 
-// Custom filter dropdown functions
+// Simplified filter functions using Bootstrap dropdowns
 function setupFilterDropdowns() {
-    // Status filter dropdown
-    const statusToggle = document.getElementById('statusFilterToggle');
-    const statusDropdown = document.getElementById('statusFilterDropdown');
-    
-    if (statusToggle && statusDropdown) {
-        statusToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            toggleFilterDropdown('statusFilter');
-        });
-    }
-    
-    // Sort filter dropdown  
-    const sortToggle = document.getElementById('sortFilterToggle');
-    const sortDropdown = document.getElementById('sortFilterDropdown');
-    
-    if (sortToggle && sortDropdown) {
-        sortToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            toggleFilterDropdown('sortFilter');
-        });
-    }
-    
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function() {
-        closeAllFilterDropdowns();
-    });
-}
-
-function toggleFilterDropdown(filterType) {
-    const dropdown = document.getElementById(filterType + 'Dropdown');
-    const button = document.getElementById(filterType + 'Toggle');
-    
-    // Close other dropdowns first
-    closeAllFilterDropdowns();
-    
-    if (dropdown && button) {
-        const isOpen = dropdown.classList.contains('show');
-        if (!isOpen) {
-            dropdown.classList.add('show');
-            button.classList.add('open');
-        }
-    }
-}
-
-function closeAllFilterDropdowns() {
-    // Close custom filter dropdowns
-    const dropdowns = document.querySelectorAll('.filter-dropdown');
-    const buttons = document.querySelectorAll('.filter-dropdown-button');
-    
-    dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
-    buttons.forEach(button => button.classList.remove('open'));
-    
-    // Also close tags filter dropdown
-    const tagsDropdown = document.getElementById('tagsFilterDropdown');
-    if (tagsDropdown) {
-        tagsDropdown.classList.remove('show');
-        tagsDropdown.style.display = 'none';
-    }
+    // Les dropdowns Bootstrap se gèrent automatiquement
+    console.log('Bootstrap dropdowns initialized');
 }
 
 function selectStatusFilter(value, text) {
     const textElement = document.getElementById('statusFilterText');
-    const items = document.querySelectorAll('#statusFilterDropdown .filter-dropdown-item');
+    const items = document.querySelectorAll('#statusFilterDropdown .dropdown-item');
     
     if (textElement) {
         textElement.textContent = text;
@@ -3420,22 +3331,25 @@ function selectStatusFilter(value, text) {
     
     // Update selected state
     items.forEach(item => {
-        if (item.dataset.value === value) {
-            item.classList.add('selected');
-        } else {
-            item.classList.remove('selected');
-        }
+        item.classList.remove('active');
     });
+    
+    // Find and mark the selected item
+    const selectedItem = Array.from(items).find(item => 
+        item.onclick && item.onclick.toString().includes(`'${value}'`)
+    );
+    if (selectedItem) {
+        selectedItem.classList.add('active');
+    }
     
     // Update app state and reload decks
     appState.filters.status = value;
     loadDecks();
-    closeAllFilterDropdowns();
 }
 
 function selectSortFilter(value, text) {
     const textElement = document.getElementById('sortFilterText');
-    const items = document.querySelectorAll('#sortFilterDropdown .filter-dropdown-item');
+    const items = document.querySelectorAll('#sortFilterDropdown .dropdown-item');
     
     if (textElement) {
         textElement.textContent = text;
@@ -3443,17 +3357,20 @@ function selectSortFilter(value, text) {
     
     // Update selected state
     items.forEach(item => {
-        if (item.dataset.value === value) {
-            item.classList.add('selected');
-        } else {
-            item.classList.remove('selected');
-        }
+        item.classList.remove('active');
     });
+    
+    // Find and mark the selected item
+    const selectedItem = Array.from(items).find(item => 
+        item.onclick && item.onclick.toString().includes(`'${value}'`)
+    );
+    if (selectedItem) {
+        selectedItem.classList.add('active');
+    }
     
     // Update app state and reload decks
     appState.filters.sort = value;
     loadDecks();
-    closeAllFilterDropdowns();
 }
 
 // UI functions

@@ -71,41 +71,40 @@
         <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
         
         <!-- Status Filter Dropdown -->
-        <div class="filter-dropdown-container">
-            <button id="statusFilterToggle" class="filter-dropdown-button" style="width: 110px; min-width: 90px;">
+        <div class="dropdown">
+            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
                 <span id="statusFilterText">Tous les statuts</span>
-                <i class="bi bi-chevron-down"></i>
             </button>
-            <div id="statusFilterDropdown" class="filter-dropdown">
-                <div class="filter-dropdown-item" data-value="" onclick="selectStatusFilter('', 'Tous les statuts')">Tous les statuts</div>
-                <div class="filter-dropdown-item" data-value="active" onclick="selectStatusFilter('active', 'Actifs')">Actifs</div>
-                <div class="filter-dropdown-item" data-value="archived" onclick="selectStatusFilter('archived', 'Archivés')">Archivés</div>
-                <div class="filter-dropdown-item" data-value="public" onclick="selectStatusFilter('public', 'Publics')">Publics</div>
-            </div>
+            <ul id="statusFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous les statuts')">Tous les statuts</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('active', 'Actifs')">Actifs</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('archived', 'Archivés')">Archivés</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('public', 'Publics')">Publics</a></li>
+            </ul>
         </div>
         
         <!-- Sort Filter Dropdown -->
-        <div class="filter-dropdown-container">
-            <button id="sortFilterToggle" class="filter-dropdown-button" style="width: 110px; min-width: 90px;">
+        <div class="dropdown">
+            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
                 <span id="sortFilterText">Plus récents</span>
-                <i class="bi bi-chevron-down"></i>
             </button>
-            <div id="sortFilterDropdown" class="filter-dropdown">
-                <div class="filter-dropdown-item" data-value="updated_desc" onclick="selectSortFilter('updated_desc', 'Plus récents')">Plus récents</div>
-                <div class="filter-dropdown-item" data-value="name_asc" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</div>
-                <div class="filter-dropdown-item" data-value="progress_desc" onclick="selectSortFilter('progress_desc', 'Progression')">Progression</div>
-            </div>
+            <ul id="sortFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">Plus récents</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('progress_desc', 'Progression')">Progression</a></li>
+            </ul>
         </div>
         
-        <div class="tags-filter-container">
-            <button id="tagsFilterToggle" class="btn-tags-filter">
+        <!-- Tags Filter Dropdown -->
+        <div class="dropdown">
+            <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" data-bs-toggle="dropdown">
                 <i class="bi bi-tags"></i>
                 <span class="d-none d-lg-inline">Tags</span>
                 <span class="tags-filter-count" id="tagsFilterCount">0</span>
             </button>
-            <div id="tagsFilterDropdown" class="tags-filter-dropdown">
+            <ul id="tagsFilterDropdown" class="dropdown-menu">
                 <!-- Tags will be dynamically loaded here -->
-            </div>
+            </ul>
         </div>
         
         <!-- Actions - Only show when no deck is selected -->
