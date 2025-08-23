@@ -3058,30 +3058,45 @@ function handleSortFilter() {
 }
 
 // Tags filter functions
+// Enhanced Tags Filter with Advanced Error Handling
 function toggleTagsFilter() {
-    console.log('toggleTagsFilter called');
-    
-    const dropdown = document.getElementById('tagsFilterDropdown');
-    const toggle = document.getElementById('tagsFilterToggle');
-    
-    console.log('Dropdown element:', dropdown);
-    console.log('Toggle element:', toggle);
-    
-    if (!dropdown || !toggle) {
-        console.error('Required elements not found for tags filter');
-        return;
-    }
-    
-    // Check if dropdown is visible using computed style, not inline style
-    const isVisible = dropdown.classList.contains('show') || 
-                     (window.getComputedStyle(dropdown).display !== 'none' && dropdown.style.display !== 'none');
-    
-    console.log('Is dropdown visible:', isVisible);
-    
-    if (!isVisible) {
-        // Load tags when dropdown is opened (Bootstrap handles the rest)
-        loadTagsFilter();
-        console.log('Tags loaded for Bootstrap dropdown');
+    try {
+        console.log('🏷️ toggleTagsFilter called');
+        
+        // Advanced element validation with detailed error reporting
+        const dropdown = document.getElementById('tagsFilterDropdown');
+        const toggle = document.getElementById('tagsFilterToggle');
+        
+        if (!dropdown) {
+            throw new Error('CRITICAL: tagsFilterDropdown element not found in DOM');
+        }
+        if (!toggle) {
+            throw new Error('CRITICAL: tagsFilterToggle button not found in DOM');
+        }
+        
+        console.log('✅ Elements validated successfully');
+        
+        // Always load tags when dropdown is about to be shown (Bootstrap event handling)
+        loadTagsFilter().catch(error => {
+            console.error('❌ Error loading tags for dropdown:', error);
+            showNavbarError('Erreur lors du chargement des tags', 'error');
+        });
+        
+        console.log('✅ Tags loading initiated for Bootstrap dropdown');
+        
+    } catch (error) {
+        console.error('❌ CRITICAL ERROR in toggleTagsFilter:', error.message);
+        showNavbarError('Erreur critique dans les filtres tags', 'critical');
+        
+        // Advanced error recovery - try to reset the tags filter
+        try {
+            const dropdown = document.querySelector('#tagsFilterDropdown');
+            if (dropdown) {
+                dropdown.innerHTML = '<li><a class="dropdown-item text-muted" href="#">Erreur - Réessayez</a></li>';
+            }
+        } catch (recoveryError) {
+            console.error('❌ Recovery failed:', recoveryError.message);
+        }
     }
 }
 
@@ -3313,62 +3328,341 @@ function loadMoreDecks() {
     }
 }
 
-// Simplified filter functions using Bootstrap dropdowns
+// Advanced Navbar Error Management System
+function showNavbarError(message, severity = 'warning', duration = 5000) {
+    try {
+        const errorId = `navbar-error-${Date.now()}`;
+        const severityClasses = {
+            info: 'alert-info',
+            warning: 'alert-warning', 
+            error: 'alert-danger',
+            critical: 'alert-danger border-danger'
+        };
+        
+        const severityIcons = {
+            info: 'bi-info-circle',
+            warning: 'bi-exclamation-triangle',
+            error: 'bi-x-circle', 
+            critical: 'bi-shield-exclamation'
+        };
+        
+        // Create error notification
+        const errorHtml = `
+            <div id="${errorId}" class="alert ${severityClasses[severity]} alert-dismissible fade show position-fixed" 
+                 style="top: 80px; right: 20px; z-index: 9999; min-width: 300px; max-width: 500px;">
+                <i class="bi ${severityIcons[severity]} me-2"></i>
+                <strong>${severity.toUpperCase()}:</strong> ${message}
+                <button type="button" class="btn-close" onclick="dismissNavbarError('${errorId}')"></button>
+            </div>
+        `;
+        
+        // Inject into DOM
+        const existingError = document.getElementById(errorId);
+        if (!existingError) {
+            document.body.insertAdjacentHTML('beforeend', errorHtml);
+            
+            // Auto-dismiss after duration
+            if (duration > 0) {
+                setTimeout(() => dismissNavbarError(errorId), duration);
+            }
+            
+            console.log(`📢 Navbar error shown: [${severity.toUpperCase()}] ${message}`);
+        }
+        
+        // Additional critical error handling
+        if (severity === 'critical') {
+            // Log to external service (if available)
+            if (window.analytics && window.analytics.track) {
+                window.analytics.track('Navbar Critical Error', {
+                    message, 
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent
+                });
+            }
+            
+            // Disable navbar temporarily to prevent cascading errors
+            const navbar = document.querySelector('.navbar-linguify');
+            if (navbar) {
+                navbar.style.pointerEvents = 'none';
+                navbar.style.opacity = '0.7';
+                
+                // Re-enable after 3 seconds
+                setTimeout(() => {
+                    navbar.style.pointerEvents = '';
+                    navbar.style.opacity = '';
+                }, 3000);
+            }
+        }
+        
+    } catch (errorHandlingError) {
+        console.error('❌ Error in error handling system:', errorHandlingError.message);
+        // Fallback to basic alert
+        alert(`NAVBAR ERROR [${severity}]: ${message}`);
+    }
+}
+
+function dismissNavbarError(errorId) {
+    try {
+        const errorElement = document.getElementById(errorId);
+        if (errorElement) {
+            errorElement.classList.remove('show');
+            setTimeout(() => errorElement.remove(), 300);
+            console.log(`✅ Error dismissed: ${errorId}`);
+        }
+    } catch (error) {
+        console.error('❌ Error dismissing error notification:', error.message);
+    }
+}
+
+// Advanced Navbar Health Check System
+function performNavbarHealthCheck() {
+    const healthReport = {
+        timestamp: new Date().toISOString(),
+        status: 'healthy',
+        issues: [],
+        warnings: []
+    };
+    
+    try {
+        // Check critical elements
+        const criticalElements = [
+            'statusFilterToggle',
+            'sortFilterToggle', 
+            'tagsFilterToggle',
+            'searchInput'
+        ];
+        
+        criticalElements.forEach(elementId => {
+            const element = document.getElementById(elementId);
+            if (!element) {
+                healthReport.issues.push(`Missing critical element: ${elementId}`);
+                healthReport.status = 'degraded';
+            }
+        });
+        
+        // Check appState integrity
+        if (!appState) {
+            healthReport.issues.push('appState is undefined');
+            healthReport.status = 'critical';
+        } else {
+            if (!appState.filters) {
+                healthReport.issues.push('appState.filters is undefined');
+                healthReport.status = 'degraded';
+            }
+            if (!Array.isArray(appState.decks)) {
+                healthReport.warnings.push('appState.decks is not an array');
+            }
+        }
+        
+        // Check Bootstrap dependencies
+        if (typeof bootstrap === 'undefined') {
+            healthReport.warnings.push('Bootstrap JavaScript not loaded');
+        }
+        
+        console.log('🔍 Navbar Health Check:', healthReport);
+        
+        if (healthReport.issues.length > 0) {
+            showNavbarError(
+                `Issues détectés: ${healthReport.issues.join(', ')}`, 
+                healthReport.status === 'critical' ? 'critical' : 'error'
+            );
+        }
+        
+        return healthReport;
+        
+    } catch (error) {
+        console.error('❌ Health check failed:', error.message);
+        return { status: 'unknown', error: error.message };
+    }
+}
+
+// Enhanced Bootstrap Dropdowns with Advanced Error Handling
 function setupFilterDropdowns() {
-    // Les dropdowns Bootstrap se gèrent automatiquement
-    console.log('Bootstrap dropdowns initialized');
+    try {
+        console.log('🔧 Setting up Bootstrap dropdowns with error handling...');
+        
+        // Perform health check first
+        const healthReport = performNavbarHealthCheck();
+        
+        if (healthReport.status === 'critical') {
+            throw new Error('Critical navbar health issues detected');
+        }
+        
+        // Set up Bootstrap dropdown events for tags filter (fixes the re-click issue)
+        const tagsToggle = document.getElementById('tagsFilterToggle');
+        if (tagsToggle) {
+            // Bootstrap event: dropdown is about to be shown
+            tagsToggle.addEventListener('show.bs.dropdown', function (event) {
+                try {
+                    console.log('🏷️ Tags dropdown about to open - loading tags...');
+                    loadTagsFilter().catch(error => {
+                        console.error('❌ Error loading tags on dropdown open:', error);
+                        showNavbarError('Erreur lors du chargement des tags', 'error');
+                    });
+                } catch (error) {
+                    console.error('❌ Error in show.bs.dropdown handler:', error.message);
+                    showNavbarError('Erreur lors de l\'ouverture du menu tags', 'error');
+                }
+            });
+            
+            // Bootstrap event: dropdown was hidden
+            tagsToggle.addEventListener('hidden.bs.dropdown', function (event) {
+                console.log('🏷️ Tags dropdown closed');
+            });
+            
+            console.log('✅ Tags dropdown events configured');
+        } else {
+            console.warn('⚠️ Tags toggle button not found');
+        }
+        
+        // Set up error resilience for other dropdowns
+        ['statusFilterToggle', 'sortFilterToggle'].forEach(toggleId => {
+            const toggle = document.getElementById(toggleId);
+            if (toggle) {
+                toggle.addEventListener('show.bs.dropdown', function (event) {
+                    console.log(`📊 ${toggleId} dropdown opening`);
+                });
+                
+                toggle.addEventListener('hidden.bs.dropdown', function (event) {
+                    console.log(`📊 ${toggleId} dropdown closed`);
+                });
+            } else {
+                console.warn(`⚠️ ${toggleId} not found`);
+            }
+        });
+        
+        // Set up global error catching for dropdown interactions
+        document.addEventListener('click', function(event) {
+            try {
+                const target = event.target;
+                if (target.classList.contains('dropdown-item')) {
+                    console.log('📊 Dropdown item clicked:', target.textContent.trim());
+                }
+            } catch (error) {
+                console.warn('⚠️ Minor error in dropdown click handler:', error.message);
+            }
+        });
+        
+        console.log('✅ Bootstrap dropdowns initialized with advanced error handling');
+        
+    } catch (error) {
+        console.error('❌ CRITICAL ERROR in setupFilterDropdowns:', error.message);
+        showNavbarError('Erreur critique lors de l\'initialisation des filtres', 'critical');
+        
+        // Fallback: basic functionality
+        console.log('🔄 Attempting basic dropdown fallback...');
+        try {
+            const tagsToggle = document.querySelector('#tagsFilterToggle');
+            if (tagsToggle) {
+                tagsToggle.onclick = function() {
+                    console.log('🔄 Fallback tags toggle clicked');
+                    loadTagsFilter().catch(err => console.error('Fallback error:', err));
+                };
+            }
+        } catch (fallbackError) {
+            console.error('❌ Even fallback failed:', fallbackError.message);
+        }
+    }
 }
 
 function selectStatusFilter(value, text) {
-    const textElement = document.getElementById('statusFilterText');
-    const items = document.querySelectorAll('#statusFilterDropdown .dropdown-item');
-    
-    if (textElement) {
+    try {
+        console.log(`📊 Status filter selected: ${value} (${text})`);
+        
+        const textElement = document.getElementById('statusFilterText');
+        const items = document.querySelectorAll('#statusFilterDropdown .dropdown-item');
+        
+        if (!textElement) {
+            throw new Error('Status filter text element not found');
+        }
+        
         textElement.textContent = text;
+        
+        // Update selected state with error handling
+        items.forEach(item => {
+            try {
+                item.classList.remove('active');
+            } catch (itemError) {
+                console.warn('⚠️ Error updating item state:', itemError.message);
+            }
+        });
+        
+        // Find and mark the selected item
+        const selectedItem = Array.from(items).find(item => 
+            item.onclick && item.onclick.toString().includes(`'${value}'`)
+        );
+        if (selectedItem) {
+            selectedItem.classList.add('active');
+        }
+        
+        // Update app state and reload decks with validation
+        if (!appState.filters) {
+            console.warn('⚠️ appState.filters not initialized, creating...');
+            appState.filters = {};
+        }
+        
+        appState.filters.status = value;
+        loadDecks().catch(error => {
+            console.error('❌ Error reloading decks after status filter:', error);
+            showNavbarError('Erreur lors de l\'application du filtre', 'error');
+        });
+        
+        console.log('✅ Status filter applied successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in selectStatusFilter:', error.message);
+        showNavbarError('Erreur lors de la sélection du filtre status', 'error');
     }
-    
-    // Update selected state
-    items.forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // Find and mark the selected item
-    const selectedItem = Array.from(items).find(item => 
-        item.onclick && item.onclick.toString().includes(`'${value}'`)
-    );
-    if (selectedItem) {
-        selectedItem.classList.add('active');
-    }
-    
-    // Update app state and reload decks
-    appState.filters.status = value;
-    loadDecks();
 }
 
 function selectSortFilter(value, text) {
-    const textElement = document.getElementById('sortFilterText');
-    const items = document.querySelectorAll('#sortFilterDropdown .dropdown-item');
-    
-    if (textElement) {
+    try {
+        console.log(`📊 Sort filter selected: ${value} (${text})`);
+        
+        const textElement = document.getElementById('sortFilterText');
+        const items = document.querySelectorAll('#sortFilterDropdown .dropdown-item');
+        
+        if (!textElement) {
+            throw new Error('Sort filter text element not found');
+        }
+        
         textElement.textContent = text;
+        
+        // Update selected state with error handling
+        items.forEach(item => {
+            try {
+                item.classList.remove('active');
+            } catch (itemError) {
+                console.warn('⚠️ Error updating sort item state:', itemError.message);
+            }
+        });
+        
+        // Find and mark the selected item
+        const selectedItem = Array.from(items).find(item => 
+            item.onclick && item.onclick.toString().includes(`'${value}'`)
+        );
+        if (selectedItem) {
+            selectedItem.classList.add('active');
+        }
+        
+        // Update app state and reload decks with validation
+        if (!appState.filters) {
+            console.warn('⚠️ appState.filters not initialized, creating...');
+            appState.filters = {};
+        }
+        
+        appState.filters.sort = value;
+        loadDecks().catch(error => {
+            console.error('❌ Error reloading decks after sort filter:', error);
+            showNavbarError('Erreur lors de l\'application du tri', 'error');
+        });
+        
+        console.log('✅ Sort filter applied successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in selectSortFilter:', error.message);
+        showNavbarError('Erreur lors de la sélection du tri', 'error');
     }
-    
-    // Update selected state
-    items.forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // Find and mark the selected item
-    const selectedItem = Array.from(items).find(item => 
-        item.onclick && item.onclick.toString().includes(`'${value}'`)
-    );
-    if (selectedItem) {
-        selectedItem.classList.add('active');
-    }
-    
-    // Update app state and reload decks
-    appState.filters.sort = value;
-    loadDecks();
 }
 
 // UI functions
@@ -3996,6 +4290,11 @@ window.revisionMain = {
     initializeApp,
     getElements,
     
+    // Advanced Error Management
+    showNavbarError,
+    dismissNavbarError,
+    performNavbarHealthCheck,
+    
     
     // Import Preview
     showImportPreview,
@@ -4101,6 +4400,11 @@ function hideTailwindModal(modalElement) {
 window.confirmResetProgress = confirmResetProgress;
 window.selectStatusFilter = selectStatusFilter;
 window.selectSortFilter = selectSortFilter;
+window.toggleTagFilter = toggleTagFilter;
+window.clearTagsFilter = clearTagsFilter;
+window.showNavbarError = showNavbarError;
+window.dismissNavbarError = dismissNavbarError;
+window.selectDeck = selectDeck;
 
 // Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeApp);
