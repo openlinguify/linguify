@@ -2,64 +2,74 @@
 <!-- DEBUG: share_deck.html component is being included -->
 <div id="share-component-debug-marker" style="display: none;">share_deck.html included</div>
 <!-- Modal de partage - Jeu de cartes privé -->
-<div class="modal fade" id="makePublicModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-circle p-2 me-3 share-modal-icon-bg">
-                        <i class="bi bi-globe2 share-modal-icon"></i>
+<div class="fixed inset-0 z-50 hidden" id="makePublicModal" aria-hidden="true">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <div class="relative bg-white rounded-lg max-w-lg w-full mx-auto shadow-xl">
+            <!-- Header -->
+            <div class="flex items-start justify-between p-6 pb-3">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mr-4">
+                        <i class="bi bi-globe2 text-blue-600 text-xl"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0 share-modal-title">Rendre votre deck public</h5>
-                        <p class="text-muted mb-0 small">Permettez à d'autres utilisateurs de le découvrir et l'utiliser</p>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-1">Rendre votre deck public</h3>
+                        <p class="text-sm text-gray-500">Permettez à d'autres utilisateurs de le découvrir et l'utiliser</p>
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="text-gray-400 hover:text-gray-600" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
-            <div class="modal-body pt-2">
-                <div class="alert border-0 share-modal-alert">
-                    <div class="d-flex align-items-start">
-                        <i class="bi bi-info-circle-fill me-2 mt-1 share-modal-alert-icon"></i>
-                        <div>
-                            <strong class="share-modal-alert-title">Deck actuellement privé</strong><br>
-                            <span class="share-modal-alert-text">Ce deck n'est visible que par vous. Rendez-le public pour le partager avec d'autres personnes.</span>
+            
+            <!-- Body -->
+            <div class="px-6 pb-4">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-info-circle-fill text-blue-400 text-lg"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-medium text-blue-800">Deck actuellement privé</h4>
+                            <p class="mt-1 text-sm text-blue-700">Ce deck n'est visible que par vous. Rendez-le public pour le partager avec d'autres personnes.</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="mb-3">
-                    <h6 class="fw-semibold mb-2 share-modal-section-title">
-                        <i class="bi bi-eye me-1 share-modal-accent-icon"></i>
+                <div class="mb-4">
+                    <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
+                        <i class="bi bi-eye text-blue-600 mr-2"></i>
                         Ce qui se passera en rendant ce deck public :
-                    </h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
-                            Il apparaîtra dans la section "Explorer" pour tous
+                    </h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="bi bi-check-circle text-green-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                            <span class="text-sm text-gray-700">Il apparaîtra dans la section "Explorer" pour tous</span>
                         </li>
-                        <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
-                            Vous obtiendrez un lien partageable
+                        <li class="flex items-start">
+                            <i class="bi bi-check-circle text-green-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                            <span class="text-sm text-gray-700">Vous obtiendrez un lien partageable</span>
                         </li>
-                        <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
-                            Vous restez propriétaire et gardez tous vos droits
+                        <li class="flex items-start">
+                            <i class="bi bi-check-circle text-green-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                            <span class="text-sm text-gray-700">Vous restez propriétaire et gardez tous vos droits</span>
                         </li>
                     </ul>
                 </div>
                 
-                <div class="small share-modal-info-text">
-                    <i class="bi bi-shield-check me-1 share-modal-accent-icon"></i>
-                    Vous pourrez toujours rendre votre deck privé plus tard en un clic.
+                <div class="flex items-start text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+                    <i class="bi bi-shield-check text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                    <span>Vous pourrez toujours rendre votre deck privé plus tard en un clic.</span>
                 </div>
             </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary share-modal-cancel-btn" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i>Annuler
+            
+            <!-- Footer -->
+            <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 rounded-b-lg">
+                <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle mr-2"></i>Annuler
                 </button>
-                <button type="button" class="btn share-modal-primary-btn" id="makeDeckPublicBtn">
-                    <i class="bi bi-globe2 me-1"></i>Rendre public
+                <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" id="makeDeckPublicBtn">
+                    <i class="bi bi-globe2 mr-2"></i>Rendre public
                 </button>
             </div>
         </div>
@@ -67,64 +77,74 @@
 </div>
 
 <!-- Modal de confirmation - Rendre privé -->
-<div class="modal fade" id="makePrivateModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-circle p-2 me-3 share-modal-icon-bg">
-                        <i class="bi bi-lock share-modal-icon"></i>
+<div class="fixed inset-0 z-50 hidden" id="makePrivateModal" aria-hidden="true">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <div class="relative bg-white rounded-lg max-w-lg w-full mx-auto shadow-xl">
+            <!-- Header -->
+            <div class="flex items-start justify-between p-6 pb-3">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mr-4">
+                        <i class="bi bi-lock text-gray-600 text-xl"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0 share-modal-title">Rendre votre deck privé</h5>
-                        <p class="text-muted mb-0 small">Retirer ce deck de la section publique</p>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-1">Rendre votre deck privé</h3>
+                        <p class="text-sm text-gray-500">Retirer ce deck de la section publique</p>
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="text-gray-400 hover:text-gray-600" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
-            <div class="modal-body pt-2">
-                <div class="alert border-0 share-modal-alert">
-                    <div class="d-flex align-items-start">
-                        <i class="bi bi-exclamation-triangle-fill me-2 mt-1" style="color: var(--linguify-warning);"></i>
-                        <div>
-                            <strong class="share-modal-alert-title">Attention</strong><br>
-                            <span class="share-modal-alert-text">Cette action rendra votre deck privé. Il ne sera plus accessible publiquement.</span>
+            
+            <!-- Body -->
+            <div class="px-6 pb-4">
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-exclamation-triangle-fill text-amber-400 text-lg"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-medium text-amber-800">Attention</h4>
+                            <p class="mt-1 text-sm text-amber-700">Cette action rendra votre deck privé. Il ne sera plus accessible publiquement.</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="mb-3">
-                    <h6 class="fw-semibold mb-2 share-modal-section-title">
-                        <i class="bi bi-eye-slash me-1" style="color: var(--linguify-warning);"></i>
+                <div class="mb-4">
+                    <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
+                        <i class="bi bi-eye-slash text-amber-500 mr-2"></i>
                         Ce qui va changer :
-                    </h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-x-circle me-2" style="color: var(--linguify-error);"></i>
-                            Il ne sera plus visible dans la section "Explorer"
+                    </h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="bi bi-x-circle text-red-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                            <span class="text-sm text-gray-700">Il ne sera plus visible dans la section "Explorer"</span>
                         </li>
-                        <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-x-circle me-2" style="color: var(--linguify-error);"></i>
-                            Les liens de partage existants ne fonctionneront plus
+                        <li class="flex items-start">
+                            <i class="bi bi-x-circle text-red-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                            <span class="text-sm text-gray-700">Les liens de partage existants ne fonctionneront plus</span>
                         </li>
-                        <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
-                            Vous restez propriétaire et gardez tous vos droits
+                        <li class="flex items-start">
+                            <i class="bi bi-check-circle text-green-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                            <span class="text-sm text-gray-700">Vous restez propriétaire et gardez tous vos droits</span>
                         </li>
                     </ul>
                 </div>
                 
-                <div class="small share-modal-info-text">
-                    <i class="bi bi-shield-check me-1 share-modal-accent-icon"></i>
-                    Vous pourrez rendre ce deck public à nouveau plus tard si vous le souhaitez.
+                <div class="flex items-start text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+                    <i class="bi bi-shield-check text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                    <span>Vous pourrez rendre ce deck public à nouveau plus tard si vous le souhaitez.</span>
                 </div>
             </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary share-modal-cancel-btn" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i>Annuler
+            
+            <!-- Footer -->
+            <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 rounded-b-lg">
+                <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle mr-2"></i>Annuler
                 </button>
-                <button type="button" class="btn" id="makeDeckPrivateBtn" style="background: linear-gradient(135deg, var(--linguify-gray-light) 0%, var(--linguify-gray) 100%); border: none; color: white; font-weight: 500;">
-                    <i class="bi bi-lock me-1"></i>Rendre privé
+                <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-br from-gray-400 to-gray-600 border border-transparent rounded-md shadow-sm hover:from-gray-500 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" id="makeDeckPrivateBtn">
+                    <i class="bi bi-lock mr-2"></i>Rendre privé
                 </button>
             </div>
         </div>
@@ -132,85 +152,92 @@
 </div>
 
 <!-- Modal de partage - Jeu de cartes public -->
-<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-circle p-2 me-3 share-modal-public-icon-bg">
-                        <i class="bi bi-globe2 share-modal-public-icon"></i>
+<div class="fixed inset-0 z-50 hidden" id="shareModal" aria-hidden="true">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <div class="relative bg-white rounded-lg max-w-lg w-full mx-auto shadow-xl">
+            <!-- Header -->
+            <div class="flex items-start justify-between p-6 pb-3">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mr-4">
+                        <i class="bi bi-globe2 text-green-600 text-xl"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0 share-modal-public-title">Partager ce deck</h5>
-                        <p class="text-muted mb-0 small" id="shareModalDeckName">"Nom du jeu de cartes"</p>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-1">Partager ce deck</h3>
+                        <p class="text-sm text-gray-500" id="shareModalDeckName">"Nom du jeu de cartes"</p>
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="text-gray-400 hover:text-gray-600" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
-            <div class="modal-body pt-2">
-                <p class="mb-3 share-modal-info-text">Votre deck est public ! Partagez ce lien avec qui vous voulez :</p>
+            
+            <!-- Body -->
+            <div class="px-6 pb-4">
+                <p class="mb-4 text-sm text-gray-600">Votre deck est public ! Partagez ce lien avec qui vous voulez :</p>
                 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold share-modal-section-title">
-                        <i class="bi bi-link-45deg me-1 share-modal-icon"></i>Lien de partage
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-900 mb-2">
+                        <i class="bi bi-link-45deg mr-2 text-blue-600"></i>Lien de partage
                     </label>
-                    <div class="input-group">
-                        <input type="text" class="form-control share-modal-url-input" readonly id="shareUrl">
-                        <button class="btn share-modal-primary-btn" id="copyShareUrlBtn" type="button">
-                            <i class="bi bi-clipboard me-1"></i>Copier
+                    <div class="flex">
+                        <input type="text" class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-l-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" readonly id="shareUrl">
+                        <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" id="copyShareUrlBtn" type="button">
+                            <i class="bi bi-clipboard mr-1"></i>Copier
                         </button>
                     </div>
-                    <small class="text-success mt-1" id="copySuccessMessage" style="display: none;">
-                        <i class="bi bi-check-circle me-1"></i>Le lien a été copié !
-                    </small>
+                    <div class="mt-1 text-sm text-green-600 hidden" id="copySuccessMessage">
+                        <i class="bi bi-check-circle mr-1"></i>Le lien a été copié !
+                    </div>
                 </div>
                 
                 <div class="mb-4">
-                    <h6 class="fw-semibold mb-2 share-modal-section-title">
-                        <i class="bi bi-send me-1 share-modal-accent-icon"></i>
+                    <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
+                        <i class="bi bi-send text-blue-600 mr-2"></i>
                         Partager rapidement
-                    </h6>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <!-- Boutons de partage direct -->
-                        <button class="btn btn-outline-success btn-sm" id="shareByEmailBtn" type="button">
-                            <i class="bi bi-envelope me-1"></i>Email
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-3 py-2 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" id="shareByEmailBtn" type="button">
+                            <i class="bi bi-envelope mr-1"></i>Email
                         </button>
-                        <button class="btn btn-outline-info btn-sm" id="shareByWhatsAppBtn" type="button">
-                            <i class="bi bi-whatsapp me-1"></i>WhatsApp
+                        <button class="px-3 py-2 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" id="shareByWhatsAppBtn" type="button">
+                            <i class="bi bi-whatsapp mr-1"></i>WhatsApp
                         </button>
-                        <button class="btn btn-outline-primary btn-sm" id="shareByMessengerBtn" type="button">
-                            <i class="bi bi-messenger me-1"></i>Messenger
+                        <button class="px-3 py-2 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" id="shareByMessengerBtn" type="button">
+                            <i class="bi bi-messenger mr-1"></i>Messenger
                         </button>
-                        <button class="btn btn-outline-dark btn-sm" id="shareBySMSBtn" type="button">
-                            <i class="bi bi-chat-text me-1"></i>SMS
+                        <button class="px-3 py-2 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" id="shareBySMSBtn" type="button">
+                            <i class="bi bi-chat-text mr-1"></i>SMS
                         </button>
                     </div>
                 </div>
                 
-                <div class="mb-3">
-                    <h6 class="fw-semibold mb-2 share-modal-section-title">
-                        <i class="bi bi-share me-1 share-modal-accent-icon"></i>
+                <div class="mb-4">
+                    <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
+                        <i class="bi bi-share text-blue-600 mr-2"></i>
                         Réseaux sociaux
-                    </h6>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="twitter" type="button">
-                            <i class="bi bi-twitter me-1"></i>Twitter
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 social-share-btn" data-platform="twitter" type="button">
+                            <i class="bi bi-twitter mr-1"></i>Twitter
                         </button>
-                        <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="facebook" type="button">
-                            <i class="bi bi-facebook me-1"></i>Facebook
+                        <button class="px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 social-share-btn" data-platform="facebook" type="button">
+                            <i class="bi bi-facebook mr-1"></i>Facebook
                         </button>
-                        <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="linkedin" type="button">
-                            <i class="bi bi-linkedin me-1"></i>LinkedIn
+                        <button class="px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 social-share-btn" data-platform="linkedin" type="button">
+                            <i class="bi bi-linkedin mr-1"></i>LinkedIn
                         </button>
-                        <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="reddit" type="button">
-                            <i class="bi bi-reddit me-1"></i>Reddit
+                        <button class="px-3 py-2 text-xs font-medium text-orange-600 bg-orange-50 border border-orange-200 rounded-md hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 social-share-btn" data-platform="reddit" type="button">
+                            <i class="bi bi-reddit mr-1"></i>Reddit
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary share-modal-cancel-btn" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i>Fermer
+            
+            <!-- Footer -->
+            <div class="flex justify-end px-6 py-4 bg-gray-50 rounded-b-lg">
+                <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle mr-2"></i>Fermer
                 </button>
             </div>
         </div>
