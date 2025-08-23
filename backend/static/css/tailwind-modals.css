@@ -1890,6 +1890,13 @@ button.bg-linguify-gradient:hover,
   letter-spacing: normal;
 }
 
+/* Deck List Container */
+.deck-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 /* Deck Cards Component */
 .deck-card {
   background-color: white;
@@ -1899,6 +1906,7 @@ button.bg-linguify-gradient:hover,
   margin-bottom: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  list-style: none;
 }
 
 .deck-card:hover {
@@ -2046,6 +2054,27 @@ button.bg-linguify-gradient:hover,
 .btn-link-linguify:hover {
   background-color: rgba(0, 212, 170, 0.1);
   color: var(--linguify-primary, #2D5BBA);
+}
+
+/* Layout fixes for sidebar and main area */
+.sidebar-linguify {
+  width: 300px;
+  flex-shrink: 0;
+  height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid #e5e7eb;
+}
+
+.revision-study {
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Navbar actions group */
+.navbar-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .study-mode-icon {

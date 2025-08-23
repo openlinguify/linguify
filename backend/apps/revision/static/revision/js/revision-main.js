@@ -499,6 +499,19 @@ function hideAllSections() {
     if (elements.spacedStudyMode) elements.spacedStudyMode.style.display = 'none';
 }
 
+// Function to manage contextual navbar actions
+function updateNavbarActions(showGeneralActions = true) {
+    const generalActions = document.getElementById('generalActions');
+    
+    if (generalActions) {
+        if (showGeneralActions) {
+            generalActions.style.display = 'flex';
+        } else {
+            generalActions.style.display = 'none';
+        }
+    }
+}
+
 // UI Management Functions
 async function selectDeck(deckId) {
     try {
@@ -573,6 +586,9 @@ async function selectDeck(deckId) {
             elements.sidebar.classList.remove('show');
         }
         
+        // Hide general actions when deck is selected
+        updateNavbarActions(false);
+        
     } catch (error) {
         console.error('Error loading deck:', error);
         
@@ -624,8 +640,12 @@ function hideCreateForm() {
     
     if (appState.selectedDeck) {
         elements.deckDetails.style.display = 'block';
+        // Hide general actions when deck is selected
+        updateNavbarActions(false);
     } else {
         elements.welcomeState.style.display = 'block';
+        // Show general actions in welcome state
+        updateNavbarActions(true);
     }
 }
 
@@ -3701,6 +3721,9 @@ function initializeApp() {
     
     // Setup share modal event handlers
     setupShareModalEventHandlers();
+    
+    // Show general actions on app init (no deck selected)
+    updateNavbarActions(true);
     
     loadDecks();
     

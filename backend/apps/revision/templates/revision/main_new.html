@@ -8,35 +8,36 @@
 {% endblock %}
 
 {% block content %}
-<!-- Sidebar -->
-<div id="revisionSidebar" class="sidebar-linguify">
-    <div class="sidebar-content">
-        <!-- Decks list -->
-        <ul id="decksList" class="deck-list"></ul>
-        
-        <!-- Empty state -->
-        <div id="decksEmpty" class="empty-state empty-state-hidden">
-            <i class="bi bi-stack empty-state-icon"></i>
-            <div class="empty-state-title">Aucun deck</div>
-            <div class="empty-state-description">Créez votre premier deck de flashcards pour commencer à réviser</div>
-            <button class="btn-linguify create-deck-btn">
-                <i class="bi bi-plus-lg mr-2"></i>
-                Créer un deck
-            </button>
-        </div>
-        
-        <!-- Load more -->
-        <div id="loadMoreContainer" class="p-3 text-center load-more-container">
-            <button id="loadMoreBtn" class="btn-linguify-secondary">
-                <i class="bi bi-arrow-down-circle mr-2"></i>
-                Charger plus
-            </button>
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div id="revisionSidebar" class="sidebar-linguify">
+        <div class="sidebar-content">
+            <!-- Decks list -->
+            <ul id="decksList" class="deck-list"></ul>
+            
+            <!-- Empty state -->
+            <div id="decksEmpty" class="empty-state empty-state-hidden">
+                <i class="bi bi-stack empty-state-icon"></i>
+                <div class="empty-state-title">Aucun deck</div>
+                <div class="empty-state-description">Créez votre premier deck de flashcards pour commencer à réviser</div>
+                <button class="btn-linguify create-deck-btn">
+                    <i class="bi bi-plus-lg mr-2"></i>
+                    Créer un deck
+                </button>
+            </div>
+            
+            <!-- Load more -->
+            <div id="loadMoreContainer" class="p-3 text-center load-more-container">
+                <button id="loadMoreBtn" class="btn-linguify-secondary">
+                    <i class="bi bi-arrow-down-circle mr-2"></i>
+                    Charger plus
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Study Area -->
-<div class="revision-study">
+    <!-- Study Area -->
+    <div class="flex-1 revision-study">
     <!-- Welcome state -->
     <div id="welcomeState" class="welcome-state">
         <i class="bi bi-lightning-charge welcome-state-icon"></i>
@@ -858,6 +859,7 @@
             </div>
         </div>
     </div>
+    </div> <!-- End flex container -->
 </div>
 {% endblock %}
 
@@ -1024,7 +1026,7 @@
 <!-- Charger le JavaScript modulaire -->
 <script src="{% static 'revision/js/revision-tags.js' %}?v=20250823-tailwind"></script>
 <script src="{% static 'revision/js/revision-tags-management.js' %}"></script>
-<script src="{% static 'revision/js/revision-main.js' %}?v=20250823-tailwind"></script>
+<script src="{% static 'revision/js/revision-main.js' %}?v=20250823-contextual"></script>
 <script src="{% static 'revision/js/revision-flashcards.js' %}"></script>
 <script src="{% static 'revision/js/revision-quiz.js' %}"></script>
 <script src="{% static 'revision/js/revision-matching.js' %}"></script>

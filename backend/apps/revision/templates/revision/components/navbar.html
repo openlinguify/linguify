@@ -94,16 +94,18 @@
             </div>
         </div>
         
-        <!-- Actions -->
-        <button id="importDeck" class="btn-navbar-outline">
-            <i class="bi bi-upload"></i>
-            <span class="d-none d-xxl-inline">Importer</span>
-        </button>
-        
-        <button id="createDeck" class="btn-navbar-primary">
-            <i class="bi bi-plus-lg"></i>
-            <span class="d-none d-xxl-inline">Nouveau</span>
-        </button>
+        <!-- Actions - Only show when no deck is selected -->
+        <div id="generalActions" class="navbar-actions-group">
+            <button id="importDeck" class="btn-navbar-outline">
+                <i class="bi bi-upload"></i>
+                <span class="d-none d-xxl-inline">Importer</span>
+            </button>
+            
+            <button id="createDeck" class="btn-navbar-primary">
+                <i class="bi bi-plus-lg"></i>
+                <span class="d-none d-xxl-inline">Nouveau</span>
+            </button>
+        </div>
         {% endif %}
     </div>
 </div>
