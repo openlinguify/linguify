@@ -1671,6 +1671,50 @@ button.bg-linguify-gradient:hover,
   display: none;
 }
 
+/* Dropdown Menu Styling - Tailwind Linguify */
+.dropdown-menu {
+  background: white !important;
+  border: 1px solid var(--linguify-gray-200, #e5e7eb) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+  padding: 0.5rem 0 !important;
+  margin-top: 0.25rem !important;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem !important;
+  color: var(--linguify-gray-700, #374151) !important;
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  font-size: 0.875rem !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.dropdown-item:hover {
+  background: var(--linguify-gray-50, #f9fafb) !important;
+  color: var(--linguify-primary, #2D5BBA) !important;
+}
+
+.dropdown-item:focus {
+  background: var(--linguify-gray-50, #f9fafb) !important;
+  color: var(--linguify-primary, #2D5BBA) !important;
+}
+
+.dropdown-item.text-danger {
+  color: var(--linguify-error, #EF4444) !important;
+}
+
+.dropdown-item.text-danger:hover {
+  background: rgba(239, 68, 68, 0.05) !important;
+  color: var(--linguify-error, #EF4444) !important;
+}
+
+.dropdown-divider {
+  margin: 0.5rem 0 !important;
+  border-color: var(--linguify-gray-200, #e5e7eb) !important;
+}
+
 /* Remove mobile overrides entirely */
 
 /* Universal scrollbar styling - Linguify design system */
