@@ -3060,6 +3060,10 @@ function handleSortFilter() {
 // Tags filter functions
 function toggleTagsFilter() {
     console.log('toggleTagsFilter called');
+    
+    // Close all other dropdowns first
+    closeAllFilterDropdowns();
+    
     const dropdown = document.getElementById('tagsFilterDropdown');
     const toggle = document.getElementById('tagsFilterToggle');
     
@@ -3342,6 +3346,114 @@ function loadMoreDecks() {
     if (!appState.isLoading && appState.hasMore) {
         loadDecks(false);
     }
+}
+
+// Custom filter dropdown functions
+function setupFilterDropdowns() {
+    // Status filter dropdown
+    const statusToggle = document.getElementById('statusFilterToggle');
+    const statusDropdown = document.getElementById('statusFilterDropdown');
+    
+    if (statusToggle && statusDropdown) {
+        statusToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleFilterDropdown('statusFilter');
+        });
+    }
+    
+    // Sort filter dropdown  
+    const sortToggle = document.getElementById('sortFilterToggle');
+    const sortDropdown = document.getElementById('sortFilterDropdown');
+    
+    if (sortToggle && sortDropdown) {
+        sortToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleFilterDropdown('sortFilter');
+        });
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        closeAllFilterDropdowns();
+    });
+}
+
+function toggleFilterDropdown(filterType) {
+    const dropdown = document.getElementById(filterType + 'Dropdown');
+    const button = document.getElementById(filterType + 'Toggle');
+    
+    // Close other dropdowns first
+    closeAllFilterDropdowns();
+    
+    if (dropdown && button) {
+        const isOpen = dropdown.classList.contains('show');
+        if (!isOpen) {
+            dropdown.classList.add('show');
+            button.classList.add('open');
+        }
+    }
+}
+
+function closeAllFilterDropdowns() {
+    // Close custom filter dropdowns
+    const dropdowns = document.querySelectorAll('.filter-dropdown');
+    const buttons = document.querySelectorAll('.filter-dropdown-button');
+    
+    dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
+    buttons.forEach(button => button.classList.remove('open'));
+    
+    // Also close tags filter dropdown
+    const tagsDropdown = document.getElementById('tagsFilterDropdown');
+    if (tagsDropdown) {
+        tagsDropdown.classList.remove('show');
+        tagsDropdown.style.display = 'none';
+    }
+}
+
+function selectStatusFilter(value, text) {
+    const textElement = document.getElementById('statusFilterText');
+    const items = document.querySelectorAll('#statusFilterDropdown .filter-dropdown-item');
+    
+    if (textElement) {
+        textElement.textContent = text;
+    }
+    
+    // Update selected state
+    items.forEach(item => {
+        if (item.dataset.value === value) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+    
+    // Update app state and reload decks
+    appState.filters.status = value;
+    loadDecks();
+    closeAllFilterDropdowns();
+}
+
+function selectSortFilter(value, text) {
+    const textElement = document.getElementById('sortFilterText');
+    const items = document.querySelectorAll('#sortFilterDropdown .filter-dropdown-item');
+    
+    if (textElement) {
+        textElement.textContent = text;
+    }
+    
+    // Update selected state
+    items.forEach(item => {
+        if (item.dataset.value === value) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+    
+    // Update app state and reload decks
+    appState.filters.sort = value;
+    loadDecks();
+    closeAllFilterDropdowns();
 }
 
 // UI functions
@@ -3903,6 +4015,9 @@ function initializeApp() {
     // Setup share modal event handlers
     setupShareModalEventHandlers();
     
+    // Setup custom filter dropdowns
+    setupFilterDropdowns();
+    
     // Show general actions on app init (no deck selected)
     updateNavbarActions(true);
     
@@ -3962,6 +4077,7 @@ window.revisionMain = {
     toggleSidebar,
     backToList,
     setupEventListeners,
+    setupFilterDropdowns,
     initializeApp,
     getElements,
     
@@ -4066,8 +4182,10 @@ function hideTailwindModal(modalElement) {
     // Clean up event listeners is handled automatically by removing the modal from DOM or using modern event handling
 }
 
-// Export global functions for modal onclick handlers
+// Export global functions for modal onclick handlers and filter dropdowns
 window.confirmResetProgress = confirmResetProgress;
+window.selectStatusFilter = selectStatusFilter;
+window.selectSortFilter = selectSortFilter;
 
 // Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeApp);

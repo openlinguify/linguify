@@ -1407,6 +1407,90 @@ button.bg-linguify-gradient:hover,
   box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
 }
 
+/* Filter Dropdown Components - Generic for all filter dropdowns */
+.filter-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.filter-dropdown-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(17 24 39);
+  background-color: white;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  min-height: 2.25rem; /* Same as form-select-linguify */
+}
+
+.filter-dropdown-button:hover {
+  border-color: rgba(45, 91, 186, 0.3);
+  background-color: rgba(45, 91, 186, 0.02);
+}
+
+.filter-dropdown-button:focus {
+  outline: none;
+  border-color: #2D5BBA;
+  box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+}
+
+.filter-dropdown-button i {
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+  transition: transform 0.15s ease;
+}
+
+.filter-dropdown-button.open i {
+  transform: rotate(180deg);
+}
+
+.filter-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  z-index: 1050;
+  display: none;
+  overflow: hidden;
+}
+
+.filter-dropdown.show {
+  display: block;
+}
+
+.filter-dropdown-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid rgb(243 244 246);
+}
+
+.filter-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.filter-dropdown-item:hover {
+  background-color: #f3f4f6;
+}
+
+.filter-dropdown-item.selected {
+  background-color: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+}
+
 /* Tags Filter Component */
 .tags-filter-container {
   position: relative;
@@ -1453,7 +1537,7 @@ button.bg-linguify-gradient:hover,
   max-width: 20rem;
   background-color: white;
   border: 1px solid rgb(209 213 219);
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   z-index: 1050;
   display: none;
@@ -2406,7 +2490,7 @@ button.bg-linguify-gradient:hover,
 .dropdown-menu {
   background: white !important;
   border: 1px solid var(--linguify-gray-200, #e5e7eb) !important;
-  border-radius: 0.5rem !important;
+  border-radius: 0.375rem !important;
   box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
   padding: 0.5rem 0 !important;
   margin-top: 0.25rem !important;
@@ -2883,32 +2967,7 @@ button.bg-linguify-gradient:hover,
   color: #EF4444 !important;
 }
 
-/* Tags Filter Dropdown Styles */
-.tags-filter-container {
-  position: relative;
-  display: inline-block;
-}
-
-.tags-filter-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  min-width: 280px;
-  max-width: 320px;
-  max-height: 400px;
-  overflow-y: auto;
-  z-index: 1000;
-  display: none;
-  margin-top: 4px;
-}
-
-.tags-filter-dropdown.show {
-  display: block;
-}
+/* Tags Filter Dropdown Styles - Removed duplicate, using the primary definition above */
 
 .tags-filter-header {
   padding: 12px 16px;
@@ -2970,7 +3029,7 @@ button.bg-linguify-gradient:hover,
   white-space: nowrap;
 }
 
-.tags-filter-count {
+.tags-filter-tag-count {
   margin-left: 8px;
   background-color: #f3f4f6;
   color: #6b7280;

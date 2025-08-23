@@ -70,18 +70,32 @@
         <!-- Filtres pour les pages personnelles -->
         <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
         
-        <select id="statusFilter" class="form-select-linguify" style="width: 110px; min-width: 90px;">
-            <option value="">Tous les statuts</option>
-            <option value="active">Actifs</option>
-            <option value="archived">Archivés</option>
-            <option value="public">Publics</option>
-        </select>
+        <!-- Status Filter Dropdown -->
+        <div class="filter-dropdown-container">
+            <button id="statusFilterToggle" class="filter-dropdown-button" style="width: 110px; min-width: 90px;">
+                <span id="statusFilterText">Tous les statuts</span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <div id="statusFilterDropdown" class="filter-dropdown">
+                <div class="filter-dropdown-item" data-value="" onclick="selectStatusFilter('', 'Tous les statuts')">Tous les statuts</div>
+                <div class="filter-dropdown-item" data-value="active" onclick="selectStatusFilter('active', 'Actifs')">Actifs</div>
+                <div class="filter-dropdown-item" data-value="archived" onclick="selectStatusFilter('archived', 'Archivés')">Archivés</div>
+                <div class="filter-dropdown-item" data-value="public" onclick="selectStatusFilter('public', 'Publics')">Publics</div>
+            </div>
+        </div>
         
-        <select id="sortFilter" class="form-select-linguify" style="width: 110px; min-width: 90px;">
-            <option value="updated_desc">Plus récents</option>
-            <option value="name_asc">A-Z</option>
-            <option value="progress_desc">Progression</option>
-        </select>
+        <!-- Sort Filter Dropdown -->
+        <div class="filter-dropdown-container">
+            <button id="sortFilterToggle" class="filter-dropdown-button" style="width: 110px; min-width: 90px;">
+                <span id="sortFilterText">Plus récents</span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <div id="sortFilterDropdown" class="filter-dropdown">
+                <div class="filter-dropdown-item" data-value="updated_desc" onclick="selectSortFilter('updated_desc', 'Plus récents')">Plus récents</div>
+                <div class="filter-dropdown-item" data-value="name_asc" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</div>
+                <div class="filter-dropdown-item" data-value="progress_desc" onclick="selectSortFilter('progress_desc', 'Progression')">Progression</div>
+            </div>
+        </div>
         
         <div class="tags-filter-container">
             <button id="tagsFilterToggle" class="btn-tags-filter">
