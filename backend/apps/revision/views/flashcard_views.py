@@ -267,12 +267,28 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
         
         # Use optimized querysets based on action
         if self.action == 'list':
-            show_archived = self.request.query_params.get('archived', 'false').lower() == 'true'
             base_queryset = self.get_list_optimized_queryset()
-            if show_archived:
+            
+            # Handle status filter from frontend
+            status_filter = self.request.query_params.get('status', '')
+            
+            if status_filter == 'archived':
+                # Show only archived decks
                 return base_queryset.filter(user=user, is_archived=True)
-            else:
+            elif status_filter == 'active':
+                # Show only active (non-archived) decks
                 return base_queryset.filter(user=user, is_archived=False)
+            elif status_filter == 'public':
+                # Show only public decks owned by user
+                return base_queryset.filter(user=user, is_public=True)
+            else:
+                # Default: show only active (non-archived) decks
+                # Also support legacy 'archived' parameter for backwards compatibility
+                show_archived = self.request.query_params.get('archived', 'false').lower() == 'true'
+                if show_archived:
+                    return base_queryset.filter(user=user, is_archived=True)
+                else:
+                    return base_queryset.filter(user=user, is_archived=False)
         
         elif self.action == 'retrieve':
             # Use detail optimized queryset for single deck retrieval

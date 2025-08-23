@@ -29,7 +29,11 @@ const revisionAPI = {
             ...filters
         });
         
-        return await window.apiService.request(`/api/v1/revision/decks/?${params}`);
+        const url = `/api/v1/revision/decks/?${params}`;
+        console.log('🌐 API request URL:', url);
+        console.log('🌐 Filters being sent:', filters);
+        
+        return await window.apiService.request(url);
     },
     
     async getDeck(id) {
@@ -2672,7 +2676,10 @@ function handleSearch() {
 
 function handleStatusFilter() {
     const elements = getElements();
-    appState.filters.status = elements.statusFilter.value;
+    const statusValue = elements.statusFilter.value;
+    console.log('🔍 Status filter changed to:', statusValue);
+    appState.filters.status = statusValue;
+    console.log('🔍 Full filters object:', appState.filters);
     loadDecks();
 }
 
