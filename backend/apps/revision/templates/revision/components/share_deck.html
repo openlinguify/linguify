@@ -85,7 +85,7 @@
             <div class="modal-body pt-2">
                 <div class="alert border-0 share-modal-alert">
                     <div class="d-flex align-items-start">
-                        <i class="bi bi-exclamation-triangle-fill me-2 mt-1" style="color: #f59e0b;"></i>
+                        <i class="bi bi-exclamation-triangle-fill me-2 mt-1" style="color: var(--linguify-warning);"></i>
                         <div>
                             <strong class="share-modal-alert-title">Attention</strong><br>
                             <span class="share-modal-alert-text">Cette action rendra votre deck privé. Il ne sera plus accessible publiquement.</span>
@@ -95,16 +95,16 @@
                 
                 <div class="mb-3">
                     <h6 class="fw-semibold mb-2 share-modal-section-title">
-                        <i class="bi bi-eye-slash me-1" style="color: #f59e0b;"></i>
+                        <i class="bi bi-eye-slash me-1" style="color: var(--linguify-warning);"></i>
                         Ce qui va changer :
                     </h6>
                     <ul class="list-unstyled ms-3">
                         <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-x-circle me-2" style="color: #ef4444;"></i>
+                            <i class="bi bi-x-circle me-2" style="color: var(--linguify-error);"></i>
                             Il ne sera plus visible dans la section "Explorer"
                         </li>
                         <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-x-circle me-2" style="color: #ef4444;"></i>
+                            <i class="bi bi-x-circle me-2" style="color: var(--linguify-error);"></i>
                             Les liens de partage existants ne fonctionneront plus
                         </li>
                         <li class="mb-1 share-modal-list-item">
@@ -123,7 +123,7 @@
                 <button type="button" class="btn btn-outline-secondary share-modal-cancel-btn" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle me-1"></i>Annuler
                 </button>
-                <button type="button" class="btn" id="makeDeckPrivateBtn" style="background-color: #6b7280; border-color: #6b7280; color: white;">
+                <button type="button" class="btn" id="makeDeckPrivateBtn" style="background: linear-gradient(135deg, var(--linguify-gray-light) 0%, var(--linguify-gray) 100%); border: none; color: white; font-weight: 500;">
                     <i class="bi bi-lock me-1"></i>Rendre privé
                 </button>
             </div>
