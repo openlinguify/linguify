@@ -289,7 +289,7 @@ async function loadDecks(reset = true) {
 
 // Improved refresh function with visual feedback and error handling
 async function handleRefreshDecks() {
-    const refreshBtn = document.getElementById('refreshDecks');
+    const refreshBtn = document.getElementById('refreshDecks') || document.getElementById('refreshStats');
     const refreshIcon = refreshBtn?.querySelector('i');
     
     if (!refreshBtn || appState.isRefreshing) {
@@ -314,19 +314,28 @@ async function handleRefreshDecks() {
                           appState.filters.sort !== 'updated_desc' || 
                           (appState.filters.tags && appState.filters.tags.length > 0);
         
-        // Perform comprehensive refresh
-        await Promise.all([
-            loadDecks(true), // Full reload of decks
-            // If we have a selected deck, refresh its data too
-            appState.selectedDeck ? refreshSelectedDeck() : Promise.resolve()
-        ]);
+        // Perform appropriate refresh based on current page
+        if (refreshBtn.id === 'refreshStats') {
+            // We're on the stats page - just reload the page for now
+            console.log('🔄 Actualisation des statistiques...');
+            window.location.reload();
+        } else {
+            // We're on a deck-related page
+            await Promise.all([
+                loadDecks(true), // Full reload of decks
+                // If we have a selected deck, refresh its data too
+                appState.selectedDeck ? refreshSelectedDeck() : Promise.resolve()
+            ]);
+        }
         
-        // Success feedback
-        window.notificationService.success(
-            isFiltered ? 
-            'Liste actualisée (filtres conservés)' : 
-            'Liste actualisée avec succès'
-        );
+        // Success feedback (only for non-stats pages, stats page reloads)
+        if (refreshBtn.id !== 'refreshStats') {
+            window.notificationService.success(
+                isFiltered ? 
+                'Liste actualisée (filtres conservés)' : 
+                'Liste actualisée avec succès'
+            );
+        }
         
         console.log('✅ Actualisation terminée avec succès');
         
@@ -3059,6 +3068,55 @@ function handleSortFilter() {
 
 // Tags filter functions - now handled entirely by Bootstrap events in setupFilterDropdowns()
 
+// Stats page specific functions
+function handleExportStats() {
+    try {
+        console.log('📊 Exporting statistics...');
+        
+        // Get current time range
+        const timeRange = document.getElementById('statsTimeRange')?.value || '30';
+        
+        // For now, show a notification that this feature is coming
+        if (window.notificationService) {
+            window.notificationService.info('Export des statistiques en cours de développement');
+        }
+        
+        // TODO: Implement actual stats export functionality
+        // This would typically make an API call to get stats data and download as CSV/JSON
+        
+    } catch (error) {
+        console.error('❌ Error exporting stats:', error);
+        if (window.notificationService) {
+            window.notificationService.error('Erreur lors de l\'export des statistiques');
+        }
+    }
+}
+
+function handleStatsTimeRangeChange(event) {
+    try {
+        const selectedRange = event.target.value;
+        console.log(`📅 Stats time range changed to: ${selectedRange} days`);
+        
+        // TODO: Implement stats refresh with new time range
+        // This would typically trigger a refresh of the stats dashboard
+        
+        if (window.notificationService) {
+            const rangeText = {
+                '7': '7 derniers jours',
+                '30': '30 derniers jours', 
+                '90': '3 derniers mois',
+                '365': 'cette année',
+                'all': 'toute la période'
+            }[selectedRange] || selectedRange;
+            
+            window.notificationService.info(`Période mise à jour : ${rangeText}`);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error changing stats time range:', error);
+    }
+}
+
 async function loadTagsFilter() {
     const dropdown = document.getElementById('tagsFilterDropdown');
     
@@ -3712,7 +3770,7 @@ function getElements() {
         // Buttons
         createDeck: document.getElementById('createDeck'),
         importDeck: document.getElementById('importDeck'),
-        refreshDecks: document.getElementById('refreshDecks'),
+        refreshDecks: document.getElementById('refreshDecks') || document.getElementById('refreshStats'),
         backToList: document.getElementById('backToList'),
         addCard: document.getElementById('addCard'),
         submitCreate: document.getElementById('submitCreate'),
@@ -3794,6 +3852,19 @@ function setupEventListeners() {
     elements.createDeck?.addEventListener('click', showCreateForm);
     elements.importDeck?.addEventListener('click', showImportForm);
     elements.refreshDecks?.addEventListener('click', handleRefreshDecks);
+    
+    // Handle export stats button
+    const exportStatsBtn = document.getElementById('exportStats');
+    if (exportStatsBtn) {
+        exportStatsBtn.addEventListener('click', handleExportStats);
+    }
+    
+    // Handle stats time range selector
+    const statsTimeRange = document.getElementById('statsTimeRange');
+    if (statsTimeRange) {
+        statsTimeRange.addEventListener('change', handleStatsTimeRangeChange);
+    }
+    
     elements.backToList?.addEventListener('click', backToList);
     elements.addCard?.addEventListener('click', showCreateCardForm);
     

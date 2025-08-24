@@ -28,16 +28,38 @@
             </a>
         </div>
         
-        <!-- Refresh -->
+        <!-- Refresh - Always show, but different for stats -->
+        {% if view_type == 'stats' %}
+        <button id="refreshStats" class="btn-navbar btn-navbar-outline" title="Actualiser les statistiques">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-xl-inline">Actualiser</span>
+        </button>
+        {% else %}
         <button id="refreshDecks" class="btn-navbar btn-navbar-outline" title="Actualiser la liste des decks">
             <i class="bi bi-arrow-clockwise"></i>
             <span class="d-none d-xl-inline">Actualiser</span>
         </button>
+        {% endif %}
     </div>
     
     <!-- Droite: Actions et filtres contextuels -->
     <div class="navbar-section-right">
-        {% if view_type == 'explore' %}
+        {% if view_type == 'stats' %}
+        <!-- Actions pour la page Statistiques -->
+        <select id="statsTimeRange" class="form-select-linguify" style="width: 140px; min-width: 120px;">
+            <option value="7">7 derniers jours</option>
+            <option value="30" selected>30 derniers jours</option>
+            <option value="90">3 derniers mois</option>
+            <option value="365">Cette année</option>
+            <option value="all">Toute la période</option>
+        </select>
+        
+        <button id="exportStats" class="btn-navbar btn-navbar-outline" title="Exporter les statistiques">
+            <i class="bi bi-download"></i>
+            <span class="d-none d-lg-inline">Exporter</span>
+        </button>
+        
+        {% elif view_type == 'explore' %}
         <!-- Bouton toggle sidebar pour Explorer -->
         <button id="toggleSidebar" class="btn-navbar btn-navbar-outline" onclick="toggleSidebar()">
             <i class="bi bi-layout-sidebar"></i>
