@@ -171,26 +171,26 @@ function loadDeckStats() {
             
             if (data.results && data.results.length > 0) {
                 data.results.forEach(deck => {
-                    const accuracyClass = deck.accuracy >= 80 ? 'linguify-success-bg' : 
-                                        deck.accuracy >= 60 ? 'linguify-warning-bg' : 'linguify-error-bg';
+                    const accuracyClass = deck.accuracy >= 80 ? 'bg-green-500 text-white' : 
+                                        deck.accuracy >= 60 ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white';
                     
                     tbody.innerHTML += `
-                        <tr>
-                            <td>
-                                <strong>${deck.name}</strong>
-                                <br><small class="text-muted">${deck.description || 'No description'}</small>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-medium text-gray-900">${deck.name}</div>
+                                <div class="text-sm text-gray-500">${deck.description || 'No description'}</div>
                             </td>
-                            <td>${deck.cards_count}</td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">${deck.mastered_cards}/${deck.cards_count}</span>
-                                    <div class="progress flex-grow-1" style="height: 4px;">
-                                        <div class="progress-bar" style="width: ${deck.mastery_percentage}%"></div>
+                            <td class="px-6 py-4 text-sm text-gray-900">${deck.cards_count}</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <span class="mr-2 text-sm text-gray-900">${deck.mastered_cards}/${deck.cards_count}</span>
+                                    <div class="flex-1 bg-gray-200 rounded-full h-1">
+                                        <div class="bg-linguify-primary rounded-full h-1 transition-all duration-300" style="width: ${deck.mastery_percentage}%"></div>
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <span class="badge ${accuracyClass} text-white">
+                            <td class="px-6 py-4">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${accuracyClass}">
                                     ${deck.accuracy}%
                                 </span>
                             </td>
@@ -200,7 +200,7 @@ function loadDeckStats() {
             } else {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="4" class="text-center py-3 text-muted">
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">
                             No deck statistics available
                         </td>
                     </tr>
@@ -213,7 +213,7 @@ function loadDeckStats() {
             if (tbody) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="4" class="text-center py-3 text-danger">
+                        <td colspan="4" class="px-6 py-8 text-center text-red-600">
                             Error loading deck statistics
                         </td>
                     </tr>
@@ -240,19 +240,19 @@ function loadRecentActivity() {
                 data.results.forEach(session => {
                     const timeAgo = getTimeAgo(new Date(session.created_at));
                     container.innerHTML += `
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">${session.deck_name}</h6>
-                                <small>${timeAgo}</small>
+                        <div class="px-6 py-4">
+                            <div class="flex justify-between items-start">
+                                <h6 class="text-sm font-medium text-gray-900 mb-1">${session.deck_name}</h6>
+                                <span class="text-xs text-gray-500">${timeAgo}</span>
                             </div>
-                            <p class="mb-1">${session.mode} - ${session.cards_studied} cards studied</p>
-                            <small>Accuracy: ${session.accuracy}%</small>
+                            <p class="text-sm text-gray-600 mb-1">${session.mode} - ${session.cards_studied} cards studied</p>
+                            <div class="text-xs text-gray-500">Accuracy: ${session.accuracy}%</div>
                         </div>
                     `;
                 });
             } else {
                 container.innerHTML = `
-                    <div class="list-group-item text-center py-3 text-muted">
+                    <div class="px-6 py-8 text-center text-gray-500">
                         No recent activity found
                     </div>
                 `;
@@ -263,7 +263,7 @@ function loadRecentActivity() {
             const container = document.getElementById('recentActivity');
             if (container) {
                 container.innerHTML = `
-                    <div class="list-group-item text-center py-3 text-danger">
+                    <div class="px-6 py-8 text-center text-red-600">
                         Error loading recent activity
                     </div>
                 `;
