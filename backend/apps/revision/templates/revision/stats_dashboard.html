@@ -10,40 +10,7 @@
 
 {% block content %}
 <!-- Stats Area - Tailwind Layout Linguify -->
-<div class="w-full">
-    <!-- Stats Header -->
-    <div class="border-b border-gray-200 pb-6 mb-8">
-        <div class="w-full max-w-none px-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-bold text-linguify-primary mb-2">{% trans "Statistics Dashboard" %}</h1>
-                    <p class="text-gray-600 mb-0">{% trans "Track your learning progress and performance" %}</p>
-                </div>
-                
-                <div class="flex gap-3">
-                    <div class="dropdown relative">
-                        <button class="btn-linguify-secondary dropdown-toggle flex items-center gap-2" type="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-calendar text-sm"></i>
-                            <span id="currentPeriod">{% trans "Last 7 days" %}</span>
-                        </button>
-                        <ul class="dropdown-menu absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-                            <li><a class="dropdown-item period-filter block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" data-period="7">{% trans "Last 7 days" %}</a></li>
-                            <li><a class="dropdown-item period-filter block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" data-period="30">{% trans "Last 30 days" %}</a></li>
-                            <li><a class="dropdown-item period-filter block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" data-period="90">{% trans "Last 3 months" %}</a></li>
-                            <li><a class="dropdown-item period-filter block px-4 py-2 text-gray-700 hover:bg-gray-100" href="#" data-period="365">{% trans "Last year" %}</a></li>
-                        </ul>
-                    </div>
-                    
-                    <button class="btn-linguify flex items-center gap-2" onclick="exportStats()">
-                        <i class="bi bi-download text-sm"></i>
-                        {% trans "Export" %}
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="w-full px-6">
+<div class="w-full px-6 py-6">
         <!-- Collection Overview Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
             <div class="card-linguify">
