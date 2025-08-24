@@ -138,6 +138,9 @@ class AdvancedStatsManager {
         // Reset charts rendered flag to allow re-rendering
         this.chartsRendered = false;
         
+        // Clear any existing charts with cache buster
+        document.querySelectorAll('[data-chart-type]').forEach(el => el.remove());
+        
         // Check cache first
         if (this.cache.has(cacheKey)) {
             console.log('📊 Using cached advanced stats data');
@@ -446,13 +449,17 @@ class AdvancedStatsManager {
     }
     
     /**
-     * Create simple, guaranteed-to-work performance chart
+     * Create simple, guaranteed-to-work performance chart - ULTRA SIMPLE VERSION
      */
     createSimplePerformanceChart(data) {
         const dataWithActivity = data.filter(d => d.avg_success_rate > 0);
         
         if (dataWithActivity.length === 0) {
-            return '<div style="background: #fee; border: 1px solid #f00; padding: 10px; margin: 10px 0; border-radius: 5px;">No performance data available</div>';
+            return `
+                <div style="background: #ffcccc; border: 2px solid #ff0000; padding: 15px; margin: 15px 0; border-radius: 8px; text-align: center;">
+                    <strong>No performance data available</strong>
+                </div>
+            `;
         }
         
         const maxRate = Math.max(...dataWithActivity.map(d => d.avg_success_rate * 100), 1);
@@ -460,8 +467,13 @@ class AdvancedStatsManager {
         let barsHTML = '';
         dataWithActivity.forEach((point, index) => {
             const successPercent = point.avg_success_rate * 100;
-            const height = Math.max((successPercent / maxRate * 100), 10); // Min 10px
-            const color = successPercent >= 80 ? '#22c55e' : successPercent >= 60 ? '#f59e0b' : '#ef4444';
+            // Make bars much taller and more visible
+            const height = Math.max((successPercent / maxRate * 150), 20); // Min 20px, max 150px
+            
+            // Use very simple, solid colors
+            let color = '#ff4444'; // Red for low performance
+            if (successPercent >= 80) color = '#44ff44'; // Green for high performance  
+            else if (successPercent >= 60) color = '#ffaa00'; // Orange for medium performance
             
             // Better date formatting
             let dateLabel = 'N/A';
@@ -472,44 +484,58 @@ class AdvancedStatsManager {
                 dateLabel = dateParts.length >= 3 ? dateParts[2] + '/' + dateParts[1] : point.date;
             }
             
+            // Ultra simple bars - no fancy CSS, just solid colors and basic styling
             barsHTML += `
-                <div style="display: inline-block; margin: 0 2px; text-align: center; vertical-align: bottom;">
-                    <div style="background-color: ${color}; width: 20px; height: ${height}px; margin-bottom: 5px; border-radius: 3px;"></div>
-                    <div style="font-size: 10px; color: #666; transform: rotate(-45deg); white-space: nowrap;">${dateLabel}</div>
+                <div style="display: inline-block; margin: 0 8px; text-align: center; vertical-align: bottom;">
+                    <div style="background-color: ${color}; width: 30px; height: ${height}px; margin-bottom: 10px; border: 2px solid #333333; display: block;" 
+                         title="${successPercent.toFixed(1)}% success on ${dateLabel}"></div>
+                    <div style="font-size: 12px; color: #000000; font-weight: bold;">${dateLabel}</div>
                 </div>
             `;
         });
         
         return `
-            <div style="background: #f8fafc; border: 2px solid #3b82f6; padding: 15px; margin: 10px 0; border-radius: 8px;">
-                <div style="font-weight: bold; margin-bottom: 10px; color: #1e40af;">📈 Performance Trend Chart</div>
-                <div style="background: white; padding: 10px; border-radius: 5px; text-align: center; min-height: 150px; display: flex; align-items: flex-end; justify-content: center;">
-                    ${barsHTML}
+            <div style="background: #f0f8ff; border: 3px solid #0066cc; padding: 20px; margin: 20px 0; border-radius: 10px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #0066cc; margin: 0; font-size: 18px; font-weight: bold;">📈 SUCCESS RATE TREND</h3>
                 </div>
-                <div style="font-size: 12px; color: #666; margin-top: 8px;">
-                    ${dataWithActivity.length} days with activity • Avg: ${(dataWithActivity.reduce((sum, p) => sum + p.avg_success_rate * 100, 0) / dataWithActivity.length).toFixed(1)}%
+                <div style="background: white; padding: 20px; border: 2px solid #cccccc; text-align: center; min-height: 200px; display: flex; align-items: flex-end; justify-content: center;">
+                    <div style="display: flex; align-items: flex-end; justify-content: center;">
+                        ${barsHTML}
+                    </div>
+                </div>
+                <div style="margin-top: 15px; text-align: center; font-size: 14px; color: #333333;">
+                    <strong>📊 ${dataWithActivity.length} days with activity | Average: ${(dataWithActivity.reduce((sum, p) => sum + p.avg_success_rate * 100, 0) / dataWithActivity.length).toFixed(1)}%</strong>
                 </div>
             </div>
         `;
     }
     
     /**
-     * Create simple, guaranteed-to-work activity chart
+     * Create simple, guaranteed-to-work activity chart - ULTRA SIMPLE VERSION
      */
     createSimpleActivityChart(data) {
         if (!data || data.length === 0) {
-            return '<div style="background: #fee; border: 1px solid #f00; padding: 10px; margin: 10px 0; border-radius: 5px;">No activity data available</div>';
+            return `
+                <div style="background: #ffcccc; border: 2px solid #ff0000; padding: 15px; margin: 15px 0; border-radius: 8px; text-align: center;">
+                    <strong>No activity data available</strong>
+                </div>
+            `;
         }
         
         const maxCards = Math.max(...data.map(d => d.cards_studied), 1);
         const totalCards = data.reduce((sum, p) => sum + p.cards_studied, 0);
         
         let barsHTML = '';
-        data.forEach((point, index) => {
-            const height = Math.max((point.cards_studied / maxCards * 100), 2); // Min 2px
-            const color = point.cards_studied > 10 ? '#2563eb' : 
-                         point.cards_studied > 5 ? '#3b82f6' : 
-                         point.cards_studied > 0 ? '#60a5fa' : '#e5e7eb';
+        data.slice(-14).forEach((point, index) => { // Show only last 14 days for clarity
+            // Make bars much taller and more visible
+            const height = Math.max((point.cards_studied / maxCards * 120), 5); // Min 5px, max 120px
+            
+            // Use very simple, solid colors based on activity level
+            let color = '#cccccc'; // Gray for no activity
+            if (point.cards_studied > 10) color = '#0066cc'; // Blue for high activity
+            else if (point.cards_studied > 5) color = '#4499ff'; // Light blue for medium activity  
+            else if (point.cards_studied > 0) color = '#88ccff'; // Very light blue for low activity
             
             // Better date formatting
             let dateLabel = 'N/A';
@@ -520,25 +546,28 @@ class AdvancedStatsManager {
                 dateLabel = dateParts.length >= 3 ? dateParts[2] + '/' + dateParts[1] : point.date;
             }
             
-            // Only show every 5th label to avoid clutter
-            const showLabel = index % 5 === 0;
-            
+            // Ultra simple bars - no fancy CSS, just solid colors and basic styling
             barsHTML += `
-                <div style="display: inline-block; margin: 0 1px; text-align: center; vertical-align: bottom;">
-                    <div style="background-color: ${color}; width: 8px; height: ${height}px; margin-bottom: 5px;"></div>
-                    ${showLabel ? `<div style="font-size: 8px; color: #666; transform: rotate(-45deg); white-space: nowrap;">${dateLabel}</div>` : ''}
+                <div style="display: inline-block; margin: 0 4px; text-align: center; vertical-align: bottom;">
+                    <div style="background-color: ${color}; width: 25px; height: ${height}px; margin-bottom: 8px; border: 2px solid #333333; display: block;" 
+                         title="${dateLabel}: ${point.cards_studied} cards studied"></div>
+                    <div style="font-size: 10px; color: #000000; font-weight: bold;">${dateLabel}</div>
                 </div>
             `;
         });
         
         return `
-            <div style="background: #f0fdf4; border: 2px solid #22c55e; padding: 15px; margin: 10px 0; border-radius: 8px;">
-                <div style="font-weight: bold; margin-bottom: 10px; color: #166534;">📊 Activity Trend Chart</div>
-                <div style="background: white; padding: 10px; border-radius: 5px; text-align: center; min-height: 120px; display: flex; align-items: flex-end; justify-content: center;">
-                    ${barsHTML}
+            <div style="background: #f0fff0; border: 3px solid #00aa00; padding: 20px; margin: 20px 0; border-radius: 10px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #00aa00; margin: 0; font-size: 18px; font-weight: bold;">📊 DAILY STUDY ACTIVITY</h3>
                 </div>
-                <div style="font-size: 12px; color: #666; margin-top: 8px;">
-                    Last 30 days • Total: ${totalCards} cards studied
+                <div style="background: white; padding: 20px; border: 2px solid #cccccc; text-align: center; min-height: 180px; display: flex; align-items: flex-end; justify-content: center; overflow-x: auto;">
+                    <div style="display: flex; align-items: flex-end; justify-content: center;">
+                        ${barsHTML}
+                    </div>
+                </div>
+                <div style="margin-top: 15px; text-align: center; font-size: 14px; color: #333333;">
+                    <strong>📅 Last 14 days | Total cards studied: ${totalCards}</strong>
                 </div>
             </div>
         `;
