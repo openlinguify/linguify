@@ -15,42 +15,55 @@
 <link rel="preload" href="/app-icons/revision/icon.png" as="image">
 <link rel="preload" href="/app-icons/todo/icon.png" as="image">
 <link rel="preload" href="/app-icons/teaching/icon.png" as="image">
+
+<link rel="stylesheet" href="{% static 'app_manager/css/app_store.css' %}">
+<style>
+/* Critical CSS inline pour ultra performance */
+.app-store-container{display:flex;max-width:1400px;margin:0 auto;gap:2rem;padding:2rem}
+.app-store-sidebar{width:250px;flex-shrink:0}
+.app-store-main{flex:1}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
+.app-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.5rem;transition:all .3s ease;cursor:pointer;position:relative}
+.app-card:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(0,0,0,.08);border-color:#6366f1}
+.app-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem}
+.app-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#fff;flex-shrink:0}
+.app-icon img{will-change:transform;backface-visibility:hidden}
+</style>
 {% endblock %}
 
 {% block content %}
 {% csrf_token %}
 
-<!-- Layout App Store avec classes Tailwind -->
-<div class="app-store-layout">
-    <!-- Sidebar utilisant les classes tailwind-modals -->
-    <aside class="sidebar-linguify hidden md:block">
-        <div class="sidebar-header-linguify">
-            <h6>Catégories</h6>
-        </div>
-        <div class="sidebar-content">
-            <div class="p-4 space-y-1">
-                <button class="category-item active w-full flex items-center justify-between p-2 rounded text-left border-0 text-gray-700 hover:bg-gray-100" data-category="all">
-                    <div class="flex items-center">
-                        <i class="bi bi-grid-3x3-gap mr-2 text-sm"></i>
-                        <span class="text-sm font-medium">Toutes les apps</span>
-                    </div>
-                    <span class="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded" id="count-all">{{ total_apps }}</span>
-                </button>
-                
-                {% for category_id, definition in category_definitions.items %}
-                <button class="category-item w-full flex items-center justify-between p-2 rounded text-left border-0 text-gray-700 hover:bg-gray-100" data-category="{{ category_id }}">
-                    <div class="flex items-center">
-                        <i class="{{ definition.icon }} mr-2 text-sm text-gray-500"></i>
-                        <span class="text-sm">{{ definition.label }}</span>
-                    </div>
-                    <span class="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded" id="count-{{ category_id }}">
-                        {% for cat_id, count in category_counts.items %}
-                            {% if cat_id == category_id %}{{ count }}{% endif %}
-                        {% empty %}0{% endfor %}
-                    </span>
-                </button>
-                {% endfor %}
-            </div>
+
+<!-- App Store Container -->
+<div class="app-store-container">
+    <!-- Sidebar -->
+    <aside class="app-store-sidebar">
+        <div class="category-list">
+            <h6 class="text-muted text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 600;">Catégories</h6>
+            
+            <button class="category-item active" data-category="all">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-grid-3x3-gap category-icon"></i>
+                    <span>Toutes les apps</span>
+                </div>
+                <span class="category-count" id="count-all">{{ total_apps }}</span>
+            </button>
+            
+            <!-- Catégories dynamiques depuis les manifests -->
+            {% for category_id, definition in category_definitions.items %}
+            <button class="category-item" data-category="{{ category_id }}">
+                <div class="d-flex align-items-center">
+                    <i class="{{ definition.icon }} category-icon"></i>
+                    <span>{{ definition.label }}</span>
+                </div>
+                <span class="category-count" id="count-{{ category_id }}">
+                    {% for cat_id, count in category_counts.items %}
+                        {% if cat_id == category_id %}{{ count }}{% endif %}
+                    {% empty %}0{% endfor %}
+                </span>
+            </button>
+            {% endfor %}
         </div>
     </aside>
 
@@ -68,23 +81,15 @@
             <div class="app-card" data-category="{{ app.category|default:'other' }}" data-app-id="{{ app.id }}">
                 <!-- App Header -->
                 <div class="app-header">
-                    <!-- App Icon -->
-                    <div class="app-icon bg-gray-50 border border-gray-200">
+                    <div class="app-icon" style="background: transparent; border: 1px solid #e2e8f0; border-radius: 12px;">
                         {% if app.static_icon %}
-                            <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon" 
-                                 class="w-10 h-10 object-contain">
-                        {% else %}
-                            <i class="bi bi-app text-2xl text-gray-400"></i>
+                            <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon" style="width: 40px; height: 40px; object-fit: contain;">
                         {% endif %}
                     </div>
-                    
-                    <!-- App Info -->
                     <div class="app-info">
-                        <h3 class="app-title truncate">{{ app.display_name }}</h3>
+                        <h3 class="app-title">{{ app.display_name }}</h3>
                         <span class="app-category">{{ app.category_display|default:'Application' }}</span>
                     </div>
-                    
-                    <!-- Install Toggle -->
                     <div class="install-toggle">
                         <input type="checkbox" id="toggle-{{ app.id }}" 
                                {% if app.id in enabled_app_ids %}checked{% endif %}
@@ -106,31 +111,33 @@
                         {% endif %}
                     </div>
                     {% if app.id in enabled_app_ids %}
-                    <a href="{{ app.route_path }}" class="inline-flex items-center px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200">
+                    <a href="{{ app.route_path }}" class="btn btn-primary btn-sm">
                         <i class="bi bi-box-arrow-up-right me-1"></i>Ouvrir
                     </a>
                     {% endif %}
                 </div>
 
                 <!-- Loading Overlay -->
-                <div class="loading-overlay hidden" id="loading-{{ app.id }}">
-                    <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                <div class="loading-overlay" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
                 </div>
             </div>
             {% empty %}
-            <div class="col-span-full empty-state">
+            <div class="empty-state">
                 <i class="bi bi-app-indicator"></i>
-                <h5 class="text-xl font-medium text-gray-700 mb-2">Aucune application disponible</h5>
-                <p class="text-gray-500">Les applications seront bientôt disponibles.</p>
+                <h5 class="mb-2">Aucune application disponible</h5>
+                <p>Les applications seront bientôt disponibles.</p>
             </div>
             {% endfor %}
         </div>
 
         <!-- Empty State (pour les recherches) -->
-        <div class="col-span-full empty-state hidden" id="emptyState">
+        <div class="empty-state" id="emptyState" style="display: none;">
             <i class="bi bi-search"></i>
-            <h5 class="text-xl font-medium text-gray-700 mb-2">Aucune application trouvée</h5>
-            <p class="text-gray-500">Essayez avec d'autres mots-clés</p>
+            <h5 class="mb-2">Aucune application trouvée</h5>
+            <p>Essayez avec d'autres mots-clés</p>
         </div>
     </main>
 </div>
@@ -189,22 +196,4 @@
 <!-- Pass Django URL to JavaScript -->
 <div data-toggle-url="{% url 'app_manager:api_app_toggle' 0 %}" style="display: none;"></div>
 <script src="{% static 'app_manager/js/app_store.js' %}?v=2"></script>
-
-<!-- JavaScript Compatible avec les classes Tailwind -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Gestion des catégories actives avec la classe .active définie in tailwind-modals.css
-    document.querySelectorAll('.category-item').forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Reset all - retire la classe active de tous
-            document.querySelectorAll('.category-item').forEach(b => {
-                b.classList.remove('active');
-            });
-            
-            // Ajouter la classe active au bouton cliqué
-            this.classList.add('active');
-        });
-    });
-});
-</script>
 {% endblock %}
