@@ -3016,3 +3016,221 @@ button.bg-linguify-gradient:hover,
 .tags-filter-apply:hover {
   background-color: var(--linguify-primary-dark);
 }
+/* App Store Styles for Open Linguify */
+:root {
+    --app-store-primary: #6366f1;
+    --app-store-primary-dark: #4f46e5;
+    --app-store-secondary: #8b5cf6;
+    --app-store-success: #10b981;
+    --app-store-warning: #f59e0b;
+    --app-store-danger: #ef4444;
+}
+
+/* Layout App Store */
+.app-store-layout {
+    @apply flex w-full;
+    height: calc(100vh - 70px);
+    margin: 0;
+    padding: 0;
+}
+
+/* Styles pour les éléments de catégorie dans la sidebar */
+.category-item.active {
+    background: #e0e7ff !important;
+    color: var(--app-store-primary);
+}
+
+.category-item.active .bi {
+    color: var(--app-store-primary) !important;
+}
+
+.category-item.active span:last-child {
+    background: #c7d2fe !important;
+    color: var(--app-store-primary) !important;
+}
+
+/* Main content utilise flex: 1 pour occuper tout lespace restant */
+.app-store-main {
+    @apply flex-1 overflow-y-auto p-8;
+}
+
+.search-bar {
+    @apply bg-white border border-gray-200 rounded-xl p-4 mb-8 flex items-center gap-4;
+}
+
+.search-bar input {
+    @apply border-0 outline-0 flex-1 text-base;
+}
+
+.search-bar i {
+    @apply text-gray-500;
+}
+
+/* Apps grid */
+.apps-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.app-card {
+    @apply bg-white rounded-2xl border border-gray-200 p-6 transition-all duration-300 cursor-pointer relative;
+}
+
+.app-card:hover {
+    @apply -translate-y-1 shadow-xl;
+    border-color: var(--app-store-primary);
+}
+
+.app-header {
+    @apply flex items-start gap-4 mb-4;
+}
+
+.app-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0;
+}
+
+.app-info {
+    @apply flex-1;
+}
+
+.app-title {
+    @apply text-lg font-semibold mb-1 text-gray-900;
+}
+
+.app-category {
+    @apply text-sm text-gray-500;
+}
+
+.app-description {
+    @apply text-gray-600 text-sm leading-relaxed mb-4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.app-footer {
+    @apply flex justify-between items-center pt-4 border-t border-gray-100;
+}
+
+.install-toggle {
+    position: relative;
+    width: 50px;
+    height: 26px;
+}
+
+.install-toggle input {
+    display: none;
+}
+
+.install-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e5e7eb;
+    transition: 0.4s;
+    border-radius: 26px;
+}
+
+.install-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.install-toggle input:checked + .install-toggle-slider {
+    background-color: var(--app-store-success);
+}
+
+.install-toggle input:checked + .install-toggle-slider:before {
+    transform: translateX(24px);
+}
+
+.install-status {
+    @apply text-sm text-gray-500;
+}
+
+.install-status.installed {
+    color: var(--app-store-success);
+}
+
+/* Empty state */
+.empty-state {
+    @apply text-center py-16 text-gray-500;
+}
+
+.empty-state i {
+    @apply text-5xl opacity-30 mb-4 block;
+}
+
+/* Loading state */
+.loading-overlay {
+    @apply absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-2xl;
+}
+
+/* Animation keyframes */
+@keyframes slideIn {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.app-card {
+    animation: slideIn 0.3s ease-out;
+}
+
+.app-card.installing .install-toggle {
+    pointer-events: none;
+}
+
+.app-card.installing {
+    opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .app-store-layout {
+        @apply flex-col;
+        height: auto;
+    }
+    
+    .sidebar-linguify {
+        @apply w-full relative border-r-0 border-b border-gray-200;
+        height: auto !important;
+        max-height: none !important;
+    }
+    
+    .app-store-main {
+        @apply p-4;
+        height: auto;
+        overflow-y: visible;
+    }
+    
+    .sidebar-content > div {
+        @apply flex overflow-x-auto p-2 gap-2;
+    }
+    
+    .category-item {
+        @apply whitespace-nowrap flex-shrink-0;
+        min-width: auto;
+    }
+    
+    .apps-grid {
+        @apply grid-cols-1;
+    }
+}
+
