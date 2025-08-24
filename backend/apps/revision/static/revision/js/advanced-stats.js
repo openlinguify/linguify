@@ -477,31 +477,192 @@ class AdvancedStatsManager {
     }
     
     /**
-     * Chart rendering methods (placeholder implementations)
+     * Chart rendering methods with basic implementations
      */
     renderMaturityChart(container, data) {
-        // TODO: Implement chart rendering using Chart.js or similar
         console.log('📊 Rendering maturity chart:', data);
+        
+        // Create a simple visual representation using HTML/CSS
+        const total = data.reduce((sum, item) => sum + item.count, 0);
+        
+        container.innerHTML = `
+            <div class="space-y-2">
+                ${data.map(item => {
+                    const percentage = total > 0 ? (item.count / total * 100) : 0;
+                    return `
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full" style="background: ${item.color}"></div>
+                            <div class="flex-1 text-sm">${item.label}</div>
+                            <div class="text-sm font-semibold">${item.count}</div>
+                            <div class="text-xs text-gray-500">${percentage.toFixed(1)}%</div>
+                        </div>
+                        <div class="ml-5">
+                            <div class="w-full bg-gray-200 rounded-full h-1">
+                                <div class="rounded-full h-1 transition-all duration-300" 
+                                     style="width: ${percentage}%; background: ${item.color}"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
     }
     
     renderForecastChart(forecastData) {
         console.log('📊 Rendering forecast chart:', forecastData);
+        
+        // For now, just show a simple text representation
+        const forecastContainer = document.getElementById('forecast-chart');
+        if (forecastContainer && forecastData && forecastData.length > 0) {
+            const nextWeek = forecastData.slice(0, 7);
+            const maxReviews = Math.max(...nextWeek.map(d => d.predicted_reviews), 1);
+            
+            forecastContainer.innerHTML = `
+                <div class="text-xs text-gray-600 mb-2">Next 7 days forecast:</div>
+                <div class="space-y-1">
+                    ${nextWeek.map((day, index) => {
+                        const width = (day.predicted_reviews / maxReviews * 100);
+                        const date = new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'short' });
+                        return `
+                            <div class="flex items-center gap-2">
+                                <div class="text-xs w-8">${date}</div>
+                                <div class="flex-1 bg-gray-200 rounded h-2">
+                                    <div class="bg-purple-500 rounded h-2 transition-all duration-300" 
+                                         style="width: ${width}%"></div>
+                                </div>
+                                <div class="text-xs w-8 text-right">${day.predicted_reviews}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
     }
     
     renderHourlyChart(hourlyData) {
         console.log('📊 Rendering hourly chart:', hourlyData);
+        
+        const hourlyContainer = document.getElementById('hourly-chart');
+        if (hourlyContainer && hourlyData && hourlyData.length > 0) {
+            const validHours = hourlyData.filter(h => h.avg_success_rate !== null && h.session_count > 0);
+            
+            if (validHours.length === 0) {
+                hourlyContainer.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No hourly data available yet</div>';
+                return;
+            }
+            
+            const maxRate = Math.max(...validHours.map(h => h.avg_success_rate));
+            
+            hourlyContainer.innerHTML = `
+                <div class="text-xs text-gray-600 mb-2">Performance by hour:</div>
+                <div class="grid grid-cols-12 gap-1">
+                    ${validHours.map(hour => {
+                        const height = maxRate > 0 ? (hour.avg_success_rate / maxRate * 40) : 0;
+                        return `
+                            <div class="text-center">
+                                <div class="bg-yellow-500 rounded-t mb-1 transition-all duration-300" 
+                                     style="height: ${height}px; min-height: 2px;"
+                                     title="${hour.hour}:00 - ${hour.avg_success_rate}%"></div>
+                                <div class="text-xs">${hour.hour}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
     }
     
     renderActivityChart(data) {
         console.log('📊 Rendering activity chart:', data);
+        
+        const activityContainer = document.getElementById('activityTrendChart');
+        if (activityContainer && data && data.length > 0) {
+            // Create a parent div to replace the canvas
+            const parent = activityContainer.parentNode;
+            const chartDiv = document.createElement('div');
+            chartDiv.className = 'w-full h-64 flex items-end gap-1 p-4';
+            chartDiv.id = 'activityTrendChart';
+            
+            const maxCards = Math.max(...data.map(d => d.cards_studied), 1);
+            
+            chartDiv.innerHTML = `
+                <div class="text-sm text-gray-600 absolute top-2 left-4">Cards studied over time</div>
+                ${data.map((point, index) => {
+                    const height = (point.cards_studied / maxCards * 180);
+                    return `
+                        <div class="flex-1 flex flex-col items-center">
+                            <div class="bg-linguify-primary rounded-t transition-all duration-300 w-full min-h-[2px]" 
+                                 style="height: ${height}px"
+                                 title="${point.label}: ${point.cards_studied} cards"></div>
+                            <div class="text-xs mt-1 text-center transform -rotate-45 origin-left">${point.label}</div>
+                        </div>
+                    `;
+                }).join('')}
+            `;
+            
+            parent.replaceChild(chartDiv, activityContainer);
+        }
     }
     
     renderPerformanceTrendChart(data) {
         console.log('📊 Rendering performance trend chart:', data);
+        
+        const performanceContainer = document.getElementById('performanceTrendChart');
+        if (performanceContainer && data && data.length > 0) {
+            // Create a parent div to replace the canvas
+            const parent = performanceContainer.parentNode;
+            const chartDiv = document.createElement('div');
+            chartDiv.className = 'w-full h-64 flex items-end gap-1 p-4';
+            chartDiv.id = 'performanceTrendChart';
+            
+            const maxRate = Math.max(...data.map(d => d.avg_success_rate), 1);
+            
+            chartDiv.innerHTML = `
+                <div class="text-sm text-gray-600 absolute top-2 left-4">Success rate trend (%)</div>
+                ${data.map((point, index) => {
+                    const height = (point.avg_success_rate / maxRate * 180);
+                    const color = point.avg_success_rate >= 80 ? 'bg-green-500' : 
+                                 point.avg_success_rate >= 60 ? 'bg-yellow-500' : 'bg-red-500';
+                    return `
+                        <div class="flex-1 flex flex-col items-center">
+                            <div class="${color} rounded-t transition-all duration-300 w-full min-h-[2px]" 
+                                 style="height: ${height}px"
+                                 title="${point.label}: ${point.avg_success_rate}% success"></div>
+                            <div class="text-xs mt-1 text-center transform -rotate-45 origin-left">${point.label}</div>
+                        </div>
+                    `;
+                }).join('')}
+            `;
+            
+            parent.replaceChild(chartDiv, performanceContainer);
+        }
     }
     
     initializeCharts() {
         console.log('📊 Initializing chart containers');
+        
+        // Add containers for charts that don't exist yet
+        const forecastSection = document.getElementById('forecast-section');
+        if (forecastSection) {
+            const existingChart = document.getElementById('forecast-chart');
+            if (!existingChart) {
+                const chartContainer = document.createElement('div');
+                chartContainer.id = 'forecast-chart';
+                chartContainer.className = 'mt-4';
+                forecastSection.appendChild(chartContainer);
+            }
+        }
+        
+        const hourlySection = document.getElementById('hourly-performance');
+        if (hourlySection) {
+            const existingChart = document.getElementById('hourly-chart');
+            if (!existingChart) {
+                const chartContainer = document.createElement('div');
+                chartContainer.id = 'hourly-chart';
+                chartContainer.className = 'mt-4';
+                hourlySection.appendChild(chartContainer);
+            }
+        }
     }
     
     /**
