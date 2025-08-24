@@ -1,0 +1,35 @@
+<!-- Modal de creation/edition d'etiquette pour le notebook -->
+<div class="modal fade" id="notebookTagEditModal" tabindex="-1" aria-labelledby="notebookTagEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notebookTagEditModalLabel">Nouvelle etiquette</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="notebookTagEditForm">
+                    <div class="mb-3">
+                        <label for="notebookTagNameInput" class="form-label">Nom de l'etiquette *</label>
+                        <input type="text" class="form-control" id="notebookTagNameInput" required maxlength="50">
+                        <div class="form-text">Utilisez des noms courts et descriptifs</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notebookTagColorInput" class="form-label">Couleur</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="color" class="form-control form-control-color" id="notebookTagColorInput" value="#3B82F6">
+                            <div class="tag-preview" id="notebookTagPreview">
+                                <span class="badge" style="background: #3B82F6; color: white;">Apercu</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="saveNotebookTagBtn">
+                    <i class="bi bi-check-lg me-1"></i>Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

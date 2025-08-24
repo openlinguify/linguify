@@ -1,0 +1,26 @@
+<!-- Sidebar avec liste des notes -->
+<div class="notebook-sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h6 class="m-0 text-muted">Mes notes</h6>
+        <small class="text-muted" id="notesCount">0 notes</small>
+    </div>
+    
+    <div class="sidebar-content">
+        <div id="notesList" class="note-list">
+            <!-- Les notes seront chargees ici -->
+        </div>
+        
+        <div id="loadingNotes" class="text-center p-3" style="display: none;">
+            <div class="loading-spinner"></div>
+            <div class="mt-2 text-muted">Chargement...</div>
+        </div>
+        
+        <div id="emptyNotes" class="text-center p-4" style="display: none;">
+            <i class="bi bi-journal-x text-muted" style="font-size: 2rem;"></i>
+            <div class="mt-2 text-muted">Aucune note trouvée</div>
+            <button class="btn btn-gradient btn-sm mt-2" onclick="createNewNote()">
+                Créer ma premiere note
+            </button>
+        </div>
+    </div>
+</div>
