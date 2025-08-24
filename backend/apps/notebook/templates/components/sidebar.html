@@ -1,25 +1,25 @@
-<!-- Sidebar avec liste des notes -->
-<div class="notebook-sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <h6 class="m-0 text-muted">Mes notes</h6>
-        <small class="text-muted" id="notesCount">0 notes</small>
-    </div>
-    
+<!-- Sidebar -->
+<div id="notebookSidebar" class="sidebar-linguify">
     <div class="sidebar-content">
-        <div id="notesList" class="note-list">
-            <!-- Les notes seront chargees ici -->
+        <!-- Notes list -->
+        <ul id="notesList" class="note-list"></ul>
+        
+        <!-- Empty state -->
+        <div id="notesEmpty" class="empty-state empty-state-hidden">
+            <i class="bi bi-journal-text empty-state-icon"></i>
+            <div class="empty-state-title">Aucune note</div>
+            <div class="empty-state-description">Creez votre premiere note pour commencer a organiser vos idees</div>
+            <button class="btn-linguify create-note-btn" onclick="createNewNote()">
+                <i class="bi bi-plus-lg mr-2"></i>
+                Creer une note
+            </button>
         </div>
         
-        <div id="loadingNotes" class="text-center p-3" style="display: none;">
-            <div class="loading-spinner"></div>
-            <div class="mt-2 text-muted">Chargement...</div>
-        </div>
-        
-        <div id="emptyNotes" class="text-center p-4" style="display: none;">
-            <i class="bi bi-journal-x text-muted" style="font-size: 2rem;"></i>
-            <div class="mt-2 text-muted">Aucune note trouvée</div>
-            <button class="btn btn-gradient btn-sm mt-2" onclick="createNewNote()">
-                Créer ma premiere note
+        <!-- Load more -->
+        <div id="loadMoreContainer" class="text-center load-more-container">
+            <button id="loadMoreBtn" class="btn-linguify-secondary">
+                <i class="bi bi-arrow-down-circle mr-2"></i>
+                Charger plus
             </button>
         </div>
     </div>
