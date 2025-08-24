@@ -1,20 +1,371 @@
 # apps/revision/views/stats_api_views.py
 """
-API endpoints for revision statistics
+API endpoints for revision statistics with Anki-inspired advanced analytics
 Separated from web_views.py for better organization
 """
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Avg, Max, Min, Sum, Case, When, IntegerField, FloatField
+from django.db.models.functions import Extract, TruncDate, TruncWeek, TruncMonth
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, date
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
 
 from ..models.revision_flashcard import FlashcardDeck, Flashcard
 from ..models.revision_schedule import RevisionSession
 
 import logging
 logger = logging.getLogger(__name__)
+
+# Constants
+PERIOD_WEEK = 0
+PERIOD_MONTH = 1  
+PERIOD_YEAR = 2
+PERIOD_LIFETIME = 3
+
+# Card maturity levels
+MATURE_INTERVAL_DAYS = 21  # Cards with interval >= 21 days are considered mature
+
+
+class StatsPeriodHelper:
+    """Helper class for managing statistical periods"""
+    
+    @staticmethod
+    def get_period_config(period_type, user=None):
+        """
+        Get period configuration similar to Anki's get_start_end_chunk
+        Returns (start_days_ago, days_duration, chunk_size)
+        """
+        now = timezone.now().date()
+        
+        if period_type == PERIOD_WEEK:
+            return 7, 7, 1  # Last 7 days, daily chunks
+        elif period_type == PERIOD_MONTH:
+            return 31, 31, 1  # Last 31 days, daily chunks
+        elif period_type == PERIOD_YEAR:
+            return 365, 52, 7  # Last 52 weeks, weekly chunks
+        else:  # PERIOD_LIFETIME
+            # Calculate deck age for lifetime stats
+            deck_age = StatsPeriodHelper._get_deck_age(user) if user else 365
+            if deck_age <= 100:
+                chunk_size = 1  # Daily
+            elif deck_age <= 700:
+                chunk_size = 7  # Weekly
+            else:
+                chunk_size = 31  # Monthly
+            return deck_age, None, chunk_size
+    
+    @staticmethod
+    def _get_deck_age(user):
+        """Calculate how long the user has been studying (in days)"""
+        if not user:
+            return 365
+            
+        # Find oldest flashcard or session
+        oldest_card = Flashcard.objects.filter(user=user).order_by('created_at').first()
+        oldest_session = RevisionSession.objects.filter(user=user).order_by('scheduled_date').first()
+        
+        oldest_date = None
+        if oldest_card:
+            oldest_date = oldest_card.created_at.date()
+        if oldest_session and (not oldest_date or oldest_session.scheduled_date.date() < oldest_date):
+            oldest_date = oldest_session.scheduled_date.date()
+            
+        if oldest_date:
+            return (timezone.now().date() - oldest_date).days
+        return 365  # Default to 1 year if no data
+    
+    @staticmethod
+    def get_time_chunks(period_type, user=None):
+        """Get time chunk configuration for graphs"""
+        start_days, duration, chunk = StatsPeriodHelper.get_period_config(period_type, user)
+        
+        chunks = []
+        now = timezone.now().date()
+        
+        if chunk == 1:  # Daily chunks
+            for i in range(start_days):
+                day = now - timedelta(days=i)
+                chunks.append({
+                    'date': day,
+                    'label': day.strftime('%m-%d'),
+                    'start': timezone.make_aware(timezone.datetime.combine(day, timezone.datetime.min.time())),
+                    'end': timezone.make_aware(timezone.datetime.combine(day, timezone.datetime.max.time()))
+                })
+        elif chunk == 7:  # Weekly chunks
+            weeks = duration or (start_days // 7)
+            for i in range(weeks):
+                week_start = now - timedelta(days=i*7, weeks=1)
+                week_end = week_start + timedelta(days=6)
+                chunks.append({
+                    'date': week_start,
+                    'label': f'Week {week_start.strftime("%U")}',
+                    'start': timezone.make_aware(timezone.datetime.combine(week_start, timezone.datetime.min.time())),
+                    'end': timezone.make_aware(timezone.datetime.combine(week_end, timezone.datetime.max.time()))
+                })
+        elif chunk == 31:  # Monthly chunks
+            months = duration or (start_days // 31)
+            for i in range(months):
+                month_start = now.replace(day=1) - timedelta(days=31*i)
+                month_start = month_start.replace(day=1)
+                if month_start.month == 12:
+                    month_end = month_start.replace(year=month_start.year+1, month=1, day=1) - timedelta(days=1)
+                else:
+                    month_end = month_start.replace(month=month_start.month+1, day=1) - timedelta(days=1)
+                chunks.append({
+                    'date': month_start,
+                    'label': month_start.strftime('%Y-%m'),
+                    'start': timezone.make_aware(timezone.datetime.combine(month_start, timezone.datetime.min.time())),
+                    'end': timezone.make_aware(timezone.datetime.combine(month_end, timezone.datetime.max.time()))
+                })
+        
+        return chunks[::-1]  # Reverse to get chronological order
+
+
+class AdvancedStatsAPIView(APIView):
+    """
+    Advanced statistics API inspired by Anki's comprehensive analytics
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """Get comprehensive statistics with period analysis"""
+        try:
+            user = request.user
+            period_type = int(request.GET.get('period_type', PERIOD_MONTH))
+            include_forecast = request.GET.get('include_forecast', 'false').lower() == 'true'
+            include_hourly = request.GET.get('include_hourly', 'false').lower() == 'true'
+            include_maturity = request.GET.get('include_maturity', 'true').lower() == 'true'
+            
+            stats = {
+                'period_info': self._get_period_info(period_type, user),
+                'basic_stats': self._get_basic_stats(user),
+            }
+            
+            if include_maturity:
+                stats['card_maturity'] = self._get_card_maturity_stats(user)
+            
+            if include_forecast:
+                stats['forecast'] = self._get_forecast_data(user, days_ahead=30)
+            
+            if include_hourly:
+                stats['hourly_performance'] = self._get_hourly_performance(user)
+            
+            # Historical data for graphs
+            stats['historical_data'] = self._get_historical_data(period_type, user)
+            
+            return Response(stats)
+            
+        except Exception as e:
+            logger.error(f"Error in AdvancedStatsAPIView: {str(e)}")
+            return Response({'error': 'Failed to fetch advanced statistics'}, status=500)
+    
+    def _get_period_info(self, period_type, user):
+        """Get information about the current period"""
+        period_names = {
+            PERIOD_WEEK: "Last 7 days",
+            PERIOD_MONTH: "Last 30 days", 
+            PERIOD_YEAR: "Last year",
+            PERIOD_LIFETIME: "All time"
+        }
+        
+        start_days, duration, chunk = StatsPeriodHelper.get_period_config(period_type, user)
+        
+        return {
+            'type': period_type,
+            'name': period_names.get(period_type, "Unknown"),
+            'days_covered': start_days,
+            'chunk_size': chunk,
+            'chunk_unit': 'days' if chunk == 1 else 'weeks' if chunk == 7 else 'months'
+        }
+    
+    def _get_basic_stats(self, user):
+        """Get basic statistics similar to existing API but enhanced"""
+        # Get user's active decks with annotations
+        user_decks = FlashcardDeck.objects.filter(
+            user=user, 
+            is_active=True, 
+            is_archived=False
+        ).annotate(
+            cards_count=Count('flashcards'),
+            learned_count=Count('flashcards', filter=Q(flashcards__learned=True)),
+            mature_count=Count('flashcards', filter=Q(
+                flashcards__learned=True,
+                flashcards__review_count__gte=5  # Approximation of mature cards
+            ))
+        )
+        
+        total_decks = user_decks.count()
+        total_cards = sum(deck.cards_count for deck in user_decks)
+        total_learned = sum(deck.learned_count for deck in user_decks)
+        total_mature = sum(deck.mature_count for deck in user_decks)
+        
+        return {
+            'total_decks': total_decks,
+            'total_cards': total_cards,
+            'total_learned': total_learned,
+            'total_mature': total_mature,
+            'young_cards': total_learned - total_mature,
+            'new_cards': total_cards - total_learned,
+            'completion_percentage': round((total_learned / total_cards * 100) if total_cards > 0 else 0),
+            'maturity_percentage': round((total_mature / total_learned * 100) if total_learned > 0 else 0)
+        }
+    
+    def _get_card_maturity_stats(self, user):
+        """Get detailed card maturity breakdown like Anki"""
+        flashcards = Flashcard.objects.filter(
+            deck__user=user,
+            deck__is_active=True,
+            deck__is_archived=False
+        )
+        
+        # Categorize cards by maturity
+        new_cards = flashcards.filter(learned=False, review_count=0)
+        learning_cards = flashcards.filter(learned=False, review_count__gt=0)
+        young_cards = flashcards.filter(learned=True, review_count__lt=5)
+        mature_cards = flashcards.filter(learned=True, review_count__gte=5)
+        
+        return {
+            'new': {
+                'count': new_cards.count(),
+                'description': 'Never studied'
+            },
+            'learning': {
+                'count': learning_cards.count(),
+                'description': 'Currently learning'
+            },
+            'young': {
+                'count': young_cards.count(),
+                'description': 'Recently learned (< 5 reviews)'
+            },
+            'mature': {
+                'count': mature_cards.count(),
+                'description': 'Well established (≥ 5 reviews)'
+            }
+        }
+    
+    def _get_forecast_data(self, user, days_ahead=30):
+        """Predict future revision workload like Anki's due graph"""
+        # For now, we'll create a simple prediction based on current learning patterns
+        # In a real implementation, this would use spaced repetition intervals
+        
+        now = timezone.now().date()
+        forecast = []
+        
+        # Get average daily reviews from last 7 days
+        week_ago = now - timedelta(days=7)
+        recent_sessions = RevisionSession.objects.filter(
+            user=user,
+            status='COMPLETED',
+            completed_date__date__gte=week_ago
+        ).prefetch_related('flashcards')
+        
+        avg_daily_reviews = 0
+        if recent_sessions.exists():
+            total_cards = sum(session.flashcards.count() for session in recent_sessions)
+            avg_daily_reviews = total_cards / 7
+        
+        # Simple prediction: maintain average with some variation
+        import random
+        for i in range(days_ahead):
+            future_date = now + timedelta(days=i+1)
+            
+            # Add some realistic variation (±30%)
+            variation = random.uniform(0.7, 1.3)
+            predicted_reviews = max(0, int(avg_daily_reviews * variation))
+            
+            forecast.append({
+                'date': future_date.isoformat(),
+                'predicted_reviews': predicted_reviews,
+                'confidence': 'medium' if i < 7 else 'low' if i < 14 else 'very_low'
+            })
+        
+        return {
+            'days_ahead': days_ahead,
+            'forecast': forecast,
+            'avg_daily_base': round(avg_daily_reviews, 1)
+        }
+    
+    def _get_hourly_performance(self, user):
+        """Analyze performance by hour of day like Anki"""
+        # Get sessions with hourly data
+        sessions = RevisionSession.objects.filter(
+            user=user,
+            status='COMPLETED',
+            completed_date__isnull=False
+        ).annotate(
+            hour=Extract('completed_date', 'hour')
+        ).values('hour').annotate(
+            avg_success_rate=Avg('success_rate'),
+            session_count=Count('id')
+        ).filter(session_count__gte=2)  # Only include hours with meaningful data (lowered threshold)
+        
+        hourly_data = {}
+        for session_data in sessions:
+            hour = session_data['hour']
+            hourly_data[hour] = {
+                'hour': hour,
+                'avg_success_rate': round(session_data['avg_success_rate'] or 0, 1),
+                'session_count': session_data['session_count'],
+                'total_cards': 0  # TODO: Calculate total cards per hour when needed
+            }
+        
+        # Fill in missing hours with None
+        complete_hourly = []
+        for hour in range(24):
+            if hour in hourly_data:
+                complete_hourly.append(hourly_data[hour])
+            else:
+                complete_hourly.append({
+                    'hour': hour,
+                    'avg_success_rate': None,
+                    'session_count': 0,
+                    'total_cards': 0
+                })
+        
+        # Find best performance hours
+        valid_hours = [h for h in complete_hourly if h['avg_success_rate'] is not None]
+        best_hour = max(valid_hours, key=lambda x: x['avg_success_rate']) if valid_hours else None
+        
+        return {
+            'hourly_breakdown': complete_hourly,
+            'best_performance_hour': best_hour,
+            'total_study_sessions': sum(h['session_count'] for h in complete_hourly)
+        }
+    
+    def _get_historical_data(self, period_type, user):
+        """Get historical performance data for graphs"""
+        chunks = StatsPeriodHelper.get_time_chunks(period_type, user)
+        
+        historical_data = []
+        for chunk in chunks:
+            # Get sessions in this time chunk
+            chunk_sessions = RevisionSession.objects.filter(
+                user=user,
+                status='COMPLETED',
+                completed_date__range=[chunk['start'], chunk['end']]
+            ).prefetch_related('flashcards')
+            
+            # Calculate metrics for this chunk
+            total_cards = sum(session.flashcards.count() for session in chunk_sessions)
+            avg_success_rate = chunk_sessions.aggregate(Avg('success_rate'))['success_rate__avg'] or 0
+            session_count = chunk_sessions.count()
+            
+            historical_data.append({
+                'date': chunk['date'].isoformat(),
+                'label': chunk['label'],
+                'cards_studied': total_cards,
+                'avg_success_rate': round(avg_success_rate, 1),
+                'session_count': session_count
+            })
+        
+        return {
+            'period_type': period_type,
+            'data_points': historical_data,
+            'total_periods': len(chunks)
+        }
 
 
 @api_view(['GET'])

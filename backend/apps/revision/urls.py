@@ -24,7 +24,8 @@ from .views.stats_api_views import (
     get_detailed_stats, 
     get_recent_sessions, 
     get_study_goals, 
-    get_deck_performance
+    get_deck_performance,
+    AdvancedStatsAPIView
 )
 
 app_name = 'revision'
@@ -52,6 +53,9 @@ urlpatterns = [
     path('sessions/recent/', get_recent_sessions, name='recent-sessions'),
     path('goals/', get_study_goals, name='study-goals'),
     path('decks/performance/', get_deck_performance, name='deck-performance'),
+    
+    # Advanced statistics
+    path('stats/advanced/', AdvancedStatsAPIView.as_view(), name='advanced-stats'),
     
     # Main API routes
     path('', include(router.urls)),
