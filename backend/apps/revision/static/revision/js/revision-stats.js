@@ -96,6 +96,11 @@ function loadCollectionOverview() {
             updateElement('totalLearned', totalLearned);
             updateElement('completionRate', completionPercentage + '%');
             
+            // Update sidebar elements
+            updateElement('sidebarTotalDecks', totalDecks);
+            updateElement('sidebarTotalCards', totalCards);
+            updateElement('sidebarProgress', completionPercentage + '%');
+            
             // Update progress bar
             const progressBar = document.getElementById('completionProgress');
             if (progressBar) {
@@ -118,6 +123,11 @@ function loadCollectionOverview() {
             updateElement('totalCards', demoData.total_cards);
             updateElement('totalLearned', demoData.total_learned);
             updateElement('completionRate', demoData.completion_percentage + '%');
+            
+            // Update sidebar elements with demo data
+            updateElement('sidebarTotalDecks', demoData.total_decks);
+            updateElement('sidebarTotalCards', demoData.total_cards);
+            updateElement('sidebarProgress', demoData.completion_percentage + '%');
             
             const progressBar = document.getElementById('completionProgress');
             if (progressBar) {
@@ -142,6 +152,11 @@ function loadStatistics() {
             updateElement('accuracyRate', (data.accuracy_rate || 0) + '%');
             updateElement('studyTime', formatTime(data.total_study_time || 0));
             updateElement('currentStreak', data.current_streak || 0);
+            
+            // Update sidebar elements
+            updateElement('sidebarStudiedCards', data.total_studied_cards || 0);
+            updateElement('sidebarAccuracy', (data.accuracy_rate || 0) + '%');
+            updateElement('sidebarStreak', data.current_streak || 0);
             
             // Update progress bars
             updateProgressBar('studiedCardsProgress', Math.min((data.total_studied_cards || 0) / 100 * 100, 100));
@@ -169,6 +184,11 @@ function loadStatistics() {
             updateElement('accuracyRate', demoData.accuracy_rate + '%');
             updateElement('studyTime', formatTime(demoData.total_study_time));
             updateElement('currentStreak', demoData.current_streak);
+            
+            // Update sidebar elements with demo data
+            updateElement('sidebarStudiedCards', demoData.total_studied_cards);
+            updateElement('sidebarAccuracy', demoData.accuracy_rate + '%');
+            updateElement('sidebarStreak', demoData.current_streak);
             
             // Update progress bars
             updateProgressBar('studiedCardsProgress', Math.min((demoData.total_studied_cards || 0) / 100 * 100, 100));
@@ -199,20 +219,20 @@ function loadDeckStats() {
                     
                     tbody.innerHTML += `
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4">
-                                <div class="text-sm font-medium text-gray-900">${deck.name}</div>
-                                <div class="text-sm text-gray-500">${deck.description || 'No description'}</div>
+                            <td class="px-4 py-3">
+                                <div class="text-xs font-medium text-gray-900">${deck.name}</div>
+                                <div class="text-xs text-gray-500">${deck.description || 'No description'}</div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900">${deck.cards_count}</td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3 text-xs text-gray-900">${deck.cards_count}</td>
+                            <td class="px-4 py-3">
                                 <div class="flex items-center">
-                                    <span class="mr-2 text-sm text-gray-900">${deck.mastered_cards}/${deck.cards_count}</span>
+                                    <span class="mr-2 text-xs text-gray-900">${deck.mastered_cards}/${deck.cards_count}</span>
                                     <div class="flex-1 bg-gray-200 rounded-full h-1">
                                         <div class="bg-linguify-primary rounded-full h-1 transition-all duration-300" style="width: ${deck.mastery_percentage}%"></div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3">
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${accuracyClass}">
                                     ${deck.accuracy}%
                                 </span>
@@ -223,7 +243,7 @@ function loadDeckStats() {
             } else {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                        <td colspan="4" class="px-4 py-6 text-center text-gray-500 text-sm">
                             No deck statistics available
                         </td>
                     </tr>
@@ -236,7 +256,7 @@ function loadDeckStats() {
             if (tbody) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="4" class="px-6 py-8 text-center text-red-600">
+                        <td colspan="4" class="px-4 py-6 text-center text-red-600 text-sm">
                             Error loading deck statistics
                         </td>
                     </tr>
@@ -263,19 +283,19 @@ function loadRecentActivity() {
                 data.results.forEach(session => {
                     const timeAgo = getTimeAgo(new Date(session.created_at));
                     container.innerHTML += `
-                        <div class="px-6 py-4">
+                        <div class="px-4 py-3">
                             <div class="flex justify-between items-start">
-                                <h6 class="text-sm font-medium text-gray-900 mb-1">${session.deck_name}</h6>
+                                <h6 class="text-xs font-medium text-gray-900 mb-1">${session.deck_name}</h6>
                                 <span class="text-xs text-gray-500">${timeAgo}</span>
                             </div>
-                            <p class="text-sm text-gray-600 mb-1">${session.mode} - ${session.cards_studied} cards studied</p>
+                            <p class="text-xs text-gray-600 mb-1">${session.mode} - ${session.cards_studied} cards studied</p>
                             <div class="text-xs text-gray-500">Accuracy: ${session.accuracy}%</div>
                         </div>
                     `;
                 });
             } else {
                 container.innerHTML = `
-                    <div class="px-6 py-8 text-center text-gray-500">
+                    <div class="px-4 py-6 text-center text-gray-500 text-sm">
                         No recent activity found
                     </div>
                 `;
@@ -286,7 +306,7 @@ function loadRecentActivity() {
             const container = document.getElementById('recentActivity');
             if (container) {
                 container.innerHTML = `
-                    <div class="px-6 py-8 text-center text-red-600">
+                    <div class="px-4 py-6 text-center text-red-600 text-sm">
                         Error loading recent activity
                     </div>
                 `;
