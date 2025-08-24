@@ -19,9 +19,8 @@
 <link rel="stylesheet" href="{% static 'app_manager/css/app_store.css' %}">
 <style>
 /* Critical CSS inline pour ultra performance */
-.app-store-container{display:flex;max-width:1400px;margin:0 auto;gap:2rem;padding:2rem}
-.app-store-sidebar{width:250px;flex-shrink:0}
-.app-store-main{flex:1}
+.app-store-layout{display:flex;width:100%;height:calc(100vh - 70px);margin:0;padding:0}
+.app-store-main{flex:1;overflow-y:auto;padding:2rem}
 .apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
 .app-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.5rem;transition:all .3s ease;cursor:pointer;position:relative}
 .app-card:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(0,0,0,.08);border-color:#6366f1}
@@ -34,36 +33,38 @@
 {% block content %}
 {% csrf_token %}
 
-
-<!-- App Store Container -->
-<div class="app-store-container">
-    <!-- Sidebar -->
-    <aside class="app-store-sidebar">
-        <div class="category-list">
-            <h6 class="text-muted text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 600;">Catégories</h6>
-            
-            <button class="category-item active" data-category="all">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-grid-3x3-gap category-icon"></i>
-                    <span>Toutes les apps</span>
-                </div>
-                <span class="category-count" id="count-all">{{ total_apps }}</span>
-            </button>
-            
-            <!-- Catégories dynamiques depuis les manifests -->
-            {% for category_id, definition in category_definitions.items %}
-            <button class="category-item" data-category="{{ category_id }}">
-                <div class="d-flex align-items-center">
-                    <i class="{{ definition.icon }} category-icon"></i>
-                    <span>{{ definition.label }}</span>
-                </div>
-                <span class="category-count" id="count-{{ category_id }}">
-                    {% for cat_id, count in category_counts.items %}
-                        {% if cat_id == category_id %}{{ count }}{% endif %}
-                    {% empty %}0{% endfor %}
-                </span>
-            </button>
-            {% endfor %}
+<!-- App Store Layout avec Sidebar Tailwind -->
+<div class="app-store-layout">
+    <!-- Sidebar utilisant les classes tailwind-modals -->
+    <aside class="sidebar-linguify">
+        <div class="sidebar-header-linguify">
+            <h6>Catégories</h6>
+        </div>
+        <div class="sidebar-content">
+            <div class="p-4 space-y-2">
+                <button class="category-item active w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors text-left border-0 bg-transparent" data-category="all">
+                    <div class="flex items-center">
+                        <i class="bi bi-grid-3x3-gap mr-3 text-indigo-600"></i>
+                        <span class="font-medium">Toutes les apps</span>
+                    </div>
+                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs font-medium" id="count-all">{{ total_apps }}</span>
+                </button>
+                
+                <!-- Catégories dynamiques depuis les manifests -->
+                {% for category_id, definition in category_definitions.items %}
+                <button class="category-item w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors text-left border-0 bg-transparent" data-category="{{ category_id }}">
+                    <div class="flex items-center">
+                        <i class="{{ definition.icon }} mr-3 text-gray-600"></i>
+                        <span class="font-medium">{{ definition.label }}</span>
+                    </div>
+                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs font-medium" id="count-{{ category_id }}">
+                        {% for cat_id, count in category_counts.items %}
+                            {% if cat_id == category_id %}{{ count }}{% endif %}
+                        {% empty %}0{% endfor %}
+                    </span>
+                </button>
+                {% endfor %}
+            </div>
         </div>
     </aside>
 
