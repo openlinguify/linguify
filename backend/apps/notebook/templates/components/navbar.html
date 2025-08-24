@@ -1,0 +1,87 @@
+{% load static %}
+<div class="d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-gradient btn-sm" onclick="createNewNote()">
+            <i class="bi bi-plus"></i>
+            Nouvelle note
+        </button>
+        
+        <div class="input-group input-group-sm" style="width: 300px;">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Rechercher des notes..." 
+                   id="searchInput" onkeyup="debounceSearch()">
+        </div>
+        
+        <select class="form-select form-select-sm" style="width: auto;" 
+                id="languageFilter" onchange="filterNotes()">
+            <option value="">Toutes les langues</option>
+            <option value="fr">Français</option>
+            <option value="en">Anglais</option>
+            <option value="es">Espagnol</option>
+            <option value="de">Allemand</option>
+        </select>
+        
+        <select class="form-select form-select-sm" style="width: auto;" 
+                id="archiveFilter" onchange="filterNotes()">
+            <option value="active">Notes actives</option>
+            <option value="archived">Notes archivées</option>
+            <option value="all">Toutes les notes</option>
+        </select>
+        
+        <select class="form-select form-select-sm" style="width: auto;" 
+                id="sortFilter" onchange="filterNotes()">
+            <option value="updated_desc">Plus récentes</option>
+            <option value="updated_asc">Plus anciennes</option>
+            <option value="title_asc">Titre A-Z</option>
+            <option value="title_desc">Titre Z-A</option>
+        </select>
+        
+        <button id="manageNotebookTagsBtn" class="btn btn-outline-primary btn-sm" title="Gérer les étiquettes">
+            <i class="bi bi-tag-fill"></i>
+            <span class="d-none d-lg-inline ms-1">Étiquettes</span>
+        </button>
+    </div>
+    
+    <div class="d-flex align-items-center">
+        <!-- Mode sélection multiple - Toolbar compacte -->
+        <div id="multiSelectControls" class="btn-toolbar fade" style="display: none;" role="toolbar">
+            <div class="btn-group btn-group-sm me-2" role="group">
+                <button type="button" class="btn btn-outline-secondary" onclick="bulkDelete()" id="bulkDeleteBtn" title="Supprimer la sélection">
+                    <img src="{% static 'notebook/img/trash.png' %}" alt="Delete" style="width: 16px; height: 16px;">
+                    <span class="badge bg-secondary ms-1" id="selectedCount">0</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="bulkArchive()" title="Archiver la sélection">
+                    <img src="{% static 'notebook/img/archive.png' %}" alt="Archive" style="width: 16px; height: 16px;">
+                    <span class="badge bg-secondary ms-1" id="selectedCountArchive">0</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="bulkUnarchive()" title="Désarchiver la sélection">
+                    <img src="{% static 'notebook/img/archive.png' %}" alt="Unarchive" style="width: 16px; height: 16px; transform: rotate(180deg);">
+                    <span class="badge bg-secondary ms-1" id="selectedCountUnarchive">0</span>
+                </button>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelMultiSelect()" title="Annuler la sélection">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        
+        <!-- Mode normal - Boutons compacts -->
+        <div id="normalControls" class="btn-toolbar fade show" role="toolbar">
+            <div class="btn-group btn-group-sm me-2" role="group">
+                <button type="button" class="btn btn-outline-secondary" onclick="toggleMultiSelect()" title="Mode sélection multiple">
+                    <img src="{% static 'notebook/img/select.png' %}" alt="Select" style="width: 16px; height: 16px;">
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="saveCurrentNote(true)" id="saveButton" title="Sauvegarder la note">
+                    <img src="{% static 'notebook/img/save-cloud.png' %}" alt="Save" style="width: 18px; height: 14px;">
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="refreshNotes()" title="Actualiser les notes">
+                    <img src="{% static 'notebook/img/refresh.png' %}" alt="Refresh" style="width: 16px; height: 16px;">
+                </button>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm d-md-none" onclick="toggleSidebar()" title="Afficher/masquer la sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+    </div>
+</div>
