@@ -45,7 +45,8 @@
     <!-- Droite: Actions et filtres contextuels -->
     <div class="navbar-section-right">
         {% if view_type == 'stats' %}
-        <!-- Actions pour la page Statistiques -->
+        <!-- Filtres pour la page Statistiques - Simplifiés -->
+        <!-- Time Range Filter - Spécifique aux statistiques -->
         <select id="statsTimeRange" class="form-select-linguify" style="width: 140px; min-width: 120px;">
             <option value="7">7 derniers jours</option>
             <option value="30" selected>30 derniers jours</option>
@@ -66,21 +67,45 @@
             <span class="d-none d-lg-inline">Filtres</span>
         </button>
         
-        <!-- Filtres pour la page Explorer -->
-        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher des decks..." style="width: 180px; min-width: 120px;">
+        <!-- Filtres pour la page Explorer - Alignés avec la Liste de cartes -->
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
         
-        <select id="statusFilter" class="form-select-linguify" style="width: 120px; min-width: 100px;">
-            <option value="">Tous les decks</option>
-            <option value="new">Récents</option>
-            <option value="popular">Populaires</option>
-        </select>
+        <!-- Status Filter Dropdown -->
+        <div class="dropdown">
+            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="statusFilterText">Tous les statuts</span>
+            </button>
+            <ul id="statusFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous les statuts')">Tous les statuts</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('new', 'Récents')">Récents</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('popular', 'Populaires')">Populaires</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('public', 'Publics')">Publics</a></li>
+            </ul>
+        </div>
         
-        <select id="sortFilter" class="form-select-linguify" style="width: 120px; min-width: 100px;">
-            <option value="created_at">Plus récents</option>
-            <option value="name">A-Z</option>
-            <option value="popularity">Popularité</option>
-            <option value="cards_count">Nb. cartes</option>
-        </select>
+        <!-- Sort Filter Dropdown -->
+        <div class="dropdown">
+            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="sortFilterText">Plus récents</span>
+            </button>
+            <ul id="sortFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">Plus récents</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('popularity_desc', 'Popularité')">Popularité</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('cards_desc', 'Nb. cartes')">Nb. cartes</a></li>
+            </ul>
+        </div>
+        
+        <!-- Tags Filter Dropdown -->
+        <div class="dropdown">
+            <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="tagsFilterText">Tous les tags</span>
+            </button>
+            <ul id="tagsFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectTagsFilter('', 'Tous les tags')">Tous les tags</a></li>
+                <!-- More tags will be dynamically loaded here -->
+            </ul>
+        </div>
         
         {% else %}
         <!-- Filtres pour les pages personnelles -->

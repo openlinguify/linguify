@@ -266,13 +266,172 @@ if (!document.getElementById('explore-animations')) {
     document.head.appendChild(style);
 }
 
+// ===== FILTER FUNCTIONS =====
+/**
+ * Select status filter for Explorer page
+ * @param {string} value - Filter value
+ * @param {string} text - Display text
+ */
+function selectStatusFilter(value, text) {
+    try {
+        console.log(`📊 Explorer status filter selected: ${value} (${text})`);
+        
+        const textElement = document.getElementById('statusFilterText');
+        const items = document.querySelectorAll('#statusFilterDropdown .dropdown-item');
+        
+        if (!textElement) {
+            console.warn('⚠️ Status filter text element not found in Explorer');
+            return;
+        }
+        
+        textElement.textContent = text;
+        
+        // Update selected state
+        items.forEach(item => {
+            try {
+                item.classList.remove('active');
+            } catch (itemError) {
+                console.warn('⚠️ Error updating item state:', itemError.message);
+            }
+        });
+        
+        // Find and mark the selected item
+        const selectedItem = Array.from(items).find(item => 
+            item.onclick && item.onclick.toString().includes(`'${value}'`)
+        );
+        if (selectedItem) {
+            selectedItem.classList.add('active');
+        }
+        
+        // Trigger search update if main explorer module is available
+        if (window.explorerMain && typeof window.explorerMain.performSearch === 'function') {
+            window.explorerMain.performSearch();
+        } else {
+            console.log('🔍 Explorer main module not available, filter stored for next search');
+        }
+        
+        console.log('✅ Explorer status filter applied successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in Explorer selectStatusFilter:', error.message);
+    }
+}
+
+/**
+ * Select sort filter for Explorer page
+ * @param {string} value - Sort value
+ * @param {string} text - Display text
+ */
+function selectSortFilter(value, text) {
+    try {
+        console.log(`📊 Explorer sort filter selected: ${value} (${text})`);
+        
+        const textElement = document.getElementById('sortFilterText');
+        const items = document.querySelectorAll('#sortFilterDropdown .dropdown-item');
+        
+        if (!textElement) {
+            console.warn('⚠️ Sort filter text element not found in Explorer');
+            return;
+        }
+        
+        textElement.textContent = text;
+        
+        // Update selected state
+        items.forEach(item => {
+            try {
+                item.classList.remove('active');
+            } catch (itemError) {
+                console.warn('⚠️ Error updating sort item state:', itemError.message);
+            }
+        });
+        
+        // Find and mark the selected item
+        const selectedItem = Array.from(items).find(item => 
+            item.onclick && item.onclick.toString().includes(`'${value}'`)
+        );
+        if (selectedItem) {
+            selectedItem.classList.add('active');
+        }
+        
+        // Trigger search update if main explorer module is available
+        if (window.explorerMain && typeof window.explorerMain.performSearch === 'function') {
+            window.explorerMain.performSearch();
+        } else {
+            console.log('🔍 Explorer main module not available, filter stored for next search');
+        }
+        
+        console.log('✅ Explorer sort filter applied successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in Explorer selectSortFilter:', error.message);
+    }
+}
+
+/**
+ * Select tags filter for Explorer page
+ * @param {string} value - Tag value
+ * @param {string} text - Display text
+ */
+function selectTagsFilter(value, text) {
+    try {
+        console.log(`📊 Explorer tags filter selected: ${value} (${text})`);
+        
+        const textElement = document.getElementById('tagsFilterText');
+        const items = document.querySelectorAll('#tagsFilterDropdown .dropdown-item');
+        
+        if (!textElement) {
+            console.warn('⚠️ Tags filter text element not found in Explorer');
+            return;
+        }
+        
+        textElement.textContent = text;
+        
+        // Update selected state
+        items.forEach(item => {
+            try {
+                item.classList.remove('active');
+            } catch (itemError) {
+                console.warn('⚠️ Error updating tags item state:', itemError.message);
+            }
+        });
+        
+        // Find and mark the selected item
+        const selectedItem = Array.from(items).find(item => 
+            item.onclick && item.onclick.toString().includes(`'${value}'`)
+        );
+        if (selectedItem) {
+            selectedItem.classList.add('active');
+        }
+        
+        // Trigger search update if main explorer module is available
+        if (window.explorerMain && typeof window.explorerMain.performSearch === 'function') {
+            window.explorerMain.performSearch();
+        } else {
+            console.log('🔍 Explorer main module not available, filter stored for next search');
+        }
+        
+        console.log('✅ Explorer tags filter applied successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in Explorer selectTagsFilter:', error.message);
+    }
+}
+
 // ===== EXPORTS POUR AUTRES MODULES =====
 window.exploreNewModule = {
     toggleNotificationCenter,
     markAllNotificationsRead,
     showNotificationSettings,
     showAllNotifications,
-    toggleSidebar
+    toggleSidebar,
+    selectStatusFilter,
+    selectSortFilter,
+    selectTagsFilter
 };
+
+// Make filter functions globally available for navbar onclick handlers
+window.selectStatusFilter = selectStatusFilter;
+window.selectSortFilter = selectSortFilter;
+window.selectTagsFilter = selectTagsFilter;
 
 console.log('🚀 Explore New JS module loaded successfully');
