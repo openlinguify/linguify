@@ -39,7 +39,7 @@
     <div class="navbar-section-right">
         {% if view_type == 'explore' %}
         <!-- Bouton toggle sidebar pour Explorer -->
-        <button id="toggleSidebar" class="btn-navbar-outline" onclick="toggleSidebar()">
+        <button id="toggleSidebar" class="btn-navbar btn-navbar-outline" onclick="toggleSidebar()">
             <i class="bi bi-layout-sidebar"></i>
             <span class="d-none d-lg-inline">Filtres</span>
         </button>
@@ -59,12 +59,6 @@
             <option value="popularity">Popularité</option>
             <option value="cards_count">Nb. cartes</option>
         </select>
-        
-        <!-- Bouton retour vers mes decks -->
-        <a href="{% url 'revision_web:main' %}" class="btn-navbar-outline">
-            <i class="bi bi-arrow-left"></i>
-            <span class="d-none d-xxl-inline">Mes Decks</span>
-        </a>
         
         {% else %}
         <!-- Filtres pour les pages personnelles -->

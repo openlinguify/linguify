@@ -1367,7 +1367,7 @@ button.bg-linguify-gradient:hover,
 
 /* Form Controls - Linguify Style */
 .form-control-linguify {
-  padding: 0.375rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
   color: rgb(17 24 39);
@@ -1390,7 +1390,7 @@ button.bg-linguify-gradient:hover,
 }
 
 .form-select-linguify {
-  padding: 0.375rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   padding-right: 2rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
