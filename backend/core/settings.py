@@ -80,54 +80,57 @@ APPEND_SLASH = True
 
 # Application definition
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.humanize',
-    'django_extensions',
-    'django_filters',
-    'channels',
-    'drf_spectacular',
+# Auto-discovery of Django apps in the apps/ directory
+from .utils import get_installed_apps
 
-    # Project django_apps
-    'apps.authentication',
-    'apps.chat',
-    # 'apps.coaching',
-    'apps.community',
-    'apps.course',
-    'apps.data',
-    'apps.documents',
-    'apps.language_ai',
-    # 'apps.payments',
-    'apps.revision',
-    'apps.notebook',
-    # 'apps.task',
-    'apps.notification',
-    #'subscription',
-    'app_manager',
-    'apps.quizz',
-    
-    # New apps for marketplace
-    # 'apps.learning',  # Fusionné dans apps.course (Learning Platform)
-    'apps.teaching',
-    'apps.todo',
-    'apps.cms_sync',
-    'apps.calendar_app',
-    
-    # Web interfaces
-    'saas_web',
-    'core.apps.CoreConfig',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'corsheaders',
+# INSTALLED_APPS is now automatically generated
+# All apps in backend/apps/ with an apps.py file are automatically included
+# To exclude an app, add it to the exclude_from_discovery list in utils.py
+INSTALLED_APPS = get_installed_apps()
 
-    # test - commented out for production
-    # 'pytest_django',
-]
+# Manual INSTALLED_APPS configuration (for reference - now automated)
+# INSTALLED_APPS = [
+#     'django.contrib.admin',
+#     'django.contrib.auth',
+#     'django.contrib.contenttypes',
+#     'django.contrib.sessions',
+#     'django.contrib.messages',
+#     'django.contrib.staticfiles',
+#     'django.contrib.humanize',
+#     'django_extensions',
+#     'django_filters',
+#     'channels',
+#     'drf_spectacular',
+# 
+#     # Project django_apps (now auto-discovered)
+#     'apps.authentication',
+#     'apps.chat',
+#     # 'apps.coaching',        # Excluded in utils.py
+#     'apps.community',
+#     'apps.course',
+#     'apps.data',
+#     'apps.documents',
+#     'apps.language_ai',
+#     # 'apps.payments',        # Excluded in utils.py
+#     'apps.revision',
+#     'apps.notebook',
+#     # 'apps.task',            # Excluded in utils.py
+#     'apps.notification',
+#     # 'apps.subscription',    # Excluded in utils.py
+#     'apps.quizz',
+#     'apps.teaching',
+#     'apps.todo',
+#     'apps.cms_sync',
+#     'apps.calendar_app',
+#     
+#     # Other modules
+#     'app_manager',
+#     'saas_web',
+#     'core.apps.CoreConfig',
+#     'rest_framework',
+#     'rest_framework.authtoken',
+#     'corsheaders',
+# ]
 
 AUTH_USER_MODEL = 'authentication.User'
 

@@ -17,7 +17,7 @@ Fonctionnalités:
 - Suivi des progrès et statistiques
 - Multiples modes de révision (flashcards, apprentissage, association, révision rapide)
 - Intégration avec le vocabulaire des modules d'apprentissage
-- Interface OWL moderne et réactive
+ 
 
 Usage:
 - API: /api/v1/revision/

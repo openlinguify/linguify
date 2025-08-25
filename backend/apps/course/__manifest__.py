@@ -30,7 +30,7 @@ Usage:
         'authentication',  # Core authentication system
         'app_manager',     # App management system
     ],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
     'application': False,  # En développement - pas prêt pour production
     'sequence': 10,
