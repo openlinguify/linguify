@@ -206,35 +206,78 @@ class NotebookTagsManagement {
 
     async loadTags() {
         try {
-            console.log('Chargement des tags depuis l\'API globale...');
+            console.log('🔄 Chargement des tags depuis l\'API globale...');
+            
+            const csrfToken = this.getCSRFToken();
+            console.log('🔐 CSRF Token:', csrfToken ? 'Found' : 'Not found');
             
             // Appeler l'API du système de tags global
             const response = await fetch('/api/v1/core/tags/', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': this.getCSRFToken()
-                }
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'same-origin'  // Inclure les cookies de session
             });
+            
+            console.log('📡 Response status:', response.status);
+            console.log('📡 Response headers:', response.headers);
 
             if (response.ok) {
                 const data = await response.json();
+                console.log('✅ API Data:', data);
+                console.log('✅ Data type:', typeof data);
+                console.log('✅ Data keys:', Object.keys(data));
+                
+                // Gérer différents formats de réponse API
+                let tagsArray = [];
+                
+                if (data && Array.isArray(data.results)) {
+                    // Format pagination DRF: {results: [...], count: N}
+                    tagsArray = data.results;
+                    console.log('✅ Format DRF pagination détecté');
+                } else if (data && Array.isArray(data)) {
+                    // Format liste directe: [...]
+                    tagsArray = data;
+                    console.log('✅ Format liste directe détecté');
+                } else if (data && typeof data === 'object' && !Array.isArray(data)) {
+                    // Format objet avec propriétés inconnues - chercher une liste
+                    const possibleArrays = Object.values(data).filter(v => Array.isArray(v));
+                    if (possibleArrays.length > 0) {
+                        tagsArray = possibleArrays[0];
+                        console.log('✅ Format objet avec liste trouvé');
+                    }
+                } else {
+                    console.log('❌ Format de données non reconnu, utilisation d\'un tableau vide');
+                    tagsArray = [];
+                }
+                
+                console.log('✅ Tags array:', tagsArray);
+                console.log('✅ Tags array length:', tagsArray.length);
+                
+                // Vérifier que chaque élément a les propriétés nécessaires
+                if (tagsArray.length > 0) {
+                    console.log('✅ Premier tag:', tagsArray[0]);
+                }
                 
                 // Transformer les données de l'API pour correspondre au format attendu
-                this.tags = data.results.map(tag => ({
-                    id: tag.id,
-                    name: tag.name,
-                    color: tag.color,
+                this.tags = tagsArray.map(tag => ({
+                    id: tag.id || tag.pk || Math.random().toString(),
+                    name: tag.name || tag.display_name || 'Tag sans nom',
+                    color: tag.color || '#3B82F6',
                     description: tag.description || '',
-                    usage_count: tag.usage_count_notebook || 0,
-                    usage_count_total: tag.usage_count_total || 0,
+                    usage_count: tag.usage_count_notebook || tag.usage_count || 0,
+                    usage_count_total: tag.usage_count_total || tag.total_usage || 0,
                     is_favorite: tag.is_favorite || false,
-                    created_at: tag.created_at
+                    created_at: tag.created_at || new Date().toISOString()
                 }));
 
-                console.log(`Tags chargés: ${this.tags.length} tags trouvés`);
+                console.log(`✅ Tags chargés: ${this.tags.length} tags trouvés`);
             } else {
-                console.error('Erreur API:', response.status, response.statusText);
+                console.error('❌ Erreur API:', response.status, response.statusText);
+                const errorText = await response.text();
+                console.error('❌ Réponse détaillée:', errorText);
                 // Fallback avec les tags mockés si l'API échoue
                 this.tags = [
                     { id: 'fallback-1', name: 'API non accessible', color: '#6B7280', usage_count: 0 }
@@ -245,7 +288,7 @@ class NotebookTagsManagement {
             this.updateTagsCount();
 
         } catch (error) {
-            console.error('Erreur lors du chargement des tags:', error);
+            console.error('❌ Erreur lors du chargement des tags:', error);
             
             // Fallback avec les tags mockés en cas d'erreur
             this.tags = [
@@ -258,13 +301,25 @@ class NotebookTagsManagement {
         }
     }
 
-    // Méthode utilitaire pour obtenir le token CSRF
+    // Méthode utilitaire pour obtenir le token CSRF - compatible avec le système Linguify
     getCSRFToken() {
-        const cookieValue = document.cookie
+        // Utiliser la fonction globale définie dans le template base si disponible
+        if (window.NotebookAPI && window.NotebookAPI.getCSRFToken) {
+            return window.NotebookAPI.getCSRFToken();
+        }
+        
+        // Fallback: chercher dans plusieurs sources
+        var tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        var metaElement = document.querySelector('meta[name=csrf-token]');
+        var cookieValue = document.cookie
             .split('; ')
             .find(row => row.startsWith('csrftoken='))
             ?.split('=')[1];
-        return cookieValue || '';
+            
+        return (tokenElement && tokenElement.value) || 
+               (metaElement && metaElement.getAttribute('content')) || 
+               window.csrfToken || 
+               cookieValue || '';
     }
 
     renderTags() {
