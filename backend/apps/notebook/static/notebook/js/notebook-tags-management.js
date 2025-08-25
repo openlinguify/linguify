@@ -97,6 +97,27 @@ class NotebookTagsManagement {
             inlineTagColorInput.addEventListener('input', () => this.updateInlineTagPreview());
         }
 
+        // Quick create form events
+        const quickCreateForm = document.getElementById('quickCreateTagForm');
+        if (quickCreateForm) {
+            quickCreateForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.createQuickTag();
+            });
+        }
+
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+        if (quickTagName && quickTagColor) {
+            quickTagName.addEventListener('input', () => this.updateQuickTagPreview());
+            quickTagColor.addEventListener('input', () => this.updateQuickTagPreview());
+        }
+
+        const clearQuickForm = document.getElementById('clearQuickForm');
+        if (clearQuickForm) {
+            clearQuickForm.addEventListener('click', () => this.clearQuickForm());
+        }
+
         // Sauvegarde du tag (création/édition)
         const saveTagBtn = document.getElementById('saveNotebookTagBtn');
         if (saveTagBtn) {
@@ -472,34 +493,28 @@ class NotebookTagsManagement {
         }
 
         tagsTableBody.innerHTML = filteredTags.map(tag => `
-            <tr class="${this.selectedTags.has(tag.id) ? 'selected' : ''}" data-tag-id="${tag.id}">
-                <td class="tag-checkbox-cell">
-                    <input type="checkbox" class="form-check-input tag-checkbox" 
-                           data-tag-id="${tag.id}" ${this.selectedTags.has(tag.id) ? 'checked' : ''}
-                           style="${this.selectedTags.size > 0 ? 'display: block' : 'display: none'}">
+            <tr data-tag-id="${tag.id}">
+                <td>
+                    <div class="tag-dot" style="background: ${tag.color};"></div>
                 </td>
                 <td>
-                    <div class="tag-color-dot" style="background: ${tag.color};"></div>
+                    <span class="tag-name tag-name-text" data-tag-id="${tag.id}" 
+                          ondblclick="window.notebookTagsManagement.startInlineEdit(${tag.id}, 'name')" 
+                          title="Double-cliquez pour modifier">${tag.name}</span>
                 </td>
-                <td class="tag-name-cell">${tag.name}</td>
-                <td>
-                    <span class="tag-usage-badge">
-                        <i class="bi bi-journal-text"></i>
-                        ${tag.usage_count} note${tag.usage_count !== 1 ? 's' : ''}
-                    </span>
+                <td class="usage-count text-center">
+                    ${tag.usage_count}
                 </td>
-                <td>
-                    <span class="tag-date-text">Créé récemment</span>
+                <td class="usage-count text-center">
+                    Récemment
                 </td>
-                <td>
-                    <div class="tag-actions">
-                        <button type="button" class="tag-action-btn edit-tag" data-tag-id="${tag.id}" title="Modifier">
-                            <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
-                        </button>
-                        <button type="button" class="tag-action-btn delete delete-tag" data-tag-id="${tag.id}" title="Supprimer">
-                            <i class="bi bi-trash2" style="font-size: 0.75rem;"></i>
-                        </button>
-                    </div>
+                <td class="actions-cell">
+                    <button type="button" class="action-btn edit-tag" data-tag-id="${tag.id}" title="Modifier">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="action-btn delete delete-tag" data-tag-id="${tag.id}" title="Supprimer">
+                        <i class="bi bi-trash2"></i>
+                    </button>
                 </td>
             </tr>
         `).join('');
@@ -512,20 +527,6 @@ class NotebookTagsManagement {
     attachTagTableEventListeners() {
         const tagsTableBody = document.getElementById('tagsTableBody');
         if (!tagsTableBody) return;
-
-        // Event listeners pour les checkboxes
-        tagsTableBody.querySelectorAll('.tag-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', (e) => {
-                const tagId = parseInt(e.target.dataset.tagId);
-                if (e.target.checked) {
-                    this.selectedTags.add(tagId);
-                } else {
-                    this.selectedTags.delete(tagId);
-                }
-                this.updateSelectionInterface();
-                this.renderTags(); // Re-render to update selected state
-            });
-        });
 
         // Event listeners pour les actions edit/delete
         tagsTableBody.querySelectorAll('.edit-tag').forEach(editBtn => {
@@ -580,41 +581,8 @@ class NotebookTagsManagement {
     }
 
     updateSelectionInterface() {
-        const selectionMode = document.getElementById('selectionMode');
-        const selectedTagsCount = document.getElementById('selectedTagsCount');
-        const tagsTable = document.getElementById('tagsTable');
-        const selectAllCheckbox = document.getElementById('selectAllTagsCheckbox');
-        
-        if (this.selectedTags.size > 0) {
-            // Afficher le mode sélection
-            if (selectionMode) {
-                selectionMode.classList.remove('d-none');
-            }
-            if (selectedTagsCount) {
-                selectedTagsCount.textContent = `${this.selectedTags.size} selectionnee${this.selectedTags.size > 1 ? 's' : ''}`;
-            }
-            // Afficher les checkboxes
-            if (tagsTable) {
-                tagsTable.classList.add('selection-mode');
-                // Afficher la checkbox "Sélectionner tout"
-                if (selectAllCheckbox) {
-                    selectAllCheckbox.style.display = 'block';
-                }
-            }
-        } else {
-            // Cacher le mode sélection
-            if (selectionMode) {
-                selectionMode.classList.add('d-none');
-            }
-            // Cacher les checkboxes
-            if (tagsTable) {
-                tagsTable.classList.remove('selection-mode');
-                // Cacher la checkbox "Sélectionner tout"
-                if (selectAllCheckbox) {
-                    selectAllCheckbox.style.display = 'none';
-                }
-            }
-        }
+        // Interface simplifiée - plus de mode sélection complexe
+        return;
     }
 
     toggleSelectAll() {
@@ -772,6 +740,199 @@ class NotebookTagsManagement {
             if (badge) {
                 badge.style.background = color;
             }
+        }
+    }
+
+    // === NOUVELLES MÉTHODES POUR LE FORMULAIRE RAPIDE ===
+    
+    updateQuickTagPreview() {
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+        const quickPreviewText = document.getElementById('quickPreviewText');
+        const quickTagPreview = document.getElementById('quickTagPreview');
+
+        if (quickTagName && quickTagColor && quickPreviewText && quickTagPreview) {
+            const name = quickTagName.value || 'Aperçu';
+            const color = quickTagColor.value;
+            
+            quickPreviewText.textContent = name;
+            const badge = quickTagPreview.querySelector('.preview-badge');
+            if (badge) {
+                badge.style.background = color;
+            }
+        }
+    }
+
+    async createQuickTag() {
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+
+        if (!quickTagName || !quickTagColor) return;
+
+        const tagName = quickTagName.value.trim();
+        const tagColor = quickTagColor.value;
+
+        if (!tagName) {
+            this.showNotification('Le nom de l\'étiquette est requis', 'error');
+            return;
+        }
+
+        try {
+            const csrfToken = this.getCSRFToken();
+            
+            console.log('🔄 Création rapide du tag:', tagName, tagColor);
+            
+            const response = await fetch('/api/v1/core/tags/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    name: tagName,
+                    color: tagColor
+                })
+            });
+
+            if (response.ok) {
+                const newTag = await response.json();
+                console.log('✅ Nouveau tag créé rapidement:', newTag);
+                
+                // Ajouter à la liste locale
+                this.tags.push({
+                    id: newTag.id,
+                    name: newTag.name || newTag.display_name,
+                    color: newTag.color,
+                    description: newTag.description || '',
+                    usage_count: newTag.usage_count_notebook || 0,
+                    usage_count_total: newTag.usage_count_total || 0,
+                    is_favorite: newTag.is_favorite || false,
+                    created_at: newTag.created_at
+                });
+
+                // Effacer le formulaire
+                this.clearQuickForm();
+                
+                // Recharger la liste
+                this.renderTags();
+                this.updateTagsCount();
+                this.showNotification('Étiquette créée avec succès', 'success');
+                
+                // Focus sur le champ nom pour continuer
+                setTimeout(() => quickTagName.focus(), 100);
+            } else {
+                console.error('❌ Erreur création rapide:', response.status);
+                const errorText = await response.text();
+                console.error('❌ Détails:', errorText);
+                this.showNotification('Erreur lors de la création', 'error');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la création rapide:', error);
+            this.showNotification('Erreur lors de la création', 'error');
+        }
+    }
+
+    clearQuickForm() {
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+        
+        if (quickTagName) quickTagName.value = '';
+        if (quickTagColor) quickTagColor.value = '#3B82F6';
+        this.updateQuickTagPreview();
+    }
+
+    // === MÉTHODES POUR L'ÉDITION DIRECTE EN CELLULE ===
+    
+    startInlineEdit(tagId, field) {
+        const tag = this.tags.find(t => t.id === tagId);
+        if (!tag) return;
+
+        if (field === 'name') {
+            const nameElement = document.querySelector(`.tag-name-text[data-tag-id="${tagId}"]`);
+            if (!nameElement) return;
+
+            const originalText = nameElement.textContent;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = originalText;
+            input.className = 'form-control form-control-sm';
+            input.style.cssText = 'width: 100%; font-size: 0.875rem;';
+            
+            // Remplacer le texte par l'input
+            nameElement.style.display = 'none';
+            nameElement.parentNode.appendChild(input);
+            input.focus();
+            input.select();
+
+            // Sauvegarder au blur ou Enter
+            const saveEdit = async () => {
+                const newName = input.value.trim();
+                if (newName && newName !== originalText) {
+                    await this.updateTagField(tagId, 'name', newName);
+                }
+                // Restaurer l'affichage
+                input.remove();
+                nameElement.style.display = '';
+                this.renderTags(); // Re-render pour mettre à jour
+            };
+
+            // Annuler à Escape
+            const cancelEdit = () => {
+                input.remove();
+                nameElement.style.display = '';
+            };
+
+            input.addEventListener('blur', saveEdit);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveEdit();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    cancelEdit();
+                }
+            });
+        }
+    }
+
+    async updateTagField(tagId, field, value) {
+        try {
+            const csrfToken = this.getCSRFToken();
+            
+            console.log(`🔄 Mise à jour ${field} du tag:`, tagId, value);
+            
+            const body = {};
+            body[field] = value;
+            
+            const response = await fetch(`/api/v1/core/tags/${tagId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(body)
+            });
+
+            if (response.ok) {
+                const updatedTag = await response.json();
+                console.log('✅ Tag mis à jour:', updatedTag);
+                
+                // Mettre à jour dans la liste locale
+                const tagIndex = this.tags.findIndex(t => t.id === tagId);
+                if (tagIndex !== -1) {
+                    this.tags[tagIndex][field] = updatedTag[field] || value;
+                }
+                
+                this.showNotification('Étiquette modifiée', 'success');
+            } else {
+                console.error('❌ Erreur mise à jour:', response.status);
+                this.showNotification('Erreur lors de la modification', 'error');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la mise à jour:', error);
+            this.showNotification('Erreur lors de la modification', 'error');
         }
     }
 

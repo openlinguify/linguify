@@ -1,356 +1,244 @@
-<!-- Modal de gestion des etiquettes - Design Linguify -->
+<!-- Modal de gestion des etiquettes - Interface épurée -->
 <style>
-#tagsTable {
-    --table-bg: white;
-    --table-border-color: #e5e7eb;
-    --table-hover-bg: rgba(59, 130, 246, 0.02);
-    border-collapse: separate;
-    border-spacing: 0;
-    border-radius: 0.75rem;
-    overflow: hidden;
+.modal-content {
+    position: relative;
+    background-color: white;
+    border-radius: 8px;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e5e7eb;
 }
 
-#tagsTable thead th {
-    background: var(--linguify-gray-50);
-    border-bottom: 2px solid var(--table-border-color);
+/* Interface épurée */
+.tags-container {
+    background: white;
+    border-radius: 8px;
+}
+
+.create-form {
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 24px;
+}
+
+.simple-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.simple-table th {
+    background: #f1f5f9;
+    padding: 12px 16px;
+    text-align: left;
     font-weight: 600;
     font-size: 0.875rem;
-    color: var(--linguify-gray-700);
-    padding: 1rem 0.75rem;
+    color: #374151;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.simple-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
 }
 
-#tagsTable tbody td {
-    padding: 0.875rem 0.75rem;
-    border-bottom: 1px solid var(--table-border-color);
-    vertical-align: middle;
+.simple-table tr:hover {
+    background: #fafbfc;
 }
 
-#tagsTable tbody tr:last-child td {
+.simple-table tr:last-child td {
     border-bottom: none;
 }
 
-#tagsTable tbody tr:hover {
-    background-color: var(--table-hover-bg);
-}
-
-.tag-color-dot {
-    width: 16px;
-    height: 16px;
+.tag-dot {
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     display: inline-block;
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    margin-right: 8px;
 }
 
-.tag-name-cell {
+.tag-name {
     font-weight: 500;
-    color: var(--linguify-gray-800);
+    color: #111827;
+    cursor: pointer;
 }
 
-.tag-usage-badge {
-    background: rgba(59, 130, 246, 0.1);
-    color: #1e40af;
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
+.tag-name:hover {
+    color: #3b82f6;
 }
 
-.tag-date-text {
+.usage-count {
     font-size: 0.875rem;
-    color: var(--linguify-gray-600);
+    color: #6b7280;
 }
 
-.tag-actions {
-    display: flex;
-    gap: 0.25rem;
-    justify-content: center;
-}
-
-.tag-action-btn {
-    width: 28px;
-    height: 28px;
-    border: none;
-    background: none;
-    border-radius: 0.375rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    color: var(--linguify-gray-500);
-}
-
-.tag-action-btn:hover {
-    background: var(--linguify-gray-100);
-    color: var(--linguify-gray-700);
-}
-
-.tag-action-btn.delete:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-}
-
-.tag-checkbox-cell {
-    width: 50px;
+.actions-cell {
+    width: 100px;
     text-align: center;
 }
 
-.selection-mode #selectAllTagsCheckbox,
-.selection-mode .tag-checkbox {
-    display: block !important;
+.action-btn {
+    background: none;
+    border: none;
+    padding: 6px;
+    border-radius: 4px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 2px;
 }
 
-.selection-mode #tagsTable tbody tr.selected {
-    background-color: rgba(59, 130, 246, 0.05);
+.action-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
 }
 
-.selection-mode #tagsTable tbody tr.selected:hover {
-    background-color: rgba(59, 130, 246, 0.08);
+.action-btn.delete:hover {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6b7280;
+}
+
+.empty-state i {
+    font-size: 48px;
+    color: #d1d5db;
+    margin-bottom: 16px;
+}
+
+.create-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+}
+
+.create-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.create-color {
+    width: 40px;
+    height: 36px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.create-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.create-btn:hover {
+    background: #2563eb;
+}
+
+.preview-badge {
+    background: #3b82f6;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
 }
 </style>
 <div class="modal fade" id="notebookTagsManagementModal" tabindex="-1" aria-labelledby="notebookTagsManagementModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content border-0 shadow-lg">
-            <!-- Header moderne avec gradient -->
-            <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.03) 100%); border-radius: 0.75rem 0.75rem 0 0;">
-                <div class="d-flex align-items-center">
-                    <div class="bg-white rounded-circle p-2 me-3 shadow-sm">
-                        <i class="bi bi-tags text-primary" style="font-size: 1.25rem; color: var(--linguify-primary) !important;"></i>
-                    </div>
-                    <div>
-                        <h4 class="modal-title mb-1 fw-bold" style="color: var(--linguify-primary);">Mes etiquettes</h4>
-                        <p class="text-muted small mb-0">Organisez vos notes avec des etiquettes personnalisees</p>
-                    </div>
+    <div class="modal-dialog" style="max-width: 900px;">
+        <div class="modal-content">
+            <!-- Header simple -->
+            <div class="modal-header border-bottom" style="padding: 20px 24px;">
+                <div>
+                    <h4 class="modal-title mb-1 fw-600">Mes étiquettes</h4>
+                    <p class="text-muted small mb-0">Organisez vos notes avec des étiquettes personnalisées</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <div class="modal-body p-4">
-                <!-- Actions et recherche -->
-                <div class="mb-4">
-                    <!-- Première ligne: Recherche + Actions principales -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="input-group" style="max-width: 350px;">
-                            <span class="input-group-text bg-white border-end-0">
-                                <i class="bi bi-search text-muted"></i>
-                            </span>
-                            <input type="text" id="notebookTagsSearchInput" class="form-control border-start-0 ps-0" placeholder="Rechercher une etiquette...">
-                        </div>
-                        
-                        <div class="d-flex gap-2 flex-shrink-0">
-                            <button class="btn btn-outline-secondary" id="selectAllTags" style="padding: 0.375rem 0.75rem; white-space: nowrap;">
-                                <i class="bi bi-check2-all me-1"></i>Sélectionner
-                            </button>
-                            <button id="createNewNotebookTagBtn" class="btn btn-primary" style="background: var(--linguify-gradient); border: none; padding: 0.375rem 0.875rem; white-space: nowrap;">
-                                <i class="bi bi-plus-lg me-1"></i>Nouvelle
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Mode sélection (affiché conditionnellement) -->
-                    <div id="selectionMode" class="d-none">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-primary" id="selectedTagsCount">0 sélectionnées</span>
-                            <button class="btn btn-outline-danger btn-sm" id="deleteSelectedTags">
-                                <i class="bi bi-trash2 me-1"></i>Supprimer
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm" id="cancelSelection">Annuler</button>
-                        </div>
+            <!-- Corps du modal épuré -->
+            <div class="modal-body" style="padding: 24px;">
+                <!-- Barre de recherche simple -->
+                <div class="d-flex gap-12px mb-24px">
+                    <div class="flex-1">
+                        <input type="text" id="notebookTagsSearchInput" class="create-input" 
+                               placeholder="Rechercher une étiquette..." style="margin: 0;">
                     </div>
                 </div>
 
-                <!-- Zone principale avec onglets -->
-                <div class="border rounded" style="border-radius: 1rem !important;">
-                    <!-- Onglets -->
-                    <ul class="nav nav-tabs nav-fill border-0" id="tagsTabs" role="tablist" style="background: var(--linguify-gray-50); border-radius: 1rem 1rem 0 0;">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="tags-list-tab" data-bs-toggle="tab" data-bs-target="#tags-list" type="button" role="tab" style="border: none; border-radius: 1rem 0 0 0;">
-                                <i class="bi bi-tags me-2"></i>Mes étiquettes
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="tag-form-tab" data-bs-toggle="tab" data-bs-target="#tag-form" type="button" role="tab" style="border: none; border-radius: 0 1rem 0 0;">
-                                <i class="bi bi-plus-circle me-2"></i><span id="tagFormTabText">Nouvelle étiquette</span>
-                            </button>
-                        </li>
-                    </ul>
-                    
-                    <!-- Contenu des onglets -->
-                    <div class="tab-content" id="tagsTabContent" style="background: white; border-radius: 0 0 1rem 1rem;">
-                        
-                        <!-- Onglet: Liste des étiquettes -->
-                        <div class="tab-pane fade show active" id="tags-list" role="tabpanel">
-                            <div class="p-4">
-                                <!-- Tableau des etiquettes moderne -->
-                                <div class="table-responsive">
-                                    <table id="tagsTable" class="table table-hover mb-0" style="table-layout: fixed;">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th style="width: 50px; border-radius: 0.75rem 0 0 0;">
-                                                    <input type="checkbox" id="selectAllTagsCheckbox" class="form-check-input" style="display: none;">
-                                                </th>
-                                                <th style="width: 40px;"></th>
-                                                <th style="width: auto;">Nom</th>
-                                                <th style="width: 150px;">Utilisation</th>
-                                                <th style="width: 120px;">Créé</th>
-                                                <th style="width: 80px; border-radius: 0 0.75rem 0 0;">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tagsTableBody">
-                                            <!-- Tags seront charges dynamiquement ici -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                                
-                                <!-- Formulaire d'édition inline (caché par défaut) -->
-                                <div id="inlineEditForm" class="mt-4 p-4 border rounded" style="display: none; background: var(--linguify-gray-50); border-radius: 1rem;">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="bg-primary rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="bi bi-pencil text-white" style="font-size: 1rem;"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-bold">Modifier l'étiquette</h6>
-                                            <small class="text-muted">Modifiez le nom et la couleur directement</small>
-                                        </div>
-                                    </div>
-                                    
-                                    <form id="inlineTagEditForm">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label for="inlineTagNameInput" class="form-label fw-semibold">Nom</label>
-                                                <input type="text" class="form-control" id="inlineTagNameInput" required maxlength="50" 
-                                                       placeholder="Nom de l'étiquette" style="border-radius: 0.75rem;">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="inlineTagColorInput" class="form-label fw-semibold">Couleur</label>
-                                                <input type="color" class="form-control form-control-color" id="inlineTagColorInput" 
-                                                       style="width: 100%; height: 38px; border-radius: 0.75rem;">
-                                            </div>
-                                            <div class="col-md-3 d-flex align-items-end">
-                                                <div id="inlineTagPreview" class="w-100">
-                                                    <small class="text-muted d-block mb-1">Aperçu</small>
-                                                    <span class="badge w-100 py-2" style="background: #3B82F6; color: white; border-radius: 0.75rem;">
-                                                        <span id="inlinePreviewText">Aperçu</span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="d-flex gap-2 justify-content-end mt-3">
-                                            <button type="button" class="btn btn-outline-secondary" id="cancelInlineEdit" style="border-radius: 0.75rem;">
-                                                <i class="bi bi-x-lg me-1"></i>Annuler
-                                            </button>
-                                            <button type="button" class="btn btn-primary" id="saveInlineEdit" style="border-radius: 0.75rem;">
-                                                <i class="bi bi-check-lg me-1"></i>Sauvegarder
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
+                <!-- Formulaire de création simple -->
+                <div class="create-form">
+                    <form id="quickCreateTagForm">
+                        <div class="create-row">
+                            <input type="text" id="quickTagName" class="create-input" 
+                                   placeholder="Nom de l'étiquette" required maxlength="50">
+                            <input type="color" id="quickTagColor" class="create-color" value="#3b82f6">
+                            <div id="quickTagPreview">
+                                <span class="preview-badge">
+                                    <span id="quickPreviewText">Aperçu</span>
+                                </span>
                             </div>
+                            <button type="submit" class="create-btn">Créer</button>
                         </div>
-                        
-                        <!-- Onglet: Formulaire création/édition -->
-                        <div class="tab-pane fade" id="tag-form" role="tabpanel">
-                            <div class="p-4">
-                                <form id="notebookTagEditForm">
-                                    <!-- Nom de l'etiquette -->
-                                    <div class="mb-4">
-                                        <label for="notebookTagNameInput" class="form-label fw-semibold" style="color: var(--linguify-gray-700);">
-                                            <i class="bi bi-pencil me-1"></i>Nom de l'étiquette
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" class="form-control form-control-lg" id="notebookTagNameInput" required maxlength="50" 
-                                               placeholder="Ex: Vocabulaire, Important, A reviser..." 
-                                               style="border-radius: 0.75rem; border: 2px solid var(--linguify-gray-200); padding: 0.75rem 1rem;">
-                                        <div class="form-text mt-2">
-                                            <i class="bi bi-info-circle me-1"></i>
-                                            Choisissez un nom court et descriptif (max 50 caracteres)
-                                        </div>
-                                    </div>
-
-                                    <!-- Couleur avec preview moderne -->
-                                    <div class="mb-4">
-                                        <label for="notebookTagColorInput" class="form-label fw-semibold mb-3" style="color: var(--linguify-gray-700);">
-                                            <i class="bi bi-palette me-1"></i>Couleur de l'etiquette
-                                        </label>
-                                        
-                                        <!-- Couleurs predefinies -->
-                                        <div class="mb-3">
-                                            <small class="text-muted mb-2 d-block">Couleurs suggérées :</small>
-                                            <div class="d-flex gap-2 flex-wrap">
-                                                <button type="button" class="color-preset" data-color="#3B82F6" style="width: 32px; height: 32px; border-radius: 50%; background: #3B82F6; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
-                                                <button type="button" class="color-preset" data-color="#EF4444" style="width: 32px; height: 32px; border-radius: 50%; background: #EF4444; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
-                                                <button type="button" class="color-preset" data-color="#10B981" style="width: 32px; height: 32px; border-radius: 50%; background: #10B981; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
-                                                <button type="button" class="color-preset" data-color="#F59E0B" style="width: 32px; height: 32px; border-radius: 50%; background: #F59E0B; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
-                                                <button type="button" class="color-preset" data-color="#8B5CF6" style="width: 32px; height: 32px; border-radius: 50%; background: #8B5CF6; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
-                                                <button type="button" class="color-preset" data-color="#06B6D4" style="width: 32px; height: 32px; border-radius: 50%; background: #06B6D4; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
-                                                <button type="button" class="color-preset" data-color="#EC4899" style="width: 32px; height: 32px; border-radius: 50%; background: #EC4899; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
-                                                <button type="button" class="color-preset" data-color="#6B7280" style="width: 32px; height: 32px; border-radius: 50%; background: #6B7280; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Sélecteur de couleur personnalisée et aperçu -->
-                                        <div class="row g-3 align-items-end">
-                                            <div class="col-auto">
-                                                <small class="text-muted d-block mb-1">Couleur personnalisée :</small>
-                                                <input type="color" class="form-control form-control-color" id="notebookTagColorInput" value="#3B82F6" 
-                                                       style="width: 60px; height: 45px; border-radius: 0.5rem; border: 2px solid var(--linguify-gray-200);">
-                                            </div>
-                                            <div class="col">
-                                                <small class="text-muted d-block mb-1">Aperçu de votre étiquette :</small>
-                                                <div id="notebookTagPreview" class="d-inline-block">
-                                                    <span class="badge rounded-pill px-3 py-2" style="background: #3B82F6; color: white; font-weight: 500; font-size: 0.9rem;">
-                                                        <i class="bi bi-tag-fill me-1" style="font-size: 0.8rem;"></i>
-                                                        <span id="previewText">Apercu</span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Actions du formulaire -->
-                                    <div class="d-flex gap-2 justify-content-end">
-                                        <button type="button" class="btn btn-light" id="cancelTagForm" style="border-radius: 0.75rem; padding: 0.75rem 1.5rem;">
-                                            <i class="bi bi-x-lg me-2"></i>Annuler
-                                        </button>
-                                        <button type="button" class="btn btn-primary" id="saveNotebookTagBtn" style="background: var(--linguify-gradient); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem;">
-                                            <i class="bi bi-check-lg me-2"></i><span id="saveTagBtnText">Enregistrer</span>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
 
-                <!-- Empty state moderne pour tableau -->
-                <div id="tagsEmptyState" class="text-center py-5" style="display: none;">
-                    <div class="mb-4">
-                        <i class="bi bi-tags" style="font-size: 4rem; color: var(--linguify-gray-300);"></i>
-                    </div>
-                    <h5 style="color: var(--linguify-gray-600);">Aucune etiquette trouvee</h5>
-                    <p class="text-muted mb-4">Commencez par creer votre premiere etiquette pour organiser vos notes</p>
-                    <button class="btn btn-primary create-tag-btn" style="background: var(--linguify-gradient); border: none;">
-                        <i class="bi bi-plus-lg me-2"></i>Creer ma premiere etiquette
-                    </button>
+                <!-- Tableau simple -->
+                <div style="overflow-y: auto; max-height: 400px;">
+                    <table id="tagsTable" class="simple-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;"></th>
+                                <th>Nom de l'étiquette</th>
+                                <th style="width: 100px;">Usage</th>
+                                <th style="width: 100px;">Créé</th>
+                                <th style="width: 100px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tagsTableBody">
+                            <!-- Tags seront chargés ici -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- État vide -->
+                <div id="tagsEmptyState" class="empty-state" style="display: none;">
+                    <i class="bi bi-tags"></i>
+                    <h5>Aucune étiquette trouvée</h5>
+                    <p>Commencez par créer votre première étiquette pour organiser vos notes</p>
                 </div>
             </div>
 
-            <!-- Footer moderne -->
-            <div class="modal-footer border-0 bg-light" style="border-radius: 0 0 0.75rem 0.75rem;">
+            <!-- Footer simple -->
+            <div class="modal-footer border-top" style="padding: 16px 24px;">
                 <div class="d-flex align-items-center justify-content-between w-100">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-info-circle text-muted me-2"></i>
-                        <span class="text-muted small">
-                            <span id="notebookTagsCount">0</span> étiquettes
-                        </span>
-                    </div>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="padding: 0.5rem 1.25rem;">
-                        <i class="bi bi-x-lg me-2"></i>Fermer
+                    <span class="text-muted" style="font-size: 0.875rem;">
+                        <span id="notebookTagsCount">0</span> étiquette(s)
+                    </span>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Fermer
                     </button>
                 </div>
             </div>
