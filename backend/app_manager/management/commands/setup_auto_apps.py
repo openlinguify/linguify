@@ -3,6 +3,7 @@ Commande Django pour configurer automatiquement les nouvelles apps
 """
 from django.core.management.base import BaseCommand, CommandError
 from app_manager.services.auto_manifest_service import auto_manifest_service
+from app_manager.services.auto_url_service import auto_url_service
 from django.utils.termcolors import make_style
 import logging
 
@@ -10,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = 'Configure automatiquement les nouvelles apps (manifests + App Store)'
+    help = 'Configure automatiquement les nouvelles apps (manifests + URLs + App Store)'
 
     def __init__(self):
         super().__init__()
@@ -29,6 +30,11 @@ class Command(BaseCommand):
             '--no-sync',
             action='store_true',
             help='Ne pas synchroniser vers la base de données',
+        )
+        parser.add_argument(
+            '--no-urls',
+            action='store_true',
+            help='Ne pas créer/mettre à jour les URLs automatiquement',
         )
         parser.add_argument(
             '--dry-run',
@@ -55,6 +61,20 @@ class Command(BaseCommand):
             for app_code in apps_without_manifest:
                 self.stdout.write(f'  - apps.{app_code}')
 
+        # Découvrir les apps sans URLs
+        apps_without_urls = auto_url_service.discover_apps_without_urls()
+        apps_not_in_core = auto_url_service.discover_apps_not_in_core_urls()
+        
+        if apps_without_urls:
+            self.stdout.write(self.warning(f'🔗 Apps sans URLs trouvées : {len(apps_without_urls)}'))
+            for app_code in apps_without_urls:
+                self.stdout.write(f'  - apps.{app_code}/urls.py')
+        
+        if apps_not_in_core:
+            self.stdout.write(self.warning(f'📝 Apps pas dans core/urls.py : {len(apps_not_in_core)}'))
+            for app_code in apps_not_in_core:
+                self.stdout.write(f'  - {app_code}/')
+
         if options['dry_run']:
             self.stdout.write(self.info('\n🔍 MODE SIMULATION - Aucun changement effectué'))
             return
@@ -62,13 +82,23 @@ class Command(BaseCommand):
         # Configurer les options
         create_manifests = not options['no_manifests']
         sync_database = not options['no_sync']
+        setup_urls = not options['no_urls']
 
         # Exécuter le setup automatique
         try:
+            # 1. Créer manifests et sync base de données
             results = auto_manifest_service.auto_setup_new_apps(
                 create_manifests=create_manifests,
                 sync_database=sync_database
             )
+            
+            # 2. Setup URLs automatique
+            url_results = {}
+            if setup_urls:
+                url_results = auto_url_service.auto_setup_urls(
+                    create_app_urls=True,
+                    update_core_urls=True
+                )
             
             # Afficher les résultats
             self.stdout.write('\n📊 RÉSULTATS :')
@@ -94,6 +124,19 @@ class Command(BaseCommand):
                     self.stdout.write(f'   🔄 {updated} apps mises à jour')
                 if created == 0 and updated == 0:
                     self.stdout.write(self.info('   ℹ️  Toutes les apps étaient déjà à jour'))
+            
+            if setup_urls and url_results:
+                app_urls = url_results.get('app_urls_created', 0)
+                core_urls = url_results.get('core_urls_updated', 0)
+                
+                if app_urls > 0 or core_urls > 0:
+                    self.stdout.write(self.success(f'✅ URLs configurées automatiquement'))
+                    if app_urls > 0:
+                        self.stdout.write(f'   📝 {app_urls} fichier(s) urls.py créé(s)')
+                    if core_urls > 0:
+                        self.stdout.write(f'   🔗 {core_urls} app(s) ajoutée(s) à core/urls.py')
+                else:
+                    self.stdout.write(self.info('   ℹ️  Toutes les URLs étaient déjà configurées'))
 
             self.stdout.write(self.success('\n🎉 Configuration terminée avec succès !'))
             
@@ -117,13 +160,15 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write(self.info('ℹ️  Aucun statut installable à mettre à jour'))
             
-            if apps_without_manifest and create_manifests:
+            if (apps_without_manifest and create_manifests) or (setup_urls and (apps_without_urls or apps_not_in_core)):
                 self.stdout.write('\n💡 ÉTAPES SUIVANTES :')
-                self.stdout.write('1. Vérifiez les manifests générés dans apps/*/____manifest__.py')
-                self.stdout.write('2. Personnalisez les descriptions, catégories, etc.')
-                self.stdout.write('3. Ajoutez des icônes PNG dans static/app_name/description/icon.png')
-                self.stdout.write('4. Utilisez --check-readiness pour valider la préparation')
-                self.stdout.write('5. Les apps prêtes apparaîtront automatiquement dans l\'App Store !')
+                self.stdout.write('1. Vérifiez les manifests générés dans apps/*/__manifest__.py')
+                self.stdout.write('2. Vérifiez les URLs générées dans apps/*/urls.py')
+                self.stdout.write('3. Personnalisez les descriptions, catégories, etc.')
+                self.stdout.write('4. Ajoutez des icônes PNG dans static/app_name/description/icon.png')
+                self.stdout.write('5. Développez vos vues et templates dans les apps')
+                self.stdout.write('6. Utilisez --check-readiness pour valider la préparation')
+                self.stdout.write('7. Les apps prêtes apparaîtront automatiquement dans l\'App Store !')
 
         except Exception as e:
             logger.error(f"Erreur lors de la configuration : {e}")

@@ -118,6 +118,7 @@ urlpatterns = [
     # Marketplace apps
     path('chat/', include('apps.chat.urls', namespace='chat')),
     path('community/', include('apps.community.urls', namespace='community')),
+    path('coaching/', include('apps.coaching.urls', namespace='coaching')),
     # path('student-dashboard/', include('apps.learning.urls', namespace='learning')),  # Fusionné dans course app
     # path('teaching/', include('apps.teaching.urls', namespace='teaching')),  # Temporairement désactivé pour résoudre conflit
     path('api/cms-sync/', include('apps.cms_sync.urls', namespace='cms_sync')),

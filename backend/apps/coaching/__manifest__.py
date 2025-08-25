@@ -12,9 +12,9 @@ __manifest__ = {
         'authentication',  # Core authentication system
         'app_manager',     # App management system
     ],
-    'installable': False,
-    'auto_install': False,
-    'application': False,  # Internal coaching module (not ready)
+    'installable': True,
+    'auto_install': True,
+    'application': True,
     'sequence': 50,
     'frontend_components': {
         'main_component': 'CoachingApp',
