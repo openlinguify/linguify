@@ -14,7 +14,7 @@ __manifest__ = {
     ],
     'installable': False,
     'auto_install': False,
-    'application': True,
+    'application': False,  # Internal coaching module (not ready)
     'sequence': 50,
     'frontend_components': {
         'main_component': 'CoachingApp',

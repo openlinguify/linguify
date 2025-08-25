@@ -37,7 +37,7 @@ __manifest__ = {{
     ],
     'installable': True,  # Will be auto-updated by readiness check
     'auto_install': False,
-    'application': True,
+    'application': True,  # Set to False for internal/technical modules
     'sequence': 50,
     'frontend_components': {{
         'main_component': '{component_name}',
@@ -136,7 +136,8 @@ __manifest__ = {{
         # Vider le cache des manifests pour forcer le rechargement
         manifest_loader.clear_cache()
         
-        manifests = manifest_loader.get_all_manifests()
+        # Obtenir seulement les vraies applications utilisateur (pas les modules techniques)
+        manifests = manifest_loader.get_user_applications()
         created_count = 0
         updated_count = 0
         

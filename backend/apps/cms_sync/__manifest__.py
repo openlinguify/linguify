@@ -14,7 +14,7 @@ __manifest__ = {
     ],
     'installable': True,
     'auto_install': False,
-    'application': True,
+    'application': False,  # Internal CMS sync module
     'sequence': 50,
     'frontend_components': {
         'main_component': 'CmssyncApp',

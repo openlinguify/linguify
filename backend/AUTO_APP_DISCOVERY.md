@@ -157,6 +157,7 @@ __manifest__ = {
     'summary': 'Description courte pour l\'App Store',
     'description': 'Description détaillée avec fonctionnalités...',
     'installable': True,
+    'application': True,  # Set to False for internal/technical modules
     'frontend_components': {
         'route': '/mon-app',
         'icon': 'bi-app',
@@ -170,8 +171,33 @@ __manifest__ = {
 
 ### Génération automatique
 - Si une app n'a pas de `__manifest__.py`, il sera généré automatiquement
-- Les apps avec manifest apparaissent dans l'App Store
+- **Seules les apps avec `'application': True`** apparaissent dans l'App Store
 - Synchronisation automatique avec la base de données
+
+### Distinction Apps vs Modules techniques
+Le système distingue automatiquement :
+
+#### 🚀 Applications utilisateur (`'application': True`)
+- **Visibles dans l'App Store** pour installation
+- Interface utilisateur accessible
+- Fonctionnalités destinées aux utilisateurs finaux
+- Exemples : Révision, Chat, Community, Quiz, etc.
+
+#### ⚙️ Modules techniques (`'application': False`) 
+- **Non visibles dans l'App Store**
+- Infrastructure interne ou APIs
+- Pas d'interface utilisateur directe
+- Exemples : Authentication, Notifications, Payments, Data, etc.
+
+```python
+# Module technique - N'apparaît PAS dans l'App Store
+__manifest__ = {
+    'name': 'Authentication System',
+    'application': False,  # ← Clé importante !
+    'installable': False,
+    # ...
+}
+```
 
 ### Système de validation de préparation 🔍
 
