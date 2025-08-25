@@ -7,6 +7,7 @@ class NotebookTagsManagement {
         this.itemsPerPage = 10;
         this.searchQuery = '';
         this.editingTag = null;
+        this.inlineEditingTag = null;
         this.colors = [
             '#3B82F6', '#EF4444', '#10B981', '#F59E0B', 
             '#8B5CF6'
@@ -52,6 +53,12 @@ class NotebookTagsManagement {
             selectAllTags.addEventListener('click', () => this.toggleSelectAll());
         }
 
+        // Checkbox "Sélectionner tout" dans l'en-tête du tableau
+        const selectAllTagsCheckbox = document.getElementById('selectAllTagsCheckbox');
+        if (selectAllTagsCheckbox) {
+            selectAllTagsCheckbox.addEventListener('change', () => this.toggleSelectAll());
+        }
+
         // Suppression des tags sélectionnés
         const deleteSelectedTagsBtn = document.getElementById('deleteSelectedTags');
         if (deleteSelectedTagsBtn) {
@@ -70,6 +77,25 @@ class NotebookTagsManagement {
                 this.showCreateTagForm();
             }
         });
+
+        // Inline edit events
+        const cancelInlineEdit = document.getElementById('cancelInlineEdit');
+        if (cancelInlineEdit) {
+            cancelInlineEdit.addEventListener('click', () => this.cancelInlineEdit());
+        }
+
+        const saveInlineEdit = document.getElementById('saveInlineEdit');
+        if (saveInlineEdit) {
+            saveInlineEdit.addEventListener('click', () => this.saveInlineEdit());
+        }
+
+        // Inline preview update
+        const inlineTagNameInput = document.getElementById('inlineTagNameInput');
+        const inlineTagColorInput = document.getElementById('inlineTagColorInput');
+        if (inlineTagNameInput && inlineTagColorInput) {
+            inlineTagNameInput.addEventListener('input', () => this.updateInlineTagPreview());
+            inlineTagColorInput.addEventListener('input', () => this.updateInlineTagPreview());
+        }
 
         // Sauvegarde du tag (création/édition)
         const saveTagBtn = document.getElementById('saveNotebookTagBtn');
@@ -418,9 +444,10 @@ class NotebookTagsManagement {
     }
 
     renderTags() {
-        const tagsGrid = document.getElementById('tagsGrid');
+        const tagsTableBody = document.getElementById('tagsTableBody');
+        const tagsTable = document.getElementById('tagsTable');
         const tagsEmptyState = document.getElementById('tagsEmptyState');
-        if (!tagsGrid) return;
+        if (!tagsTableBody) return;
 
         // Filtrer les tags selon la recherche
         let filteredTags = this.tags;
@@ -432,65 +459,62 @@ class NotebookTagsManagement {
 
         // Afficher empty state si aucun tag
         if (filteredTags.length === 0) {
-            tagsGrid.style.display = 'none';
+            if (tagsTable) tagsTable.style.display = 'none';
             if (tagsEmptyState) {
                 tagsEmptyState.style.display = 'block';
             }
             return;
         } else {
-            tagsGrid.style.display = 'block';
+            if (tagsTable) tagsTable.style.display = 'table';
             if (tagsEmptyState) {
                 tagsEmptyState.style.display = 'none';
             }
         }
 
-        tagsGrid.innerHTML = filteredTags.map(tag => `
-            <div class="col-md-6 col-xl-4 tag-card-item">
-                <div class="card h-100 border-0 shadow-sm tag-card ${this.selectedTags.has(tag.id) ? 'selected-tag' : ''}" style="transition: all 0.3s ease; border-radius: 1rem;">
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div class="d-flex align-items-center">
-                                <input type="checkbox" class="form-check-input me-2 tag-checkbox" 
-                                       data-tag-id="${tag.id}" ${this.selectedTags.has(tag.id) ? 'checked' : ''}
-                                       style="${this.selectedTags.size > 0 ? 'display: block' : 'display: none'}">
-                                <div class="tag-color-preview rounded-circle me-2" style="width: 12px; height: 12px; background: ${tag.color};"></div>
-                                <h6 class="mb-0 fw-bold tag-name" style="color: var(--linguify-gray-800);">${tag.name}</h6>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-link btn-sm p-1 text-muted" data-bs-toggle="dropdown">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                    <li><a class="dropdown-item edit-tag" href="#" data-tag-id="${tag.id}"><i class="bi bi-pencil me-2"></i>Modifier</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger delete-tag" href="#" data-tag-id="${tag.id}"><i class="bi bi-trash2 me-2"></i>Supprimer</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span class="badge rounded-pill px-3 py-2" style="background: rgba(${this.hexToRgb(tag.color)}, 0.1); color: ${tag.color}; font-weight: 500;">
-                                <i class="bi bi-journal-text me-1" style="font-size: 0.75rem;"></i>
-                                ${tag.usage_count} note${tag.usage_count > 1 ? 's' : ''}
-                            </span>
-                            <small class="text-muted">Cree recemment</small>
-                        </div>
+        tagsTableBody.innerHTML = filteredTags.map(tag => `
+            <tr class="${this.selectedTags.has(tag.id) ? 'selected' : ''}" data-tag-id="${tag.id}">
+                <td class="tag-checkbox-cell">
+                    <input type="checkbox" class="form-check-input tag-checkbox" 
+                           data-tag-id="${tag.id}" ${this.selectedTags.has(tag.id) ? 'checked' : ''}
+                           style="${this.selectedTags.size > 0 ? 'display: block' : 'display: none'}">
+                </td>
+                <td>
+                    <div class="tag-color-dot" style="background: ${tag.color};"></div>
+                </td>
+                <td class="tag-name-cell">${tag.name}</td>
+                <td>
+                    <span class="tag-usage-badge">
+                        <i class="bi bi-journal-text"></i>
+                        ${tag.usage_count} note${tag.usage_count !== 1 ? 's' : ''}
+                    </span>
+                </td>
+                <td>
+                    <span class="tag-date-text">Créé récemment</span>
+                </td>
+                <td>
+                    <div class="tag-actions">
+                        <button type="button" class="tag-action-btn edit-tag" data-tag-id="${tag.id}" title="Modifier">
+                            <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                        </button>
+                        <button type="button" class="tag-action-btn delete delete-tag" data-tag-id="${tag.id}" title="Supprimer">
+                            <i class="bi bi-trash2" style="font-size: 0.75rem;"></i>
+                        </button>
                     </div>
-                </div>
-            </div>
+                </td>
+            </tr>
         `).join('');
 
         // Event listeners pour les actions
-        this.attachTagCardEventListeners();
+        this.attachTagTableEventListeners();
         this.updateSelectionInterface();
     }
 
-    attachTagCardEventListeners() {
-        const tagsGrid = document.getElementById('tagsGrid');
-        if (!tagsGrid) return;
+    attachTagTableEventListeners() {
+        const tagsTableBody = document.getElementById('tagsTableBody');
+        if (!tagsTableBody) return;
 
         // Event listeners pour les checkboxes
-        tagsGrid.querySelectorAll('.tag-checkbox').forEach(checkbox => {
+        tagsTableBody.querySelectorAll('.tag-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', (e) => {
                 const tagId = parseInt(e.target.dataset.tagId);
                 if (e.target.checked) {
@@ -504,18 +528,18 @@ class NotebookTagsManagement {
         });
 
         // Event listeners pour les actions edit/delete
-        tagsGrid.querySelectorAll('.edit-tag').forEach(editBtn => {
+        tagsTableBody.querySelectorAll('.edit-tag').forEach(editBtn => {
             editBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                const tagId = parseInt(e.target.closest('.edit-tag').dataset.tagId);
+                const tagId = parseInt(e.target.dataset.tagId);
                 this.editTag(tagId);
             });
         });
 
-        tagsGrid.querySelectorAll('.delete-tag').forEach(deleteBtn => {
+        tagsTableBody.querySelectorAll('.delete-tag').forEach(deleteBtn => {
             deleteBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                const tagId = parseInt(e.target.closest('.delete-tag').dataset.tagId);
+                const tagId = parseInt(e.target.dataset.tagId);
                 this.deleteTag(tagId);
             });
         });
@@ -558,7 +582,8 @@ class NotebookTagsManagement {
     updateSelectionInterface() {
         const selectionMode = document.getElementById('selectionMode');
         const selectedTagsCount = document.getElementById('selectedTagsCount');
-        const tagsGrid = document.getElementById('tagsGrid');
+        const tagsTable = document.getElementById('tagsTable');
+        const selectAllCheckbox = document.getElementById('selectAllTagsCheckbox');
         
         if (this.selectedTags.size > 0) {
             // Afficher le mode sélection
@@ -569,11 +594,12 @@ class NotebookTagsManagement {
                 selectedTagsCount.textContent = `${this.selectedTags.size} selectionnee${this.selectedTags.size > 1 ? 's' : ''}`;
             }
             // Afficher les checkboxes
-            if (tagsGrid) {
-                tagsGrid.querySelectorAll('.tag-checkbox').forEach(cb => {
-                    cb.style.display = 'block';
-                });
-                tagsGrid.classList.add('selection-mode');
+            if (tagsTable) {
+                tagsTable.classList.add('selection-mode');
+                // Afficher la checkbox "Sélectionner tout"
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.style.display = 'block';
+                }
             }
         } else {
             // Cacher le mode sélection
@@ -581,11 +607,12 @@ class NotebookTagsManagement {
                 selectionMode.classList.add('d-none');
             }
             // Cacher les checkboxes
-            if (tagsGrid) {
-                tagsGrid.querySelectorAll('.tag-checkbox').forEach(cb => {
-                    cb.style.display = 'none';
-                });
-                tagsGrid.classList.remove('selection-mode');
+            if (tagsTable) {
+                tagsTable.classList.remove('selection-mode');
+                // Cacher la checkbox "Sélectionner tout"
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.style.display = 'none';
+                }
             }
         }
     }
@@ -621,7 +648,130 @@ class NotebookTagsManagement {
     editTag(tagId) {
         const tag = this.tags.find(t => t.id === tagId);
         if (tag) {
-            this.showCreateTagForm(tag);
+            this.showInlineEditForm(tag);
+        }
+    }
+
+    showInlineEditForm(tag) {
+        this.inlineEditingTag = tag;
+        
+        // Remplir le formulaire
+        const inlineTagNameInput = document.getElementById('inlineTagNameInput');
+        const inlineTagColorInput = document.getElementById('inlineTagColorInput');
+        
+        if (inlineTagNameInput && inlineTagColorInput) {
+            inlineTagNameInput.value = tag.name;
+            inlineTagColorInput.value = tag.color;
+            this.updateInlineTagPreview();
+        }
+        
+        // Afficher le formulaire inline
+        const inlineEditForm = document.getElementById('inlineEditForm');
+        if (inlineEditForm) {
+            inlineEditForm.style.display = 'block';
+            // Scroll vers le formulaire
+            inlineEditForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // Focus sur le nom
+            setTimeout(() => inlineTagNameInput?.focus(), 300);
+        }
+    }
+
+    cancelInlineEdit() {
+        this.inlineEditingTag = null;
+        
+        // Cacher le formulaire
+        const inlineEditForm = document.getElementById('inlineEditForm');
+        if (inlineEditForm) {
+            inlineEditForm.style.display = 'none';
+        }
+        
+        // Reset des champs
+        const inlineTagNameInput = document.getElementById('inlineTagNameInput');
+        const inlineTagColorInput = document.getElementById('inlineTagColorInput');
+        if (inlineTagNameInput) inlineTagNameInput.value = '';
+        if (inlineTagColorInput) inlineTagColorInput.value = '#3B82F6';
+        this.updateInlineTagPreview();
+    }
+
+    async saveInlineEdit() {
+        if (!this.inlineEditingTag) return;
+
+        const inlineTagNameInput = document.getElementById('inlineTagNameInput');
+        const inlineTagColorInput = document.getElementById('inlineTagColorInput');
+
+        if (!inlineTagNameInput || !inlineTagColorInput) return;
+
+        const tagName = inlineTagNameInput.value.trim();
+        const tagColor = inlineTagColorInput.value;
+
+        if (!tagName) {
+            this.showNotification('Le nom de l\'étiquette est requis', 'error');
+            return;
+        }
+
+        try {
+            const csrfToken = this.getCSRFToken();
+            
+            console.log('🔄 Modification inline du tag:', this.inlineEditingTag.id);
+            
+            const response = await fetch(`/api/v1/core/tags/${this.inlineEditingTag.id}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    name: tagName,
+                    color: tagColor
+                })
+            });
+
+            if (response.ok) {
+                const updatedTag = await response.json();
+                console.log('✅ Tag modifié (inline):', updatedTag);
+                
+                // Mettre à jour dans la liste locale
+                const tagIndex = this.tags.findIndex(t => t.id === this.inlineEditingTag.id);
+                if (tagIndex !== -1) {
+                    this.tags[tagIndex] = {
+                        ...this.tags[tagIndex],
+                        name: updatedTag.name || updatedTag.display_name,
+                        color: updatedTag.color
+                    };
+                }
+                
+                // Cacher le formulaire et re-render
+                this.cancelInlineEdit();
+                this.renderTags();
+                this.showNotification('Étiquette modifiée avec succès', 'success');
+            } else {
+                console.error('❌ Erreur modification inline:', response.status);
+                const errorText = await response.text();
+                console.error('❌ Détails:', errorText);
+                this.showNotification('Erreur lors de la modification', 'error');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la modification inline:', error);
+            this.showNotification('Erreur lors de la modification', 'error');
+        }
+    }
+
+    updateInlineTagPreview() {
+        const inlineTagNameInput = document.getElementById('inlineTagNameInput');
+        const inlineTagColorInput = document.getElementById('inlineTagColorInput');
+        const inlinePreviewText = document.getElementById('inlinePreviewText');
+        const inlineTagPreview = document.getElementById('inlineTagPreview');
+
+        if (inlineTagNameInput && inlineTagColorInput && inlinePreviewText && inlineTagPreview) {
+            const name = inlineTagNameInput.value || 'Aperçu';
+            const color = inlineTagColorInput.value;
+            
+            inlinePreviewText.textContent = name;
+            const badge = inlineTagPreview.querySelector('.badge');
+            if (badge) {
+                badge.style.background = color;
+            }
         }
     }
 
@@ -634,18 +784,42 @@ class NotebookTagsManagement {
         }
 
         try {
-            // Pour l'instant, on simule la suppression
-            this.tags = this.tags.filter(t => t.id !== tagId);
-            this.selectedTags.delete(tagId);
+            const csrfToken = this.getCSRFToken();
             
-            this.renderTags();
-            this.updateTagsCount();
-            this.updateDeleteButton();
+            console.log('🔄 Suppression du tag:', tagId);
             
-            this.showNotification(`Étiquette "${tag.name}" supprimée`, 'success');
+            const response = await fetch(`/api/v1/core/tags/${tagId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'same-origin'
+            });
 
+            if (response.ok) {
+                console.log('✅ Tag supprimé:', tagId);
+                
+                // Supprimer de la liste locale
+                this.tags = this.tags.filter(t => t.id !== tagId);
+                this.selectedTags.delete(tagId);
+                
+                // Cacher le formulaire inline si c'était le tag en cours d'édition
+                if (this.inlineEditingTag && this.inlineEditingTag.id === tagId) {
+                    this.cancelInlineEdit();
+                }
+                
+                this.renderTags();
+                this.updateTagsCount();
+                this.showNotification(`Étiquette "${tag.name}" supprimée`, 'success');
+            } else {
+                console.error('❌ Erreur suppression:', response.status);
+                const errorText = await response.text();
+                console.error('❌ Détails:', errorText);
+                this.showNotification('Erreur lors de la suppression', 'error');
+            }
         } catch (error) {
-            console.error('Erreur lors de la suppression du tag:', error);
+            console.error('❌ Erreur lors de la suppression du tag:', error);
             this.showNotification('Erreur lors de la suppression de l\'étiquette', 'error');
         }
     }
@@ -658,19 +832,62 @@ class NotebookTagsManagement {
         }
 
         try {
-            // Pour l'instant, on simule la suppression
+            const csrfToken = this.getCSRFToken();
             const tagsToDelete = Array.from(this.selectedTags);
-            this.tags = this.tags.filter(tag => !this.selectedTags.has(tag.id));
-            this.selectedTags.clear();
+            let deletedCount = 0;
+            let errors = [];
+
+            // Supprimer chaque tag individuellement
+            for (const tagId of tagsToDelete) {
+                try {
+                    console.log('🔄 Suppression du tag (batch):', tagId);
+                    
+                    const response = await fetch(`/api/v1/core/tags/${tagId}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        credentials: 'same-origin'
+                    });
+
+                    if (response.ok) {
+                        deletedCount++;
+                        // Supprimer de la liste locale
+                        this.tags = this.tags.filter(t => t.id !== tagId);
+                        this.selectedTags.delete(tagId);
+                        
+                        // Cacher le formulaire inline si c'était le tag en cours d'édition
+                        if (this.inlineEditingTag && this.inlineEditingTag.id === tagId) {
+                            this.cancelInlineEdit();
+                        }
+                    } else {
+                        const errorText = await response.text();
+                        errors.push(`Tag ${tagId}: ${errorText}`);
+                    }
+                } catch (error) {
+                    errors.push(`Tag ${tagId}: ${error.message}`);
+                }
+            }
             
+            // Mettre à jour l'affichage
+            this.selectedTags.clear();
             this.renderTags();
             this.updateTagsCount();
-            this.updateDeleteButton();
             
-            this.showNotification(`${tagsToDelete.length} étiquette(s) supprimée(s)`, 'success');
+            // Afficher le résultat
+            if (deletedCount === tagsToDelete.length) {
+                this.showNotification(`${deletedCount} étiquette(s) supprimée(s)`, 'success');
+            } else if (deletedCount > 0) {
+                this.showNotification(`${deletedCount} étiquette(s) supprimée(s), ${errors.length} erreur(s)`, 'warning');
+                console.error('Erreurs lors de la suppression batch:', errors);
+            } else {
+                this.showNotification('Erreur lors de la suppression des étiquettes', 'error');
+                console.error('Erreurs lors de la suppression batch:', errors);
+            }
 
         } catch (error) {
-            console.error('Erreur lors de la suppression des tags:', error);
+            console.error('❌ Erreur lors de la suppression batch des tags:', error);
             this.showNotification('Erreur lors de la suppression des étiquettes', 'error');
         }
     }
@@ -843,8 +1060,13 @@ class NotebookTagsManagement {
 
     showNotification(message, type = 'info') {
         // Système de notification simple
+        const alertClass = type === 'error' ? 'danger' : 
+                          type === 'success' ? 'success' : 
+                          type === 'warning' ? 'warning' : 
+                          'info';
+        
         const notification = document.createElement('div');
-        notification.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} alert-dismissible fade show position-fixed`;
+        notification.className = `alert alert-${alertClass} alert-dismissible fade show position-fixed`;
         notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
         notification.innerHTML = `
             ${message}
@@ -853,12 +1075,13 @@ class NotebookTagsManagement {
 
         document.body.appendChild(notification);
 
-        // Auto-remove après 5 secondes
+        // Auto-remove après 5 secondes (plus long pour warnings)
+        const timeout = type === 'warning' ? 8000 : 5000;
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.remove();
             }
-        }, 5000);
+        }, timeout);
     }
 }
 
