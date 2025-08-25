@@ -133,7 +133,7 @@ class Note(models.Model):
     
     def remove_tag(self, tag):
         """Remove a tag from this note using the global tag system"""
-        return remove_tag_from_object(tag, 'notebook', 'Note', self.id, self.user)
+        return remove_tag_from_object(tag, 'notebook', 'Note', self.id)
     
     def set_tags(self, tags):
         """Set tags for this note using the global tag system"""

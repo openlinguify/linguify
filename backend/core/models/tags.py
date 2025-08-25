@@ -153,6 +153,36 @@ class Tag(models.Model):
             return None
         return max(usage_by_app.items(), key=lambda x: x[1])[0]
     
+    def recalculate_usage_counts(self):
+        """
+        Recalcule les compteurs d'usage basés sur les TagRelations existantes
+        """
+        # Reset all counters
+        self.usage_count_total = 0
+        self.usage_count_notebook = 0
+        self.usage_count_todo = 0
+        self.usage_count_calendar = 0
+        self.usage_count_revision = 0
+        self.usage_count_documents = 0
+        self.usage_count_community = 0
+        
+        # Count relations by app
+        relations = self.relations.all()
+        for relation in relations:
+            app_name = relation.app_name
+            field_name = f'usage_count_{app_name}'
+            if hasattr(self, field_name):
+                current_value = getattr(self, field_name)
+                setattr(self, field_name, current_value + 1)
+            self.usage_count_total += 1
+        
+        # Save all updated fields
+        self.save(update_fields=[
+            'usage_count_total', 'usage_count_notebook', 'usage_count_todo',
+            'usage_count_calendar', 'usage_count_revision', 'usage_count_documents',
+            'usage_count_community'
+        ])
+    
     @classmethod
     def get_user_tags(cls, user, app_name=None, active_only=True):
         """

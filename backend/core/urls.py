@@ -61,8 +61,8 @@ urlpatterns = [
     path('app-icons/<str:app_name>/<str:filename>', AppIconView.as_view(), name='app_icon'),
     
     # Redirects for app pages without language prefix to user's preferred language
-    path('apps/', views.language_redirect_view, {'path': 'apps/'}, name='apps_no_lang_redirect'),
-    path('apps/<slug:app_slug>/', views.app_language_redirect_view, name='app_detail_no_lang_redirect'),
+    # path('apps/', views.language_redirect_view, {'path': 'apps/'}, name='apps_no_lang_redirect'),
+    # path('apps/<slug:app_slug>/', views.app_language_redirect_view, name='app_detail_no_lang_redirect'),
     
     # User profile routes (must be before saas_web.urls to avoid conflicts)
     path('profile/', include('apps.authentication.urls.profile')),
@@ -95,7 +95,7 @@ urlpatterns = [
     path('todo/', include('apps.todo.urls_web', namespace='todo_web')),
     path('calendar/', include('apps.calendar_app.urls', namespace='calendar')),
     path('language_ai/', include('apps.language_ai.urls_web', namespace='language_ai_web')),
-    path('api/contact/', views.contact_view, name='contact'),
+    # path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
     path('api/v1/language_ai/', include('apps.language_ai.urls', namespace='language_ai')),
     # Jobs API moved to portal
@@ -140,8 +140,8 @@ urlpatterns = [
     # SEO Status and Management
     path('seo/status/', sitemap_status, name='seo_status'),
     
-    # LMS info page
-    path('lms/', views.lms_info, name='lms_info'),
+    # LMS info page  
+    # path('lms/', views.lms_info, name='lms_info'),
 ]
 
 # URLs with language prefix (for public website and authentication)

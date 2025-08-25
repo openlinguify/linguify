@@ -206,24 +206,65 @@ class NotebookTagsManagement {
 
     async loadTags() {
         try {
-            // Pour l'instant, on simule la récupération des tags depuis l'API notebook
-            // Plus tard, on connectera à l'API réelle du notebook
-            this.tags = [
-                { id: 1, name: 'Vocabulaire', color: '#3B82F6', usage_count: 15 },
-                { id: 2, name: 'Grammaire', color: '#EF4444', usage_count: 8 },
-                { id: 3, name: 'Expressions', color: '#10B981', usage_count: 12 },
-                { id: 4, name: 'Culture', color: '#F59E0B', usage_count: 5 },
-                { id: 5, name: 'Important', color: '#EC4899', usage_count: 20 },
-                { id: 6, name: 'À réviser', color: '#8B5CF6', usage_count: 7 },
-            ];
+            console.log('Chargement des tags depuis l\'API globale...');
+            
+            // Appeler l'API du système de tags global
+            const response = await fetch('/api/v1/core/tags/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Transformer les données de l'API pour correspondre au format attendu
+                this.tags = data.results.map(tag => ({
+                    id: tag.id,
+                    name: tag.name,
+                    color: tag.color,
+                    description: tag.description || '',
+                    usage_count: tag.usage_count_notebook || 0,
+                    usage_count_total: tag.usage_count_total || 0,
+                    is_favorite: tag.is_favorite || false,
+                    created_at: tag.created_at
+                }));
+
+                console.log(`Tags chargés: ${this.tags.length} tags trouvés`);
+            } else {
+                console.error('Erreur API:', response.status, response.statusText);
+                // Fallback avec les tags mockés si l'API échoue
+                this.tags = [
+                    { id: 'fallback-1', name: 'API non accessible', color: '#6B7280', usage_count: 0 }
+                ];
+            }
 
             this.renderTags();
             this.updateTagsCount();
 
         } catch (error) {
             console.error('Erreur lors du chargement des tags:', error);
-            this.showNotification('Erreur lors du chargement des étiquettes', 'error');
+            
+            // Fallback avec les tags mockés en cas d'erreur
+            this.tags = [
+                { id: 'error-1', name: 'Erreur de connexion', color: '#EF4444', usage_count: 0 }
+            ];
+            
+            this.renderTags();
+            this.updateTagsCount();
+            this.showNotification('Impossible de charger les étiquettes', 'error');
         }
+    }
+
+    // Méthode utilitaire pour obtenir le token CSRF
+    getCSRFToken() {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+        return cookieValue || '';
     }
 
     renderTags() {

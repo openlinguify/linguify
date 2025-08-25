@@ -275,7 +275,8 @@
       "Bash(DJANGO_SETTINGS_MODULE=core.settings poetry run python -c \"\nimport django\ndjango.setup()\nfrom django.contrib.auth import get_user_model\nfrom app_manager.views.app_manager_views import AppStoreView\nfrom django.test import RequestFactory\n\nUser = get_user_model()\nuser = User.objects.first()\n\n# Simuler une requête\nfactory = RequestFactory()\nrequest = factory.get(''/app-store/'')\nrequest.user = user\n\n# Obtenir le contexte\nview = AppStoreView()\nview.request = request\nresponse = view.get(request)\n\n# N''afficher que les apps todo et teaching pour diagnostic\napps_data = response.context_data[''apps'']\nfor app in apps_data:\n    if app[''name''] in [''todo'', ''teaching'']:\n        print(f''📱 {app[\"\"name\"\"]}:'')\n        print(f''   display_name: {app[\"\"display_name\"\"]}'')\n        print(f''   static_icon: {app[\"\"static_icon\"\"]}'')\n        print(f''   icon: {app[\"\"icon\"\"]}'')\n        print()\n\")",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings poetry run python:*)",
       "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.calendar_app.tests.test_models --verbosity=1)",
-      "Bash(ping:*)"
+      "Bash(ping:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.notebook.tests.GlobalTagsIntegrationTest.test_note_can_use_global_tags --verbosity=2)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
