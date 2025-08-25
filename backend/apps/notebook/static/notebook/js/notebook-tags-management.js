@@ -301,6 +301,101 @@ class NotebookTagsManagement {
         }
     }
 
+    // === NOUVELLES FONCTIONS POUR L'INTÉGRATION API ===
+    
+    // Obtenir l'ID de la note actuellement sélectionnée
+    getCurrentNoteId() {
+        // Chercher la note active dans le sidebar ou l'éditeur
+        const activeNote = document.querySelector('.notebook-note-item.active');
+        if (activeNote) {
+            return activeNote.dataset.noteId;
+        }
+        
+        // Fallback: chercher dans l'éditeur
+        const editorTitleInput = document.getElementById('note-title');
+        if (editorTitleInput && editorTitleInput.dataset.noteId) {
+            return editorTitleInput.dataset.noteId;
+        }
+        
+        return null;
+    }
+
+    // Récupérer les tags d'une note spécifique
+    async getNoteTags(noteId) {
+        if (!noteId) return [];
+        
+        try {
+            console.log('🔄 Récupération des tags pour la note:', noteId);
+            
+            const response = await fetch(`/api/v1/core/object-tags/get_object_tags/?app_name=notebook&model_name=Note&object_id=${noteId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                credentials: 'same-origin'
+            });
+
+            if (response.ok) {
+                const tags = await response.json();
+                console.log('✅ Tags de la note récupérés:', tags);
+                return tags;
+            } else {
+                console.error('❌ Erreur récupération tags note:', response.status);
+                return [];
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la récupération des tags de la note:', error);
+            return [];
+        }
+    }
+
+    // Appliquer des tags à une note
+    async setNoteTags(noteId, tagIds) {
+        if (!noteId) {
+            console.error('❌ Note ID requis pour appliquer des tags');
+            return false;
+        }
+
+        try {
+            console.log('🔄 Application des tags à la note:', noteId, tagIds);
+            
+            const response = await fetch('/api/v1/core/object-tags/set_object_tags/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    app_name: 'notebook',
+                    model_name: 'Note',
+                    object_id: noteId,
+                    tag_ids: tagIds
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✅ Tags appliqués avec succès:', result);
+                
+                // Recharger les tags pour mettre à jour les compteurs
+                await this.loadTags();
+                this.renderTags();
+                
+                return true;
+            } else {
+                console.error('❌ Erreur application tags:', response.status);
+                const errorText = await response.text();
+                console.error('❌ Détails:', errorText);
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'application des tags:', error);
+            return false;
+        }
+    }
+
     // Méthode utilitaire pour obtenir le token CSRF - compatible avec le système Linguify
     getCSRFToken() {
         // Utiliser la fonction globale définie dans le template base si disponible
@@ -595,33 +690,94 @@ class NotebookTagsManagement {
         }
 
         try {
+            const csrfToken = this.getCSRFToken();
+            
             if (this.editingTag) {
-                // Modification
-                const tagIndex = this.tags.findIndex(t => t.id === this.editingTag.id);
-                if (tagIndex !== -1) {
-                    this.tags[tagIndex] = {
-                        ...this.tags[tagIndex],
+                // Modification - Appel API PUT
+                console.log('🔄 Modification du tag:', this.editingTag.id);
+                
+                const response = await fetch(`/api/v1/core/tags/${this.editingTag.id}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
                         name: tagName,
                         color: tagColor
-                    };
+                    })
+                });
+
+                if (response.ok) {
+                    const updatedTag = await response.json();
+                    console.log('✅ Tag modifié:', updatedTag);
+                    
+                    // Mettre à jour dans la liste locale
+                    const tagIndex = this.tags.findIndex(t => t.id === this.editingTag.id);
+                    if (tagIndex !== -1) {
+                        this.tags[tagIndex] = {
+                            ...this.tags[tagIndex],
+                            name: updatedTag.name || updatedTag.display_name,
+                            color: updatedTag.color
+                        };
+                    }
+                    this.showNotification('Étiquette modifiée avec succès', 'success');
+                } else {
+                    console.error('❌ Erreur modification:', response.status);
+                    const errorText = await response.text();
+                    console.error('❌ Détails:', errorText);
+                    this.showNotification('Erreur lors de la modification', 'error');
+                    return; // Ne pas continuer si erreur
                 }
-                this.showNotification('Étiquette modifiée avec succès', 'success');
             } else {
-                // Création
-                const newTag = {
-                    id: Math.max(...this.tags.map(t => t.id), 0) + 1,
-                    name: tagName,
-                    color: tagColor,
-                    usage_count: 0
-                };
-                this.tags.push(newTag);
-                this.showNotification('Étiquette créée avec succès', 'success');
+                // Création - Appel API POST
+                console.log('🔄 Création nouveau tag:', tagName, tagColor);
+                
+                const response = await fetch('/api/v1/core/tags/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        name: tagName,
+                        color: tagColor
+                    })
+                });
+
+                if (response.ok) {
+                    const newTag = await response.json();
+                    console.log('✅ Nouveau tag créé:', newTag);
+                    
+                    // Ajouter à la liste locale
+                    this.tags.push({
+                        id: newTag.id,
+                        name: newTag.name || newTag.display_name,
+                        color: newTag.color,
+                        description: newTag.description || '',
+                        usage_count: newTag.usage_count_notebook || 0,
+                        usage_count_total: newTag.usage_count_total || 0,
+                        is_favorite: newTag.is_favorite || false,
+                        created_at: newTag.created_at
+                    });
+                    this.showNotification('Étiquette créée avec succès', 'success');
+                } else {
+                    console.error('❌ Erreur création:', response.status);
+                    const errorText = await response.text();
+                    console.error('❌ Détails:', errorText);
+                    this.showNotification('Erreur lors de la création', 'error');
+                    return; // Ne pas continuer si erreur
+                }
             }
 
             // Retourner à l'onglet liste
             const tagsListTab = document.getElementById('tags-list-tab');
-            const tabTrigger = new bootstrap.Tab(tagsListTab);
-            tabTrigger.show();
+            if (tagsListTab) {
+                const tabTrigger = new bootstrap.Tab(tagsListTab);
+                tabTrigger.show();
+            }
             
             // Reset du formulaire
             this.cancelTagForm();
@@ -631,7 +787,7 @@ class NotebookTagsManagement {
             this.updateTagsCount();
 
         } catch (error) {
-            console.error('Erreur lors de la sauvegarde du tag:', error);
+            console.error('❌ Erreur lors de la sauvegarde du tag:', error);
             this.showNotification('Erreur lors de la sauvegarde de l\'étiquette', 'error');
         }
     }
