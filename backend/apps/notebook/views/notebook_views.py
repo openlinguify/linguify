@@ -14,11 +14,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from datetime import timedelta
 import base64
 
-from ..models import Note, NoteCategory, Tag, SharedNote
+from ..models import Note, NoteCategory, SharedNote
+from core.models.tags import Tag
 from ..serializers import (
-    NoteSerializer, NoteCategorySerializer, TagSerializer,
+    NoteSerializer, NoteCategorySerializer,
     SharedNoteSerializer, NoteDetailSerializer, NoteListSerializer
 )
+from core.serializers.tag_serializers import TagSerializer
 
 
 class EnhancedCursorPagination(CursorPagination):
@@ -86,40 +88,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-class TagViewSet(viewsets.ModelViewSet):
-    serializer_class = TagSerializer
-    permission_classes = [IsAuthenticated]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
-    pagination_class = StandardResultsSetPagination
-    
-    def get_queryset(self):
-        return Tag.objects.filter(user=self.request.user).annotate(
-            notes_count=Count('note')
-        )
-
-    @action(detail=True, methods=['post'])
-    def merge(self, request, pk=None):
-        """Fusionner ce tag avec un autre"""
-        target_tag_id = request.data.get('target_tag_id')
-        if not target_tag_id:
-            raise ValidationError({"target_tag_id": "This field is required."})
-
-        source_tag = self.get_object()
-        try:
-            target_tag = Tag.objects.get(
-                id=target_tag_id,
-                user=request.user
-            )
-        except Tag.DoesNotExist:
-            raise ValidationError({"target_tag_id": "Invalid tag ID."})
-
-        with transaction.atomic():
-            # Déplacer toutes les notes du tag source vers le tag cible
-            source_tag.note_set.update(tags=target_tag)
-            source_tag.delete()
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+# TagViewSet is now handled by the global tags system in core
 
 class NoteCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = NoteCategorySerializer
@@ -188,9 +157,10 @@ class NoteViewSet(viewsets.ModelViewSet):
         'updated_at': ['gte', 'lte'],
     }
     search_fields = [
-        'title', 'content', 'tags__name',
+        'title', 'content',
         'category__name'
     ]
+    # Note: tag search is handled separately through the global tag system
     ordering_fields = [
         'created_at', 'updated_at', 'last_reviewed_at',
         'review_count', 'priority'
@@ -207,9 +177,9 @@ class NoteViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # Base queryset with optimized joins
         queryset = Note.objects.select_related('category').prefetch_related(
-            'tags',
             'sharednote_set__shared_with'
         )
+        # Tags are now fetched via the global tag system
         
         # Gestion du filtre d'archivage par défaut
         archive_filter = self.request.query_params.get('archive_status', 'active')
@@ -254,7 +224,16 @@ class NoteViewSet(viewsets.ModelViewSet):
         # Apply additional filters from query params
         tags = self.request.query_params.getlist('tags')
         if tags:
-            queryset = queryset.filter(tags__name__in=tags)
+            # Filter using TagRelation through the global system
+            from core.models.tags import TagRelation
+            tag_relations = TagRelation.objects.filter(
+                tag__name__in=tags,
+                app_name='notebook',
+                model_name='Note',
+                tag__user=self.request.user
+            )
+            note_ids = tag_relations.values_list('object_id', flat=True)
+            queryset = queryset.filter(id__in=note_ids)
             
         # Filtrage par langue
         language = self.request.query_params.get('language')
@@ -414,12 +393,18 @@ class NoteViewSet(viewsets.ModelViewSet):
         priority_labels = dict(Note.PRIORITY_CHOICES)
         notes_by_priority_labeled = {priority_labels.get(k, k): v for k, v in notes_by_priority.items()}
         
-        # Récupérer les statistiques par tag en une seule requête
-        tag_stats = Tag.objects.filter(
-            user=request.user
-        ).annotate(
-            notes_count=Count('note')
-        ).values('name', 'notes_count')
+        # Récupérer les statistiques par tag via le système global
+        from core.models.tags import TagRelation
+        tag_stats = TagRelation.objects.filter(
+            app_name='notebook',
+            model_name='Note',
+            tag__user=request.user
+        ).values('tag__name').annotate(
+            notes_count=Count('object_id')
+        ).values('tag__name', 'notes_count')
+        
+        # Reformater pour correspondre à l'ancien format
+        tag_stats = [{'name': item['tag__name'], 'notes_count': item['notes_count']} for item in tag_stats]
         
         stats = {
             'total_notes': type_priority_stats['total_notes'],

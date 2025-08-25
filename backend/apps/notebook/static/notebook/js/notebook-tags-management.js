@@ -9,9 +9,7 @@ class NotebookTagsManagement {
         this.editingTag = null;
         this.colors = [
             '#3B82F6', '#EF4444', '#10B981', '#F59E0B', 
-            '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16',
-            '#F97316', '#6366F1', '#14B8A6', '#F43F5E',
-            '#22C55E', '#A855F7', '#3B82F6', '#EF4444'
+            '#8B5CF6'
         ];
     }
 
@@ -36,23 +34,42 @@ class NotebookTagsManagement {
             });
         }
 
-        // Nouveau tag
+        // Nouveau tag - Basculer vers l'onglet formulaire
         const createNewTagBtn = document.getElementById('createNewNotebookTagBtn');
         if (createNewTagBtn) {
-            createNewTagBtn.addEventListener('click', () => this.showCreateTagModal());
+            createNewTagBtn.addEventListener('click', () => this.showCreateTagForm());
+        }
+        
+        // Bouton annuler dans le formulaire
+        const cancelTagForm = document.getElementById('cancelTagForm');
+        if (cancelTagForm) {
+            cancelTagForm.addEventListener('click', () => this.cancelTagForm());
         }
 
         // Sélection de tous les tags
-        const selectAllTags = document.getElementById('selectAllNotebookTags');
+        const selectAllTags = document.getElementById('selectAllTags');
         if (selectAllTags) {
-            selectAllTags.addEventListener('change', (e) => this.toggleSelectAll(e.target.checked));
+            selectAllTags.addEventListener('click', () => this.toggleSelectAll());
         }
 
         // Suppression des tags sélectionnés
-        const deleteSelectedTagsBtn = document.getElementById('deleteSelectedNotebookTagsBtn');
+        const deleteSelectedTagsBtn = document.getElementById('deleteSelectedTags');
         if (deleteSelectedTagsBtn) {
             deleteSelectedTagsBtn.addEventListener('click', () => this.deleteSelectedTags());
         }
+
+        // Cancel selection
+        const cancelSelection = document.getElementById('cancelSelection');
+        if (cancelSelection) {
+            cancelSelection.addEventListener('click', () => this.cancelSelection());
+        }
+
+        // Create tag buttons (including empty state)
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('create-tag-btn')) {
+                this.showCreateTagForm();
+            }
+        });
 
         // Sauvegarde du tag (création/édition)
         const saveTagBtn = document.getElementById('saveNotebookTagBtn');
@@ -60,13 +77,26 @@ class NotebookTagsManagement {
             saveTagBtn.addEventListener('click', () => this.saveTag());
         }
 
-        // Aperçu couleur
+        // Aperçu couleur et couleurs prédéfinies
         const tagColorInput = document.getElementById('notebookTagColorInput');
         const tagNameInput = document.getElementById('notebookTagNameInput');
         if (tagColorInput && tagNameInput) {
             tagColorInput.addEventListener('input', () => this.updateTagPreview());
             tagNameInput.addEventListener('input', () => this.updateTagPreview());
         }
+
+        // Couleurs prédéfinies
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('color-preset')) {
+                const color = e.target.dataset.color;
+                const colorInput = document.getElementById('notebookTagColorInput');
+                if (colorInput) {
+                    colorInput.value = color;
+                    this.updateTagPreview();
+                    this.updateColorPresets(color);
+                }
+            }
+        });
 
         // Validation du formulaire
         const tagEditForm = document.getElementById('notebookTagEditForm');
@@ -97,41 +127,76 @@ class NotebookTagsManagement {
         modal.show();
     }
 
-    showCreateTagModal(tagData = null) {
+    showCreateTagForm(tagData = null) {
         this.editingTag = tagData;
         
-        const modal = new bootstrap.Modal(document.getElementById('notebookTagEditModal'));
-        const modalTitle = document.getElementById('notebookTagEditModalLabel');
+        const tagFormTab = document.getElementById('tag-form-tab');
+        const tagFormTabText = document.getElementById('tagFormTabText');
+        const saveTagBtnText = document.getElementById('saveTagBtnText');
         const tagNameInput = document.getElementById('notebookTagNameInput');
         const tagColorInput = document.getElementById('notebookTagColorInput');
 
         if (tagData) {
-            modalTitle.textContent = 'Modifier l\'étiquette';
+            tagFormTabText.textContent = 'Modifier étiquette';
+            saveTagBtnText.textContent = 'Modifier';
             tagNameInput.value = tagData.name;
             tagColorInput.value = tagData.color || this.getRandomColor();
+            this.updateColorPresets(tagData.color || this.getRandomColor());
         } else {
-            modalTitle.textContent = 'Nouvelle étiquette';
+            tagFormTabText.textContent = 'Nouvelle étiquette';
+            saveTagBtnText.textContent = 'Enregistrer';
             tagNameInput.value = '';
-            tagColorInput.value = this.getRandomColor();
+            const defaultColor = this.colors[0]; // Bleu par défaut
+            tagColorInput.value = defaultColor;
+            this.updateColorPresets(defaultColor);
         }
 
         this.updateTagPreview();
-        modal.show();
+        
+        // Basculer vers l'onglet formulaire
+        const tabTrigger = new bootstrap.Tab(tagFormTab);
+        tabTrigger.show();
         
         // Focus sur le nom
         setTimeout(() => tagNameInput.focus(), 300);
+    }
+    
+    cancelTagForm() {
+        // Reset du formulaire
+        this.editingTag = null;
+        const tagNameInput = document.getElementById('notebookTagNameInput');
+        const tagColorInput = document.getElementById('notebookTagColorInput');
+        
+        if (tagNameInput) tagNameInput.value = '';
+        if (tagColorInput) {
+            const defaultColor = this.colors[0];
+            tagColorInput.value = defaultColor;
+            this.updateColorPresets(defaultColor);
+        }
+        
+        this.updateTagPreview();
+        
+        // Retourner à l'onglet liste
+        const tagsListTab = document.getElementById('tags-list-tab');
+        const tabTrigger = new bootstrap.Tab(tagsListTab);
+        tabTrigger.show();
     }
 
     updateTagPreview() {
         const tagNameInput = document.getElementById('notebookTagNameInput');
         const tagColorInput = document.getElementById('notebookTagColorInput');
+        const previewText = document.getElementById('previewText');
         const tagPreview = document.getElementById('notebookTagPreview');
 
-        if (tagNameInput && tagColorInput && tagPreview) {
-            const name = tagNameInput.value || 'Aperçu';
+        if (tagNameInput && tagColorInput && previewText && tagPreview) {
+            const name = tagNameInput.value || 'Apercu';
             const color = tagColorInput.value;
             
-            tagPreview.innerHTML = `<span class="badge" style="background: ${color}; color: white;">${name}</span>`;
+            previewText.textContent = name;
+            const badge = tagPreview.querySelector('.badge');
+            if (badge) {
+                badge.style.background = color;
+            }
         }
     }
 
@@ -162,8 +227,9 @@ class NotebookTagsManagement {
     }
 
     renderTags() {
-        const tbody = document.getElementById('notebookTagsTableBody');
-        if (!tbody) return;
+        const tagsGrid = document.getElementById('tagsGrid');
+        const tagsEmptyState = document.getElementById('tagsEmptyState');
+        if (!tagsGrid) return;
 
         // Filtrer les tags selon la recherche
         let filteredTags = this.tags;
@@ -173,43 +239,67 @@ class NotebookTagsManagement {
             );
         }
 
-        // Pagination
-        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-        const endIndex = startIndex + this.itemsPerPage;
-        const paginatedTags = filteredTags.slice(startIndex, endIndex);
+        // Afficher empty state si aucun tag
+        if (filteredTags.length === 0) {
+            tagsGrid.style.display = 'none';
+            if (tagsEmptyState) {
+                tagsEmptyState.style.display = 'block';
+            }
+            return;
+        } else {
+            tagsGrid.style.display = 'block';
+            if (tagsEmptyState) {
+                tagsEmptyState.style.display = 'none';
+            }
+        }
 
-        tbody.innerHTML = paginatedTags.map(tag => `
-            <tr>
-                <td>
-                    <input type="checkbox" class="form-check-input tag-checkbox" 
-                           data-tag-id="${tag.id}" ${this.selectedTags.has(tag.id) ? 'checked' : ''}>
-                </td>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <span class="badge me-2" style="background: ${tag.color}; color: white;">${tag.name}</span>
+        tagsGrid.innerHTML = filteredTags.map(tag => `
+            <div class="col-md-6 col-xl-4 tag-card-item">
+                <div class="card h-100 border-0 shadow-sm tag-card ${this.selectedTags.has(tag.id) ? 'selected-tag' : ''}" style="transition: all 0.3s ease; border-radius: 1rem;">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <input type="checkbox" class="form-check-input me-2 tag-checkbox" 
+                                       data-tag-id="${tag.id}" ${this.selectedTags.has(tag.id) ? 'checked' : ''}
+                                       style="${this.selectedTags.size > 0 ? 'display: block' : 'display: none'}">
+                                <div class="tag-color-preview rounded-circle me-2" style="width: 12px; height: 12px; background: ${tag.color};"></div>
+                                <h6 class="mb-0 fw-bold tag-name" style="color: var(--linguify-gray-800);">${tag.name}</h6>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link btn-sm p-1 text-muted" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                    <li><a class="dropdown-item edit-tag" href="#" data-tag-id="${tag.id}"><i class="bi bi-pencil me-2"></i>Modifier</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger delete-tag" href="#" data-tag-id="${tag.id}"><i class="bi bi-trash2 me-2"></i>Supprimer</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="badge rounded-pill px-3 py-2" style="background: rgba(${this.hexToRgb(tag.color)}, 0.1); color: ${tag.color}; font-weight: 500;">
+                                <i class="bi bi-journal-text me-1" style="font-size: 0.75rem;"></i>
+                                ${tag.usage_count} note${tag.usage_count > 1 ? 's' : ''}
+                            </span>
+                            <small class="text-muted">Cree recemment</small>
+                        </div>
                     </div>
-                </td>
-                <td>
-                    <div class="color-display" style="width: 20px; height: 20px; background: ${tag.color}; border-radius: 3px; border: 1px solid #ddd;"></div>
-                </td>
-                <td>
-                    <span class="text-muted">${tag.usage_count}</span>
-                </td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="window.notebookTagsManagement.editTag(${tag.id})" title="Modifier">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-outline-danger" onclick="window.notebookTagsManagement.deleteTag(${tag.id})" title="Supprimer">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+                </div>
+            </div>
         `).join('');
 
+        // Event listeners pour les actions
+        this.attachTagCardEventListeners();
+        this.updateSelectionInterface();
+    }
+
+    attachTagCardEventListeners() {
+        const tagsGrid = document.getElementById('tagsGrid');
+        if (!tagsGrid) return;
+
         // Event listeners pour les checkboxes
-        tbody.querySelectorAll('.tag-checkbox').forEach(checkbox => {
+        tagsGrid.querySelectorAll('.tag-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', (e) => {
                 const tagId = parseInt(e.target.dataset.tagId);
                 if (e.target.checked) {
@@ -217,107 +307,130 @@ class NotebookTagsManagement {
                 } else {
                     this.selectedTags.delete(tagId);
                 }
-                this.updateDeleteButton();
+                this.updateSelectionInterface();
+                this.renderTags(); // Re-render to update selected state
             });
         });
 
-        this.renderPagination(filteredTags.length);
-    }
+        // Event listeners pour les actions edit/delete
+        tagsGrid.querySelectorAll('.edit-tag').forEach(editBtn => {
+            editBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tagId = parseInt(e.target.closest('.edit-tag').dataset.tagId);
+                this.editTag(tagId);
+            });
+        });
 
-    renderPagination(totalItems) {
-        const pagination = document.getElementById('notebookTagsPagination');
-        if (!pagination) return;
-
-        const totalPages = Math.ceil(totalItems / this.itemsPerPage);
-        
-        if (totalPages <= 1) {
-            pagination.innerHTML = '';
-            return;
-        }
-
-        let paginationHTML = '';
-        
-        // Bouton précédent
-        paginationHTML += `
-            <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="window.notebookTagsManagement.goToPage(${this.currentPage - 1})">Précédent</a>
-            </li>
-        `;
-
-        // Numéros de pages
-        for (let i = 1; i <= totalPages; i++) {
-            paginationHTML += `
-                <li class="page-item ${i === this.currentPage ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="window.notebookTagsManagement.goToPage(${i})">${i}</a>
-                </li>
-            `;
-        }
-
-        // Bouton suivant
-        paginationHTML += `
-            <li class="page-item ${this.currentPage === totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="window.notebookTagsManagement.goToPage(${this.currentPage + 1})">Suivant</a>
-            </li>
-        `;
-
-        pagination.innerHTML = paginationHTML;
-    }
-
-    goToPage(page) {
-        const totalPages = Math.ceil(this.tags.length / this.itemsPerPage);
-        if (page >= 1 && page <= totalPages) {
-            this.currentPage = page;
-            this.renderTags();
-        }
+        tagsGrid.querySelectorAll('.delete-tag').forEach(deleteBtn => {
+            deleteBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tagId = parseInt(e.target.closest('.delete-tag').dataset.tagId);
+                this.deleteTag(tagId);
+            });
+        });
     }
 
     updateTagsCount() {
         const tagsCount = document.getElementById('notebookTagsCount');
         if (tagsCount) {
-            tagsCount.textContent = `${this.tags.length} étiquette(s)`;
+            const count = this.tags.length;
+            tagsCount.textContent = count;
+            
+            // Mettre à jour le texte suivant pour le pluriel
+            const parentSpan = tagsCount.parentElement;
+            if (parentSpan && parentSpan.querySelector('.text-muted')) {
+                const textAfterCount = count <= 1 ? 'étiquette' : 'étiquettes';
+                parentSpan.innerHTML = `<span id="notebookTagsCount">${count}</span> ${textAfterCount}`;
+            }
         }
     }
-
-    updateDeleteButton() {
-        const deleteBtn = document.getElementById('deleteSelectedNotebookTagsBtn');
-        if (deleteBtn) {
-            if (this.selectedTags.size > 0) {
-                deleteBtn.style.display = 'inline-block';
-                deleteBtn.innerHTML = `<i class="bi bi-trash me-1"></i>Supprimer (${this.selectedTags.size})`;
+    
+    updateColorPresets(selectedColor) {
+        // Mettre à jour l'état sélectionné des couleurs prédéfinies
+        document.querySelectorAll('.color-preset').forEach(preset => {
+            if (preset.dataset.color === selectedColor) {
+                preset.classList.add('selected');
             } else {
-                deleteBtn.style.display = 'none';
+                preset.classList.remove('selected');
+            }
+        });
+    }
+    
+    hexToRgb(hex) {
+        // Convertir hex en RGB pour les couleurs avec transparence
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? 
+            `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : 
+            '59, 130, 246'; // Fallback bleu Linguify
+    }
+
+    updateSelectionInterface() {
+        const selectionMode = document.getElementById('selectionMode');
+        const selectedTagsCount = document.getElementById('selectedTagsCount');
+        const tagsGrid = document.getElementById('tagsGrid');
+        
+        if (this.selectedTags.size > 0) {
+            // Afficher le mode sélection
+            if (selectionMode) {
+                selectionMode.classList.remove('d-none');
+            }
+            if (selectedTagsCount) {
+                selectedTagsCount.textContent = `${this.selectedTags.size} selectionnee${this.selectedTags.size > 1 ? 's' : ''}`;
+            }
+            // Afficher les checkboxes
+            if (tagsGrid) {
+                tagsGrid.querySelectorAll('.tag-checkbox').forEach(cb => {
+                    cb.style.display = 'block';
+                });
+                tagsGrid.classList.add('selection-mode');
+            }
+        } else {
+            // Cacher le mode sélection
+            if (selectionMode) {
+                selectionMode.classList.add('d-none');
+            }
+            // Cacher les checkboxes
+            if (tagsGrid) {
+                tagsGrid.querySelectorAll('.tag-checkbox').forEach(cb => {
+                    cb.style.display = 'none';
+                });
+                tagsGrid.classList.remove('selection-mode');
             }
         }
     }
 
-    toggleSelectAll(checked) {
-        this.selectedTags.clear();
+    toggleSelectAll() {
+        // Filtrer les tags selon la recherche actuelle
+        let filteredTags = this.tags;
+        if (this.searchQuery) {
+            filteredTags = this.tags.filter(tag => 
+                tag.name.toLowerCase().includes(this.searchQuery)
+            );
+        }
         
-        if (checked) {
-            // Filtrer les tags selon la recherche actuelle
-            let filteredTags = this.tags;
-            if (this.searchQuery) {
-                filteredTags = this.tags.filter(tag => 
-                    tag.name.toLowerCase().includes(this.searchQuery)
-                );
-            }
-            
-            // Pagination
-            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-            const endIndex = startIndex + this.itemsPerPage;
-            const paginatedTags = filteredTags.slice(startIndex, endIndex);
-            
-            paginatedTags.forEach(tag => this.selectedTags.add(tag.id));
+        // Si tous les tags filtrés sont sélectionnés, tout déselectionner
+        const allSelected = filteredTags.every(tag => this.selectedTags.has(tag.id));
+        
+        if (allSelected) {
+            // Désélectionner tous les tags filtrés
+            filteredTags.forEach(tag => this.selectedTags.delete(tag.id));
+        } else {
+            // Sélectionner tous les tags filtrés
+            filteredTags.forEach(tag => this.selectedTags.add(tag.id));
         }
 
         this.renderTags();
-        this.updateDeleteButton();
+    }
+    
+    cancelSelection() {
+        this.selectedTags.clear();
+        this.renderTags();
     }
 
     editTag(tagId) {
         const tag = this.tags.find(t => t.id === tagId);
         if (tag) {
-            this.showCreateTagModal(tag);
+            this.showCreateTagForm(tag);
         }
     }
 
@@ -409,9 +522,13 @@ class NotebookTagsManagement {
                 this.showNotification('Étiquette créée avec succès', 'success');
             }
 
-            // Fermer la modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('notebookTagEditModal'));
-            modal.hide();
+            // Retourner à l'onglet liste
+            const tagsListTab = document.getElementById('tags-list-tab');
+            const tabTrigger = new bootstrap.Tab(tagsListTab);
+            tabTrigger.show();
+            
+            // Reset du formulaire
+            this.cancelTagForm();
 
             // Recharger la liste
             this.renderTags();

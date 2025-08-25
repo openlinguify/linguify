@@ -1,35 +1,115 @@
-<!-- Modal de creation/edition d'etiquette pour le notebook -->
+<!-- Modal de creation/edition d'etiquette - Design Linguify -->
 <div class="modal fade" id="notebookTagEditModal" tabindex="-1" aria-labelledby="notebookTagEditModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="notebookTagEditModalLabel">Nouvelle etiquette</h5>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+            <!-- Header avec icone -->
+            <div class="modal-header border-0 pb-2" style="background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.03) 100%); border-radius: 1rem 1rem 0 0;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white rounded-circle p-2 me-3 shadow-sm">
+                        <i class="bi bi-tag-fill" style="font-size: 1.1rem; color: var(--linguify-primary);"></i>
+                    </div>
+                    <h5 class="modal-title mb-0 fw-bold" id="notebookTagEditModalLabel" style="color: var(--linguify-primary);">Nouvelle etiquette</h5>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+
+            <div class="modal-body p-4">
                 <form id="notebookTagEditForm">
-                    <div class="mb-3">
-                        <label for="notebookTagNameInput" class="form-label">Nom de l'etiquette *</label>
-                        <input type="text" class="form-control" id="notebookTagNameInput" required maxlength="50">
-                        <div class="form-text">Utilisez des noms courts et descriptifs</div>
+                    <!-- Nom de l'etiquette -->
+                    <div class="mb-4">
+                        <label for="notebookTagNameInput" class="form-label fw-semibold" style="color: var(--linguify-gray-700);">
+                            <i class="bi bi-pencil me-1"></i>Nom de l'etiquette
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control form-control-lg" id="notebookTagNameInput" required maxlength="50" 
+                               placeholder="Ex: Vocabulaire, Important, A reviser..." 
+                               style="border-radius: 0.75rem; border: 2px solid var(--linguify-gray-200); padding: 0.75rem 1rem;">
+                        <div class="form-text mt-2">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Choisissez un nom court et descriptif (max 50 caracteres)
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="notebookTagColorInput" class="form-label">Couleur</label>
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="color" class="form-control form-control-color" id="notebookTagColorInput" value="#3B82F6">
-                            <div class="tag-preview" id="notebookTagPreview">
-                                <span class="badge" style="background: #3B82F6; color: white;">Apercu</span>
+
+                    <!-- Couleur avec preview moderne -->
+                    <div class="mb-4">
+                        <label for="notebookTagColorInput" class="form-label fw-semibold mb-3" style="color: var(--linguify-gray-700);">
+                            <i class="bi bi-palette me-1"></i>Couleur de l'etiquette
+                        </label>
+                        
+                        <!-- Couleurs predefinies -->
+                        <div class="mb-3">
+                            <small class="text-muted mb-2 d-block">Couleurs suggérées :</small>
+                            <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="color-preset" data-color="#3B82F6" style="width: 32px; height: 32px; border-radius: 50%; background: #3B82F6; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                            <button type="button" class="color-preset" data-color="#EF4444" style="width: 32px; height: 32px; border-radius: 50%; background: #EF4444; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                            <button type="button" class="color-preset" data-color="#10B981" style="width: 32px; height: 32px; border-radius: 50%; background: #10B981; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                            <button type="button" class="color-preset" data-color="#F59E0B" style="width: 32px; height: 32px; border-radius: 50%; background: #F59E0B; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                            <button type="button" class="color-preset" data-color="#8B5CF6" style="width: 32px; height: 32px; border-radius: 50%; background: #8B5CF6; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                            <button type="button" class="color-preset" data-color="#06B6D4" style="width: 32px; height: 32px; border-radius: 50%; background: #06B6D4; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                            <button type="button" class="color-preset" data-color="#EC4899" style="width: 32px; height: 32px; border-radius: 50%; background: #EC4899; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                            <button type="button" class="color-preset" data-color="#6B7280" style="width: 32px; height: 32px; border-radius: 50%; background: #6B7280; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Sélecteur de couleur personnalisée et aperçu -->
+                        <div class="row g-3 align-items-end">
+                            <div class="col-auto">
+                                <small class="text-muted d-block mb-1">Couleur personnalisée :</small>
+                                <input type="color" class="form-control form-control-color" id="notebookTagColorInput" value="#3B82F6" 
+                                       style="width: 60px; height: 45px; border-radius: 0.5rem; border: 2px solid var(--linguify-gray-200);">
+                            </div>
+                            <div class="col">
+                                <small class="text-muted d-block mb-1">Aperçu de votre étiquette :</small>
+                                <div id="notebookTagPreview" class="d-inline-block">
+                                    <span class="badge rounded-pill px-3 py-2" style="background: #3B82F6; color: white; font-weight: 500; font-size: 0.9rem;">
+                                        <i class="bi bi-tag-fill me-1" style="font-size: 0.8rem;"></i>
+                                        <span id="previewText">Apercu</span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" id="saveNotebookTagBtn">
-                    <i class="bi bi-check-lg me-1"></i>Enregistrer
+
+            <!-- Footer -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 0.75rem; padding: 0.75rem 1.5rem;">
+                    <i class="bi bi-x-lg me-2"></i>Annuler
+                </button>
+                <button type="button" class="btn btn-primary" id="saveNotebookTagBtn" style="background: var(--linguify-gradient); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem;">
+                    <i class="bi bi-check-lg me-2"></i>Enregistrer
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+/* Hover effects for color presets */
+.color-preset:hover {
+    transform: scale(1.1);
+    border-color: var(--linguify-primary) !important;
+}
+
+.color-preset.selected {
+    border-color: var(--linguify-primary) !important;
+    transform: scale(1.1);
+}
+
+/* Tag card hover effects */
+.tag-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+
+/* Selection mode styles */
+.tag-card.selection-mode .tag-checkbox {
+    display: block !important;
+}
+
+.tag-card.selected-tag {
+    background: rgba(45, 91, 186, 0.05) !important;
+    border: 2px solid var(--linguify-primary) !important;
+}
+</style>

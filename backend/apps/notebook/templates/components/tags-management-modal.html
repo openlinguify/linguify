@@ -1,67 +1,183 @@
-<!-- Modal de gestion des tags pour le notebook -->
+<!-- Modal de gestion des etiquettes - Design Linguify -->
 <div class="modal fade" id="notebookTagsManagementModal" tabindex="-1" aria-labelledby="notebookTagsManagementModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="notebookTagsManagementModalLabel">
-                    <i class="bi bi-tags me-2"></i>Gestion des etiquettes - Notebook
-                </h5>
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Header moderne avec gradient -->
+            <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.03) 100%); border-radius: 0.75rem 0.75rem 0 0;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white rounded-circle p-2 me-3 shadow-sm">
+                        <i class="bi bi-tags text-primary" style="font-size: 1.25rem; color: var(--linguify-primary) !important;"></i>
+                    </div>
+                    <div>
+                        <h4 class="modal-title mb-1 fw-bold" style="color: var(--linguify-primary);">Mes etiquettes</h4>
+                        <p class="text-muted small mb-0">Organisez vos notes avec des etiquettes personnalisees</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <!-- Barre de recherche -->
-                <div class="row mb-3">
-                    <div class="col-md-8">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
+
+            <div class="modal-body p-4">
+                <!-- Actions et recherche -->
+                <div class="mb-4">
+                    <!-- Première ligne: Recherche + Actions principales -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="input-group" style="max-width: 350px;">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search text-muted"></i>
                             </span>
-                            <input type="text" id="notebookTagsSearchInput" class="form-control" placeholder="Rechercher une etiquette...">
+                            <input type="text" id="notebookTagsSearchInput" class="form-control border-start-0 ps-0" placeholder="Rechercher une etiquette...">
+                        </div>
+                        
+                        <div class="d-flex gap-2 flex-shrink-0">
+                            <button class="btn btn-outline-secondary" id="selectAllTags" style="padding: 0.375rem 0.75rem; white-space: nowrap;">
+                                <i class="bi bi-check2-all me-1"></i>Sélectionner
+                            </button>
+                            <button id="createNewNotebookTagBtn" class="btn btn-primary" style="background: var(--linguify-gradient); border: none; padding: 0.375rem 0.875rem; white-space: nowrap;">
+                                <i class="bi bi-plus-lg me-1"></i>Nouvelle
+                            </button>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <button id="createNewNotebookTagBtn" class="btn btn-primary w-100">
-                            <i class="bi bi-plus-lg me-1"></i>Nouvelle etiquette
-                        </button>
+                    
+                    <!-- Mode sélection (affiché conditionnellement) -->
+                    <div id="selectionMode" class="d-none">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary" id="selectedTagsCount">0 sélectionnées</span>
+                            <button class="btn btn-outline-danger btn-sm" id="deleteSelectedTags">
+                                <i class="bi bi-trash2 me-1"></i>Supprimer
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" id="cancelSelection">Annuler</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Liste des tags -->
-                <div class="tags-management-container">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 50px;">
-                                        <input type="checkbox" id="selectAllNotebookTags" class="form-check-input">
-                                    </th>
-                                    <th>Nom</th>
-                                    <th style="width: 80px;">Couleur</th>
-                                    <th style="width: 100px;">Utilisations</th>
-                                    <th style="width: 120px;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="notebookTagsTableBody">
-                                <!-- Les tags seront charges dynamiquement ici -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Pagination -->
-                <nav aria-label="Pagination des tags">
-                    <ul class="pagination justify-content-center" id="notebookTagsPagination">
-                        <!-- Pagination sera generee dynamiquement -->
+                <!-- Zone principale avec onglets -->
+                <div class="border rounded" style="border-radius: 1rem !important;">
+                    <!-- Onglets -->
+                    <ul class="nav nav-tabs nav-fill border-0" id="tagsTabs" role="tablist" style="background: var(--linguify-gray-50); border-radius: 1rem 1rem 0 0;">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tags-list-tab" data-bs-toggle="tab" data-bs-target="#tags-list" type="button" role="tab" style="border: none; border-radius: 1rem 0 0 0;">
+                                <i class="bi bi-tags me-2"></i>Mes étiquettes
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tag-form-tab" data-bs-toggle="tab" data-bs-target="#tag-form" type="button" role="tab" style="border: none; border-radius: 0 1rem 0 0;">
+                                <i class="bi bi-plus-circle me-2"></i><span id="tagFormTabText">Nouvelle étiquette</span>
+                            </button>
+                        </li>
                     </ul>
-                </nav>
+                    
+                    <!-- Contenu des onglets -->
+                    <div class="tab-content" id="tagsTabContent" style="background: white; border-radius: 0 0 1rem 1rem;">
+                        
+                        <!-- Onglet: Liste des étiquettes -->
+                        <div class="tab-pane fade show active" id="tags-list" role="tabpanel">
+                            <div class="p-4">
+                                <!-- Grille des etiquettes moderne -->
+                                <div id="tagsGrid" class="row g-3">
+                                    <!-- Tags seront charges dynamiquement ici -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglet: Formulaire création/édition -->
+                        <div class="tab-pane fade" id="tag-form" role="tabpanel">
+                            <div class="p-4">
+                                <form id="notebookTagEditForm">
+                                    <!-- Nom de l'etiquette -->
+                                    <div class="mb-4">
+                                        <label for="notebookTagNameInput" class="form-label fw-semibold" style="color: var(--linguify-gray-700);">
+                                            <i class="bi bi-pencil me-1"></i>Nom de l'étiquette
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control form-control-lg" id="notebookTagNameInput" required maxlength="50" 
+                                               placeholder="Ex: Vocabulaire, Important, A reviser..." 
+                                               style="border-radius: 0.75rem; border: 2px solid var(--linguify-gray-200); padding: 0.75rem 1rem;">
+                                        <div class="form-text mt-2">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            Choisissez un nom court et descriptif (max 50 caracteres)
+                                        </div>
+                                    </div>
+
+                                    <!-- Couleur avec preview moderne -->
+                                    <div class="mb-4">
+                                        <label for="notebookTagColorInput" class="form-label fw-semibold mb-3" style="color: var(--linguify-gray-700);">
+                                            <i class="bi bi-palette me-1"></i>Couleur de l'etiquette
+                                        </label>
+                                        
+                                        <!-- Couleurs predefinies -->
+                                        <div class="mb-3">
+                                            <small class="text-muted mb-2 d-block">Couleurs suggérées :</small>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <button type="button" class="color-preset" data-color="#3B82F6" style="width: 32px; height: 32px; border-radius: 50%; background: #3B82F6; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                                                <button type="button" class="color-preset" data-color="#EF4444" style="width: 32px; height: 32px; border-radius: 50%; background: #EF4444; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                                                <button type="button" class="color-preset" data-color="#10B981" style="width: 32px; height: 32px; border-radius: 50%; background: #10B981; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                                                <button type="button" class="color-preset" data-color="#F59E0B" style="width: 32px; height: 32px; border-radius: 50%; background: #F59E0B; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                                                <button type="button" class="color-preset" data-color="#8B5CF6" style="width: 32px; height: 32px; border-radius: 50%; background: #8B5CF6; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                                                <button type="button" class="color-preset" data-color="#06B6D4" style="width: 32px; height: 32px; border-radius: 50%; background: #06B6D4; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                                                <button type="button" class="color-preset" data-color="#EC4899" style="width: 32px; height: 32px; border-radius: 50%; background: #EC4899; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                                                <button type="button" class="color-preset" data-color="#6B7280" style="width: 32px; height: 32px; border-radius: 50%; background: #6B7280; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;"></button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Sélecteur de couleur personnalisée et aperçu -->
+                                        <div class="row g-3 align-items-end">
+                                            <div class="col-auto">
+                                                <small class="text-muted d-block mb-1">Couleur personnalisée :</small>
+                                                <input type="color" class="form-control form-control-color" id="notebookTagColorInput" value="#3B82F6" 
+                                                       style="width: 60px; height: 45px; border-radius: 0.5rem; border: 2px solid var(--linguify-gray-200);">
+                                            </div>
+                                            <div class="col">
+                                                <small class="text-muted d-block mb-1">Aperçu de votre étiquette :</small>
+                                                <div id="notebookTagPreview" class="d-inline-block">
+                                                    <span class="badge rounded-pill px-3 py-2" style="background: #3B82F6; color: white; font-weight: 500; font-size: 0.9rem;">
+                                                        <i class="bi bi-tag-fill me-1" style="font-size: 0.8rem;"></i>
+                                                        <span id="previewText">Apercu</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Actions du formulaire -->
+                                    <div class="d-flex gap-2 justify-content-end">
+                                        <button type="button" class="btn btn-light" id="cancelTagForm" style="border-radius: 0.75rem; padding: 0.75rem 1.5rem;">
+                                            <i class="bi bi-x-lg me-2"></i>Annuler
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="saveNotebookTagBtn" style="background: var(--linguify-gradient); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem;">
+                                            <i class="bi bi-check-lg me-2"></i><span id="saveTagBtnText">Enregistrer</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty state moderne -->
+                <div id="tagsEmptyState" class="text-center py-5" style="display: none;">
+                    <div class="mb-4">
+                        <i class="bi bi-tags" style="font-size: 4rem; color: var(--linguify-gray-300);"></i>
+                    </div>
+                    <h5 style="color: var(--linguify-gray-600);">Aucune etiquette trouvee</h5>
+                    <p class="text-muted mb-4">Commencez par creer votre premiere etiquette pour organiser vos notes</p>
+                    <button class="btn btn-primary create-tag-btn" style="background: var(--linguify-gradient); border: none;">
+                        <i class="bi bi-plus-lg me-2"></i>Creer ma premiere etiquette
+                    </button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="deleteSelectedNotebookTagsBtn" style="display: none;">
-                    <i class="bi bi-trash me-1"></i>Supprimer selection
-                </button>
-                <div class="ms-auto">
-                    <span id="notebookTagsCount" class="text-muted me-3">0 etiquette(s)</span>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+            <!-- Footer moderne -->
+            <div class="modal-footer border-0 bg-light" style="border-radius: 0 0 0.75rem 0.75rem;">
+                <div class="d-flex align-items-center justify-content-between w-100">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-info-circle text-muted me-2"></i>
+                        <span class="text-muted small">
+                            <span id="notebookTagsCount">0</span> étiquettes
+                        </span>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="padding: 0.5rem 1.25rem;">
+                        <i class="bi bi-x-lg me-2"></i>Fermer
+                    </button>
                 </div>
             </div>
         </div>

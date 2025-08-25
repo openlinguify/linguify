@@ -1,0 +1,1 @@
+# Models de base pour Linguify (équivalent de base dans Odoo)

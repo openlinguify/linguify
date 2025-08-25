@@ -1,0 +1,1 @@
+# Vues de base pour Linguify

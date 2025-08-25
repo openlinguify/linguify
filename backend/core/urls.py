@@ -16,6 +16,14 @@ from apps.authentication.views.terms_views import accept_terms, terms_status
 from tests.test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
 from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
+from rest_framework.routers import DefaultRouter
+from .views.tag_views import TagViewSet, TagRelationViewSet, ObjectTagsViewSet
+
+# Router pour l'API des tags globaux
+tags_router = DefaultRouter()
+tags_router.register(r'tags', TagViewSet, basename='tags')
+tags_router.register(r'tag-relations', TagRelationViewSet, basename='tag-relations') 
+tags_router.register(r'object-tags', ObjectTagsViewSet, basename='object-tags')
 # Blog moved to portal - commented out
 # from core.blog.views import comment_like_toggle, comment_report, reply_to_comment as comment_reply
 from django.views.generic import RedirectView
@@ -100,6 +108,9 @@ urlpatterns = [
     # path('api/v1/course/', include('apps.course.api.urls', namespace='course_api')),  # TODO: Create course API URLs
     path('api/v1/quizz/', include('apps.quizz.urls', namespace='quizz')),
     path('api/v1/todo/', include('apps.todo.urls', namespace='todo')),
+    
+    # API Tags globaux (système cross-apps)
+    path('api/v1/core/', include(tags_router.urls)),
     
     # Compatibility redirect for old /course/ URL
     path('course/', RedirectView.as_view(url='/learning/', permanent=True)),
