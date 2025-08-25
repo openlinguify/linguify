@@ -5,130 +5,33 @@
 {% block page_title %}Todo{% endblock %}
 
 {% block header_content %}
-<div class="d-flex align-items-center justify-content-between">
-    <div class="d-flex align-items-center gap-3">
-        <button class="btn btn-gradient btn-sm" onclick="createNewTask()">
-            <i class="bi bi-plus"></i>
-            {% trans "New Task" %}
-        </button>
-        
-        <div class="input-group input-group-sm" style="width: 300px;">
-            <span class="input-group-text">
-                <i class="bi bi-search"></i>
-            </span>
-            <input type="text" class="form-control" placeholder="{% trans 'Search tasks...' %}" 
-                   id="searchInput" onkeyup="debounceSearch()">
-        </div>
-        
-        <select class="form-select form-select-sm" style="width: auto;" 
-                id="stageFilter" onchange="filterTasks()">
-            <option value="">{% trans "All Stages" %}</option>
-            <!-- Stages will be loaded dynamically -->
-        </select>
-        
-        <select class="form-select form-select-sm" style="width: auto;" 
-                id="priorityFilter" onchange="filterTasks()">
-            <option value="">{% trans "All Priorities" %}</option>
-            <option value="0">{% trans "Normal" %}</option>
-            <option value="1">{% trans "Starred" %}</option>
-        </select>
-        
-        <button class="btn btn-outline-primary btn-sm" onclick="createNewProject()">
-            <i class="bi bi-folder-plus"></i>
-            <span class="d-none d-lg-inline ms-1">{% trans "New Project" %}</span>
-        </button>
-    </div>
-    
-    <div class="d-flex align-items-center gap-2">
-        <div class="btn-group btn-group-sm" role="group">
-            <button type="button" class="btn btn-outline-secondary" onclick="setView('list')" id="listViewBtn" title="{% trans 'List View' %}">
-                <i class="bi bi-list"></i>
-            </button>
-            <button type="button" class="btn btn-outline-secondary" onclick="setView('kanban')" id="kanbanViewBtn" title="{% trans 'Kanban View' %}">
-                <i class="bi bi-kanban"></i>
-            </button>
-            <button type="button" class="btn btn-outline-secondary" onclick="setView('calendar')" id="calendarViewBtn" title="{% trans 'Calendar View' %}">
-                <i class="bi bi-calendar3"></i>
-            </button>
-        </div>
-        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="refreshTasks()" title="{% trans 'Refresh' %}">
-            <i class="bi bi-arrow-clockwise"></i>
-        </button>
-    </div>
-</div>
+{% include 'components/todo_navbar.html' %}
 {% endblock %}
 
 {% block content %}
-<!-- Mobile sidebar toggle -->
-<div class="d-lg-none mb-3">
-    <button class="btn btn-outline-secondary" id="sidebarToggle" type="button">
-        <i class="bi bi-list"></i>
-        <span class="ms-1">{% trans "Show tasks" %}</span>
-    </button>
-</div>
-
-<div class="todo-workspace d-flex">
-    <!-- Sidebar with improved design -->
-    <div id="todoSidebar" class="todo-sidebar">
-        <!-- Sidebar Header -->
-        <div class="sidebar-header mb-4">
-            <div class="d-flex align-items-center justify-content-between">
-                <h5 class="mb-0 fw-bold text-primary">
-                    <i class="bi bi-check2-all me-2"></i>
-                    {% trans "My Tasks" %}
-                </h5>
-                <button class="btn btn-sm btn-outline-secondary d-lg-none" id="sidebarClose">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
-            
-            <!-- Quick stats -->
-            <div class="sidebar-stats mt-3">
-                <div class="row g-2">
-                    <div class="col-6">
-                        <div class="stat-card">
-                            <div class="stat-number" id="totalTasksCount">0</div>
-                            <div class="stat-label">{% trans "Total" %}</div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="stat-card">
-                            <div class="stat-number text-success" id="completedTasksCount">0</div>
-                            <div class="stat-label">{% trans "Done" %}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
+<div class="todo-workspace d-flex h-100">
+    <!-- Sidebar -->
+    <div id="todoSidebar" class="sidebar-linguify">
         <div class="sidebar-content">
-            <!-- Tasks list with improved styling -->
-            <ul id="tasksList" class="task-list list-unstyled"></ul>
+            <!-- Tasks list -->
+            <ul id="tasksList" class="task-list"></ul>
             
-            <!-- Enhanced empty state -->
-            <div id="tasksEmpty" class="empty-state text-center p-4" style="display: none;">
-                <div class="empty-state-icon mb-3">
-                    <i class="bi bi-clipboard-check" style="font-size: 4rem; opacity: 0.3; color: var(--linguify-primary);"></i>
-                </div>
-                <div class="h5 mb-2" style="color: var(--linguify-primary);">{% trans "Ready to get organized?" %}</div>
-                <div class="text-muted mb-4">{% trans "Create your first task and start being productive today!" %}</div>
-                <button class="btn btn-primary create-task-btn shadow-sm">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    {% trans "Create your first task" %}
+            <!-- Empty state -->
+            <div id="tasksEmpty" class="empty-state empty-state-hidden">
+                <i class="bi bi-check-square empty-state-icon"></i>
+                <div class="empty-state-title">Aucune tache</div>
+                <div class="empty-state-description">Creez votre premiere tache pour commencer a organiser votre travail</div>
+                <button class="btn-linguify create-task-btn" onclick="createNewTask()">
+                    <i class="bi bi-plus-lg mr-2"></i>
+                    Creer une tache
                 </button>
-                <div class="mt-3">
-                    <small class="text-muted">
-                        <i class="bi bi-lightbulb me-1"></i>
-                        {% trans "Pro tip: Use" %} <kbd>Ctrl+N</kbd> {% trans "to quickly add tasks" %}
-                    </small>
-                </div>
             </div>
             
-            <!-- Load more with improved styling -->
-            <div id="loadMoreContainer" class="p-3 text-center" style="display: none;">
-                <button id="loadMoreBtn" class="btn btn-outline-primary btn-sm">
-                    <i class="bi bi-arrow-down-circle me-1"></i>
-                    {% trans "Load more tasks" %}
+            <!-- Load more -->
+            <div id="loadMoreContainer" class="text-center load-more-container">
+                <button id="loadMoreBtn" class="btn-linguify-secondary">
+                    <i class="bi bi-arrow-down-circle mr-2"></i>
+                    Charger plus
                 </button>
             </div>
         </div>

@@ -1255,6 +1255,7 @@ button.bg-linguify-gradient:hover,
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   position: relative;
   z-index: 1000;
+  width: 100%;
 }
 
 .navbar-section {
@@ -1268,6 +1269,8 @@ button.bg-linguify-gradient:hover,
   align-items: center;
   gap: 0.5rem;
   flex-wrap: nowrap;
+  justify-content: flex-end;
+  margin-left: auto;
 }
 
 /* Navigation Tabs */
@@ -3016,3 +3019,97 @@ button.bg-linguify-gradient:hover,
 .tags-filter-apply:hover {
   background-color: var(--linguify-primary-dark);
 }
+
+/* =================================================================
+   APP LAYOUT SYSTEM - Linguify Design Standard
+   For consistent app structure across all Linguify applications
+   ================================================================= */
+
+/* Body Layout - Fixed header with flexible content */
+.app-body-layout {
+  height: 100vh;
+  overflow: hidden;
+  padding-top: 64px; /* Header Linguify standard height */
+}
+
+/* Main app container below fixed header */
+.app-container-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* App-specific header section (navbar area) */
+.app-header-layout {
+  flex-shrink: 0;
+  background: white;
+  border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
+  z-index: 999;
+}
+
+.app-header-layout .header-content {
+  padding: 0;
+  min-height: 60px; /* Standard navbar height */
+  display: flex;
+  align-items: center;
+}
+
+/* Main content area - flexible height */
+.app-main-layout {
+  flex: 1;
+  overflow: hidden;
+  background: var(--linguify-gray-50, #f9fafb);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header positioning - consistent across apps */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  height: 64px;
+  background: white;
+  border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* =================================================================
+   USAGE INSTRUCTIONS:
+   
+   1. Base Template Structure:
+   <body class="app-body-layout">
+     {% include 'components/header/app_header.html' %}
+     <div class="app-container-layout">
+       <div class="app-header-layout">
+         <div class="header-content">
+           <!-- Your navbar component here -->
+         </div>
+       </div>
+       <div class="app-main-layout">
+         <!-- Your main content here -->
+       </div>
+     </div>
+   </body>
+   
+   2. CSS Override (in each base template):
+   <style>
+     .app-header {
+       position: fixed;
+       top: 0;
+       left: 0;
+       right: 0;
+       z-index: 1001;
+     }
+   </style>
+   
+   This system provides:
+   - Fixed header at top (64px height)
+   - Sticky navbar below header (60px min-height)  
+   - Flexible content area that fills remaining space
+   - Consistent z-index layering
+   - Responsive design ready
+   ================================================================= */

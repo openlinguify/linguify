@@ -1,0 +1,96 @@
+{% load static %}
+<!-- Interface unifiee Linguify -->
+<div class="navbar-linguify">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="navbar-section">
+        <!-- Bouton toggle sidebar mobile -->
+        <button id="toggleSidebar" class="btn-navbar-outline d-md-none" onclick="toggleSidebar()">
+            <i class="bi bi-list"></i>
+        </button>
+        
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <a href="#" class="nav-tab active" onclick="showTasksView()">
+                <i class="bi bi-check-square"></i>
+                Mes taches
+            </a>
+            <a href="#" class="nav-tab" onclick="showCompletedView()">
+                <i class="bi bi-check-all"></i>
+                Terminees
+            </a>
+            <a href="#" class="nav-tab" onclick="showProjectsView()">
+                <i class="bi bi-folder2"></i>
+                Projets
+            </a>
+        </div>
+        
+        <!-- Refresh -->
+        <button id="refreshTasks" class="btn-navbar btn-navbar-outline" title="Actualiser les taches" onclick="refreshTasks()">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-xl-inline">Actualiser</span>
+        </button>
+    </div>
+    
+    <!-- Droite: Actions et filtres contextuels -->
+    <div class="navbar-section-right">
+        <!-- Filtres -->
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;" onkeyup="debounceSearch()">
+        
+        <!-- Priority Filter Dropdown -->
+        <div class="dropdown">
+            <button id="priorityFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="priorityFilterText">Toutes priorites</span>
+            </button>
+            <ul id="priorityFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('', 'Toutes priorites')">Toutes priorites</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('HIGH', 'Haute')">Haute</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('MEDIUM', 'Moyenne')">Moyenne</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('LOW', 'Basse')">Basse</a></li>
+            </ul>
+        </div>
+        
+        <!-- Status Filter Dropdown -->
+        <div class="dropdown">
+            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="statusFilterText">Tous statuts</span>
+            </button>
+            <ul id="statusFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous statuts')">Tous statuts</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('TODO', 'A faire')">A faire</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('IN_PROGRESS', 'En cours')">En cours</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('DONE', 'Terminee')">Terminee</a></li>
+            </ul>
+        </div>
+        
+        <!-- Due Date Filter Dropdown -->
+        <div class="dropdown">
+            <button id="dueDateFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="dueDateFilterText">Toutes dates</span>
+            </button>
+            <ul id="dueDateFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectDueDateFilter('', 'Toutes dates')">Toutes dates</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectDueDateFilter('today', 'Aujourd\\'hui')">Aujourd'hui</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectDueDateFilter('week', 'Cette semaine')">Cette semaine</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectDueDateFilter('overdue', 'En retard')">En retard</a></li>
+            </ul>
+        </div>
+        
+        <!-- Actions -->
+        <div class="navbar-actions-group">
+            <button id="bulkActions" class="btn-navbar btn-navbar-outline" title="Actions en lot">
+                <i class="bi bi-check2-all"></i>
+                <span class="d-none d-xxl-inline">Actions</span>
+            </button>
+            
+            <button id="viewOptions" class="btn-navbar btn-navbar-outline" title="Options d'affichage">
+                <i class="bi bi-layout-three-columns"></i>
+                <span class="d-none d-xxl-inline">Vue</span>
+            </button>
+            
+            <button id="createNewTask" class="btn-navbar btn-navbar-primary" onclick="createNewTask()">
+                <i class="bi bi-plus-lg"></i>
+                <span class="d-none d-xxl-inline">Nouvelle</span>
+            </button>
+        </div>
+    </div>
+</div>

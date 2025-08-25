@@ -29,32 +29,39 @@
     <!-- CSS spécifique au todo (avant app_header pour ne pas écraser) -->
     <link rel="stylesheet" href="{% static 'todo/css/todo.css' %}">
     
+    <!-- Tailwind CSS for modals -->
+    <link rel="stylesheet" href="{% static 'css/tailwind-modals.css' %}">
+    
     <!-- CSS du header (en dernier pour avoir la priorité) -->
     <link rel="stylesheet" href="{% static 'saas_web/css/app_header.css' %}">
     
     {% block extra_css %}{% endblock %}
     
     <style>
-        /* Ajustement minimal pour le header fixe */
-        body.todo-body {
-            padding-top: 64px; /* Hauteur standard du header */
+        /* Header app global fixe en haut */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
         }
     </style>
 </head>
-<body class="todo-body">
+<body class="app-body-layout">
     <!-- Include the unified app header -->
     {% include 'components/header/app_header.html' %}
     
-    <div class="todo-container">
+    <div class="app-container-layout">
         <!-- App-specific header section (below main header) -->
-        <div class="todo-header">
+        <div class="app-header-layout">
             <div class="header-content">
                 {% block header_content %}{% endblock %}
             </div>
         </div>
         
         <!-- Main Content -->
-        <div class="todo-main">
+        <div class="app-main-layout">
             {% block content %}{% endblock %}
         </div>
     </div>
