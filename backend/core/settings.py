@@ -378,21 +378,18 @@ if database_url:
     print("Using Render PostgreSQL (Cloud)")
     
 elif django_env == 'production' or django_env == 'staging' or is_render:
-    # PRODUCTION/STAGING : Toujours Supabase PostgreSQL
+    # PRODUCTION/STAGING : PostgreSQL local (plus de Supabase !)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('SUPABASE_DB_NAME', default='postgres'),
-            'USER': env('SUPABASE_DB_USER'),
-            'PASSWORD': env('SUPABASE_DB_PASSWORD'),
-            'HOST': env('SUPABASE_DB_HOST'),
-            'PORT': env('SUPABASE_DB_PORT', default='5432'),
-            'OPTIONS': {
-                'sslmode': 'require',
-            },
+            'NAME': env('PROD_DB_NAME', default='db_linguify_prod'),
+            'USER': env('PROD_DB_USER', default='postgres'),
+            'PASSWORD': env('PROD_DB_PASSWORD', default='azerty'),
+            'HOST': env('PROD_DB_HOST', default='localhost'),
+            'PORT': env('PROD_DB_PORT', default='5432'),
         }
     }
-    print(f"Using SUPABASE PostgreSQL for {django_env.upper()}")
+    print(f"Using LOCAL PostgreSQL for {django_env.upper()}")
     
 elif django_env == 'development':
     # DEVELOPMENT : PostgreSQL local uniquement
