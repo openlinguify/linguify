@@ -12,7 +12,7 @@ help:
 	@echo "========================================"
 	@echo ""
 	@echo "📋 DETAILED HELP:"
-	@echo "  help-apps        Application management: status, visibility, sync, deletion"
+	@echo "  help-apps        Application management: create, status, visibility, sync, deletion"
 	@echo "  help-db          Database management: status, sync, config, migrations"  
 	@echo "  help-dev         Development: server, tests, code formatting, cleanup"
 	@echo "  help-deploy      Deployment: production, validation, comparisons, workflow"
@@ -40,6 +40,10 @@ help-apps:
 	@echo "📱 APPLICATION MANAGEMENT"
 	@echo "========================="
 	@echo ""
+	@echo "🚀 Create new app:"
+	@echo "  create-app APP=<name> [NAME='Display Name'] [CATEGORY=productivity]"
+	@echo "      Complete app creation with all files + App Store integration"
+	@echo ""
 	@echo "📋 Status and information:"
 	@echo "  apps                     List all applications"
 	@echo "  apps-manifests          List found manifests"
@@ -60,11 +64,40 @@ help-apps:
 	@echo "  app-delete APP=<code>   Permanently delete app"
 	@echo ""
 	@echo "📝 Examples:"
+	@echo "  make create-app APP=task_manager NAME='Task Manager'"
+	@echo "  make create-app APP=fitness_tracker CATEGORY=health"
 	@echo "  make apps"
 	@echo "  make app-hide APP=demo_app_test"
 	@echo "  make app-show APP=community"
 	@echo "  make sync-app APP=course"
-	@echo "  make sync-icons"
+
+create-app:
+	@if [ -z "$(APP)" ]; then \
+		echo "❌ Usage: make create-app APP=<name> [NAME='Display Name'] [CATEGORY=productivity]"; \
+		echo "📝 Examples:"; \
+		echo "  make create-app APP=task_manager NAME='Task Manager'"; \
+		echo "  make create-app APP=fitness_tracker CATEGORY=health"; \
+		exit 1; \
+	fi
+	@echo "🚀 Creating complete app: $(APP)"
+	@if [ -n "$(NAME)" ] && [ -n "$(CATEGORY)" ]; then \
+		poetry run python scripts/create_complete_app.py $(APP) "$(NAME)" $(CATEGORY); \
+	elif [ -n "$(NAME)" ]; then \
+		poetry run python scripts/create_complete_app.py $(APP) "$(NAME)"; \
+	else \
+		poetry run python scripts/create_complete_app.py $(APP); \
+	fi
+	@echo ""
+	@echo "🔧 Configuring app (manifest + URLs + App Store)..."
+	@poetry run python manage.py setup_auto_apps --no-manifests --no-sync > /dev/null 2>&1 || true
+	@poetry run python manage.py setup_auto_apps > /dev/null
+	@echo ""
+	@echo "✅ App $(APP) ready!"
+	@echo "🎯 Your app is now visible in the App Store"
+	@echo "📝 Next steps:"
+	@echo "   1. Add an icon: static/$(APP)/description/icon.png"
+	@echo "   2. Run migrations: make migrate"
+	@echo "   3. Access your app: http://localhost:8000/$(shell echo $(APP) | tr '_' '-')/"
 
 apps:
 	@echo "📱 Listing applications..."

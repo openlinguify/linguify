@@ -121,7 +121,6 @@ urlpatterns = [
     # path('student-dashboard/', include('apps.learning.urls', namespace='learning')),  # Fusionné dans course app
     # path('teaching/', include('apps.teaching.urls', namespace='teaching')),  # Temporairement désactivé pour résoudre conflit
     path('api/cms-sync/', include('apps.cms_sync.urls', namespace='cms_sync')),
-    
     # SEO URLs - Organized sitemap serving
     path('robots.txt', serve_robots_txt, name='robots_txt'),
     path('sitemap.xml', serve_sitemap, {'sitemap_name': 'sitemap'}, name='sitemap_main'),
