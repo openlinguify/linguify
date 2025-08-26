@@ -11,7 +11,7 @@ __manifest__ = {
     'summary': 'Réservez des cours particuliers avec des enseignants professionnels',
     'description': 'Système de réservation de leçons privées et de gestion d\'enseignement',
     'author': 'Linguify Team',
-    'installable': True,
+    'installable': False,
     'application': False,  # En développement - pas prêt pour production
     'depends': ['authentication', 'course'],
     'frontend_components': {

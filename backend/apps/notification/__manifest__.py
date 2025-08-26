@@ -12,7 +12,7 @@ __manifest__ = {
         'authentication',  # Core authentication system
         'app_manager',     # App management system
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,  # Internal notification system
     'sequence': 50,

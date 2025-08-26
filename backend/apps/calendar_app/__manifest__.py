@@ -73,7 +73,7 @@ Technical Implementation:
         'notification',    # For calendar notifications
     ],
     
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': True,
     'sequence': 40,  # Medium priority in app list

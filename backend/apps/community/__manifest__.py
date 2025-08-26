@@ -31,7 +31,7 @@ Usage:
         'app_manager',     # App management system
         'chat',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': True,
     'application': True,
     'sequence': 40,

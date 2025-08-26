@@ -36,7 +36,7 @@ Usage:
     'website': 'https://linguify.com',
     'license': 'MIT',
     'depends': ['authentication', 'app_manager', 'course'],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,  # En développement - pas prêt pour production
     'sequence': 50,

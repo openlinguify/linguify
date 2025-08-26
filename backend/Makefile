@@ -21,6 +21,7 @@ help:
 	@echo "⚡ QUICK COMMANDS:"
 	@echo "  st               Quick status (dev + prod)"
 	@echo "  apps             List applications"
+	@echo "  apps-prod        List apps in PRODUCTION"
 	@echo "  env              Show current environment"
 	@echo "  env-dev          Switch to DEVELOPMENT"
 	@echo "  env-prod         ⚠️  Switch to PRODUCTION"
@@ -46,6 +47,7 @@ help-apps:
 	@echo ""
 	@echo "📋 Status and information:"
 	@echo "  apps                     List all applications"
+	@echo "  apps-prod               List apps in PRODUCTION"
 	@echo "  apps-manifests          List found manifests"
 	@echo "  app-info APP=<code>     Detailed app info"
 	@echo ""
@@ -97,6 +99,9 @@ apps:
 	@echo "📱 Listing applications..."
 	@$(eval ENV_VAL := $(shell grep DJANGO_ENV .env | cut -d'=' -f2 | tr -d '"'))
 	@DJANGO_ENV=$(ENV_VAL) poetry run python scripts/database/app_manager.py list
+
+apps-prod:
+	@poetry run python scripts/check_prod_apps.py
 
 apps-manifests:
 	@echo "📋 Application manifests..."
