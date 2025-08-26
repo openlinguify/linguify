@@ -620,8 +620,37 @@ def process_uploaded_profile_picture(user, file_data, update_model=True):
         
         # Mettre à jour le modèle si demandé  
         if update_model:
+            # En production, essayer d'uploader vers Supabase
+            supabase_url = None
+            if not getattr(settings, 'DEBUG', True):  # Production seulement
+                try:
+                    from ..utils.supabase_storage import supabase_storage
+                    
+                    # Reset file pointer if needed
+                    if hasattr(file_data, 'seek'):
+                        file_data.seek(0)
+                    
+                    supabase_result = supabase_storage.upload_profile_picture(
+                        user_id, 
+                        file_data, 
+                        getattr(file_data, 'name', f'profile_{user_id}.jpg')
+                    )
+                    
+                    if supabase_result.get('success'):
+                        supabase_url = supabase_result.get('public_url')
+                        logger.info(f"Supabase upload successful for user {user_id}: {supabase_url}")
+                    else:
+                        logger.warning(f"Supabase upload failed for user {user_id}: {supabase_result.get('error')}")
+                        
+                except Exception as e:
+                    logger.error(f"Error uploading to Supabase for user {user_id}: {e}")
+            
+            # Sauver en base : local en dev, Supabase en prod (avec fallback local)
             with transaction.atomic():
                 user.profile_picture = saved_paths['optimized']
+                if supabase_url:
+                    # En production, utiliser l'URL Supabase comme source principale
+                    user.profile_picture = supabase_url
                 user.save(update_fields=['profile_picture'])
             
             # Invalider le cache

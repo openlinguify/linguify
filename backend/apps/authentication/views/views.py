@@ -440,7 +440,7 @@ def update_profile_picture(request):
     try:
         from ..models.profile import process_uploaded_profile_picture
         
-        # Process the uploaded image using local storage
+        # Process the uploaded image (local + Supabase en production)
         result = process_uploaded_profile_picture(user, uploaded_file, update_model=True)
         
         if not result.get('success'):
@@ -456,16 +456,18 @@ def update_profile_picture(request):
         picture_url = user.get_profile_picture_absolute_url(request) if user.profile_picture else None
         
         # Log the updated values
-        logger.info(f"User {user.id} profile picture updated locally: {user.profile_picture}")
+        storage_type = "Supabase" if str(user.profile_picture).startswith(('http://', 'https://')) else "local"
+        logger.info(f"User {user.id} profile picture updated ({storage_type}): {user.profile_picture}")
         
         # Create response
         response = Response({
             'message': 'Profile picture updated successfully',
             'picture': picture_url,
             'filename': str(user.profile_picture) if user.profile_picture else None,
+            'storage_type': storage_type,
         })
         
-        logger.info(f"Profile picture saved locally for user {user.id}: {user.profile_picture}")
+        logger.info(f"Profile picture saved ({storage_type}) for user {user.id}: {user.profile_picture}")
         
         # Add cache control header for better performance
         response['Cache-Control'] = 'public, max-age=86400'  # Cache for 24 hours

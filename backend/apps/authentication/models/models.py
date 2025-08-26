@@ -369,6 +369,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         Retourne l'URL de la photo de profil
         """
         if self.profile_picture:
+            # Si c'est une URL complète (Supabase), la retourner directement
+            profile_str = str(self.profile_picture)
+            if profile_str.startswith(('http://', 'https://')):
+                return profile_str
+            
+            # Sinon, générer l'URL locale Django
             try:
                 return self.profile_picture.url
             except Exception:
@@ -381,6 +387,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         Retourne l'URL absolue de la photo de profil pour les API
         """
         if self.profile_picture:
+            profile_str = str(self.profile_picture)
+            
+            # Si c'est déjà une URL complète (Supabase), la retourner directement
+            if profile_str.startswith(('http://', 'https://')):
+                return profile_str
+            
+            # Sinon, construire l'URL absolue locale
             try:
                 return request.build_absolute_uri(self.profile_picture.url)
             except Exception:
