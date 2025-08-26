@@ -6,15 +6,15 @@ services:
     image: postgres:15
     restart: always
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DEV_DB_NAME}
+      POSTGRES_USER: ${DEV_DB_USER}
+      POSTGRES_PASSWORD: ${DEV_DB_PASSWORD}
     ports:
-      - "${DB_PORT}:5432"
+      - "${DEV_DB_PORT}:5432"
     volumes:
       - linguify_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DEV_DB_USER} -d ${DEV_DB_NAME}"]
       interval: 30s
       timeout: 10s
       retries: 3

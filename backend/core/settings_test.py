@@ -10,11 +10,11 @@ os.environ.setdefault('DJANGO_ENV', 'test')
 os.environ.setdefault('SECRET_KEY', 'test-secret-key-for-testing-only')
 os.environ.setdefault('DEBUG', 'True')
 os.environ.setdefault('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver')
-os.environ.setdefault('DB_NAME', 'db_linguify_test')
-os.environ.setdefault('DB_USER', 'postgres')
-os.environ.setdefault('DB_PASSWORD', 'azerty')
-os.environ.setdefault('DB_HOST', 'localhost')
-os.environ.setdefault('DB_PORT', '5432')
+os.environ.setdefault('TEST_DB_NAME', 'db_linguify_test')
+os.environ.setdefault('TEST_DB_USER', 'postgres')
+os.environ.setdefault('TEST_DB_PASSWORD', 'azerty')
+os.environ.setdefault('TEST_DB_HOST', 'localhost')
+os.environ.setdefault('TEST_DB_PORT', '5432')
 
 # Supabase test configuration
 os.environ.setdefault('SUPABASE_URL', 'https://test.supabase.co')
@@ -53,11 +53,11 @@ from .settings import *
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'db_linguify_test'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'azerty'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+        'NAME': os.environ.get('TEST_DB_NAME', 'db_linguify_test'),
+        'USER': os.environ.get('TEST_DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('TEST_DB_PASSWORD', 'azerty'),
+        'HOST': os.environ.get('TEST_DB_HOST', 'localhost'),
+        'PORT': os.environ.get('TEST_DB_PORT', '5432'),
         'ATOMIC_REQUESTS': True,
         'TEST': {
             'NAME': 'test_linguify_temp',

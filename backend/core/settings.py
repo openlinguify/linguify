@@ -360,11 +360,11 @@ elif os.environ.get('TEST_MODE') == 'True' or django_env == 'test':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DB_NAME', default='test_linguify'),
-            'USER': env('DB_USER', default='postgres'),
-            'PASSWORD': env('DB_PASSWORD', default='postgres'),
-            'HOST': env('DB_HOST', default='localhost'),
-            'PORT': env('DB_PORT', default='5432'),
+            'NAME': env('TEST_DB_NAME', default='db_linguify_test'),
+            'USER': env('TEST_DB_USER', default='postgres'),
+            'PASSWORD': env('TEST_DB_PASSWORD', default='azerty'),
+            'HOST': env('TEST_DB_HOST', default='localhost'),
+            'PORT': env('TEST_DB_PORT', default='5432'),
             'TEST': {
                 'NAME': 'test_linguify_temp',
             },
@@ -373,15 +373,15 @@ elif os.environ.get('TEST_MODE') == 'True' or django_env == 'test':
     print("Using PostgreSQL for testing")
     
 else:
-    # FALLBACK : PostgreSQL local
+    # FALLBACK : PostgreSQL local (utilise la config développement)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DB_NAME', default='db_linguify_dev'),
-            'USER': env('DB_USER', default='postgres'),
-            'PASSWORD': env('DB_PASSWORD', default='azerty'),
-            'HOST': env('DB_HOST', default='localhost'),
-            'PORT': env('DB_PORT', default='5432'),
+            'NAME': env('DEV_DB_NAME', default='db_linguify_dev'),
+            'USER': env('DEV_DB_USER', default='postgres'),
+            'PASSWORD': env('DEV_DB_PASSWORD', default='azerty'),
+            'HOST': env('DEV_DB_HOST', default='localhost'),
+            'PORT': env('DEV_DB_PORT', default='5432'),
         }
     }
     print("Using local PostgreSQL (fallback)")

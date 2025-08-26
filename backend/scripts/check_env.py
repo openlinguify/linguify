@@ -20,7 +20,7 @@ def check_environment():
     db_engine = os.getenv('DATABASE_ENGINE', 'postgresql')
     db_host = os.getenv('DATABASE_HOST', 'localhost')
     db_port = os.getenv('DATABASE_PORT', '5432')
-    db_name = os.getenv('DATABASE_NAME', os.getenv('DB_NAME', 'db_linguify_dev'))
+    db_name = os.getenv('DATABASE_NAME', os.getenv('DEV_DB_NAME', 'db_linguify_dev'))
     
     # URL du backend
     backend_url = os.getenv('BACKEND_URL', 'http://localhost:8000')
