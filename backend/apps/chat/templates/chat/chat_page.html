@@ -9,9 +9,135 @@
 <link rel="stylesheet" href="{% static 'css/tailwind-global.css' %}">
 <link rel="stylesheet" href="{% static 'css/tailwind-modals.css' %}">
 <link rel="stylesheet" href="{% static 'chat/css/messenger.css' %}">
+<style>
+/* Force correct hiding of welcome state */
+#no-conversation[style*="display: none"] {
+    display: none !important;
+}
+
+#conversation-area[style*="display: flex"] {
+    display: flex !important;
+}
+
+/* Ensure proper chat layout */
+.chat-main {
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-state {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+#conversation-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+}
+
+/* Conversation List Styles - Like notebook note-list */
+.conversation-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.conversation-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.conversation-item:hover {
+    background: #f8fafc;
+    border-left: 3px solid #3b82f6;
+    padding-left: calc(1rem - 3px);
+}
+
+.conversation-item.active {
+    background: #eff6ff;
+    border-left: 3px solid #3b82f6;
+    padding-left: calc(1rem - 3px);
+}
+
+.conversation-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+.conversation-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.conversation-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.conversation-preview {
+    color: #6b7280;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.conversation-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+.conversation-time {
+    color: #9ca3af;
+    font-size: 0.625rem;
+    margin-bottom: 0.25rem;
+}
+
+.conversation-unread {
+    background: #3b82f6;
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 600;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
 {% endblock %}
 
 {% block content %}
+<!-- Include the unified app header -->
+{% include 'components/header/app_header.html' %}
+
 <div class="app-container-layout">
     <!-- App Header avec Navbar -->
     <div class="app-header-layout">
@@ -22,60 +148,37 @@
     <div class="app-main-layout">
         <div class="d-flex" style="height: 100%;">
             <!-- Sidebar -->
-            <div id="chatSidebar" class="bg-white border-end" style="width: 320px; flex: 0 0 320px; overflow-y: auto;">
-                <!-- Conversations list -->
-                <div id="conversations-list"></div>
-                
-                <!-- Empty state -->
-                <div id="conversationsEmpty" class="text-center p-4" style="display: none;">
-                    <i class="bi bi-chat-dots mb-3" style="font-size: 3rem; color: #6b7280;"></i>
-                    <h5 class="mb-3">Aucune conversation</h5>
-                    <p class="text-muted mb-4">Commencez une nouvelle conversation pour échanger avec vos contacts</p>
-                    <button class="btn btn-primary btn-sm" onclick="startNewConversation()">
-                        <i class="bi bi-plus-lg me-2"></i>
-                        Nouvelle conversation
-                    </button>
-                </div>
-                
-                <!-- Loading state -->
-                <div id="conversationsLoading" class="text-center p-4">
-                    <div class="spinner-border spinner-border-sm" role="status">
-                        <span class="visually-hidden">Chargement...</span>
+            <div id="chatSidebar" class="sidebar-linguify">
+                <div class="sidebar-content">
+                    <!-- Conversations list -->
+                    <ul id="conversations-list" class="conversation-list"></ul>
+                    
+                    <!-- Empty state -->
+                    <div id="conversationsEmpty" class="empty-state empty-state-hidden">
+                        <i class="bi bi-chat-dots empty-state-icon"></i>
+                        <div class="empty-state-title">Aucune conversation</div>
+                        <div class="empty-state-description">Commencez une nouvelle conversation pour échanger avec vos contacts</div>
+                        <button class="btn-linguify create-conversation-btn" onclick="startNewConversation()">
+                            <i class="bi bi-plus-lg mr-2"></i>
+                            Nouvelle conversation
+                        </button>
                     </div>
-                    <p class="mt-2 text-muted">Chargement des conversations...</p>
+                    
+                    <!-- Loading state -->
+                    <div id="conversationsLoading" class="text-center p-4">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Chargement des conversations...</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Chat Area -->
-            <div class="flex-fill d-flex flex-column bg-white chat-main" style="height: calc(100vh - 60px); max-height: calc(100vh - 60px); min-height: 0;">
-                <!-- Header de conversation -->
-                <div class="chat-header" id="chat-header" style="display: none; flex: 0 0 auto;">
-                    <div class="d-flex align-items-center justify-content-between w-100">
-                        <div class="d-flex align-items-center">
-                            <div class="conversation-avatar me-3" id="current-participant-avatar">?</div>
-                            <div>
-                                <div class="fw-bold" id="current-participant-name">Nom</div>
-                                <small id="current-participant-status">En ligne</small>
-                            </div>
-                        </div>
-                        
-                        <!-- Boutons d'appel -->
-                        <div class="conversation-actions">
-                            <button class="btn-conv-action" title="Démarrer un appel vocal" id="audio-call-btn" data-bs-toggle="tooltip" data-bs-placement="bottom">
-                                <i class="bi bi-telephone-fill"></i>
-                            </button>
-                            <button class="btn-conv-action" title="Démarrer un appel vidéo" id="video-call-btn" data-bs-toggle="tooltip" data-bs-placement="bottom">
-                                <i class="bi bi-camera-video-fill"></i>
-                            </button>
-                            <button class="btn-conv-action" title="Plus d'options" data-bs-toggle="tooltip" data-bs-placement="bottom">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <div class="flex-fill d-flex flex-column bg-white chat-main" style="height: 100%; max-height: 100%; min-height: 0; position: relative;">
                 
                 <!-- Welcome state -->
-                <div id="no-conversation" class="d-flex flex-column align-items-center justify-content-center text-center p-4" style="height: 100%;">
+                <div id="no-conversation" class="welcome-state d-flex flex-column align-items-center justify-content-center text-center p-4">
                     <i class="bi bi-chat-dots mb-4" style="font-size: 4rem; color: #6b7280;"></i>
                     <h3 class="mb-3">Bienvenue dans votre espace de messagerie</h3>
                     <p class="text-muted mb-4">
@@ -94,7 +197,33 @@
                 </div>
                 
                 <!-- Conversation Details -->
-                <div id="conversation-area" style="display: none; height: 100%; min-height: 0;" class="d-flex flex-column">
+                <div id="conversation-area" style="display: none;" class="d-flex flex-column">
+                    <!-- Header de conversation -->
+                    <div class="chat-header" id="chat-header" style="display: none; flex: 0 0 auto;">
+                        <div class="d-flex align-items-center justify-content-between w-100">
+                            <div class="d-flex align-items-center">
+                                <div class="conversation-avatar me-3" id="current-participant-avatar">?</div>
+                                <div>
+                                    <div class="fw-bold" id="current-participant-name">Nom</div>
+                                    <small id="current-participant-status">En ligne</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Boutons d'appel -->
+                            <div class="conversation-actions">
+                                <button class="btn-conv-action" title="Démarrer un appel vocal" id="audio-call-btn" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <i class="bi bi-telephone-fill"></i>
+                                </button>
+                                <button class="btn-conv-action" title="Démarrer un appel vidéo" id="video-call-btn" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <i class="bi bi-camera-video-fill"></i>
+                                </button>
+                                <button class="btn-conv-action" title="Plus d'options" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Messages Area -->
                     <div class="messages-area flex-grow-1 p-3" id="messages-area" style="overflow-y: auto; height: 0; min-height: 0;">
                         <!-- Messages chargés dynamiquement -->
@@ -188,24 +317,9 @@ function initializeChatInterface() {
         console.log(`📝 ${conversationsList.children.length} conversations trouvées`);
     }
     
-    // Ne pas forcer l'affichage du welcome state - laisser chat-page.js gérer
-    // Seulement s'assurer qu'il est visible si aucune conversation n'est active
-    const noConversation = document.getElementById('no-conversation');
-    const conversationArea = document.getElementById('conversation-area');
-    
-    // Seulement afficher le welcome state si aucune conversation n'est déjà active
-    if (conversationArea && conversationArea.style.display !== 'flex') {
-        if (noConversation) {
-            noConversation.style.display = 'flex';
-            console.log('✅ Welcome state affiché par défaut');
-        }
-        if (conversationArea) {
-            conversationArea.style.display = 'none';
-            console.log('✅ Conversation area masquée par défaut');
-        }
-    } else {
-        console.log('✅ Conversation déjà active, ne pas afficher le welcome state');
-    }
+    // Laisser chat-page.js gérer complètement l'état des conversations
+    // Ne pas interférer avec l'affichage/masquage
+    console.log('✅ Laissant chat-page.js gérer les états d\'affichage');
 }
 
 // Fonction pour démarrer une nouvelle conversation

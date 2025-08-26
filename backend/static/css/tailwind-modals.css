@@ -1253,7 +1253,8 @@ button.bg-linguify-gradient:hover,
   background: white;
   border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 1000;
   width: 100%;
 }

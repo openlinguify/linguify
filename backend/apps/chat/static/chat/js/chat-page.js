@@ -207,12 +207,11 @@ class ChatPage {
             const lastMessage = conv.last_message;
             
             return `
-                <div class="conversation-item d-flex align-items-center" 
-                     data-conversation-id="${conv.id}"
-                     onclick="chatPage.openConversation(${conv.id})">
-                    <div class="conversation-avatar position-relative">
+                <li class="conversation-item" 
+                    data-conversation-id="${conv.id}"
+                    onclick="chatPage.openConversation(${conv.id})">
+                    <div class="conversation-avatar">
                         ${participant ? participant.username.charAt(0).toUpperCase() : '?'}
-                        ${participant && participant.is_online ? '<div class="online-indicator"></div>' : ''}
                     </div>
                     <div class="conversation-info">
                         <div class="conversation-name">
@@ -223,10 +222,12 @@ class ChatPage {
                         </div>
                     </div>
                     <div class="conversation-meta">
-                        ${lastMessage ? this.formatTime(lastMessage.timestamp) : ''}
-                        ${conv.unread_count > 0 ? `<div class="badge bg-primary rounded-pill">${conv.unread_count}</div>` : ''}
+                        <div class="conversation-time">
+                            ${lastMessage ? this.formatTime(lastMessage.timestamp) : ''}
+                        </div>
+                        ${conv.unread_count > 0 ? `<div class="conversation-unread">${conv.unread_count}</div>` : ''}
                     </div>
-                </div>
+                </li>
             `;
         }).join('');
     }
