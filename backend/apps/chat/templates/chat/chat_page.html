@@ -20,11 +20,11 @@
     
     <!-- App Main Content -->
     <div class="app-main-layout">
-        <div class="app-flex-container">
+        <div class="d-flex h-100">
             <!-- Sidebar -->
-            <div id="chatSidebar" class="app-sidebar-layout">
+            <div id="chatSidebar" class="bg-white border-end" style="width: 320px; flex: 0 0 320px; overflow-y: auto;">
                 <!-- Conversations list -->
-                <ul id="conversationsList" class="list-unstyled"></ul>
+                <div id="conversations-list"></div>
                 
                 <!-- Empty state -->
                 <div id="conversationsEmpty" class="text-center p-4" style="display: none;">
@@ -47,7 +47,7 @@
             </div>
 
             <!-- Chat Area -->
-            <div class="app-content-layout chat-main">
+            <div class="flex-fill d-flex flex-column bg-white chat-main">
                 <!-- Header de conversation -->
                 <div class="chat-header" id="chat-header" style="display: none;">
                     <div class="d-flex align-items-center justify-content-between w-100">
@@ -75,7 +75,7 @@
                 </div>
                 
                 <!-- Welcome state -->
-                <div id="welcomeState" class="d-flex flex-column align-items-center justify-content-center h-100 text-center p-4">
+                <div id="no-conversation" class="d-flex flex-column align-items-center justify-content-center h-100 text-center p-4">
                     <i class="bi bi-chat-dots mb-4" style="font-size: 4rem; color: #6b7280;"></i>
                     <h3 class="mb-3">Bienvenue dans votre espace de messagerie</h3>
                     <p class="text-muted mb-4">
@@ -94,7 +94,7 @@
                 </div>
                 
                 <!-- Conversation Details -->
-                <div id="conversationDetails" style="display: none;" class="d-flex flex-column h-100">
+                <div id="conversation-area" style="display: none;" class="d-flex flex-column h-100">
                     <!-- Messages Area -->
                     <div class="messages-area flex-grow-1 p-3" id="messages-area" style="overflow-y: auto;">
                         <!-- Messages chargés dynamiquement -->
@@ -153,6 +153,78 @@
 window.currentUserId = {{ user.id|default:'null' }};
 window.currentUsername = '{{ user.username|default:'' }}';
 window.csrfToken = '{{ csrf_token }}';
+
+// Initialisation du chat - Compatible avec chat-page.js existant
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initialisation du chat');
+    
+    // Attendre que chat-page.js se charge aussi
+    setTimeout(() => {
+        initializeChatInterface();
+    }, 1500);
+});
+
+function initializeChatInterface() {
+    console.log('📱 Interface chat initialisée');
+    
+    // Masquer le loading state de la sidebar
+    const loadingElement = document.getElementById('conversationsLoading');
+    if (loadingElement) {
+        loadingElement.style.display = 'none';
+        console.log('✅ Loading state masqué');
+    }
+    
+    // Vérifier s'il y a des conversations dans la liste
+    const conversationsList = document.getElementById('conversations-list');
+    const emptyState = document.getElementById('conversationsEmpty');
+    
+    // Si pas de conversations dans la liste, afficher l'empty state
+    if (conversationsList && conversationsList.children.length === 0) {
+        if (emptyState) {
+            emptyState.style.display = 'block';
+            console.log('✅ Empty state affiché');
+        }
+    } else if (conversationsList && conversationsList.children.length > 0) {
+        console.log(`📝 ${conversationsList.children.length} conversations trouvées`);
+    }
+    
+    // S'assurer que no-conversation est visible par défaut
+    const noConversation = document.getElementById('no-conversation');
+    if (noConversation) {
+        noConversation.style.display = 'flex';
+        console.log('✅ Welcome state affiché');
+    }
+    
+    // S'assurer que conversation-area est masquée par défaut
+    const conversationArea = document.getElementById('conversation-area');
+    if (conversationArea) {
+        conversationArea.style.display = 'none';
+        console.log('✅ Conversation area masquée');
+    }
+}
+
+// Fonction pour démarrer une nouvelle conversation
+function startNewConversation() {
+    console.log('💬 Démarrage nouvelle conversation');
+    const modal = new bootstrap.Modal(document.getElementById('newConversationModal'));
+    modal.show();
+}
+
+// Fonctions pour les vues (appelées par la navbar)
+function showConversationsView() {
+    console.log('📋 Vue conversations');
+    // Logique pour afficher les conversations
+}
+
+function showGroupsView() {
+    console.log('👥 Vue groupes');
+    // Logique pour afficher les groupes
+}
+
+function showContactsView() {
+    console.log('👤 Vue contacts');
+    // Logique pour afficher les contacts
+}
 </script>
 
 <script src="{% static 'chat/js/chat-page.js' %}"></script>
