@@ -56,16 +56,8 @@ else:
     BACKEND_URL = env.str('BACKEND_URL', default='https://www.openlinguify.com')
     BASE_URL = BACKEND_URL
 
-# DEPRECATED: FRONTEND_URL sera supprimé avec le frontend Next.js
-# Pour la compatibilité temporaire uniquement
-FRONTEND_URL = env.str('FRONTEND_URL', default=BASE_URL)
-
-# Supabase settings
-SUPABASE_URL = env.str('SUPABASE_URL', default='')
-SUPABASE_ANON_KEY = env.str('SUPABASE_ANON_KEY', default='')
-SUPABASE_SERVICE_ROLE_KEY = env.str('SUPABASE_SERVICE_ROLE_KEY', default='')
-SUPABASE_PROJECT_ID = env.str('SUPABASE_PROJECT_ID', default='')
-SUPABASE_JWT_SECRET = env.str('SUPABASE_JWT_SECRET', default='')
+# PostgreSQL settings (local only)
+# All database configuration is now in DATABASES section below
 
 # normally Allowed hosts should be set to the domain name of the website
 # but for development purposes we can set it to all
@@ -215,35 +207,10 @@ if DEBUG:
 # TEMPORARY: Enable auth bypass for development debugging
 # REMOVE THIS IN PRODUCTION!
 if DEBUG:
-    BYPASS_AUTH_FOR_DEVELOPMENT = False  # Disabled to use real Supabase auth
+    BYPASS_AUTH_FOR_DEVELOPMENT = False  # Use real authentication
     # print("WARNING: Authentication bypass is enabled for development!")
     # print("This should NEVER be used in production!")
 
-# DEPRECATED: Auth0 Configuration (REMOVED - now using Django + Supabase authentication)
-# AUTH0_DOMAIN = env('AUTH0_DOMAIN', default='')
-# AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID', default='')
-# AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET', default='')
-# AUTH0_AUDIENCE = env('AUTH0_AUDIENCE', default='')
-# AUTH0_CALLBACK_URL = f"{BACKEND_URL}/api/auth/callback/"
-# FRONTEND_CALLBACK_URL = f"{BASE_URL}/auth/login/"
-# FRONTEND_LOGOUT_REDIRECT = f"{BASE_URL}/"  # Redirection vers la landing page Django
-# AUTH0_ALGORITHM = 'RS256'
-
-# DEPRECATED: JWT_AUTH configuration (REMOVED - now using Django sessions + Supabase)
-# JWT_AUTH = {
-#     'JWT_PAYLOAD_GET_USERNAME_HANDLER':
-#         'apps.authentication.utils.jwt_get_username_from_payload_handler',
-#     'JWT_DECODE_HANDLER':
-#         'apps.authentication.utils.jwt_decode_token',
-#     'JWT_ALGORITHM': 'RS256',
-#     'JWT_AUDIENCE': AUTH0_AUDIENCE,
-#     'JWT_ISSUER': f'https://{AUTH0_DOMAIN}/',
-#     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-#     'JWT_VERIFY_EXPIRATION': False, 
-#     'JWT_ALLOW_REFRESH': True,
-#     'JWT_EXPIRATION_DELTA': timedelta(days=7),
-#     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
-# }
 
 CACHES = {
     'default': {
@@ -251,23 +218,6 @@ CACHES = {
         'LOCATION': 'unique-snowflake',
     }
 }
-
-#by default, we use LocMemCache for development
-
-# in production, we can use redis for caching
-# install redis and django-redis
-
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django_redis.cache.RedisCache',
-#         'LOCATION': 'redis://127.0.0.1:6379/1',
-#         'OPTIONS': {
-#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-#         }
-#     }
-# }
-
-
 # Configuration de session - temporarily using DB for debugging
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Changed from cache to db for debugging
 SESSION_CACHE_ALIAS = 'default'
@@ -293,7 +243,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'apps.authentication.middleware.middleware.JWTMiddleware',  # Disabled - using Supabase now
+    # 'apps.authentication.middleware.middleware.JWTMiddleware',  # Disabled - using Django sessions
     'apps.authentication.middleware.terms_middleware.TermsAcceptanceMiddleware',  # Check terms acceptance
     # 'core.jobs.middleware.JobsErrorHandlingMiddleware',  # Jobs error handling - moved to portal
     # SEO Optimization Middleware (simplified version)
@@ -423,37 +373,18 @@ elif os.environ.get('TEST_MODE') == 'True' or django_env == 'test':
     print("Using PostgreSQL for testing")
     
 else:
-    # FALLBACK : Vérifier si des variables Supabase sont présentes
-    supabase_host = env('SUPABASE_DB_HOST', default=None)
-    if supabase_host and not DEBUG:
-        # Production avec Supabase
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': env('SUPABASE_DB_NAME', default='postgres'),
-                'USER': env('SUPABASE_DB_USER'),
-                'PASSWORD': env('SUPABASE_DB_PASSWORD'),
-                'HOST': supabase_host,
-                'PORT': env('SUPABASE_DB_PORT', default='5432'),
-                'OPTIONS': {
-                    'sslmode': 'require',
-                },
-            }
+    # FALLBACK : PostgreSQL local
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', default='db_linguify_dev'),
+            'USER': env('DB_USER', default='postgres'),
+            'PASSWORD': env('DB_PASSWORD', default='azerty'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
         }
-        print("Using Supabase PostgreSQL (fallback production)")
-    else:
-        # FALLBACK : PostgreSQL local avec anciennes variables
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': env('DB_NAME', default='db_linguify_dev'),
-                'USER': env('DB_USER', default='postgres'),
-                'PASSWORD': env('DB_PASSWORD', default='azerty'),
-                'HOST': env('DB_HOST', default='localhost'),
-                'PORT': env('DB_PORT', default='5432'),
-            }
-        }
-        print("Using local PostgreSQL (fallback development)")
+    }
+    print("Using local PostgreSQL (fallback)")
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -661,7 +592,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
-        'apps.authentication.supabase_storage': {
+        'apps.authentication.storage': {
             'handlers': ['profile_console'],
             'level': 'DEBUG',
             'propagate': False,

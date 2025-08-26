@@ -289,18 +289,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
         validators=[validate_profile_picture]
     )
-    # Supabase storage fields
-    profile_picture_url = models.URLField(
-        null=True,
-        blank=True,
-        help_text="URL de la photo de profil stockée dans Supabase"
-    )
-    profile_picture_filename = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        help_text="Nom du fichier dans Supabase Storage"
-    )
     bio = models.TextField(max_length=500, null=True, blank=True)
     native_language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default=LANGUAGE_CHOICES[0][0],
                                        help_text="Your native language")
@@ -378,33 +366,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def get_profile_picture_url(self):
         """
-        Retourne l'URL de la photo de profil avec fallback pour les problèmes réseau
+        Retourne l'URL de la photo de profil
         """
-        from django.conf import settings
-        
-        # En développement, prioriser le stockage local pour éviter les erreurs réseau
-        if getattr(settings, 'DEBUG', False):
-            # Prioriser le stockage local Django en développement
-            if self.profile_picture:
-                try:
-                    return self.profile_picture.url
-                except Exception:
-                    pass
-            
-            # Fallback vers Supabase seulement si pas d'image locale
-            if self.profile_picture_url:
-                return self.profile_picture_url
-        else:
-            # En production, prioriser Supabase Storage
-            if self.profile_picture_url:
-                return self.profile_picture_url
-            
-            # Fallback vers le stockage local Django
-            if self.profile_picture:
-                try:
-                    return self.profile_picture.url
-                except Exception:
-                    pass
+        if self.profile_picture:
+            try:
+                return self.profile_picture.url
+            except Exception:
+                pass
         
         return None
     
@@ -412,11 +380,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         Retourne l'URL absolue de la photo de profil pour les API
         """
-        # Prioriser Supabase Storage (déjà absolu)
-        if self.profile_picture_url:
-            return self.profile_picture_url
-        
-        # Fallback vers le stockage local Django avec URL absolue
         if self.profile_picture:
             try:
                 return request.build_absolute_uri(self.profile_picture.url)

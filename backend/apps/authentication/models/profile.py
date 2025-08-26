@@ -400,16 +400,6 @@ def get_profile_picture_urls(user, use_cache: bool = True) -> Dict[str, str]:
     if not user:
         return get_default_profile_picture()
     
-    # Priorité à Supabase URL si disponible
-    if hasattr(user, 'profile_picture_url') and user.profile_picture_url:
-        supabase_url = user.profile_picture_url
-        return {
-            'original': supabase_url,
-            'default': supabase_url,
-            'small': supabase_url,
-            'medium': supabase_url,
-            'large': supabase_url,
-        }
     
     # Fallback vers l'ancien système de fichiers locaux
     if not hasattr(user, 'profile_picture') or not user.profile_picture:
@@ -628,44 +618,11 @@ def process_uploaded_profile_picture(user, file_data, update_model=True):
         # Sauvegarder les images
         saved_paths = save_processed_images(processed)
         
-        # Upload vers Supabase et mettre à jour le modèle si demandé
+        # Mettre à jour le modèle si demandé  
         if update_model:
-            try:
-                # Upload vers Supabase
-                from ..utils.supabase_storage import supabase_storage
-                
-                # Reset file pointer if needed
-                if hasattr(file_data, 'seek'):
-                    file_data.seek(0)
-                
-                supabase_result = supabase_storage.upload_profile_picture(
-                    user_id, 
-                    file_data, 
-                    getattr(file_data, 'name', f'profile_{user_id}.jpg')
-                )
-                
-                if supabase_result.get('success'):
-                    logger.info(f"Supabase upload successful: {supabase_result.get('public_url')}")
-                    
-                    with transaction.atomic():
-                        user.profile_picture = saved_paths['optimized']
-                        user.profile_picture_url = supabase_result.get('public_url')
-                        user.save(update_fields=['profile_picture', 'profile_picture_url'])
-                        
-                    logger.info(f"User model updated with Supabase URL: {user.profile_picture_url}")
-                else:
-                    logger.warning(f"Supabase upload failed: {supabase_result.get('error')}")
-                    # Fallback to local storage only
-                    with transaction.atomic():
-                        user.profile_picture = saved_paths['optimized']
-                        user.save(update_fields=['profile_picture'])
-                        
-            except Exception as e:
-                logger.error(f"Error uploading to Supabase: {e}")
-                # Fallback to local storage only
-                with transaction.atomic():
-                    user.profile_picture = saved_paths['optimized']
-                    user.save(update_fields=['profile_picture'])
+            with transaction.atomic():
+                user.profile_picture = saved_paths['optimized']
+                user.save(update_fields=['profile_picture'])
             
             # Invalider le cache
             invalidate_profile_picture_cache(user.id)
