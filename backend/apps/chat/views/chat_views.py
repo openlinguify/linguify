@@ -21,7 +21,7 @@ def chat_redirect(request):
         return render(request, 'chat/info.html')
     
     # Page de chat dédiée par défaut
-    return render(request, 'chat/chat_page.html')
+    return render(request, 'chat/main.html')
 
 @login_required
 @require_http_methods(["GET"])

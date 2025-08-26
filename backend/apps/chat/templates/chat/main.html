@@ -1,0 +1,378 @@
+{% extends "chat/base.html" %}
+{% load static %}
+
+{% block page_title %}Chat{% endblock %}
+
+{% block header_content %}
+{% include 'chat/components/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="chat-workspace d-flex h-100">
+    <!-- Sidebar -->
+    <div id="chatSidebar" class="sidebar-linguify">
+        <div class="sidebar-content">
+            <!-- Conversations list -->
+            <ul id="conversations-list" class="conversation-list"></ul>
+            
+            <!-- Empty state -->
+            <div id="conversationsEmpty" class="empty-state empty-state-hidden">
+                <i class="bi bi-chat-dots empty-state-icon"></i>
+                <div class="empty-state-title">Aucune conversation</div>
+                <div class="empty-state-description">Commencez une nouvelle conversation pour échanger avec vos contacts</div>
+                <button class="btn-linguify create-conversation-btn" onclick="startNewConversation()">
+                    <i class="bi bi-plus-lg mr-2"></i>
+                    Nouvelle conversation
+                </button>
+            </div>
+            
+            <!-- Loading state -->
+            <div id="conversationsLoading" class="text-center p-4">
+                <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="mt-2 text-muted">Chargement des conversations...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-content flex-fill">
+        <!-- Welcome state -->
+        <div id="no-conversation" class="welcome-workspace">
+            <div class="welcome-hero text-center">
+                <div class="welcome-illustration mb-4">
+                    <div class="illustration-container">
+                        <i class="bi bi-chat-dots" style="font-size: 5rem; color: var(--linguify-primary);"></i>
+                        <div class="illustration-sparkles">
+                            <i class="bi bi-stars" style="position: absolute; top: 10px; right: 20px; font-size: 1.5rem; color: var(--linguify-accent); opacity: 0.7;"></i>
+                            <i class="bi bi-star" style="position: absolute; bottom: 20px; left: 10px; font-size: 1rem; color: var(--linguify-secondary); opacity: 0.8;"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2 class="welcome-title mb-3">Bienvenue dans votre espace de messagerie</h2>
+                <p class="welcome-subtitle text-muted mb-4">
+                    Sélectionnez une conversation dans la liste ou commencez une nouvelle discussion pour communiquer en temps réel
+                </p>
+                
+                <div class="welcome-actions d-flex flex-wrap gap-3 justify-content-center mb-5">
+                    <button class="btn btn-primary btn-lg create-conversation-btn shadow-sm" onclick="startNewConversation()">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Nouvelle conversation
+                    </button>
+                    <button class="btn btn-outline-primary btn-lg" onclick="showContactsView()">
+                        <i class="bi bi-person-lines-fill me-2"></i>
+                        Voir mes contacts
+                    </button>
+                </div>
+                
+                <div class="welcome-features">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="feature-card text-center p-4">
+                                <i class="bi bi-lightning-charge feature-icon mb-3"></i>
+                                <h5>Messagerie instantanée</h5>
+                                <p class="text-muted small">Communication en temps réel avec vos contacts</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-card text-center p-4">
+                                <i class="bi bi-people-fill feature-icon mb-3"></i>
+                                <h5>Conversations groupées</h5>
+                                <p class="text-muted small">Créez des groupes pour communiquer avec plusieurs personnes</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-card text-center p-4">
+                                <i class="bi bi-shield-check feature-icon mb-3"></i>
+                                <h5>Sécurisé</h5>
+                                <p class="text-muted small">Vos conversations sont protégées et privées</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Conversation Area -->
+        <div id="conversation-area" style="display: none;" class="d-flex flex-column h-100">
+            <!-- Header de conversation -->
+            <div class="chat-header" id="chat-header" style="display: none; flex: 0 0 auto;">
+                <div class="d-flex align-items-center justify-content-between w-100">
+                    <div class="d-flex align-items-center">
+                        <div class="conversation-avatar me-3" id="current-participant-avatar">?</div>
+                        <div>
+                            <div class="fw-bold" id="current-participant-name">Nom</div>
+                            <small id="current-participant-status">En ligne</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Boutons d'appel -->
+                    <div class="conversation-actions">
+                        <button class="btn-conv-action" title="Démarrer un appel vocal" id="audio-call-btn" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                            <i class="bi bi-telephone-fill"></i>
+                        </button>
+                        <button class="btn-conv-action" title="Démarrer un appel vidéo" id="video-call-btn" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                            <i class="bi bi-camera-video-fill"></i>
+                        </button>
+                        <button class="btn-conv-action" title="Plus d'options" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Messages Area -->
+            <div class="messages-area flex-grow-1 p-3" id="messages-area" style="overflow-y: auto; height: 0; min-height: 0;">
+                <!-- Messages chargés dynamiquement -->
+            </div>
+            
+            <!-- Message Input Area -->
+            <div class="message-input-area border-top bg-white p-3" style="flex: 0 0 auto;">
+                <div class="d-flex gap-3">
+                    <input type="text" 
+                           class="form-control" 
+                           placeholder="💭 Écrivez votre message..." 
+                           id="message-input" 
+                           autocomplete="off">
+                    <button class="btn btn-primary" type="button" id="send-message">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bouton mobile pour ouvrir la sidebar -->
+<button class="btn btn-primary position-fixed d-md-none" id="mobile-chat-toggle" 
+        style="bottom: 1rem; right: 1rem; z-index: 1050;">
+    <i class="bi bi-list"></i>
+</button>
+
+<!-- Modal pour nouvelle conversation -->
+<div class="modal fade" id="newConversationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nouvelle conversation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="user-search" class="form-label">Rechercher un utilisateur</label>
+                    <input type="text" class="form-control" id="user-search" placeholder="Nom d'utilisateur...">
+                </div>
+                <div id="user-search-results">
+                    <!-- Résultats de recherche -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSRF Token hidden input -->
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Conversation List Styles - Like notebook note-list */
+.conversation-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.conversation-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.conversation-item:hover {
+    background: #f8fafc;
+    border-left: 3px solid #3b82f6;
+    padding-left: calc(1rem - 3px);
+}
+
+.conversation-item.active {
+    background: #eff6ff;
+    border-left: 3px solid #3b82f6;
+    padding-left: calc(1rem - 3px);
+}
+
+.conversation-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+.conversation-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.conversation-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.conversation-preview {
+    color: #6b7280;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.conversation-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+.conversation-time {
+    color: #9ca3af;
+    font-size: 0.625rem;
+    margin-bottom: 0.25rem;
+}
+
+.conversation-unread {
+    background: #3b82f6;
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 600;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Welcome workspace styles */
+.welcome-workspace {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 2rem;
+}
+
+.feature-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.feature-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.feature-icon {
+    font-size: 2rem;
+    color: #3b82f6;
+}
+
+.chat-workspace {
+    height: 100%;
+    min-height: 100%;
+}
+
+.chat-content {
+    position: relative;
+    overflow: hidden;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Variables globales pour le chat
+window.currentUserId = {{ user.id|default:'null' }};
+window.currentUsername = '{{ user.username|default:'' }}';
+window.csrfToken = '{{ csrf_token }}';
+
+// Initialisation du chat - Compatible avec chat-page.js existant
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initialisation du chat');
+    
+    // Attendre que chat-page.js se charge aussi
+    setTimeout(() => {
+        initializeChatInterface();
+    }, 1500);
+});
+
+function initializeChatInterface() {
+    console.log('📱 Interface chat initialisée');
+    
+    // Masquer le loading state de la sidebar
+    const loadingElement = document.getElementById('conversationsLoading');
+    if (loadingElement) {
+        loadingElement.style.display = 'none';
+        console.log('✅ Loading state masqué');
+    }
+    
+    // Vérifier s'il y a des conversations dans la liste
+    const conversationsList = document.getElementById('conversations-list');
+    const emptyState = document.getElementById('conversationsEmpty');
+    
+    // Si pas de conversations dans la liste, afficher l'empty state
+    if (conversationsList && conversationsList.children.length === 0) {
+        if (emptyState) {
+            emptyState.style.display = 'block';
+            console.log('✅ Empty state affiché');
+        }
+    } else if (conversationsList && conversationsList.children.length > 0) {
+        console.log(`📝 ${conversationsList.children.length} conversations trouvées`);
+    }
+    
+    // Laisser chat-page.js gérer complètement l'état des conversations
+    console.log('✅ Laissant chat-page.js gérer les états d\'affichage');
+}
+
+// Fonction pour démarrer une nouvelle conversation
+function startNewConversation() {
+    console.log('💬 Démarrage nouvelle conversation');
+    const modal = new bootstrap.Modal(document.getElementById('newConversationModal'));
+    modal.show();
+}
+
+// Fonctions pour les vues (appelées par la navbar)
+function showConversationsView() {
+    console.log('📋 Vue conversations');
+    // Logique pour afficher les conversations
+}
+
+function showGroupsView() {
+    console.log('👥 Vue groupes');
+    // Logique pour afficher les groupes
+}
+
+function showContactsView() {
+    console.log('👤 Vue contacts');
+    // Logique pour afficher les contacts
+}
+</script>
+
+<script src="{% static 'chat/js/chat-page.js' %}"></script>
+{% endblock %}
