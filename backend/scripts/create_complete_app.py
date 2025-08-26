@@ -481,8 +481,8 @@ class {app_name.replace('_', '').title()}TestCase(TestCase):
     img_dir.mkdir(parents=True)
     desc_dir.mkdir(parents=True)
     
-    # CSS
-    css_content = f'''/* Styles pour {display_name} */
+    # CSS général
+    css_content = f'''/* Styles généraux pour {display_name} */
 .{app_name}-container {{
     max-width: 1200px;
     margin: 0 auto;
@@ -520,8 +520,130 @@ class {app_name.replace('_', '').title()}TestCase(TestCase):
 '''
     (css_dir / 'style.css').write_text(css_content)
     
-    # JavaScript
-    js_content = f'''// JavaScript pour {display_name}
+    # CSS spécifique à la page
+    page_css_content = f'''/* Styles spécifiques pour la page {display_name} */
+.{app_name}-page {{
+    min-height: 100vh;
+    background: #f8f9fa;
+}}
+
+.{app_name}-page-header {{
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    padding: 3rem 0;
+    text-align: center;
+    margin-bottom: 2rem;
+}}
+
+.{app_name}-page-title {{
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}}
+
+.{app_name}-page-subtitle {{
+    font-size: 1.2rem;
+    opacity: 0.9;
+}}
+
+.{app_name}-content-wrapper {{
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}}
+
+.{app_name}-action-buttons {{
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}}
+
+.{app_name}-btn-primary {{
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}}
+
+.{app_name}-btn-primary:hover {{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
+}}
+
+.{app_name}-item-grid {{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}}
+
+.{app_name}-item-card {{
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}}
+
+.{app_name}-item-card:hover {{
+    border-color: #4f46e5;
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.15);
+    transform: translateY(-4px);
+}}
+
+.{app_name}-empty-state {{
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6b7280;
+}}
+
+.{app_name}-empty-icon {{
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}}
+
+/* Animations */
+@keyframes {app_name}FadeIn {{
+    from {{ opacity: 0; transform: translateY(20px); }}
+    to {{ opacity: 1; transform: translateY(0); }}
+}}
+
+.{app_name}-animate-in {{
+    animation: {app_name}FadeIn 0.6s ease forwards;
+}}
+
+/* Responsive */
+@media (max-width: 768px) {{
+    .{app_name}-page-header {{
+        padding: 2rem 1rem;
+    }}
+    
+    .{app_name}-page-title {{
+        font-size: 2rem;
+    }}
+    
+    .{app_name}-content-wrapper {{
+        margin: 0 1rem 2rem;
+        padding: 1.5rem;
+    }}
+    
+    .{app_name}-item-grid {{
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }}
+}}
+'''
+    (css_dir / f'{app_name}_page.css').write_text(page_css_content)
+    
+    # JavaScript général
+    js_content = f'''// JavaScript général pour {display_name}
 document.addEventListener('DOMContentLoaded', function() {{
     console.log('{display_name} app loaded');
     
@@ -554,24 +676,481 @@ class {app_name.replace('_', '').title()}API {{
             return null;
         }}
     }}
+    
+    static async createItem(data) {{
+        try {{
+            const response = await fetch('/{app_name.replace('_', '-')}/api/items/', {{
+                method: 'POST',
+                headers: {{
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                }},
+                body: JSON.stringify(data)
+            }});
+            return await response.json();
+        }} catch (error) {{
+            console.error('Error creating item:', error);
+            return null;
+        }}
+    }}
+    
+    static async updateItem(id, data) {{
+        try {{
+            const response = await fetch(`/{app_name.replace('_', '-')}/api/items/${{id}}/`, {{
+                method: 'PUT',
+                headers: {{
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                }},
+                body: JSON.stringify(data)
+            }});
+            return await response.json();
+        }} catch (error) {{
+            console.error('Error updating item:', error);
+            return null;
+        }}
+    }}
+    
+    static async deleteItem(id) {{
+        try {{
+            const response = await fetch(`/{app_name.replace('_', '-')}/api/items/${{id}}/`, {{
+                method: 'DELETE',
+                headers: {{
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                }}
+            }});
+            return response.ok;
+        }} catch (error) {{
+            console.error('Error deleting item:', error);
+            return false;
+        }}
+    }}
 }}
 '''
     (js_dir / 'app.js').write_text(js_content)
+    
+    # JavaScript spécifique à la page
+    page_js_content = f'''// JavaScript spécifique pour la page {display_name}
+class {app_name.replace('_', '').title()}Page {{
+    constructor() {{
+        this.init();
+    }}
+    
+    init() {{
+        console.log('{display_name} page initialized');
+        this.setupEventListeners();
+        this.loadInitialData();
+        this.setupAnimations();
+    }}
+    
+    setupEventListeners() {{
+        // Gestionnaire pour les boutons d'action
+        const actionButtons = document.querySelectorAll('.{app_name}-btn-primary');
+        actionButtons.forEach(button => {{
+            button.addEventListener('click', (e) => {{
+                this.handleActionClick(e);
+            }});
+        }});
+        
+        // Gestionnaire pour les cartes d'items
+        const itemCards = document.querySelectorAll('.{app_name}-item-card');
+        itemCards.forEach(card => {{
+            card.addEventListener('click', (e) => {{
+                this.handleCardClick(e);
+            }});
+        }});
+        
+        // Gestionnaire pour la recherche
+        const searchInput = document.querySelector('#{app_name}-search');
+        if (searchInput) {{
+            searchInput.addEventListener('input', (e) => {{
+                this.handleSearch(e.target.value);
+            }});
+        }}
+    }}
+    
+    async loadInitialData() {{
+        try {{
+            const data = await {app_name.replace('_', '').title()}API.getItems();
+            if (data) {{
+                this.renderItems(data.items);
+            }}
+        }} catch (error) {{
+            console.error('Error loading initial data:', error);
+        }}
+    }}
+    
+    renderItems(items) {{
+        const container = document.querySelector('.{app_name}-item-grid');
+        if (!container) return;
+        
+        if (items.length === 0) {{
+            this.showEmptyState();
+            return;
+        }}
+        
+        container.innerHTML = items.map(item => `
+            <div class="{app_name}-item-card {app_name}-animate-in" data-item-id="${{item.id}}">
+                <h5>${{item.title}}</h5>
+                <p>${{item.description || 'Aucune description'}}</p>
+                <small class="text-muted">
+                    Créé le ${{new Date(item.created_at).toLocaleDateString('fr-FR')}}
+                </small>
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-primary" onclick="{app_name}Page.editItem(${{item.id}})">
+                        <i class="bi bi-pencil"></i> Modifier
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="{app_name}Page.deleteItem(${{item.id}})">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }}
+    
+    showEmptyState() {{
+        const container = document.querySelector('.{app_name}-item-grid');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="{app_name}-empty-state">
+                <div class="{app_name}-empty-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h3>Aucun item</h3>
+                <p>Commencez par créer votre premier item.</p>
+                <button class="{app_name}-btn-primary" onclick="{app_name}Page.createItem()">
+                    <i class="bi bi-plus"></i> Créer le premier item
+                </button>
+            </div>
+        `;
+    }}
+    
+    setupAnimations() {{
+        // Observer pour les animations d'apparition
+        const observer = new IntersectionObserver((entries) => {{
+            entries.forEach(entry => {{
+                if (entry.isIntersecting) {{
+                    entry.target.classList.add('{app_name}-animate-in');
+                }}
+            }});
+        }}, {{ threshold: 0.1 }});
+        
+        // Observer tous les éléments avec la classe d'animation
+        const animateElements = document.querySelectorAll('.{app_name}-item-card');
+        animateElements.forEach(el => observer.observe(el));
+    }}
+    
+    handleActionClick(e) {{
+        const action = e.target.dataset.action;
+        switch (action) {{
+            case 'create':
+                this.createItem();
+                break;
+            case 'refresh':
+                this.loadInitialData();
+                break;
+            default:
+                console.log('Action clicked:', action);
+        }}
+    }}
+    
+    handleCardClick(e) {{
+        const card = e.target.closest('.{app_name}-item-card');
+        if (!card) return;
+        
+        const itemId = card.dataset.itemId;
+        console.log('Card clicked, item ID:', itemId);
+        // Ajouter logique spécifique ici
+    }}
+    
+    handleSearch(query) {{
+        const cards = document.querySelectorAll('.{app_name}-item-card');
+        cards.forEach(card => {{
+            const title = card.querySelector('h5').textContent.toLowerCase();
+            const description = card.querySelector('p').textContent.toLowerCase();
+            const matches = title.includes(query.toLowerCase()) || description.includes(query.toLowerCase());
+            
+            card.style.display = matches ? 'block' : 'none';
+        }});
+    }}
+    
+    static async createItem() {{
+        // Redirect to create page or open modal
+        window.location.href = '/{app_name.replace('_', '-')}/create/';
+    }}
+    
+    static async editItem(id) {{
+        // Redirect to edit page or open modal
+        window.location.href = `/{app_name.replace('_', '-')}/edit/${{id}}/`;
+    }}
+    
+    static async deleteItem(id) {{
+        if (!confirm('Êtes-vous sûr de vouloir supprimer cet item ?')) {{
+            return;
+        }}
+        
+        const success = await {app_name.replace('_', '').title()}API.deleteItem(id);
+        if (success) {{
+            // Refresh the page or remove the item from DOM
+            window.location.reload();
+        }} else {{
+            alert('Erreur lors de la suppression');
+        }}
+    }}
+}}
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {{
+    if (document.querySelector('.{app_name}-page')) {{
+        window.{app_name}Page = new {app_name.replace('_', '').title()}Page();
+    }}
+}});
+'''
+    (js_dir / f'{app_name}_page.js').write_text(page_js_content)
     print(f"✅ Fichiers static créés")
+    
+    # 10. Créer __manifest__.py
+    create_manifest(app_dir, app_name, display_name, category)
+    
+    # 11. Créer urls.py
+    create_urls_file(app_dir, app_name)
+    
+    # 12. Synchroniser les apps et URLs automatiquement
+    sync_app_to_system(app_name)
     
     print(f"🎯 App {app_name} créée avec succès!")
     print()
     print("📁 Structure créée:")
+    print(f"   ├── __manifest__.py (configuration complète)")
     print(f"   ├── apps.py")
     print(f"   ├── models.py (avec {app_name.replace('_', '').title()}Item)")
     print(f"   ├── views.py (vues complètes + API)")
     print(f"   ├── forms.py")
     print(f"   ├── admin.py") 
     print(f"   ├── tests.py")
+    print(f"   ├── urls.py (routage automatique)")
     print(f"   ├── templates/{app_name}/")
     print(f"   └── static/{app_name}/")
+    print(f"        ├── css/style.css (styles généraux)")
+    print(f"        ├── css/{app_name}_page.css (styles page)")
+    print(f"        ├── js/app.js (JavaScript général + API)")
+    print(f"        └── js/{app_name}_page.js (JavaScript page)")
     print()
+    
+    # Add app to dashboard for all users
+    add_app_to_all_dashboards(app_name, display_name)
+    
     return True
+
+
+def create_manifest(app_dir, app_name, display_name, category):
+    """
+    Crée le fichier __manifest__.py pour l'app.
+    """
+    manifest_content = f'''"""
+Manifest for {display_name} app
+Auto-generated by create_complete_app.py
+"""
+
+__manifest__ = {{
+    # Basic Information
+    'name': '{app_name}',
+    'display_name': '{display_name}',
+    'version': '1.0.0',
+    'category': '{category}',
+    'author': 'Linguify',
+    'description': 'Application {display_name} pour gérer et organiser vos données.',
+    'summary': '{display_name} - Gérez vos éléments efficacement',
+    
+    # App Configuration
+    'application': True,  # This is a user application (visible in App Store)
+    'installable': True,  # Ready for production use
+    'auto_install': False,  # Don't install automatically
+    'sequence': 100,  # Display order
+    
+    # Dependencies
+    'depends': [
+        'base',
+        'authentication',
+    ],
+    
+    # Data files and assets
+    'data': [
+        # Add any default data files here
+    ],
+    
+    # Frontend components
+    'frontend_components': {{
+        'icon': 'bi-app',  # Bootstrap icon
+        'color': '#4f46e5',  # Primary color
+        'routes': {{
+            'home': '/{app_name.replace('_', '-')}/',
+            'create': '/{app_name.replace('_', '-')}/create/',
+            'api': '/{app_name.replace('_', '-')}/api/',
+        }},
+        'menu_items': [
+            {{
+                'name': 'home',
+                'label': 'Accueil',
+                'url': '/{app_name.replace('_', '-')}/',
+                'icon': 'bi-house'
+            }},
+            {{
+                'name': 'create',
+                'label': 'Nouveau',
+                'url': '/{app_name.replace('_', '-')}/create/',
+                'icon': 'bi-plus'
+            }}
+        ]
+    }},
+    
+    # Features and capabilities
+    'features': [
+        'crud_operations',
+        'user_data',
+        'responsive_design',
+        'api_endpoints',
+        'pagination',
+        'search'
+    ],
+    
+    # Technical information
+    'django_app': True,
+    'has_models': True,
+    'has_views': True,
+    'has_templates': True,
+    'has_static': True,
+    'has_api': True,
+    'has_tests': True,
+}}
+'''
+    
+    (app_dir / '__manifest__.py').write_text(manifest_content)
+    print(f"✅ __manifest__.py créé")
+
+
+def create_urls_file(app_dir, app_name):
+    """
+    Crée le fichier urls.py pour l'app.
+    """
+    urls_content = f'''"""
+URLs configuration for {app_name} app.
+"""
+from django.urls import path
+from . import views
+
+app_name = '{app_name}'
+
+urlpatterns = [
+    # Main pages
+    path('', views.{app_name}_home, name='home'),
+    path('create/', views.create_item, name='create_item'),
+    path('edit/<int:item_id>/', views.edit_item, name='edit_item'),
+    path('delete/<int:item_id>/', views.delete_item, name='delete_item'),
+    
+    # API endpoints
+    path('api/items/', views.api_items, name='api_items'),
+]
+'''
+    
+    (app_dir / 'urls.py').write_text(urls_content)
+    print(f"✅ urls.py créé")
+
+
+def sync_app_to_system(app_name):
+    """
+    Synchronise l'app avec le système (manifest, URLs, base de données).
+    """
+    try:
+        print(f"🔄 Synchronisation de l'app {app_name} avec le système...")
+        
+        # Import des services nécessaires
+        from app_manager.services.auto_manifest_service import AutoManifestService
+        from app_manager.services.auto_url_service import AutoURLService
+        from app_manager.models import App
+        
+        # 1. Synchroniser les manifests
+        print("   📝 Synchronisation des manifests...")
+        manifest_result = AutoManifestService.sync_all_apps()
+        
+        # 2. Synchroniser les URLs
+        print("   🔗 Synchronisation des URLs...")
+        url_result = AutoURLService.sync_all_urls()
+        
+        # 3. Découvrir et synchroniser les apps
+        print("   🗃️  Synchronisation de la base de données...")
+        discovery_result = App.sync_apps()
+        
+        print(f"   ✅ Apps découvertes: {discovery_result.get('total_discovered', 0)}")
+        print(f"   ✅ Apps créées: {discovery_result.get('newly_created', 0)}")
+        print(f"   ✅ Apps mises à jour: {discovery_result.get('updated', 0)}")
+        
+        # Vérifier que l'app a été créée
+        try:
+            app = App.objects.get(code=app_name)
+            print(f"   🎯 App {app.display_name} synchronisée avec succès!")
+            return app
+        except App.DoesNotExist:
+            print(f"   ⚠️  App {app_name} pas encore visible dans la base de données")
+            print("      Cela peut prendre quelques secondes...")
+            return None
+            
+    except Exception as e:
+        print(f"   ❌ Erreur lors de la synchronisation: {e}")
+        print("      Vous pourrez exécuter manuellement: poetry run python manage.py setup_auto_apps")
+        return None
+
+
+def add_app_to_all_dashboards(app_code, display_name):
+    """
+    Ajoute la nouvelle app au dashboard de tous les utilisateurs existants.
+    """
+    try:
+        from django.contrib.auth import get_user_model
+        from app_manager.models import App, UserAppSettings
+        
+        User = get_user_model()
+        
+        print(f"🔄 Ajout de l'app au dashboard des utilisateurs...")
+        
+        # Vérifier si l'app existe dans la base de données
+        # (elle sera créée automatiquement par setup_auto_apps)
+        try:
+            app = App.objects.get(code=app_code)
+            print(f"✅ App trouvée dans la base: {app.display_name}")
+        except App.DoesNotExist:
+            print(f"⚠️  App pas encore synchronisée dans la base de données.")
+            print(f"   Elle sera automatiquement ajoutée après: poetry run python manage.py setup_auto_apps")
+            return
+        
+        # Obtenir tous les utilisateurs
+        users = User.objects.all()
+        users_count = users.count()
+        
+        if users_count == 0:
+            print("ℹ️  Aucun utilisateur trouvé - l'app sera automatiquement disponible pour les nouveaux utilisateurs")
+            return
+        
+        added_count = 0
+        
+        # Ajouter l'app au dashboard de chaque utilisateur
+        for user in users:
+            user_settings, created = UserAppSettings.objects.get_or_create(user=user)
+            
+            # Vérifier si l'app n'est pas déjà activée
+            if not user_settings.enabled_apps.filter(code=app_code).exists():
+                user_settings.enabled_apps.add(app)
+                added_count += 1
+                print(f"   ✅ Ajoutée au dashboard de {user.username}")
+            else:
+                print(f"   ℹ️  Déjà dans le dashboard de {user.username}")
+        
+        print(f"🎉 App ajoutée au dashboard de {added_count}/{users_count} utilisateurs!")
+        
+    except Exception as e:
+        print(f"❌ Erreur lors de l'ajout au dashboard: {e}")
+        print("   L'app sera disponible dans l'App Store pour installation manuelle.")
 
 
 if __name__ == '__main__':
@@ -585,7 +1164,22 @@ if __name__ == '__main__':
     category = sys.argv[3] if len(sys.argv) > 3 else 'productivity'
     
     if create_complete_app(app_name, display_name, category):
-        print("✅ Maintenant exécutez: poetry run python manage.py setup_auto_apps")
-        print("🎯 Votre app apparaîtra automatiquement dans l'App Store!")
+        print()
+        print("🎉 APP COMPLÈTEMENT CONFIGURÉE!")
+        print("="*50)
+        print("✅ App créée avec tous les fichiers")
+        print("✅ Manifest généré automatiquement")
+        print("✅ URLs configurées automatiquement")
+        print("✅ App synchronisée avec la base de données")
+        print("✅ App ajoutée au dashboard des utilisateurs")
+        print()
+        print("🌐 Votre app est maintenant disponible à:")
+        print(f"   👉 http://localhost:8000/{app_name.replace('_', '-')}/")
+        print()
+        print("📱 Elle apparaît aussi dans:")
+        print("   👉 App Store (pour installation)")
+        print("   👉 Dashboard (déjà installée)")
+        print()
+        print("🚀 Prêt à développer!")
     else:
         sys.exit(1)
