@@ -20,7 +20,7 @@
     
     <!-- App Main Content -->
     <div class="app-main-layout">
-        <div class="d-flex h-100">
+        <div class="d-flex" style="height: 100%;">
             <!-- Sidebar -->
             <div id="chatSidebar" class="bg-white border-end" style="width: 320px; flex: 0 0 320px; overflow-y: auto;">
                 <!-- Conversations list -->
@@ -47,9 +47,9 @@
             </div>
 
             <!-- Chat Area -->
-            <div class="flex-fill d-flex flex-column bg-white chat-main">
+            <div class="flex-fill d-flex flex-column bg-white chat-main" style="height: calc(100vh - 60px); max-height: calc(100vh - 60px); min-height: 0;">
                 <!-- Header de conversation -->
-                <div class="chat-header" id="chat-header" style="display: none;">
+                <div class="chat-header" id="chat-header" style="display: none; flex: 0 0 auto;">
                     <div class="d-flex align-items-center justify-content-between w-100">
                         <div class="d-flex align-items-center">
                             <div class="conversation-avatar me-3" id="current-participant-avatar">?</div>
@@ -75,7 +75,7 @@
                 </div>
                 
                 <!-- Welcome state -->
-                <div id="no-conversation" class="d-flex flex-column align-items-center justify-content-center h-100 text-center p-4">
+                <div id="no-conversation" class="d-flex flex-column align-items-center justify-content-center text-center p-4" style="height: 100%;">
                     <i class="bi bi-chat-dots mb-4" style="font-size: 4rem; color: #6b7280;"></i>
                     <h3 class="mb-3">Bienvenue dans votre espace de messagerie</h3>
                     <p class="text-muted mb-4">
@@ -94,14 +94,14 @@
                 </div>
                 
                 <!-- Conversation Details -->
-                <div id="conversation-area" style="display: none;" class="d-flex flex-column h-100">
+                <div id="conversation-area" style="display: none; height: 100%; min-height: 0;" class="d-flex flex-column">
                     <!-- Messages Area -->
-                    <div class="messages-area flex-grow-1 p-3" id="messages-area" style="overflow-y: auto;">
+                    <div class="messages-area flex-grow-1 p-3" id="messages-area" style="overflow-y: auto; height: 0; min-height: 0;">
                         <!-- Messages chargés dynamiquement -->
                     </div>
                     
                     <!-- Message Input Area -->
-                    <div class="message-input-area border-top bg-white p-3">
+                    <div class="message-input-area border-top bg-white p-3" style="flex: 0 0 auto;">
                         <div class="d-flex gap-3">
                             <input type="text" 
                                    class="form-control" 
@@ -188,18 +188,23 @@ function initializeChatInterface() {
         console.log(`📝 ${conversationsList.children.length} conversations trouvées`);
     }
     
-    // S'assurer que no-conversation est visible par défaut
+    // Ne pas forcer l'affichage du welcome state - laisser chat-page.js gérer
+    // Seulement s'assurer qu'il est visible si aucune conversation n'est active
     const noConversation = document.getElementById('no-conversation');
-    if (noConversation) {
-        noConversation.style.display = 'flex';
-        console.log('✅ Welcome state affiché');
-    }
-    
-    // S'assurer que conversation-area est masquée par défaut
     const conversationArea = document.getElementById('conversation-area');
-    if (conversationArea) {
-        conversationArea.style.display = 'none';
-        console.log('✅ Conversation area masquée');
+    
+    // Seulement afficher le welcome state si aucune conversation n'est déjà active
+    if (conversationArea && conversationArea.style.display !== 'flex') {
+        if (noConversation) {
+            noConversation.style.display = 'flex';
+            console.log('✅ Welcome state affiché par défaut');
+        }
+        if (conversationArea) {
+            conversationArea.style.display = 'none';
+            console.log('✅ Conversation area masquée par défaut');
+        }
+    } else {
+        console.log('✅ Conversation déjà active, ne pas afficher le welcome state');
     }
 }
 
