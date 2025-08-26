@@ -101,11 +101,11 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           DJANGO_ENV: 'test'
-          DB_NAME: 'test_db_linguify'
-          DB_USER: 'postgres'
-          DB_PASSWORD: 'postgres'
-          DB_HOST: 'localhost'
-          DB_PORT: '5432'
+          TEST_DB_NAME: 'test_db_linguify'
+          TEST_DB_USER: 'postgres'
+          TEST_DB_PASSWORD: 'postgres'
+          TEST_DB_HOST: 'localhost'
+          TEST_DB_PORT: '5432'
 
       - name: Run main tests
         run: |
@@ -116,11 +116,11 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           DJANGO_ENV: 'test'
-          DB_NAME: 'test_db_linguify'
-          DB_USER: 'postgres'
-          DB_PASSWORD: 'postgres'
-          DB_HOST: 'localhost'
-          DB_PORT: '5432'
+          TEST_DB_NAME: 'test_db_linguify'
+          TEST_DB_USER: 'postgres'
+          TEST_DB_PASSWORD: 'postgres'
+          TEST_DB_HOST: 'localhost'
+          TEST_DB_PORT: '5432'
       
       - name: Run additional backend tests
         run: |
@@ -130,11 +130,11 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: 'core.settings_test'
           DJANGO_ENV: 'test'
-          DB_NAME: 'test_db_linguify'
-          DB_USER: 'postgres'
-          DB_PASSWORD: 'postgres'
-          DB_HOST: 'localhost'
-          DB_PORT: '5432'
+          TEST_DB_NAME: 'test_db_linguify'
+          TEST_DB_USER: 'postgres'
+          TEST_DB_PASSWORD: 'postgres'
+          TEST_DB_HOST: 'localhost'
+          TEST_DB_PORT: '5432'
       
       # Pas de génération de rapport pour simplifier la configuration CI
 

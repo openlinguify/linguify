@@ -85,12 +85,12 @@ jobs:
           cp .env.example .env
           # Convert to Unix line endings
           sed -i 's/\r$//' .env
-          # Update DB configuration for CI
-          sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env
-          sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env
-          sed -i 's/DB_HOST=.*/DB_HOST=localhost/g' .env
-          sed -i 's/DB_PORT=.*/DB_PORT=5432/g' .env
+          # Update DB configuration for CI (use TEST_DB variables)
+          sed -i 's/TEST_DB_NAME=.*/TEST_DB_NAME=test_db_linguify/g' .env
+          sed -i 's/TEST_DB_USER=.*/TEST_DB_USER=postgres/g' .env
+          sed -i 's/TEST_DB_PASSWORD=.*/TEST_DB_PASSWORD=postgres/g' .env
+          sed -i 's/TEST_DB_HOST=.*/TEST_DB_HOST=localhost/g' .env
+          sed -i 's/TEST_DB_PORT=.*/TEST_DB_PORT=5432/g' .env
           sed -i 's/DEBUG=.*/DEBUG=True/g' .env
           sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env
           sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env
@@ -235,12 +235,12 @@ jobs:
           cp .env.example .env
           # Convert to Unix line endings
           sed -i 's/\r$//' .env
-          # Update DB configuration for CI
-          sed -i 's/DB_NAME=.*/DB_NAME=test_db_linguify/g' .env
-          sed -i 's/DB_USER=.*/DB_USER=postgres/g' .env
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/g' .env
-          sed -i 's/DB_HOST=.*/DB_HOST=localhost/g' .env
-          sed -i 's/DB_PORT=.*/DB_PORT=5432/g' .env
+          # Update DB configuration for CI (use TEST_DB variables)
+          sed -i 's/TEST_DB_NAME=.*/TEST_DB_NAME=test_db_linguify/g' .env
+          sed -i 's/TEST_DB_USER=.*/TEST_DB_USER=postgres/g' .env
+          sed -i 's/TEST_DB_PASSWORD=.*/TEST_DB_PASSWORD=postgres/g' .env
+          sed -i 's/TEST_DB_HOST=.*/TEST_DB_HOST=localhost/g' .env
+          sed -i 's/TEST_DB_PORT=.*/TEST_DB_PORT=5432/g' .env
           sed -i 's/DEBUG=.*/DEBUG=True/g' .env
           sed -i 's/SECRET_KEY=.*/SECRET_KEY=test_secret_key_for_ci_environment/g' .env
           sed -i 's/REDIS_URL=.*/REDIS_URL=redis:\/\/localhost:6379\/1/g' .env

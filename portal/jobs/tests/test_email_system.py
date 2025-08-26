@@ -71,8 +71,8 @@ startxref
         """Test that confirmation email is sent to candidate"""
         application = JobApplication.objects.create(
             position=self.position,
-            first_name="Louis-Philippe",
-            last_name="Lalou",
+            first_name="Jesus",
+            last_name="Cherve",
             email="test.candidate@example.com",
             phone="123456789",
             cover_letter="I am very interested in this position",
@@ -101,7 +101,7 @@ startxref
         self.assertEqual(email.reply_to, ["linguify.info@gmail.com"])
         
         # Check content
-        self.assertIn("Louis-Philippe", email.body)
+        self.assertIn("Jesus", email.body)
         self.assertIn("Senior Python Developer", email.body)
         self.assertIn("Engineering", email.body)
         self.assertIn("Paris, France", email.body)
