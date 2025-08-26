@@ -3,94 +3,51 @@
 
 {% block title %}Chat - Linguify{% endblock %}
 
-{% block body_class %}chat-page{% endblock %}
+{% block body_class %}app-body-layout{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
+<link rel="stylesheet" href="{% static 'css/tailwind-global.css' %}">
+<link rel="stylesheet" href="{% static 'css/tailwind-modals.css' %}">
 <link rel="stylesheet" href="{% static 'chat/css/messenger.css' %}">
-<link rel="stylesheet" href="{% static 'chat/css/chat_page.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="community-page">
-    <div class="container-fluid">
-        <!-- Header -->
-        <div class="community-header">
-            <div class="container">
-                <h1 class="h3 mb-3">
-                    <i class="bi bi-chat-dots me-2"></i>
-                    <span class="gradient-text">Messages</span>
-                </h1>
+<div class="app-container-layout">
+    <!-- App Header avec Navbar -->
+    <div class="app-header-layout">
+        {% include 'chat/components/navbar.html' %}
+    </div>
+    
+    <!-- App Main Content -->
+    <div class="app-main-layout">
+        <div class="app-flex-container">
+            <!-- Sidebar -->
+            <div id="chatSidebar" class="app-sidebar-layout">
+                <!-- Conversations list -->
+                <ul id="conversationsList" class="list-unstyled"></ul>
                 
-                <!-- Navigation -->
-                <div class="community-nav">
-                    <a href="{% url 'community:main' %}" class="nav-button">
-                        <i class="bi bi-house me-1"></i>
-                        {% trans "Overview" %}
-                    </a>
-                    <a href="{% url 'community:discover' %}" class="nav-button">
-                        <i class="bi bi-search me-1"></i>
-                        {% trans "Discover" %}
-                    </a>
-                    <a href="{% url 'community:friends' %}" class="nav-button">
-                        <i class="bi bi-person-heart me-1"></i>
-                        {% trans "Friends" %}
-                    </a>
-                    <a href="{% url 'community:groups' %}" class="nav-button">
-                        <i class="bi bi-people me-1"></i>
-                        {% trans "Groups" %}
-                    </a>
-                    <a href="#" class="nav-button active">
-                        <i class="bi bi-chat-dots me-1"></i>
-                        Messages
-                    </a>
+                <!-- Empty state -->
+                <div id="conversationsEmpty" class="text-center p-4" style="display: none;">
+                    <i class="bi bi-chat-dots mb-3" style="font-size: 3rem; color: #6b7280;"></i>
+                    <h5 class="mb-3">Aucune conversation</h5>
+                    <p class="text-muted mb-4">Commencez une nouvelle conversation pour échanger avec vos contacts</p>
+                    <button class="btn btn-primary btn-sm" onclick="startNewConversation()">
+                        <i class="bi bi-plus-lg me-2"></i>
+                        Nouvelle conversation
+                    </button>
                 </div>
-            </div>
-        </div>
-
-        <div class="chat-page-container">
-            <div class="row h-100 g-0">
-                <!-- Sidebar avec liste des conversations -->
-                <div class="col-md-4 col-lg-3 h-100">
-                    <div class="chat-sidebar" id="chat-sidebar">
-                        <!-- Header sidebar -->
-                        <div class="conversations-header">
-                            <h5 class="mb-3">
-                                <i class="bi bi-chat-dots-fill me-2"></i>
-                                Conversations
-                            </h5>
-                            
-                            <!-- Bouton nouvelle conversation -->
-                            <button class="btn-simple new-conversation-btn" id="new-conversation-btn">
-                                <i class="bi bi-plus-circle me-1"></i>
-                                Nouvelle conversation
-                            </button>
-                            
-                            <!-- Recherche -->
-                            <div class="search-conversations mt-3">
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-search"></i>
-                                    </span>
-                                    <input type="text" class="form-control" placeholder="Rechercher..." id="search-conversations">
-                                </div>
-                            </div>
-                        </div>
                 
-                <!-- Liste des conversations -->
-                <div class="conversations-list" id="conversations-list">
-                    <div class="text-center p-4">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Chargement...</span>
-                        </div>
+                <!-- Loading state -->
+                <div id="conversationsLoading" class="text-center p-4">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Chargement...</span>
                     </div>
+                    <p class="mt-2 text-muted">Chargement des conversations...</p>
                 </div>
             </div>
-        </div>
-        
-        <!-- Zone principale de chat -->
-        <div class="col-md-8 col-lg-9 h-100">
-            <div class="chat-main">
+
+            <!-- Chat Area -->
+            <div class="app-content-layout chat-main">
                 <!-- Header de conversation -->
                 <div class="chat-header" id="chat-header" style="display: none;">
                     <div class="d-flex align-items-center justify-content-between w-100">
@@ -117,28 +74,43 @@
                     </div>
                 </div>
                 
-                <!-- Zone sans conversation sélectionnée -->
-                <div class="no-conversation" id="no-conversation">
-                    <i class="bi bi-chat-dots" style="font-size: 4rem; margin-bottom: 1rem;"></i>
-                    <h4>Sélectionnez une conversation</h4>
-                    <p class="text-muted">Choisissez une conversation existante ou créez-en une nouvelle</p>
+                <!-- Welcome state -->
+                <div id="welcomeState" class="d-flex flex-column align-items-center justify-content-center h-100 text-center p-4">
+                    <i class="bi bi-chat-dots mb-4" style="font-size: 4rem; color: #6b7280;"></i>
+                    <h3 class="mb-3">Bienvenue dans votre espace de messagerie</h3>
+                    <p class="text-muted mb-4">
+                        Sélectionnez une conversation dans la liste ou commencez une nouvelle discussion
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 justify-content-center">
+                        <button class="btn btn-primary" onclick="startNewConversation()">
+                            <i class="bi bi-plus-lg me-2"></i>
+                            Nouvelle conversation
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="showContactsView()">
+                            <i class="bi bi-person-lines-fill me-2"></i>
+                            Voir mes contacts
+                        </button>
+                    </div>
                 </div>
                 
-                <!-- Zone de conversation active -->
-                <div class="conversation-area" id="conversation-area" style="display: none;">
-                    <!-- Messages -->
-                    <div class="messages-area" id="messages-area">
+                <!-- Conversation Details -->
+                <div id="conversationDetails" style="display: none;" class="d-flex flex-column h-100">
+                    <!-- Messages Area -->
+                    <div class="messages-area flex-grow-1 p-3" id="messages-area" style="overflow-y: auto;">
                         <!-- Messages chargés dynamiquement -->
                     </div>
                     
-                    <!-- Zone de saisie -->
-                    <div class="message-input-area">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="💭 Écrivez votre message..." id="message-input" autocomplete="off">
+                    <!-- Message Input Area -->
+                    <div class="message-input-area border-top bg-white p-3">
+                        <div class="d-flex gap-3">
+                            <input type="text" 
+                                   class="form-control" 
+                                   placeholder="💭 Écrivez votre message..." 
+                                   id="message-input" 
+                                   autocomplete="off">
                             <button class="btn btn-primary" type="button" id="send-message">
                                 <i class="bi bi-send-fill"></i>
                             </button>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -148,7 +120,8 @@
 </div>
 
 <!-- Bouton mobile pour ouvrir la sidebar -->
-<button class="mobile-chat-toggle d-md-none" id="mobile-chat-toggle">
+<button class="btn btn-primary position-fixed d-md-none" id="mobile-chat-toggle" 
+        style="bottom: 1rem; right: 1rem; z-index: 1050;">
     <i class="bi bi-list"></i>
 </button>
 
