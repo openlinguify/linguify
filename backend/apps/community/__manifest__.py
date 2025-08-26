@@ -29,6 +29,7 @@ Usage:
         'authentication',  # Core authentication system
         'notification',    # Notification system
         'app_manager',     # App management system
+        'chat',
     ],
     'installable': True,
     'auto_install': True,
