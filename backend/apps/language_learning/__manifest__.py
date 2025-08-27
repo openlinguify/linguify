@@ -32,7 +32,7 @@ __manifest__ = {
     
     # Frontend components
     'frontend_components': {
-        'icon': 'bi-translate',  # Bootstrap icon pour les langues
+        'static_icon': '/static/language_learning/description/icon.png',
         'color': '#10b981',  # Vert émeraude pour l'apprentissage
         'routes': {
             'home': '/language-learning/',

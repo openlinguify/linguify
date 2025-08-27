@@ -1,0 +1,159 @@
+<!-- Interface unifiee Linguify - Language Learning -->
+<div class="navbar-linguify">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="navbar-section">
+        <!-- Bouton toggle sidebar mobile -->
+        <button id="toggleSidebar" class="btn-navbar-outline d-md-none">
+            <i class="bi bi-list"></i>
+        </button>
+        
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <a href="{% url 'language_learning:home' %}" 
+               class="nav-tab {% if not view_type %}active{% endif %}">
+                <i class="bi bi-house"></i>
+                Accueil
+            </a>
+            <a href="#" 
+               class="nav-tab {% if view_type == 'lessons' %}active{% endif %}">
+                <i class="bi bi-book"></i>
+                Lecons
+            </a>
+            <a href="#" 
+               class="nav-tab {% if view_type == 'progress' %}active{% endif %}">
+                <i class="bi bi-graph-up"></i>
+                Progres
+            </a>
+            <a href="#" 
+               class="nav-tab {% if view_type == 'practice' %}active{% endif %}">
+                <i class="bi bi-arrow-repeat"></i>
+                Pratique
+            </a>
+        </div>
+        
+        <!-- Refresh -->
+        <button id="refreshLanguageLearning" class="btn-navbar btn-navbar-outline" title="Actualiser les donnees">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-xl-inline">Actualiser</span>
+        </button>
+    </div>
+    
+    <!-- Droite: Actions et filtres contextuels -->
+    <div class="navbar-section-right">
+        {% if view_type == 'progress' %}
+        <!-- Filtres pour la page Progres -->
+        <select id="progressTimeRange" class="form-select-linguify" style="width: 140px; min-width: 120px;">
+            <option value="7">7 derniers jours</option>
+            <option value="30" selected>30 derniers jours</option>
+            <option value="90">3 derniers mois</option>
+            <option value="365">Cette annee</option>
+            <option value="all">Toute la periode</option>
+        </select>
+        
+        <button id="exportProgress" class="btn-navbar btn-navbar-outline" title="Exporter le progres">
+            <i class="bi bi-download"></i>
+            <span class="d-none d-lg-inline">Exporter</span>
+        </button>
+        
+        {% elif view_type == 'lessons' %}
+        <!-- Filtres pour les lecons -->
+        <select id="languageFilter" class="form-select-linguify" style="width: 140px; min-width: 120px;">
+            <option value="">Toutes les langues</option>
+            {% if user_languages %}
+                {% for lang in user_languages %}
+                <option value="{{ lang.language.code }}">{{ lang.language.name }}</option>
+                {% endfor %}
+            {% endif %}
+        </select>
+        
+        <select id="levelFilter" class="form-select-linguify" style="width: 120px; min-width: 100px;">
+            <option value="">Tous niveaux</option>
+            <option value="beginner">Debutant</option>
+            <option value="elementary">Elementaire</option>
+            <option value="intermediate">Intermediaire</option>
+            <option value="upper_intermediate">Intermediaire+</option>
+            <option value="advanced">Avance</option>
+            <option value="proficient">Expert</option>
+        </select>
+        
+        {% else %}
+        <!-- Filtres pour la page d'accueil -->
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher une langue..." style="width: 160px; min-width: 120px;">
+        
+        <!-- Selecteur de langue cible -->
+        <select id="targetLanguageFilter" class="form-select-linguify" style="width: 140px; min-width: 120px;">
+            <option value="">Toutes les langues</option>
+            {% for code, name in language_choices %}
+            <option value="{{ code }}" {% if user.target_language == code %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+        
+        <!-- Niveau de difficulte -->
+        <div class="dropdown">
+            <button id="difficultyFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="difficultyFilterText">Tous niveaux</span>
+            </button>
+            <ul id="difficultyFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectDifficultyFilter('', 'Tous niveaux')">Tous niveaux</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectDifficultyFilter('easy', 'Facile')">Facile</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectDifficultyFilter('normal', 'Normal')">Normal</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectDifficultyFilter('hard', 'Difficile')">Difficile</a></li>
+            </ul>
+        </div>
+        
+        <!-- Actions -->
+        <div id="languageLearningActions" class="navbar-actions-group">
+            <button id="startNewLanguage" class="btn-navbar btn-navbar-outline" title="Commencer une nouvelle langue">
+                <i class="bi bi-plus-circle"></i>
+                <span class="d-none d-xl-inline">Nouvelle langue</span>
+            </button>
+            
+            <button id="practiceSession" class="btn-navbar btn-navbar-primary" title="Commencer une session de pratique">
+                <i class="bi bi-play-fill"></i>
+                <span class="d-none d-xl-inline">Pratiquer</span>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript pour les interactions de la navbar -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fonction de rafraichissement
+    document.getElementById('refreshLanguageLearning')?.addEventListener('click', function() {
+        location.reload();
+    });
+    
+    // Selecteur de difficulte
+    window.selectDifficultyFilter = function(value, text) {
+        document.getElementById('difficultyFilterText').textContent = text;
+        // Ici, on peut ajouter la logique de filtrage
+        filterByDifficulty(value);
+    };
+    
+    // Filtrage par difficulte
+    function filterByDifficulty(difficulty) {
+        // Logique de filtrage a implementer selon les besoins
+        console.log('Filtering by difficulty:', difficulty);
+    }
+    
+    // Demarrer une nouvelle langue
+    document.getElementById('startNewLanguage')?.addEventListener('click', function() {
+        // Logique pour commencer l'apprentissage d'une nouvelle langue
+        showLanguageSelectionModal();
+    });
+    
+    // Session de pratique
+    document.getElementById('practiceSession')?.addEventListener('click', function() {
+        // Rediriger vers une session de pratique
+        window.location.href = '{% url "language_learning:home" %}?practice=true';
+    });
+    
+    // Fonction pour afficher le modal de selection de langue
+    function showLanguageSelectionModal() {
+        // A implementer selon les besoins de l'interface
+        alert('Fonctionnalite de selection de langue a venir !');
+    }
+});
+</script>

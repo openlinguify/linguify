@@ -3,49 +3,14 @@
 
 {% block app_title %}Linguify Learn{% endblock %}
 
+{% block extra_css %}
+<!-- Tailwind CSS for modals and navbar components -->
+<link rel="stylesheet" href="{% static 'css/tailwind-modals.css' %}">
+{% endblock %}
+
 {% block content %}
-    <!-- Navigation spécifique à Linguify Learn -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom mb-4" style="margin-top: 56px;">
-        <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1 text-success">
-                <i class="bi bi-translate me-2"></i>Linguify Learn
-            </span>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#languageLearningNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="languageLearningNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'language_learning:home' %}">
-                            <i class="bi bi-globe me-1"></i>Mes Langues
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-book me-1"></i>Leçons
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-lightning me-1"></i>Pratique
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-bar-chart me-1"></i>Progression
-                        </a>
-                    </li>
-                </ul>
-                <div class="d-flex">
-                    <a href="{% url 'saas_web:dashboard' %}" class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-house me-1"></i>Dashboard
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Navigation unifiée Linguify -->
+    {% include "components/navbar.html" with user_languages=user_languages language_choices=language_choices %}
     
     <div class="container-fluid">
         <div class="row mb-4">

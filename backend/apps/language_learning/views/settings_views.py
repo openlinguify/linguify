@@ -20,7 +20,7 @@ from rest_framework.response import Response
 
 # App specific imports
 from app_manager.mixins import SettingsContextMixin
-from ..models import UserLanguage, Language
+from ..models import UserLanguage, Language, LanguageLearningSettings
 from ..serializers.settings_serializers import (
     LanguageLearningSettingsSerializer,
     ApplyLanguageLearningPresetSerializer,
@@ -50,41 +50,51 @@ class LanguageLearningSettingsView(View):
             # Check if it's an AJAX request for getting settings as JSON
             is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
             
-            # Get settings from session for language learning settings
-            session_key = f'language_learning_settings_{request.user.id}'
-            settings = request.session.get(session_key, {})
-            
-            if not settings:
-                # Return default language learning settings
-                settings = {
-                    # Paramètres généraux
-                    'preferred_study_time': '18:00',
+            # Get or create language learning settings from database
+            language_learning_settings, created = LanguageLearningSettings.objects.get_or_create(
+                user=request.user,
+                defaults={
+                    'preferred_study_time': timezone.datetime.strptime('18:00', '%H:%M').time(),
                     'daily_goal_minutes': 15,
                     'weekly_goal_days': 5,
-                    
-                    # Notifications
                     'reminder_enabled': True,
                     'reminder_frequency': 'daily',
                     'streak_notifications': True,
                     'achievement_notifications': True,
-                    
-                    # Difficulté
                     'auto_difficulty_adjustment': True,
                     'preferred_difficulty': 'adaptive',
-                    
-                    # Interface
                     'show_pronunciation_hints': True,
                     'enable_audio_playback': True,
                     'audio_playback_speed': 1.0,
                     'show_progress_animations': True,
-                    
-                    # Méthodes d'apprentissage
-                    'learning_methods': ['flashcards', 'vocabulary', 'listening'],
-                    
-                    # Langues
-                    'target_language': request.user.target_language or 'EN',
-                    'interface_language': 'fr',
+                    'font_size': 'medium'
                 }
+            )
+            
+            if created:
+                logger.info(f"Created new LanguageLearningSettings for user {request.user.username}")
+            
+            # Convert model to dict for template usage
+            settings = {
+                'preferred_study_time': language_learning_settings.preferred_study_time.strftime('%H:%M'),
+                'daily_goal_minutes': language_learning_settings.daily_goal_minutes,
+                'weekly_goal_days': language_learning_settings.weekly_goal_days,
+                'reminder_enabled': language_learning_settings.reminder_enabled,
+                'reminder_frequency': language_learning_settings.reminder_frequency,
+                'streak_notifications': language_learning_settings.streak_notifications,
+                'achievement_notifications': language_learning_settings.achievement_notifications,
+                'auto_difficulty_adjustment': language_learning_settings.auto_difficulty_adjustment,
+                'preferred_difficulty': language_learning_settings.preferred_difficulty,
+                'show_pronunciation_hints': language_learning_settings.show_pronunciation_hints,
+                'enable_audio_playback': language_learning_settings.enable_audio_playback,
+                'audio_playback_speed': language_learning_settings.audio_playback_speed,
+                'show_progress_animations': language_learning_settings.show_progress_animations,
+                'font_size': language_learning_settings.font_size,
+                'target_language': request.user.target_language or 'EN',
+                'interface_language': 'fr',
+                # Add some default learning methods for backward compatibility
+                'learning_methods': ['flashcards', 'vocabulary', 'listening'],
+            }
             
             # Récupérer les langues que l'utilisateur apprend actuellement
             user_languages = UserLanguage.objects.filter(
@@ -167,57 +177,65 @@ class LanguageLearningSettingsView(View):
             # Check if it's an AJAX request
             is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
             
-            # Parse form data
-            data = {
-                # Paramètres généraux
-                'preferred_study_time': request.POST.get('preferred_study_time', '18:00'),
-                'daily_goal_minutes': int(request.POST.get('daily_goal_minutes', '15')),
-                'weekly_goal_days': int(request.POST.get('weekly_goal_days', '5')),
-                
-                # Notifications
-                'reminder_enabled': request.POST.get('reminder_enabled') == 'on',
-                'reminder_frequency': request.POST.get('reminder_frequency', 'daily'),
-                'streak_notifications': request.POST.get('streak_notifications') == 'on',
-                'achievement_notifications': request.POST.get('achievement_notifications') == 'on',
-                
-                # Difficulté
-                'auto_difficulty_adjustment': request.POST.get('auto_difficulty_adjustment') == 'on',
-                'preferred_difficulty': request.POST.get('preferred_difficulty', 'adaptive'),
-                
-                # Interface
-                'show_pronunciation_hints': request.POST.get('show_pronunciation_hints') == 'on',
-                'enable_audio_playback': request.POST.get('enable_audio_playback') == 'on',
-                'audio_playback_speed': float(request.POST.get('audio_playback_speed', '1.0')),
-                'show_progress_animations': request.POST.get('show_progress_animations') == 'on',
-                
-                # Méthodes d'apprentissage (multiple selection)
-                'learning_methods': request.POST.getlist('learning_methods'),
-                
-                # Langues
-                'target_language': request.POST.get('target_language', request.user.target_language or 'EN'),
-                'interface_language': request.POST.get('interface_language', 'fr'),
-            }
+            # Parse form data with validation
+            try:
+                daily_goal_minutes = int(request.POST.get('daily_goal_minutes', '15'))
+                weekly_goal_days = int(request.POST.get('weekly_goal_days', '5'))
+                audio_playback_speed = float(request.POST.get('audio_playback_speed', '1.0'))
+            except (ValueError, TypeError):
+                raise ValueError("Valeurs numériques invalides dans les paramètres")
             
             # Validation des données
-            if data['daily_goal_minutes'] < 5 or data['daily_goal_minutes'] > 300:
+            if daily_goal_minutes < 5 or daily_goal_minutes > 300:
                 raise ValueError("L'objectif quotidien doit être entre 5 et 300 minutes")
             
-            if data['weekly_goal_days'] < 1 or data['weekly_goal_days'] > 7:
+            if weekly_goal_days < 1 or weekly_goal_days > 7:
                 raise ValueError("L'objectif hebdomadaire doit être entre 1 et 7 jours")
             
-            if not (0.5 <= data['audio_playback_speed'] <= 2.0):
+            if not (0.5 <= audio_playback_speed <= 2.0):
                 raise ValueError("La vitesse audio doit être entre 0.5 et 2.0")
             
-            # Mettre à jour la langue cible dans le profil utilisateur si différente
-            if data['target_language'] != request.user.target_language:
-                request.user.target_language = data['target_language']
-                request.user.save(update_fields=['target_language'])
-                logger.info(f"Updated target language for user {request.user.username}: {data['target_language']}")
+            # Get or create the settings model
+            language_learning_settings, created = LanguageLearningSettings.objects.get_or_create(
+                user=request.user
+            )
             
-            # Store validated language learning settings in session
-            session_key = f'language_learning_settings_{request.user.id}'
-            request.session[session_key] = data
-            logger.info(f"Language learning settings updated for user {request.user.id}")
+            # Update settings in database
+            language_learning_settings.preferred_study_time = timezone.datetime.strptime(
+                request.POST.get('preferred_study_time', '18:00'), '%H:%M'
+            ).time()
+            language_learning_settings.daily_goal_minutes = daily_goal_minutes
+            language_learning_settings.weekly_goal_days = weekly_goal_days
+            language_learning_settings.reminder_enabled = request.POST.get('reminder_enabled') == 'on'
+            language_learning_settings.reminder_frequency = request.POST.get('reminder_frequency', 'daily')
+            language_learning_settings.streak_notifications = request.POST.get('streak_notifications') == 'on'
+            language_learning_settings.achievement_notifications = request.POST.get('achievement_notifications') == 'on'
+            language_learning_settings.auto_difficulty_adjustment = request.POST.get('auto_difficulty_adjustment') == 'on'
+            language_learning_settings.preferred_difficulty = request.POST.get('preferred_difficulty', 'adaptive')
+            language_learning_settings.show_pronunciation_hints = request.POST.get('show_pronunciation_hints') == 'on'
+            language_learning_settings.enable_audio_playback = request.POST.get('enable_audio_playback') == 'on'
+            language_learning_settings.audio_playback_speed = audio_playback_speed
+            language_learning_settings.show_progress_animations = request.POST.get('show_progress_animations') == 'on'
+            language_learning_settings.font_size = request.POST.get('font_size', 'medium')
+            
+            language_learning_settings.save()
+            
+            # Mettre à jour la langue cible dans le profil utilisateur si différente
+            target_language = request.POST.get('target_language', request.user.target_language or 'EN')
+            if target_language != request.user.target_language:
+                request.user.target_language = target_language
+                request.user.save(update_fields=['target_language'])
+                logger.info(f"Updated target language for user {request.user.username}: {target_language}")
+            
+            logger.info(f"Language learning settings updated in database for user {request.user.username}")
+            
+            # Create response data
+            data = {
+                'preferred_study_time': language_learning_settings.preferred_study_time.strftime('%H:%M'),
+                'daily_goal_minutes': language_learning_settings.daily_goal_minutes,
+                'weekly_goal_days': language_learning_settings.weekly_goal_days,
+                'target_language': target_language,
+            }
             
             if is_ajax:
                 return JsonResponse({
