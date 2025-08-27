@@ -1,91 +1,202 @@
-{{ extends "language_learning/base.html" }}
+{% extends "saas_web/base.html" %}
+{% load static %}
 
-{{ block app_content }}
-    {{ if messages }}
-        {{ for message in messages }}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+{% block app_title %}Linguify Learn{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="h2 text-success">
+                        <i class="bi bi-translate me-2"></i>
+                        Linguify Learn
+                    </h1>
+                    <div>
+                        <a href="{% url 'language_learning:create_item' %}" class="btn btn-success">
+                            <i class="bi bi-plus-lg me-1"></i> Nouveau contenu
+                        </a>
+                    </div>
+                </div>
             </div>
-        {{ endfor }}
-    {{ endif }}
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <p class="text-muted">{{ total_items }} item{{ total_items|pluralize }} au total</p>
         </div>
-        <div class="col-md-6 text-end">
-            <div class="btn-group" role="group">
-                <a href="{{ url 'language_learning:create_item' }}" class="btn btn-outline-primary">
-                    <i class="bi bi-plus"></i> Ajouter
-                </a>
+
+        <!-- Language Selection Cards -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="h5 mb-3">🌍 Choisissez votre langue</h3>
+                <div class="row">
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                        <div class="card border-primary h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <div class="display-4 mb-2">🇺🇸</div>
+                                <h5 class="card-title">English</h5>
+                                <p class="card-text text-muted">Master English with interactive lessons</p>
+                                <button class="btn btn-outline-primary">Start Learning</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                        <div class="card border-success h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <div class="display-4 mb-2">🇪🇸</div>
+                                <h5 class="card-title">Español</h5>
+                                <p class="card-text text-muted">Aprende español paso a paso</p>
+                                <button class="btn btn-outline-success">Empezar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                        <div class="card border-info h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <div class="display-4 mb-2">🇫🇷</div>
+                                <h5 class="card-title">Français</h5>
+                                <p class="card-text text-muted">Apprenez le français facilement</p>
+                                <button class="btn btn-outline-info">Commencer</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                        <div class="card border-warning h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <div class="display-4 mb-2">🇩🇪</div>
+                                <h5 class="card-title">Deutsch</h5>
+                                <p class="card-text text-muted">Lernen Sie Deutsch effektiv</p>
+                                <button class="btn btn-outline-warning">Beginnen</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Overview -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="h5 mb-3">📊 Votre progression</h3>
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Streak actuel</h6>
+                                        <h3 class="mb-0">7 jours</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="bi bi-fire display-6"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Leçons complétées</h6>
+                                        <h3 class="mb-0">24</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="bi bi-check-circle display-6"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Temps d'étude</h6>
+                                        <h3 class="mb-0">2h 30m</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="bi bi-clock display-6"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Niveau</h6>
+                                        <h3 class="mb-0">Intermédiaire</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="bi bi-trophy display-6"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Lessons -->
+        <div class="row">
+            <div class="col-12">
+                <h3 class="h5 mb-3">📚 Continuer l'apprentissage</h3>
+                {% if items.count > 0 %}
+                    <div class="row">
+                        {% for item in items %}
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ item.title }}</h5>
+                                    <p class="card-text">{{ item.description|truncatewords:15 }}</p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar me-1"></i>
+                                        {{ item.created_at|date:"d/m/Y" }}
+                                    </small>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <a href="{% url 'language_learning:edit_item' item.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-play-fill me-1"></i> Continuer
+                                    </a>
+                                    <a href="{% url 'language_learning:delete_item' item.id %}" class="btn btn-sm btn-outline-secondary ms-2">
+                                        <i class="bi bi-gear"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-4">
+                            <i class="bi bi-book display-1 text-muted"></i>
+                        </div>
+                        <h4>Commencez votre voyage linguistique !</h4>
+                        <p class="text-muted mb-4">
+                            Choisissez une langue ci-dessus et commencez à apprendre avec nos leçons interactives.
+                        </p>
+                        <a href="{% url 'language_learning:create_item' %}" class="btn btn-success btn-lg">
+                            <i class="bi bi-play-fill me-2"></i>
+                            Commencer maintenant
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
 
-    {{ if items }}
-        <div class="row">
-            {{ for item in items }}
-                <div class="col-md-6 col-lg-4 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ item.title }}</h5>
-                            <p class="card-text">{{ item.description|truncatewords:20 }}</p>
-                            <small class="text-muted">
-                                Créé le {{ item.created_at|date:"d/m/Y H:i" }}
-                            </small>
-                        </div>
-                        <div class="card-footer">
-                            <a href="{{ url 'language_learning:edit_item' item.id }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-pencil"></i> Modifier
-                            </a>
-                            <a href="{{ url 'language_learning:delete_item' item.id }}" class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-trash"></i> Supprimer
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            {{ endfor }}
-        </div>
-        
-        <!-- Pagination -->
-        {{ if items.has_other_pages }}
-            <nav>
-                <ul class="pagination justify-content-center">
-                    {{ if items.has_previous }}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ items.previous_page_number }}">Précédent</a>
-                        </li>
-                    {{ endif }}
-                    
-                    {{ for num in items.paginator.page_range }}
-                        {{ if items.number == num }}
-                            <li class="page-item active">
-                                <span class="page-link">{{ num }}</span>
-                            </li>
-                        {{ else }}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                            </li>
-                        {{ endif }}
-                    {{ endfor }}
-                    
-                    {{ if items.has_next }}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ items.next_page_number }}">Suivant</a>
-                        </li>
-                    {{ endif }}
-                </ul>
-            </nav>
-        {{ endif }}
-    {{ else }}
-        <div class="text-center py-5">
-            <i class="bi bi-inbox display-1 text-muted"></i>
-            <h3 class="mt-3">Aucun item</h3>
-            <p class="text-muted">Commencez par créer votre premier item.</p>
-            <a href="{{ url 'language_learning:create_item' }}" class="btn btn-primary">
-                <i class="bi bi-plus"></i> Créer le premier item
-            </a>
-        </div>
-    {{ endif }}
-{{ endblock }}
+    <style>
+        .hover-shadow {
+            transition: all 0.2s;
+        }
+        .hover-shadow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .display-4 {
+            font-size: 2.5rem;
+        }
+    </style>
+{% endblock %}
