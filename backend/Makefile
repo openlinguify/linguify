@@ -46,7 +46,7 @@ help-apps:
 	@echo "      Complete app creation with all files + App Store integration"
 	@echo ""
 	@echo "📋 Status and information:"
-	@echo "  apps                     List all applications"
+	@echo "  apps                    List all applications"
 	@echo "  apps-prod               List apps in PRODUCTION"
 	@echo "  apps-manifests          List found manifests"
 	@echo "  app-info APP=<code>     Detailed app info"
