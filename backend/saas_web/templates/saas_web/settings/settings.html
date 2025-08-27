@@ -120,6 +120,8 @@
                     {% include 'community/community_settings.html' %}
                 {% elif tab.id == 'documents' and tab.active %}
                     {% include 'documents/documents_settings.html' %}
+                {% elif tab.id == 'language_learning' and tab.active %}
+                    {% include 'language_learning/language_learning_settings.html' %}
                 {% elif tab.id == 'app_manager' and tab.active %}
                     {% include 'app_manager/app_manager_settings.html' %}
                 {% elif tab.active %}
@@ -166,4 +168,5 @@
 <script src="{% static 'revision/js/settings.js' %}"></script>
 <script src="{% static 'notification/js/settings.js' %}"></script>
 <script src="{% static 'documents/js/documents_settings.js' %}"></script>
+<script src="{% static 'language_learning/js/settings.js' %}"></script>
 {% endblock %}
