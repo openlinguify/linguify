@@ -15,4 +15,5 @@ urlpatterns = [
     
     # API endpoints
     path('api/items/', views.api_items, name='api_items'),
+    path('api/start_language/', views.start_language_learning, name='start_language'),
 ]

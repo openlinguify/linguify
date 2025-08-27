@@ -4,15 +4,67 @@
 {% block app_title %}Linguify Learn{% endblock %}
 
 {% block content %}
+    <!-- Navigation spécifique à Linguify Learn -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom mb-4" style="margin-top: 56px;">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1 text-success">
+                <i class="bi bi-translate me-2"></i>Linguify Learn
+            </span>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#languageLearningNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="languageLearningNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'language_learning:home' %}">
+                            <i class="bi bi-globe me-1"></i>Mes Langues
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-book me-1"></i>Leçons
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-lightning me-1"></i>Pratique
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-bar-chart me-1"></i>Progression
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="{% url 'saas_web:dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-house me-1"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h1 class="h2 text-success">
-                        <i class="bi bi-translate me-2"></i>
-                        Linguify Learn
-                    </h1>
                     <div>
+                        <h1 class="h2 text-success">
+                            <i class="bi bi-translate me-2"></i>
+                            Linguify Learn
+                        </h1>
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-target me-1"></i>
+                            Objectif : Apprendre <strong>{{ user_stats.target_language_name }}</strong>
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'saas_web:settings' %}" class="btn btn-outline-secondary me-2" title="Changer de langue cible">
+                            <i class="bi bi-gear me-1"></i> Paramètres
+                        </a>
                         <a href="{% url 'language_learning:create_item' %}" class="btn btn-success">
                             <i class="bi bi-plus-lg me-1"></i> Nouveau contenu
                         </a>
@@ -24,48 +76,59 @@
         <!-- Language Selection Cards -->
         <div class="row mb-4">
             <div class="col-12">
-                <h3 class="h5 mb-3">🌍 Choisissez votre langue</h3>
+                <h3 class="h5 mb-3">🌍 Langues d'apprentissage</h3>
                 <div class="row">
+                    {% for lang in available_languages %}
                     <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                        <div class="card border-primary h-100 hover-shadow">
-                            <div class="card-body text-center">
-                                <div class="display-4 mb-2">🇺🇸</div>
-                                <h5 class="card-title">English</h5>
-                                <p class="card-text text-muted">Master English with interactive lessons</p>
-                                <button class="btn btn-outline-primary">Start Learning</button>
+                        {% if lang.is_target %}
+                            <div class="card border-warning border-2 h-100 hover-shadow position-relative">
+                                <div class="card-header bg-warning text-dark text-center py-1">
+                                    <small><i class="bi bi-star-fill me-1"></i><strong>Langue cible</strong></small>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="display-4 mb-2">{{ lang.flag }}</div>
+                                    <h5 class="card-title">{{ lang.name }}</h5>
+                                    <p class="card-text text-muted">{{ lang.description }}</p>
+                                    {% if lang.is_learning %}
+                                        <button class="btn btn-warning">
+                                            <i class="bi bi-play-fill me-1"></i>Continuer l'apprentissage
+                                        </button>
+                                        <small class="d-block mt-2 text-success">
+                                            <i class="bi bi-check-circle me-1"></i>En cours d'apprentissage
+                                        </small>
+                                    {% else %}
+                                        <button class="btn btn-warning" onclick="startLearning('{{ lang.code }}')">
+                                            <i class="bi bi-rocket me-1"></i>Commencer maintenant !
+                                        </button>
+                                        <small class="d-block mt-2 text-muted">
+                                            <i class="bi bi-info-circle me-1"></i>Définie dans vos paramètres
+                                        </small>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                        <div class="card border-success h-100 hover-shadow">
-                            <div class="card-body text-center">
-                                <div class="display-4 mb-2">🇪🇸</div>
-                                <h5 class="card-title">Español</h5>
-                                <p class="card-text text-muted">Aprende español paso a paso</p>
-                                <button class="btn btn-outline-success">Empezar</button>
+                        {% else %}
+                            <div class="card {% if lang.is_learning %}border-success{% else %}border-primary{% endif %} h-100 hover-shadow">
+                                <div class="card-body text-center">
+                                    <div class="display-4 mb-2">{{ lang.flag }}</div>
+                                    <h5 class="card-title">{{ lang.name }}</h5>
+                                    <p class="card-text text-muted">{{ lang.description }}</p>
+                                    {% if lang.is_learning %}
+                                        <button class="btn btn-success">
+                                            <i class="bi bi-play-fill me-1"></i>Continuer
+                                        </button>
+                                        <small class="d-block mt-2 text-success">
+                                            <i class="bi bi-check-circle me-1"></i>En cours d'apprentissage
+                                        </small>
+                                    {% else %}
+                                        <button class="btn btn-outline-primary" onclick="startLearning('{{ lang.code }}')">
+                                            <i class="bi bi-plus me-1"></i>Commencer
+                                        </button>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                        <div class="card border-info h-100 hover-shadow">
-                            <div class="card-body text-center">
-                                <div class="display-4 mb-2">🇫🇷</div>
-                                <h5 class="card-title">Français</h5>
-                                <p class="card-text text-muted">Apprenez le français facilement</p>
-                                <button class="btn btn-outline-info">Commencer</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                        <div class="card border-warning h-100 hover-shadow">
-                            <div class="card-body text-center">
-                                <div class="display-4 mb-2">🇩🇪</div>
-                                <h5 class="card-title">Deutsch</h5>
-                                <p class="card-text text-muted">Lernen Sie Deutsch effektiv</p>
-                                <button class="btn btn-outline-warning">Beginnen</button>
-                            </div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -81,7 +144,7 @@
                                 <div class="d-flex justify-content-between">
                                     <div>
                                         <h6 class="card-title">Streak actuel</h6>
-                                        <h3 class="mb-0">7 jours</h3>
+                                        <h3 class="mb-0">{{ user_stats.streak_days }} jour{{ user_stats.streak_days|pluralize }}</h3>
                                     </div>
                                     <div class="align-self-center">
                                         <i class="bi bi-fire display-6"></i>
@@ -96,7 +159,7 @@
                                 <div class="d-flex justify-content-between">
                                     <div>
                                         <h6 class="card-title">Leçons complétées</h6>
-                                        <h3 class="mb-0">24</h3>
+                                        <h3 class="mb-0">{{ user_stats.completed_lessons }}</h3>
                                     </div>
                                     <div class="align-self-center">
                                         <i class="bi bi-check-circle display-6"></i>
@@ -111,7 +174,7 @@
                                 <div class="d-flex justify-content-between">
                                     <div>
                                         <h6 class="card-title">Temps d'étude</h6>
-                                        <h3 class="mb-0">2h 30m</h3>
+                                        <h3 class="mb-0">{{ user_stats.total_time }}</h3>
                                     </div>
                                     <div class="align-self-center">
                                         <i class="bi bi-clock display-6"></i>
@@ -126,7 +189,7 @@
                                 <div class="d-flex justify-content-between">
                                     <div>
                                         <h6 class="card-title">Niveau</h6>
-                                        <h3 class="mb-0">Intermédiaire</h3>
+                                        <h3 class="mb-0">{{ user_stats.current_level }}</h3>
                                     </div>
                                     <div class="align-self-center">
                                         <i class="bi bi-trophy display-6"></i>
@@ -199,4 +262,50 @@
             font-size: 2.5rem;
         }
     </style>
+
+    <script>
+        function startLearning(languageCode) {
+            // Démarrer l'apprentissage d'une langue
+            fetch('/language_learning/api/start_language/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({language_code: languageCode})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Afficher un message de succès
+                    if (data.created) {
+                        alert(`🎉 ${data.message}\n\nVous pouvez maintenant commencer vos leçons !`);
+                    } else {
+                        alert(`✅ ${data.message}\n\nVous continuez votre apprentissage !`);
+                    }
+                    // Recharger la page pour mettre à jour l'interface
+                    location.reload();
+                } else {
+                    alert(`❌ Erreur: ${data.error}`);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('❌ Une erreur est survenue lors du démarrage de l\'apprentissage.');
+            });
+        }
+
+        // Message d'encouragement pour la langue cible
+        document.addEventListener('DOMContentLoaded', function() {
+            const targetLanguageCard = document.querySelector('.border-warning.border-2');
+            if (targetLanguageCard) {
+                targetLanguageCard.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                });
+                targetLanguageCard.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            }
+        });
+    </script>
 {% endblock %}
