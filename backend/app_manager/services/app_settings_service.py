@@ -211,6 +211,18 @@ class AppSettingsService:
                 }
             ]
         },
+        'language_learning': {
+            'tabs': [
+                {
+                    'id': 'language_learning',
+                    'name': 'Apprentissage des Langues',
+                    'icon': 'bi-translate',
+                    'template': 'language_learning/language_learning_settings.html',
+                    'category': 'applications',
+                    'order': 9
+                }
+            ]
+        },
         'app_manager': {
             'tabs': [
                 {
@@ -536,15 +548,16 @@ class AppSettingsService:
             
             # Liste des apps à activer par défaut
             default_apps = [
-                'app_manager',   # Gestionnaire d'apps (toujours activé)
-                'revision',      # App de révision
-                'chat',          # Chat
-                'community',     # Communauté
-                'notes',         # Notes
-                'quiz',          # Quiz
-                'language_ai',   # IA Linguistique
-                'learning',      # Apprentissage (si elle existe)
-                'documents',     # Documents collaboratifs
+                'app_manager',       # Gestionnaire d'apps (toujours activé)
+                'revision',          # App de révision
+                'chat',              # Chat
+                'community',         # Communauté
+                'notes',             # Notes
+                'quiz',              # Quiz
+                'language_ai',       # IA Linguistique
+                'language_learning', # Apprentissage des langues
+                'learning',          # Apprentissage (si elle existe)
+                'documents',         # Documents collaboratifs
             ]
             
             # Activer les apps par défaut
