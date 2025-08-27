@@ -1,0 +1,91 @@
+{{ extends "language_learning/base.html" }}
+
+{{ block app_content }}
+    {{ if messages }}
+        {{ for message in messages }}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {{ endfor }}
+    {{ endif }}
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <p class="text-muted">{{ total_items }} item{{ total_items|pluralize }} au total</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group" role="group">
+                <a href="{{ url 'language_learning:create_item' }}" class="btn btn-outline-primary">
+                    <i class="bi bi-plus"></i> Ajouter
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {{ if items }}
+        <div class="row">
+            {{ for item in items }}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ item.title }}</h5>
+                            <p class="card-text">{{ item.description|truncatewords:20 }}</p>
+                            <small class="text-muted">
+                                Créé le {{ item.created_at|date:"d/m/Y H:i" }}
+                            </small>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{ url 'language_learning:edit_item' item.id }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i> Modifier
+                            </a>
+                            <a href="{{ url 'language_learning:delete_item' item.id }}" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {{ endfor }}
+        </div>
+        
+        <!-- Pagination -->
+        {{ if items.has_other_pages }}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {{ if items.has_previous }}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ items.previous_page_number }}">Précédent</a>
+                        </li>
+                    {{ endif }}
+                    
+                    {{ for num in items.paginator.page_range }}
+                        {{ if items.number == num }}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {{ else }}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {{ endif }}
+                    {{ endfor }}
+                    
+                    {{ if items.has_next }}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ items.next_page_number }}">Suivant</a>
+                        </li>
+                    {{ endif }}
+                </ul>
+            </nav>
+        {{ endif }}
+    {{ else }}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <h3 class="mt-3">Aucun item</h3>
+            <p class="text-muted">Commencez par créer votre premier item.</p>
+            <a href="{{ url 'language_learning:create_item' }}" class="btn btn-primary">
+                <i class="bi bi-plus"></i> Créer le premier item
+            </a>
+        </div>
+    {{ endif }}
+{{ endblock }}
