@@ -279,25 +279,25 @@ class TodoKanban {
         const tasksContainer = document.querySelector(`[data-stage-id="${stageId}"] .kanban-tasks-container`);
         if (!tasksContainer) return;
         
-        // Create Odoo-style inline form
+        // Create Linguify-style inline form
         const form = document.createElement('div');
-        form.className = 'quick-add-form kanban-card mb-3';
+        form.className = 'quick-add-form';
         form.dataset.stageId = stageId;
         form.innerHTML = `
-            <div class="kanban-card-body p-3">
-                <input type="text" class="form-control form-control-sm mb-2" 
-                       placeholder="{% trans 'Titre de la tâche...' %}" 
-                       id="quickTaskTitle_${stageId}" 
-                       style="border: none; box-shadow: none; font-size: 1.1rem; font-weight: 500;"
-                       autofocus>
-                <div class="d-flex gap-2 mt-2">
-                    <button class="btn btn-success btn-sm" onclick="todoKanban.submitQuickTask('${stageId}')">
-                        <i class="bi bi-check"></i> Ajouter
-                    </button>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="todoKanban.closeAllForms()">
-                        <i class="bi bi-x"></i> Annuler
-                    </button>
-                </div>
+            <input type="text" 
+                   placeholder="Tapez le titre de la tâche..." 
+                   id="quickTaskTitle_${stageId}" 
+                   class="form-control mb-3"
+                   autofocus>
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary btn-sm" 
+                        onclick="todoKanban.submitQuickTask('${stageId}')">
+                    <i class="bi bi-check me-1"></i>Ajouter
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" 
+                        onclick="todoKanban.closeAllForms()">
+                    <i class="bi bi-x me-1"></i>Annuler
+                </button>
             </div>
         `;
         
@@ -386,46 +386,65 @@ class TodoKanban {
     
     createTaskCard(taskData) {
         const card = document.createElement('div');
-        card.className = 'kanban-card';
+        card.className = 'card mb-3 kanban-task-card kanban-card';
         card.dataset.taskId = taskData.id;
         card.dataset.stageId = taskData.personal_stage_type;
+        card.onclick = () => window.openTask(taskData.id);
+        card.style.cursor = 'pointer';
+        card.style.border = '1px solid var(--linguify-gray-200, #e5e7eb)';
+        card.style.transition = 'all 0.2s ease';
         
-        const priorityIndicator = taskData.priority === '1' 
-            ? '<div class="priority-indicator starred"><i class="bi bi-star-fill text-warning"></i></div>'
+        const priorityIcon = taskData.priority === '1' 
+            ? '<i class="bi bi-star-fill text-warning ms-2"></i>'
             : '';
         
-        const colorBar = `<div class="task-color-bar color-${taskData.color || 0}"></div>`;
-        
         const completeBtnIcon = taskData.state === '1_done' 
-            ? 'bi-check-circle-fill' 
+            ? 'bi-check-circle-fill text-success' 
             : 'bi-circle';
         
         const titleClasses = taskData.state === '1_done' 
-            ? 'task-title text-decoration-line-through text-muted'
-            : 'task-title';
+            ? 'card-title mb-0 flex-grow-1 text-decoration-line-through'
+            : 'card-title mb-0 flex-grow-1';
+        
+        const titleStyle = 'color: var(--linguify-primary-dark, #1E4A8C);';
         
         card.innerHTML = `
-            ${priorityIndicator}
-            ${colorBar}
-            <div class="kanban-card-body">
-                <div class="task-title-container">
-                    <h6 class="${titleClasses} mb-1" onclick="openTask('${taskData.id}')">
-                        ${taskData.title}
-                    </h6>
+            <div class="card-body p-3">
+                <!-- Task Header -->
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="${titleClasses}" style="${titleStyle}">${taskData.title}</h6>
+                    ${priorityIcon}
                 </div>
-                <div class="task-meta mb-2">
-                    ${taskData.due_date ? `<small class="due-date"><i class="bi bi-calendar"></i> ${new Date(taskData.due_date).toLocaleDateString()}</small>` : ''}
-                    ${taskData.project ? `<small class="project-name text-muted ms-2"><i class="bi bi-folder"></i> ${taskData.project}</small>` : ''}
-                </div>
-            </div>
-            <div class="kanban-card-actions">
-                <div class="d-flex justify-content-between align-items-center">
+
+                <!-- Task Meta Information -->
+                ${(taskData.due_date || taskData.project) ? `
+                <div class="d-flex align-items-center gap-3 mb-2 small text-muted">
+                    ${taskData.due_date ? `
+                    <span class="d-flex align-items-center gap-1">
+                        <i class="bi bi-calendar"></i>
+                        ${new Date(taskData.due_date).toLocaleDateString()}
+                    </span>` : ''}
+                    ${taskData.project ? `
+                    <span class="d-flex align-items-center gap-1">
+                        <i class="bi bi-folder"></i>
+                        ${taskData.project}
+                    </span>` : ''}
+                </div>` : ''}
+
+                <!-- Task Footer -->
+                <div class="d-flex justify-content-between align-items-center pt-2" 
+                     style="border-top: 1px solid var(--linguify-gray-100, #f3f4f6);">
                     <small class="text-muted">Just now</small>
-                    <div class="action-buttons">
-                        <button class="btn btn-sm btn-outline-primary" onclick="editTask('${taskData.id}')" title="Edit">
-                            <i class="bi bi-pencil"></i>
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="btn btn-sm btn-outline-primary p-1" 
+                                onclick="event.stopPropagation(); editTask('${taskData.id}')" 
+                                title="Edit"
+                                style="border-color: var(--linguify-primary, #2D5BBA); color: var(--linguify-primary, #2D5BBA);">
+                            <i class="bi bi-pencil" style="font-size: 0.8rem;"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-success" onclick="toggleTaskComplete('${taskData.id}')" title="Toggle Complete">
+                        <button class="btn btn-sm btn-outline-success p-1" 
+                                onclick="event.stopPropagation(); toggleTaskComplete('${taskData.id}')" 
+                                title="Toggle Complete">
                             <i class="${completeBtnIcon}"></i>
                         </button>
                     </div>

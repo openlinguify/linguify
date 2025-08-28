@@ -9,156 +9,167 @@
 {% endblock %}
 
 {% block content %}
-<div class="todo-kanban-workspace">
-    <!-- Kanban Board -->
-    <div class="kanban-board-container">
-        <div class="kanban-board d-flex gap-3" id="kanbanBoard">
-            {% for stage_id, stage_data in kanban_data.items %}
-            <div class="kanban-column" data-stage-id="{{ stage_id }}">
-                <!-- Column Header -->
-                <div class="kanban-column-header" style="border-left: 4px solid {{ stage_data.stage.color }}">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="column-title-group">
-                            <h6 class="column-title mb-0">{{ stage_data.stage.name }}</h6>
-                            <span class="task-count badge bg-secondary">{{ stage_data.count }}</span>
-                        </div>
-                        <div class="column-actions">
-                            <!-- Odoo-style quick add button -->
-                            <button class="btn btn-sm btn-link text-muted kanban-quick-add" 
-                                    onclick="addTaskToStage('{{ stage_id }}')" 
-                                    title="{% trans 'Ajout rapide' %}">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                            <!-- Settings button -->
-                            <button class="btn btn-sm btn-link text-muted dropdown-toggle" 
-                                    data-bs-toggle="dropdown" 
-                                    title="{% trans 'Paramètres' %}">
-                                <i class="bi bi-gear"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" onclick="toggleStage('{{ stage_id }}')">
-                                    <i class="bi bi-eye{% if stage_data.stage.fold %}-slash{% endif %}"></i>
-                                    {% if stage_data.stage.fold %}{% trans "Afficher" %}{% else %}{% trans "Masquer" %}{% endif %}
-                                </a></li>
-                                <li><a class="dropdown-item" href="#">
-                                    <i class="bi bi-palette"></i> {% trans "Changer couleur" %}
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="#">
-                                    <i class="bi bi-trash"></i> {% trans "Supprimer étape" %}
-                                </a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tasks Container -->
-                <div class="kanban-tasks-container" id="tasks-{{ stage_id }}" {% if stage_data.stage.fold %}style="display: none;"{% endif %}>
-                    {% for task in stage_data.tasks %}
-                    <div class="kanban-card" data-task-id="{{ task.id }}" data-stage-id="{{ stage_id }}">
-                        <!-- Task Priority Indicator -->
-                        {% if task.priority == '1' %}
-                        <div class="priority-indicator starred">
-                            <i class="bi bi-star-fill text-warning"></i>
-                        </div>
-                        {% endif %}
-                        
-                        <!-- Task Color Bar -->
-                        <div class="task-color-bar color-{{ task.color }}"></div>
-                        
-                        <!-- Task Content -->
-                        <div class="kanban-card-body">
-                            <!-- Task Title -->
-                            <div class="task-title-container">
-                                <h6 class="task-title mb-1" onclick="openTask('{{ task.id }}')">
-                                    {{ task.title }}
-                                    {% if task.subtask_count > 0 %}
-                                    <small class="text-muted">({{ task.completed_subtask_count }}/{{ task.subtask_count }})</small>
-                                    {% endif %}
-                                </h6>
-                            </div>
-                            
-                            <!-- Task Meta -->
-                            <div class="task-meta mb-2">
-                                {% if task.due_date %}
-                                <small class="due-date {% if task.is_overdue %}text-danger{% elif task.due_date.date == today %}text-warning{% endif %}">
-                                    <i class="bi bi-calendar"></i>
-                                    {% if task.due_date.date == today %}
-                                        {% trans "Today" %}
-                                    {% elif task.is_overdue %}
-                                        {{ task.due_date|date:"M d" }} ({% trans "Overdue" %})
-                                    {% else %}
-                                        {{ task.due_date|date:"M d" }}
-                                    {% endif %}
-                                </small>
-                                {% endif %}
-                                
-                                {% if task.project %}
-                                <small class="project-name text-muted ms-2">
-                                    <i class="bi bi-folder"></i> {{ task.project.name }}
-                                </small>
-                                {% endif %}
-                            </div>
-                            
-                            <!-- Task Tags -->
-                            {% if task.tags.all %}
-                            <div class="task-tags mb-2">
-                                {% for tag in task.tags.all %}
-                                <span class="tag badge" style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
-                                    {{ tag.name }}
-                                </span>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                            
-                            <!-- Task Progress -->
-                            {% if task.progress_percentage > 0 %}
-                            <div class="task-progress mb-2">
-                                <div class="progress progress-sm">
-                                    <div class="progress-bar" role="progressbar" 
-                                         style="width: {{ task.progress_percentage }}%">
+<!-- Kanban Board with Linguify styling -->
+<div class="container-fluid p-4" style="background-color: var(--linguify-gray-50, #f9fafb); min-height: calc(100vh - 120px);">
+    <div class="row g-0">
+        <div class="col-12">
+            <div class="kanban-board-container" style="overflow-x: auto;">
+                <div class="d-flex gap-3" id="kanbanBoard" style="min-width: max-content;">
+                    {% for stage_id, stage_data in kanban_data.items %}
+                    <!-- Kanban Column -->
+                    <div class="kanban-column" data-stage-id="{{ stage_id }}" style="min-width: 300px; width: 300px;">
+                        <div class="card-linguify h-100 d-flex flex-column">
+                            <!-- Column Header -->
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <h6 class="mb-0 fw-semibold">{{ stage_data.stage.name }}</h6>
+                                    <span class="badge" style="background-color: var(--linguify-gray-200, #e5e7eb); color: var(--linguify-gray-700, #374151);">
+                                        {{ stage_data.count }}
+                                    </span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <button class="btn btn-sm btn-link text-muted p-1 kanban-quick-add" 
+                                            onclick="addTaskToStage('{{ stage_id }}')" 
+                                            title="{% trans 'Add task' %}"
+                                            style="color: var(--linguify-gray-400, #9ca3af) !important;">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-link text-muted p-1 dropdown-toggle" 
+                                                data-bs-toggle="dropdown"
+                                                style="color: var(--linguify-gray-400, #9ca3af) !important;">
+                                            <i class="bi bi-three-dots"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" onclick="toggleStage('{{ stage_id }}')">
+                                                <i class="bi bi-eye{% if stage_data.stage.fold %}-slash{% endif %} me-2"></i>
+                                                {% if stage_data.stage.fold %}{% trans "Show" %}{% else %}{% trans "Hide" %}{% endif %}
+                                            </a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#">
+                                                <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
+                                            </a></li>
+                                        </ul>
                                     </div>
                                 </div>
-                                <small class="text-muted">{{ task.progress_percentage }}%</small>
                             </div>
-                            {% endif %}
-                        </div>
-                        
-                        <!-- Task Actions -->
-                        <div class="kanban-card-actions">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">{{ task.created_at|timesince }} {% trans "ago" %}</small>
-                                <div class="action-buttons">
-                                    <button class="btn btn-sm btn-outline-primary" onclick="editTask('{{ task.id }}')" title="{% trans 'Edit' %}">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-success" onclick="toggleTaskComplete('{{ task.id }}')" title="{% trans 'Toggle Complete' %}">
-                                        {% if task.state == '1_done' %}
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        {% else %}
-                                        <i class="bi bi-circle"></i>
+
+                            <!-- Tasks Container -->
+                            <div class="card-body flex-grow-1 kanban-tasks-container" 
+                                 id="tasks-{{ stage_id }}" 
+                                 style="{% if stage_data.stage.fold %}display: none;{% endif %} overflow-y: auto; max-height: 70vh;">
+                                {% for task in stage_data.tasks %}
+                                <!-- Task Card -->
+                                <div class="card mb-3 kanban-task-card kanban-card" 
+                                     data-task-id="{{ task.id }}" 
+                                     data-stage-id="{{ stage_id }}" 
+                                     onclick="openTask('{{ task.id }}')"
+                                     style="cursor: pointer; border: 1px solid var(--linguify-gray-200, #e5e7eb); transition: all 0.2s ease;">
+                                    <div class="card-body p-3">
+                                        <!-- Task Header -->
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="card-title mb-0 flex-grow-1" style="color: var(--linguify-primary-dark, #1E4A8C);">
+                                                {{ task.title }}
+                                            </h6>
+                                            {% if task.priority == '1' %}
+                                            <i class="bi bi-star-fill text-warning ms-2"></i>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Task Meta -->
+                                        {% if task.due_date or task.project %}
+                                        <div class="d-flex align-items-center gap-3 mb-2 small text-muted">
+                                            {% if task.due_date %}
+                                            <span class="d-flex align-items-center gap-1 {% if task.is_overdue %}text-danger{% elif task.due_date.date == today %}text-warning{% endif %}">
+                                                <i class="bi bi-calendar"></i>
+                                                {% if task.due_date.date == today %}
+                                                    {% trans "Today" %}
+                                                {% elif task.is_overdue %}
+                                                    {{ task.due_date|date:"M d" }}
+                                                {% else %}
+                                                    {{ task.due_date|date:"M d" }}
+                                                {% endif %}
+                                            </span>
+                                            {% endif %}
+                                            
+                                            {% if task.project %}
+                                            <span class="d-flex align-items-center gap-1">
+                                                <i class="bi bi-folder"></i>
+                                                {{ task.project.name }}
+                                            </span>
+                                            {% endif %}
+                                        </div>
                                         {% endif %}
-                                    </button>
+
+                                        <!-- Task Tags -->
+                                        {% if task.tags.all %}
+                                        <div class="d-flex flex-wrap gap-1 mb-2">
+                                            {% for tag in task.tags.all %}
+                                            <span class="badge badge-sm" 
+                                                  style="background-color: {{ tag.color }}20; color: {{ tag.color }}; font-size: 0.7rem;">
+                                                {{ tag.name }}
+                                            </span>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- Task Progress -->
+                                        {% if task.progress_percentage > 0 %}
+                                        <div class="mb-2">
+                                            <div class="progress" style="height: 4px;">
+                                                <div class="progress-bar" 
+                                                     style="width: {{ task.progress_percentage }}%; background-color: var(--linguify-primary, #2D5BBA);"></div>
+                                            </div>
+                                            <small class="text-muted">{{ task.progress_percentage }}%</small>
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- Task Footer -->
+                                        <div class="d-flex justify-content-between align-items-center pt-2" style="border-top: 1px solid var(--linguify-gray-100, #f3f4f6);">
+                                            <small class="text-muted">{{ task.created_at|timesince }} {% trans "ago" %}</small>
+                                            <div class="d-flex align-items-center gap-1">
+                                                <button class="btn btn-sm btn-outline-primary p-1" 
+                                                        onclick="event.stopPropagation(); editTask('{{ task.id }}')" 
+                                                        title="{% trans 'Edit' %}"
+                                                        style="border-color: var(--linguify-primary, #2D5BBA); color: var(--linguify-primary, #2D5BBA);">
+                                                    <i class="bi bi-pencil" style="font-size: 0.8rem;"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-success p-1" 
+                                                        onclick="event.stopPropagation(); toggleTaskComplete('{{ task.id }}')" 
+                                                        title="{% trans 'Toggle Complete' %}">
+                                                    {% if task.state == '1_done' %}
+                                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                                    {% else %}
+                                                    <i class="bi bi-circle" style="font-size: 0.8rem;"></i>
+                                                    {% endif %}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                {% endfor %}
+
+                                <!-- Add Task Button -->
+                                <button class="btn btn-outline-secondary w-100 add-task-btn" 
+                                        onclick="addTaskToStage('{{ stage_id }}')"
+                                        style="border-style: dashed; color: var(--linguify-gray-500, #6b7280); border-color: var(--linguify-gray-300, #d1d5db);">
+                                    <i class="bi bi-plus me-2"></i>{% trans "Add a task" %}
+                                </button>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
-                    
-                    <!-- Add Task Button -->
-                    <button class="add-task-btn" onclick="addTaskToStage('{{ stage_id }}')">
-                        <i class="bi bi-plus"></i> {% trans "Add a task" %}
-                    </button>
+
+                    <!-- Add Stage Column -->
+                    <div class="d-flex align-items-center" style="min-width: 200px;">
+                        <button class="btn btn-outline-secondary add-stage-btn d-flex flex-column align-items-center justify-content-center" 
+                                onclick="addNewStage()"
+                                style="width: 100%; height: 200px; border-style: dashed; color: var(--linguify-gray-500, #6b7280); border-color: var(--linguify-gray-300, #d1d5db);">
+                            <i class="bi bi-plus-lg mb-2" style="font-size: 1.5rem;"></i>
+                            <span class="fw-medium">{% trans "Add Stage" %}</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            {% endfor %}
-            
-            <!-- Add Stage Column -->
-            <div class="kanban-column add-stage-column">
-                <button class="add-stage-btn" onclick="addNewStage()">
-                    <i class="bi bi-plus-lg"></i>
-                    <span>{% trans "Add Stage" %}</span>
-                </button>
             </div>
         </div>
     </div>
@@ -214,214 +225,97 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'todo/css/kanban.css' %}">
 <style>
-.todo-kanban-workspace {
-    padding: 1rem;
-    min-height: calc(100vh - 120px);
-}
-
-.kanban-board-container {
-    overflow-x: auto;
-    padding-bottom: 1rem;
-}
-
-.kanban-board {
-    min-width: max-content;
-}
-
-.kanban-column {
-    width: 280px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 0;
-    min-height: 500px;
-}
-
-.kanban-column-header {
-    padding: 1rem;
-    background: white;
-    border-radius: 8px 8px 0 0;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.column-title {
-    font-weight: 600;
-    color: #495057;
-}
-
-.task-count {
-    font-size: 0.75rem;
-    margin-left: 0.5rem;
-}
-
-.kanban-tasks-container {
-    padding: 0.5rem;
-    min-height: 400px;
-}
-
-.kanban-card {
-    background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    margin-bottom: 0.75rem;
-    position: relative;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.kanban-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* Kanban Linguify Styles */
+.kanban-task-card:hover {
+    border-color: var(--linguify-primary, #2D5BBA) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transform: translateY(-1px);
 }
 
-.task-color-bar {
-    height: 4px;
-    border-radius: 8px 8px 0 0;
-}
-
-.color-0 { background-color: #6c757d; }
-.color-1 { background-color: #dc3545; }
-.color-2 { background-color: #fd7e14; }
-.color-3 { background-color: #ffc107; }
-.color-4 { background-color: #28a745; }
-.color-5 { background-color: #20c997; }
-.color-6 { background-color: #17a2b8; }
-.color-7 { background-color: #007bff; }
-.color-8 { background-color: #6f42c1; }
-.color-9 { background-color: #e83e8c; }
-.color-10 { background-color: #343a40; }
-.color-11 { background-color: #f8f9fa; }
-
-.kanban-card-body {
-    padding: 0.75rem;
-}
-
-.task-title {
-    font-weight: 500;
-    color: #212529;
-    cursor: pointer;
-}
-
-.task-title:hover {
-    color: #007bff;
-}
-
-.priority-indicator {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-}
-
-.task-tags .tag {
-    font-size: 0.65rem;
-    margin-right: 0.25rem;
-}
-
-.progress-sm {
-    height: 4px;
-}
-
-.kanban-card-actions {
-    padding: 0.5rem 0.75rem;
-    border-top: 1px solid #f8f9fa;
-    background: #fafbfc;
-    border-radius: 0 0 8px 8px;
-}
-
-.add-task-btn {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px dashed #ced4da;
-    border-radius: 8px;
-    background: transparent;
-    color: #6c757d;
-    transition: all 0.2s ease;
-}
-
-.add-task-btn:hover {
-    border-color: #007bff;
-    color: #007bff;
-    background: rgba(0,123,255,0.05);
-}
-
-.add-stage-column {
-    width: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.add-stage-btn {
-    width: 100%;
-    height: 200px;
-    border: 2px dashed #ced4da;
-    border-radius: 8px;
-    background: transparent;
-    color: #6c757d;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-}
-
-.add-stage-btn:hover {
-    border-color: #007bff;
-    color: #007bff;
-    background: rgba(0,123,255,0.05);
-}
-
-/* Odoo-style quick add forms */
-.quick-add-form {
-    border: 1px solid #e3e6f0;
-    background: #f8f9fc;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.quick-add-form:hover {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.quick-add-form input {
-    background: transparent !important;
-    border: none !important;
-    padding: 8px 0 !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-.quick-add-form input:focus {
-    background: white !important;
-    border: 1px solid #ced4da !important;
-    border-radius: 4px !important;
-    padding: 8px 12px !important;
-}
-
-/* Column actions hover effects */
 .kanban-quick-add:hover {
-    color: #007bff !important;
+    color: var(--linguify-primary, #2D5BBA) !important;
     transform: scale(1.1);
 }
 
-.column-actions .btn-link:hover {
-    color: #495057 !important;
+.add-task-btn:hover,
+.add-stage-btn:hover {
+    border-color: var(--linguify-primary, #2D5BBA) !important;
+    color: var(--linguify-primary, #2D5BBA) !important;
+    background-color: rgba(45, 91, 186, 0.05) !important;
 }
 
-/* Progress indicator like Odoo */
-.kanban-column-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, var(--bs-primary, #007bff) 50%, transparent 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+/* Quick add form styling */
+.quick-add-form {
+    background: white;
+    border: 1px solid var(--linguify-gray-200, #e5e7eb);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.kanban-column:hover .kanban-column-header::after {
-    opacity: 0.3;
+.quick-add-form input {
+    border: 1px solid var(--linguify-gray-300, #d1d5db) !important;
+    border-radius: 0.375rem !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    width: 100% !important;
+    background: white !important;
+}
+
+.quick-add-form input:focus {
+    border-color: var(--linguify-primary, #2D5BBA) !important;
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1) !important;
+    outline: none !important;
+}
+
+.quick-add-form .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Drag and drop effects */
+.kanban-card.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+.kanban-column.drag-over {
+    background-color: rgba(45, 91, 186, 0.05);
+}
+
+/* Scrollbar styling */
+.kanban-tasks-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.kanban-tasks-container::-webkit-scrollbar-track {
+    background: var(--linguify-gray-100, #f3f4f6);
+}
+
+.kanban-tasks-container::-webkit-scrollbar-thumb {
+    background: var(--linguify-gray-300, #d1d5db);
+    border-radius: 2px;
+}
+
+.kanban-tasks-container::-webkit-scrollbar-thumb:hover {
+    background: var(--linguify-gray-400, #9ca3af);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .kanban-column {
+        min-width: 250px !important;
+        width: 250px !important;
+    }
+    
+    .gap-3 {
+        gap: 0.75rem !important;
+    }
+    
+    .kanban-tasks-container {
+        max-height: 60vh !important;
+    }
 }
 </style>
 {% endblock %}
