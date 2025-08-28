@@ -3693,6 +3693,455 @@ button.bg-linguify-gradient:hover,
    - Responsive design ready
    ================================================================= */
 
+/* ===== FORM LINGUIFY COMPONENTS ===== */
+
+/* Form Layout - Odoo style full height */
+.form-layout {
+    height: 100%; /* Use 100% to work with app-main-layout */
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.form-container {
+    flex: 1;
+    padding: 24px;
+    background-color: var(--linguify-gray-50);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    min-height: 0;
+    box-sizing: border-box;
+}
+
+/* Form Header */
+.form-header-linguify {
+    padding: 0 0 24px 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--linguify-gray-200);
+}
+
+.form-title-linguify {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--linguify-gray-900);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-title-linguify i {
+    color: var(--linguify-primary);
+}
+
+/* Breadcrumb */
+.breadcrumb-linguify {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-600);
+}
+
+.breadcrumb-link-linguify {
+    color: var(--linguify-gray-500);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-link-linguify:hover {
+    color: var(--linguify-primary);
+}
+
+.breadcrumb-separator-linguify {
+    color: var(--linguify-gray-400);
+    margin: 0 8px;
+}
+
+.breadcrumb-current-linguify {
+    color: var(--linguify-gray-700);
+    font-weight: 500;
+}
+
+/* Form Main Content and Sidebar Layout */
+.form-main-content {
+    flex: 1;
+    max-width: 800px;
+    margin-right: 24px;
+}
+
+.form-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+}
+
+/* Main form card */
+.form-card-linguify {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--linguify-gray-200);
+    padding: 32px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Form groups and inputs */
+.form-group-linguify {
+    margin-bottom: 24px;
+}
+
+.form-row-linguify {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.form-label-linguify {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--linguify-gray-700);
+    margin-bottom: 8px;
+}
+
+.text-required {
+    color: var(--linguify-danger);
+}
+
+.input-linguify, .textarea-linguify, .select-linguify {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: white;
+    box-sizing: border-box;
+}
+
+.input-linguify:focus, .textarea-linguify:focus, .select-linguify:focus {
+    outline: none;
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+.textarea-linguify {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.input-sm-linguify {
+    padding: 8px 12px;
+    font-size: 0.8125rem;
+}
+
+/* Range slider */
+.range-linguify {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--linguify-gray-200);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.range-linguify::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--linguify-primary);
+    cursor: pointer;
+}
+
+.range-linguify::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--linguify-primary);
+    cursor: pointer;
+    border: none;
+}
+
+/* Color selector */
+.color-selector-linguify {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-option-linguify {
+    display: none;
+}
+
+.color-label-linguify {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.color-option-linguify:checked + .color-label-linguify {
+    border-color: var(--linguify-primary);
+    transform: scale(1.1);
+}
+
+.color-option-linguify:checked + .color-label-linguify::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    text-shadow: 0 0 2px rgba(0,0,0,0.8);
+}
+
+/* Color definitions */
+.color-0 { background-color: #6c757d; }
+.color-1 { background-color: #dc3545; }
+.color-2 { background-color: #fd7e14; }
+.color-3 { background-color: #ffc107; }
+.color-4 { background-color: #28a745; }
+.color-5 { background-color: #20c997; }
+.color-6 { background-color: #17a2b8; }
+.color-7 { background-color: #007bff; }
+.color-8 { background-color: #6f42c1; }
+.color-9 { background-color: #e83e8c; }
+.color-10 { background-color: #343a40; }
+.color-11 { background-color: #f8f9fa; }
+
+/* Tags */
+.tags-container-linguify {
+    position: relative;
+}
+
+.selected-tags-linguify {
+    min-height: 48px;
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 8px;
+    padding: 8px;
+    background: white;
+    margin-bottom: 8px;
+}
+
+.tag-badge-linguify {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.tag-remove-linguify {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 4px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.tag-remove-linguify:hover {
+    opacity: 1;
+}
+
+.tag-input-group-linguify {
+    position: relative;
+}
+
+.tag-suggestions-linguify {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tag-suggestion {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+}
+
+.tag-suggestion:hover {
+    background-color: var(--linguify-gray-50);
+}
+
+.tag-suggestion.create {
+    color: var(--linguify-primary);
+    font-style: italic;
+}
+
+/* Sidebar */
+.sidebar-card-linguify {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--linguify-gray-200);
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header-linguify {
+    padding: 20px 24px 0 24px;
+    border-bottom: 1px solid var(--linguify-gray-100);
+}
+
+.sidebar-header-linguify h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--linguify-gray-900);
+    margin: 0 0 16px 0;
+}
+
+.sidebar-content-linguify {
+    padding: 20px 24px 24px 24px;
+}
+
+/* Form actions stack */
+.form-actions-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-sm-linguify {
+    padding: 8px 16px;
+    font-size: 0.8125rem;
+}
+
+.btn-success {
+    background-color: var(--linguify-success);
+    border-color: var(--linguify-success);
+}
+
+.btn-success:hover {
+    background-color: #0d8043;
+    border-color: #0d8043;
+}
+
+.btn-danger {
+    background-color: var(--linguify-danger);
+    border-color: var(--linguify-danger);
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* Info items */
+.info-item-linguify {
+    margin-bottom: 16px;
+}
+
+.info-item-linguify:last-child {
+    margin-bottom: 0;
+}
+
+.info-label {
+    color: var(--linguify-gray-500);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.info-value {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-900);
+    margin-top: 4px;
+}
+
+/* Tips list */
+.tips-list-linguify {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tips-list-linguify li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 0.875rem;
+    color: var(--linguify-gray-600);
+}
+
+.tips-list-linguify li:last-child {
+    margin-bottom: 0;
+}
+
+.tips-list-linguify li i {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* Badge */
+.badge-linguify {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid currentColor;
+    opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .form-container {
+        flex-direction: column;
+    }
+    
+    .form-main-content {
+        margin-right: 0;
+        margin-bottom: 24px;
+        max-width: none;
+    }
+    
+    .form-sidebar {
+        width: 100%;
+    }
+    
+    .form-row-linguify {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
 /* ===== LIST LINGUIFY COMPONENTS ===== */
 
 /* List Layout - Odoo style full height */

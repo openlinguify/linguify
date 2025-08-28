@@ -9,200 +9,174 @@
 {% endblock %}
 
 {% block content %}
-<div class="todo-form-workspace">
-    <!-- Form Header -->
-    <div class="form-header mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h4 class="mb-0">
-                    {% if task %}
-                    <i class="bi bi-pencil"></i> {% trans "Edit Task" %}
-                    {% else %}
-                    <i class="bi bi-plus-circle"></i> {% trans "Create New Task" %}
-                    {% endif %}
-                </h4>
-                <nav class="breadcrumb-nav">
-                    <a href="{% url 'todo_web:kanban' %}" class="breadcrumb-link">
-                        {% trans "Tasks" %}
-                    </a>
-                    <span class="breadcrumb-separator">›</span>
-                    <span class="breadcrumb-current">
-                        {% if task %}{% trans "Edit" %}{% else %}{% trans "New" %}{% endif %}
-                    </span>
-                </nav>
-            </div>
-            <div class="form-actions">
-                <a href="{% url 'todo_web:kanban' %}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-arrow-left"></i> {% trans "Back to Tasks" %}
-                </a>
-            </div>
-        </div>
-    </div>
+<div class="form-layout">
+    <div class="form-container">
+        <!-- Form Header -->
 
-    <!-- Task Form -->
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card form-card">
-                <div class="card-body">
-                    <form id="taskForm" method="post">
-                        {% csrf_token %}
-                        
-                        <!-- Title -->
-                        <div class="mb-3">
-                            <label for="title" class="form-label">
-                                {% trans "Title" %} <span class="text-danger">*</span>
+        <!-- Form Content Layout -->
+        <div class="flex gap-6">
+            <!-- Main Form Content -->
+            <div class="form-main-content">
+                <div class="form-card-linguify">
+                <form id="taskForm" method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Title -->
+                    <div class="form-group-linguify">
+                        <label for="title" class="form-label-linguify">
+                            {% trans "Title" %} <span class="text-required">*</span>
+                        </label>
+                        <input type="text" class="input-linguify" id="title" name="title" 
+                               value="{{ task.title|default:'' }}" required autofocus>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="form-group-linguify">
+                        <label for="description" class="form-label-linguify">
+                            {% trans "Description" %}
+                        </label>
+                        <textarea class="textarea-linguify" id="description" name="description" 
+                                  rows="4" placeholder="{% trans 'Add task details...' %}">{{ task.description|default:'' }}</textarea>
+                    </div>
+                    
+                    <!-- Row 1: Project & Stage -->
+                    <div class="form-row-linguify">
+                        <div class="form-group-linguify">
+                            <label for="project" class="form-label-linguify">
+                                {% trans "Project" %}
                             </label>
-                            <input type="text" class="form-control" id="title" name="title" 
-                                   value="{{ task.title|default:'' }}" required autofocus>
+                            <select class="select-linguify" id="project" name="project">
+                                <option value="">{% trans "No Project" %}</option>
+                                {% for project in projects %}
+                                <option value="{{ project.id }}" 
+                                        {% if task.project_id == project.id %}selected{% endif %}>
+                                    {{ project.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
                         </div>
-                        
-                        <!-- Description -->
-                        <div class="mb-3">
-                            <label for="description" class="form-label">
-                                {% trans "Description" %}
+                        <div class="form-group-linguify">
+                            <label for="personal_stage_type" class="form-label-linguify">
+                                {% trans "Stage" %}
                             </label>
-                            <textarea class="form-control" id="description" name="description" 
-                                      rows="4" placeholder="{% trans 'Add task details...' %}">{{ task.description|default:'' }}</textarea>
+                            <select class="select-linguify" id="personal_stage_type" name="personal_stage_type">
+                                {% for stage in stages %}
+                                <option value="{{ stage.id }}" 
+                                        {% if task.personal_stage_type_id == stage.id %}selected{% endif %}>
+                                    {{ stage.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
                         </div>
-                        
-                        <!-- Row 1: Project & Stage -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="project" class="form-label">
-                                    {% trans "Project" %}
-                                </label>
-                                <select class="form-select" id="project" name="project">
-                                    <option value="">{% trans "No Project" %}</option>
-                                    {% for project in projects %}
-                                    <option value="{{ project.id }}" 
-                                            {% if task.project_id == project.id %}selected{% endif %}>
-                                        {{ project.name }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="personal_stage_type" class="form-label">
-                                    {% trans "Stage" %}
-                                </label>
-                                <select class="form-select" id="personal_stage_type" name="personal_stage_type">
-                                    {% for stage in stages %}
-                                    <option value="{{ stage.id }}" 
-                                            {% if task.personal_stage_type_id == stage.id %}selected{% endif %}>
-                                        {{ stage.name }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
+                    </div>
+                    
+                    <!-- Row 2: Priority & Color -->
+                    <div class="form-row-linguify">
+                        <div class="form-group-linguify">
+                            <label for="priority" class="form-label-linguify">
+                                {% trans "Priority" %}
+                            </label>
+                            <select class="select-linguify" id="priority" name="priority">
+                                {% for value, label in priority_choices %}
+                                <option value="{{ value }}" 
+                                        {% if task.priority == value %}selected{% endif %}>
+                                    {% if value == '1' %}⭐ {% endif %}{{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group-linguify">
+                            <label for="color" class="form-label-linguify">
+                                {% trans "Color" %}
+                            </label>
+                            <div class="color-selector-linguify">
+                                {% for i in "0123456789AB" %}
+                                <input type="radio" class="color-option-linguify" name="color" value="{{ forloop.counter0 }}" 
+                                       id="color{{ forloop.counter0 }}"
+                                       {% if task.color == forloop.counter0 or forloop.counter0 == 0 and not task.color %}checked{% endif %}>
+                                <label for="color{{ forloop.counter0 }}" class="color-label-linguify color-{{ forloop.counter0 }}" 
+                                       title="Color {{ forloop.counter0 }}"></label>
+                                {% endfor %}
                             </div>
                         </div>
-                        
-                        <!-- Row 2: Priority & Color -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="priority" class="form-label">
-                                    {% trans "Priority" %}
-                                </label>
-                                <select class="form-select" id="priority" name="priority">
-                                    {% for value, label in priority_choices %}
-                                    <option value="{{ value }}" 
-                                            {% if task.priority == value %}selected{% endif %}>
-                                        {% if value == '1' %}⭐ {% endif %}{{ label }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
+                    </div>
+                    
+                    <!-- Row 3: Dates -->
+                    <div class="form-row-linguify">
+                        <div class="form-group-linguify">
+                            <label for="start_date" class="form-label-linguify">
+                                {% trans "Start Date" %}
+                            </label>
+                            <input type="datetime-local" class="input-linguify" id="start_date" name="start_date" 
+                                   value="{{ task.start_date|date:'Y-m-d\TH:i'|default:'' }}">
+                        </div>
+                        <div class="form-group-linguify">
+                            <label for="due_date" class="form-label-linguify">
+                                {% trans "Due Date" %}
+                            </label>
+                            <input type="datetime-local" class="input-linguify" id="due_date" name="due_date" 
+                                   value="{{ task.due_date|date:'Y-m-d\TH:i'|default:'' }}">
+                        </div>
+                    </div>
+                    
+                    <!-- Progress -->
+                    {% if task %}
+                    <div class="form-group-linguify">
+                        <label for="progress" class="form-label-linguify">
+                            {% trans "Progress" %}: <span id="progressValue">{{ task.progress_percentage|default:0 }}%</span>
+                        </label>
+                        <input type="range" class="range-linguify" id="progress" name="progress_percentage" 
+                               min="0" max="100" step="5" value="{{ task.progress_percentage|default:0 }}">
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Tags -->
+                    <div class="form-group-linguify">
+                        <label class="form-label-linguify">
+                            {% trans "Tags" %}
+                        </label>
+                        <div class="tags-container-linguify">
+                            <div class="selected-tags-linguify" id="selectedTags">
+                                {% for tag in task.tags.all %}
+                                <span class="tag-badge-linguify" data-tag-id="{{ tag.id }}" style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
+                                    {{ tag.name }}
+                                    <button type="button" class="tag-remove-linguify" onclick="removeTag('{{ tag.id }}')">&times;</button>
+                                </span>
+                                {% endfor %}
                             </div>
-                            <div class="col-md-6">
-                                <label for="color" class="form-label">
-                                    {% trans "Color" %}
-                                </label>
-                                <div class="color-selector">
-                                    {% for i in "0123456789AB" %}
-                                    <input type="radio" class="color-option" name="color" value="{{ forloop.counter0 }}" 
-                                           id="color{{ forloop.counter0 }}"
-                                           {% if task.color == forloop.counter0 or forloop.counter0 == 0 and not task.color %}checked{% endif %}>
-                                    <label for="color{{ forloop.counter0 }}" class="color-label color-{{ forloop.counter0 }}" 
-                                           title="Color {{ forloop.counter0 }}"></label>
-                                    {% endfor %}
+                            <div class="tag-input-group-linguify">
+                                <input type="text" class="input-linguify input-sm-linguify" id="tagInput" 
+                                       placeholder="{% trans 'Type to search or create tags...' %}">
+                                <div class="tag-suggestions-linguify" id="tagSuggestions">
+                                    <!-- Tag suggestions will appear here -->
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Row 3: Dates -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="start_date" class="form-label">
-                                    {% trans "Start Date" %}
-                                </label>
-                                <input type="datetime-local" class="form-control" id="start_date" name="start_date" 
-                                       value="{{ task.start_date|date:'Y-m-d\TH:i'|default:'' }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="due_date" class="form-label">
-                                    {% trans "Due Date" %}
-                                </label>
-                                <input type="datetime-local" class="form-control" id="due_date" name="due_date" 
-                                       value="{{ task.due_date|date:'Y-m-d\TH:i'|default:'' }}">
-                            </div>
-                        </div>
-                        
-                        <!-- Progress -->
-                        {% if task %}
-                        <div class="mb-3">
-                            <label for="progress" class="form-label">
-                                {% trans "Progress" %}: <span id="progressValue">{{ task.progress_percentage|default:0 }}%</span>
-                            </label>
-                            <input type="range" class="form-range" id="progress" name="progress_percentage" 
-                                   min="0" max="100" step="5" value="{{ task.progress_percentage|default:0 }}">
-                        </div>
-                        {% endif %}
-                        
-                        <!-- Tags -->
-                        <div class="mb-3">
-                            <label class="form-label">
-                                {% trans "Tags" %}
-                            </label>
-                            <div class="tags-container">
-                                <div class="selected-tags mb-2" id="selectedTags">
-                                    {% for tag in task.tags.all %}
-                                    <span class="tag-badge" data-tag-id="{{ tag.id }}" style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
-                                        {{ tag.name }}
-                                        <button type="button" class="tag-remove" onclick="removeTag('{{ tag.id }}')">&times;</button>
-                                    </span>
-                                    {% endfor %}
-                                </div>
-                                <div class="tag-input-group">
-                                    <input type="text" class="form-control form-control-sm" id="tagInput" 
-                                           placeholder="{% trans 'Type to search or create tags...' %}">
-                                    <div class="tag-suggestions" id="tagSuggestions">
-                                        <!-- Tag suggestions will appear here -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Hidden tags input -->
-                        <input type="hidden" name="tags" id="tagsInput" 
-                               value="{% for tag in task.tags.all %}{{ tag.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
-                    </form>
-                </div>
+                    </div>
+                    
+                    <!-- Hidden tags input -->
+                    <input type="hidden" name="tags" id="tagsInput" 
+                           value="{% for tag in task.tags.all %}{{ tag.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                </form>
             </div>
         </div>
         
         <!-- Sidebar -->
-        <div class="col-lg-4">
+        <div class="form-sidebar">
             <!-- Actions Card -->
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h6 class="card-title">{% trans "Actions" %}</h6>
-                    
-                    <div class="d-grid gap-2">
-                        <button type="submit" form="taskForm" class="btn btn-primary">
+            <div class="sidebar-card-linguify">
+                <div class="sidebar-header-linguify">
+                    <h6>{% trans "Actions" %}</h6>
+                </div>
+                <div class="sidebar-content-linguify">
+                    <div class="form-actions-stack">
+                        <button type="submit" form="taskForm" class="btn-linguify btn-full">
                             <i class="bi bi-check"></i>
                             {% if task %}{% trans "Update Task" %}{% else %}{% trans "Create Task" %}{% endif %}
                         </button>
                         
                         {% if task %}
-                        <button type="button" class="btn btn-outline-success" onclick="toggleTaskComplete()">
+                        <button type="button" class="btn-linguify-outline btn-full btn-success" onclick="toggleTaskComplete()">
                             {% if task.state == '1_done' %}
                             <i class="bi bi-arrow-counterclockwise"></i> {% trans "Mark as Incomplete" %}
                             {% else %}
@@ -210,7 +184,7 @@
                             {% endif %}
                         </button>
                         
-                        <button type="button" class="btn btn-outline-danger" onclick="deleteTask()">
+                        <button type="button" class="btn-linguify-outline btn-full btn-danger" onclick="deleteTask()">
                             <i class="bi bi-trash"></i> {% trans "Delete Task" %}
                         </button>
                         {% endif %}
@@ -220,33 +194,34 @@
             
             <!-- Info Card -->
             {% if task %}
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h6 class="card-title">{% trans "Information" %}</h6>
-                    
-                    <div class="info-item">
-                        <small class="text-muted">{% trans "Created" %}</small>
-                        <div>{{ task.created_at|date:"M d, Y H:i" }}</div>
+            <div class="sidebar-card-linguify">
+                <div class="sidebar-header-linguify">
+                    <h6>{% trans "Information" %}</h6>
+                </div>
+                <div class="sidebar-content-linguify">
+                    <div class="info-item-linguify">
+                        <small class="info-label">{% trans "Création" %}</small>
+                        <div class="info-value">{{ task.created_at|date:"M d, Y H:i" }}</div>
                     </div>
                     
                     {% if task.updated_at != task.created_at %}
-                    <div class="info-item">
-                        <small class="text-muted">{% trans "Last Modified" %}</small>
-                        <div>{{ task.updated_at|date:"M d, Y H:i" }}</div>
+                    <div class="info-item-linguify">
+                        <small class="info-label">{% trans "Last Modified" %}</small>
+                        <div class="info-value">{{ task.updated_at|date:"M d, Y H:i" }}</div>
                     </div>
                     {% endif %}
                     
                     {% if task.completed_at %}
-                    <div class="info-item">
-                        <small class="text-muted">{% trans "Completed" %}</small>
-                        <div>{{ task.completed_at|date:"M d, Y H:i" }}</div>
+                    <div class="info-item-linguify">
+                        <small class="info-label">{% trans "Completed" %}</small>
+                        <div class="info-value">{{ task.completed_at|date:"M d, Y H:i" }}</div>
                     </div>
                     {% endif %}
                     
-                    <div class="info-item">
-                        <small class="text-muted">{% trans "Status" %}</small>
-                        <div>
-                            <span class="badge bg-{{ task.state|slice:'2:' }}" style="background-color: {{ task.personal_stage_type.color }}20 !important; color: {{ task.personal_stage_type.color }} !important;">
+                    <div class="info-item-linguify">
+                        <small class="info-label">{% trans "Status" %}</small>
+                        <div class="info-value">
+                            <span class="badge-linguify" style="background-color: {{ task.personal_stage_type.color }}20; color: {{ task.personal_stage_type.color }};">
                                 {{ task.personal_stage_type.name }}
                             </span>
                         </div>
@@ -256,19 +231,21 @@
             {% endif %}
             
             <!-- Quick Tips -->
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-title">{% trans "Quick Tips" %}</h6>
-                    <ul class="list-unstyled small text-muted mb-0">
-                        <li class="mb-1">
+            <div class="sidebar-card-linguify">
+                <div class="sidebar-header-linguify">
+                    <h6>{% trans "Quick Tips" %}</h6>
+                </div>
+                <div class="sidebar-content-linguify">
+                    <ul class="tips-list-linguify">
+                        <li>
                             <i class="bi bi-lightbulb text-warning"></i>
                             {% trans "Use tags to organize related tasks" %}
                         </li>
-                        <li class="mb-1">
+                        <li>
                             <i class="bi bi-calendar text-info"></i>
                             {% trans "Set due dates to track deadlines" %}
                         </li>
-                        <li class="mb-1">
+                        <li>
                             <i class="bi bi-star text-primary"></i>
                             {% trans "Star important tasks for quick access" %}
                         </li>
@@ -280,181 +257,13 @@
                 </div>
             </div>
         </div>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_css %}
-<style>
-.todo-form-workspace {
-    padding: 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.form-card {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.breadcrumb-nav {
-    font-size: 0.85rem;
-    margin-top: 0.25rem;
-}
-
-.breadcrumb-link {
-    color: #6c757d;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.breadcrumb-link:hover {
-    color: #007bff;
-}
-
-.breadcrumb-separator {
-    color: #adb5bd;
-    margin: 0 0.5rem;
-}
-
-.breadcrumb-current {
-    color: #495057;
-    font-weight: 500;
-}
-
-.color-selector {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.color-option {
-    display: none;
-}
-
-.color-label {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.color-option:checked + .color-label {
-    border-color: #007bff;
-    transform: scale(1.1);
-}
-
-.color-option:checked + .color-label::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-weight: bold;
-    font-size: 12px;
-    text-shadow: 0 0 2px rgba(0,0,0,0.8);
-}
-
-/* Color definitions */
-.color-0 { background-color: #6c757d; }
-.color-1 { background-color: #dc3545; }
-.color-2 { background-color: #fd7e14; }
-.color-3 { background-color: #ffc107; }
-.color-4 { background-color: #28a745; }
-.color-5 { background-color: #20c997; }
-.color-6 { background-color: #17a2b8; }
-.color-7 { background-color: #007bff; }
-.color-8 { background-color: #6f42c1; }
-.color-9 { background-color: #e83e8c; }
-.color-10 { background-color: #343a40; }
-.color-11 { background-color: #f8f9fa; }
-
-.tags-container {
-    position: relative;
-}
-
-.selected-tags {
-    min-height: 40px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    padding: 0.5rem;
-    background: white;
-}
-
-.tag-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    margin-right: 0.25rem;
-    margin-bottom: 0.25rem;
-}
-
-.tag-remove {
-    background: none;
-    border: none;
-    color: inherit;
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0;
-    margin-left: 0.25rem;
-    opacity: 0.7;
-}
-
-.tag-remove:hover {
-    opacity: 1;
-}
-
-.tag-suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 1000;
-    display: none;
-}
-
-.tag-suggestion {
-    padding: 0.5rem 0.75rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.tag-suggestion:hover {
-    background-color: #f8f9fa;
-}
-
-.tag-suggestion.create {
-    color: #007bff;
-    font-style: italic;
-}
-
-.info-item {
-    margin-bottom: 0.75rem;
-}
-
-.info-item:last-child {
-    margin-bottom: 0;
-}
-
-#progressValue {
-    font-weight: 600;
-    color: #007bff;
-}
-</style>
+<!-- All styles are centralized in tailwind-modals.css -->
 {% endblock %}
 
 {% block extra_js %}
