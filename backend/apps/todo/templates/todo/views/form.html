@@ -12,7 +12,7 @@
 <div class="form-layout">
     <div class="form-container">
         <!-- Form Content Layout -->
-        <div class="flex gap-6">
+        <div class="form-layout-full-width">
             <!-- Main Form Content -->
             <div class="form-main-content">
                 <div class="form-card-linguify">
@@ -29,7 +29,7 @@
                     </div>
                     
                     <!-- Description -->
-                    <div class="form-group-linguify">
+                    <div class="form-group-description-linguify">
                         <label for="description" class="form-label-linguify">
                             {% trans "Description" %}
                         </label>
@@ -37,120 +37,6 @@
                         <input type="hidden" id="description" name="description" value="{{ task.description|default:'' }}">
                     </div>
                     
-                    <!-- Row 1: Project & Stage -->
-                    <div class="form-row-linguify">
-                        <div class="form-group-linguify">
-                            <label for="project" class="form-label-linguify">
-                                {% trans "Project" %}
-                            </label>
-                            <select class="select-linguify" id="project" name="project">
-                                <option value="">{% trans "No Project" %}</option>
-                                {% for project in projects %}
-                                <option value="{{ project.id }}" 
-                                        {% if task.project_id == project.id %}selected{% endif %}>
-                                    {{ project.name }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group-linguify">
-                            <label for="personal_stage_type" class="form-label-linguify">
-                                {% trans "Stage" %}
-                            </label>
-                            <select class="select-linguify" id="personal_stage_type" name="personal_stage_type">
-                                {% for stage in stages %}
-                                <option value="{{ stage.id }}" 
-                                        {% if task.personal_stage_type_id == stage.id %}selected{% endif %}>
-                                    {{ stage.name }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Row 2: Priority & Color -->
-                    <div class="form-row-linguify">
-                        <div class="form-group-linguify">
-                            <label for="priority" class="form-label-linguify">
-                                {% trans "Priority" %}
-                            </label>
-                            <select class="select-linguify" id="priority" name="priority">
-                                {% for value, label in priority_choices %}
-                                <option value="{{ value }}" 
-                                        {% if task.priority == value %}selected{% endif %}>
-                                    {% if value == '1' %}⭐ {% endif %}{{ label }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group-linguify">
-                            <label for="color" class="form-label-linguify">
-                                {% trans "Color" %}
-                            </label>
-                            <div class="color-selector-linguify">
-                                {% for i in "0123456789AB" %}
-                                <input type="radio" class="color-option-linguify" name="color" value="{{ forloop.counter0 }}" 
-                                       id="color{{ forloop.counter0 }}"
-                                       {% if task.color == forloop.counter0 or forloop.counter0 == 0 and not task.color %}checked{% endif %}>
-                                <label for="color{{ forloop.counter0 }}" class="color-label-linguify color-{{ forloop.counter0 }}" 
-                                       title="Color {{ forloop.counter0 }}"></label>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Row 3: Dates -->
-                    <div class="form-row-linguify">
-                        <div class="form-group-linguify">
-                            <label for="start_date" class="form-label-linguify">
-                                {% trans "Start Date" %}
-                            </label>
-                            <input type="datetime-local" class="input-linguify" id="start_date" name="start_date" 
-                                   value="{{ task.start_date|date:'Y-m-d\TH:i'|default:'' }}">
-                        </div>
-                        <div class="form-group-linguify">
-                            <label for="due_date" class="form-label-linguify">
-                                {% trans "Due Date" %}
-                            </label>
-                            <input type="datetime-local" class="input-linguify" id="due_date" name="due_date" 
-                                   value="{{ task.due_date|date:'Y-m-d\TH:i'|default:'' }}">
-                        </div>
-                    </div>
-                    
-                    <!-- Progress -->
-                    {% if task %}
-                    <div class="form-group-linguify">
-                        <label for="progress" class="form-label-linguify">
-                            {% trans "Progress" %}: <span id="progressValue">{{ task.progress_percentage|default:0 }}%</span>
-                        </label>
-                        <input type="range" class="range-linguify" id="progress" name="progress_percentage" 
-                               min="0" max="100" step="5" value="{{ task.progress_percentage|default:0 }}">
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Tags -->
-                    <div class="form-group-linguify">
-                        <label class="form-label-linguify">
-                            {% trans "Tags" %}
-                        </label>
-                        <div class="tags-container-linguify">
-                            <div class="selected-tags-linguify" id="selectedTags">
-                                {% for tag in task.tags.all %}
-                                <span class="tag-badge-linguify" data-tag-id="{{ tag.id }}" style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
-                                    {{ tag.name }}
-                                    <button type="button" class="tag-remove-linguify" onclick="removeTag('{{ tag.id }}')">&times;</button>
-                                </span>
-                                {% endfor %}
-                            </div>
-                            <div class="tag-input-group-linguify">
-                                <input type="text" class="input-linguify input-sm-linguify" id="tagInput" 
-                                       placeholder="{% trans 'Type to search or create tags...' %}">
-                                <div class="tag-suggestions-linguify" id="tagSuggestions">
-                                    <!-- Tag suggestions will appear here -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     
                     <!-- Hidden tags input -->
                     <input type="hidden" name="tags" id="tagsInput" 
@@ -190,6 +76,118 @@
                 </div>
             </div>
             
+            <!-- Configuration Card -->
+            <div class="sidebar-card-linguify">
+                <div class="sidebar-header-linguify">
+                    <h6>{% trans "Configuration" %}</h6>
+                </div>
+                <div class="sidebar-content-linguify">
+                    <!-- Project -->
+                    <div class="form-group-linguify">
+                        <label for="project" class="form-label-linguify">
+                            {% trans "Project" %}
+                        </label>
+                        <select class="select-linguify" id="project" name="project" form="taskForm">
+                            <option value="">{% trans "No Project" %}</option>
+                            {% for project in projects %}
+                            <option value="{{ project.id }}" 
+                                    {% if task.project_id == project.id %}selected{% endif %}>
+                                {{ project.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Stage -->
+                    <div class="form-group-linguify">
+                        <label for="personal_stage_type" class="form-label-linguify">
+                            {% trans "Stage" %}
+                        </label>
+                        <select class="select-linguify" id="personal_stage_type" name="personal_stage_type" form="taskForm">
+                            {% for stage in stages %}
+                            <option value="{{ stage.id }}" 
+                                    {% if task.personal_stage_type_id == stage.id %}selected{% endif %}>
+                                {{ stage.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Priority -->
+                    <div class="form-group-linguify">
+                        <label for="priority" class="form-label-linguify">
+                            {% trans "Priority" %}
+                        </label>
+                        <select class="select-linguify" id="priority" name="priority" form="taskForm">
+                            {% for value, label in priority_choices %}
+                            <option value="{{ value }}" 
+                                    {% if task.priority == value %}selected{% endif %}>
+                                {% if value == '1' %}⭐ {% endif %}{{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Color -->
+                    <div class="form-group-linguify">
+                        <label class="form-label-linguify">
+                            {% trans "Color" %}
+                        </label>
+                        <div class="color-selector-linguify">
+                            {% for i in "0123456789AB" %}
+                            <input type="radio" class="color-option-linguify" name="color" value="{{ forloop.counter0 }}" 
+                                   id="color{{ forloop.counter0 }}" form="taskForm"
+                                   {% if task.color == forloop.counter0 or forloop.counter0 == 0 and not task.color %}checked{% endif %}>
+                            <label for="color{{ forloop.counter0 }}" class="color-label-linguify color-{{ forloop.counter0 }}" 
+                                   title="Color {{ forloop.counter0 }}"></label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Start Date -->
+                    <div class="form-group-linguify">
+                        <label for="start_date" class="form-label-linguify">
+                            {% trans "Start Date" %}
+                        </label>
+                        <input type="datetime-local" class="input-linguify" id="start_date" name="start_date" 
+                               value="{{ task.start_date|date:'Y-m-d\TH:i'|default:'' }}" form="taskForm">
+                    </div>
+                    
+                    <!-- Due Date -->
+                    <div class="form-group-linguify">
+                        <label for="due_date" class="form-label-linguify">
+                            {% trans "Due Date" %}
+                        </label>
+                        <input type="datetime-local" class="input-linguify" id="due_date" name="due_date" 
+                               value="{{ task.due_date|date:'Y-m-d\TH:i'|default:'' }}" form="taskForm">
+                    </div>
+                    
+                    <!-- Tags -->
+                    <div class="form-group-linguify">
+                        <label class="form-label-linguify">
+                            {% trans "Tags" %}
+                        </label>
+                        <div class="tags-container-linguify">
+                            <div class="selected-tags-linguify" id="selectedTags">
+                                {% for tag in task.tags.all %}
+                                <span class="tag-badge-linguify" data-tag-id="{{ tag.id }}" style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
+                                    {{ tag.name }}
+                                    <button type="button" class="tag-remove-linguify" onclick="removeTag('{{ tag.id }}')">&times;</button>
+                                </span>
+                                {% endfor %}
+                            </div>
+                            <div class="tag-input-group-linguify">
+                                <input type="text" class="input-linguify input-sm-linguify" id="tagInput" 
+                                       placeholder="{% trans 'Type to search or create tags...' %}">
+                                <div class="tag-suggestions-linguify" id="tagSuggestions">
+                                    <!-- Tag suggestions will appear here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Info Card -->
             {% if task %}
             <div class="sidebar-card-linguify">
@@ -224,36 +222,10 @@
                             </span>
                         </div>
                     </div>
+                    
                 </div>
             </div>
             {% endif %}
-            
-            <!-- Quick Tips -->
-            <div class="sidebar-card-linguify">
-                <div class="sidebar-header-linguify">
-                    <h6>{% trans "Quick Tips" %}</h6>
-                </div>
-                <div class="sidebar-content-linguify">
-                    <ul class="tips-list-linguify">
-                        <li>
-                            <i class="bi bi-lightbulb text-warning"></i>
-                            {% trans "Use tags to organize related tasks" %}
-                        </li>
-                        <li>
-                            <i class="bi bi-calendar text-info"></i>
-                            {% trans "Set due dates to track deadlines" %}
-                        </li>
-                        <li>
-                            <i class="bi bi-star text-primary"></i>
-                            {% trans "Star important tasks for quick access" %}
-                        </li>
-                        <li>
-                            <i class="bi bi-palette text-success"></i>
-                            {% trans "Use colors to categorize tasks visually" %}
-                        </li>
-                    </ul>
-                </div>
-            </div>
         </div>
         </div>
     </div>
@@ -269,15 +241,6 @@
 <script src="{% static 'js/command-palette/linguify-rich-editor.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Progress slider update
-    const progressSlider = document.getElementById('progress');
-    const progressValue = document.getElementById('progressValue');
-    
-    if (progressSlider && progressValue) {
-        progressSlider.addEventListener('input', function() {
-            progressValue.textContent = this.value + '%';
-        });
-    }
     
     // Tag management
     const tagInput = document.getElementById('tagInput');
