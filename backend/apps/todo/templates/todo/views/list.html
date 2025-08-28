@@ -1,0 +1,520 @@
+{% extends "todo/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block page_title %}Todo - List{% endblock %}
+
+{% block header_content %}
+{% include 'components/todo_navbar.html' with active_view='list' %}
+{% endblock %}
+
+{% block content %}
+<div class="todo-list-workspace">
+    <!-- List Controls -->
+    <div class="list-controls mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <h4 class="mb-0">{% trans "Tasks List" %}</h4>
+                <div class="view-controls">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="{% url 'todo_web:kanban' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-kanban"></i> {% trans "Kanban" %}
+                        </a>
+                        <a href="{% url 'todo_web:list' %}" class="btn btn-primary">
+                            <i class="bi bi-list-ul"></i> {% trans "List" %}
+                        </a>
+                        <a href="{% url 'todo_web:activity' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-clock-history"></i> {% trans "Activity" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-actions">
+                <button class="btn btn-success btn-sm" onclick="createNewTask()">
+                    <i class="bi bi-plus-lg"></i> {% trans "New Task" %}
+                </button>
+                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="exportTasks()">
+                        <i class="bi bi-download"></i> {% trans "Export List" %}
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" onclick="importTasks()">
+                        <i class="bi bi-upload"></i> {% trans "Import Tasks" %}
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="bulkActions()">
+                        <i class="bi bi-check-all"></i> {% trans "Bulk Actions" %}
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="list-filters mb-3">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="filter-group">
+                    <label class="form-label small">{% trans "Search" %}</label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" id="searchInput" 
+                               placeholder="{% trans 'Search tasks...' %}" 
+                               value="{{ current_filters.search }}">
+                        <button class="btn btn-outline-secondary" onclick="clearSearch()">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="filter-group">
+                    <label class="form-label small">{% trans "Project" %}</label>
+                    <select class="form-select form-select-sm" id="projectFilter">
+                        <option value="">{% trans "All Projects" %}</option>
+                        {% for project in projects %}
+                        <option value="{{ project.id }}" {% if current_filters.project == project.id|stringformat:"s" %}selected{% endif %}>
+                            {{ project.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="filter-group">
+                    <label class="form-label small">{% trans "Stage" %}</label>
+                    <select class="form-select form-select-sm" id="stageFilter">
+                        <option value="">{% trans "All Stages" %}</option>
+                        {% for stage in stages %}
+                        <option value="{{ stage.id }}" {% if current_filters.stage == stage.id|stringformat:"s" %}selected{% endif %}>
+                            {{ stage.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="filter-group">
+                    <label class="form-label small">{% trans "Status" %}</label>
+                    <select class="form-select form-select-sm" id="statusFilter">
+                        <option value="">{% trans "All" %}</option>
+                        <option value="open" {% if current_filters.status == 'open' %}selected{% endif %}>{% trans "Open" %}</option>
+                        <option value="closed" {% if current_filters.status == 'closed' %}selected{% endif %}>{% trans "Closed" %}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="filter-group">
+                    <label class="form-label small">{% trans "Priority" %}</label>
+                    <select class="form-select form-select-sm" id="priorityFilter">
+                        <option value="">{% trans "All" %}</option>
+                        <option value="1" {% if current_filters.priority == '1' %}selected{% endif %}>{% trans "Starred" %}</option>
+                        <option value="0" {% if current_filters.priority == '0' %}selected{% endif %}>{% trans "Normal" %}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <label class="form-label small">&nbsp;</label>
+                <button class="btn btn-outline-primary btn-sm d-block" onclick="applyFilters()">
+                    <i class="bi bi-funnel"></i> {% trans "Filter" %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tasks Table -->
+    <div class="tasks-table-container">
+        <div class="table-responsive">
+            <table class="table table-hover tasks-table" id="tasksTable">
+                <thead class="table-light">
+                    <tr>
+                        <th width="30">
+                            <input type="checkbox" class="form-check-input" id="selectAll">
+                        </th>
+                        <th width="30"></th>
+                        <th width="30">
+                            <a href="#" class="sort-header" data-sort="priority">
+                                <i class="bi bi-star"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="#" class="sort-header" data-sort="title">
+                                {% trans "Task" %}
+                                {% if current_filters.order_by == 'title' %}
+                                <i class="bi bi-chevron-up"></i>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th width="150">
+                            <a href="#" class="sort-header" data-sort="state">
+                                {% trans "Stage" %}
+                                {% if current_filters.order_by == 'state' %}
+                                <i class="bi bi-chevron-up"></i>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th width="120">{% trans "Project" %}</th>
+                        <th width="100">{% trans "Tags" %}</th>
+                        <th width="120">
+                            <a href="#" class="sort-header" data-sort="due_date">
+                                {% trans "Due Date" %}
+                                {% if current_filters.order_by == 'due_date' %}
+                                <i class="bi bi-chevron-up"></i>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th width="100">
+                            <a href="#" class="sort-header" data-sort="created">
+                                {% trans "Created" %}
+                                {% if current_filters.order_by == 'created' %}
+                                <i class="bi bi-chevron-up"></i>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th width="80">{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr class="task-row {% if task.state == '1_done' %}completed-task{% endif %}" 
+                        data-task-id="{{ task.id }}">
+                        <td>
+                            <input type="checkbox" class="form-check-input task-select" value="{{ task.id }}">
+                        </td>
+                        <td>
+                            <div class="task-color-indicator color-{{ task.color }}" title="Color {{ task.color }}"></div>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm p-0 priority-btn" onclick="togglePriority('{{ task.id }}')" 
+                                    title="{% trans 'Toggle Priority' %}">
+                                {% if task.priority == '1' %}
+                                <i class="bi bi-star-fill text-warning"></i>
+                                {% else %}
+                                <i class="bi bi-star text-muted"></i>
+                                {% endif %}
+                            </button>
+                        </td>
+                        <td>
+                            <div class="task-title-cell">
+                                <div class="d-flex align-items-center">
+                                    <button class="btn btn-sm p-0 me-2 complete-btn" onclick="toggleComplete('{{ task.id }}')"
+                                            title="{% trans 'Toggle Complete' %}">
+                                        {% if task.state == '1_done' %}
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                        {% else %}
+                                        <i class="bi bi-circle text-muted"></i>
+                                        {% endif %}
+                                    </button>
+                                    <div>
+                                        <div class="task-title {% if task.state == '1_done' %}text-decoration-line-through text-muted{% endif %}" 
+                                             onclick="openTask('{{ task.id }}')">
+                                            {{ task.title }}
+                                            {% if task.subtask_count > 0 %}
+                                            <small class="text-muted">({{ task.completed_subtask_count }}/{{ task.subtask_count }})</small>
+                                            {% endif %}
+                                        </div>
+                                        {% if task.description %}
+                                        <small class="task-description text-muted">
+                                            {{ task.description|truncatechars:80|striptags }}
+                                        </small>
+                                        {% endif %}
+                                        {% if task.progress_percentage > 0 and task.state != '1_done' %}
+                                        <div class="progress progress-sm mt-1" style="width: 100px;">
+                                            <div class="progress-bar" style="width: {{ task.progress_percentage }}%"></div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge stage-badge" style="background-color: {{ task.personal_stage_type.color }}20; color: {{ task.personal_stage_type.color }};">
+                                {{ task.personal_stage_type.name }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if task.project %}
+                            <span class="project-name text-truncate d-inline-block" style="max-width: 100px;">
+                                {{ task.project.name }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="task-tags-cell">
+                                {% for tag in task.tags.all|slice:":3" %}
+                                <span class="badge tag-badge" style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
+                                    {{ tag.name }}
+                                </span>
+                                {% endfor %}
+                                {% if task.tags.count > 3 %}
+                                <span class="badge bg-light text-muted">+{{ task.tags.count|add:"-3" }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if task.due_date %}
+                            <span class="due-date-cell {% if task.is_overdue %}text-danger{% elif task.due_date.date == today %}text-warning{% endif %}">
+                                {% if task.due_date.date == today %}
+                                <i class="bi bi-exclamation-triangle"></i> {% trans "Today" %}
+                                {% elif task.is_overdue %}
+                                <i class="bi bi-exclamation-circle"></i> {{ task.due_date|date:"M d" }}
+                                {% else %}
+                                {{ task.due_date|date:"M d, Y" }}
+                                {% endif %}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ task.created_at|date:"M d" }}</small>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary btn-sm" onclick="editTask('{{ task.id }}')" 
+                                        title="{% trans 'Edit' %}">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="deleteTask('{{ task.id }}')" 
+                                        title="{% trans 'Delete' %}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-inbox display-4 text-muted mb-3"></i>
+                                <h5 class="text-muted">{% trans "No tasks found" %}</h5>
+                                <p class="text-muted">{% trans "Create your first task or adjust your filters" %}</p>
+                                <button class="btn btn-primary" onclick="createNewTask()">
+                                    <i class="bi bi-plus-lg"></i> {% trans "Create Task" %}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if tasks.count > 50 %}
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="text-muted">
+                {% trans "Showing" %} {{ tasks.count }} {% trans "tasks" %}
+            </div>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled">
+                        <span class="page-link">{% trans "Previous" %}</span>
+                    </li>
+                    <li class="page-item active">
+                        <span class="page-link">1</span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">{% trans "Next" %}</span>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Task Creation Modal -->
+<div class="modal fade" id="quickTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans "Create New Task" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quickTaskForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Task Title" %}</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Stage" %}</label>
+                            <select class="form-select" name="personal_stage_type">
+                                {% for stage in stages %}
+                                <option value="{{ stage.id }}">{{ stage.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Priority" %}</label>
+                            <select class="form-select" name="priority">
+                                <option value="0">{% trans "Normal" %}</option>
+                                <option value="1">{% trans "Starred" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Project" %}</label>
+                            <select class="form-select" name="project">
+                                <option value="">{% trans "No Project" %}</option>
+                                {% for project in projects %}
+                                <option value="{{ project.id }}">{{ project.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Due Date" %}</label>
+                            <input type="datetime-local" class="form-control" name="due_date">
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">{% trans "Description" %}</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-primary" onclick="submitQuickTask()">{% trans "Create Task" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.todo-list-workspace {
+    padding: 1rem;
+    min-height: calc(100vh - 120px);
+}
+
+.tasks-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.task-row {
+    transition: all 0.2s ease;
+}
+
+.task-row:hover {
+    background-color: rgba(0,123,255,0.05);
+}
+
+.task-row.completed-task {
+    background-color: rgba(40,167,69,0.05);
+}
+
+.task-title {
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.task-title:hover {
+    color: #007bff;
+}
+
+.task-description {
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
+.task-color-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.stage-badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.tag-badge {
+    font-size: 0.6rem;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.due-date-cell {
+    font-size: 0.85rem;
+}
+
+.sort-header {
+    color: #495057;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.sort-header:hover {
+    color: #007bff;
+}
+
+.priority-btn, .complete-btn {
+    border: none;
+    background: none;
+    font-size: 1.1rem;
+}
+
+.priority-btn:hover, .complete-btn:hover {
+    transform: scale(1.1);
+}
+
+.progress-sm {
+    height: 3px;
+}
+
+.filter-group label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.empty-state {
+    padding: 2rem;
+}
+
+.tasks-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Color classes */
+.color-0 { background-color: #6c757d; }
+.color-1 { background-color: #dc3545; }
+.color-2 { background-color: #fd7e14; }
+.color-3 { background-color: #ffc107; }
+.color-4 { background-color: #28a745; }
+.color-5 { background-color: #20c997; }
+.color-6 { background-color: #17a2b8; }
+.color-7 { background-color: #007bff; }
+.color-8 { background-color: #6f42c1; }
+.color-9 { background-color: #e83e8c; }
+.color-10 { background-color: #343a40; }
+.color-11 { background-color: #f8f9fa; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'todo/js/list.js' %}"></script>
+<script>
+// Initialize List functionality
+document.addEventListener('DOMContentLoaded', function() {
+    initializeList();
+});
+</script>
+{% endblock %}

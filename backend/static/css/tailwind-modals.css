@@ -29,6 +29,10 @@
     --linguify-gray-800: #1f2937;
     --linguify-gray-900: #111827;
     
+    /* Gray aliases for convenience */
+    --linguify-gray-light: var(--linguify-gray-200);
+    --linguify-gray-dark: var(--linguify-gray-700);
+    
     /* Gradient officiel */
     --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
 }
@@ -40,8 +44,9 @@
 .hidden { display: none; }
 .relative { position: relative; }
 
-/* Flexbox */
+/* Flexbox & Grid */
 .flex { display: flex; }
+.grid { display: grid; }
 .items-center { align-items: center; }
 .items-start { align-items: flex-start; }
 .justify-center { justify-content: center; }
@@ -50,6 +55,20 @@
 .flex-1 { flex: 1 1 0%; }
 .flex-shrink-0 { flex-shrink: 0; }
 .flex-wrap { flex-wrap: wrap; }
+
+/* Grid */
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+.gap-8 { gap: 2rem; }
+
+/* Responsive Grid */
+@media (min-width: 768px) {
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 
 /* Spacing */
 .p-3 { padding: 0.75rem; }

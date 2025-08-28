@@ -1,0 +1,408 @@
+{% extends "todo/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block page_title %}Todo - Kanban{% endblock %}
+
+{% block header_content %}
+{% include 'components/todo_navbar.html' with active_view='kanban' %}
+{% endblock %}
+
+{% block content %}
+<div class="todo-kanban-workspace">
+    <!-- Kanban Controls -->
+    <div class="kanban-controls mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <h4 class="mb-0">{% trans "Tasks Board" %}</h4>
+                <div class="view-controls">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="{% url 'todo_web:kanban' %}" class="btn btn-primary">
+                            <i class="bi bi-kanban"></i> {% trans "Kanban" %}
+                        </a>
+                        <a href="{% url 'todo_web:list' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-list-ul"></i> {% trans "List" %}
+                        </a>
+                        <a href="{% url 'todo_web:activity' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-clock-history"></i> {% trans "Activity" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="kanban-actions">
+                <button class="btn btn-success btn-sm" onclick="createNewTask()">
+                    <i class="bi bi-plus-lg"></i> {% trans "New Task" %}
+                </button>
+                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="configureStages()">
+                        <i class="bi bi-sliders"></i> {% trans "Configure Stages" %}
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportTasks()">
+                        <i class="bi bi-download"></i> {% trans "Export Tasks" %}
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="kanban-board-container">
+        <div class="kanban-board d-flex gap-3" id="kanbanBoard">
+            {% for stage_id, stage_data in kanban_data.items %}
+            <div class="kanban-column" data-stage-id="{{ stage_id }}">
+                <!-- Column Header -->
+                <div class="kanban-column-header" style="border-left: 4px solid {{ stage_data.stage.color }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="column-title-group">
+                            <h6 class="column-title mb-0">{{ stage_data.stage.name }}</h6>
+                            <span class="task-count badge bg-secondary">{{ stage_data.count }}</span>
+                        </div>
+                        <div class="column-actions">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="addTaskToStage('{{ stage_id }}')">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                            {% if stage_data.stage.fold %}
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleStage('{{ stage_id }}')">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
+                            {% else %}
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleStage('{{ stage_id }}')">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Container -->
+                <div class="kanban-tasks-container" id="tasks-{{ stage_id }}" {% if stage_data.stage.fold %}style="display: none;"{% endif %}>
+                    {% for task in stage_data.tasks %}
+                    <div class="kanban-card" data-task-id="{{ task.id }}" data-stage-id="{{ stage_id }}">
+                        <!-- Task Priority Indicator -->
+                        {% if task.priority == '1' %}
+                        <div class="priority-indicator starred">
+                            <i class="bi bi-star-fill text-warning"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Task Color Bar -->
+                        <div class="task-color-bar color-{{ task.color }}"></div>
+                        
+                        <!-- Task Content -->
+                        <div class="kanban-card-body">
+                            <!-- Task Title -->
+                            <div class="task-title-container">
+                                <h6 class="task-title mb-1" onclick="openTask('{{ task.id }}')">
+                                    {{ task.title }}
+                                    {% if task.subtask_count > 0 %}
+                                    <small class="text-muted">({{ task.completed_subtask_count }}/{{ task.subtask_count }})</small>
+                                    {% endif %}
+                                </h6>
+                            </div>
+                            
+                            <!-- Task Meta -->
+                            <div class="task-meta mb-2">
+                                {% if task.due_date %}
+                                <small class="due-date {% if task.is_overdue %}text-danger{% elif task.due_date.date == today %}text-warning{% endif %}">
+                                    <i class="bi bi-calendar"></i>
+                                    {% if task.due_date.date == today %}
+                                        {% trans "Today" %}
+                                    {% elif task.is_overdue %}
+                                        {{ task.due_date|date:"M d" }} ({% trans "Overdue" %})
+                                    {% else %}
+                                        {{ task.due_date|date:"M d" }}
+                                    {% endif %}
+                                </small>
+                                {% endif %}
+                                
+                                {% if task.project %}
+                                <small class="project-name text-muted ms-2">
+                                    <i class="bi bi-folder"></i> {{ task.project.name }}
+                                </small>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Task Tags -->
+                            {% if task.tags.all %}
+                            <div class="task-tags mb-2">
+                                {% for tag in task.tags.all %}
+                                <span class="tag badge" style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
+                                    {{ tag.name }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Task Progress -->
+                            {% if task.progress_percentage > 0 %}
+                            <div class="task-progress mb-2">
+                                <div class="progress progress-sm">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ task.progress_percentage }}%">
+                                    </div>
+                                </div>
+                                <small class="text-muted">{{ task.progress_percentage }}%</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Task Actions -->
+                        <div class="kanban-card-actions">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ task.created_at|timesince }} {% trans "ago" %}</small>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editTask('{{ task.id }}')" title="{% trans 'Edit' %}">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="toggleTaskComplete('{{ task.id }}')" title="{% trans 'Toggle Complete' %}">
+                                        {% if task.state == '1_done' %}
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        {% else %}
+                                        <i class="bi bi-circle"></i>
+                                        {% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Add Task Button -->
+                    <button class="add-task-btn" onclick="addTaskToStage('{{ stage_id }}')">
+                        <i class="bi bi-plus"></i> {% trans "Add a task" %}
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Add Stage Column -->
+            <div class="kanban-column add-stage-column">
+                <button class="add-stage-btn" onclick="addNewStage()">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>{% trans "Add Stage" %}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Task Creation Modal -->
+<div class="modal fade" id="quickTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans "Create New Task" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quickTaskForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Task Title" %}</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Stage" %}</label>
+                        <select class="form-select" name="personal_stage_type">
+                            {% for stage in stages %}
+                            <option value="{{ stage.id }}">{{ stage.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Project" %} ({% trans "Optional" %})</label>
+                        <select class="form-select" name="project">
+                            <option value="">{% trans "No Project" %}</option>
+                            {% for project in projects %}
+                            <option value="{{ project.id }}">{{ project.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Due Date" %} ({% trans "Optional" %})</label>
+                        <input type="datetime-local" class="form-control" name="due_date">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-primary" onclick="submitQuickTask()">{% trans "Create Task" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'todo/css/kanban.css' %}">
+<style>
+.todo-kanban-workspace {
+    padding: 1rem;
+    min-height: calc(100vh - 120px);
+}
+
+.kanban-board-container {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+}
+
+.kanban-board {
+    min-width: max-content;
+}
+
+.kanban-column {
+    width: 280px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0;
+    min-height: 500px;
+}
+
+.kanban-column-header {
+    padding: 1rem;
+    background: white;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.column-title {
+    font-weight: 600;
+    color: #495057;
+}
+
+.task-count {
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
+.kanban-tasks-container {
+    padding: 0.5rem;
+    min-height: 400px;
+}
+
+.kanban-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    position: relative;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.kanban-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.task-color-bar {
+    height: 4px;
+    border-radius: 8px 8px 0 0;
+}
+
+.color-0 { background-color: #6c757d; }
+.color-1 { background-color: #dc3545; }
+.color-2 { background-color: #fd7e14; }
+.color-3 { background-color: #ffc107; }
+.color-4 { background-color: #28a745; }
+.color-5 { background-color: #20c997; }
+.color-6 { background-color: #17a2b8; }
+.color-7 { background-color: #007bff; }
+.color-8 { background-color: #6f42c1; }
+.color-9 { background-color: #e83e8c; }
+.color-10 { background-color: #343a40; }
+.color-11 { background-color: #f8f9fa; }
+
+.kanban-card-body {
+    padding: 0.75rem;
+}
+
+.task-title {
+    font-weight: 500;
+    color: #212529;
+    cursor: pointer;
+}
+
+.task-title:hover {
+    color: #007bff;
+}
+
+.priority-indicator {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+}
+
+.task-tags .tag {
+    font-size: 0.65rem;
+    margin-right: 0.25rem;
+}
+
+.progress-sm {
+    height: 4px;
+}
+
+.kanban-card-actions {
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid #f8f9fa;
+    background: #fafbfc;
+    border-radius: 0 0 8px 8px;
+}
+
+.add-task-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px dashed #ced4da;
+    border-radius: 8px;
+    background: transparent;
+    color: #6c757d;
+    transition: all 0.2s ease;
+}
+
+.add-task-btn:hover {
+    border-color: #007bff;
+    color: #007bff;
+    background: rgba(0,123,255,0.05);
+}
+
+.add-stage-column {
+    width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-stage-btn {
+    width: 100%;
+    height: 200px;
+    border: 2px dashed #ced4da;
+    border-radius: 8px;
+    background: transparent;
+    color: #6c757d;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.add-stage-btn:hover {
+    border-color: #007bff;
+    color: #007bff;
+    background: rgba(0,123,255,0.05);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'todo/js/kanban.js' %}"></script>
+<script>
+// Initialize Kanban functionality
+document.addEventListener('DOMContentLoaded', function() {
+    initializeKanban();
+});
+</script>
+{% endblock %}

@@ -26,10 +26,12 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'saas_web/css/main.css' %}">
     
-    <!-- CSS spécifique au todo (avant app_header pour ne pas écraser) -->
+    <!-- CSS spécifique au todo -->
     <link rel="stylesheet" href="{% static 'todo/css/todo.css' %}">
+    <link rel="stylesheet" href="{% static 'todo/css/navbar.css' %}">
     
-    <!-- Tailwind CSS for modals -->
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="{% static 'css/tailwind-global.css' %}">
     <link rel="stylesheet" href="{% static 'css/tailwind-modals.css' %}">
     
     <!-- CSS du header (en dernier pour avoir la priorité) -->
@@ -197,6 +199,9 @@
             }
         };
     </script>
+    
+    <!-- Todo-specific JavaScript -->
+    <script src="{% static 'todo/js/navbar.js' %}"></script>
     
     {% block extra_js %}{% endblock %}
 </body>

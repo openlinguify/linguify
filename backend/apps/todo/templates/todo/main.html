@@ -9,105 +9,91 @@
 {% endblock %}
 
 {% block content %}
-<div class="todo-workspace d-flex h-100">
+<div class="app-flex-container">
     <!-- Sidebar -->
-    <div id="todoSidebar" class="sidebar-linguify">
-        <div class="sidebar-content">
+    <div id="todoSidebar" class="app-sidebar-layout">
+        <div class="p-6">
             <!-- Tasks list -->
-            <ul id="tasksList" class="task-list"></ul>
+            <ul id="tasksList" class="space-y-2"></ul>
             
             <!-- Empty state -->
-            <div id="tasksEmpty" class="empty-state empty-state-hidden">
-                <i class="bi bi-check-square empty-state-icon"></i>
-                <div class="empty-state-title">Aucune tache</div>
-                <div class="empty-state-description">Creez votre premiere tache pour commencer a organiser votre travail</div>
-                <button class="btn-linguify create-task-btn" onclick="createNewTask()">
+            <div id="tasksEmpty" class="hidden text-center py-16 px-8">
+                <i class="bi bi-check-square text-6xl text-linguify-gray mb-4 block"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{% trans "No tasks yet" %}</h3>
+                <p class="text-linguify-gray mb-6">{% trans "Create your first task to start organizing your work" %}</p>
+                <button class="btn-linguify" onclick="createNewTask()">
                     <i class="bi bi-plus-lg mr-2"></i>
-                    Creer une tache
+                    {% trans "Create task" %}
                 </button>
             </div>
             
             <!-- Load more -->
-            <div id="loadMoreContainer" class="text-center load-more-container">
-                <button id="loadMoreBtn" class="btn-linguify-secondary">
+            <div id="loadMoreContainer" class="text-center mt-4">
+                <button id="loadMoreBtn" class="btn-linguify-outline">
                     <i class="bi bi-arrow-down-circle mr-2"></i>
-                    Charger plus
+                    {% trans "Load more" %}
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Main Work Area -->
-    <div class="todo-content flex-fill">
+    <div class="app-content-layout">
         <!-- Enhanced Welcome state -->
-        <div id="welcomeState" class="welcome-workspace">
-            <div class="welcome-hero text-center">
-                <div class="welcome-illustration mb-4">
-                    <div class="illustration-container">
-                        <i class="bi bi-rocket-takeoff" style="font-size: 5rem; color: var(--linguify-primary);"></i>
-                        <div class="illustration-sparkles">
-                            <i class="bi bi-stars" style="position: absolute; top: 10px; right: 20px; font-size: 1.5rem; color: var(--linguify-accent); opacity: 0.7;"></i>
-                            <i class="bi bi-star" style="position: absolute; bottom: 20px; left: 10px; font-size: 1rem; color: var(--linguify-secondary); opacity: 0.8;"></i>
-                        </div>
+        <div id="welcomeState" class="flex items-center justify-center min-h-full">
+            <div class="text-center max-w-2xl px-8">
+                <div class="relative mb-8">
+                    <i class="bi bi-rocket-takeoff text-8xl text-linguify-primary block mb-4"></i>
+                    <div class="absolute -top-2 -right-8">
+                        <i class="bi bi-stars text-2xl text-linguify-accent opacity-70"></i>
+                    </div>
+                    <div class="absolute -bottom-4 -left-6">
+                        <i class="bi bi-star text-lg text-linguify-secondary opacity-80"></i>
                     </div>
                 </div>
                 
-                <h2 class="welcome-title mb-3">{% trans "Your productivity hub awaits" %}</h2>
-                <p class="welcome-subtitle text-muted mb-4">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">{% trans "Your productivity hub awaits" %}</h2>
+                <p class="text-lg text-linguify-gray mb-8">
                     {% trans "Organize your tasks, track your progress, and achieve your goals with our intuitive todo system" %}
                 </p>
                 
-                <div class="welcome-actions d-flex flex-wrap gap-3 justify-content-center mb-5">
-                    <button class="btn btn-primary btn-lg create-task-btn shadow-sm">
-                        <i class="bi bi-plus-circle me-2"></i>
+                <div class="flex flex-wrap gap-4 justify-center mb-12">
+                    <button class="btn-linguify text-lg py-4 px-8" onclick="createNewTask()">
+                        <i class="bi bi-plus-circle mr-2"></i>
                         {% trans "Create your first task" %}
                     </button>
-                    <button class="btn btn-outline-primary btn-lg" onclick="setView('kanban')">
-                        <i class="bi bi-kanban me-2"></i>
+                    <button class="btn-linguify-outline text-lg py-4 px-8" onclick="setView('kanban')">
+                        <i class="bi bi-kanban mr-2"></i>
                         {% trans "Try Kanban view" %}
                     </button>
                 </div>
                 
                 <!-- Feature highlights -->
-                <div class="welcome-features">
-                    <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="feature-card text-center">
-                                <div class="feature-icon mb-3">
-                                    <i class="bi bi-list-check" style="font-size: 2.5rem; color: var(--linguify-primary);"></i>
-                                </div>
-                                <h5 class="fw-bold mb-2">{% trans "Smart Lists" %}</h5>
-                                <p class="text-muted small">{% trans "Organize tasks by projects, priorities, and custom stages" %}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="feature-card text-center">
-                                <div class="feature-icon mb-3">
-                                    <i class="bi bi-kanban" style="font-size: 2.5rem; color: var(--linguify-accent);"></i>
-                                </div>
-                                <h5 class="fw-bold mb-2">{% trans "Kanban Board" %}</h5>
-                                <p class="text-muted small">{% trans "Visualize your workflow with customizable boards" %}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="feature-card text-center">
-                                <div class="feature-icon mb-3">
-                                    <i class="bi bi-graph-up" style="font-size: 2.5rem; color: var(--linguify-secondary);"></i>
-                                </div>
-                                <h5 class="fw-bold mb-2">{% trans "Progress Tracking" %}</h5>
-                                <p class="text-muted small">{% trans "Monitor your productivity with detailed analytics" %}</p>
-                            </div>
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="card-linguify text-center">
+                        <i class="bi bi-list-check text-4xl text-linguify-primary mb-4 block"></i>
+                        <h5 class="font-bold text-lg mb-2 text-gray-900">{% trans "Smart Lists" %}</h5>
+                        <p class="text-linguify-gray text-sm">{% trans "Organize tasks by projects, priorities, and custom stages" %}</p>
+                    </div>
+                    <div class="card-linguify text-center">
+                        <i class="bi bi-kanban text-4xl text-linguify-accent mb-4 block"></i>
+                        <h5 class="font-bold text-lg mb-2 text-gray-900">{% trans "Kanban Board" %}</h5>
+                        <p class="text-linguify-gray text-sm">{% trans "Visualize your workflow with customizable boards" %}</p>
+                    </div>
+                    <div class="card-linguify text-center">
+                        <i class="bi bi-graph-up text-4xl text-linguify-secondary mb-4 block"></i>
+                        <h5 class="font-bold text-lg mb-2 text-gray-900">{% trans "Progress Tracking" %}</h5>
+                        <p class="text-linguify-gray text-sm">{% trans "Monitor your productivity with detailed analytics" %}</p>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Task Details -->
-        <div id="taskDetails" class="task-details" style="display: none;">
+        <div id="taskDetails" class="hidden p-8">
             <!-- Task Header -->
-            <div class="border-bottom pb-3 mb-4">
-                <div class="d-flex align-items-center justify-content-between">
+            <div class="card-linguify">
+                <div class="flex items-center justify-between pb-6 mb-6 border-b border-gray-200">
                     <div class="d-flex align-items-center gap-2">
                         <button id="backToList" class="btn btn-outline-secondary btn-sm d-md-none">
                             <i class="bi bi-arrow-left"></i>

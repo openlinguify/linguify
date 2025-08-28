@@ -175,4 +175,50 @@
   .bg-linguify-light-gradient {
     @apply bg-gradient-to-br from-blue-50 to-white;
   }
+  
+  /* Linguify Text Colors */
+  .text-linguify-primary {
+    color: var(--linguify-primary, #2D5BBA);
+  }
+  
+  .text-linguify-secondary {
+    color: var(--linguify-secondary, #8B5CF6);
+  }
+  
+  .text-linguify-accent {
+    color: var(--linguify-accent, #017E84);
+  }
+  
+  .text-linguify-gray {
+    color: var(--linguify-gray, #6B7280);
+  }
+  
+  .text-linguify-gray-dark {
+    color: var(--linguify-gray-dark, #374151);
+  }
+  
+  .text-linguify-success {
+    color: var(--linguify-success, #10B981);
+  }
+  
+  .text-linguify-warning {
+    color: var(--linguify-warning, #F59E0B);
+  }
+  
+  .text-linguify-error {
+    color: var(--linguify-error, #EF4444);
+  }
+  
+  /* Linguify Hover Text Colors */
+  .hover\:text-linguify-primary:hover {
+    color: var(--linguify-primary, #2D5BBA);
+  }
+  
+  .hover\:text-linguify-secondary:hover {
+    color: var(--linguify-secondary, #8B5CF6);
+  }
+  
+  .hover\:text-linguify-accent:hover {
+    color: var(--linguify-accent, #017E84);
+  }
 }
