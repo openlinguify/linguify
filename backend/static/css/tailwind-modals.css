@@ -4500,6 +4500,94 @@ button.bg-linguify-gradient:hover,
     flex-direction: column;
 }
 
+/* Editor.js Linguify Integration */
+.editor-js-linguify {
+    flex: 1;
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    background: white;
+    min-height: 300px;
+    overflow-y: auto;
+}
+
+.editor-js-linguify .codex-editor {
+    height: 100%;
+}
+
+.editor-js-linguify .codex-editor__redactor {
+    padding: 16px !important;
+}
+
+.editor-js-linguify .ce-block__content {
+    max-width: none !important;
+    margin: 0 !important;
+}
+
+.editor-js-linguify .ce-paragraph {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--linguify-gray-900);
+}
+
+.editor-js-linguify .ce-header {
+    font-weight: 600;
+    color: var(--linguify-gray-900);
+}
+
+.editor-js-linguify .ce-toolbar__plus {
+    color: var(--linguify-gray-400);
+}
+
+.editor-js-linguify .ce-toolbar__plus:hover {
+    background: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary);
+}
+
+.editor-js-linguify .ce-toolbar__settings-btn {
+    color: var(--linguify-gray-400);
+}
+
+.editor-js-linguify .ce-toolbar__settings-btn:hover {
+    background: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary);
+}
+
+.editor-js-linguify .ce-inline-toolbar {
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.editor-js-linguify .ce-inline-toolbar__buttons {
+    padding: 4px;
+}
+
+.editor-js-linguify .ce-inline-tool {
+    color: var(--linguify-gray-600);
+}
+
+.editor-js-linguify .ce-inline-tool:hover {
+    background: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary);
+}
+
+.editor-js-linguify .ce-inline-tool--active {
+    background: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary);
+}
+
+/* Focus states */
+.editor-js-linguify:focus-within {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+}
+
+/* Placeholder styles */
+.editor-js-linguify .ce-paragraph[data-placeholder]:empty::before {
+    color: var(--linguify-gray-400);
+    font-style: italic;
+}
+
 .form-row-linguify {
     display: grid;
     grid-template-columns: 1fr 1fr;

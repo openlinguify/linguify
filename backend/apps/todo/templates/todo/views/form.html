@@ -33,7 +33,7 @@
                         <label for="description" class="form-label-linguify">
                             {% trans "Description" %}
                         </label>
-                        <div id="description-editor" class="linguify-rich-editor" data-rich-editor="true"></div>
+                        <div id="description-editor" class="editor-js-linguify"></div>
                         <input type="hidden" id="description" name="description" value="{{ task.description|default:'' }}">
                     </div>
                     
@@ -237,8 +237,13 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/command-palette/linguify-command-palette.js' %}"></script>
-<script src="{% static 'js/command-palette/linguify-rich-editor.js' %}"></script>
+<!-- Editor.js -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.29.1/dist/editorjs.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2.8.1/dist/header.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@1.9.0/dist/list.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@2.11.6/dist/paragraph.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/marker@1.4.0/dist/marker.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/inline-code@1.5.1/dist/inline-code.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -376,27 +381,76 @@ document.addEventListener('DOMContentLoaded', function() {
         tagsInput.value = tagIds.join(',');
     }
     
-    // Initialize rich editor
-    const descriptionEditor = document.getElementById('description-editor');
-    if (descriptionEditor) {
-        const richEditor = new LinguifyRichEditor(descriptionEditor, {
-            placeholder: 'Décrivez votre tâche ici...\n\nUtilisez Entrée pour aller à la ligne\nTapez / pour voir les commandes'
-        });
-        
-        // Load existing content if any
-        const existingContent = document.getElementById('description').value;
-        if (existingContent) {
-            // Simple content loading - you might want to implement proper HTML parsing
-            richEditor.addBlock('paragraph', existingContent);
+    // Initialize Editor.js
+    const editor = new EditorJS({
+        holderId: 'description-editor',
+        placeholder: 'Commencez à taper votre description...',
+        autofocus: true,
+        tools: {
+            header: {
+                class: Header,
+                inlineToolbar: true,
+                config: {
+                    placeholder: 'Titre...',
+                    levels: [2, 3, 4],
+                    defaultLevel: 2
+                }
+            },
+            paragraph: {
+                class: Paragraph,
+                inlineToolbar: true
+            },
+            list: {
+                class: List,
+                inlineToolbar: true,
+                config: {
+                    defaultStyle: 'unordered'
+                }
+            },
+            marker: {
+                class: Marker
+            },
+            inlineCode: {
+                class: InlineCode
+            }
+        },
+        inlineToolbar: ['marker', 'inlineCode']
+    });
+    
+    // Load existing content if any
+    const existingContent = document.getElementById('description').value;
+    if (existingContent) {
+        try {
+            const parsedData = JSON.parse(existingContent);
+            editor.isReady.then(() => {
+                editor.render(parsedData);
+            });
+        } catch (e) {
+            // If not JSON, create a simple paragraph block
+            editor.isReady.then(() => {
+                editor.render({
+                    blocks: [
+                        {
+                            type: 'paragraph',
+                            data: {
+                                text: existingContent
+                            }
+                        }
+                    ]
+                });
+            });
         }
-        
-        // Sync content before form submission
-        document.getElementById('taskForm').addEventListener('submit', function(e) {
-            // Export HTML content from rich editor
-            const htmlContent = richEditor.getHTML();
-            document.getElementById('description').value = htmlContent;
-        });
     }
+    
+    // Sync content before form submission
+    document.getElementById('taskForm').addEventListener('submit', async function(e) {
+        try {
+            const outputData = await editor.save();
+            document.getElementById('description').value = JSON.stringify(outputData);
+        } catch (error) {
+            console.log('Saving failed: ', error);
+        }
+    });
     
     // Form submission
     document.getElementById('taskForm').addEventListener('submit', function(e) {
