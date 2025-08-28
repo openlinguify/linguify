@@ -604,6 +604,49 @@ window.clearSearch = function() {
     }
 };
 
+// Missing table functions
+window.togglePriority = function(taskId) {
+    const taskRow = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (todoList && taskRow) {
+        todoList.togglePriority(taskId, taskRow);
+    }
+};
+
+window.toggleComplete = function(taskId) {
+    const taskRow = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (todoList && taskRow) {
+        todoList.toggleComplete(taskId, taskRow);
+    }
+};
+
+window.duplicateTask = function(taskId) {
+    console.log('Duplicating task:', taskId);
+    // This would typically make an API call to duplicate the task
+    if (confirm('Are you sure you want to duplicate this task?')) {
+        // API call would go here
+        fetch(`/todo/api/tasks/${taskId}/duplicate/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': todoList ? todoList.getCSRFToken() : '',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                todoList.showSuccess('Task duplicated successfully');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                todoList.showError('Failed to duplicate task');
+            }
+        })
+        .catch(error => {
+            console.error('Error duplicating task:', error);
+            todoList.showError('Failed to duplicate task');
+        });
+    }
+};
+
 // Initialize List
 let todoList;
 function initializeList() {

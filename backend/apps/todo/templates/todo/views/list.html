@@ -71,123 +71,165 @@
                         {% for task in tasks %}
                         <tr class="task-row-linguify {% if task.state == '1_done' %}task-completed{% endif %}" 
                             data-task-id="{{ task.id }}">
-                    <!-- Task Header -->
-                    <div class="task-header-section">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" class="form-check-input task-select" value="{{ task.id }}">
-                                <div class="task-color-indicator color-{{ task.color }}" title="Color {{ task.color }}"></div>
-                                <button class="priority-btn-linguify" onclick="togglePriority('{{ task.id }}')" 
+                            
+                            <!-- Selector Column -->
+                            <td class="col-selector">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input task-select" value="{{ task.id }}">
+                                    <label class="form-check-label"></label>
+                                </div>
+                            </td>
+                            
+                            <!-- Priority Column -->
+                            <td class="col-priority">
+                                <button class="priority-btn-table" onclick="togglePriority('{{ task.id }}')" 
                                         title="{% trans 'Toggle Priority' %}">
                                     {% if task.priority == '1' %}
-                                    <i class="bi bi-star-fill text-amber-500"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
                                     {% else %}
-                                    <i class="bi bi-star text-gray-400"></i>
+                                    <i class="bi bi-star text-muted"></i>
                                     {% endif %}
                                 </button>
-                            </div>
-                            <div class="task-actions">
-                                <button class="action-btn-linguify" onclick="editTask('{{ task.id }}')" 
-                                        title="{% trans 'Edit' %}">
-                                    <i class="bi bi-pencil"></i>
+                            </td>
+                            
+                            <!-- Status Column -->
+                            <td class="col-status">
+                                <button class="status-btn-table" onclick="toggleComplete('{{ task.id }}')"
+                                        title="{% trans 'Toggle Complete' %}">
+                                    {% if task.state == '1_done' %}
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                    {% else %}
+                                    <i class="bi bi-circle text-muted"></i>
+                                    {% endif %}
                                 </button>
-                                <button class="action-btn-linguify text-red-500" onclick="deleteTask('{{ task.id }}')" 
-                                        title="{% trans 'Delete' %}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Task Content -->
-                    <div class="task-content-section">
-                        <div class="flex items-start gap-3">
-                            <button class="complete-btn-linguify" onclick="toggleComplete('{{ task.id }}')"
-                                    title="{% trans 'Toggle Complete' %}">
-                                {% if task.state == '1_done' %}
-                                <i class="bi bi-check-circle-fill text-green-500"></i>
-                                {% else %}
-                                <i class="bi bi-circle text-gray-400"></i>
-                                {% endif %}
-                            </button>
-                            <div class="flex-1">
-                                <div class="task-title-linguify {% if task.state == '1_done' %}line-through text-gray-500{% endif %}" 
-                                     onclick="openTask('{{ task.id }}')">
-                                    {{ task.title }}
-                                    {% if task.subtask_count > 0 %}
-                                    <span class="subtask-counter">({{ task.completed_subtask_count }}/{{ task.subtask_count }})</span>
+                            </td>
+                            
+                            <!-- Title Column -->
+                            <td class="col-title">
+                                <div class="task-title-container">
+                                    <div class="task-title-text {% if task.state == '1_done' %}text-muted text-decoration-line-through{% endif %}" 
+                                         onclick="openTask('{{ task.id }}')">
+                                        {{ task.title }}
+                                        {% if task.subtask_count > 0 %}
+                                        <span class="badge badge-outline-secondary ms-2">
+                                            {{ task.completed_subtask_count }}/{{ task.subtask_count }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    {% if task.description %}
+                                    <div class="task-description-preview text-muted small">
+                                        {{ task.description|truncatechars:80|striptags }}
+                                    </div>
+                                    {% endif %}
+                                    {% if task.progress_percentage > 0 and task.state != '1_done' %}
+                                    <div class="progress mt-1" style="height: 3px;">
+                                        <div class="progress-bar" style="width: {{ task.progress_percentage }}%"></div>
+                                    </div>
                                     {% endif %}
                                 </div>
-                                {% if task.description %}
-                                <div class="task-description-linguify">
-                                    {{ task.description|truncatechars:100|striptags }}
-                                </div>
-                                {% endif %}
-                                {% if task.progress_percentage > 0 and task.state != '1_done' %}
-                                <div class="task-progress-linguify">
-                                    <div class="progress-bar-linguify" style="width: {{ task.progress_percentage }}%"></div>
-                                </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Task Meta -->
-                    <div class="task-meta-section">
-                        <div class="flex items-center justify-between flex-wrap gap-2">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <div class="stage-badge-linguify" style="background-color: {{ task.personal_stage_type.color }}20; color: {{ task.personal_stage_type.color }};">
+                            </td>
+                            
+                            <!-- Stage Column -->
+                            <td class="col-stage">
+                                <span class="badge" style="background-color: {{ task.personal_stage_type.color }}20; color: {{ task.personal_stage_type.color }}; border: 1px solid {{ task.personal_stage_type.color }}40;">
                                     {{ task.personal_stage_type.name }}
-                                </div>
+                                </span>
+                            </td>
+                            
+                            <!-- Project Column -->
+                            <td class="col-project">
                                 {% if task.project %}
-                                <div class="project-badge-linguify">
-                                    <i class="bi bi-folder"></i>
-                                    {{ task.project.name }}
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-folder text-muted me-1"></i>
+                                    <span class="text-truncate">{{ task.project.name }}</span>
                                 </div>
+                                {% else %}
+                                <span class="text-muted">—</span>
                                 {% endif %}
-                            </div>
-                            <div class="flex items-center gap-2">
-                                {% if task.due_date %}
-                                <div class="due-date-badge-linguify {% if task.is_overdue %}overdue{% elif task.due_date.date == today %}today{% endif %}">
-                                    {% if task.due_date.date == today %}
-                                    <i class="bi bi-exclamation-triangle"></i> {% trans "Today" %}
-                                    {% elif task.is_overdue %}
-                                    <i class="bi bi-exclamation-circle"></i> {{ task.due_date|date:"M d" }}
-                                    {% else %}
-                                    <i class="bi bi-calendar"></i> {{ task.due_date|date:"M d, Y" }}
+                            </td>
+                            
+                            <!-- Tags Column -->
+                            <td class="col-tags">
+                                {% if task.tags.exists %}
+                                <div class="tags-container">
+                                    {% for tag in task.tags.all|slice:":3" %}
+                                    <span class="badge badge-tag me-1" style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
+                                        {{ tag.name }}
+                                    </span>
+                                    {% endfor %}
+                                    {% if task.tags.count > 3 %}
+                                    <span class="badge badge-outline-secondary">+{{ task.tags.count|add:"-3" }}</span>
                                     {% endif %}
                                 </div>
+                                {% else %}
+                                <span class="text-muted">—</span>
                                 {% endif %}
-                                <div class="created-date-linguify">
-                                    <i class="bi bi-clock"></i> {{ task.created_at|date:"M d" }}
+                            </td>
+                            
+                            <!-- Due Date Column -->
+                            <td class="col-due-date">
+                                {% if task.due_date %}
+                                <div class="due-date-container">
+                                    {% if task.due_date.date == today %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>{% trans "Today" %}
+                                    </span>
+                                    {% elif task.is_overdue %}
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-exclamation-circle me-1"></i>{{ task.due_date|date:"M d" }}
+                                    </span>
+                                    {% else %}
+                                    <span class="text-muted">
+                                        <i class="bi bi-calendar me-1"></i>{{ task.due_date|date:"M d, Y" }}
+                                    </span>
+                                    {% endif %}
                                 </div>
-                            </div>
-                        </div>
-                        {% if task.tags.exists %}
-                        <div class="task-tags-linguify mt-2">
-                            {% for tag in task.tags.all|slice:":5" %}
-                            <span class="tag-badge-linguify" style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
-                                {{ tag.name }}
-                            </span>
-                            {% endfor %}
-                            {% if task.tags.count > 5 %}
-                            <span class="tag-more-linguify">+{{ task.tags.count|add:"-5" }}</span>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-state-linguify">
-                    <div class="flex flex-col items-center justify-center py-12">
-                        <i class="bi bi-inbox text-6xl text-gray-300 mb-4"></i>
-                        <h3 class="text-xl font-medium text-gray-600 mb-2">{% trans "No tasks found" %}</h3>
-                        <p class="text-gray-500 mb-4">{% trans "Create your first task or adjust your filters" %}</p>
-                        <button class="btn-linguify-primary" onclick="createNewTask()">
-                            <i class="bi bi-plus-lg"></i> {% trans "Create Task" %}
-                        </button>
-                    </div>
-                </div>
+                                {% else %}
+                                <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            
+                            <!-- Actions Column -->
+                            <td class="col-actions">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                            type="button" data-bs-toggle="dropdown" title="{% trans 'Actions' %}">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="editTask('{{ task.id }}')">
+                                                <i class="bi bi-pencil me-2"></i>{% trans "Edit" %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="duplicateTask('{{ task.id }}')">
+                                                <i class="bi bi-files me-2"></i>{% trans "Duplicate" %}
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="#" onclick="deleteTask('{{ task.id }}')">
+                                                <i class="bi bi-trash me-2"></i>{% trans "Delete" %}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <div class="empty-state-table">
+                                    <i class="bi bi-inbox text-muted mb-3" style="font-size: 3rem;"></i>
+                                    <h5 class="text-muted mb-2">{% trans "No tasks found" %}</h5>
+                                    <p class="text-muted mb-3">{% trans "Create your first task or adjust your filters" %}</p>
+                                    <button class="btn btn-primary" onclick="createNewTask()">
+                                        <i class="bi bi-plus-lg me-1"></i> {% trans "Create Task" %}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                 {% endfor %}
             </div>
         </div>
