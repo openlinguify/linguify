@@ -10,44 +10,6 @@
 
 {% block content %}
 <div class="todo-kanban-workspace">
-    <!-- Kanban Controls -->
-    <div class="kanban-controls mb-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <h4 class="mb-0">{% trans "Tasks Board" %}</h4>
-                <div class="view-controls">
-                    <div class="btn-group btn-group-sm" role="group">
-                        <a href="{% url 'todo_web:kanban' %}" class="btn btn-primary">
-                            <i class="bi bi-kanban"></i> {% trans "Kanban" %}
-                        </a>
-                        <a href="{% url 'todo_web:list' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-list-ul"></i> {% trans "List" %}
-                        </a>
-                        <a href="{% url 'todo_web:activity' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-clock-history"></i> {% trans "Activity" %}
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="kanban-actions">
-                <button class="btn btn-success btn-sm" onclick="createNewTask()">
-                    <i class="bi bi-plus-lg"></i> {% trans "New Task" %}
-                </button>
-                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                    <i class="bi bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="configureStages()">
-                        <i class="bi bi-sliders"></i> {% trans "Configure Stages" %}
-                    </a></li>
-                    <li><a class="dropdown-item" href="#" onclick="exportTasks()">
-                        <i class="bi bi-download"></i> {% trans "Export Tasks" %}
-                    </a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
     <!-- Kanban Board -->
     <div class="kanban-board-container">
         <div class="kanban-board d-flex gap-3" id="kanbanBoard">

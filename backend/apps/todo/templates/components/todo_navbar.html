@@ -3,7 +3,12 @@
 <!-- Todo App Navbar - Linguify Style -->
 <div class="navbar-linguify">
     <!-- Gauche: Navigation + Actions principales -->
-    <div class="navbar-section">
+    <div class="navbar-section">    
+                <!-- New Task Button - Left side -->
+        <button id="createTask" class="btn-navbar btn-navbar-primary" onclick="createNewTask()">
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-xl-inline">{% trans "New Task" %}</span>
+        </button>    
         <!-- Navigation tabs -->
         <div class="nav-tabs-group">
             <a href="{% url 'todo_web:kanban' %}" 
@@ -22,6 +27,8 @@
                 {% trans "Activity" %}
             </a>
         </div>
+        
+
         
         <!-- Refresh -->
         <button id="refreshTasks" class="btn-navbar btn-navbar-outline" title="{% trans 'Refresh tasks' %}">
@@ -77,14 +84,19 @@
         
         <!-- Actions -->
         <div class="navbar-actions-group">
+            <button id="configureTasks" class="btn-navbar btn-navbar-outline" onclick="configureStages()" title="{% trans 'Configure Stages' %}">
+                <i class="bi bi-gear"></i>
+                <span class="d-none d-xxl-inline">{% trans "Configure" %}</span>
+            </button>
+            
+            <button id="exportTasks" class="btn-navbar btn-navbar-outline" onclick="exportTasks()" title="{% trans 'Export Tasks' %}">
+                <i class="bi bi-download"></i>
+                <span class="d-none d-xxl-inline">{% trans "Export" %}</span>
+            </button>
+            
             <button id="importTasks" class="btn-navbar btn-navbar-outline" onclick="importTasks()">
                 <i class="bi bi-upload"></i>
                 <span class="d-none d-xxl-inline">{% trans "Import" %}</span>
-            </button>
-            
-            <button id="createTask" class="btn-navbar btn-navbar-primary" onclick="createNewTask()">
-                <i class="bi bi-plus-lg"></i>
-                <span class="d-none d-xxl-inline">{% trans "New Task" %}</span>
             </button>
         </div>
     </div>

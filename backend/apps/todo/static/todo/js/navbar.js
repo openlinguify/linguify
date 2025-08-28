@@ -383,9 +383,37 @@ class TodoNavbar {
 
 // Global functions for button clicks
 window.createNewTask = function() {
-    const modal = new bootstrap.Modal(document.getElementById('quickTaskModal'));
-    modal.show();
+    // Check if we're in kanban view
+    const currentView = todoNavbar ? todoNavbar.getCurrentView() : 'kanban';
+    
+    if (currentView === 'kanban') {
+        // Use existing kanban functionality to add task directly to first column
+        const firstColumn = document.querySelector('.kanban-column[data-stage-id]');
+        if (firstColumn) {
+            const stageId = firstColumn.getAttribute('data-stage-id');
+            const addBtn = firstColumn.querySelector('.add-task-btn');
+            
+            // Use the existing TodoKanban showQuickAddForm method if available
+            if (window.todoKanban && addBtn) {
+                window.todoKanban.showQuickAddForm(stageId, addBtn);
+            } else {
+                // Fallback to the original addTaskToStage function
+                window.addTaskToStage(stageId);
+            }
+        }
+    } else if (currentView === 'list') {
+        // For list view, redirect to create page or show modal
+        window.location.href = '/todo/task/create/';
+    } else {
+        // For activity or other views, show the modal
+        const modal = document.getElementById('quickTaskModal');
+        if (modal) {
+            new bootstrap.Modal(modal).show();
+        }
+    }
 };
+
+// Helper functions for other views
 
 window.exportTasks = function() {
     console.log('Exporting tasks...');
