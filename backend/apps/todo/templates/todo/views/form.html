@@ -237,13 +237,8 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Editor.js -->
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.29.1/dist/editorjs.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2.8.1/dist/header.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@1.9.0/dist/list.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@2.11.6/dist/paragraph.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/marker@1.4.0/dist/marker.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/inline-code@1.5.1/dist/inline-code.umd.min.js"></script>
+<!-- Linguify Commands Editor - All-in-One -->
+<script src="{% static 'js/commands-editor/index.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -381,75 +376,26 @@ document.addEventListener('DOMContentLoaded', function() {
         tagsInput.value = tagIds.join(',');
     }
     
-    // Initialize Editor.js
-    const editor = new EditorJS({
-        holderId: 'description-editor',
-        placeholder: 'Commencez à taper votre description...',
-        autofocus: true,
-        tools: {
-            header: {
-                class: Header,
-                inlineToolbar: true,
-                config: {
-                    placeholder: 'Titre...',
-                    levels: [2, 3, 4],
-                    defaultLevel: 2
-                }
-            },
-            paragraph: {
-                class: Paragraph,
-                inlineToolbar: true
-            },
-            list: {
-                class: List,
-                inlineToolbar: true,
-                config: {
-                    defaultStyle: 'unordered'
-                }
-            },
-            marker: {
-                class: Marker
-            },
-            inlineCode: {
-                class: InlineCode
-            }
-        },
-        inlineToolbar: ['marker', 'inlineCode']
-    });
-    
-    // Load existing content if any
+    // Initialize Linguify Commands Editor
     const existingContent = document.getElementById('description').value;
-    if (existingContent) {
-        try {
-            const parsedData = JSON.parse(existingContent);
-            editor.isReady.then(() => {
-                editor.render(parsedData);
-            });
-        } catch (e) {
-            // If not JSON, create a simple paragraph block
-            editor.isReady.then(() => {
-                editor.render({
-                    blocks: [
-                        {
-                            type: 'paragraph',
-                            data: {
-                                text: existingContent
-                            }
-                        }
-                    ]
-                });
-            });
-        }
-    }
     
-    // Sync content before form submission
-    document.getElementById('taskForm').addEventListener('submit', async function(e) {
-        try {
-            const outputData = await editor.save();
-            document.getElementById('description').value = JSON.stringify(outputData);
-        } catch (error) {
-            console.log('Saving failed: ', error);
-        }
+    initLinguifyEditorWithContent('description-editor', existingContent, {
+        placeholder: 'Décrivez votre tâche... Utilisez le bouton + pour ajouter du contenu',
+        autofocus: true
+    }).then(editor => {
+        console.log('✅ Commands Editor ready!');
+        
+        // Sync content before form submission
+        document.getElementById('taskForm').addEventListener('submit', async function(e) {
+            try {
+                const outputData = await editor.save();
+                document.getElementById('description').value = JSON.stringify(outputData);
+            } catch (error) {
+                console.log('Saving failed: ', error);
+            }
+        });
+    }).catch(error => {
+        console.error('❌ Commands Editor failed to initialize:', error);
     });
     
     // Form submission

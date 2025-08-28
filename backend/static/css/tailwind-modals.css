@@ -3901,6 +3901,178 @@ button.bg-linguify-gradient:hover,
     font-style: italic;
 }
 
+/* Additional Editor.js Tool Styles */
+
+/* Quote styles */
+.editor-js-linguify .cdx-quote {
+    border-left: 3px solid var(--linguify-primary);
+    padding-left: 16px;
+    margin: 12px 0;
+    font-style: italic;
+}
+
+.editor-js-linguify .cdx-quote__text {
+    font-size: 1rem;
+    color: var(--linguify-gray-700);
+    line-height: 1.6;
+}
+
+.editor-js-linguify .cdx-quote__caption {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-500);
+    margin-top: 8px;
+    font-style: normal;
+}
+
+/* Code block styles */
+.editor-js-linguify .ce-code__textarea {
+    background: var(--linguify-gray-50);
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    padding: 12px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.875rem;
+    color: var(--linguify-gray-900);
+    line-height: 1.4;
+}
+
+/* Table styles */
+.editor-js-linguify .tc-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+}
+
+.editor-js-linguify .tc-table__cell {
+    border: 1px solid var(--linguify-gray-300);
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    color: var(--linguify-gray-900);
+}
+
+.editor-js-linguify .tc-table__cell--selected {
+    background: rgba(45, 91, 186, 0.1);
+}
+
+/* Checklist styles */
+.editor-js-linguify .cdx-checklist {
+    margin: 8px 0;
+}
+
+.editor-js-linguify .cdx-checklist__item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.editor-js-linguify .cdx-checklist__item-checkbox {
+    margin-right: 12px;
+    margin-top: 2px;
+}
+
+.editor-js-linguify .cdx-checklist__item-text {
+    flex: 1;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--linguify-gray-900);
+}
+
+.editor-js-linguify .cdx-checklist__item--checked .cdx-checklist__item-text {
+    text-decoration: line-through;
+    color: var(--linguify-gray-500);
+}
+
+/* Delimiter styles */
+.editor-js-linguify .ce-delimiter {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.editor-js-linguify .ce-delimiter::before {
+    content: "***";
+    color: var(--linguify-gray-400);
+    font-size: 1.2rem;
+    letter-spacing: 8px;
+}
+
+/* Link styles */
+.editor-js-linguify .link-tool {
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    padding: 12px;
+    margin: 8px 0;
+}
+
+.editor-js-linguify .link-tool__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--linguify-gray-900);
+    margin-bottom: 4px;
+}
+
+.editor-js-linguify .link-tool__description {
+    font-size: 0.8125rem;
+    color: var(--linguify-gray-600);
+    margin-bottom: 8px;
+}
+
+.editor-js-linguify .link-tool__anchor {
+    color: var(--linguify-primary);
+    text-decoration: none;
+    font-size: 0.8125rem;
+}
+
+/* Alert/Banner styles */
+.editor-js-linguify .cdx-alert {
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 6px;
+    border-left: 4px solid;
+}
+
+.editor-js-linguify .cdx-alert--info {
+    background: rgba(59, 130, 246, 0.1);
+    border-left-color: #3b82f6;
+    color: #1e40af;
+}
+
+.editor-js-linguify .cdx-alert--success {
+    background: rgba(16, 185, 129, 0.1);
+    border-left-color: #10b981;
+    color: #065f46;
+}
+
+.editor-js-linguify .cdx-alert--warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-left-color: #f59e0b;
+    color: #92400e;
+}
+
+.editor-js-linguify .cdx-alert--danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+    color: #991b1b;
+}
+
+/* Image styles */
+.editor-js-linguify .image-tool {
+    text-align: center;
+    margin: 12px 0;
+}
+
+.editor-js-linguify .image-tool__image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+}
+
+.editor-js-linguify .image-tool__caption {
+    margin-top: 8px;
+    font-size: 0.8125rem;
+    color: var(--linguify-gray-500);
+    font-style: italic;
+}
+
 .form-row-linguify {
     display: grid;
     grid-template-columns: 1fr 1fr;
