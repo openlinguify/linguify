@@ -3755,11 +3755,18 @@ button.bg-linguify-gradient:hover,
 .table-header-sticky th.sortable {
     cursor: pointer;
     transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
 }
 
 .table-header-sticky th.sortable:hover {
     background-color: rgba(45, 91, 186, 0.1);
     color: var(--linguify-primary);
+}
+
+.table-header-sticky th.sortable:active {
+    background-color: rgba(45, 91, 186, 0.2);
+    transform: translateY(1px);
 }
 
 .table-header-sticky th i {
@@ -3846,6 +3853,13 @@ thead .col-selector .form-check {
 #tasksTable {
     table-layout: fixed;
     width: 100%;
+    transition: opacity 0.3s ease;
+}
+
+/* Sorting state */
+#tasksTable.sorting {
+    opacity: 0.7;
+    pointer-events: none;
 }
 
 #tasksTable th,

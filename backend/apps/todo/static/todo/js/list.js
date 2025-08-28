@@ -36,7 +36,7 @@ class TodoList {
         
         // Sort headers
         document.addEventListener('click', (e) => {
-            const sortHeader = e.target.closest('.sort-header');
+            const sortHeader = e.target.closest('.sortable');
             if (sortHeader) {
                 e.preventDefault();
                 const sortField = sortHeader.dataset.sort;
@@ -189,18 +189,9 @@ class TodoList {
     }
     
     updateSortUI() {
-        // Remove all sort indicators
-        document.querySelectorAll('.sort-header i').forEach(icon => {
-            icon.remove();
-        });
-        
-        // Add indicator to current sort column
-        const currentHeader = document.querySelector(`[data-sort="${this.currentSort.field}"]`);
-        if (currentHeader) {
-            const icon = document.createElement('i');
-            icon.className = this.currentSort.direction === 'asc' ? 'bi bi-chevron-up' : 'bi bi-chevron-down';
-            currentHeader.appendChild(icon);
-        }
+        // The sort indicators are handled server-side in the template
+        // Just add visual feedback during sorting
+        this.showSortingIndicator();
     }
     
     showSortingIndicator() {
