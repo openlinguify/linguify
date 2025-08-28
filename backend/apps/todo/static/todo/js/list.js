@@ -86,7 +86,7 @@ class TodoList {
         
         // Bulk actions
         document.addEventListener('click', (e) => {
-            if (e.target.closest('#bulkActions')) {
+            if (e.target.closest('#bulkActionsBtn')) {
                 e.preventDefault();
                 this.showBulkActionsMenu();
             }
@@ -130,27 +130,35 @@ class TodoList {
     updateSelectionUI() {
         const selectedCount = this.selectedTasks.size;
         
-        // Update bulk actions visibility
-        const bulkActionsBtn = document.getElementById('bulkActions');
+        // Update bulk actions button
+        const bulkActionsBtn = document.getElementById('bulkActionsBtn');
         if (bulkActionsBtn) {
             if (selectedCount > 0) {
-                bulkActionsBtn.textContent = `Actions (${selectedCount})`;
-                bulkActionsBtn.classList.add('btn-primary');
-                bulkActionsBtn.classList.remove('btn-outline-secondary');
+                bulkActionsBtn.disabled = false;
+                bulkActionsBtn.classList.add('btn-linguify-primary');
+                bulkActionsBtn.classList.remove('btn-linguify-secondary');
+                const textSpan = bulkActionsBtn.querySelector('span');
+                if (textSpan) {
+                    textSpan.textContent = `Actions (${selectedCount})`;
+                }
             } else {
-                bulkActionsBtn.textContent = 'Actions';
-                bulkActionsBtn.classList.remove('btn-primary');
-                bulkActionsBtn.classList.add('btn-outline-secondary');
+                bulkActionsBtn.disabled = true;
+                bulkActionsBtn.classList.remove('btn-linguify-primary');
+                bulkActionsBtn.classList.add('btn-linguify-secondary');
+                const textSpan = bulkActionsBtn.querySelector('span');
+                if (textSpan) {
+                    textSpan.textContent = 'Bulk Actions';
+                }
             }
         }
         
-        // Highlight selected rows
-        document.querySelectorAll('.task-row').forEach(row => {
-            const taskId = row.dataset.taskId;
+        // Highlight selected task cards
+        document.querySelectorAll('.task-item-linguify').forEach(card => {
+            const taskId = card.dataset.taskId;
             if (this.selectedTasks.has(taskId)) {
-                row.classList.add('table-active');
+                card.classList.add('selected');
             } else {
-                row.classList.remove('table-active');
+                card.classList.remove('selected');
             }
         });
     }
