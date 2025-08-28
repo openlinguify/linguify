@@ -33,9 +33,8 @@
                         <label for="description" class="form-label-linguify">
                             {% trans "Description" %}
                         </label>
-                        <textarea class="textarea-linguify" id="description" name="description" 
-                                  rows="4" placeholder="{% trans 'Add task details... Type / for commands' %}" 
-                                  data-command-palette="true">{{ task.description|default:'' }}</textarea>
+                        <div id="description-editor" class="linguify-rich-editor" data-rich-editor="true"></div>
+                        <input type="hidden" id="description" name="description" value="{{ task.description|default:'' }}">
                     </div>
                     
                     <!-- Row 1: Project & Stage -->
@@ -266,7 +265,8 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/linguify-command-palette.js' %}"></script>
+<script src="{% static 'js/command-palette/linguify-command-palette.js' %}"></script>
+<script src="{% static 'js/command-palette/linguify-rich-editor.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Progress slider update
@@ -411,6 +411,28 @@ document.addEventListener('DOMContentLoaded', function() {
             .map(el => el.dataset.tagId)
             .filter(id => !id.startsWith('temp_')); // Filter out temporary tags
         tagsInput.value = tagIds.join(',');
+    }
+    
+    // Initialize rich editor
+    const descriptionEditor = document.getElementById('description-editor');
+    if (descriptionEditor) {
+        const richEditor = new LinguifyRichEditor(descriptionEditor, {
+            placeholder: 'Décrivez votre tâche... Tapez "/" pour voir les commandes'
+        });
+        
+        // Load existing content if any
+        const existingContent = document.getElementById('description').value;
+        if (existingContent) {
+            // Simple content loading - you might want to implement proper HTML parsing
+            richEditor.addBlock('paragraph', existingContent);
+        }
+        
+        // Sync content before form submission
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            // Export HTML content from rich editor
+            const htmlContent = richEditor.getHTML();
+            document.getElementById('description').value = htmlContent;
+        });
     }
     
     // Form submission
