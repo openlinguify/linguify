@@ -1,158 +1,91 @@
 {% load static %}
 {% load i18n %}
 <!-- Todo App Navbar - Linguify Style -->
-<div class="todo-app-navbar bg-white border-bottom">
-    <div class="container-fluid">
-        <div class="d-flex align-items-center justify-content-between py-3">
-            <!-- Left Section: App Title & Navigation -->
-            <div class="d-flex align-items-center flex-grow-1">
-                <!-- App Title with Breadcrumb -->
-                <div class="me-4">
-                    <div class="d-flex align-items-center mb-1">
-                        <i class="bi bi-check2-square text-primary me-2" style="font-size: 1.5rem;"></i>
-                        <h1 class="h4 mb-0 fw-bold text-dark">{% trans "Todo" %}</h1>
-                    </div>
-                    <nav class="small text-muted">
-                        <a href="{% url 'saas_web:dashboard' %}" class="text-decoration-none text-primary">
-                            {% trans "Dashboard" %}
-                        </a>
-                        <span class="mx-2">›</span>
-                        <span class="fw-medium">{% trans "Tasks" %}</span>
-                    </nav>
-                </div>
-                
-                <!-- View Controls - Bootstrap Style -->
-                <div class="view-controls-section">
-                    <div class="btn-group bg-light rounded-pill p-1">
-                        <a href="{% url 'todo_web:kanban' %}" 
-                           class="btn btn-sm view-btn {% if active_view == 'kanban' %}btn-primary{% else %}btn-light{% endif %}" 
-                           title="{% trans 'Kanban View' %}">
-                            <i class="bi bi-kanban me-1"></i>
-                            <span class="view-label">{% trans "Kanban" %}</span>
-                        </a>
-                        <a href="{% url 'todo_web:list' %}" 
-                           class="btn btn-sm view-btn {% if active_view == 'list' %}btn-primary{% else %}btn-light{% endif %}" 
-                           title="{% trans 'List View' %}">
-                            <i class="bi bi-list-ul me-1"></i>
-                            <span class="view-label">{% trans "List" %}</span>
-                        </a>
-                        <a href="{% url 'todo_web:activity' %}" 
-                           class="btn btn-sm view-btn {% if active_view == 'activity' %}btn-primary{% else %}btn-light{% endif %}" 
-                           title="{% trans 'Activity View' %}">
-                            <i class="bi bi-clock-history me-1"></i>
-                            <span class="view-label">{% trans "Activity" %}</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+<div class="navbar-linguify">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="navbar-section">
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <a href="{% url 'todo_web:kanban' %}" 
+               class="nav-tab {% if active_view == 'kanban' %}active{% endif %}">
+                <i class="bi bi-kanban"></i>
+                {% trans "Kanban" %}
+            </a>
+            <a href="{% url 'todo_web:list' %}" 
+               class="nav-tab {% if active_view == 'list' %}active{% endif %}">
+                <i class="bi bi-list-ul"></i>
+                {% trans "List" %}
+            </a>
+            <a href="{% url 'todo_web:activity' %}" 
+               class="nav-tab {% if active_view == 'activity' %}active{% endif %}">
+                <i class="bi bi-clock-history"></i>
+                {% trans "Activity" %}
+            </a>
+        </div>
+        
+        <!-- Refresh -->
+        <button id="refreshTasks" class="btn-navbar btn-navbar-outline" title="{% trans 'Refresh tasks' %}">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-xl-inline">{% trans "Refresh" %}</span>
+        </button>
+    </div>
             
-            <!-- Right Section: Search, Filters & Actions -->
-            <div class="d-flex align-items-center gap-3">
-                <!-- Quick Search -->
-                <div class="search-section">
-                    <div class="position-relative">
-                        <div class="position-absolute top-50 start-0 translate-middle-y ps-3">
-                            <i class="bi bi-search text-muted"></i>
-                        </div>
-                        <input type="text" 
-                               class="form-control form-control-sm ps-5" 
-                               placeholder="{% trans 'Search tasks...' %}" 
-                               id="globalSearchInput"
-                               style="width: 250px;">
-                    </div>
-                </div>
-                
-                <!-- Quick Filters -->
-                <div class="filters-section d-none d-lg-flex gap-2">
-                    <!-- Status Filter -->
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" 
-                                type="button"
-                                data-bs-toggle="dropdown" 
-                                title="{% trans 'Filter by Status' %}">
-                            <i class="bi bi-funnel me-1"></i>
-                            <span>{% trans "Open" %}</span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" data-filter="status" data-value="">
-                                <i class="bi bi-funnel me-2 text-muted"></i> {% trans "All Tasks" %}
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" data-filter="status" data-value="open">
-                                <i class="bi bi-circle me-2 text-primary"></i> {% trans "Open Tasks" %}
-                            </a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" data-filter="status" data-value="closed">
-                                <i class="bi bi-check-circle me-2 text-success"></i> {% trans "Closed Tasks" %}
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" data-filter="due" data-value="today">
-                                <i class="bi bi-calendar-day me-2 text-warning"></i> {% trans "Due Today" %}
-                            </a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" data-filter="due" data-value="overdue">
-                                <i class="bi bi-exclamation-triangle me-2 text-danger"></i> {% trans "Overdue" %}
-                            </a></li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Priority Filter -->
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" 
-                                type="button"
-                                data-bs-toggle="dropdown" 
-                                title="{% trans 'Filter by Priority' %}">
-                            <i class="bi bi-star me-1"></i>
-                            <span>{% trans "All" %}</span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" data-filter="priority" data-value="">
-                                <i class="bi bi-funnel me-2 text-muted"></i> {% trans "All Priorities" %}
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" data-filter="priority" data-value="1">
-                                <i class="bi bi-star-fill me-2 text-warning"></i> {% trans "Starred" %}
-                            </a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" data-filter="priority" data-value="0">
-                                <i class="bi bi-star me-2 text-muted"></i> {% trans "Normal" %}
-                            </a></li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Actions -->
-                <div class="actions-section d-flex align-items-center gap-2">
-                    <!-- More Options -->
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm" 
-                                type="button"
-                                data-bs-toggle="dropdown" 
-                                title="{% trans 'More Options' %}">
-                            <i class="bi bi-three-dots"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" onclick="refreshData()">
-                                <i class="bi bi-arrow-clockwise me-2 text-muted"></i> {% trans "Refresh" %}
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" onclick="exportTasks()">
-                                <i class="bi bi-download me-2 text-muted"></i> {% trans "Export Tasks" %}
-                            </a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#" onclick="importTasks()">
-                                <i class="bi bi-upload me-2 text-muted"></i> {% trans "Import Tasks" %}
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="{% url 'saas_web:todo_settings' %}">
-                                <i class="bi bi-gear me-2 text-muted"></i> {% trans "Settings" %}
-                            </a></li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Create Task Button -->
-                    <button class="btn btn-primary btn-sm" onclick="createNewTask()">
-                        <i class="bi bi-plus-lg me-1"></i>
-                        <span>{% trans "New Task" %}</span>
-                    </button>
-                </div>
-            </div>
+    
+    <!-- Droite: Actions et filtres contextuels -->
+    <div class="navbar-section-right">
+        <!-- Filtres -->
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Search tasks...' %}" style="width: 140px; min-width: 100px;">
+        
+        <!-- Status Filter Dropdown -->
+        <div class="dropdown">
+            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="statusFilterText">{% trans "All Status" %}</span>
+            </button>
+            <ul id="statusFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', '{% trans "All Status" %}')">{% trans "All Status" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('open', '{% trans "Open" %}')">{% trans "Open" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('completed', '{% trans "Completed" %}')">{% trans "Completed" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('overdue', '{% trans "Overdue" %}')">{% trans "Overdue" %}</a></li>
+            </ul>
+        </div>
+        
+        <!-- Priority Filter Dropdown -->
+        <div class="dropdown">
+            <button id="priorityFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="priorityFilterText">{% trans "All Priority" %}</span>
+            </button>
+            <ul id="priorityFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('', '{% trans "All Priority" %}')">{% trans "All Priority" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('high', '{% trans "High" %}')">{% trans "High" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('medium', '{% trans "Medium" %}')">{% trans "Medium" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('low', '{% trans "Low" %}')">{% trans "Low" %}</a></li>
+            </ul>
+        </div>
+        
+        <!-- Sort Filter Dropdown -->
+        <div class="dropdown">
+            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="sortFilterText">{% trans "Recent" %}</span>
+            </button>
+            <ul id="sortFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', '{% trans "Recent" %}')">{% trans "Recent" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('title_asc', '{% trans "A-Z" %}')">{% trans "A-Z" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('priority_desc', '{% trans "Priority" %}')">{% trans "Priority" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('due_date_asc', '{% trans "Due Date" %}')">{% trans "Due Date" %}</a></li>
+            </ul>
+        </div>
+        
+        <!-- Actions -->
+        <div class="navbar-actions-group">
+            <button id="importTasks" class="btn-navbar btn-navbar-outline" onclick="importTasks()">
+                <i class="bi bi-upload"></i>
+                <span class="d-none d-xxl-inline">{% trans "Import" %}</span>
+            </button>
+            
+            <button id="createTask" class="btn-navbar btn-navbar-primary" onclick="createNewTask()">
+                <i class="bi bi-plus-lg"></i>
+                <span class="d-none d-xxl-inline">{% trans "New Task" %}</span>
+            </button>
         </div>
     </div>
 </div>

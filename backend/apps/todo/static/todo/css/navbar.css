@@ -1,220 +1,29 @@
-/* Todo App Navbar - Linguify Style with Bootstrap */
+/* Todo App Navbar - Linguify Style */
+/* All main styles are now in tailwind-modals.css via the Linguify classes */
 
-/* Navbar base styling */
-.todo-app-navbar {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    border-bottom: 1px solid #e2e8f0 !important;
-}
-
-/* View Controls styling */
-.view-controls-section .btn-group {
-    border-radius: 2rem;
-    background-color: #f8f9fa;
-    padding: 0.25rem;
-}
-
-.view-controls-section .view-btn {
-    border-radius: 1.5rem;
-    border: none;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
-
-.view-controls-section .view-btn:not(.btn-primary) {
-    background-color: transparent;
-    color: #6c757d;
-}
-
-.view-controls-section .view-btn:not(.btn-primary):hover {
-    background-color: rgba(0,0,0,0.05);
-    color: #007acc;
+/* Todo-specific customizations */
+#refreshTasks:hover {
     transform: translateY(-1px);
 }
 
-.view-controls-section .view-btn.btn-primary {
-    background-color: #007acc;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0,123,204,0.2);
-}
-
-/* Search Section customizations */
-.search-section #globalSearchInput {
-    border-color: #dee2e6;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease;
-}
-
-.search-section #globalSearchInput:focus {
-    border-color: #007acc;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 204, 0.25);
-}
-
-/* Filters Section customizations */
-.filters-section .btn {
-    border-color: #dee2e6;
-    font-weight: 500;
-}
-
-.filters-section .btn:hover {
-    border-color: #007acc;
-    color: #007acc;
-    transform: translateY(-1px);
-}
-
-/* Actions Section */
-.actions-section .btn-primary {
-    background-color: #007acc;
-    border-color: #007acc;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0,123,204,0.2);
-}
-
-.actions-section .btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,123,204,0.3);
-}
-
-/* Dropdown Improvements */
-.dropdown-menu {
-    background: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
-    padding: 0.5rem 0;
-    min-width: 200px;
-    z-index: 1050;
-}
-
-.dropdown-item {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    color: #374151;
-    transition: background-color 0.2s ease;
-    gap: 0.5rem;
-}
-
-.dropdown-item:hover {
-    background-color: #f8fafc;
-    color: #007acc;
-}
-
-.dropdown-item i {
-    width: 1rem;
-    text-align: center;
-    color: #6c757d;
-}
-
-.dropdown-item:hover i {
-    color: #007acc;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .todo-app-navbar .d-flex {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .search-section #globalSearchInput {
-        width: 100% !important;
-        min-width: 200px;
-    }
-    
-    .filters-section {
-        display: none !important;
-    }
-}
-
-@media (max-width: 576px) {
-    .view-controls-section .view-label {
-        display: none;
-    }
-    
-    .view-controls-section .view-btn {
-        padding: 0.25rem 0.5rem;
-        min-width: 2.5rem;
-        justify-content: center;
-    }
-    
-    .search-section #globalSearchInput {
-        min-width: 150px;
-    }
-}
-
-/* Animation for active state transitions */
-.view-controls-section .view-btn.btn-primary {
-    position: relative;
-    overflow: hidden;
-}
-
-.view-controls-section .view-btn.btn-primary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #007acc, #0056b3);
-    animation: slideIn 0.3s ease-in-out;
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(-100%);
-    }
-    to {
-        transform: translateX(0);
-    }
-}
-
-/* Focus states for accessibility */
-.view-controls-section .view-btn:focus {
-    outline: 2px solid #007acc;
-    outline-offset: 2px;
-}
-
-.filters-section .dropdown-toggle:focus {
-    outline: 2px solid #007acc;
-    outline-offset: 2px;
-}
-
-/* Loading states */
-.navbar-loading .view-controls-section .view-btn {
+/* Loading states for Todo navbar */
+.navbar-loading .navbar-section .btn-navbar {
     opacity: 0.7;
     pointer-events: none;
 }
 
-.navbar-loading .actions-section .btn {
+.navbar-loading .navbar-actions-group .btn-navbar {
     opacity: 0.8;
     cursor: wait;
 }
 
-/* Custom scrollbar for dropdowns */
-.dropdown-menu {
-    max-height: 300px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #dee2e6 #f8f9fa;
+/* Focus states for Todo accessibility */
+.nav-tab:focus {
+    outline: 2px solid #2D5BBA;
+    outline-offset: 2px;
 }
 
-.dropdown-menu::-webkit-scrollbar {
-    width: 6px;
-}
-
-.dropdown-menu::-webkit-scrollbar-track {
-    background: #f8f9fa;
-    border-radius: 3px;
-}
-
-.dropdown-menu::-webkit-scrollbar-thumb {
-    background: #dee2e6;
-    border-radius: 3px;
-}
-
-.dropdown-menu::-webkit-scrollbar-thumb:hover {
-    background: #6c757d;
+.btn-navbar:focus {
+    outline: 2px solid #2D5BBA;
+    outline-offset: 2px;
 }
