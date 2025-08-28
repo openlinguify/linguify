@@ -40,34 +40,46 @@
     
     <!-- Droite: Actions et filtres contextuels -->
     <div class="navbar-section-right">
+        <!-- Select All (List view only) -->
+        {% if active_view == 'list' %}
+        <div class="navbar-checkbox-group">
+            <input type="checkbox" class="form-check-input" id="selectAll">
+            <label class="navbar-label">{% trans "Select All" %}</label>
+        </div>
+        {% endif %}
+        
         <!-- Filtres -->
         <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Search tasks...' %}" style="width: 140px; min-width: 100px;">
         
-        <!-- Status Filter Dropdown -->
+        <!-- Project Filter (List view) -->
+        {% if active_view == 'list' %}
         <div class="dropdown">
-            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="statusFilterText">{% trans "All Status" %}</span>
+            <button id="projectFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="projectFilterText">{% trans "All Projects" %}</span>
             </button>
-            <ul id="statusFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', '{% trans "All Status" %}')">{% trans "All Status" %}</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('open', '{% trans "Open" %}')">{% trans "Open" %}</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('completed', '{% trans "Completed" %}')">{% trans "Completed" %}</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('overdue', '{% trans "Overdue" %}')">{% trans "Overdue" %}</a></li>
+            <ul id="projectFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectProjectFilter('', '{% trans "All Projects" %}')">{% trans "All Projects" %}</a></li>
+                {% for project in projects %}
+                <li><a class="dropdown-item" href="#" onclick="selectProjectFilter('{{ project.id }}', '{{ project.name }}')">{{ project.name }}</a></li>
+                {% endfor %}
             </ul>
         </div>
+        {% endif %}
         
-        <!-- Priority Filter Dropdown -->
+        <!-- Stage Filter (List view) -->
+        {% if active_view == 'list' %}
         <div class="dropdown">
-            <button id="priorityFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="priorityFilterText">{% trans "All Priority" %}</span>
+            <button id="stageFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="stageFilterText">{% trans "All Stages" %}</span>
             </button>
-            <ul id="priorityFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('', '{% trans "All Priority" %}')">{% trans "All Priority" %}</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('high', '{% trans "High" %}')">{% trans "High" %}</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('medium', '{% trans "Medium" %}')">{% trans "Medium" %}</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectPriorityFilter('low', '{% trans "Low" %}')">{% trans "Low" %}</a></li>
+            <ul id="stageFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectStageFilter('', '{% trans "All Stages" %}')">{% trans "All Stages" %}</a></li>
+                {% for stage in stages %}
+                <li><a class="dropdown-item" href="#" onclick="selectStageFilter('{{ stage.id }}', '{{ stage.name }}')">{{ stage.name }}</a></li>
+                {% endfor %}
             </ul>
         </div>
+        {% endif %}
         
         <!-- Sort Filter Dropdown -->
         <div class="dropdown">
@@ -84,6 +96,14 @@
         
         <!-- Actions -->
         <div class="navbar-actions-group">
+            <!-- Bulk Actions (List view only) -->
+            {% if active_view == 'list' %}
+            <button id="bulkActionsBtn" class="btn-navbar btn-navbar-outline" onclick="showBulkActionsMenu()" disabled title="{% trans 'Bulk Actions' %}">
+                <i class="bi bi-check-all"></i>
+                <span class="d-none d-xl-inline">{% trans "Bulk Actions" %}</span>
+            </button>
+            {% endif %}
+            
             <button id="configureTasks" class="btn-navbar btn-navbar-outline" onclick="configureStages()" title="{% trans 'Configure Stages' %}">
                 <i class="bi bi-gear"></i>
                 <span class="d-none d-xxl-inline">{% trans "Configure" %}</span>

@@ -429,6 +429,25 @@ window.refreshData = function() {
     todoNavbar.refreshData();
 };
 
+// List view specific functions
+window.selectProjectFilter = function(value, text) {
+    document.getElementById('projectFilterText').textContent = text;
+    // Apply project filter logic here
+    console.log('Project filter:', value);
+};
+
+window.selectStageFilter = function(value, text) {
+    document.getElementById('stageFilterText').textContent = text;
+    // Apply stage filter logic here
+    console.log('Stage filter:', value);
+};
+
+window.showBulkActionsMenu = function() {
+    if (window.todoList && typeof window.todoList.showBulkActionsMenu === 'function') {
+        window.todoList.showBulkActionsMenu();
+    }
+};
+
 // Initialize navbar when DOM is loaded
 let todoNavbar;
 document.addEventListener('DOMContentLoaded', function() {

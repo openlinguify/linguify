@@ -3422,6 +3422,25 @@ button.bg-linguify-gradient:hover,
   gap: 0.5rem;
 }
 
+/* Navbar Checkbox Group */
+.navbar-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 12px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--linguify-gray-50);
+    border: 1px solid var(--linguify-gray-200);
+}
+
+.navbar-label {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-700);
+    margin: 0;
+    white-space: nowrap;
+}
+
 .study-mode-icon {
   font-size: 2rem;
   margin-bottom: 0.75rem;
@@ -3704,22 +3723,21 @@ button.bg-linguify-gradient:hover,
     background-color: var(--linguify-gray-50);
 }
 
-/* List Header */
-.list-header-linguify {
-    background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #ffffff 100%);
-    border-bottom: 1px solid var(--linguify-gray-200);
-    border-radius: 8px 8px 0 0;
-    padding: 20px 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-    position: relative;
-    @apply sticky top-0 z-10;
+/* Simple Header */
+.simple-header-linguify {
+    padding: 20px 16px 16px;
+    background: white;
 }
 
-.list-title-linguify {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--linguify-gray-900);
-    margin: 0;
+.badge-count-linguify {
+    background: var(--linguify-primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    min-width: 24px;
+    text-align: center;
 }
 
 /* List Filters */
