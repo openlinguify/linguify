@@ -52,7 +52,8 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initializeCommandsEditor);
     } else {
-        initializeCommandsEditor();
+        // Delay initialization to ensure proper script loading order
+        setTimeout(initializeCommandsEditor, 100);
     }
     
     async function initializeCommandsEditor() {
@@ -77,20 +78,43 @@
     
     // Helper functions for easy initialization
     window.initLinguifyEditor = function(holderId, options = {}) {
-        return new Promise((resolve) => {
-            document.addEventListener('linguifyCommandsEditorReady', () => {
+        return new Promise((resolve, reject) => {
+            if (window.LinguifyEditor) {
+                // Already loaded, initialize immediately
                 const editor = new LinguifyEditor(holderId, options);
-                resolve(editor);
-            });
+                editor.init().then(() => resolve(editor)).catch(reject);
+            } else {
+                // Wait for the ready event
+                document.addEventListener('linguifyCommandsEditorReady', async () => {
+                    try {
+                        const editor = new LinguifyEditor(holderId, options);
+                        await editor.init();
+                        resolve(editor);
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            }
         });
     };
     
     window.initLinguifyEditorWithContent = function(holderId, content, options = {}) {
-        return new Promise((resolve) => {
-            document.addEventListener('linguifyCommandsEditorReady', async () => {
-                const editor = await LinguifyEditor.createFromContent(holderId, content, options);
-                resolve(editor);
-            });
+        return new Promise((resolve, reject) => {
+            if (window.LinguifyEditor) {
+                // Already loaded, initialize immediately
+                LinguifyEditor.createFromContent(holderId, content, options)
+                    .then(resolve).catch(reject);
+            } else {
+                // Wait for the ready event
+                document.addEventListener('linguifyCommandsEditorReady', async () => {
+                    try {
+                        const editor = await LinguifyEditor.createFromContent(holderId, content, options);
+                        resolve(editor);
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            }
         });
     };
     

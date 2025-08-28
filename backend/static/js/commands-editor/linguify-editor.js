@@ -13,31 +13,62 @@ class LinguifyEditor {
         };
         
         this.editor = null;
-        this.init();
+        // Don't auto-init in constructor - wait for async initialization
     }
     
-    init() {
+    async init() {
         // Wait for all Editor.js tools to be loaded
         if (typeof EditorJS === 'undefined') {
-            console.error('EditorJS not loaded');
-            return;
+            console.error('❌ EditorJS not loaded');
+            throw new Error('EditorJS not available');
         }
         
-        this.editor = new EditorJS({
+        // Check if target element exists
+        const targetElement = document.getElementById(this.holderId);
+        if (!targetElement) {
+            console.error('❌ Target element not found:', this.holderId);
+            throw new Error(`Target element '${this.holderId}' not found`);
+        }
+        
+        console.log('🔧 Initializing LinguifyEditor with:', {
             holderId: this.holderId,
-            placeholder: this.options.placeholder,
-            autofocus: this.options.autofocus,
-            tools: this.getToolsConfig(),
-            inlineToolbar: ['marker', 'inlineCode'],
-            data: { blocks: [] }
+            targetElement: targetElement,
+            options: this.options
         });
+        
+        try {
+            const tools = this.getToolsConfig();
+            console.log('🛠️ Available tools:', Object.keys(tools));
+            
+            this.editor = new EditorJS({
+                holder: this.holderId,
+                placeholder: this.options.placeholder,
+                autofocus: this.options.autofocus,
+                tools: tools,
+                inlineToolbar: ['marker', 'inlineCode'],
+                data: { blocks: [] },
+                onChange: (api, event) => {
+                    console.log('📝 Editor content changed');
+                }
+            });
+            
+            // Wait for the editor to be ready
+            await this.editor.isReady;
+            console.log('✅ EditorJS ready for:', this.holderId);
+            
+        } catch (error) {
+            console.error('❌ EditorJS initialization failed:', error);
+            throw error;
+        }
     }
     
     getToolsConfig() {
-        return {
-            // ===== Format =====
-            header: {
-                class: Header,
+        const tools = {};
+        
+        // Check which tools are available and add them safely
+        if (typeof window.Header !== 'undefined') {
+            tools.header = {
+                class: window.Header,
                 inlineToolbar: true,
                 config: {
                     placeholder: 'Titre...',
@@ -45,88 +76,86 @@ class LinguifyEditor {
                     defaultLevel: 2
                 },
                 shortcut: 'CMD+SHIFT+H'
-            },
-            paragraph: {
-                class: Paragraph,
+            };
+        }
+        
+        if (typeof window.Paragraph !== 'undefined') {
+            tools.paragraph = {
+                class: window.Paragraph,
                 inlineToolbar: true
-            },
-            
-            // ===== Structure =====
-            list: {
-                class: List,
+            };
+        }
+        
+        if (typeof window.List !== 'undefined') {
+            tools.list = {
+                class: window.List,
                 inlineToolbar: true,
                 config: {
                     defaultStyle: 'unordered'
                 }
-            },
-            checklist: {
-                class: Checklist,
+            };
+        }
+        
+        if (typeof window.Checklist !== 'undefined') {
+            tools.checklist = {
+                class: window.Checklist,
                 inlineToolbar: true
-            },
-            quote: {
-                class: Quote,
+            };
+        }
+        
+        if (typeof window.Quote !== 'undefined') {
+            tools.quote = {
+                class: window.Quote,
                 inlineToolbar: true,
                 shortcut: 'CMD+SHIFT+O',
                 config: {
                     quotePlaceholder: 'Citation...',
                     captionPlaceholder: 'Auteur...'
                 }
-            },
-            delimiter: {
-                class: Delimiter
-            },
-            table: {
-                class: Table,
+            };
+        }
+        
+        if (typeof window.Delimiter !== 'undefined') {
+            tools.delimiter = {
+                class: window.Delimiter
+            };
+        }
+        
+        if (typeof window.Table !== 'undefined') {
+            tools.table = {
+                class: window.Table,
                 inlineToolbar: true,
                 config: {
                     rows: 2,
                     cols: 3
                 }
-            },
-            code: {
-                class: CodeTool,
+            };
+        }
+        
+        if (typeof window.CodeTool !== 'undefined') {
+            tools.code = {
+                class: window.CodeTool,
                 config: {
                     placeholder: 'Entrez votre code...'
                 }
-            },
-            
-            // ===== Navigation/Média =====
-            linkTool: {
-                class: LinkTool,
-                config: {
-                    endpoint: '/api/link-preview' // Endpoint to be implemented
-                }
-            },
-            image: {
-                class: ImageTool,
-                config: {
-                    endpoints: {
-                        byFile: '/api/upload-image', // Endpoint to be implemented
-                        byUrl: '/api/image-by-url'   // Endpoint to be implemented
-                    }
-                }
-            },
-            
-            // ===== Bannières/Alertes =====
-            alert: {
-                class: Alert,
-                inlineToolbar: true,
-                shortcut: 'CMD+SHIFT+A',
-                config: {
-                    alertTypes: ['primary', 'secondary', 'info', 'success', 'warning', 'danger'],
-                    defaultType: 'info',
-                    messagePlaceholder: 'Tapez votre message...'
-                }
-            },
-            
-            // ===== Inline Tools =====
-            marker: {
-                class: Marker
-            },
-            inlineCode: {
-                class: InlineCode
-            }
-        };
+            };
+        }
+        
+        // Inline tools
+        if (typeof window.Marker !== 'undefined') {
+            tools.marker = {
+                class: window.Marker
+            };
+        }
+        
+        if (typeof window.InlineCode !== 'undefined') {
+            tools.inlineCode = {
+                class: window.InlineCode
+            };
+        }
+        
+        console.log('🛠️ Tools configured:', Object.keys(tools));
+        return tools;
     }
     
     // Public methods
@@ -166,30 +195,37 @@ class LinguifyEditor {
     
     // Static method to initialize from existing content
     static async createFromContent(holderId, content, options = {}) {
+        console.log('📝 Creating LinguifyEditor with content:', {
+            holderId,
+            contentLength: content ? content.length : 0,
+            options
+        });
+        
         const editor = new LinguifyEditor(holderId, options);
         
-        // Wait for editor to be ready
-        if (editor.editor) {
-            await editor.editor.isReady;
-            
-            if (content) {
-                try {
-                    // Try to parse as JSON first
-                    const parsedData = JSON.parse(content);
-                    await editor.render(parsedData);
-                } catch (e) {
-                    // If not JSON, create a simple paragraph block
-                    await editor.render({
-                        blocks: [
-                            {
-                                type: 'paragraph',
-                                data: {
-                                    text: content
-                                }
+        // Initialize the editor first
+        await editor.init();
+        
+        if (content && content.trim()) {
+            try {
+                console.log('🔍 Attempting to parse content as JSON...');
+                // Try to parse as JSON first
+                const parsedData = JSON.parse(content);
+                console.log('✅ Content parsed as JSON, rendering...');
+                await editor.render(parsedData);
+            } catch (e) {
+                console.log('📝 Content is not JSON, creating paragraph block...');
+                // If not JSON, create a simple paragraph block
+                await editor.render({
+                    blocks: [
+                        {
+                            type: 'paragraph',
+                            data: {
+                                text: content
                             }
-                        ]
-                    });
-                }
+                        }
+                    ]
+                });
             }
         }
         
