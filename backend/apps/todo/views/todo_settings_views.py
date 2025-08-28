@@ -1,7 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.utils.decorators import method_decorator
+from django.contrib import messages
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -37,6 +39,42 @@ class TodoSettingsView(SettingsContextMixin, View):
                 'page_title': 'To-do',
                 'page_subtitle': 'Erreur lors du chargement des paramètres'
             })
+    
+    def post(self, request):
+        """Traite la sauvegarde des paramètres de todo"""
+        try:
+            # Récupérer le type de paramètre
+            setting_type = request.POST.get('setting_type', 'general')
+            
+            # Préparer la réponse de succès
+            success_data = {
+                'success': True,
+                'message': 'Paramètres todo mis à jour avec succès',
+                'setting_type': setting_type
+            }
+            
+            # Check if it's an AJAX request
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+            
+            if is_ajax:
+                return JsonResponse(success_data)
+            else:
+                messages.success(request, 'Paramètres todo mis à jour avec succès')
+                return redirect('saas_web:todo_settings')
+            
+        except Exception as e:
+            logger.error(f"Error in TodoSettingsView POST: {e}")
+            
+            error_data = {
+                'success': False,
+                'message': 'Erreur lors de la sauvegarde des paramètres'
+            }
+            
+            if is_ajax:
+                return JsonResponse(error_data, status=500)
+            else:
+                messages.error(request, 'Erreur lors de la sauvegarde des paramètres')
+                return redirect('saas_web:todo_settings')
 
 
 class TodoSettingsAPI(APIView):

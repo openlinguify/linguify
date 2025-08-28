@@ -491,36 +491,136 @@
 </style>
 
 <script>
-    // JavaScript for todo settings
-    document.addEventListener('DOMContentLoaded', function () {
-        // Initialize todo settings
-        initTodoSettings();
-
-        // Range slider handlers
-        document.querySelectorAll('#todo .range-input input[type="range"]').forEach(slider => {
-            slider.addEventListener('input', function () {
-                const valueSpan = this.parentElement.querySelector('.range-value');
-                if (this.name === 'reminder_minutes_before' && parseInt(this.value) >= 60) {
-                    const hours = Math.floor(this.value / 60);
-                    const minutes = this.value % 60;
-                    valueSpan.textContent = hours + 'h' + (minutes > 0 ? minutes + 'm' : '');
-                } else {
-                    valueSpan.textContent = this.value;
-                }
-            });
-        });
-    });
-
-    function initTodoSettings() {
-        console.log('[TodoSettings] Initializing todo settings');
-        loadTodoStats();
-    }
-
-    async function loadTodoStats() {
-        console.log('[TodoSettings] Loading todo statistics...');
+    // Todo Settings JavaScript - Isolated scope
+    (function() {
+        'use strict';
         
-        try {
-            // Pour le moment, utilisons des données de test
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTodoSettingsPage);
+        } else {
+            initTodoSettingsPage();
+        }
+        
+        function initTodoSettingsPage() {
+            // Only initialize if we're on the todo settings page
+            if (!document.getElementById('todo')) {
+                return;
+            }
+            
+            console.log('[TodoSettings] Initializing todo settings page');
+            
+            // Initialize components
+            initRangeSliders();
+            initSectionToggles();
+            initFormHandlers();
+            loadTodoStats();
+        }
+        
+        function initRangeSliders() {
+            const rangeInputs = document.querySelectorAll('#todo .range-input input[type="range"]');
+            rangeInputs.forEach(slider => {
+                slider.addEventListener('input', function() {
+                    updateRangeValue(this);
+                });
+                updateRangeValue(slider);
+            });
+        }
+        
+        function initSectionToggles() {
+            const toggles = document.querySelectorAll('#todo .section-toggle');
+            toggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const section = this.closest('.content-section');
+                    const content = section.querySelector('.section-content');
+                    const icon = this.querySelector('i');
+                    
+                    if (content.style.display === 'none') {
+                        content.style.display = 'block';
+                        icon.className = 'bi bi-chevron-up';
+                    } else {
+                        content.style.display = 'none';
+                        icon.className = 'bi bi-chevron-down';
+                    }
+                });
+            });
+        }
+        
+        function initFormHandlers() {
+            const forms = document.querySelectorAll('#todo form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    saveTodoForm(this);
+                });
+            });
+        }
+        
+        function updateRangeValue(slider) {
+            const valueSpan = slider.parentElement.querySelector('.range-value');
+            if (!valueSpan) return;
+            
+            const value = parseInt(slider.value);
+            
+            if (slider.name === 'reminder_minutes_before' && value >= 60) {
+                const hours = Math.floor(value / 60);
+                const minutes = value % 60;
+                valueSpan.textContent = hours + 'h' + (minutes > 0 ? minutes + 'm' : '');
+            } else if (slider.name === 'auto_archive_days') {
+                valueSpan.textContent = value + ' jours';
+            } else {
+                valueSpan.textContent = value;
+            }
+        }
+
+        async function saveTodoForm(form) {
+            try {
+                const formData = new FormData(form);
+                const button = form.querySelector('button[type="submit"]');
+                const originalText = button.innerHTML;
+                
+                button.innerHTML = '<i class="bi bi-hourglass"></i> Sauvegarde...';
+                button.disabled = true;
+                
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    button.innerHTML = '<i class="bi bi-check"></i> Enregistré !';
+                    button.style.backgroundColor = '#28a745';
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.style.backgroundColor = '';
+                        button.disabled = false;
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Erreur de sauvegarde');
+                }
+                
+            } catch (error) {
+                console.error('[TodoSettings] Save error:', error);
+                const button = form.querySelector('button[type="submit"]');
+                button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Erreur';
+                button.style.backgroundColor = '#dc3545';
+                setTimeout(() => {
+                    button.innerHTML = '<i class="bi bi-save"></i> Enregistrer';
+                    button.style.backgroundColor = '';
+                    button.disabled = false;
+                }, 2000);
+            }
+        }
+        
+        function loadTodoStats() {
+            console.log('[TodoSettings] Loading todo statistics...');
+            
+            // Use test data for now
             const stats = {
                 total_tasks: 5,
                 completed_tasks: 3,
@@ -528,16 +628,10 @@
                 completion_rate: 60
             };
             
-            console.log('[TodoSettings] Using test statistics:', stats);
-            
-            // Update HTML elements
             const updateElement = (id, value) => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.textContent = value;
-                    console.log(`[TodoSettings] Updated ${id} to: ${value}`);
-                } else {
-                    console.error(`[TodoSettings] Element ${id} not found`);
                 }
             };
             
@@ -545,28 +639,15 @@
             updateElement('completed-tasks', stats.completed_tasks);
             updateElement('active-projects', stats.active_projects);
             updateElement('completion-rate', stats.completion_rate + '%');
-            
-        } catch (error) {
-            console.error('[TodoSettings] Error:', error);
-            // Fallback values
-            document.getElementById('total-tasks').textContent = '0';
-            document.getElementById('completed-tasks').textContent = '0';
-            document.getElementById('active-projects').textContent = '0';
-            document.getElementById('completion-rate').textContent = '0%';
         }
-    }
-
-    async function testTodoAPI() {
-        console.log('[TEST] Testing todo API...');
-        try {
+        
+        function testTodoAPI() {
             alert('Test API Todo: Fonctionnement OK!\nStatistiques chargées avec succès\nTemplate rendu correctement');
-        } catch (error) {
-            console.error('[TEST] Error:', error);
-            alert('Test API failed: ' + error.message);
         }
-    }
-
-    // Make functions globally available
-    window.loadTodoStats = loadTodoStats;
-    window.testTodoAPI = testTodoAPI;
+        
+        // Make functions globally available for button clicks
+        window.loadTodoStats = loadTodoStats;
+        window.testTodoAPI = testTodoAPI;
+        
+    })(); // End of isolated scope
 </script>
