@@ -55,7 +55,10 @@
                         <div class="kanban-tasks-container" 
                              id="tasks-{{ stage_id }}" 
                              {% if stage_data.stage.fold %}style="display: none;"{% endif %}>
-                            {% for task in stage_data.tasks %}
+                            
+                            <!-- Tasks List -->
+                            <div class="tasks-list">
+                                {% for task in stage_data.tasks %}
                             <!-- Task Card -->
                             <div class="task-card-linguify kanban-card" 
                                  data-task-id="{{ task.id }}" 
@@ -139,12 +142,15 @@
                                     </div>
                                 </div>
                                 {% endfor %}
+                            </div>
 
-                            <!-- Add Task Button -->
-                            <button class="add-task-btn-linguify" 
-                                    onclick="addTaskToStage('{{ stage_id }}')">
-                                <i class="bi bi-plus me-2"></i>{% trans "Add a task" %}
-                            </button>
+                            <!-- Add Task Button Container -->
+                            <div class="add-task-container">
+                                <button class="add-task-btn-linguify" 
+                                        onclick="addTaskToStage('{{ stage_id }}')">
+                                    <i class="bi bi-plus me-2"></i>{% trans "Add a task" %}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

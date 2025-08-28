@@ -41,26 +41,29 @@
 
 /* Kanban Layout */
 .kanban-layout {
-    height: 100%;
-    min-height: 100%;
+    height: 100vh;
+    min-height: 100vh;
 }
 
 .kanban-container {
     flex: 1;
     overflow-y: auto;
     height: 100%;
-    padding: 24px;
+    padding: 0px;
 }
 
 .kanban-board {
     overflow-x: auto;
+    height: 100%;
+    padding: 0px;
+    padding-bottom: 24px;
 }
 
 .kanban-columns {
     display: flex;
     gap: 16px;
     min-width: max-content;
-    height: calc(100vh - 180px);
+    height: calc(100vh - 64px - 48px);
 }
 
 /* Kanban Column */
@@ -80,51 +83,76 @@
 
 /* Column Header */
 .sidebar-header-linguify {
-    background-color: var(--linguify-gray-50);
+    background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #ffffff 100%);
     border-bottom: 1px solid var(--linguify-gray-200);
     border-radius: 8px 8px 0 0;
-    padding: 16px;
+    padding: 20px 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    position: relative;
+}
+
+.sidebar-header-linguify::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--linguify-gradient);
+    border-radius: 8px 8px 0 0;
 }
 
 .column-title-linguify {
     font-weight: 600;
-    color: var(--linguify-primary);
+    color: var(--linguify-primary-dark);
     margin-bottom: 0;
-    font-size: 14px;
+    font-size: 15px;
+    letter-spacing: -0.01em;
 }
 
 .badge-linguify {
-    background-color: var(--linguify-primary-light);
-    color: var(--linguify-primary);
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: 500;
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-light) 100%);
+    color: white;
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-weight: 600;
     display: inline-block;
+    box-shadow: 0 2px 4px rgba(45, 91, 186, 0.2);
+    min-width: 24px;
+    text-align: center;
 }
 
 .btn-linguify-secondary {
-    background-color: var(--linguify-gray-100);
+    background-color: white;
     border: 1px solid var(--linguify-gray-300);
-    color: var(--linguify-gray-700);
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 13px;
+    color: var(--linguify-gray-600);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 12px;
     transition: all 0.2s ease;
     cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-linguify-secondary:hover {
-    background-color: var(--linguify-gray-200);
-    color: var(--linguify-gray-800);
+    background-color: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(45, 91, 186, 0.2);
 }
 
 /* Tasks Container */
 .kanban-tasks-container {
     flex: 1;
-    padding: 12px;
+    padding: 16px;
+    padding-bottom: 20px;
     overflow-y: auto;
-    height: calc(100% - 80px);
+    height: calc(100% - 90px);
+    background: linear-gradient(to bottom, #ffffff 0%, var(--linguify-gray-50) 100%);
+    display: flex;
+    flex-direction: column;
 }
 
 /* Task Cards */
@@ -172,19 +200,68 @@
 /* Add Task Button */
 .add-task-btn-linguify {
     width: 100%;
-    height: 40px;
-    border: 2px dashed var(--linguify-gray-300);
-    background: transparent;
-    color: var(--linguify-gray-500);
-    border-radius: 8px;
-    transition: all 0.2s ease;
+    height: 48px;
+    border: 2px dashed var(--linguify-primary);
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.03) 0%, rgba(1, 126, 132, 0.03) 100%);
+    color: var(--linguify-primary);
+    border-radius: 12px;
+    transition: all 0.3s ease;
     cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.add-task-btn-linguify::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(45, 91, 186, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.add-task-btn-linguify:hover::before {
+    left: 100%;
 }
 
 .add-task-btn-linguify:hover {
     border-color: var(--linguify-primary);
-    color: var(--linguify-primary);
-    background-color: rgba(45, 91, 186, 0.05);
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.08) 0%, rgba(1, 126, 132, 0.08) 100%);
+    color: var(--linguify-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(45, 91, 186, 0.2);
+}
+
+.add-task-btn-linguify:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(45, 91, 186, 0.15);
+}
+
+/* Tasks List Container */
+.tasks-list {
+    flex: 1;
+    margin-bottom: 16px;
+}
+
+/* Add Task Button Container */
+.add-task-container {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid var(--linguify-gray-200);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 8px;
 }
 
 /* Add Stage Button */
