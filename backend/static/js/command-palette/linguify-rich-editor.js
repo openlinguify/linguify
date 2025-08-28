@@ -7,7 +7,7 @@ class LinguifyRichEditor {
     constructor(container, options = {}) {
         this.container = container;
         this.options = {
-            placeholder: 'Tapez \'/\' pour voir les commandes...',
+            placeholder: 'Décrivez votre tâche ici...\n\nRaccourcis utiles:\n• Entrée = nouvelle ligne\n• Ctrl+Entrée = nouveau bloc\n• / = menu de commandes',
             ...options
         };
         
@@ -63,7 +63,7 @@ class LinguifyRichEditor {
             case 'paragraph':
                 blockHTML = `
                     <div class="block-content">
-                        <div class="block-input" contenteditable="true" data-placeholder="${this.options.placeholder}">${content}</div>
+                        <div class="block-input" contenteditable="true" data-placeholder="Tapez votre texte... (Entrée = nouvelle ligne, / = commandes)">${content}</div>
                     </div>
                 `;
                 break;
@@ -322,10 +322,27 @@ class LinguifyRichEditor {
         const input = e.target;
         const block = input.closest('.rich-block');
         
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            this.createNewBlockAfter(block);
-        } else if (e.key === 'Backspace' && input.innerText === '') {
+        if (e.key === 'Enter') {
+            if (e.shiftKey) {
+                // Shift+Enter: Insert line break within the same block
+                e.preventDefault();
+                const selection = window.getSelection();
+                const range = selection.getRangeAt(0);
+                const br = document.createElement('br');
+                range.insertNode(br);
+                range.setStartAfter(br);
+                range.setEndAfter(br);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            } else if (e.ctrlKey || e.metaKey) {
+                // Ctrl+Enter (or Cmd+Enter): Create new block
+                e.preventDefault();
+                this.createNewBlockAfter(block);
+            } else {
+                // Regular Enter: Allow natural line break (browser default behavior)
+                // Don't prevent default - let the browser handle it naturally
+            }
+        } else if (e.key === 'Backspace' && input.innerText.trim() === '') {
             e.preventDefault();
             this.deleteBlock(block);
         }

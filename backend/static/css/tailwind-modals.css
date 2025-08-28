@@ -3817,6 +3817,8 @@ button.bg-linguify-gradient:hover,
     color: var(--linguify-gray-400);
     position: absolute;
     pointer-events: none;
+    white-space: pre-wrap;
+    font-style: italic;
 }
 
 .block-input {

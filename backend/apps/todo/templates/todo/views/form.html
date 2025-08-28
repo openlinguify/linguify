@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const descriptionEditor = document.getElementById('description-editor');
     if (descriptionEditor) {
         const richEditor = new LinguifyRichEditor(descriptionEditor, {
-            placeholder: 'Décrivez votre tâche... Tapez "/" pour voir les commandes'
+            placeholder: 'Décrivez votre tâche ici...\n\nUtilisez Entrée pour aller à la ligne\nTapez / pour voir les commandes'
         });
         
         // Load existing content if any
