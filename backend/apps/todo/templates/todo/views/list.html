@@ -11,22 +11,22 @@
 {% block content %}
 <div class="list-layout flex">
     <div class="list-container">
-        <!-- Table Header Linguify Style -->
-        <div class="table-header-linguify">
+        <!-- Unified Table with Sticky Header -->
+        <div class="unified-table-container-linguify">
             <div class="table-responsive">
-                <table class="table table-hover table-linguify mb-0">
+                <table class="table table-hover table-linguify mb-0" id="tasksTable">
                     <thead class="table-header-sticky">
                         <tr>
-                            <th class="col-selector" style="width: 40px;">
+                            <th class="col-selector">
                                 <div class="form-check">
                                     <input type="checkbox" class="form-check-input" id="selectAll">
                                     <label class="form-check-label" for="selectAll"></label>
                                 </div>
                             </th>
-                            <th class="col-priority" style="width: 60px;">
+                            <th class="col-priority">
                                 <i class="bi bi-star" title="{% trans 'Priority' %}"></i>
                             </th>
-                            <th class="col-status" style="width: 60px;">
+                            <th class="col-status">
                                 <i class="bi bi-check-circle" title="{% trans 'Status' %}"></i>
                             </th>
                             <th class="col-title sortable" data-sort="title">
@@ -37,16 +37,16 @@
                                     {% endif %}
                                 </div>
                             </th>
-                            <th class="col-stage" style="width: 120px;">
+                            <th class="col-stage">
                                 {% trans "Stage" %}
                             </th>
-                            <th class="col-project" style="width: 120px;">
+                            <th class="col-project">
                                 {% trans "Project" %}
                             </th>
-                            <th class="col-tags" style="width: 100px;">
+                            <th class="col-tags">
                                 {% trans "Tags" %}
                             </th>
-                            <th class="col-due-date sortable" style="width: 120px;" data-sort="due_date">
+                            <th class="col-due-date sortable" data-sort="due_date">
                                 <div class="d-flex align-items-center">
                                     <span>{% trans "Due Date" %}</span>
                                     {% if current_filters.order_by == 'due_date' %}
@@ -54,19 +54,11 @@
                                     {% endif %}
                                 </div>
                             </th>
-                            <th class="col-actions" style="width: 80px;">
+                            <th class="col-actions">
                                 {% trans "Actions" %}
                             </th>
                         </tr>
                     </thead>
-                </table>
-            </div>
-        </div>
-
-        <!-- Tasks Table Body -->
-        <div class="task-list-container-linguify">
-            <div class="table-responsive">
-                <table class="table table-hover table-linguify mb-0">
                     <tbody id="tasksTableBody">
                         {% for task in tasks %}
                         <tr class="task-row-linguify {% if task.state == '1_done' %}task-completed{% endif %}" 
@@ -131,7 +123,8 @@
                             
                             <!-- Stage Column -->
                             <td class="col-stage">
-                                <span class="badge" style="background-color: {{ task.personal_stage_type.color }}20; color: {{ task.personal_stage_type.color }}; border: 1px solid {{ task.personal_stage_type.color }}40;">
+                                <span class="badge" style="background-color: {{ task.personal_stage_type.color }}20; color: {{ task.personal_stage_type.color }}; border: 1px solid {{ task.personal_stage_type.color }}40;" 
+                                      title="{{ task.personal_stage_type.name }}">
                                     {{ task.personal_stage_type.name }}
                                 </span>
                             </td>
@@ -139,9 +132,9 @@
                             <!-- Project Column -->
                             <td class="col-project">
                                 {% if task.project %}
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-folder text-muted me-1"></i>
-                                    <span class="text-truncate">{{ task.project.name }}</span>
+                                <div class="d-flex align-items-center" title="{{ task.project.name }}">
+                                    <i class="bi bi-folder text-muted me-1" style="flex-shrink: 0;"></i>
+                                    <span>{{ task.project.name }}</span>
                                 </div>
                                 {% else %}
                                 <span class="text-muted">—</span>
@@ -230,7 +223,9 @@
                                 </div>
                             </td>
                         </tr>
-                {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
         

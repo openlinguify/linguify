@@ -3723,13 +3723,13 @@ button.bg-linguify-gradient:hover,
     background-color: var(--linguify-gray-50);
 }
 
-/* Table Header Linguify */
-.table-header-linguify {
+/* Unified Table Container */
+.unified-table-container-linguify {
     background: white;
-    border-bottom: 1px solid var(--linguify-gray-200);
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    border-radius: 8px;
+    border: 1px solid var(--linguify-gray-200);
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .table-linguify {
@@ -3770,37 +3770,99 @@ button.bg-linguify-gradient:hover,
     color: var(--linguify-primary);
 }
 
-/* Column specific styles */
+/* Column specific styles with fixed widths for perfect alignment */
 .col-selector {
     text-align: center;
-    width: 40px;
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
 }
 
 .col-priority,
 .col-status {
     text-align: center;
     width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+}
+
+.col-title {
+    min-width: 250px;
 }
 
 .col-stage {
     width: 120px;
+    min-width: 120px;
+    max-width: 120px;
 }
 
 .col-project {
-    width: 120px;
+    width: 140px;
+    min-width: 140px;
+    max-width: 140px;
 }
 
 .col-tags {
-    width: 100px;
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
 }
 
 .col-due-date {
-    width: 120px;
+    width: 130px;
+    min-width: 130px;
+    max-width: 130px;
 }
 
 .col-actions {
     text-align: center;
     width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+}
+
+/* Ensure table layout is fixed for consistent column widths */
+#tasksTable {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#tasksTable th,
+#tasksTable td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 12px 8px;
+}
+
+/* Title column can wrap text */
+#tasksTable .col-title {
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Stage and Project columns with ellipsis for overflow */
+#tasksTable .col-stage,
+#tasksTable .col-project {
+    position: relative;
+}
+
+#tasksTable .col-stage span,
+#tasksTable .col-project span {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Tags column layout */
+#tasksTable .col-tags .tags-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 2px;
+    align-items: center;
+    overflow: hidden;
 }
 
 /* Task Row Styles */
@@ -3870,6 +3932,23 @@ button.bg-linguify-gradient:hover,
     font-weight: 500;
     border-radius: 4px;
     padding: 2px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+}
+
+/* Stage badge specific styles */
+#tasksTable .col-stage .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 4px;
+    padding: 3px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+    display: inline-block;
 }
 
 .badge-outline-secondary {
