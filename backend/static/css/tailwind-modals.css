@@ -335,15 +335,6 @@
     min-height: 100vh;
 }
 
-.list-container {
-    flex: 1;
-    overflow-y: auto;
-    height: 100%;
-    padding: 0px;
-    display: flex;
-    flex-direction: column;
-}
-
 /* List Header */
 .list-header-linguify {
     background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #ffffff 100%);
@@ -1825,7 +1816,6 @@ button.bg-linguify-gradient:hover,
   padding: 0.75rem 1rem;
   background: white;
   border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   width: 100%;
 }
 
@@ -3717,10 +3707,11 @@ button.bg-linguify-gradient:hover,
 
 .list-container {
     flex: 1;
-    overflow-y: auto;
     height: 100%;
-    padding: 0px;
+    padding: 16px;
     background-color: var(--linguify-gray-50);
+    display: flex;
+    flex-direction: column;
 }
 
 /* Unified Table Container */
@@ -3728,8 +3719,43 @@ button.bg-linguify-gradient:hover,
     background: white;
     border-radius: 8px;
     border: 1px solid var(--linguify-gray-200);
-    overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Make table responsive container scrollable */
+.unified-table-container-linguify .table-responsive {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
+    min-height: 0; /* Important for flex child to scroll */
+}
+
+/* Ensure table takes full width */
+.unified-table-container-linguify .table {
+    margin-bottom: 0;
+}
+
+/* Custom scrollbar for table */
+.unified-table-container-linguify .table-responsive::-webkit-scrollbar {
+    width: 8px;
+}
+
+.unified-table-container-linguify .table-responsive::-webkit-scrollbar-track {
+    background: var(--linguify-gray-100);
+    border-radius: 4px;
+}
+
+.unified-table-container-linguify .table-responsive::-webkit-scrollbar-thumb {
+    background: var(--linguify-gray-300);
+    border-radius: 4px;
+}
+
+.unified-table-container-linguify .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: var(--linguify-gray-400);
 }
 
 .table-linguify {
@@ -3739,6 +3765,9 @@ button.bg-linguify-gradient:hover,
 
 .table-header-sticky {
     background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #ffffff 100%);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .table-header-sticky th {
