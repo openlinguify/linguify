@@ -41,6 +41,14 @@ class AppIconService:
         Returns:
             str: Bootstrap icon class
         """
+        if not icon_name:
+            return 'bi-app'
+        
+        # Si c'est déjà une classe Bootstrap (commence par bi-), l'utiliser directement
+        if icon_name.startswith('bi-'):
+            return icon_name
+        
+        # Sinon, utiliser le mapping traditionnel
         return cls.ICON_MAPPING.get(icon_name, 'bi-app')
     
     @classmethod

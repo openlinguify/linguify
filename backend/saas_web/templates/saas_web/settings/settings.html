@@ -45,7 +45,11 @@
                 {% for tab in category.tabs %}
                 <a href="{{ settings_urls|get_item:tab.id }}" class="nav-item{% if tab.active %} active{% endif %}" data-tab="{{ tab.id }}">
                     <div class="nav-item-text">
-                        <i class="{{ tab.icon }}"></i>
+                        {% if tab.static_icon %}
+                            <img src="{{ tab.static_icon }}" alt="{{ tab.name }}" class="nav-item-icon" style="width: 16px; height: 16px; margin-right: 8px;">
+                        {% else %}
+                            <i class="{{ tab.icon }}"></i>
+                        {% endif %}
                         {{ tab.name }}
                         {% if tab.source == 'debug_forced' %}
                         <small style="color: #e74c3c; font-size: 10px;">[DEBUG]</small>

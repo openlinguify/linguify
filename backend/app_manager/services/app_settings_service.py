@@ -90,10 +90,9 @@ class AppSettingsService:
         }
     }
     
-    # Configuration des apps core avec leurs métadonnées
-    # IMPORTANT: Cette configuration centralise TOUTES les applications de paramètres.
-    # Modifier ici met automatiquement à jour la navigation dans toutes les vues de settings.
-    CORE_APP_SETTINGS = {
+    # Apps core qui ont des paramètres spéciaux (non découvrables automatiquement)
+    # Ces apps sont toujours visibles car elles font partie du système de base
+    CORE_SYSTEM_SETTINGS = {
         'authentication': {
             'tabs': [
                 {
@@ -103,7 +102,8 @@ class AppSettingsService:
                     'template': 'authentication/account_settings.html',
                     'category': 'personal',
                     'order': 1,
-                    'active': True
+                    'active': True,
+                    'always_visible': True  # Toujours visible même si pas "installée"
                 },
                 {
                     'id': 'interface',
@@ -111,115 +111,8 @@ class AppSettingsService:
                     'icon': 'bi-palette',
                     'template': 'authentication/interface_settings.html',
                     'category': 'interface',
-                    'order': 1
-                }
-            ]
-        },
-        'course': {
-            'tabs': [
-                {
-                    'id': 'learning',
-                    'name': 'Apprentissage',
-                    'icon': 'bi-book',
-                    'template': 'course/course_settings.html',
-                    'category': 'applications',
-                    'order': 1
-                }
-            ]
-        },
-        'chat': {
-            'tabs': [
-                {
-                    'id': 'chat',
-                    'name': 'Chat',
-                    'icon': 'bi-chat-dots',
-                    'template': 'chat/chat_settings.html',
-                    'category': 'applications',
-                    'order': 2
-                }
-            ]
-        },
-        'community': {
-            'tabs': [
-                {
-                    'id': 'community',
-                    'name': 'Communauté',
-                    'icon': 'bi-people',
-                    'template': 'community/community_settings.html',
-                    'category': 'applications',
-                    'order': 3
-                }
-            ]
-        },
-        'notebook': {
-            'tabs': [
-                {
-                    'id': 'notes',
-                    'name': 'Notes',
-                    'icon': 'bi-journal-text',
-                    'template': 'notebook/notebook_settings.html',
-                    'category': 'applications',
-                    'order': 4
-                }
-            ]
-        },
-        'quizz': {
-            'tabs': [
-                {
-                    'id': 'quiz',
-                    'name': 'Quiz',
-                    'icon': 'bi-question-circle',
-                    'template': 'quizz/quizz_settings.html',
-                    'category': 'applications',
-                    'order': 5
-                }
-            ]
-        },
-        'revision': {
-            'tabs': [
-                {
-                    'id': 'revision',
-                    'name': 'Révision',
-                    'icon': 'bi-arrow-repeat',
-                    'template': 'revision/revision_settings.html',
-                    'category': 'applications',
-                    'order': 6
-                }
-            ]
-        },
-        'language_ai': {
-            'tabs': [
-                {
-                    'id': 'language_ai',
-                    'name': 'IA Linguistique',
-                    'icon': 'bi-cpu',
-                    'template': 'language_ai/language_ai_settings.html',
-                    'category': 'applications',
-                    'order': 7
-                }
-            ]
-        },
-        'documents': {
-            'tabs': [
-                {
-                    'id': 'documents',
-                    'name': 'Documents',
-                    'icon': 'bi-file-earmark-text',
-                    'template': 'documents/documents_settings.html',
-                    'category': 'applications',
-                    'order': 8
-                }
-            ]
-        },
-        'language_learning': {
-            'tabs': [
-                {
-                    'id': 'language_learning',
-                    'name': 'Apprentissage des Langues',
-                    'icon': 'bi-translate',
-                    'template': 'language_learning/language_learning_settings.html',
-                    'category': 'applications',
-                    'order': 9
+                    'order': 1,
+                    'always_visible': True  # Toujours visible
                 }
             ]
         },
@@ -230,11 +123,9 @@ class AppSettingsService:
                     'name': 'Gestionnaire d\'Apps',
                     'icon': 'bi-grid-3x3-gap',
                     'template': 'app_manager/app_manager_settings_full.html',
-                    'category': 'interface',  # Mettre dans Interface pour qu'il soit toujours visible
-                    'order': 0,  # Premier dans Interface
-                    'app_name': 'app_manager',  # Nom de l'app pour le filtrage
-                    'source': 'core',
-                    'active': False,
+                    'category': 'interface',
+                    'order': 0,
+                    'always_visible': True,  # Toujours visible pour gérer les apps
                     'description': 'Gérez vos applications installées et configurez l\'App Store'
                 }
             ]
@@ -256,17 +147,17 @@ class AppSettingsService:
         all_tabs = []
         
         try:
-            # 1. Charger les paramètres des apps core
-            core_tabs = cls._load_core_app_settings()
-            all_tabs.extend(core_tabs)
+            # 1. Charger les paramètres système (toujours visibles)
+            system_tabs = cls._load_system_settings()
+            all_tabs.extend(system_tabs)
             
-            # 2. Découvrir les apps installées dynamiquement
-            installed_tabs = cls._discover_installed_app_settings()
-            all_tabs.extend(installed_tabs)
-            
-            # 3. Filtrer les apps selon l'activation utilisateur
+            # 2. Découvrir dynamiquement les settings depuis les apps installées
             if user:
-                all_tabs = cls._filter_tabs_by_user_activation(all_tabs, user)
+                dynamic_tabs = cls._discover_dynamic_app_settings(user)
+                all_tabs.extend(dynamic_tabs)
+            
+            # 3. Les apps sont déjà filtrées lors de la découverte dynamique
+            # Pas besoin de filtrage supplémentaire
             
             # 4. Trier les onglets par catégorie et ordre
             all_tabs.sort(key=lambda x: (x.get('category', 'applications'), x.get('order', 999)))
@@ -279,16 +170,16 @@ class AppSettingsService:
             
         except Exception as e:
             logger.error(f"Error loading settings tabs: {e}")
-            # Fallback to core settings only
-            core_tabs = cls._load_core_app_settings()
-            return cls._organize_tabs_by_category(core_tabs, categories), core_tabs
+            # Fallback to system settings only
+            system_tabs = cls._load_system_settings()
+            return cls._organize_tabs_by_category(system_tabs, categories), system_tabs
     
     @classmethod
-    def _load_core_app_settings(cls) -> List[Dict]:
-        """Charge les paramètres des apps core prédéfinies"""
+    def _load_system_settings(cls) -> List[Dict]:
+        """Charge les paramètres système (toujours visibles)"""
         tabs = []
         
-        for app_name, app_config in cls.CORE_APP_SETTINGS.items():
+        for app_name, app_config in cls.CORE_SYSTEM_SETTINGS.items():
             try:
                 # Vérifier si l'app est installée
                 app_config_obj = apps.get_app_config(app_name)
@@ -305,16 +196,174 @@ class AppSettingsService:
                             'category': tab_config.get('category', 'applications'),
                             'order': tab_config.get('order', 999),
                             'active': tab_config.get('active', False),
+                            'always_visible': tab_config.get('always_visible', False),
                             'app_name': app_name,
-                            'source': 'core'
+                            'source': 'system'
                         })
                         
             except LookupError:
-                logger.debug(f"App '{app_name}' not installed, skipping")
+                logger.debug(f"System app '{app_name}' not installed, skipping")
                 continue
             except Exception as e:
-                logger.warning(f"Error loading core app '{app_name}': {e}")
+                logger.warning(f"Error loading system app '{app_name}': {e}")
                 continue
+        
+        return tabs
+    
+    @classmethod
+    def _discover_dynamic_app_settings(cls, user) -> List[Dict]:
+        """
+        Découvre dynamiquement les settings depuis les apps installées par l'utilisateur.
+        Utilise les manifests et la détection automatique de templates.
+        """
+        tabs = []
+        
+        try:
+            # Récupérer les apps installées par l'utilisateur
+            from ..models import App, UserAppSettings
+            
+            user_settings, created = UserAppSettings.objects.get_or_create(user=user)
+            installed_apps = user_settings.enabled_apps.filter(is_enabled=True, installable=True)
+            
+            logger.info(f"Discovering settings for {installed_apps.count()} installed apps for user {user.username}")
+            
+            for app in installed_apps:
+                try:
+                    # Obtenir la configuration Django de l'app
+                    app_config = cls._get_django_app_config(app.code)
+                    if not app_config:
+                        continue
+                    
+                    # 1. Essayer de récupérer depuis le manifest
+                    manifest_settings = cls._get_settings_from_manifest(app_config, app)
+                    if manifest_settings:
+                        tabs.extend(manifest_settings)
+                        continue
+                    
+                    # 2. Fallback: auto-découverte par templates
+                    auto_settings = cls._auto_discover_app_settings_for_user(app_config, app)
+                    tabs.extend(auto_settings)
+                    
+                except Exception as e:
+                    logger.warning(f"Error discovering settings for app '{app.code}': {e}")
+                    continue
+        
+        except Exception as e:
+            logger.error(f"Error in dynamic settings discovery: {e}")
+        
+        return tabs
+    
+    @classmethod
+    def _get_django_app_config(cls, app_code: str):
+        """Récupère la configuration Django pour un code d'app"""
+        try:
+            # Essayer d'abord le nom direct
+            return apps.get_app_config(app_code)
+        except LookupError:
+            try:
+                # Essayer avec le préfixe apps.
+                return apps.get_app_config(f'apps.{app_code}')
+            except LookupError:
+                logger.debug(f"Django app config not found for '{app_code}'")
+                return None
+    
+    @classmethod
+    def _get_settings_from_manifest(cls, app_config, app) -> List[Dict]:
+        """Récupère les settings depuis le manifest de l'app"""
+        try:
+            # Charger le manifest
+            manifest_path = os.path.join(app_config.path, '__manifest__.py')
+            if not os.path.exists(manifest_path):
+                return []
+            
+            # Importer le manifest
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("manifest", manifest_path)
+            manifest_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(manifest_module)
+            
+            manifest = getattr(manifest_module, '__manifest__', {})
+            
+            # Chercher les informations de settings
+            settings_info = manifest.get('settings', {})
+            if not settings_info:
+                return []
+            
+            tabs = []
+            settings_tabs = settings_info.get('tabs', [])
+            
+            # Mapping spéciaux pour maintenir la compatibilité avec les URLs existantes
+            special_id_mapping = {
+                'notebook': 'notes',  # notebook settings utilise l'ID 'notes' pour l'URL
+            }
+            
+            for tab_info in settings_tabs:
+                template_path = tab_info.get('template')
+                if template_path and cls._template_exists(template_path):
+                    base_id = tab_info.get('id', app.code)
+                    tab_id = special_id_mapping.get(base_id, base_id)
+                    
+                    # Récupérer l'URL statique de l'icône
+                    from .app_icon_service import AppIconService
+                    static_icon_url = AppIconService.get_static_icon_url(app.code)
+                    
+                    tabs.append({
+                        'id': tab_id,
+                        'name': tab_info.get('name', app.display_name),
+                        'icon': cls._get_app_icon(app.code) or tab_info.get('icon', 'bi-gear'),
+                        'static_icon': static_icon_url,  # Ajouter l'URL de l'icône statique
+                        'template': template_path,
+                        'category': tab_info.get('category', 'applications'),
+                        'order': tab_info.get('order', 999),
+                        'active': False,
+                        'app_name': app_config.name,
+                        'source': 'manifest'
+                    })
+            
+            return tabs
+            
+        except Exception as e:
+            logger.debug(f"Error loading manifest settings for {app.code}: {e}")
+            return []
+    
+    @classmethod
+    def _auto_discover_app_settings_for_user(cls, app_config, app) -> List[Dict]:
+        """Auto-découverte des templates de settings pour une app utilisateur"""
+        tabs = []
+        
+        # Templates patterns à chercher
+        template_patterns = [
+            f"{app.code}/{app.code}_settings.html",
+            f"{app.code}/settings.html",
+            f"{app.code}/preferences.html",
+        ]
+        
+        for pattern in template_patterns:
+            if cls._template_exists(pattern):
+                # Mapping spéciaux pour maintenir la compatibilité avec les URLs existantes
+                special_id_mapping = {
+                    'notebook': 'notes',  # notebook settings utilise l'ID 'notes' pour l'URL
+                }
+                
+                tab_id = special_id_mapping.get(app.code, app.code)
+                
+                # Récupérer l'URL statique de l'icône comme dans le gestionnaire d'apps
+                from .app_icon_service import AppIconService
+                static_icon_url = AppIconService.get_static_icon_url(app.code)
+                
+                tabs.append({
+                    'id': tab_id,
+                    'name': app.display_name,
+                    'icon': cls._get_app_icon(app.code) or 'bi-gear',
+                    'static_icon': static_icon_url,  # Ajouter l'URL de l'icône statique
+                    'template': pattern,
+                    'category': 'applications',
+                    'order': 999,
+                    'active': False,
+                    'app_name': app_config.name,
+                    'source': 'auto_discovered'
+                })
+                break  # Prendre le premier template trouvé
         
         return tabs
     

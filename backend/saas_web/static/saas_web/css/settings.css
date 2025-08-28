@@ -82,6 +82,8 @@ body.settings-page {
     align-items: center;
     justify-content: space-between;
     padding: 12px 24px;
+    margin: 2px 12px;
+    border-radius: 8px;
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
     font-size: 14px;
@@ -89,6 +91,7 @@ body.settings-page {
     border-left: 3px solid transparent;
     transition: all 0.2s ease;
     cursor: pointer;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .nav-item:hover {
@@ -110,6 +113,17 @@ body.settings-page {
     font-size: 16px;
     width: 20px;
     text-align: center;
+}
+
+/* Style pour les icônes d'apps (images) */
+.nav-item-icon {
+    margin-right: 8px !important;
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .nav-item .badge {
