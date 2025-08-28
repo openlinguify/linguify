@@ -3828,12 +3828,19 @@ button.bg-linguify-gradient:hover,
 }
 
 .editor-js-linguify .codex-editor__redactor {
-    padding: 16px !important;
+    padding: 16px !important; /* Extra left padding for toolbar */
+    position: relative;
+}
+
+.editor-js-linguify .ce-block {
+    position: relative;
+    margin: 8px 0;
 }
 
 .editor-js-linguify .ce-block__content {
     max-width: none !important;
     margin: 0 !important;
+    position: relative;
 }
 
 .editor-js-linguify .ce-paragraph {
@@ -3847,21 +3854,64 @@ button.bg-linguify-gradient:hover,
     color: var(--linguify-gray-900);
 }
 
+/* Toolbar positioning and visibility */
+.editor-js-linguify .ce-toolbar {
+    position: absolute;
+    left: -34px;
+    top: 0;
+    transform: translateY(0);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+}
+
+.editor-js-linguify .ce-block:hover .ce-toolbar,
+.editor-js-linguify .ce-block--focused .ce-toolbar {
+    opacity: 1;
+    visibility: visible;
+}
+
 .editor-js-linguify .ce-toolbar__plus {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
     color: var(--linguify-gray-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .editor-js-linguify .ce-toolbar__plus:hover {
-    background: rgba(45, 91, 186, 0.1);
-    color: var(--linguify-primary);
+    background: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+    transform: scale(1.1);
 }
 
 .editor-js-linguify .ce-toolbar__settings-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
     color: var(--linguify-gray-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 4px;
 }
 
 .editor-js-linguify .ce-toolbar__settings-btn:hover {
     background: rgba(45, 91, 186, 0.1);
+    border-color: var(--linguify-primary);
     color: var(--linguify-primary);
 }
 
@@ -3893,6 +3943,28 @@ button.bg-linguify-gradient:hover,
 .editor-js-linguify:focus-within {
     border-color: var(--linguify-primary);
     box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+}
+
+/* Always show toolbar when editor is focused or when hovering over empty editor */
+.editor-js-linguify:hover .ce-toolbar,
+.editor-js-linguify:focus-within .ce-toolbar {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Ensure first block always shows toolbar when editor is empty */
+.editor-js-linguify .ce-block:first-child .ce-toolbar {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Better spacing for first and last blocks */
+.editor-js-linguify .ce-block:first-child {
+    margin-top: 0;
+}
+
+.editor-js-linguify .ce-block:last-child {
+    margin-bottom: 16px;
 }
 
 /* Placeholder styles */
