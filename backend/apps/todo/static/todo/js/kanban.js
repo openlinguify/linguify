@@ -264,9 +264,9 @@ class TodoKanban {
         const taskTitle = taskCard.querySelector('.task-title');
         if (taskTitle) {
             if (taskData.state === '1_done') {
-                taskTitle.classList.add('text-decoration-line-through', 'text-muted');
+                taskTitle.classList.add('line-through', 'text-gray-400');
             } else {
-                taskTitle.classList.remove('text-decoration-line-through', 'text-muted');
+                taskTitle.classList.remove('line-through', 'text-gray-400');
             }
         }
     }
@@ -281,16 +281,17 @@ class TodoKanban {
         
         // Create Linguify-style inline form
         const form = document.createElement('div');
-        form.className = 'quick-add-form';
+        form.className = 'task-card-linguify mb-3';
         form.dataset.stageId = stageId;
         form.innerHTML = `
             <input type="text" 
                    placeholder="Tapez le titre de la tâche..." 
                    id="quickTaskTitle_${stageId}" 
                    class="form-control mb-3"
+                   style="border: 1px solid var(--linguify-primary, #2D5BBA); font-size: 14px;"
                    autofocus>
             <div class="d-flex gap-2">
-                <button class="btn btn-primary btn-sm" 
+                <button class="btn-linguify-secondary btn-sm" 
                         onclick="todoKanban.submitQuickTask('${stageId}')">
                     <i class="bi bi-check me-1"></i>Ajouter
                 </button>
