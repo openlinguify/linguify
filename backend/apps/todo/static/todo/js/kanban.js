@@ -184,7 +184,7 @@ class TodoKanban {
         this.showTaskLoading(taskElement);
         
         try {
-            const response = await fetch(`/api/todo/tasks/${taskId}/`, {
+            const response = await fetch(`/api/v1/todo/tasks/${taskId}/`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -223,7 +223,7 @@ class TodoKanban {
         this.showTaskLoading(taskCard);
         
         try {
-            const response = await fetch(`/api/todo/tasks/${taskId}/toggle_completed/`, {
+            const response = await fetch(`/api/v1/todo/tasks/${taskId}/toggle_completed/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -337,7 +337,7 @@ class TodoKanban {
         }
         
         try {
-            const response = await fetch('/api/todo/tasks/quick_create/', {
+            const response = await fetch('/api/v1/todo/tasks/quick_create/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -515,7 +515,7 @@ class TodoKanban {
         const taskIds = Array.from(tasks).map(task => task.dataset.taskId);
         
         // Send sequence update to server
-        fetch(`/api/todo/stages/${stageId}/reorder_tasks/`, {
+        fetch(`/api/v1/todo/stages/${stageId}/reorder_tasks/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -600,6 +600,32 @@ class TodoKanban {
         window.location.href = `/todo/task/${taskId}/`;
     }
     
+    async createNewStage(stageName) {
+        try {
+            const response = await fetch('/api/v1/todo/stages/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({
+                    name: stageName
+                })
+            });
+            
+            if (response.ok) {
+                this.showSuccess('Stage créé avec succès');
+                // Reload the page to show the new stage
+                window.location.reload();
+            } else {
+                throw new Error('Failed to create stage');
+            }
+        } catch (error) {
+            console.error('Error creating stage:', error);
+            this.showError('Erreur lors de la création du stage');
+        }
+    }
+    
     showAddStageForm() {
         console.log('Add new stage form - to be implemented');
     }
@@ -645,6 +671,13 @@ window.editTask = function(taskId) {
 
 window.openTask = function(taskId) {
     todoKanban.openTask(taskId);
+};
+
+window.addNewStage = function() {
+    const stageName = prompt('Nom du nouveau stage :');
+    if (stageName && stageName.trim()) {
+        todoKanban.createNewStage(stageName.trim());
+    }
 };
 
 window.submitQuickTask = function() {

@@ -104,7 +104,7 @@ class TodoActivity {
         completeBtn.style.pointerEvents = 'none';
         
         try {
-            const response = await fetch(`/api/todo/tasks/${taskId}/toggle_completed/`, {
+            const response = await fetch(`/api/v1/todo/tasks/${taskId}/toggle_completed/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

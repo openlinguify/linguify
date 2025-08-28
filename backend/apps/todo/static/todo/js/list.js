@@ -245,7 +245,7 @@ class TodoList {
         const isStarred = priorityBtn.classList.contains('bi-star-fill');
         
         try {
-            const response = await fetch(`/api/todo/tasks/${taskId}/toggle_important/`, {
+            const response = await fetch(`/api/v1/todo/tasks/${taskId}/toggle_important/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -276,7 +276,7 @@ class TodoList {
         const isCompleted = completeBtn.classList.contains('bi-check-circle-fill');
         
         try {
-            const response = await fetch(`/api/todo/tasks/${taskId}/toggle_completed/`, {
+            const response = await fetch(`/api/v1/todo/tasks/${taskId}/toggle_completed/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -390,7 +390,7 @@ class TodoList {
         
         try {
             const promises = taskIds.map(taskId =>
-                fetch(`/api/todo/tasks/${taskId}/`, {
+                fetch(`/api/v1/todo/tasks/${taskId}/`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRFToken': this.getCSRFToken()
@@ -423,7 +423,7 @@ class TodoList {
         
         try {
             const promises = taskIds.map(taskId =>
-                fetch(`/api/todo/tasks/${taskId}/`, {
+                fetch(`/api/v1/todo/tasks/${taskId}/`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -471,7 +471,7 @@ class TodoList {
         }
         
         try {
-            const response = await fetch(`/api/todo/tasks/${taskId}/`, {
+            const response = await fetch(`/api/v1/todo/tasks/${taskId}/`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRFToken': this.getCSRFToken()

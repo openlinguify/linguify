@@ -9,119 +9,107 @@
 {% endblock %}
 
 {% block content %}
-<div class="todo-list-workspace">
-    <!-- List Controls -->
-    <div class="list-controls mb-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <h4 class="mb-0">{% trans "Tasks List" %}</h4>
-                <div class="view-controls">
-                    <div class="btn-group btn-group-sm" role="group">
-                        <a href="{% url 'todo_web:kanban' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-kanban"></i> {% trans "Kanban" %}
-                        </a>
-                        <a href="{% url 'todo_web:list' %}" class="btn btn-primary">
-                            <i class="bi bi-list-ul"></i> {% trans "List" %}
-                        </a>
-                        <a href="{% url 'todo_web:activity' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-clock-history"></i> {% trans "Activity" %}
-                        </a>
-                    </div>
+<div class="list-layout flex">
+    <div class="list-container">
+        <!-- List Header -->
+        <div class="list-header-linguify">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <h1 class="list-title-linguify">{% trans "Tasks List" %}</h1>
+                    <span class="badge-linguify">{{ tasks.count }} {% trans "tasks" %}</span>
                 </div>
-            </div>
-            <div class="list-actions">
-                <button class="btn btn-success btn-sm" onclick="createNewTask()">
-                    <i class="bi bi-plus-lg"></i> {% trans "New Task" %}
-                </button>
-                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                    <i class="bi bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="exportTasks()">
-                        <i class="bi bi-download"></i> {% trans "Export List" %}
-                    </a></li>
-                    <li><a class="dropdown-item" href="#" onclick="importTasks()">
-                        <i class="bi bi-upload"></i> {% trans "Import Tasks" %}
-                    </a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#" onclick="bulkActions()">
-                        <i class="bi bi-check-all"></i> {% trans "Bulk Actions" %}
-                    </a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Filters and Search -->
-    <div class="list-filters mb-3">
-        <div class="row g-3">
-            <div class="col-md-3">
-                <div class="filter-group">
-                    <label class="form-label small">{% trans "Search" %}</label>
-                    <div class="input-group input-group-sm">
-                        <input type="text" class="form-control" id="searchInput" 
-                               placeholder="{% trans 'Search tasks...' %}" 
-                               value="{{ current_filters.search }}">
-                        <button class="btn btn-outline-secondary" onclick="clearSearch()">
-                            <i class="bi bi-x"></i>
+                <div class="flex items-center gap-2">
+                    <button class="btn-linguify-secondary" onclick="createNewTask()">
+                        <i class="bi bi-plus"></i>
+                        <span class="hidden md:inline ml-1">{% trans "New Task" %}</span>
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn-linguify-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
                         </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="exportTasks()">
+                                <i class="bi bi-download me-2"></i> {% trans "Export List" %}
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="importTasks()">
+                                <i class="bi bi-upload me-2"></i> {% trans "Import Tasks" %}
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="bulkActions()">
+                                <i class="bi bi-check-all me-2"></i> {% trans "Bulk Actions" %}
+                            </a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-            <div class="col-md-2">
-                <div class="filter-group">
-                    <label class="form-label small">{% trans "Project" %}</label>
-                    <select class="form-select form-select-sm" id="projectFilter">
-                        <option value="">{% trans "All Projects" %}</option>
-                        {% for project in projects %}
-                        <option value="{{ project.id }}" {% if current_filters.project == project.id|stringformat:"s" %}selected{% endif %}>
-                            {{ project.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="list-filters-linguify">
+            <div class="filter-card">
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                    <div class="md:col-span-2">
+                        <div class="filter-group-linguify">
+                            <label class="filter-label-linguify">{% trans "Search" %}</label>
+                            <div class="relative">
+                                <input type="text" class="filter-input-linguify w-full pr-8" id="searchInput" 
+                                       placeholder="{% trans 'Search tasks...' %}" 
+                                       value="{{ current_filters.search }}">
+                                <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600" onclick="clearSearch()">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="filter-group-linguify">
+                            <label class="filter-label-linguify">{% trans "Project" %}</label>
+                            <select class="filter-input-linguify w-full" id="projectFilter">
+                                <option value="">{% trans "All Projects" %}</option>
+                                {% for project in projects %}
+                                <option value="{{ project.id }}" {% if current_filters.project == project.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ project.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="filter-group-linguify">
+                            <label class="filter-label-linguify">{% trans "Stage" %}</label>
+                            <select class="filter-input-linguify w-full" id="stageFilter">
+                                <option value="">{% trans "All Stages" %}</option>
+                                {% for stage in stages %}
+                                <option value="{{ stage.id }}" {% if current_filters.stage == stage.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ stage.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="filter-group-linguify">
+                            <label class="filter-label-linguify">{% trans "Status" %}</label>
+                            <select class="filter-input-linguify w-full" id="statusFilter">
+                                <option value="">{% trans "All" %}</option>
+                                <option value="open" {% if current_filters.status == 'open' %}selected{% endif %}>{% trans "Open" %}</option>
+                                <option value="closed" {% if current_filters.status == 'closed' %}selected{% endif %}>{% trans "Closed" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="filter-group-linguify">
+                            <label class="filter-label-linguify">{% trans "Priority" %}</label>
+                            <select class="filter-input-linguify w-full" id="priorityFilter">
+                                <option value="">{% trans "All" %}</option>
+                                <option value="1" {% if current_filters.priority == '1' %}selected{% endif %}>{% trans "Starred" %}</option>
+                                <option value="0" {% if current_filters.priority == '0' %}selected{% endif %}>{% trans "Normal" %}</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-2">
-                <div class="filter-group">
-                    <label class="form-label small">{% trans "Stage" %}</label>
-                    <select class="form-select form-select-sm" id="stageFilter">
-                        <option value="">{% trans "All Stages" %}</option>
-                        {% for stage in stages %}
-                        <option value="{{ stage.id }}" {% if current_filters.stage == stage.id|stringformat:"s" %}selected{% endif %}>
-                            {{ stage.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="filter-group">
-                    <label class="form-label small">{% trans "Status" %}</label>
-                    <select class="form-select form-select-sm" id="statusFilter">
-                        <option value="">{% trans "All" %}</option>
-                        <option value="open" {% if current_filters.status == 'open' %}selected{% endif %}>{% trans "Open" %}</option>
-                        <option value="closed" {% if current_filters.status == 'closed' %}selected{% endif %}>{% trans "Closed" %}</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="filter-group">
-                    <label class="form-label small">{% trans "Priority" %}</label>
-                    <select class="form-select form-select-sm" id="priorityFilter">
-                        <option value="">{% trans "All" %}</option>
-                        <option value="1" {% if current_filters.priority == '1' %}selected{% endif %}>{% trans "Starred" %}</option>
-                        <option value="0" {% if current_filters.priority == '0' %}selected{% endif %}>{% trans "Normal" %}</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-1">
-                <label class="form-label small">&nbsp;</label>
-                <button class="btn btn-outline-primary btn-sm d-block" onclick="applyFilters()">
-                    <i class="bi bi-funnel"></i> {% trans "Filter" %}
-                </button>
             </div>
         </div>
-    </div>
 
     <!-- Tasks Table -->
     <div class="tasks-table-container">

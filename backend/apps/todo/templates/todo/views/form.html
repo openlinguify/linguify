@@ -641,7 +641,7 @@ async function submitForm() {
 {% if task %}
 async function toggleTaskComplete() {
     try {
-        const response = await fetch(`/api/todo/tasks/{{ task.id }}/toggle_completed/`, {
+        const response = await fetch(`/api/v1/todo/tasks/{{ task.id }}/toggle_completed/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -667,7 +667,7 @@ async function deleteTask() {
     }
     
     try {
-        const response = await fetch(`/api/todo/tasks/{{ task.id }}/`, {
+        const response = await fetch(`/api/v1/todo/tasks/{{ task.id }}/`, {
             method: 'DELETE',
             headers: {
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
