@@ -129,16 +129,39 @@ class TodoListView(LoginRequiredMixin, TemplateView):
                 Q(description__icontains=search)
             )
         
-        # Order by
+        # Order by with direction support
         order_by = self.request.GET.get('order_by', 'state')
+        order_dir = self.request.GET.get('order_dir', 'asc')
+        
+        # Determine direction prefix
+        dir_prefix = '' if order_dir == 'asc' else '-'
+        
+        # Apply sorting based on field and direction
         if order_by == 'due_date':
-            tasks = tasks.order_by('due_date', 'created_at')
+            if order_dir == 'asc':
+                tasks = tasks.order_by('due_date', 'created_at')
+            else:
+                tasks = tasks.order_by('-due_date', '-created_at')
         elif order_by == 'priority':
-            tasks = tasks.order_by('-priority', 'due_date')
+            if order_dir == 'asc':
+                tasks = tasks.order_by('priority', 'due_date')  # 0 first, then 1
+            else:
+                tasks = tasks.order_by('-priority', 'due_date')  # 1 first, then 0
         elif order_by == 'title':
-            tasks = tasks.order_by('title')
+            tasks = tasks.order_by(f'{dir_prefix}title')
+        elif order_by == 'state':
+            tasks = tasks.order_by(f'{dir_prefix}state', '-priority', 'due_date')
+        elif order_by == 'personal_stage_type__name':
+            tasks = tasks.order_by(f'{dir_prefix}personal_stage_type__name', 'title')
+        elif order_by == 'project__name':
+            # Handle null projects properly - nulls always go to end
+            from django.db.models import F
+            if order_dir == 'asc':
+                tasks = tasks.order_by(F('project__name').asc(nulls_last=True), 'title')
+            else:
+                tasks = tasks.order_by(F('project__name').desc(nulls_last=True), 'title')
         elif order_by == 'created':
-            tasks = tasks.order_by('-created_at')
+            tasks = tasks.order_by(f'{dir_prefix}created_at')
         else:  # default: state
             tasks = tasks.order_by('state', '-priority', 'due_date')
         
@@ -154,6 +177,7 @@ class TodoListView(LoginRequiredMixin, TemplateView):
                 'status': status_filter,
                 'search': search,
                 'order_by': order_by,
+                'order_dir': order_dir,
             },
             'can_create': True,
             'can_edit': True,

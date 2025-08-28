@@ -164,12 +164,23 @@ class TodoList {
     }
     
     handleSort(field) {
-        if (this.currentSort.field === field) {
-            this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
+        // Always read current state from URL to ensure accuracy
+        const url = new URL(window.location);
+        const currentField = url.searchParams.get('order_by');
+        const currentDirection = url.searchParams.get('order_dir') || 'asc';
+        
+        // Update internal state
+        if (currentField === field) {
+            // Same field - toggle direction
+            this.currentSort.field = field;
+            this.currentSort.direction = currentDirection === 'asc' ? 'desc' : 'asc';
         } else {
+            // Different field - reset to ascending
             this.currentSort.field = field;
             this.currentSort.direction = 'asc';
         }
+        
+        console.log(`Sorting by ${field} in ${this.currentSort.direction} direction`);
         
         this.applySorting();
         this.updateSortUI();
