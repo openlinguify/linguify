@@ -62,15 +62,24 @@
 .kanban-columns {
     display: flex;
     gap: 16px;
-    min-width: max-content;
+    width: 100%;
     height: calc(100vh - 64px - 48px);
+    min-width: 100%;
 }
 
 /* Kanban Column */
 .kanban-column {
-    width: 280px;
+    flex: 1;
     min-width: 280px;
+    max-width: none;
     height: 100%;
+}
+
+/* Add Stage Column */
+.add-stage-column {
+    flex: 0 0 auto;
+    width: 200px;
+    min-width: 200px;
 }
 
 .kanban-column-card {
@@ -266,25 +275,28 @@
 
 /* Add Stage Button */
 .add-stage-btn-linguify {
-    width: 150px;
-    height: 200px;
-    border: 2px dashed var(--linguify-gray-300);
-    background: transparent;
-    color: var(--linguify-gray-500);
-    border-radius: 8px;
+    width: 160px;
+    height: 240px;
+    border: 2px dashed var(--linguify-primary);
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.02) 0%, rgba(1, 126, 132, 0.02) 100%);
+    color: var(--linguify-primary);
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    transition: all 0.2s ease;
+    gap: 12px;
+    transition: all 0.3s ease;
     cursor: pointer;
+    font-weight: 500;
 }
 
 .add-stage-btn-linguify:hover {
     border-color: var(--linguify-primary);
-    color: var(--linguify-primary);
-    background-color: rgba(45, 91, 186, 0.05);
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.08) 0%, rgba(1, 126, 132, 0.08) 100%);
+    color: var(--linguify-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(45, 91, 186, 0.15);
 }
 
 /* Drag and Drop Effects */
