@@ -3821,6 +3821,8 @@ button.bg-linguify-gradient:hover,
     background: white;
     min-height: 300px;
     overflow-y: auto;
+    position: relative;
+    z-index: 0; /* Base container */
 }
 
 .editor-js-linguify .codex-editor {
@@ -3863,6 +3865,7 @@ button.bg-linguify-gradient:hover,
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease;
+    z-index: 100; /* Au-dessus de tout le contenu */
 }
 
 .editor-js-linguify .ce-block:hover .ce-toolbar,
@@ -3885,6 +3888,9 @@ button.bg-linguify-gradient:hover,
     transition: all 0.2s ease;
     font-size: 16px;
     font-weight: bold;
+    z-index: 101; /* Au-dessus de la toolbar */
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .editor-js-linguify .ce-toolbar__plus:hover {
@@ -3907,6 +3913,9 @@ button.bg-linguify-gradient:hover,
     cursor: pointer;
     transition: all 0.2s ease;
     margin-left: 4px;
+    z-index: 101; /* Au-dessus de la toolbar */
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .editor-js-linguify .ce-toolbar__settings-btn:hover {
@@ -3919,6 +3928,8 @@ button.bg-linguify-gradient:hover,
     background: white;
     border: 1px solid var(--linguify-gray-300);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 150; /* Au-dessus des boutons toolbar */
+    position: relative;
 }
 
 .editor-js-linguify .ce-inline-toolbar__buttons {
@@ -3956,6 +3967,47 @@ button.bg-linguify-gradient:hover,
 .editor-js-linguify .ce-block:first-child .ce-toolbar {
     opacity: 1;
     visibility: visible;
+}
+
+/* Z-index hierarchy for Editor.js elements */
+.editor-js-linguify .ce-block {
+    z-index: 1; /* Base layer */
+}
+
+.editor-js-linguify .ce-toolbar {
+    z-index: 100; /* Toolbar base */
+}
+
+.editor-js-linguify .ce-toolbar__plus,
+.editor-js-linguify .ce-toolbar__settings-btn {
+    z-index: 101; /* Toolbar buttons */
+}
+
+.editor-js-linguify .ce-popover,
+.editor-js-linguify .ce-toolbar__actions {
+    z-index: 200; /* Popover menus */
+    background: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 8px;
+}
+
+.editor-js-linguify .ce-inline-toolbar {
+    z-index: 150; /* Inline toolbar */
+}
+
+.editor-js-linguify .ce-conversion-toolbar {
+    z-index: 160; /* Conversion toolbar */
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.editor-js-linguify .ce-settings {
+    z-index: 180; /* Settings panels */
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 /* Better spacing for first and last blocks */
