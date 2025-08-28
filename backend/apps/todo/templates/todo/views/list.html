@@ -99,25 +99,28 @@
                             <!-- Title Column -->
                             <td class="col-title">
                                 <div class="task-title-container">
-                                    <div class="task-title-text {% if task.state == '1_done' %}text-muted text-decoration-line-through{% endif %}" 
-                                         onclick="openTask('{{ task.id }}')">
-                                        {{ task.title }}
-                                        {% if task.subtask_count > 0 %}
-                                        <span class="badge badge-outline-secondary ms-2">
-                                            {{ task.completed_subtask_count }}/{{ task.subtask_count }}
-                                        </span>
-                                        {% endif %}
+                                    <div class="task-title-row d-flex align-items-center">
+                                        <div class="task-title-text {% if task.state == '1_done' %}text-muted text-decoration-line-through{% endif %}" 
+                                             onclick="openTask('{{ task.id }}')"
+                                             {% if task.description %}title="{{ task.title }} - {{ task.description|striptags }}"{% else %}title="{{ task.title }}"{% endif %}>
+                                            {{ task.title }}
+                                        </div>
+                                        <div class="task-meta-indicators ms-auto d-flex align-items-center gap-1">
+                                            {% if task.subtask_count > 0 %}
+                                            <span class="badge badge-outline-secondary">
+                                                {{ task.completed_subtask_count }}/{{ task.subtask_count }}
+                                            </span>
+                                            {% endif %}
+                                            {% if task.description %}
+                                            <i class="bi bi-chat-text text-muted" title="{{ task.description|striptags }}" style="font-size: 0.8rem;"></i>
+                                            {% endif %}
+                                            {% if task.progress_percentage > 0 and task.state != '1_done' %}
+                                            <div class="progress-indicator" style="width: 30px; height: 4px; background: var(--linguify-gray-200); border-radius: 2px; position: relative;">
+                                                <div class="progress-bar" style="width: {{ task.progress_percentage }}%; height: 100%; background: var(--linguify-primary); border-radius: 2px;"></div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                    {% if task.description %}
-                                    <div class="task-description-preview text-muted small">
-                                        {{ task.description|truncatechars:80|striptags }}
-                                    </div>
-                                    {% endif %}
-                                    {% if task.progress_percentage > 0 and task.state != '1_done' %}
-                                    <div class="progress mt-1" style="height: 3px;">
-                                        <div class="progress-bar" style="width: {{ task.progress_percentage }}%"></div>
-                                    </div>
-                                    {% endif %}
                                 </div>
                             </td>
                             
