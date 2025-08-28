@@ -3687,3 +3687,362 @@ button.bg-linguify-gradient:hover,
    - Consistent z-index layering
    - Responsive design ready
    ================================================================= */
+
+/* ===== LIST LINGUIFY COMPONENTS ===== */
+
+/* List Layout */
+.list-layout {
+    height: 100vh;
+    min-height: 100vh;
+}
+
+.list-container {
+    flex: 1;
+    overflow-y: auto;
+    height: 100%;
+    padding: 0px;
+    background-color: var(--linguify-gray-50);
+}
+
+/* List Header */
+.list-header-linguify {
+    background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #ffffff 100%);
+    border-bottom: 1px solid var(--linguify-gray-200);
+    border-radius: 8px 8px 0 0;
+    padding: 20px 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    position: relative;
+    @apply sticky top-0 z-10;
+}
+
+.list-title-linguify {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--linguify-gray-900);
+    margin: 0;
+}
+
+/* List Filters */
+.list-filters-linguify {
+    padding: 16px;
+    background: white;
+    border-bottom: 1px solid var(--linguify-gray-200);
+}
+
+.filter-card {
+    background: white;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.filter-group-linguify {
+    margin-bottom: 0;
+}
+
+.filter-label-linguify {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--linguify-gray-700);
+    margin-bottom: 4px;
+    display: block;
+}
+
+.filter-input-linguify {
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-input-linguify:focus {
+    outline: none;
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+/* List Controls */
+.list-controls-linguify {
+    padding: 16px;
+    background: white;
+    border-bottom: 1px solid var(--linguify-gray-200);
+}
+
+.sort-controls-linguify {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sort-btn-linguify {
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    color: var(--linguify-gray-700);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sort-btn-linguify:hover {
+    background-color: var(--linguify-gray-50);
+    border-color: var(--linguify-primary);
+    color: var(--linguify-primary);
+}
+
+/* Task List Container */
+.task-list-container-linguify {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Tasks Grid */
+.tasks-grid-linguify {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Task Item (Card) */
+.task-item-linguify {
+    background: white;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.task-item-linguify:hover {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.15);
+    transform: translateY(-1px);
+}
+
+.task-item-linguify.task-completed {
+    background-color: rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* Task Header Section */
+.task-header-section {
+    margin-bottom: 12px;
+}
+
+.task-actions {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.task-item-linguify:hover .task-actions {
+    opacity: 1;
+}
+
+.action-btn-linguify {
+    background: var(--linguify-gray-100);
+    border: none;
+    border-radius: 6px;
+    padding: 6px 8px;
+    color: var(--linguify-gray-600);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.action-btn-linguify:hover {
+    background-color: var(--linguify-primary);
+    color: white;
+}
+
+.action-btn-linguify.text-red-500:hover {
+    background-color: var(--linguify-error);
+    color: white;
+}
+
+/* Priority Button */
+.priority-btn-linguify {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--linguify-gray-400);
+    transition: all 0.2s ease;
+}
+
+.priority-btn-linguify:hover {
+    transform: scale(1.1);
+}
+
+/* Complete Button */
+.complete-btn-linguify {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--linguify-gray-400);
+    transition: all 0.2s ease;
+}
+
+.complete-btn-linguify:hover {
+    transform: scale(1.1);
+}
+
+/* Task Content Section */
+.task-content-section {
+    margin-bottom: 12px;
+}
+
+.task-title-linguify {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--linguify-gray-900);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    margin-bottom: 4px;
+}
+
+.task-title-linguify:hover {
+    color: var(--linguify-primary);
+}
+
+.task-description-linguify {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-600);
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.subtask-counter {
+    font-size: 0.75rem;
+    color: var(--linguify-gray-500);
+    font-weight: normal;
+}
+
+/* Task Progress */
+.task-progress-linguify {
+    width: 100px;
+    height: 4px;
+    background-color: var(--linguify-gray-200);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.progress-bar-linguify {
+    height: 100%;
+    background: linear-gradient(90deg, var(--linguify-primary) 0%, var(--linguify-secondary) 100%);
+    transition: width 0.3s ease;
+}
+
+/* Task Meta Section */
+.task-meta-section {
+    border-top: 1px solid var(--linguify-gray-100);
+    padding-top: 12px;
+}
+
+/* Badges */
+.stage-badge-linguify {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-700);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.project-badge-linguify {
+    background: var(--linguify-primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.due-date-badge-linguify {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-700);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.due-date-badge-linguify.overdue {
+    background: var(--linguify-error);
+    color: white;
+}
+
+.due-date-badge-linguify.today {
+    background: var(--linguify-warning);
+    color: white;
+}
+
+.created-date-linguify {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-600);
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Task Tags */
+.task-tags-linguify {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tag-badge-linguify {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.tag-more-linguify {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-600);
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+/* Empty State */
+.empty-state-linguify {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+/* Task Color Indicators - reuse kanban colors */
+.task-color-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}

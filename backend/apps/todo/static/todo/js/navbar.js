@@ -403,7 +403,7 @@ window.createNewTask = function() {
         }
     } else if (currentView === 'list') {
         // For list view, redirect to create page or show modal
-        window.location.href = '/todo/task/create/';
+        window.location.href = '/todo/task/new/';
     } else {
         // For activity or other views, show the modal
         const modal = document.getElementById('quickTaskModal');
