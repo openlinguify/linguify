@@ -11,22 +11,66 @@
 {% block content %}
 <div class="list-layout flex">
     <div class="list-container">
-        <!-- Simple Header with Task Count -->
-        <div class="simple-header-linguify">
-            <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold text-gray-900">{% trans "Tasks" %}</h1>
-                <span class="badge-count-linguify">{{ tasks.count }}</span>
+        <!-- Table Header Linguify Style -->
+        <div class="table-header-linguify">
+            <div class="table-responsive">
+                <table class="table table-hover table-linguify mb-0">
+                    <thead class="table-header-sticky">
+                        <tr>
+                            <th class="col-selector" style="width: 40px;">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="selectAll">
+                                    <label class="form-check-label" for="selectAll"></label>
+                                </div>
+                            </th>
+                            <th class="col-priority" style="width: 60px;">
+                                <i class="bi bi-star" title="{% trans 'Priority' %}"></i>
+                            </th>
+                            <th class="col-status" style="width: 60px;">
+                                <i class="bi bi-check-circle" title="{% trans 'Status' %}"></i>
+                            </th>
+                            <th class="col-title sortable" data-sort="title">
+                                <div class="d-flex align-items-center">
+                                    <span>{% trans "Title" %}</span>
+                                    {% if current_filters.order_by == 'title' %}
+                                    <i class="bi bi-chevron-up ms-1"></i>
+                                    {% endif %}
+                                </div>
+                            </th>
+                            <th class="col-stage" style="width: 120px;">
+                                {% trans "Stage" %}
+                            </th>
+                            <th class="col-project" style="width: 120px;">
+                                {% trans "Project" %}
+                            </th>
+                            <th class="col-tags" style="width: 100px;">
+                                {% trans "Tags" %}
+                            </th>
+                            <th class="col-due-date sortable" style="width: 120px;" data-sort="due_date">
+                                <div class="d-flex align-items-center">
+                                    <span>{% trans "Due Date" %}</span>
+                                    {% if current_filters.order_by == 'due_date' %}
+                                    <i class="bi bi-chevron-up ms-1"></i>
+                                    {% endif %}
+                                </div>
+                            </th>
+                            <th class="col-actions" style="width: 80px;">
+                                {% trans "Actions" %}
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
         </div>
 
-        <!-- Tasks List (Cards) -->
+        <!-- Tasks Table Body -->
         <div class="task-list-container-linguify">
-
-            <!-- Tasks Grid -->
-            <div class="tasks-grid-linguify" id="tasksGrid">
-                {% for task in tasks %}
-                <div class="task-item-linguify {% if task.state == '1_done' %}task-completed{% endif %}" 
-                     data-task-id="{{ task.id }}">
+            <div class="table-responsive">
+                <table class="table table-hover table-linguify mb-0">
+                    <tbody id="tasksTableBody">
+                        {% for task in tasks %}
+                        <tr class="task-row-linguify {% if task.state == '1_done' %}task-completed{% endif %}" 
+                            data-task-id="{{ task.id }}">
                     <!-- Task Header -->
                     <div class="task-header-section">
                         <div class="flex items-center justify-between">

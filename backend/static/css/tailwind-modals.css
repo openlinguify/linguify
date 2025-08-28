@@ -3723,10 +3723,77 @@ button.bg-linguify-gradient:hover,
     background-color: var(--linguify-gray-50);
 }
 
+/* Table Header Linguify */
+.table-header-linguify {
+    background: white;
+    border-bottom: 1px solid var(--linguify-gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table-linguify {
+    --bs-table-bg: transparent;
+    --bs-table-border-color: var(--linguify-gray-200);
+}
+
+.table-header-sticky {
+    background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #ffffff 100%);
+}
+
+.table-header-sticky th {
+    background: inherit;
+    border-bottom: 2px solid var(--linguify-primary);
+    padding: 12px 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--linguify-gray-700);
+    white-space: nowrap;
+    position: relative;
+}
+
+.table-header-sticky th.sortable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.table-header-sticky th.sortable:hover {
+    background-color: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary);
+}
+
+.table-header-sticky th i {
+    color: var(--linguify-gray-500);
+}
+
+.table-header-sticky th.sortable:hover i {
+    color: var(--linguify-primary);
+}
+
+/* Column specific styles */
+.col-selector {
+    text-align: center;
+}
+
+.col-priority,
+.col-status {
+    text-align: center;
+}
+
+.col-actions {
+    text-align: center;
+}
+
 /* Simple Header */
 .simple-header-linguify {
     padding: 20px 16px 16px;
     background: white;
+}
+
+th, tr, td, thead, tbody, tfoot {
+  border-color: inherit;
+    border-style: solid;
+    border-width: 0;
 }
 
 .badge-count-linguify {
