@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     PersonalStageTypeViewSet, CategoryViewSet, TagViewSet, ProjectViewSet, TaskViewSet,
     NoteViewSet, ReminderViewSet, TaskTemplateViewSet,
-    TodoSettingsView, TodoUserPreferencesView, TodoDashboardView
+    TodoSettingsAPI, TodoUserPreferencesAPI, TodoDashboardAPI
 )
 
 app_name = 'todo'
@@ -24,7 +24,7 @@ urlpatterns = [
     path('', include(router.urls)),
     
     # Settings endpoints
-    path('settings/', TodoSettingsView.as_view(), name='settings'),
-    path('preferences/', TodoUserPreferencesView.as_view(), name='preferences'),
-    path('dashboard/', TodoDashboardView.as_view(), name='dashboard'),
+    path('settings/', TodoSettingsAPI.as_view(), name='settings'),
+    path('preferences/', TodoUserPreferencesAPI.as_view(), name='preferences'),
+    path('dashboard/', TodoDashboardAPI.as_view(), name='dashboard'),
 ]

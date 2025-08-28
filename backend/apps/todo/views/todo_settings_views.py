@@ -1,11 +1,45 @@
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.views.generic import View
+from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.core.cache import cache
+from app_manager.mixins import SettingsContextMixin
 from ..serializers import TodoSettingsSerializer, TodoUserPreferencesSerializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 
-class TodoSettingsView(APIView):
+@method_decorator(login_required, name='dispatch')
+class TodoSettingsView(SettingsContextMixin, View):
+    """Interface web pour les paramètres de todo"""
+    
+    def get(self, request):
+        """Affiche la page des paramètres de todo"""
+        try:
+            # Utiliser le mixin pour générer le contexte standardisé
+            context = self.get_settings_context(
+                user=request.user,
+                active_tab_id='todo',
+                page_title='To-do',
+                page_subtitle='Configurez vos paramètres de productivité et gestion de tâches'
+            )
+            
+            return render(request, 'saas_web/settings/settings.html', context)
+            
+        except Exception as e:
+            logger.error(f"Error in TodoSettingsView: {e}")
+            # Fallback
+            return render(request, 'saas_web/settings/settings.html', {
+                'page_title': 'To-do',
+                'page_subtitle': 'Erreur lors du chargement des paramètres'
+            })
+
+
+class TodoSettingsAPI(APIView):
     """
     Get and update todo app settings
     """
@@ -97,7 +131,7 @@ class TodoSettingsView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TodoUserPreferencesView(APIView):
+class TodoUserPreferencesAPI(APIView):
     """
     Get and update user preferences for todo app
     """
@@ -160,7 +194,7 @@ class TodoUserPreferencesView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TodoDashboardView(APIView):
+class TodoDashboardAPI(APIView):
     """
     Get dashboard data for todo app
     """

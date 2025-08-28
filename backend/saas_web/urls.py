@@ -21,6 +21,7 @@ from apps.revision.views.revision_settings_views import RevisionSettingsView
 from apps.language_ai.views.language_ai_settings_views import LanguageAISettingsView
 from apps.language_learning.views.settings_views import LanguageLearningSettingsView
 from apps.documents.views.documents_settings_views import documents_settings_view
+from apps.todo.views.todo_settings_views import TodoSettingsView
 
 app_name = 'saas_web'
 
@@ -43,6 +44,7 @@ urlpatterns = [
     path('settings/language-learning/', LanguageLearningSettingsView.as_view(), name='language_learning_settings'),
     path('settings/notifications/', NotificationSettingsView.as_view(), name='notification_settings'),
     path('settings/documents/', documents_settings_view, name='documents_settings'),
+    path('settings/todo/', TodoSettingsView.as_view(), name='todo_settings'),
     path('settings/app-manager/', AppManagerSettingsView.as_view(), name='app_manager_settings'),
     
     # API endpoints

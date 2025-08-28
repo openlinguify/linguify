@@ -127,6 +127,7 @@ class SettingsContextMixin:
             'documents': 'saas_web:documents_settings',
             'app_manager': 'saas_web:app_manager_settings',
             'language_learning': 'saas_web:language_learning_settings',
+            'todo': 'saas_web:todo_settings',
         }
         
         # Construire les URLs avec gestion d'erreurs

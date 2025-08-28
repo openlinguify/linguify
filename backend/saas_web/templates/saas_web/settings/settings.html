@@ -126,6 +126,8 @@
                     {% include 'documents/documents_settings.html' %}
                 {% elif tab.id == 'language_learning' and tab.active %}
                     {% include 'language_learning/language_learning_settings.html' %}
+                {% elif tab.id == 'todo' and tab.active %}
+                    {% include 'todo/todo_settings.html' %}
                 {% elif tab.id == 'app_manager' and tab.active %}
                     {% include 'app_manager/app_manager_settings.html' %}
                 {% elif tab.active %}
@@ -173,4 +175,5 @@
 <script src="{% static 'notification/js/settings.js' %}"></script>
 <script src="{% static 'documents/js/documents_settings.js' %}"></script>
 <script src="{% static 'language_learning/js/settings.js' %}"></script>
+<script src="{% static 'todo/js/settings.js' %}"></script>
 {% endblock %}

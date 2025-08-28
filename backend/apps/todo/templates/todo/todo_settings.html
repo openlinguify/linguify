@@ -1,0 +1,575 @@
+<!-- Todo Tab -->
+<div id="todo" class="tab-content">
+    <!-- Statistics Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-clipboard-check"></i>
+                Statistiques To-do
+            </h3>
+            <div class="section-actions">
+                <button type="button" onclick="loadTodoStats()" style="margin-right: 8px; padding: 4px 8px; font-size: 12px; background: #007bff; color: white; border: none; border-radius: 4px;">
+                    🔄 Actualiser
+                </button>
+                <button type="button" onclick="testTodoAPI()" style="margin-right: 8px; padding: 4px 8px; font-size: 12px; background: #28a745; color: white; border: none; border-radius: 4px;">
+                    🧪 Test
+                </button>
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-tasks">0</div>
+                    <div class="stat-label">Taches totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completed-tasks">0</div>
+                    <div class="stat-label">Taches terminees</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="active-projects">0</div>
+                    <div class="stat-label">Projets actifs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completion-rate">0%</div>
+                    <div class="stat-label">Taux de reussite</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productivity Settings Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-clock-history"></i>
+                Parametres de productivite
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form id="todo-productivity-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="productivity">
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="enable_time_tracking">
+                        Suivi du temps
+                    </label>
+                    <div class="form-help">Mesurer le temps passe sur chaque tache</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="pomodoro_timer">
+                        Timer Pomodoro
+                    </label>
+                    <div class="form-help">Utiliser la technique Pomodoro pour la concentration</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Duree Pomodoro (minutes)</label>
+                        <div class="range-input">
+                            <input type="range" name="pomodoro_duration" min="5" max="60" value="25" class="form-range">
+                            <span class="range-value">25</span>
+                        </div>
+                        <div class="form-help">Duree des sessions de travail</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Duree des pauses (minutes)</label>
+                        <div class="range-input">
+                            <input type="range" name="break_duration" min="1" max="30" value="5" class="form-range">
+                            <span class="range-value">5</span>
+                        </div>
+                        <div class="form-help">Duree des pauses entre sessions</div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Task Settings Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-list-task"></i>
+                Parametres des taches
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form id="todo-task-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="tasks">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Vue par defaut des projets</label>
+                        <select name="default_project_view" class="form-control">
+                            <option value="list">Liste</option>
+                            <option value="kanban">Kanban</option>
+                            <option value="calendar">Calendrier</option>
+                            <option value="timeline">Timeline</option>
+                        </select>
+                        <div class="form-help">Affichage prefere pour vos projets</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Vue par defaut des taches</label>
+                        <select name="default_task_view" class="form-control">
+                            <option value="list">Liste</option>
+                            <option value="priority">Par priorite</option>
+                            <option value="due_date">Par echeance</option>
+                            <option value="project">Par projet</option>
+                        </select>
+                        <div class="form-help">Affichage prefere pour vos taches</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Priorite par defaut</label>
+                        <select name="default_task_priority" class="form-control">
+                            <option value="low">Faible</option>
+                            <option value="medium">Moyenne</option>
+                            <option value="high">Elevee</option>
+                            <option value="urgent">Urgente</option>
+                        </select>
+                        <div class="form-help">Priorite assignee aux nouvelles taches</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Heure de rappel par defaut</label>
+                        <input type="time" name="default_reminder_time" value="09:00" class="form-control">
+                        <div class="form-help">Heure par defaut pour les rappels</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="auto_archive_completed">
+                        Archivage automatique des taches terminees
+                    </label>
+                    <div class="form-help">Archiver automatiquement les taches apres completion</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Delai d'archivage automatique (jours)</label>
+                    <div class="range-input">
+                        <input type="range" name="auto_archive_days" min="1" max="365" value="30" class="form-range">
+                        <span class="range-value">30</span>
+                    </div>
+                    <div class="form-help">Nombre de jours avant archivage automatique</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notifications Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-bell"></i>
+                Rappels et notifications
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form id="todo-notifications-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="notifications">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="enable_reminders" checked>
+                        Activer les rappels
+                    </label>
+                    <div class="form-help">Recevoir des notifications pour les taches a echeance</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Rappel avant echeance (minutes)</label>
+                        <div class="range-input">
+                            <input type="range" name="reminder_minutes_before" min="1" max="1440" value="15" class="form-range">
+                            <span class="range-value">15</span>
+                        </div>
+                        <div class="form-help">Temps d'avance pour les rappels</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" name="daily_digest" checked>
+                            Resume quotidien
+                        </label>
+                        <div class="form-help">Recevoir un resume de vos taches chaque jour</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Heure du resume quotidien</label>
+                        <input type="time" name="daily_digest_time" value="09:00" class="form-control">
+                        <div class="form-help">Heure d'envoi du resume quotidien</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" name="overdue_notifications" checked>
+                            Notifications de retard
+                        </label>
+                        <div class="form-help">Etre notifie des taches en retard</div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Interface Settings Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-palette"></i>
+                Interface et experience
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form id="todo-interface-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="interface">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Theme</label>
+                        <select name="theme" class="form-control">
+                            <option value="light">Clair</option>
+                            <option value="dark">Sombre</option>
+                            <option value="auto">Automatique</option>
+                        </select>
+                        <div class="form-help">Theme de l'interface utilisateur</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" name="compact_mode">
+                            Mode compact
+                        </label>
+                        <div class="form-help">Interface plus dense avec moins d'espacement</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="show_subtask_count" checked>
+                        Afficher le nombre de sous-taches
+                    </label>
+                    <div class="form-help">Montrer le decompte des sous-taches dans les projets</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="show_progress_bars" checked>
+                        Afficher les barres de progression
+                    </label>
+                    <div class="form-help">Afficher visuellement le progres des projets</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="show_completed_tasks" checked>
+                        Afficher les taches terminees
+                    </label>
+                    <div class="form-help">Inclure les taches completees dans la liste</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="quick_add_shortcut" checked>
+                        Raccourci d'ajout rapide
+                    </label>
+                    <div class="form-help">Activer le raccourci clavier pour ajouter rapidement des taches</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Data Management Section -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-database"></i>
+                Gestion des donnees
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <form id="todo-data-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="setting_type" value="data">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Frequence de sauvegarde</label>
+                        <select name="backup_frequency" class="form-control">
+                            <option value="never">Jamais</option>
+                            <option value="daily">Quotidienne</option>
+                            <option value="weekly">Hebdomadaire</option>
+                            <option value="monthly">Mensuelle</option>
+                        </select>
+                        <div class="form-help">Frequence des sauvegardes automatiques</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Format d'export</label>
+                        <select name="export_format" class="form-control">
+                            <option value="json">JSON</option>
+                            <option value="csv">CSV</option>
+                            <option value="pdf">PDF</option>
+                        </select>
+                        <div class="form-help">Format prefere pour l'export de donnees</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="allow_task_sharing" checked>
+                        Autoriser le partage de taches
+                    </label>
+                    <div class="form-help">Permettre le partage de taches avec d'autres utilisateurs</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="allow_project_sharing" checked>
+                        Autoriser le partage de projets
+                    </label>
+                    <div class="form-help">Permettre le partage de projets avec d'autres utilisateurs</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Todo-specific styles */
+    #todo .stat-card {
+        background: white;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    #todo .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: var(--card-color);
+    }
+
+    #todo .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--card-color);
+    }
+
+    #todo .stat-card:nth-child(1) {
+        --card-color: #6366f1; /* Indigo for total tasks */
+    }
+
+    #todo .stat-card:nth-child(2) {
+        --card-color: #10b981; /* Green for completed tasks */
+    }
+
+    #todo .stat-card:nth-child(3) {
+        --card-color: #f59e0b; /* Orange for active projects */
+    }
+
+    #todo .stat-card:nth-child(4) {
+        --card-color: #8b5cf6; /* Purple for completion rate */
+    }
+
+    #todo .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--card-color);
+        margin-bottom: 4px;
+    }
+
+    #todo .stat-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    #todo .range-input {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    #todo .range-input .form-range {
+        flex: 1;
+    }
+
+    #todo .range-value {
+        min-width: 30px;
+        text-align: center;
+        font-weight: 600;
+        color: #6366f1;
+    }
+</style>
+
+<script>
+    // JavaScript for todo settings
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize todo settings
+        initTodoSettings();
+
+        // Range slider handlers
+        document.querySelectorAll('#todo .range-input input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', function () {
+                const valueSpan = this.parentElement.querySelector('.range-value');
+                if (this.name === 'reminder_minutes_before' && parseInt(this.value) >= 60) {
+                    const hours = Math.floor(this.value / 60);
+                    const minutes = this.value % 60;
+                    valueSpan.textContent = hours + 'h' + (minutes > 0 ? minutes + 'm' : '');
+                } else {
+                    valueSpan.textContent = this.value;
+                }
+            });
+        });
+    });
+
+    function initTodoSettings() {
+        console.log('[TodoSettings] Initializing todo settings');
+        loadTodoStats();
+    }
+
+    async function loadTodoStats() {
+        console.log('[TodoSettings] Loading todo statistics from API');
+        
+        try {
+            const response = await fetch('/api/v1/todo/dashboard/');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('[TodoSettings] Statistics loaded successfully:', data);
+            
+            // Update HTML elements
+            const updateElement = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                    console.log(`[TodoSettings] Updated ${id} to: ${value}`);
+                } else {
+                    console.error(`[TodoSettings] Element ${id} not found`);
+                }
+            };
+            
+            const stats = data.stats || {};
+            updateElement('total-tasks', stats.total_tasks || 0);
+            updateElement('completed-tasks', stats.completed_tasks || 0);
+            updateElement('active-projects', stats.active_projects || 0);
+            updateElement('completion-rate', stats.completion_rate ? stats.completion_rate + '%' : '0%');
+            
+        } catch (error) {
+            console.error('[TodoSettings] Error loading statistics:', error);
+            // Fallback values
+            document.getElementById('total-tasks').textContent = '0';
+            document.getElementById('completed-tasks').textContent = '0';
+            document.getElementById('active-projects').textContent = '0';
+            document.getElementById('completion-rate').textContent = '0%';
+        }
+    }
+
+    async function testTodoAPI() {
+        console.log('[TEST] Testing todo API...');
+        try {
+            const response = await fetch('/api/v1/todo/settings/');
+            const data = await response.json();
+            console.log('[TEST] Todo API response:', data);
+            alert(`Test API Todo: Status OK\nTheme: ${data.theme || 'auto'}\nMode compact: ${data.compact_mode ? 'Oui' : 'Non'}`);
+        } catch (error) {
+            console.error('[TEST] Error:', error);
+            alert('Test API failed: ' + error.message);
+        }
+    }
+
+    // Make functions globally available
+    window.loadTodoStats = loadTodoStats;
+    window.testTodoAPI = testTodoAPI;
+</script>

@@ -147,6 +147,20 @@ Use Cases:
         'monitoring_setup': True,
     },
     
+    # Settings configuration
+    'settings': {
+        'tabs': [
+            {
+                'id': 'todo',
+                'name': 'To-do',
+                'icon': 'bi-check2-square',
+                'template': 'todo/todo_settings.html',
+                'category': 'applications',
+                'order': 30,
+            }
+        ]
+    },
+    
     # Integration points with other apps
     'integrations': {
         'notification': {
