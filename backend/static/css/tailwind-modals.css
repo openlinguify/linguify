@@ -329,11 +329,7 @@
 
 /* ===== LIST VIEW LINGUIFY COMPONENTS ===== */
 
-/* List Layout */
-.list-layout {
-    height: 100vh;
-    min-height: 100vh;
-}
+/* List Layout - See main definition below */
 
 /* List Header */
 .list-header-linguify {
@@ -3699,18 +3695,27 @@ button.bg-linguify-gradient:hover,
 
 /* ===== LIST LINGUIFY COMPONENTS ===== */
 
-/* List Layout */
+/* List Layout - Odoo style full height */
 .list-layout {
-    height: 100vh;
-    min-height: 100vh;
+    height: 100%; /* Use 100% instead of 100vh since we're inside app-main-layout */
+    min-height: 100%; /* Same for min-height */
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Include borders in height calculation */
 }
 
 .list-container {
     flex: 1;
     padding: 0px;
     background-color: var(--linguify-gray-50);
-    overflow-y: auto;
-    max-height: calc(100vh - 80px); /* Ensure it fits in viewport */
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Take full available height from parent */
+    overflow: hidden; /* Prevent container from scrolling */
+    min-height: 0; /* Important for proper flexbox behavior */
+    box-sizing: border-box;
 }
 
 /* Unified Table Container */
@@ -3719,11 +3724,25 @@ button.bg-linguify-gradient:hover,
     border-radius: 8px;
     border: 1px solid var(--linguify-gray-200);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    overflow: hidden;
+    height: 100%; /* Ensure it takes full height */
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Important for proper flexbox behavior */
+    margin: 0; /* Remove any default margins */
+    box-sizing: border-box;
 }
 
-/* Table responsive - no special overflow handling */
+/* Make the table-responsive container handle scroll properly */
 .unified-table-container-linguify .table-responsive {
-    /* Let parent handle scrolling */
+    flex: 1; /* Take all available height */
+    overflow-y: auto;
+    height: 100%;
+    min-height: 0; /* Important for proper flexbox behavior */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 /* Ensure table takes full width */
@@ -3759,7 +3778,8 @@ button.bg-linguify-gradient:hover,
     background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #ffffff 100%);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 100; /* Higher z-index to ensure it stays on top */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow when sticky */
 }
 
 .table-header-sticky th {
