@@ -23,18 +23,31 @@
                             <span class="task-count badge bg-secondary">{{ stage_data.count }}</span>
                         </div>
                         <div class="column-actions">
-                            <button class="btn btn-sm btn-outline-secondary" onclick="addTaskToStage('{{ stage_id }}')">
+                            <!-- Odoo-style quick add button -->
+                            <button class="btn btn-sm btn-link text-muted kanban-quick-add" 
+                                    onclick="addTaskToStage('{{ stage_id }}')" 
+                                    title="{% trans 'Ajout rapide' %}">
                                 <i class="bi bi-plus"></i>
                             </button>
-                            {% if stage_data.stage.fold %}
-                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleStage('{{ stage_id }}')">
-                                <i class="bi bi-chevron-up"></i>
+                            <!-- Settings button -->
+                            <button class="btn btn-sm btn-link text-muted dropdown-toggle" 
+                                    data-bs-toggle="dropdown" 
+                                    title="{% trans 'Paramètres' %}">
+                                <i class="bi bi-gear"></i>
                             </button>
-                            {% else %}
-                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleStage('{{ stage_id }}')">
-                                <i class="bi bi-chevron-down"></i>
-                            </button>
-                            {% endif %}
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="toggleStage('{{ stage_id }}')">
+                                    <i class="bi bi-eye{% if stage_data.stage.fold %}-slash{% endif %}"></i>
+                                    {% if stage_data.stage.fold %}{% trans "Afficher" %}{% else %}{% trans "Masquer" %}{% endif %}
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-palette"></i> {% trans "Changer couleur" %}
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#">
+                                    <i class="bi bi-trash"></i> {% trans "Supprimer étape" %}
+                                </a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -355,6 +368,60 @@
     border-color: #007bff;
     color: #007bff;
     background: rgba(0,123,255,0.05);
+}
+
+/* Odoo-style quick add forms */
+.quick-add-form {
+    border: 1px solid #e3e6f0;
+    background: #f8f9fc;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.quick-add-form:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.quick-add-form input {
+    background: transparent !important;
+    border: none !important;
+    padding: 8px 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.quick-add-form input:focus {
+    background: white !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
+}
+
+/* Column actions hover effects */
+.kanban-quick-add:hover {
+    color: #007bff !important;
+    transform: scale(1.1);
+}
+
+.column-actions .btn-link:hover {
+    color: #495057 !important;
+}
+
+/* Progress indicator like Odoo */
+.kanban-column-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--bs-primary, #007bff) 50%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.kanban-column:hover .kanban-column-header::after {
+    opacity: 0.3;
 }
 </style>
 {% endblock %}

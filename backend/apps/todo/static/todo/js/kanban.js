@@ -271,44 +271,63 @@ class TodoKanban {
         }
     }
     
-    showQuickAddForm(stageId, addBtn) {
+    showQuickAddForm(stageId, referenceElement) {
         // Hide existing forms
         this.closeAllForms();
         
+        // Find the tasks container for this stage
+        const tasksContainer = document.querySelector(`[data-stage-id="${stageId}"] .kanban-tasks-container`);
+        if (!tasksContainer) return;
+        
+        // Create Odoo-style inline form
         const form = document.createElement('div');
-        form.className = 'quick-add-form';
+        form.className = 'quick-add-form kanban-card mb-3';
+        form.dataset.stageId = stageId;
         form.innerHTML = `
-            <div class="card">
-                <div class="card-body p-3">
-                    <input type="text" class="form-control form-control-sm mb-2" 
-                           placeholder="Task title..." id="quickTaskTitle" autofocus>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary btn-sm flex-fill" onclick="todoKanban.submitQuickTask('${stageId}')">
-                            Add
-                        </button>
-                        <button class="btn btn-outline-secondary btn-sm" onclick="todoKanban.closeAllForms()">
-                            Cancel
-                        </button>
-                    </div>
+            <div class="kanban-card-body p-3">
+                <input type="text" class="form-control form-control-sm mb-2" 
+                       placeholder="{% trans 'Titre de la tâche...' %}" 
+                       id="quickTaskTitle_${stageId}" 
+                       style="border: none; box-shadow: none; font-size: 1.1rem; font-weight: 500;"
+                       autofocus>
+                <div class="d-flex gap-2 mt-2">
+                    <button class="btn btn-success btn-sm" onclick="todoKanban.submitQuickTask('${stageId}')">
+                        <i class="bi bi-check"></i> Ajouter
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="todoKanban.closeAllForms()">
+                        <i class="bi bi-x"></i> Annuler
+                    </button>
                 </div>
             </div>
         `;
         
-        addBtn.style.display = 'none';
-        addBtn.after(form);
+        // Insert at the top of the tasks container (Odoo behavior)
+        tasksContainer.insertBefore(form, tasksContainer.firstChild);
         
-        // Focus and enter key handling
-        const input = form.querySelector('#quickTaskTitle');
-        input.focus();
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                this.submitQuickTask(stageId);
-            }
-        });
+        // Focus and keyboard handling
+        const input = form.querySelector(`#quickTaskTitle_${stageId}`);
+        if (input) {
+            input.focus();
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.submitQuickTask(stageId);
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    this.closeAllForms();
+                }
+            });
+        }
+        
+        // Hide the reference button if it's an add button
+        if (referenceElement && referenceElement.classList.contains('add-task-btn')) {
+            referenceElement.style.display = 'none';
+        }
     }
     
     async submitQuickTask(stageId) {
-        const input = document.getElementById('quickTaskTitle');
+        // Look for the input in the specific stage form
+        const input = document.getElementById(`quickTaskTitle_${stageId}`) || document.getElementById('quickTaskTitle');
         const title = input?.value?.trim();
         
         if (!title) {
@@ -489,8 +508,13 @@ class TodoKanban {
     }
     
     closeAllForms() {
+        // Remove all quick add forms
         document.querySelectorAll('.quick-add-form').forEach(form => form.remove());
-        document.querySelectorAll('.add-task-btn').forEach(btn => btn.style.display = 'block');
+        
+        // Restore any hidden add buttons
+        document.querySelectorAll('.add-task-btn').forEach(btn => {
+            btn.style.display = 'block';
+        });
     }
     
     showTaskLoading(taskCard) {
@@ -563,8 +587,23 @@ class TodoKanban {
 
 // Global functions
 window.addTaskToStage = function(stageId) {
-    const addBtn = document.querySelector(`[data-stage-id="${stageId}"] .add-task-btn`);
-    if (addBtn) {
+    // Look for the kanban-quick-add button first (Odoo style)
+    let addBtn = document.querySelector(`[data-stage-id="${stageId}"] .kanban-quick-add`);
+    
+    // If not found, look for the bottom add button
+    if (!addBtn) {
+        addBtn = document.querySelector(`[data-stage-id="${stageId}"] .add-task-btn`);
+    }
+    
+    // If still not found, create a reference from the column header
+    if (!addBtn) {
+        const column = document.querySelector(`[data-stage-id="${stageId}"]`);
+        if (column) {
+            addBtn = column.querySelector('.kanban-column-header');
+        }
+    }
+    
+    if (window.todoKanban) {
         todoKanban.showQuickAddForm(stageId, addBtn);
     }
 };
