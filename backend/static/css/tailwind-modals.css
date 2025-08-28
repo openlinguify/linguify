@@ -37,6 +37,219 @@
     --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
 }
 
+/* ===== KANBAN LINGUIFY COMPONENTS ===== */
+
+/* Kanban Layout */
+.kanban-layout {
+    height: 100%;
+    min-height: 100%;
+}
+
+.kanban-container {
+    flex: 1;
+    overflow-y: auto;
+    height: 100%;
+    padding: 24px;
+}
+
+.kanban-board {
+    overflow-x: auto;
+}
+
+.kanban-columns {
+    display: flex;
+    gap: 16px;
+    min-width: max-content;
+    height: calc(100vh - 180px);
+}
+
+/* Kanban Column */
+.kanban-column {
+    width: 280px;
+    min-width: 280px;
+    height: 100%;
+}
+
+.kanban-column-card {
+    background: white;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    height: 100%;
+}
+
+/* Column Header */
+.sidebar-header-linguify {
+    background-color: var(--linguify-gray-50);
+    border-bottom: 1px solid var(--linguify-gray-200);
+    border-radius: 8px 8px 0 0;
+    padding: 16px;
+}
+
+.column-title-linguify {
+    font-weight: 600;
+    color: var(--linguify-primary);
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.badge-linguify {
+    background-color: var(--linguify-primary-light);
+    color: var(--linguify-primary);
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.btn-linguify-secondary {
+    background-color: var(--linguify-gray-100);
+    border: 1px solid var(--linguify-gray-300);
+    color: var(--linguify-gray-700);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-linguify-secondary:hover {
+    background-color: var(--linguify-gray-200);
+    color: var(--linguify-gray-800);
+}
+
+/* Tasks Container */
+.kanban-tasks-container {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+    height: calc(100% - 80px);
+}
+
+/* Task Cards */
+.task-card-linguify {
+    background: white;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}
+
+.task-card-linguify:hover {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+}
+
+.task-title-linguify {
+    font-weight: 500;
+    color: var(--linguify-primary);
+    margin-bottom: 0;
+    font-size: 14px;
+    flex: 1;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    width: 100%;
+    height: 4px;
+    background-color: var(--linguify-gray-200);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+    transition: width 0.3s ease;
+}
+
+/* Add Task Button */
+.add-task-btn-linguify {
+    width: 100%;
+    height: 40px;
+    border: 2px dashed var(--linguify-gray-300);
+    background: transparent;
+    color: var(--linguify-gray-500);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.add-task-btn-linguify:hover {
+    border-color: var(--linguify-primary);
+    color: var(--linguify-primary);
+    background-color: rgba(45, 91, 186, 0.05);
+}
+
+/* Add Stage Button */
+.add-stage-btn-linguify {
+    width: 150px;
+    height: 200px;
+    border: 2px dashed var(--linguify-gray-300);
+    background: transparent;
+    color: var(--linguify-gray-500);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.add-stage-btn-linguify:hover {
+    border-color: var(--linguify-primary);
+    color: var(--linguify-primary);
+    background-color: rgba(45, 91, 186, 0.05);
+}
+
+/* Drag and Drop Effects */
+.kanban-card.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+.kanban-column.drag-over {
+    background-color: rgba(45, 91, 186, 0.05);
+}
+
+/* Custom Scrollbar */
+.kanban-tasks-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.kanban-tasks-container::-webkit-scrollbar-track {
+    background: var(--linguify-gray-100);
+}
+
+.kanban-tasks-container::-webkit-scrollbar-thumb {
+    background: var(--linguify-gray-300);
+    border-radius: 2px;
+}
+
+.kanban-tasks-container::-webkit-scrollbar-thumb:hover {
+    background: var(--linguify-gray-400);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .kanban-column {
+        width: 250px !important;
+        min-width: 250px !important;
+    }
+    
+    .kanban-container {
+        padding: 12px;
+    }
+}
+
 /* Layout & Positioning */
 .fixed { position: fixed; }
 .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
