@@ -34,7 +34,8 @@
                             {% trans "Description" %}
                         </label>
                         <textarea class="textarea-linguify" id="description" name="description" 
-                                  rows="4" placeholder="{% trans 'Add task details...' %}">{{ task.description|default:'' }}</textarea>
+                                  rows="4" placeholder="{% trans 'Add task details... Type / for commands' %}" 
+                                  data-command-palette="true">{{ task.description|default:'' }}</textarea>
                     </div>
                     
                     <!-- Row 1: Project & Stage -->
@@ -265,6 +266,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/linguify-command-palette.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Progress slider update
