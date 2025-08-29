@@ -10,8 +10,8 @@
                 <i class="bi bi-house-door"></i>
                 {% trans "Accueil" %}
             </a>
-            <a href="{% url 'teaching:teachers_list' %}" 
-               class="nav-tab {% if request.resolver_match.url_name == 'teachers_list' %}active{% endif %}">
+            <a href="{% url 'teaching:my_teachers' %}" 
+               class="nav-tab {% if request.resolver_match.url_name == 'my_teachers' %}active{% endif %}">
                 <i class="bi bi-people"></i>
                 {% trans "Professeurs" %}
             </a>
@@ -31,7 +31,7 @@
     
     <!-- Droite: Actions et filtres -->
     <div class="navbar-section-right">
-        {% if request.resolver_match.url_name == 'teachers_list' %}
+        {% if request.resolver_match.url_name == 'find_teachers' or request.resolver_match.url_name == 'teachers_list' %}
         <!-- Filtres pour la liste des professeurs -->
         <input type="text" id="searchTeachers" class="form-control-linguify" 
                placeholder="{% trans 'Rechercher un professeur...' %}" 
@@ -89,7 +89,7 @@
         {% else %}
         <!-- Actions par défaut pour dashboard -->
         <div class="navbar-actions-group">
-            <a href="{% url 'teaching:teachers_list' %}" class="btn-navbar btn-navbar-outline">
+            <a href="{% url 'teaching:find_teachers' %}" class="btn-navbar btn-navbar-outline">
                 <i class="bi bi-search"></i>
                 <span class="d-none d-xxl-inline">{% trans "Trouver un professeur" %}</span>
             </a>
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const quickBookBtn = document.getElementById('bookLessonQuick');
     if (quickBookBtn) {
         quickBookBtn.addEventListener('click', function() {
-            window.location.href = '{% url "teaching:teachers_list" %}';
+            window.location.href = '{% url "teaching:find_teachers" %}';
         });
     }
     

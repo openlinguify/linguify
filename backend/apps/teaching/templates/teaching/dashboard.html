@@ -24,7 +24,7 @@
                 </p>
             </div>
             <div class="col-md-4 text-end">
-                <a href="{% url 'teaching:teachers_list' %}" class="btn btn-light btn-lg">
+                <a href="{% url 'teaching:find_teachers' %}" class="btn btn-light btn-lg">
                     <i class="bi bi-calendar-plus me-2"></i>
                     {% trans "Réserver un cours" %}
                 </a>
@@ -170,7 +170,7 @@
                 {% endfor %}
                 
                 <div class="text-center">
-                    <a href="/teaching/teachers/" class="btn btn-outline-primary">
+                    <a href="{% url 'teaching:find_teachers' %}" class="btn btn-outline-primary">
                         {% trans "Voir tous les enseignants" %}
                     </a>
                 </div>
@@ -233,7 +233,7 @@
 function bookWithTeacher(teacherId) {
     console.log('Book with teacher:', teacherId);
     // Rediriger vers la page des professeurs
-    window.location.href = '{% url "teaching:teachers_list" %}';
+    window.location.href = '{% url "teaching:find_teachers" %}';
 }
 
 function startLesson(lessonId) {
