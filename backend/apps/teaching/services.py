@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, time
 from typing import List, Dict, Any
 from .models import Teacher, PrivateLesson, TeacherAvailability, TeacherScheduleOverride
 # Import updated to use course app models after learning app fusion  
-from apps.course.models import StudentCourse
+# from apps.course.models import UserProgress  # Updated import path
 
 class BookingService:
     """Service for lesson booking logic."""
@@ -146,12 +146,9 @@ class TeacherMatchingService:
     def get_recommendations(self, limit: int = 5) -> List[Teacher]:
         """Get personalized teacher recommendations."""
         
-        # Get student's learning history
-        student_courses = StudentCourse.objects.filter(student=self.student)
-        
-        # Extract preferences
-        preferred_languages = self._get_preferred_languages(student_courses)
-        student_level = self._estimate_student_level(student_courses)
+        # For now, use default preferences (can be enhanced later with user course data)
+        preferred_languages = ['fr', 'en', 'es']  # Default popular languages
+        student_level = 'A2'  # Default intermediate beginner level
         
         # Get available teachers
         available_teachers = Teacher.objects.filter(
@@ -172,31 +169,17 @@ class TeacherMatchingService:
         scored_teachers.sort(key=lambda x: x[1], reverse=True)
         return [teacher for teacher, score in scored_teachers[:limit]]
     
-    def _get_preferred_languages(self, student_courses) -> List[str]:
-        """Extract preferred languages from student's course history."""
-        # This would need to be adapted based on your course model structure
+    def _get_preferred_languages(self) -> List[str]:
+        """Extract preferred languages from student's profile/preferences."""
+        # TODO: Implement user language preferences from profile
         # For now, return common languages
         return ['en', 'fr', 'es']
     
-    def _estimate_student_level(self, student_courses) -> str:
+    def _estimate_student_level(self) -> str:
         """Estimate student's current level."""
-        if not student_courses.exists():
-            return 'A1'
-        
-        # Get the highest level from completed courses
-        levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
-        completed_levels = []
-        
-        for course in student_courses.filter(progress_percentage__gte=80):
-            if hasattr(course.unit, 'level') and course.unit.level in levels:
-                completed_levels.append(course.unit.level)
-        
-        if not completed_levels:
-            return 'A1'
-        
-        # Return the highest completed level
-        highest_level_index = max(levels.index(level) for level in completed_levels)
-        return levels[min(highest_level_index + 1, len(levels) - 1)]  # Next level or max
+        # TODO: Implement level estimation based on user progress
+        # For now, return intermediate beginner level
+        return 'A2'
     
     def _calculate_teacher_score(self, teacher: Teacher, preferred_languages: List[str], student_level: str) -> float:
         """Calculate matching score for a teacher."""
