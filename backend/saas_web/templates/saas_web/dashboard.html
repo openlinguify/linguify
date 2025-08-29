@@ -24,7 +24,7 @@
                 <div class="app-icon-simple" {% if not app.static_icon %}data-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)' }}"{% else %}style="background: transparent; border: 1px solid #e2e8f0;"{% endif %}>
                     {% if app.static_icon %}
                     <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon"
-                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 10px;"
+                        style="width: 48px; height: 48px; object-fit: cover"
                         class="app-static-icon" data-fallback-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)' }}" data-fallback-icon="{{ app.icon|default:'bi-app' }}">
                     <i class="bi {{ app.icon|default:'bi-app' }}" style="display: none; color: white;"></i>
                     {% else %}
