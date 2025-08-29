@@ -3830,8 +3830,8 @@ button.bg-linguify-gradient:hover,
 }
 
 .editor-js-linguify .codex-editor__redactor {
-    padding: 12px !important; /* Reduced left padding for closer toolbar */
-    position: relative;
+    padding: 16px 16px 16px 40px !important;
+    position: relative; /* Contexte de positionnement pour inline toolbar */
 }
 
 .editor-js-linguify .ce-block {
@@ -3929,10 +3929,11 @@ button.bg-linguify-gradient:hover,
     border: 1px solid var(--linguify-gray-300) !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
     border-radius: 8px !important;
-    z-index: 99999 !important; /* Z-index très élevé pour passer au-dessus du header */
-    position: fixed !important;
+    z-index: 99999 !important;
+    position: absolute !important; /* Position absolue pour être relative au contenu */
     padding: 4px !important;
     max-width: none !important;
+    transform: translateY(-100%) translateY(-8px) !important; /* Juste au-dessus du texte */
 }
 
 .editor-js-linguify .ce-inline-toolbar--showed {
@@ -4007,11 +4008,12 @@ button.bg-linguify-gradient:hover,
 /* Override any potential conflicting styles */
 .ce-inline-toolbar {
     z-index: 99999 !important;
-    position: fixed !important;
+    position: absolute !important; /* Position relative au contenu */
     background: white !important;
     border: 1px solid #d1d5db !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
     border-radius: 8px !important;
+    transform: translateY(-100%) translateY(-8px) !important;
 }
 
 /* Better initial state for empty editor */
