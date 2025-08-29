@@ -257,3 +257,41 @@ body {
         color: #00D4AA;
     }
 }
+
+/* App icon styling in header */
+.app-brand-icon {
+    display: flex;
+    align-items: center;
+    transition: all var(--transition-medium);
+}
+
+.app-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    transition: all var(--transition-medium);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.app-brand-icon:hover .app-icon {
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+}
+
+/* Keep gradient for Linguify text when not in an app */
+.app-brand-icon .app-brand-gradient {
+    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.app-brand-icon:hover .app-brand-gradient {
+    background: linear-gradient(135deg, #3d6bca 0%, #00e4ba 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: scale(1.05);
+}

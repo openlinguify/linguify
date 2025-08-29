@@ -6,21 +6,11 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <!-- Brand -->
-            <a class="navbar-brand app-brand-gradient" href="{% url 'saas_web:dashboard' %}" aria-label="{% trans 'Return to dashboard' %}">
-                {% if 'teaching' in request.resolver_match.namespace %}
-                    Teaching
-                {% elif 'revision' in request.resolver_match.namespace %}
-                    Memory
-                {% elif 'notebook' in request.resolver_match.namespace %}
-                    Notebook
-                {% elif 'todo' in request.resolver_match.namespace %}
-                    Todo
-                {% elif 'community' in request.resolver_match.namespace %}
-                    Community
-                {% elif 'quizz' in request.resolver_match.namespace %}
-                    Quiz
+            <a class="navbar-brand app-brand-icon" href="{% url 'saas_web:dashboard' %}" aria-label="{% trans 'Return to dashboard' %}">
+                {% if current_app.static_icon %}
+                    <img src="{{ current_app.static_icon }}" alt="{{ current_app.display_name|default:current_app.name }}" class="app-icon">
                 {% else %}
-                    Linguify
+                    <span class="app-brand-gradient">{{ current_app.display_name|default:current_app.name|default:"Linguify" }}</span>
                 {% endif %}
             </a>
             
