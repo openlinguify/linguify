@@ -3963,6 +3963,23 @@ button.bg-linguify-gradient:hover,
     visibility: visible;
 }
 
+/* Show toolbar when editor is clicked/focused */
+.editor-js-linguify.ce-toolbar-opened .ce-toolbar {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Better initial state for empty editor */
+.editor-js-linguify:not(.codex-editor--empty) .ce-block:first-child .ce-toolbar {
+    opacity: 0;
+}
+
+.editor-js-linguify.codex-editor--empty .ce-block:first-child .ce-toolbar,
+.editor-js-linguify:focus-within .ce-block:first-child .ce-toolbar {
+    opacity: 1;
+    visibility: visible;
+}
+
 /* Ensure first block always shows toolbar when editor is empty */
 .editor-js-linguify .ce-block:first-child .ce-toolbar {
     opacity: 1;
@@ -4019,11 +4036,33 @@ button.bg-linguify-gradient:hover,
     margin-bottom: 16px;
 }
 
-/* Placeholder styles */
+/* Error states only */
+
+.editor-js-linguify.editor-error {
+    border-color: var(--linguify-error);
+    background-color: #fef2f2;
+}
+
+/* Smooth transitions for editor states */
+.editor-js-linguify {
+    transition: all 0.2s ease;
+}
+
+/* Enhanced placeholder styling */
 .editor-js-linguify .ce-paragraph[data-placeholder]:empty::before {
+    content: attr(data-placeholder);
     color: var(--linguify-gray-400);
     font-style: italic;
+    pointer-events: none;
 }
+
+/* Better focus indication */
+.editor-js-linguify:focus-within {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+/* Duplicate removed - already defined above */
 
 /* Additional Editor.js Tool Styles */
 

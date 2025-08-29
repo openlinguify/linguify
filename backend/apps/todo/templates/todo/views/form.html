@@ -379,28 +379,74 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Linguify Commands Editor
     const existingContent = document.getElementById('description').value;
     
+    let editorInstance = null;
+    
     initLinguifyEditorWithContent('description-editor', existingContent, {
         placeholder: 'Décrivez votre tâche... Utilisez le bouton + pour ajouter du contenu',
-        autofocus: true
+        autofocus: false // Disable autofocus to avoid conflicts with title field
     }).then(editor => {
+        editorInstance = editor;
         console.log('✅ Commands Editor ready!');
         
-        // Sync content before form submission
-        document.getElementById('taskForm').addEventListener('submit', async function(e) {
-            try {
-                const outputData = await editor.save();
-                document.getElementById('description').value = JSON.stringify(outputData);
-            } catch (error) {
-                console.log('Saving failed: ', error);
-            }
-        });
     }).catch(error => {
         console.error('❌ Commands Editor failed to initialize:', error);
+        
+        // Show fallback textarea if editor fails
+        const editorContainer = document.getElementById('description-editor');
+        editorContainer.innerHTML = `
+            <textarea name="description_fallback" 
+                      placeholder="Décrivez votre tâche..."
+                      style="width: 100%; min-height: 300px; padding: 16px; border: 1px solid var(--linguify-gray-300); border-radius: 6px; resize: vertical; font-size: 14px; line-height: 1.6;"
+                      >${existingContent || ''}</textarea>
+        `;
     });
     
-    // Form submission
-    document.getElementById('taskForm').addEventListener('submit', function(e) {
+    // Single form submission handler
+    document.getElementById('taskForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        
+        // Save editor content if available
+        if (editorInstance) {
+            try {
+                const outputData = await editorInstance.save();
+                const descriptionField = document.getElementById('description');
+                
+                // Only save if there's actual content
+                if (outputData && outputData.blocks && outputData.blocks.length > 0) {
+                    // Check if there's meaningful content (not just empty paragraphs)
+                    const hasContent = outputData.blocks.some(block => {
+                        if (block.type === 'paragraph' && block.data.text.trim()) return true;
+                        if (block.type !== 'paragraph') return true;
+                        return false;
+                    });
+                    
+                    if (hasContent) {
+                        descriptionField.value = JSON.stringify(outputData);
+                    } else {
+                        descriptionField.value = ''; // Empty content
+                    }
+                } else {
+                    descriptionField.value = ''; // No blocks
+                }
+                
+                console.log('📝 Editor content saved to hidden field');
+            } catch (error) {
+                console.error('❌ Failed to save editor content:', error);
+                // Try to get fallback content
+                const fallbackTextarea = document.querySelector('textarea[name="description_fallback"]');
+                if (fallbackTextarea) {
+                    document.getElementById('description').value = fallbackTextarea.value;
+                }
+            }
+        } else {
+            // Try to get fallback content
+            const fallbackTextarea = document.querySelector('textarea[name="description_fallback"]');
+            if (fallbackTextarea) {
+                document.getElementById('description').value = fallbackTextarea.value;
+            }
+        }
+        
+        // Submit the form
         submitForm();
     });
 });
