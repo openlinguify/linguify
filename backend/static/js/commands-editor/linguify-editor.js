@@ -40,24 +40,52 @@ class LinguifyEditor {
             const tools = this.getToolsConfig();
             console.log('🛠️ Available tools:', Object.keys(tools));
             
+            // Check which inline tools are actually available
+            const availableInlineTools = [];
+            if (tools.marker) availableInlineTools.push('marker');
+            if (tools.inlineCode) availableInlineTools.push('inlineCode');
+            
+            console.log('🔧 Inline toolbar will use:', availableInlineTools);
+            
             this.editor = new EditorJS({
                 holder: this.holderId,
                 placeholder: this.options.placeholder,
                 autofocus: this.options.autofocus,
                 tools: tools,
-                inlineToolbar: ['marker', 'inlineCode'],
+                inlineToolbar: availableInlineTools.length > 0 ? availableInlineTools : true,
                 data: { blocks: [] },
                 onChange: (api, event) => {
                     console.log('📝 Editor content changed');
                 },
                 // Configuration pour améliorer l'affichage des toolbars
                 defaultBlock: 'paragraph',
-                minHeight: 0
+                minHeight: 0,
+                logLevel: 'VERBOSE' // Enable debug logs
             });
             
             // Wait for the editor to be ready
             await this.editor.isReady;
             console.log('✅ EditorJS ready for:', this.holderId);
+            
+            // Add debug event listeners
+            const editorElement = document.getElementById(this.holderId);
+            if (editorElement) {
+                editorElement.addEventListener('mouseup', () => {
+                    setTimeout(() => {
+                        const selection = window.getSelection();
+                        if (selection.toString().length > 0) {
+                            console.log('📝 Text selected:', selection.toString());
+                            console.log('🔍 Looking for inline toolbar...');
+                            const inlineToolbar = document.querySelector('.ce-inline-toolbar');
+                            console.log('🔧 Inline toolbar found:', !!inlineToolbar);
+                            if (inlineToolbar) {
+                                console.log('👁️ Inline toolbar visible:', 
+                                    window.getComputedStyle(inlineToolbar).display !== 'none');
+                            }
+                        }
+                    }, 100);
+                });
+            }
             
         } catch (error) {
             console.error('❌ EditorJS initialization failed:', error);
@@ -144,17 +172,29 @@ class LinguifyEditor {
             };
         }
         
-        // Inline tools
+        // Inline tools - Debug what's available
+        console.log('🔍 Checking inline tools availability:');
+        console.log('  - Marker:', typeof window.Marker !== 'undefined');
+        console.log('  - InlineCode:', typeof window.InlineCode !== 'undefined');
+        
         if (typeof window.Marker !== 'undefined') {
             tools.marker = {
-                class: window.Marker
+                class: window.Marker,
+                shortcut: 'CMD+SHIFT+M'
             };
+            console.log('✅ Marker tool configured');
+        } else {
+            console.warn('❌ Marker tool not available');
         }
         
         if (typeof window.InlineCode !== 'undefined') {
             tools.inlineCode = {
-                class: window.InlineCode
+                class: window.InlineCode,
+                shortcut: 'CMD+SHIFT+C'
             };
+            console.log('✅ InlineCode tool configured');
+        } else {
+            console.warn('❌ InlineCode tool not available');
         }
         
         console.log('🛠️ Tools configured:', Object.keys(tools));
