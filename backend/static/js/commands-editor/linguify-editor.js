@@ -60,7 +60,15 @@ class LinguifyEditor {
                 // Configuration pour améliorer l'affichage des toolbars
                 defaultBlock: 'paragraph',
                 minHeight: 0,
-                logLevel: 'VERBOSE' // Enable debug logs
+                logLevel: 'VERBOSE',
+                // Configuration toolbar - cacher le bouton + mais garder les fonctionnalités
+                toolbar: {
+                    should: true // Nécessaire pour les commandes slash
+                },
+                // Configuration pour les commandes slash
+                shortcuts: {
+                    should: true // Active les raccourcis clavier et slash
+                }
             });
             
             // Wait for the editor to be ready

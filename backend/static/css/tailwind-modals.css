@@ -3830,7 +3830,7 @@ button.bg-linguify-gradient:hover,
 }
 
 .editor-js-linguify .codex-editor__redactor {
-    padding: 16px 16px 16px 40px !important;
+    padding: 16px !important; /* Padding normal, plus besoin d'espace pour le bouton + */
     position: relative; /* Contexte de positionnement pour inline toolbar */
 }
 
@@ -3856,73 +3856,53 @@ button.bg-linguify-gradient:hover,
     color: var(--linguify-gray-900);
 }
 
-/* Toolbar positioning and visibility */
-.editor-js-linguify .ce-toolbar {
-    position: absolute;
-    left: -28px; /* Plus proche du texte */
-    top: 0;
-    transform: translateY(0);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease;
-    z-index: 100;
-}
-
-.editor-js-linguify .ce-block:hover .ce-toolbar,
-.editor-js-linguify .ce-block--focused .ce-toolbar {
-    opacity: 1;
-    visibility: visible;
-}
-
-.editor-js-linguify .ce-toolbar__plus {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: white;
-    border: 1px solid var(--linguify-gray-300);
-    color: var(--linguify-gray-400);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 16px;
-    font-weight: bold;
-    z-index: 101; /* Au-dessus de la toolbar */
-    position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.editor-js-linguify .ce-toolbar__plus:hover {
-    background: var(--linguify-primary);
-    border-color: var(--linguify-primary);
-    color: white;
-    transform: scale(1.1);
-}
-
+/* Cacher seulement le bouton + mais garder les fonctionnalités */
+.editor-js-linguify .ce-toolbar__plus,
 .editor-js-linguify .ce-toolbar__settings-btn {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: white;
-    border: 1px solid var(--linguify-gray-300);
-    color: var(--linguify-gray-400);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-left: 4px;
-    z-index: 101; /* Au-dessus de la toolbar */
-    position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: none !important; /* Cache les boutons */
 }
 
-.editor-js-linguify .ce-toolbar__settings-btn:hover {
-    background: rgba(45, 91, 186, 0.1);
-    border-color: var(--linguify-primary);
-    color: var(--linguify-primary);
+.editor-js-linguify .ce-toolbar {
+    opacity: 0 !important; /* Toolbar invisible mais fonctionnelle */
+    pointer-events: none !important; /* Pas d'interaction avec la toolbar */
 }
+
+/* Mais permettre les popups de commandes slash */
+.editor-js-linguify .ce-popover,
+.editor-js-linguify .ce-toolbar__actions,
+.editor-js-linguify .ce-toolbox {
+    display: block !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 99999 !important;
+    background: white !important;
+    border: 1px solid var(--linguify-gray-300) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Styles pour les éléments du menu slash */
+.editor-js-linguify .ce-popover__item {
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+    transition: background 0.2s ease !important;
+}
+
+.editor-js-linguify .ce-popover__item:hover,
+.editor-js-linguify .ce-popover__item--focused {
+    background: rgba(45, 91, 186, 0.1) !important;
+    color: var(--linguify-primary) !important;
+}
+
+/* Règles hover supprimées - toolbar désactivée */
+
+/* Bouton + supprimé */
+
+/* Hover bouton + supprimé */
+
+/* Bouton settings supprimé */
+
+/* Hover settings supprimé */
 
 .editor-js-linguify .ce-inline-toolbar {
     background: white !important;
@@ -3933,7 +3913,7 @@ button.bg-linguify-gradient:hover,
     position: absolute !important; /* Position absolue pour être relative au contenu */
     padding: 4px !important;
     max-width: none !important;
-    transform: translateY(-100%) translateY(-8px) !important; /* Juste au-dessus du texte */
+    transform: translateY(-100%) translateY(-25px) !important; /* Espacement confortable */
 }
 
 .editor-js-linguify .ce-inline-toolbar--showed {
@@ -3989,11 +3969,7 @@ button.bg-linguify-gradient:hover,
     visibility: visible;
 }
 
-/* Show toolbar when editor is clicked/focused */
-.editor-js-linguify.ce-toolbar-opened .ce-toolbar {
-    opacity: 1 !important;
-    visibility: visible !important;
-}
+/* Toolbar principale désactivée - plus besoin de ces règles */
 
 /* Force inline toolbar to show on text selection */
 .editor-js-linguify .ce-inline-toolbar--showed,
@@ -4013,7 +3989,7 @@ button.bg-linguify-gradient:hover,
     border: 1px solid #d1d5db !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
     border-radius: 8px !important;
-    transform: translateY(-100%) translateY(-8px) !important;
+    transform: translateY(-100%) translateY(-20px) !important;
 }
 
 /* Better initial state for empty editor */
