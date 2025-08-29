@@ -44,9 +44,15 @@ def current_app_context(request):
                 # Fallback: extract app code from namespace
                 app_code = _extract_app_code_from_namespace(namespace)
                 if app_code:
+                    # Special case for saas_web namespace - use Linguify instead
+                    if namespace == 'saas_web':
+                        display_name = 'Linguify'
+                    else:
+                        display_name = namespace.replace('_', ' ').title()
+                    
                     current_app_info.update({
                         'name': app_code,
-                        'display_name': namespace.replace('_', ' ').title(),
+                        'display_name': display_name,
                         'code': app_code,
                         'static_icon': AppIconService.get_static_icon_url(app_code),
                     })
