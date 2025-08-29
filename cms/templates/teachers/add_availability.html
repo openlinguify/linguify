@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ajouter une disponibilité - Professeur{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Ajouter un créneau de disponibilité</h5>
+                        <a href="{% url 'teachers:availability' %}" class="btn btn-sm btn-secondary">
+                            <i class="fa fa-arrow-left"></i> Retour
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="id_day_of_week" class="form-label">Jour de la semaine</label>
+                                <select name="day_of_week" id="id_day_of_week" class="form-select" required>
+                                    <option value="">Choisir un jour</option>
+                                    <option value="1">Lundi</option>
+                                    <option value="2">Mardi</option>
+                                    <option value="3">Mercredi</option>
+                                    <option value="4">Jeudi</option>
+                                    <option value="5">Vendredi</option>
+                                    <option value="6">Samedi</option>
+                                    <option value="7">Dimanche</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_start_time" class="form-label">Heure de début</label>
+                                <input type="time" name="start_time" id="id_start_time" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_end_time" class="form-label">Heure de fin</label>
+                                <input type="time" name="end_time" id="id_end_time" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6><i class="fa fa-info-circle"></i> Informations importantes :</h6>
+                            <ul class="mb-0">
+                                <li>Les horaires sont dans votre fuseau horaire : <strong>{{ teacher.timezone }}</strong></li>
+                                <li>Assurez-vous que l'heure de fin est après l'heure de début</li>
+                                <li>Les créneaux ne doivent pas se chevaucher avec vos créneaux existants</li>
+                                <li>Prévoyez du temps entre les cours pour vous reposer</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'teachers:availability' %}" class="btn btn-secondary">
+                                <i class="fa fa-times"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> Enregistrer le créneau
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Existing availability for this day -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Créneaux existants</h5>
+                </div>
+                <div class="card-body">
+                    <div id="existing-slots">
+                        <p class="text-muted">Sélectionnez un jour pour voir les créneaux existants</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const daySelect = document.getElementById('id_day_of_week');
+    const startTimeInput = document.getElementById('id_start_time');
+    const endTimeInput = document.getElementById('id_end_time');
+    const existingSlotsDiv = document.getElementById('existing-slots');
+
+    // Sample existing slots data (in a real app, this would come from the backend)
+    const existingSlots = {
+        1: [{'start': '09:00', 'end': '12:00'}, {'start': '14:00', 'end': '17:00'}], // Monday
+        2: [{'start': '10:00', 'end': '15:00'}], // Tuesday
+        3: [], // Wednesday
+        4: [{'start': '09:00', 'end': '11:00'}], // Thursday
+        5: [{'start': '14:00', 'end': '18:00'}], // Friday
+        6: [], // Saturday
+        7: [] // Sunday
+    };
+
+    daySelect.addEventListener('change', function() {
+        const selectedDay = this.value;
+        if (selectedDay && existingSlots[selectedDay]) {
+            const slots = existingSlots[selectedDay];
+            if (slots.length > 0) {
+                let html = '<h6>Créneaux existants pour ce jour :</h6>';
+                html += '<div class="d-flex flex-wrap gap-2">';
+                slots.forEach(slot => {
+                    html += `<span class="badge bg-info fs-6">${slot.start} - ${slot.end}</span>`;
+                });
+                html += '</div>';
+                html += '<small class="text-muted d-block mt-2">Assurez-vous que votre nouveau créneau ne chevauche pas avec ceux-ci.</small>';
+            } else {
+                html = '<p class="text-success"><i class="fa fa-check"></i> Aucun créneau existant pour ce jour</p>';
+            }
+            existingSlotsDiv.innerHTML = html;
+        } else {
+            existingSlotsDiv.innerHTML = '<p class="text-muted">Sélectionnez un jour pour voir les créneaux existants</p>';
+        }
+    });
+
+    // Auto-set end time when start time changes (add 1 hour by default)
+    startTimeInput.addEventListener('change', function() {
+        if (this.value && !endTimeInput.value) {
+            const startTime = new Date('2000-01-01 ' + this.value);
+            startTime.setHours(startTime.getHours() + 1);
+            const endTime = startTime.toTimeString().substr(0, 5);
+            endTimeInput.value = endTime;
+        }
+    });
+
+    // Validation: ensure end time is after start time
+    function validateTimes() {
+        if (startTimeInput.value && endTimeInput.value) {
+            const startTime = new Date('2000-01-01 ' + startTimeInput.value);
+            const endTime = new Date('2000-01-01 ' + endTimeInput.value);
+            
+            if (endTime <= startTime) {
+                endTimeInput.setCustomValidity('L\'heure de fin doit être après l\'heure de début');
+            } else {
+                endTimeInput.setCustomValidity('');
+            }
+        }
+    }
+
+    startTimeInput.addEventListener('change', validateTimes);
+    endTimeInput.addEventListener('change', validateTimes);
+});
+</script>
+{% endblock %}

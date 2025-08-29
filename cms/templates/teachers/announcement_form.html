@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ form_title }} - Professeur{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ form_title }}</h5>
+                        <a href="{% url 'teachers:announcements' %}" class="btn btn-sm btn-secondary">
+                            <i class="fa fa-arrow-left"></i> Retour aux annonces
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fa fa-info-circle"></i> Informations de base</h6>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_type" class="form-label">Type d'annonce</label>
+                                <select name="type" id="id_type" class="form-select" required>
+                                    <option value="">Choisir un type</option>
+                                    <option value="promotion" {% if form.type.value == 'promotion' %}selected{% endif %}>Promotion</option>
+                                    <option value="new_course" {% if form.type.value == 'new_course' %}selected{% endif %}>Nouveau cours</option>
+                                    <option value="schedule_change" {% if form.type.value == 'schedule_change' %}selected{% endif %}>Changement d'horaires</option>
+                                    <option value="general" {% if form.type.value == 'general' %}selected{% endif %}>Général</option>
+                                    <option value="holiday" {% if form.type.value == 'holiday' %}selected{% endif %}>Vacances</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_start_date" class="form-label">Date de début</label>
+                                <input type="datetime-local" name="start_date" id="id_start_date" 
+                                       class="form-control" value="{{ form.start_date.value|date:'Y-m-d\TH:i' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_end_date" class="form-label">Date de fin</label>
+                                <input type="datetime-local" name="end_date" id="id_end_date" 
+                                       class="form-control" value="{{ form.end_date.value|date:'Y-m-d\TH:i' }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fa fa-edit"></i> Contenu</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_title" class="form-label">Titre (principal)</label>
+                                <input type="text" name="title" id="id_title" class="form-control" 
+                                       value="{{ form.title.value|default:'' }}" maxlength="200" required>
+                                <div class="form-text">Le titre principal de votre annonce</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_title_fr" class="form-label">Titre en français</label>
+                                <input type="text" name="title_fr" id="id_title_fr" class="form-control" 
+                                       value="{{ form.title_fr.value|default:'' }}" maxlength="200">
+                                <div class="form-text">Version française du titre</div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <label for="id_description" class="form-label">Description (principale)</label>
+                                <textarea name="description" id="id_description" class="form-control" rows="4" required>{{ form.description.value|default:'' }}</textarea>
+                                <div class="form-text">Décrivez votre annonce en détail</div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <label for="id_description_fr" class="form-label">Description en français</label>
+                                <textarea name="description_fr" id="id_description_fr" class="form-control" rows="4">{{ form.description_fr.value|default:'' }}</textarea>
+                                <div class="form-text">Version française de la description</div>
+                            </div>
+                        </div>
+
+                        <!-- Promotion Details -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fa fa-percent"></i> Détails de la promotion (optionnel)</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_discount_percentage" class="form-label">Pourcentage de remise</label>
+                                <div class="input-group">
+                                    <input type="number" name="discount_percentage" id="id_discount_percentage" 
+                                           class="form-control" value="{{ form.discount_percentage.value|default:'' }}" 
+                                           min="5" max="50">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <div class="form-text">Remise sur votre taux horaire normal (5-50%)</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_special_price" class="form-label">Prix spécial par heure</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">€</span>
+                                    <input type="number" name="special_price" id="id_special_price" 
+                                           class="form-control" value="{{ form.special_price.value|default:'' }}" 
+                                           step="0.01" min="10">
+                                </div>
+                                <div class="form-text">Ou définissez un prix fixe spécial</div>
+                            </div>
+                        </div>
+
+                        <!-- Targeting -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fa fa-target"></i> Ciblage</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_languages" class="form-label">Langues ciblées</label>
+                                <input type="text" name="languages" id="id_languages" class="form-control" 
+                                       value="{{ form.languages.value|default:'' }}" 
+                                       placeholder="fr,en,es">
+                                <div class="form-text">Codes de langues séparés par des virgules (fr,en,es,nl)</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_levels" class="form-label">Niveaux ciblés</label>
+                                <input type="text" name="levels" id="id_levels" class="form-control" 
+                                       value="{{ form.levels.value|default:'' }}" 
+                                       placeholder="A1,A2,B1">
+                                <div class="form-text">Niveaux séparés par des virgules (A1,A2,B1,B2,C1,C2)</div>
+                            </div>
+                        </div>
+
+                        <!-- Visibility Options -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fa fa-eye"></i> Options de visibilité</h6>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input type="checkbox" name="is_featured" id="id_is_featured" class="form-check-input"
+                                           {% if form.is_featured.value %}checked{% endif %}>
+                                    <label for="id_is_featured" class="form-check-label">
+                                        <strong>Mettre en avant</strong>
+                                    </label>
+                                    <div class="form-text">Annonce prioritaire avec badge spécial</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input type="checkbox" name="show_on_profile" id="id_show_on_profile" class="form-check-input"
+                                           {% if form.show_on_profile.value %}checked{% endif %}>
+                                    <label for="id_show_on_profile" class="form-check-label">
+                                        <strong>Afficher sur mon profil</strong>
+                                    </label>
+                                    <div class="form-text">Visible sur votre page de profil</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input type="checkbox" name="send_notification" id="id_send_notification" class="form-check-input"
+                                           {% if form.send_notification.value %}checked{% endif %}>
+                                    <label for="id_send_notification" class="form-check-label">
+                                        <strong>Envoyer une notification</strong>
+                                    </label>
+                                    <div class="form-text">Notifier vos étudiants existants</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview Box -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fa fa-preview"></i> Aperçu</h6>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <div id="preview-content">
+                                            <p class="text-muted">Remplissez les champs ci-dessus pour voir l'aperçu de votre annonce</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="{% url 'teachers:announcements' %}" class="btn btn-secondary">
+                                        <i class="fa fa-times"></i> Annuler
+                                    </a>
+                                    <button type="submit" name="status" value="draft" class="btn btn-outline-primary">
+                                        <i class="fa fa-save"></i> Enregistrer en brouillon
+                                    </button>
+                                    <button type="submit" name="status" value="active" class="btn btn-success">
+                                        <i class="fa fa-paper-plane"></i> Publier maintenant
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const titleInput = document.getElementById('id_title');
+    const descriptionTextarea = document.getElementById('id_description');
+    const typeSelect = document.getElementById('id_type');
+    const discountInput = document.getElementById('id_discount_percentage');
+    const specialPriceInput = document.getElementById('id_special_price');
+    const startDateInput = document.getElementById('id_start_date');
+    const endDateInput = document.getElementById('id_end_date');
+    const previewContent = document.getElementById('preview-content');
+
+    function updatePreview() {
+        const title = titleInput.value || 'Titre de votre annonce';
+        const description = descriptionTextarea.value || 'Description de votre annonce';
+        const type = typeSelect.options[typeSelect.selectedIndex]?.text || 'Type';
+        const discount = discountInput.value;
+        const specialPrice = specialPriceInput.value;
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+
+        let html = '<div class="announcement-preview">';
+        html += `<div class="d-flex justify-content-between mb-2">`;
+        html += `<span class="badge bg-primary">${type}</span>`;
+        html += `<span class="badge bg-success">Actif</span>`;
+        html += `</div>`;
+        html += `<h5>${title}</h5>`;
+        html += `<p class="text-muted">${description}</p>`;
+        
+        if (discount) {
+            html += `<div class="alert alert-success py-2 mb-2"><small><strong>Remise: ${discount}%</strong></small></div>`;
+        }
+        
+        if (specialPrice) {
+            html += `<div class="alert alert-info py-2 mb-2"><small><strong>Prix spécial: €${specialPrice}/h</strong></small></div>`;
+        }
+        
+        if (startDate && endDate) {
+            const startFormatted = new Date(startDate).toLocaleDateString('fr-FR');
+            const endFormatted = new Date(endDate).toLocaleDateString('fr-FR');
+            html += `<div class="small text-muted">Du ${startFormatted} au ${endFormatted}</div>`;
+        }
+        
+        html += '</div>';
+        previewContent.innerHTML = html;
+    }
+
+    // Update preview on input changes
+    [titleInput, descriptionTextarea, typeSelect, discountInput, specialPriceInput, startDateInput, endDateInput].forEach(element => {
+        element.addEventListener('input', updatePreview);
+        element.addEventListener('change', updatePreview);
+    });
+
+    // Initial preview update
+    updatePreview();
+
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // Validate date range
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        
+        if (endDate <= startDate) {
+            e.preventDefault();
+            alert('La date de fin doit être postérieure à la date de début');
+            endDateInput.focus();
+            return;
+        }
+        
+        // Validate discount and special price (not both)
+        if (discountInput.value && specialPriceInput.value) {
+            e.preventDefault();
+            alert('Vous ne pouvez pas définir à la fois une remise et un prix spécial. Choisissez l\'un ou l\'autre.');
+            return;
+        }
+        
+        form.classList.add('was-validated');
+    });
+
+    // Auto-set end date (1 week after start date)
+    startDateInput.addEventListener('change', function() {
+        if (this.value && !endDateInput.value) {
+            const startDate = new Date(this.value);
+            startDate.setDate(startDate.getDate() + 7);
+            endDateInput.value = startDate.toISOString().slice(0, 16);
+            updatePreview();
+        }
+    });
+
+    // Mutual exclusion for discount and special price
+    discountInput.addEventListener('input', function() {
+        if (this.value) {
+            specialPriceInput.value = '';
+        }
+        updatePreview();
+    });
+
+    specialPriceInput.addEventListener('input', function() {
+        if (this.value) {
+            discountInput.value = '';
+        }
+        updatePreview();
+    });
+});
+</script>
+{% endblock %}

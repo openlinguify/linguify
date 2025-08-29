@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mes disponibilités - Professeur{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>Mes disponibilités</h1>
+                <div>
+                    <a href="{% url 'teachers:add_availability' %}" class="btn btn-primary">
+                        <i class="fa fa-plus"></i> Ajouter un créneau
+                    </a>
+                    <a href="{% url 'teachers:dashboard' %}" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Retour
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Weekly Schedule -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Planning hebdomadaire</h5>
+                </div>
+                <div class="card-body">
+                    {% if availability_slots %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered schedule-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 120px;">Jour</th>
+                                        <th>Créneaux horaires</th>
+                                        <th style="width: 100px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% regroup availability_slots by day_of_week as slots_by_day %}
+                                    {% for day_group in slots_by_day %}
+                                    <tr>
+                                        <td class="fw-bold text-center">
+                                            {% for choice in day_choices %}
+                                                {% if choice.0 == day_group.grouper %}
+                                                    {{ choice.1 }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        <td>
+                                            {% for slot in day_group.list %}
+                                                <div class="d-inline-block me-2 mb-1">
+                                                    <span class="badge bg-{% if slot.is_active %}success{% else %}secondary{% endif %} fs-6">
+                                                        {{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}
+                                                        {% if not slot.is_active %}(Inactif){% endif %}
+                                                    </span>
+                                                </div>
+                                            {% endfor %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% for slot in day_group.list %}
+                                                <div class="btn-group btn-group-sm mb-1" role="group">
+                                                    <button type="button" class="btn btn-outline-warning btn-sm"
+                                                            onclick="editSlot({{ slot.id }})"
+                                                            title="Modifier">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                                            onclick="deleteSlot({{ slot.id }})"
+                                                            title="Supprimer">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                    <!-- Empty days -->
+                                    {% for choice in day_choices %}
+                                        {% if not choice.0 in slots_by_day %}
+                                        <tr>
+                                            <td class="fw-bold text-center">{{ choice.1 }}</td>
+                                            <td>
+                                                <em class="text-muted">Aucun créneau défini</em>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-outline-primary btn-sm"
+                                                        onclick="quickAddSlot({{ choice.0 }})"
+                                                        title="Ajouter un créneau">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fa fa-clock fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Aucune disponibilité définie</h5>
+                            <p class="text-muted">Ajoutez vos créneaux horaires pour que les étudiants puissent réserver des cours.</p>
+                            <a href="{% url 'teachers:add_availability' %}" class="btn btn-primary">
+                                <i class="fa fa-plus"></i> Ajouter mon premier créneau
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Info -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Actions rapides</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'teachers:add_availability' %}" class="btn btn-primary">
+                            <i class="fa fa-plus"></i> Nouveau créneau
+                        </a>
+                        <button type="button" class="btn btn-info" onclick="copyWeek()">
+                            <i class="fa fa-copy"></i> Dupliquer la semaine
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="toggleAllSlots()">
+                            <i class="fa fa-toggle-on"></i> Activer/Désactiver tout
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Conseils</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fa fa-lightbulb"></i> Conseils pour optimiser vos disponibilités :</h6>
+                        <ul class="mb-0 small">
+                            <li>Définissez des créneaux réguliers pour fidéliser les étudiants</li>
+                            <li>Prévoyez 15 minutes entre les cours pour vous reposer</li>
+                            <li>Tenez compte de vos heures les plus productives</li>
+                            <li>Adaptez vos horaires selon les fuseaux horaires de vos étudiants</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="small text-muted">
+                        <p><strong>Fuseau horaire:</strong> {{ teacher.timezone }}</p>
+                        <p><strong>Total créneaux:</strong> {{ availability_slots|length }}</p>
+                        <p><strong>Créneaux actifs:</strong> {{ availability_slots|length }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Add Modal -->
+<div class="modal fade" id="quickAddModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter un créneau rapide</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="quickAddForm">
+                <div class="modal-body">
+                    <input type="hidden" id="quickDayOfWeek" name="day_of_week">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="quickStartTime" class="form-label">Heure de début</label>
+                            <input type="time" id="quickStartTime" name="start_time" class="form-control" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="quickEndTime" class="form-label">Heure de fin</label>
+                            <input type="time" id="quickEndTime" name="end_time" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.schedule-table {
+    font-size: 0.9rem;
+}
+.schedule-table td {
+    vertical-align: middle;
+}
+.schedule-table .badge {
+    padding: 0.375rem 0.75rem;
+}
+</style>
+
+<script>
+function quickAddSlot(dayOfWeek) {
+    document.getElementById('quickDayOfWeek').value = dayOfWeek;
+    const modal = new bootstrap.Modal(document.getElementById('quickAddModal'));
+    modal.show();
+}
+
+document.getElementById('quickAddForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    // TODO: Submit via AJAX
+    alert('Ajout rapide de créneau - À implémenter via AJAX');
+    bootstrap.Modal.getInstance(document.getElementById('quickAddModal')).hide();
+});
+
+function editSlot(slotId) {
+    // TODO: Implement slot editing
+    alert('Modification du créneau #' + slotId + ' - À implémenter');
+}
+
+function deleteSlot(slotId) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce créneau ?')) {
+        // TODO: Implement slot deletion
+        alert('Suppression du créneau #' + slotId + ' - À implémenter');
+    }
+}
+
+function copyWeek() {
+    if (confirm('Dupliquer cette semaine pour la semaine suivante ?')) {
+        // TODO: Implement week copying
+        alert('Duplication de la semaine - À implémenter');
+    }
+}
+
+function toggleAllSlots() {
+    if (confirm('Activer/Désactiver tous les créneaux ?')) {
+        // TODO: Implement bulk toggle
+        alert('Basculement de tous les créneaux - À implémenter');
+    }
+}
+</script>
+{% endblock %}

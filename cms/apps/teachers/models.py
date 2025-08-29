@@ -146,3 +146,123 @@ class TeacherAvailability(TimestampedModel):
     
     def __str__(self):
         return f"{self.teacher.full_name} - {self.get_day_of_week_display()} {self.start_time}-{self.end_time}"
+
+class TeacherAnnouncement(TimestampedModel):
+    """Teacher announcements and special offers."""
+    
+    class AnnouncementType(models.TextChoices):
+        PROMOTION = 'promotion', 'Promotion'
+        NEW_COURSE = 'new_course', 'Nouveau cours'
+        SCHEDULE_CHANGE = 'schedule_change', 'Changement d\'horaires'
+        GENERAL = 'general', 'Général'
+        HOLIDAY = 'holiday', 'Vacances'
+    
+    class Status(models.TextChoices):
+        DRAFT = 'draft', 'Brouillon'
+        ACTIVE = 'active', 'Actif'
+        EXPIRED = 'expired', 'Expiré'
+        ARCHIVED = 'archived', 'Archivé'
+    
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='announcements')
+    type = models.CharField(max_length=20, choices=AnnouncementType.choices, default=AnnouncementType.GENERAL)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT)
+    
+    # Content
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    
+    # Multilingual content
+    title_en = models.CharField(max_length=200, blank=True)
+    title_fr = models.CharField(max_length=200, blank=True)
+    title_es = models.CharField(max_length=200, blank=True)
+    title_nl = models.CharField(max_length=200, blank=True)
+    
+    description_en = models.TextField(blank=True)
+    description_fr = models.TextField(blank=True)
+    description_es = models.TextField(blank=True)
+    description_nl = models.TextField(blank=True)
+    
+    # Promotion details
+    discount_percentage = models.PositiveIntegerField(null=True, blank=True, 
+                                                     help_text="Discount percentage for promotions")
+    special_price = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True,
+                                       help_text="Special hourly rate")
+    
+    # Scheduling
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    
+    # Targeting
+    languages = models.CharField(max_length=100, blank=True, 
+                                help_text="Comma-separated language codes (en,fr,es)")
+    levels = models.CharField(max_length=50, blank=True,
+                             help_text="Comma-separated levels (A1,A2,B1,etc)")
+    
+    # Engagement
+    view_count = models.PositiveIntegerField(default=0)
+    click_count = models.PositiveIntegerField(default=0)
+    booking_count = models.PositiveIntegerField(default=0)
+    
+    # Visibility
+    is_featured = models.BooleanField(default=False)
+    show_on_profile = models.BooleanField(default=True)
+    send_notification = models.BooleanField(default=False)
+    
+    class Meta:
+        db_table = 'teacher_announcements'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['teacher', 'status']),
+            models.Index(fields=['start_date', 'end_date']),
+            models.Index(fields=['type', 'is_featured']),
+        ]
+    
+    def __str__(self):
+        return f"{self.teacher.full_name} - {self.title}"
+    
+    @property
+    def is_active(self):
+        """Check if announcement is currently active."""
+        from django.utils import timezone
+        now = timezone.now()
+        return (self.status == self.Status.ACTIVE and 
+                self.start_date <= now <= self.end_date)
+    
+    @property
+    def is_expired(self):
+        """Check if announcement has expired."""
+        from django.utils import timezone
+        return timezone.now() > self.end_date
+    
+    def get_title(self, language='fr'):
+        """Get title in specified language with fallback."""
+        title_field = f"title_{language}"
+        if hasattr(self, title_field):
+            title = getattr(self, title_field)
+            if title:
+                return title
+        return self.title
+    
+    def get_description(self, language='fr'):
+        """Get description in specified language with fallback."""
+        desc_field = f"description_{language}"
+        if hasattr(self, desc_field):
+            description = getattr(self, desc_field)
+            if description:
+                return description
+        return self.description
+    
+    def increment_view_count(self):
+        """Increment view count."""
+        self.view_count += 1
+        self.save(update_fields=['view_count'])
+    
+    def increment_click_count(self):
+        """Increment click count."""
+        self.click_count += 1
+        self.save(update_fields=['click_count'])
+    
+    def increment_booking_count(self):
+        """Increment booking count when someone books via this announcement."""
+        self.booking_count += 1
+        self.save(update_fields=['booking_count'])

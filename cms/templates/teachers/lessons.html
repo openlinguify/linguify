@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mes cours - Professeur{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>Mes cours</h1>
+                <a href="{% url 'teachers:dashboard' %}" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Retour au tableau de bord
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="status" class="form-label">Statut</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">Tous les statuts</option>
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="date_from" class="form-label">Date de début</label>
+                    <input type="date" name="date_from" id="date_from" class="form-control" 
+                           value="{{ current_date_from }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="date_to" class="form-label">Date de fin</label>
+                    <input type="date" name="date_to" id="date_to" class="form-control" 
+                           value="{{ current_date_to }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-search"></i> Filtrer
+                        </button>
+                        <a href="{% url 'teachers:lessons' %}" class="btn btn-outline-secondary">
+                            <i class="fa fa-times"></i> Réinitialiser
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lessons List -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                Cours ({{ lessons|length }} résultat{% if lessons|length > 1 %}s{% endif %})
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if lessons %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date & Heure</th>
+                                <th>Étudiant</th>
+                                <th>Langue/Niveau</th>
+                                <th>Sujet</th>
+                                <th>Durée</th>
+                                <th>Prix</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lesson in lessons %}
+                            <tr>
+                                <td>
+                                    <strong>{{ lesson.scheduled_date|date:"d/m/Y" }}</strong><br>
+                                    <small class="text-muted">{{ lesson.scheduled_date|time:"H:i" }}</small>
+                                </td>
+                                <td>
+                                    <i class="fa fa-user"></i> Étudiant #{{ lesson.student_id }}<br>
+                                    <small class="text-muted">ID: {{ lesson.student_id }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ lesson.language|upper }}</span>
+                                    {% if lesson.level %}
+                                        <span class="badge bg-secondary">{{ lesson.level }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if lesson.topic %}
+                                        {{ lesson.topic|truncatechars:30 }}
+                                    {% else %}
+                                        <em class="text-muted">Pas de sujet défini</em>
+                                    {% endif %}
+                                </td>
+                                <td>{{ lesson.duration_minutes }}min</td>
+                                <td>€{{ lesson.total_price|floatformat:2 }}</td>
+                                <td>
+                                    {% if lesson.status == 'scheduled' %}
+                                        <span class="badge bg-warning">{{ lesson.get_status_display }}</span>
+                                    {% elif lesson.status == 'confirmed' %}
+                                        <span class="badge bg-success">{{ lesson.get_status_display }}</span>
+                                    {% elif lesson.status == 'in_progress' %}
+                                        <span class="badge bg-primary">{{ lesson.get_status_display }}</span>
+                                    {% elif lesson.status == 'completed' %}
+                                        <span class="badge bg-success">{{ lesson.get_status_display }}</span>
+                                    {% elif lesson.status == 'cancelled' %}
+                                        <span class="badge bg-danger">{{ lesson.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <!-- View Details -->
+                                        <button type="button" class="btn btn-info" 
+                                                onclick="showLessonDetails({{ lesson.id }})"
+                                                title="Voir les détails">
+                                            <i class="fa fa-eye"></i>
+                                        </button>
+                                        
+                                        <!-- Join Meeting (if available and upcoming) -->
+                                        {% if lesson.meeting_url and lesson.is_upcoming %}
+                                            <a href="{{ lesson.meeting_url }}" target="_blank" 
+                                               class="btn btn-success" title="Rejoindre le cours">
+                                                <i class="fa fa-video"></i>
+                                            </a>
+                                        {% endif %}
+                                        
+                                        <!-- Confirm lesson -->
+                                        {% if lesson.status == 'scheduled' %}
+                                            <button type="button" class="btn btn-primary"
+                                                    onclick="confirmLesson({{ lesson.id }})"
+                                                    title="Confirmer le cours">
+                                                <i class="fa fa-check"></i>
+                                            </button>
+                                        {% endif %}
+                                        
+                                        <!-- Cancel lesson -->
+                                        {% if lesson.status in 'scheduled,confirmed' %}
+                                            <button type="button" class="btn btn-danger"
+                                                    onclick="cancelLesson({{ lesson.id }})"
+                                                    title="Annuler le cours">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        {% endif %}
+                                        
+                                        <!-- Add notes -->
+                                        <button type="button" class="btn btn-warning"
+                                                onclick="addTeacherNotes({{ lesson.id }})"
+                                                title="Ajouter des notes">
+                                            <i class="fa fa-sticky-note"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <nav aria-label="Navigation des cours">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Premier</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Précédent</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Suivant</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Dernier</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fa fa-graduation-cap fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Aucun cours trouvé</h5>
+                    <p class="text-muted">
+                        {% if current_status or current_date_from or current_date_to %}
+                            Essayez de modifier vos filtres pour voir plus de résultats.
+                        {% else %}
+                            Les cours réservés par les étudiants apparaîtront ici.
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Lesson Details Modal -->
+<div class="modal fade" id="lessonDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Détails du cours</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="lessonDetailsContent">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showLessonDetails(lessonId) {
+    // TODO: Load lesson details via AJAX
+    const modal = new bootstrap.Modal(document.getElementById('lessonDetailsModal'));
+    document.getElementById('lessonDetailsContent').innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+        </div>
+    `;
+    modal.show();
+    
+    // Simulate loading (replace with actual AJAX call)
+    setTimeout(() => {
+        document.getElementById('lessonDetailsContent').innerHTML = `
+            <p><strong>ID du cours:</strong> ${lessonId}</p>
+            <p>Détails complets du cours à implémenter...</p>
+        `;
+    }, 1000);
+}
+
+function confirmLesson(lessonId) {
+    if (confirm('Êtes-vous sûr de vouloir confirmer ce cours ?')) {
+        // TODO: Implement lesson confirmation
+        alert('Confirmation du cours #' + lessonId + ' - À implémenter');
+    }
+}
+
+function cancelLesson(lessonId) {
+    const reason = prompt('Raison de l\'annulation (optionnel):');
+    if (reason !== null) {
+        // TODO: Implement lesson cancellation
+        alert('Annulation du cours #' + lessonId + ' - À implémenter\nRaison: ' + (reason || 'Aucune raison spécifiée'));
+    }
+}
+
+function addTeacherNotes(lessonId) {
+    const notes = prompt('Notes du professeur:');
+    if (notes !== null && notes.trim() !== '') {
+        // TODO: Implement teacher notes saving
+        alert('Notes ajoutées au cours #' + lessonId + ' - À implémenter');
+    }
+}
+</script>
+{% endblock %}
