@@ -144,6 +144,165 @@
             padding: 0;
         }
         
+        /* Status badges with Tailwind colors */
+        .status-pending {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-confirmed {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-cancelled_student,
+        .status-cancelled_teacher {
+            background-color: #fecaca;
+            color: #b91c1c;
+        }
+        
+        /* Enhanced card interactions */
+        .card-linguify {
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-linguify:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-linguify.cursor-pointer:hover {
+            border-color: var(--linguify-primary);
+            box-shadow: 0 8px 25px rgba(45, 91, 186, 0.1);
+        }
+        
+        /* Smooth view transitions */
+        #welcomeState,
+        #lessonDetails {
+            will-change: opacity, transform;
+        }
+        
+        /* Teacher avatar enhancement */
+        #teacherAvatar {
+            transition: all 0.3s ease;
+        }
+        
+        #teacherAvatar:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Button hover effects */
+        .btn-linguify:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(45, 91, 186, 0.2);
+        }
+        
+        .btn-linguify-outline:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Sidebar lesson cards active state */
+        .lesson-card-active {
+            border-color: var(--linguify-primary) !important;
+            background-color: rgba(45, 91, 186, 0.05);
+        }
+        
+        /* Notes textarea enhancement */
+        #lessonNotes {
+            transition: all 0.2s ease;
+        }
+        
+        #lessonNotes:focus {
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+        }
+        
+        /* Button loading state */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Micro-interaction animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+            40%, 43% { transform: translateY(-8px); }
+            70% { transform: translateY(-4px); }
+            90% { transform: translateY(-2px); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        /* Success state for buttons */
+        .bg-linguify-success {
+            background-color: #065f46 !important;
+            color: white !important;
+        }
+        
+        /* Enhanced hover effects for quick actions */
+        .card-linguify button:hover,
+        .card-linguify a:hover {
+            transform: translateY(-1px);
+        }
+        
+        /* Staggered animation for cards */
+        .card-linguify:nth-child(1) { animation-delay: 0.1s; }
+        .card-linguify:nth-child(2) { animation-delay: 0.2s; }
+        .card-linguify:nth-child(3) { animation-delay: 0.3s; }
+        .card-linguify:nth-child(4) { animation-delay: 0.4s; }
+        
+        /* Focus states for accessibility */
+        .btn-linguify:focus,
+        .btn-linguify-outline:focus {
+            outline: 2px solid var(--linguify-primary);
+            outline-offset: 2px;
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .teaching-header {

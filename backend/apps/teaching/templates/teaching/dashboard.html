@@ -28,7 +28,8 @@
                 {% if upcoming_lessons %}
                     <div class="space-y-3">
                         {% for lesson in upcoming_lessons|slice:":3" %}
-                        <div class="card-linguify p-4 hover:shadow-md transition-all duration-200">
+                        <div class="card-linguify p-4 hover:shadow-md transition-all duration-200 cursor-pointer" 
+                             onclick="selectLesson('{{ lesson.id }}')">
                             <div class="flex justify-between items-start mb-2">
                                 <h4 class="font-medium text-gray-900">{{ lesson.teacher.full_name }}</h4>
                                 <span class="badge-linguify status-{{ lesson.status }} text-xs">
@@ -52,13 +53,11 @@
                                 </span>
                                 
                                 {% if lesson.status == 'confirmed' %}
-                                <div class="flex space-x-2">
-                                    <button onclick="startLesson('{{ lesson.id }}')" 
-                                            class="btn-linguify text-xs py-1 px-2">
-                                        <i class="bi bi-play-circle mr-1"></i>
-                                        {% trans "Démarrer" %}
-                                    </button>
-                                </div>
+                                <button onclick="startLesson('{{ lesson.id }}'); event.stopPropagation();" 
+                                        class="btn-linguify text-xs py-1 px-2">
+                                    <i class="bi bi-play-circle mr-1"></i>
+                                    {% trans "Démarrer" %}
+                                </button>
                                 {% endif %}
                             </div>
                         </div>
@@ -203,6 +202,176 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Lesson Details -->
+        <div id="lessonDetails" class="hidden p-8">
+            <!-- Lesson Header -->
+            <div class="card-linguify">
+                <div class="flex items-center justify-between pb-6 mb-6 border-b border-linguify-gray-200">
+                    <div class="flex items-center gap-3">
+                        <button id="backToWelcome" class="btn-linguify-outline btn-sm">
+                            <i class="bi bi-arrow-left"></i>
+                            <span class="hidden md:inline ml-1">{% trans "Retour" %}</span>
+                        </button>
+                        <div>
+                            <h2 id="lessonTeacherName" class="text-2xl font-bold text-gray-900 mb-1">{% trans "Cours avec" %}</h2>
+                            <div class="flex items-center gap-4">
+                                <span id="lessonDateTime" class="text-linguify-gray">
+                                    <i class="bi bi-clock mr-1"></i>
+                                    {% trans "Date et heure" %}
+                                </span>
+                                <span id="lessonLanguage" class="text-linguify-gray">
+                                    <i class="bi bi-flag mr-1"></i>
+                                    {% trans "Langue" %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <span id="lessonStatus" class="badge-linguify">{% trans "Statut" %}</span>
+                        <div class="flex gap-2">
+                            <button id="startLessonBtn" class="btn-linguify hidden">
+                                <i class="bi bi-play-circle mr-1"></i>
+                                {% trans "Démarrer" %}
+                            </button>
+                            <button id="rescheduleBtn" class="btn-linguify-outline">
+                                <i class="bi bi-calendar-event mr-1"></i>
+                                {% trans "Reprogrammer" %}
+                            </button>
+                            <button id="cancelLessonBtn" class="btn-linguify-outline text-linguify-error">
+                                <i class="bi bi-x-circle mr-1"></i>
+                                {% trans "Annuler" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lesson Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Main Info -->
+                <div class="lg:col-span-2">
+                    <div class="card-linguify mb-6">
+                        <h3 class="text-lg font-semibold mb-4">{% trans "Détails du cours" %}</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <i class="bi bi-clock text-linguify-primary mr-3 text-lg"></i>
+                                <div>
+                                    <div class="font-medium" id="detailDateTime">{% trans "Date et heure" %}</div>
+                                    <div class="text-sm text-linguify-gray" id="detailDuration">{% trans "Durée: 60 minutes" %}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <i class="bi bi-flag text-linguify-accent mr-3 text-lg"></i>
+                                <div>
+                                    <div class="font-medium" id="detailLanguageLevel">{% trans "Langue et niveau" %}</div>
+                                    <div class="text-sm text-linguify-gray">{% trans "Cours personnalisé selon votre niveau" %}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <i class="bi bi-bookmark text-linguify-secondary mr-3 text-lg mt-1"></i>
+                                <div class="flex-grow">
+                                    <div class="font-medium">{% trans "Sujet du cours" %}</div>
+                                    <div class="text-sm text-linguify-gray mt-1" id="detailTopic">
+                                        {% trans "Sujet non spécifié - Discussion générale" %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <i class="bi bi-currency-euro text-linguify-success mr-3 text-lg"></i>
+                                <div>
+                                    <div class="font-medium" id="detailPrice">{% trans "Prix du cours" %}</div>
+                                    <div class="text-sm text-linguify-gray">{% trans "Paiement sécurisé" %}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notes Section -->
+                    <div class="card-linguify">
+                        <h3 class="text-lg font-semibold mb-4">{% trans "Notes et préparation" %}</h3>
+                        <div class="bg-linguify-gray-50 rounded-lg p-4">
+                            <textarea id="lessonNotes" 
+                                      class="w-full bg-transparent border-none resize-none focus:ring-0 focus:outline-none text-sm" 
+                                      rows="4" 
+                                      placeholder="{% trans 'Ajoutez vos notes, questions ou sujets à aborder pendant le cours...' %}"></textarea>
+                        </div>
+                        <div class="flex justify-end mt-3">
+                            <button class="btn-linguify-outline btn-sm" onclick="saveNotes()">
+                                <i class="bi bi-check-lg mr-1"></i>
+                                {% trans "Sauvegarder" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Teacher Info -->
+                <div class="lg:col-span-1">
+                    <div class="card-linguify">
+                        <h3 class="text-lg font-semibold mb-4">{% trans "Votre enseignant" %}</h3>
+                        
+                        <div class="text-center mb-4">
+                            <div id="teacherAvatar" class="w-20 h-20 mx-auto mb-3 rounded-full bg-linguify-primary flex items-center justify-center text-white text-2xl font-bold">
+                                ?
+                            </div>
+                            <h4 id="teacherName" class="font-semibold text-gray-900">{% trans "Nom de l'enseignant" %}</h4>
+                            <div id="teacherRating" class="flex justify-center text-linguify-warning mt-1">
+                                <!-- Stars will be populated by JS -->
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-linguify-gray">{% trans "Expérience" %}</span>
+                                <span id="teacherExperience" class="font-medium">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-linguify-gray">{% trans "Cours donnés" %}</span>
+                                <span id="teacherLessonsCount" class="font-medium">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-linguify-gray">{% trans "Tarif/heure" %}</span>
+                                <span id="teacherRate" class="font-medium text-linguify-success">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <button class="btn-linguify-outline w-full" onclick="contactTeacher()">
+                                <i class="bi bi-chat-dots mr-2"></i>
+                                {% trans "Contacter" %}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="card-linguify mt-6">
+                        <h4 class="font-semibold mb-3">{% trans "Actions rapides" %}</h4>
+                        <div class="space-y-2">
+                            <button class="w-full text-left p-2 rounded hover:bg-linguify-gray-50 transition-colors text-sm" 
+                                    onclick="openBookingModal()">
+                                <i class="bi bi-plus-circle mr-2 text-linguify-primary"></i>
+                                {% trans "Réserver un autre cours" %}
+                            </button>
+                            <button class="w-full text-left p-2 rounded hover:bg-linguify-gray-50 transition-colors text-sm"
+                                    onclick="downloadCalendar()">
+                                <i class="bi bi-calendar-download mr-2 text-linguify-accent"></i>
+                                {% trans "Ajouter au calendrier" %}
+                            </button>
+                            <a href="{% url 'teaching:find_teachers' %}" 
+                               class="block w-full text-left p-2 rounded hover:bg-linguify-gray-50 transition-colors text-sm">
+                                <i class="bi bi-people mr-2 text-linguify-secondary"></i>
+                                {% trans "Voir d'autres enseignants" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -332,12 +501,231 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// State management for teaching dashboard
+let currentLesson = null;
+let lessons = [
+    {% for lesson in upcoming_lessons %}
+    {
+        id: '{{ lesson.id }}',
+        teacher_name: '{{ lesson.teacher.full_name|escapejs }}',
+        teacher_avatar: {% if lesson.teacher.profile_picture %}'{{ lesson.teacher.profile_picture.url }}'{% else %}null{% endif %},
+        teacher_rating: {{ lesson.teacher.average_rating|default:0 }},
+        teacher_experience: '{{ lesson.teacher.experience_years|default:0 }} {% trans "années" %}',
+        teacher_lessons_count: {{ lesson.teacher.total_lessons|default:0 }},
+        teacher_rate: {{ lesson.teacher.hourly_rate }},
+        scheduled_datetime: '{{ lesson.scheduled_datetime|date:"l j F Y à H:i" }}',
+        language: '{{ lesson.language|upper }}',
+        level: '{{ lesson.get_level_display }}',
+        topic: '{{ lesson.topic|default:""|escapejs }}',
+        price: {{ lesson.total_price }},
+        status: '{{ lesson.status }}',
+        status_display: '{{ lesson.get_status_display|escapejs }}'
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+// Function to select and display lesson details
+function selectLesson(lessonId) {
+    currentLesson = lessons.find(lesson => lesson.id === lessonId);
+    if (currentLesson) {
+        // Remove active state from all lesson cards
+        document.querySelectorAll('.card-linguify.cursor-pointer').forEach(card => {
+            card.classList.remove('lesson-card-active');
+        });
+        
+        // Add active state to selected card
+        event.currentTarget.classList.add('lesson-card-active');
+        
+        showLessonDetails();
+    }
+}
+
+function showLessonDetails() {
+    // Transition from welcome to lesson details with animation
+    const welcomeState = document.getElementById('welcomeState');
+    const lessonDetails = document.getElementById('lessonDetails');
+    
+    // First, prepare the lesson details content
+    populateLessonDetails();
+    
+    // Animate transition
+    welcomeState.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+    welcomeState.style.opacity = '0';
+    welcomeState.style.transform = 'translateX(-50px)';
+    
+    setTimeout(() => {
+        welcomeState.classList.add('hidden');
+        lessonDetails.classList.remove('hidden');
+        
+        // Animate in the lesson details
+        lessonDetails.style.opacity = '0';
+        lessonDetails.style.transform = 'translateX(50px)';
+        lessonDetails.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+        
+        requestAnimationFrame(() => {
+            lessonDetails.style.opacity = '1';
+            lessonDetails.style.transform = 'translateX(0)';
+        });
+    }, 300);
+}
+
+function populateLessonDetails() {
+    document.getElementById('lessonTeacherName').textContent = `{% trans "Cours avec" %} ${currentLesson.teacher_name}`;
+    document.getElementById('lessonDateTime').innerHTML = `<i class="bi bi-clock mr-1"></i>${currentLesson.scheduled_datetime}`;
+    document.getElementById('lessonLanguage').innerHTML = `<i class="bi bi-flag mr-1"></i>${currentLesson.language} - ${currentLesson.level}`;
+    document.getElementById('lessonStatus').textContent = currentLesson.status_display;
+    document.getElementById('lessonStatus').className = `badge-linguify status-${currentLesson.status}`;
+    
+    // Populate detailed info
+    document.getElementById('detailDateTime').textContent = currentLesson.scheduled_datetime;
+    document.getElementById('detailLanguageLevel').textContent = `${currentLesson.language} - ${currentLesson.level}`;
+    document.getElementById('detailTopic').textContent = currentLesson.topic || '{% trans "Sujet non spécifié - Discussion générale" %}';
+    document.getElementById('detailPrice').textContent = `${currentLesson.price}€`;
+    
+    // Teacher info
+    const teacherAvatar = document.getElementById('teacherAvatar');
+    if (currentLesson.teacher_avatar) {
+        teacherAvatar.innerHTML = `<img src="${currentLesson.teacher_avatar}" alt="${currentLesson.teacher_name}" class="w-full h-full object-cover rounded-full">`;
+    } else {
+        teacherAvatar.textContent = currentLesson.teacher_name.charAt(0);
+    }
+    
+    document.getElementById('teacherName').textContent = currentLesson.teacher_name;
+    document.getElementById('teacherExperience').textContent = currentLesson.teacher_experience;
+    document.getElementById('teacherLessonsCount').textContent = currentLesson.teacher_lessons_count;
+    document.getElementById('teacherRate').textContent = `${currentLesson.teacher_rate}€/h`;
+    
+    // Teacher rating stars
+    const ratingContainer = document.getElementById('teacherRating');
+    ratingContainer.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+        const star = document.createElement('i');
+        star.className = i <= currentLesson.teacher_rating ? 'bi bi-star-fill' : 'bi bi-star';
+        ratingContainer.appendChild(star);
+    }
+    
+    // Show/hide start button based on status
+    const startBtn = document.getElementById('startLessonBtn');
+    if (currentLesson.status === 'confirmed') {
+        startBtn.classList.remove('hidden');
+        startBtn.onclick = () => startLesson(currentLesson.id);
+    } else {
+        startBtn.classList.add('hidden');
+    }
+    
+    // Set up other button actions
+    document.getElementById('cancelLessonBtn').onclick = () => cancelLesson(currentLesson.id);
+}
+
+function hideDetailedView() {
+    const welcomeState = document.getElementById('welcomeState');
+    const lessonDetails = document.getElementById('lessonDetails');
+    
+    // Remove active state from all lesson cards
+    document.querySelectorAll('.lesson-card-active').forEach(card => {
+        card.classList.remove('lesson-card-active');
+    });
+    
+    // Animate out lesson details
+    lessonDetails.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+    lessonDetails.style.opacity = '0';
+    lessonDetails.style.transform = 'translateX(50px)';
+    
+    setTimeout(() => {
+        lessonDetails.classList.add('hidden');
+        welcomeState.classList.remove('hidden');
+        
+        // Animate in welcome state
+        welcomeState.style.opacity = '0';
+        welcomeState.style.transform = 'translateX(-50px)';
+        welcomeState.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+        
+        requestAnimationFrame(() => {
+            welcomeState.style.opacity = '1';
+            welcomeState.style.transform = 'translateX(0)';
+        });
+    }, 300);
+    
+    currentLesson = null;
+}
+
 // Actions pour le dashboard teaching
 function bookWithTeacher(teacherId) {
     console.log('Book with teacher:', teacherId);
     // Rediriger vers la page des professeurs avec l'ID du professeur
     window.location.href = `{% url "teaching:find_teachers" %}?teacher=${teacherId}`;
 }
+
+// Additional functions for lesson management
+function saveNotes() {
+    const saveBtn = event.target;
+    const notes = document.getElementById('lessonNotes').value;
+    
+    // Add loading state
+    saveBtn.classList.add('btn-loading');
+    saveBtn.disabled = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+        saveBtn.classList.remove('btn-loading');
+        saveBtn.disabled = false;
+        
+        // Success feedback
+        saveBtn.innerHTML = '<i class="bi bi-check-lg mr-1"></i>{% trans "Sauvegardé !" %}';
+        saveBtn.classList.add('bg-linguify-success');
+        
+        setTimeout(() => {
+            saveBtn.innerHTML = '<i class="bi bi-check-lg mr-1"></i>{% trans "Sauvegarder" %}';
+            saveBtn.classList.remove('bg-linguify-success');
+        }, 2000);
+        
+        window.notificationService.success('{% trans "Notes sauvegardées" %}');
+    }, 1000);
+}
+
+function contactTeacher() {
+    if (currentLesson) {
+        const contactBtn = event.target;
+        
+        // Add pulse animation
+        contactBtn.style.animation = 'pulse 0.6s';
+        setTimeout(() => {
+            contactBtn.style.animation = '';
+        }, 600);
+        
+        window.notificationService.info('{% trans "Fonctionnalité de contact bientôt disponible" %}');
+    }
+}
+
+function downloadCalendar() {
+    if (currentLesson) {
+        const downloadBtn = event.target;
+        
+        // Add bounce animation
+        downloadBtn.style.animation = 'bounce 0.6s';
+        setTimeout(() => {
+            downloadBtn.style.animation = '';
+        }, 600);
+        
+        // Create temporary download effect
+        const originalText = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = '<i class="bi bi-download mr-2"></i>{% trans "Téléchargement..." %}';
+        
+        setTimeout(() => {
+            downloadBtn.innerHTML = '<i class="bi bi-check-circle mr-2"></i>{% trans "Ajouté !" %}';
+            setTimeout(() => {
+                downloadBtn.innerHTML = originalText;
+            }, 1500);
+        }, 1000);
+        
+        window.notificationService.success('{% trans "Événement ajouté au calendrier" %}');
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('backToWelcome').addEventListener('click', hideDetailedView);
+});
 
 function startLesson(lessonId) {
     console.log('Start lesson:', lessonId);
