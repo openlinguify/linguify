@@ -9,6 +9,8 @@ app_name = 'teaching'
 urlpatterns = [
     # Web views
     path('', views.TeachingDashboardView.as_view(), name='dashboard'),
+    path('teachers/', views.TeachersListView.as_view(), name='teachers_list'),
+    path('my-lessons/', views.MyLessonsView.as_view(), name='my_lessons'),
     
     # Teacher discovery
     path('api/teachers/', views.AvailableTeachersAPIView.as_view(), name='api_teachers'),

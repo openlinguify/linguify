@@ -257,3 +257,62 @@ class TeacherRecommendationsAPIView(APIView):
             'recommendations': TeacherSerializer(recommendations, many=True).data,
             'recommendation_reasons': matching_service.get_recommendation_reasons()
         })
+
+class TeachersListView(LoginRequiredMixin, TemplateView):
+    """List all available teachers."""
+    template_name = 'teaching/teachers_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get all active teachers
+        teachers = Teacher.objects.filter(
+            status='active',
+            available_for_individual=True
+        ).prefetch_related('teaching_languages').order_by('-average_rating', '-total_lessons')
+        
+        context.update({
+            'teachers': teachers,
+            'teachers_count': teachers.count()
+        })
+        return context
+
+class MyLessonsView(LoginRequiredMixin, TemplateView):
+    """View student's lessons."""
+    template_name = 'teaching/my_lessons.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get all student's lessons
+        all_lessons = PrivateLesson.objects.filter(
+            student=self.request.user
+        ).select_related('teacher').order_by('-scheduled_datetime')
+        
+        # Separate by status
+        upcoming_lessons = all_lessons.filter(
+            status__in=['pending', 'confirmed'],
+            scheduled_datetime__gt=timezone.now()
+        )
+        
+        completed_lessons = all_lessons.filter(
+            status='completed'
+        )
+        
+        cancelled_lessons = all_lessons.filter(
+            status__in=['cancelled_student', 'cancelled_teacher']
+        )
+        
+        context.update({
+            'all_lessons': all_lessons[:20],  # Latest 20
+            'upcoming_lessons': upcoming_lessons,
+            'completed_lessons': completed_lessons[:10],  # Latest 10
+            'cancelled_lessons': cancelled_lessons[:10],   # Latest 10
+            'lessons_stats': {
+                'total': all_lessons.count(),
+                'upcoming': upcoming_lessons.count(),
+                'completed': completed_lessons.count(),
+                'cancelled': cancelled_lessons.count()
+            }
+        })
+        return context

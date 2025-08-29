@@ -1,15 +1,16 @@
-{% extends "saas_web/base.html" %}
+{% extends "teaching/base_teaching.html" %}
 {% load i18n %}
 {% load static %}
 {% load humanize %}
 
-{% block title %}{% trans "Cours Particuliers" %} - Linguify{% endblock %}
+{% block title %}{% trans "Cours Particuliers" %}{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'teaching/css/dashboard.css' %}">
+{% block header_content %}
+{% include 'teaching/components/navbar.html' %}
 {% endblock %}
 
 {% block content %}
+<!-- Header avec le nouveau layout -->
 <div class="teaching-header">
     <div class="container">
         <div class="row align-items-center">
@@ -23,7 +24,7 @@
                 </p>
             </div>
             <div class="col-md-4 text-end">
-                <a href="#book-lesson" class="btn btn-light btn-lg">
+                <a href="{% url 'teaching:teachers_list' %}" class="btn btn-light btn-lg">
                     <i class="bi bi-calendar-plus me-2"></i>
                     {% trans "Réserver un cours" %}
                 </a>
@@ -227,5 +228,51 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'teaching/js/dashboard.js' %}"></script>
+<script>
+// Actions pour le dashboard teaching
+function bookWithTeacher(teacherId) {
+    console.log('Book with teacher:', teacherId);
+    // Rediriger vers la page des professeurs
+    window.location.href = '{% url "teaching:teachers_list" %}';
+}
+
+function startLesson(lessonId) {
+    console.log('Start lesson:', lessonId);
+    if (confirm('{% trans "Démarrer ce cours maintenant ?" %}')) {
+        window.apiService.request(`/teaching/api/lessons/${lessonId}/start/`, {
+            method: 'POST'
+        })
+        .then(response => {
+            window.notificationService.success('{% trans "Cours démarré avec succès !" %}');
+            if (response.meeting_url) {
+                window.open(response.meeting_url, '_blank');
+            }
+            setTimeout(() => window.location.reload(), 1000);
+        })
+        .catch(error => {
+            console.error('Error starting lesson:', error);
+            window.notificationService.error(error.message || '{% trans "Erreur lors du démarrage du cours" %}');
+        });
+    }
+}
+
+function cancelLesson(lessonId) {
+    const reason = prompt('{% trans "Raison de l\'annulation (optionnel) :" %}') || 'Cancelled by student';
+    
+    if (confirm('{% trans "Êtes-vous sûr de vouloir annuler ce cours ?" %}')) {
+        window.apiService.request(`/teaching/api/lessons/${lessonId}/cancel/`, {
+            method: 'POST',
+            body: JSON.stringify({ reason: reason })
+        })
+        .then(response => {
+            window.notificationService.success('{% trans "Cours annulé avec succès" %}');
+            setTimeout(() => window.location.reload(), 1000);
+        })
+        .catch(error => {
+            console.error('Error cancelling lesson:', error);
+            window.notificationService.error(error.message || '{% trans "Erreur lors de l\'annulation" %}');
+        });
+    }
+}
+</script>
 {% endblock %}

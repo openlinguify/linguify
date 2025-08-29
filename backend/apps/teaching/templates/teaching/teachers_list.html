@@ -1,0 +1,300 @@
+{% extends "teaching/base_teaching.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Professeurs disponibles" %}{% endblock %}
+
+{% block header_content %}
+{% include 'teaching/components/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="teaching-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-3">
+                    <i class="bi bi-people me-2"></i>
+                    {% trans "Professeurs disponibles" %}
+                </h1>
+                <p class="lead mb-0">
+                    {% trans "Trouvez le professeur parfait pour vos cours particuliers" %}
+                </p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="text-white">
+                    <i class="bi bi-person-check me-2"></i>
+                    {{ teachers_count }} {% trans "professeur" %}{{ teachers_count|pluralize:"s" }} {% trans "disponible" %}{{ teachers_count|pluralize:"s" }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    {% if teachers %}
+        <div class="row" id="teachersGrid">
+            {% for teacher in teachers %}
+            <div class="col-lg-4 col-md-6 mb-4 teacher-item" 
+                 data-languages="{% for lang in teacher.teaching_languages.all %}{{ lang.language_code }} {% endfor %}"
+                 data-rating="{{ teacher.average_rating }}" 
+                 data-price="{{ teacher.hourly_rate }}"
+                 data-experience="{{ teacher.years_experience }}">
+                <div class="teacher-card p-4 h-100">
+                    <!-- Teacher Info -->
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3">
+                            {% if teacher.profile_picture %}
+                                <img src="{{ teacher.profile_picture.url }}" alt="{{ teacher.full_name }}" 
+                                     class="rounded-circle" width="60" height="60">
+                            {% else %}
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" 
+                                     style="width: 60px; height: 60px; color: white; font-size: 1.5rem;">
+                                    {{ teacher.full_name|first }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">{{ teacher.full_name }}</h5>
+                            <div class="d-flex align-items-center mb-1">
+                                <div class="text-warning me-2">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= teacher.average_rating|floatformat:0|add:0 %}
+                                            <i class="bi bi-star-fill"></i>
+                                        {% else %}
+                                            <i class="bi bi-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <small class="text-muted">
+                                    ({{ teacher.total_lessons }} {% trans "cours" %})
+                                </small>
+                            </div>
+                            <small class="text-muted">
+                                {{ teacher.years_experience }} {% trans "ans d'expérience" %}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Languages -->
+                    <div class="mb-3">
+                        <strong class="text-muted small">{% trans "Langues enseignées" %} :</strong>
+                        <div class="mt-1">
+                            {% for lang in teacher.teaching_languages.all %}
+                                <span class="badge bg-light text-dark me-1 mb-1">
+                                    {{ lang.language_code|upper }}
+                                    <small class="text-muted">({{ lang.get_proficiency_level_display }})</small>
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Bio -->
+                    {% if teacher.bio %}
+                    <div class="mb-3">
+                        <p class="text-muted small">{{ teacher.bio|truncatechars:120 }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Specialties -->
+                    {% if teacher.specialties %}
+                    <div class="mb-3">
+                        <strong class="text-muted small">{% trans "Spécialités" %} :</strong>
+                        <div class="mt-1">
+                            {% for specialty in teacher.specialties.all %}
+                                <span class="badge bg-info text-white me-1">{{ specialty.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Price and Actions -->
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <div>
+                            <span class="h5 text-success mb-0">
+                                {{ teacher.hourly_rate|floatformat:0 }}€/h
+                            </span>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-primary btn-sm me-2" 
+                                    onclick="viewTeacherProfile({{ teacher.id }})">
+                                <i class="bi bi-eye"></i>
+                                {% trans "Profil" %}
+                            </button>
+                            <button class="btn btn-primary-custom btn-sm" 
+                                    onclick="bookWithTeacher({{ teacher.id }})">
+                                <i class="bi bi-calendar-plus"></i>
+                                {% trans "Réserver" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- No results message (hidden by default) -->
+        <div id="noResultsMessage" class="text-center py-5" style="display: none;">
+            <i class="bi bi-person-x display-1 text-muted"></i>
+            <h4 class="mt-3 text-muted">{% trans "Aucun professeur trouvé" %}</h4>
+            <p class="text-muted">{% trans "Essayez de modifier vos critères de recherche" %}</p>
+        </div>
+        
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-person-x display-1 text-muted"></i>
+            <h4 class="mt-3 text-muted">{% trans "Aucun professeur disponible" %}</h4>
+            <p class="text-muted">{% trans "Revenez plus tard ou contactez le support" %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// API service for teaching features
+window.teachingAPI = {
+    filterTeachers: function(filters) {
+        const { search, language, sort } = filters;
+        const teacherItems = document.querySelectorAll('.teacher-item');
+        let visibleCount = 0;
+        
+        teacherItems.forEach(item => {
+            let shouldShow = true;
+            
+            // Search filter
+            if (search && search.length > 2) {
+                const teacherName = item.querySelector('h5').textContent.toLowerCase();
+                const teacherBio = item.querySelector('p')?.textContent?.toLowerCase() || '';
+                const searchLower = search.toLowerCase();
+                
+                if (!teacherName.includes(searchLower) && !teacherBio.includes(searchLower)) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Language filter
+            if (language && language !== '{% trans "Toutes langues" %}') {
+                const teacherLanguages = item.getAttribute('data-languages');
+                if (!teacherLanguages.includes(language)) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Show/hide item
+            if (shouldShow) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // Apply sorting if specified
+        if (sort && sort !== '{% trans "Mieux notés" %}') {
+            this.sortTeachers(sort);
+        }
+        
+        // Show/hide no results message
+        const noResultsMsg = document.getElementById('noResultsMessage');
+        if (visibleCount === 0) {
+            noResultsMsg.style.display = 'block';
+        } else {
+            noResultsMsg.style.display = 'none';
+        }
+    },
+    
+    sortTeachers: function(sortBy) {
+        const container = document.getElementById('teachersGrid');
+        const items = Array.from(container.querySelectorAll('.teacher-item:not([style*="display: none"])'));
+        
+        items.sort((a, b) => {
+            switch(sortBy) {
+                case '{% trans "Prix croissant" %}':
+                    return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
+                case '{% trans "Prix décroissant" %}':
+                    return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
+                case '{% trans "Expérience" %}':
+                    return parseFloat(b.getAttribute('data-experience')) - parseFloat(a.getAttribute('data-experience'));
+                default: // '{% trans "Mieux notés" %}'
+                    return parseFloat(b.getAttribute('data-rating')) - parseFloat(a.getAttribute('data-rating'));
+            }
+        });
+        
+        // Reorder elements
+        items.forEach(item => container.appendChild(item));
+    }
+};
+
+// Actions pour les professeurs
+function viewTeacherProfile(teacherId) {
+    // Ici on peut ouvrir un modal ou naviguer vers une page de profil
+    console.log('View teacher profile:', teacherId);
+    // Pour l'instant, on peut utiliser l'API pour obtenir les détails
+    
+    window.apiService.request(`/teaching/api/teachers/${teacherId}/`)
+        .then(teacher => {
+            console.log('Teacher details:', teacher);
+            // Afficher un modal avec les détails du professeur
+            showTeacherModal(teacher);
+        })
+        .catch(error => {
+            console.error('Error fetching teacher:', error);
+            window.notificationService.error('Erreur lors du chargement du profil');
+        });
+}
+
+function bookWithTeacher(teacherId) {
+    console.log('Book with teacher:', teacherId);
+    // Rediriger vers une page de réservation ou ouvrir un modal de réservation
+    window.notificationService.info('Fonctionnalité de réservation en développement');
+}
+
+function showTeacherModal(teacher) {
+    // Créer et afficher un modal avec les détails du professeur
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">${teacher.full_name}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            ${teacher.profile_picture ? 
+                                `<img src="${teacher.profile_picture}" class="rounded-circle mb-3" width="120" height="120">` :
+                                `<div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 120px; height: 120px; color: white; font-size: 3rem;">${teacher.full_name[0]}</div>`
+                            }
+                            <h6>${teacher.hourly_rate}€/h</h6>
+                        </div>
+                        <div class="col-md-8">
+                            <p><strong>Expérience :</strong> ${teacher.years_experience} ans</p>
+                            <p><strong>Note moyenne :</strong> ${teacher.average_rating}/5 (${teacher.total_lessons} cours)</p>
+                            ${teacher.bio ? `<p><strong>Présentation :</strong><br>${teacher.bio}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-primary" onclick="bookWithTeacher(${teacher.id}); bootstrap.Modal.getInstance(this.closest('.modal')).hide();">
+                        Réserver un cours
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+    
+    // Supprimer le modal du DOM quand il est fermé
+    modal.addEventListener('hidden.bs.modal', () => {
+        document.body.removeChild(modal);
+    });
+}
+</script>
+{% endblock %}
