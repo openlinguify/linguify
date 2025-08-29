@@ -61,14 +61,8 @@ class LinguifyEditor {
                 defaultBlock: 'paragraph',
                 minHeight: 0,
                 logLevel: 'VERBOSE',
-                // Configuration toolbar - cacher le bouton + mais garder les fonctionnalités
-                toolbar: {
-                    should: true // Nécessaire pour les commandes slash
-                },
-                // Configuration pour les commandes slash
-                shortcuts: {
-                    should: true // Active les raccourcis clavier et slash
-                }
+                // Réactiver complètement la toolbar pour les commandes slash
+                // mais on cachera visuellement les boutons avec CSS
             });
             
             // Wait for the editor to be ready
@@ -78,6 +72,7 @@ class LinguifyEditor {
             // Add debug event listeners
             const editorElement = document.getElementById(this.holderId);
             if (editorElement) {
+                // Debug sélection de texte
                 editorElement.addEventListener('mouseup', () => {
                     setTimeout(() => {
                         const selection = window.getSelection();
@@ -92,6 +87,19 @@ class LinguifyEditor {
                             }
                         }
                     }, 100);
+                });
+                
+                // Debug commandes slash
+                editorElement.addEventListener('keydown', (e) => {
+                    if (e.key === '/') {
+                        console.log('🔀 Slash key pressed!');
+                        setTimeout(() => {
+                            const popover = document.querySelector('.ce-popover');
+                            const toolbox = document.querySelector('.ce-toolbox');
+                            console.log('📋 Popover found:', !!popover);
+                            console.log('🧰 Toolbox found:', !!toolbox);
+                        }, 100);
+                    }
                 });
             }
             

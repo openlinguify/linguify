@@ -3856,15 +3856,15 @@ button.bg-linguify-gradient:hover,
     color: var(--linguify-gray-900);
 }
 
-/* Cacher seulement le bouton + mais garder les fonctionnalités */
+/* Cacher visuellement les boutons mais laisser la toolbar fonctionner */
 .editor-js-linguify .ce-toolbar__plus,
 .editor-js-linguify .ce-toolbar__settings-btn {
-    display: none !important; /* Cache les boutons */
+    visibility: hidden !important; /* Invisible mais prend encore l'espace */
+    opacity: 0 !important;
 }
 
 .editor-js-linguify .ce-toolbar {
-    opacity: 0 !important; /* Toolbar invisible mais fonctionnelle */
-    pointer-events: none !important; /* Pas d'interaction avec la toolbar */
+    /* Toolbar complètement fonctionnelle, seuls les boutons sont cachés */
 }
 
 /* Mais permettre les popups de commandes slash */
