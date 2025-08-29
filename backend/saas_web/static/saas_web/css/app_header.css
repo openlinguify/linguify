@@ -33,7 +33,6 @@
 .fixed-header .navbar-brand {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #007ACC !important;
     text-decoration: none;
     transition: opacity var(--transition-fast);
     display: flex;
@@ -41,7 +40,11 @@
     margin-bottom: 0;
 }
 
-.fixed-header .navbar-brand:hover {
+.fixed-header .navbar-brand:not(.app-brand-gradient) {
+    color: #007ACC !important;
+}
+
+.fixed-header .navbar-brand:hover:not(.app-brand-gradient) {
     opacity: 0.9;
 }
 
@@ -224,4 +227,33 @@ body {
     padding: 0.25rem 0.5rem !important;
     font-size: 0.875rem !important;
     line-height: 1.5 !important;
+}
+
+/* App brand gradient styling */
+.app-brand-gradient {
+    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+    transition: all var(--transition-medium);
+}
+
+.app-brand-gradient:hover {
+    background: linear-gradient(135deg, #3d6bca 0%, #00e4ba 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: scale(1.05);
+    text-decoration: none;
+}
+
+/* Fallback pour les navigateurs qui ne supportent pas background-clip: text */
+@supports not (-webkit-background-clip: text) {
+    .app-brand-gradient {
+        color: #2D5BBA;
+    }
+    .app-brand-gradient:hover {
+        color: #00D4AA;
+    }
 }

@@ -6,8 +6,22 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <!-- Brand -->
-            <a class="navbar-brand" href="{% url 'saas_web:dashboard' %}" aria-label="{% trans 'Return to dashboard' %}">
-                Linguify
+            <a class="navbar-brand app-brand-gradient" href="{% url 'saas_web:dashboard' %}" aria-label="{% trans 'Return to dashboard' %}">
+                {% if 'teaching' in request.resolver_match.namespace %}
+                    Teaching
+                {% elif 'revision' in request.resolver_match.namespace %}
+                    Memory
+                {% elif 'notebook' in request.resolver_match.namespace %}
+                    Notebook
+                {% elif 'todo' in request.resolver_match.namespace %}
+                    Todo
+                {% elif 'community' in request.resolver_match.namespace %}
+                    Community
+                {% elif 'quizz' in request.resolver_match.namespace %}
+                    Quiz
+                {% else %}
+                    Linguify
+                {% endif %}
             </a>
             
             <div class="ms-auto d-flex align-items-center gap-2">
@@ -189,6 +203,7 @@
         </div>
     </nav>
 </header>
+
 
 <!-- Enhanced JavaScript for header functionality -->
 <script>
