@@ -49,7 +49,10 @@ class LinguifyEditor {
                 data: { blocks: [] },
                 onChange: (api, event) => {
                     console.log('📝 Editor content changed');
-                }
+                },
+                // Configuration pour améliorer l'affichage des toolbars
+                defaultBlock: 'paragraph',
+                minHeight: 0
             });
             
             // Wait for the editor to be ready

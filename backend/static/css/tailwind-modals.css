@@ -3830,7 +3830,7 @@ button.bg-linguify-gradient:hover,
 }
 
 .editor-js-linguify .codex-editor__redactor {
-    padding: 16px !important; /* Extra left padding for toolbar */
+    padding: 12px !important; /* Reduced left padding for closer toolbar */
     position: relative;
 }
 
@@ -3859,13 +3859,13 @@ button.bg-linguify-gradient:hover,
 /* Toolbar positioning and visibility */
 .editor-js-linguify .ce-toolbar {
     position: absolute;
-    left: -34px;
+    left: -28px; /* Plus proche du texte */
     top: 0;
     transform: translateY(0);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease;
-    z-index: 100; /* Au-dessus de tout le contenu */
+    z-index: 100;
 }
 
 .editor-js-linguify .ce-block:hover .ce-toolbar,
@@ -3927,9 +3927,17 @@ button.bg-linguify-gradient:hover,
 .editor-js-linguify .ce-inline-toolbar {
     background: white;
     border: 1px solid var(--linguify-gray-300);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 150; /* Au-dessus des boutons toolbar */
-    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    z-index: 150;
+    position: fixed !important; /* Force la position fixe */
+    padding: 4px;
+}
+
+.editor-js-linguify .ce-inline-toolbar--showed {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .editor-js-linguify .ce-inline-toolbar__buttons {
@@ -3938,16 +3946,32 @@ button.bg-linguify-gradient:hover,
 
 .editor-js-linguify .ce-inline-tool {
     color: var(--linguify-gray-600);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+    transition: all 0.2s ease;
+    border: none;
+    background: transparent;
+    cursor: pointer;
 }
 
 .editor-js-linguify .ce-inline-tool:hover {
     background: rgba(45, 91, 186, 0.1);
     color: var(--linguify-primary);
+    transform: translateY(-1px);
 }
 
 .editor-js-linguify .ce-inline-tool--active {
-    background: rgba(45, 91, 186, 0.1);
-    color: var(--linguify-primary);
+    background: var(--linguify-primary);
+    color: white;
+}
+
+.editor-js-linguify .ce-inline-tool--active:hover {
+    background: var(--linguify-primary-dark);
 }
 
 /* Focus states */
@@ -3967,6 +3991,15 @@ button.bg-linguify-gradient:hover,
 .editor-js-linguify.ce-toolbar-opened .ce-toolbar {
     opacity: 1 !important;
     visibility: visible !important;
+}
+
+/* Force inline toolbar to show on text selection */
+.editor-js-linguify .ce-inline-toolbar--showed,
+.editor-js-linguify .ce-inline-toolbar.ce-inline-toolbar--showed {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
 }
 
 /* Better initial state for empty editor */
