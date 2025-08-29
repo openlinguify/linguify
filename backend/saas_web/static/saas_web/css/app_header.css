@@ -262,15 +262,28 @@ body {
 .app-brand-icon {
     display: flex;
     align-items: center;
+    justify-content: center;
     transition: all var(--transition-medium);
+    height: var(--header-height);
 }
 
-.app-icon {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-    transition: all var(--transition-medium);
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+/* Header specific app icon styling - override other app-icon styles */
+.fixed-header .app-icon {
+    width: 32px !important;
+    height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    transition: all var(--transition-medium) !important;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)) !important;
+    border-radius: 0 !important;
+    border: none !important;
+    clip-path: none !important;
+    mask: none !important;
+    display: block !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
 }
 
 .app-brand-icon:hover .app-icon {
@@ -294,4 +307,46 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     transform: scale(1.05);
+}
+
+/* Fix icon alignment in header */
+.fixed-header .bi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+/* Ensure buttons with icons are properly aligned */
+.header-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.header-btn .bi {
+    vertical-align: baseline;
+    line-height: inherit;
+}
+
+/* Fix dropdown toggle alignment */
+.dropdown-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* Profile picture and user menu alignment */
+.profile-picture {
+    vertical-align: middle;
+}
+
+/* Navigation mobile items alignment */
+.mobile-nav-item {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.mobile-nav-item .bi {
+    vertical-align: baseline;
 }
