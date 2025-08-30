@@ -1,0 +1,45 @@
+.profanity-error {
+    border-left: 4px solid #fd7e14 !important;
+    background: linear-gradient(135deg, #fff4e6 0%, #ffebcc 100%) !important;
+    border-color: #fd7e14 !important;
+    animation: slideInDown 0.5s ease-out;
+}
+
+.profanity-error .alert-heading {
+    color: #fd7e14 !important;
+    font-weight: 600;
+}
+
+.profanity-error ul li {
+    padding: 3px 0;
+    color: #6c757d;
+}
+
+.profanity-error .fas.fa-exclamation-triangle {
+    color: #fd7e14 !important;
+}
+
+/* Animation for smooth appearance */
+@keyframes slideInDown {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Ensure the alert stays visible (no auto-hide) */
+.profanity-error {
+    position: relative;
+    z-index: 1050;
+    margin-bottom: 1.5rem;
+}
+
+/* Scroll to the alert when it appears */
+.profanity-error-scroll {
+    scroll-margin-top: 100px;
+}

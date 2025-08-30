@@ -158,63 +158,125 @@
                             {% trans "Quick access to all your learning apps in one place" %}
                         </p>
                         
-                        <!-- Mini Dashboard Preview -->
-                        <div class="hero-mock-browser">
-                            <div class="hero-browser-header">
+                        <!-- Professional Dashboard Preview -->
+                        <div class="hero-mock-browser-pro">
+                            <div class="hero-browser-header-pro">
                                 <div class="browser-dots">
                                     <span class="dot red"></span>
                                     <span class="dot yellow"></span>
                                     <span class="dot green"></span>
                                 </div>
-                                <div class="hero-browser-title">Dashboard - Open Linguify</div>
+                                <div class="hero-browser-title-pro">Dashboard - Open Linguify</div>
+                                <div class="browser-controls">
+                                    <i class="bi bi-dash-lg"></i>
+                                    <i class="bi bi-square"></i>
+                                    <i class="bi bi-x-lg"></i>
+                                </div>
                             </div>
-                            <div class="hero-browser-content">
-                                <!-- Mini Apps Grid -->
-                                <div class="hero-apps-grid">
-                                    <!-- Todo App -->
-                                    <div class="hero-app-card">
-                                        <div class="hero-app-icon" style="background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);">
-                                            <i class="bi bi-check2-square"></i>
+                            <div class="hero-browser-content-pro">
+                                <!-- Top Navigation Bar -->
+                                <div class="dashboard-nav-bar">
+                                    <div class="nav-brand">
+                                        <div class="brand-logo">L</div>
+                                        <span class="brand-text">Linguify</span>
+                                    </div>
+                                    <div class="nav-user">
+                                        <div class="user-avatar">
+                                            <i class="bi bi-person-circle"></i>
                                         </div>
-                                        <span class="hero-app-name">Todo</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Welcome Section -->
+                                <div class="dashboard-welcome">
+                                    <h4 class="welcome-title">Welcome back!</h4>
+                                    <p class="welcome-subtitle">Ready to continue your learning journey?</p>
+                                </div>
+                                
+                                <!-- Professional Apps Grid -->
+                                <div class="hero-apps-grid-pro">
+                                    <!-- Todo App - Operational -->
+                                    <div class="hero-app-card-pro hero-app-operational">
+                                        <div class="hero-app-icon-pro">
+                                            <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo" class="app-icon-img">
+                                            <div class="app-status-badge operational">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </div>
+                                        <div class="hero-app-info">
+                                            <span class="hero-app-name-pro">Todo</span>
+                                            <span class="hero-app-desc">Productivity</span>
+                                        </div>
                                     </div>
                                     
-                                    <!-- Revision App -->
-                                    <div class="hero-app-card">
-                                        <div class="hero-app-icon" style="background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%);">
-                                            <i class="bi bi-lightning-charge"></i>
+                                    <!-- Revision App - Operational -->
+                                    <div class="hero-app-card-pro hero-app-operational">
+                                        <div class="hero-app-icon-pro">
+                                            <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision" class="app-icon-img">
+                                            <div class="app-status-badge operational">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
                                         </div>
-                                        <span class="hero-app-name">Revision</span>
+                                        <div class="hero-app-info">
+                                            <span class="hero-app-name-pro">Revision</span>
+                                            <span class="hero-app-desc">Spaced Learning</span>
+                                        </div>
                                     </div>
                                     
-                                    <!-- Notebook App -->
-                                    <div class="hero-app-card">
-                                        <div class="hero-app-icon" style="background: linear-gradient(135deg, #059669 0%, #0891B2 100%);">
-                                            <i class="bi bi-journal-text"></i>
+                                    <!-- Notebook App - Operational -->
+                                    <div class="hero-app-card-pro hero-app-operational">
+                                        <div class="hero-app-icon-pro">
+                                            <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" class="app-icon-img">
+                                            <div class="app-status-badge operational">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
                                         </div>
-                                        <span class="hero-app-name">Notebook</span>
+                                        <div class="hero-app-info">
+                                            <span class="hero-app-name-pro">Notebook</span>
+                                            <span class="hero-app-desc">Note Taking</span>
+                                        </div>
                                     </div>
                                     
-                                    <!-- Coming Soon Apps (Grayed out) -->
-                                    <div class="hero-app-card hero-app-coming-soon">
-                                        <div class="hero-app-icon">
-                                            <i class="bi bi-mortarboard"></i>
+                                    <!-- Courses App - Coming Soon -->
+                                    <div class="hero-app-card-pro hero-app-coming-soon">
+                                        <div class="hero-app-icon-pro">
+                                            <img src="{% static 'img/app_icon/langue.png' %}" alt="Courses" class="app-icon-img">
+                                            <div class="app-status-badge coming-soon">
+                                                <i class="bi bi-clock"></i>
+                                            </div>
                                         </div>
-                                        <span class="hero-app-name">Courses</span>
+                                        <div class="hero-app-info">
+                                            <span class="hero-app-name-pro">Courses</span>
+                                            <span class="hero-app-desc">Structured Learning</span>
+                                        </div>
                                     </div>
                                     
-                                    <div class="hero-app-card hero-app-coming-soon">
-                                        <div class="hero-app-icon">
-                                            <i class="bi bi-question-circle"></i>
+                                    <!-- Quiz App - Coming Soon -->
+                                    <div class="hero-app-card-pro hero-app-coming-soon">
+                                        <div class="hero-app-icon-pro">
+                                            <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quiz" class="app-icon-img">
+                                            <div class="app-status-badge coming-soon">
+                                                <i class="bi bi-clock"></i>
+                                            </div>
                                         </div>
-                                        <span class="hero-app-name">Quiz</span>
+                                        <div class="hero-app-info">
+                                            <span class="hero-app-name-pro">Quiz</span>
+                                            <span class="hero-app-desc">Assessment</span>
+                                        </div>
                                     </div>
                                     
-                                    <div class="hero-app-card hero-app-coming-soon">
-                                        <div class="hero-app-icon">
-                                            <i class="bi bi-chat-dots"></i>
+                                    <!-- Chat App - Coming Soon -->
+                                    <div class="hero-app-card-pro hero-app-coming-soon">
+                                        <div class="hero-app-icon-pro">
+                                            <img src="{% static 'img/app_icon/chat.png' %}" alt="Chat" class="app-icon-img">
+                                            <div class="app-status-badge coming-soon">
+                                                <i class="bi bi-clock"></i>
+                                            </div>
                                         </div>
-                                        <span class="hero-app-name">Chat</span>
+                                        <div class="hero-app-info">
+                                            <span class="hero-app-name-pro">Chat</span>
+                                            <span class="hero-app-desc">Collaboration</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1183,164 +1245,329 @@
     }
 }
 
-/* Hero Dashboard Preview Styles */
+/* Hero Dashboard Preview Professional Styles */
 .hero-dashboard-preview {
-    max-width: 500px;
+    max-width: 650px;
     margin: 0 auto;
 }
 
-.hero-mock-browser {
-    background: rgba(255,255,255,0.95);
-    border-radius: 12px;
+.hero-mock-browser-pro {
+    background: rgba(255,255,255,0.98);
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
-    transform: perspective(1000px) rotateY(-3deg) rotateX(2deg);
-    transition: transform 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.3);
+    transform: perspective(1000px) rotateY(-2deg) rotateX(1deg);
+    transition: transform 0.4s ease;
 }
 
-.hero-mock-browser:hover {
-    transform: perspective(1000px) rotateY(-1deg) rotateX(1deg);
+.hero-mock-browser-pro:hover {
+    transform: perspective(1000px) rotateY(-1deg) rotateX(0.5deg);
 }
 
-.hero-browser-header {
-    background: rgba(245,245,245,0.9);
-    padding: 12px 16px;
+.hero-browser-header-pro {
+    background: linear-gradient(180deg, rgba(250,250,250,0.95) 0%, rgba(240,240,240,0.95) 100%);
+    padding: 14px 20px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid rgba(224,224,224,0.5);
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(224,224,224,0.6);
 }
 
-.hero-browser-header .browser-dots {
+.hero-browser-header-pro .browser-dots {
     display: flex;
-    gap: 6px;
-    margin-right: 16px;
+    gap: 8px;
 }
 
-.hero-browser-header .dot {
-    width: 10px;
-    height: 10px;
+.hero-browser-header-pro .dot {
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
 }
 
-.hero-browser-header .dot.red { background: #ff5f57; }
-.hero-browser-header .dot.yellow { background: #ffbd2e; }
-.hero-browser-header .dot.green { background: #28ca42; }
+.hero-browser-header-pro .dot.red { background: #ff5f57; }
+.hero-browser-header-pro .dot.yellow { background: #ffbd2e; }
+.hero-browser-header-pro .dot.green { background: #28ca42; }
 
-.hero-browser-title {
-    font-size: 12px;
-    color: #666;
+.hero-browser-title-pro {
+    font-size: 13px;
+    color: #555;
     font-weight: 500;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-.hero-browser-content {
-    background: #f8fafc;
-    padding: 20px 15px;
-    min-height: 180px;
+.browser-controls {
+    display: flex;
+    gap: 8px;
+    opacity: 0.6;
 }
 
-.hero-apps-grid {
+.browser-controls i {
+    font-size: 10px;
+    color: #666;
+}
+
+.hero-browser-content-pro {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 0;
+    min-height: 320px;
+}
+
+.dashboard-nav-bar {
+    background: rgba(255,255,255,0.9);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    backdrop-filter: blur(10px);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-logo {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.brand-text {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 16px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-avatar i {
+    font-size: 18px;
+    color: #64748b;
+}
+
+.dashboard-welcome {
+    padding: 20px 24px 16px;
+    text-align: left;
+}
+
+.welcome-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 4px 0;
+}
+
+.welcome-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+.hero-apps-grid-pro {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    max-width: 300px;
-    margin: 0 auto;
+    gap: 16px;
+    padding: 0 24px 24px;
+    max-width: 100%;
 }
 
-.hero-app-card {
+.hero-app-card-pro {
+    background: rgba(255,255,255,0.9);
+    border-radius: 12px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
     cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.05);
+    backdrop-filter: blur(10px);
+    position: relative;
 }
 
-.hero-app-card:hover {
-    transform: translateY(-3px);
+.hero-app-card-pro.hero-app-operational:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
 }
 
-.hero-app-card.hero-app-coming-soon:hover {
+.hero-app-card-pro.hero-app-coming-soon {
+    opacity: 0.6;
+}
+
+.hero-app-card-pro.hero-app-coming-soon:hover {
     transform: none;
+    opacity: 0.4;
 }
 
-.hero-app-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+.hero-app-icon-pro {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 12px;
+}
+
+.app-icon-img {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.hero-app-coming-soon .app-icon-img {
+    filter: grayscale(100%) opacity(0.6);
+}
+
+.app-status-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 6px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-    transition: box-shadow 0.3s ease;
+    font-size: 10px;
+    border: 2px solid rgba(255,255,255,0.9);
 }
 
-.hero-app-card:hover .hero-app-icon {
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-}
-
-.hero-app-icon i {
-    font-size: 16px;
+.app-status-badge.operational {
+    background: #10b981;
     color: white;
 }
 
-.hero-app-name {
-    font-size: 10px;
+.app-status-badge.coming-soon {
+    background: #f59e0b;
+    color: white;
+}
+
+.hero-app-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-app-name-pro {
+    font-size: 13px;
     font-weight: 600;
     color: #1e293b;
-    margin: 0;
+    margin-bottom: 2px;
 }
 
-.hero-app-coming-soon {
-    opacity: 0.5;
-}
-
-.hero-app-coming-soon .hero-app-icon {
-    background: #e2e8f0 !important;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.hero-app-coming-soon .hero-app-icon i {
-    color: #64748b !important;
-}
-
-.hero-app-coming-soon .hero-app-name {
+.hero-app-desc {
+    font-size: 10px;
     color: #64748b;
+    font-weight: 500;
 }
 
-/* Responsive adjustments for hero dashboard */
+.hero-app-coming-soon .hero-app-name-pro,
+.hero-app-coming-soon .hero-app-desc {
+    color: #94a3b8;
+}
+
+/* Responsive adjustments for professional dashboard */
 @media (max-width: 768px) {
-    .hero-mock-browser {
+    .hero-dashboard-preview {
+        max-width: 100%;
+    }
+    
+    .hero-mock-browser-pro {
+        transform: none;
+        border-radius: 12px;
+    }
+    
+    .hero-mock-browser-pro:hover {
         transform: none;
     }
     
-    .hero-mock-browser:hover {
-        transform: none;
+    .hero-browser-content-pro {
+        min-height: 280px;
     }
     
-    .hero-browser-content {
-        padding: 15px 10px;
-        min-height: 150px;
+    .dashboard-nav-bar {
+        padding: 10px 16px;
     }
     
-    .hero-apps-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        max-width: 250px;
+    .brand-logo {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
     }
     
-    .hero-app-icon {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .hero-app-icon i {
+    .brand-text {
         font-size: 14px;
     }
     
-    .hero-app-name {
+    .dashboard-welcome {
+        padding: 16px 16px 12px;
+    }
+    
+    .welcome-title {
+        font-size: 16px;
+    }
+    
+    .welcome-subtitle {
+        font-size: 13px;
+    }
+    
+    .hero-apps-grid-pro {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        padding: 0 16px 20px;
+    }
+    
+    .hero-app-card-pro {
+        padding: 12px;
+    }
+    
+    .hero-app-icon-pro {
+        width: 44px;
+        height: 44px;
+        margin-bottom: 8px;
+    }
+    
+    .app-icon-img {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+    }
+    
+    .app-status-badge {
+        width: 16px;
+        height: 16px;
+        font-size: 8px;
+        top: -4px;
+        right: -4px;
+    }
+    
+    .hero-app-name-pro {
+        font-size: 11px;
+    }
+    
+    .hero-app-desc {
         font-size: 9px;
     }
 }
