@@ -143,21 +143,70 @@
                     <h1 class="hero-title animate-on-scroll">
                         {% trans "Open Source Education Apps" %}
                     </h1>
-                    <p class="hero-subtitle animate-on-scroll delay-1">
+                    <p class="hero-subtitle animate-on-scroll delay-1 justify-content">
                         {% trans "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more." %}
                     </p>
+                    
+                    <!-- Free and Open Source Badge -->
+                    <div class="free-badge animate-on-scroll delay-1" style="background: linear-gradient(135deg, #017e84, #015a5e); color: white; padding: 1rem 2rem; border-radius: 50px; margin: 1.5rem 0; display: inline-block; box-shadow: 0 8px 25px rgba(1, 126, 132, 0.3);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <i class="fas fa-gift" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <div style="font-size: 1.4rem; font-weight: bold; margin-bottom: 2px;">
+                                    {% trans "100% FREE FOREVER" %}
+                                </div>
+                                <div style="font-size: 0.95rem; opacity: 0.95;">
+                                    {% trans "No credit card • No hidden fees • Always free" %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Type Selection -->
+                    <div id="user-products" class="user-type-selection mb-4 animate-on-scroll delay-2 user-type-enhanced">
+                        <h3 class="mb-3" style="color: #e0e7ff; font-size: 1.1rem;">
+                            {% trans "Choose your Linguify product:" %}
+                        </h3>
+                        <div class="row g-3 justify-content-center">
+                            {% for product in products %}
+                                {% if product.key != 'lms' and product.key != 'cms' %}  <!-- Hide LMS and CMS products as they're not ready -->
+                                <div class="col-md-12">
+                                    <div class="user-type-card" style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 1.5rem; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                                        <i class="{{ product.icon }} fa-2x mb-2" style="color: #e0e7ff;"></i>
+                                        <h5 style="color: white; margin-bottom: 0.5rem;">{{ product.name }}</h5>
+                                        <p style="color: #e0e7ff; font-size: 0.9rem; margin-bottom: 1rem;">{{ product.description }}</p>
+                                        <a href="{{ product.url }}" class="btn {% if product.key == 'backend' %}btn-light{% else %}btn-outline-light{% endif %} btn-sm" {% if product.key != 'backend' %}target="_blank"{% endif %}>
+                                            {% if product.key == 'backend' %}
+                                                {% trans "Start Learning" %}
+                                            {% else %}
+                                                {% trans "Learn More" %}
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Call to Action Buttons -->
+                    <div class="text-center mt-4 animate-on-scroll delay-3">
+                        <div class="d-flex gap-3 flex-wrap hero-cta-enhanced justify-content-center align-items-center">
+                            <a href="#features" class="btn-hero secondary mb-2">
+                                <i class="fas fa-globe"></i>
+                                {% trans "Discover our apps" %}
+                            </a>
+                            <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-hero primary pulse mb-2">
+                                <i class="fab fa-github"></i>
+                                {% trans "View Source Code" %}
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Right Column - Dashboard Preview -->
                 <div class="col-lg-6 text-center">
                     <div class="hero-dashboard-preview animate-on-scroll delay-1">
-                        <h3 class="mb-3" style="color: #e0e7ff; font-size: 1.2rem; font-weight: 600;">
-                            <i class="bi bi-grid-3x3-gap me-2"></i>{% trans "Your Dashboard" %}
-                        </h3>
-                        <p class="mb-4" style="color: #e0e7ff; font-size: 0.95rem; opacity: 0.9;">
-                            {% trans "Quick access to all your learning apps in one place" %}
-                        </p>
-                        
                         <!-- Professional Dashboard Preview -->
                         <div class="hero-mock-browser-pro">
                             <div class="hero-browser-header-pro">
@@ -187,11 +236,8 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Welcome Section -->
-                                <div class="dashboard-welcome">
-                                    <h4 class="welcome-title">Welcome back!</h4>
-                                    <p class="welcome-subtitle">Ready to continue your learning journey?</p>
-                                </div>
+
+
                                 
                                 <!-- Professional Apps Grid -->
                                 <div class="hero-apps-grid-pro">
@@ -294,68 +340,7 @@
                 </div>
             </div>
             
-            <!-- Additional Hero Content - Free Badge and Product Selection -->
-            <div class="row justify-content-center mt-5">
-                <div class="col-lg-10 text-center">
-                    <!-- Free and Open Source Badge -->
-                    <div class="free-badge animate-on-scroll delay-1" style="background: linear-gradient(135deg, #017e84, #015a5e); color: white; padding: 1rem 2rem; border-radius: 50px; margin: 1.5rem auto; display: inline-block; box-shadow: 0 8px 25px rgba(1, 126, 132, 0.3);">
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                            <i class="fas fa-gift" style="font-size: 1.5rem;"></i>
-                            <div>
-                                <div style="font-size: 1.4rem; font-weight: bold; margin-bottom: 2px;">
-                                    {% trans "100% FREE FOREVER" %}
-                                </div>
-                                <div style="font-size: 0.95rem; opacity: 0.95;">
-                                    {% trans "No credit card • No hidden fees • Always free" %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- User Type Selection -->
-                    <div id="user-products" class="user-type-selection mb-4 animate-on-scroll delay-2 user-type-enhanced">
-                        <h3 class="mb-3" style="color: #e0e7ff; font-size: 1.1rem;">
-                            {% trans "Choose your Linguify product:" %}
-                        </h3>
-                        <div class="row g-3 justify-content-center">
-                            {% for product in products %}
-                                {% if product.key != 'lms' and product.key != 'cms' %}  <!-- Hide LMS and CMS products as they're not ready -->
-                                <div class="col-md-6 col-lg-5">
-                                    <div class="user-type-card" style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 1.5rem; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-                                        <i class="{{ product.icon }} fa-2x mb-2" style="color: #e0e7ff;"></i>
-                                        <h5 style="color: white; margin-bottom: 0.5rem;">{{ product.name }}</h5>
-                                        <p style="color: #e0e7ff; font-size: 0.9rem; margin-bottom: 1rem;">{{ product.description }}</p>
-                                        <a href="{{ product.url }}" class="btn {% if product.key == 'backend' %}btn-light{% else %}btn-outline-light{% endif %} btn-sm" {% if product.key != 'backend' %}target="_blank"{% endif %}>
-                                            {% if product.key == 'backend' %}
-                                                {% trans "Start Learning" %}
-                                            {% else %}
-                                                {% trans "Learn More" %}
-                                            {% endif %}
-                                        </a>
-                                    </div>
-                                </div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Call to Action Buttons - Full Width -->
-            <div class="row">
-                <div class="col-12 text-center mt-4 animate-on-scroll delay-3">
-                    <div class="d-flex gap-3 flex-wrap hero-cta-enhanced justify-content-center align-items-center">
-                        <a href="#features" class="btn-hero secondary mb-2">
-                            <i class="fas fa-globe"></i>
-                            {% trans "Discover our apps" %}
-                        </a>
-                        <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-hero primary pulse mb-2">
-                            <i class="fab fa-github"></i>
-                            {% trans "View Source Code" %}
-                        </a>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </section>
 
