@@ -137,15 +137,104 @@
         </div>
         
         <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-10 col-lg-8 hero-content text-center">
+            <div class="row justify-content-center align-items-center">
+                <!-- Left Column - Main Content -->
+                <div class="col-lg-6 hero-content text-center text-lg-start mb-4 mb-lg-0">
                     <h1 class="hero-title animate-on-scroll">
                         {% trans "Open Source Education Apps" %}
                     </h1>
                     <p class="hero-subtitle animate-on-scroll delay-1">
                         {% trans "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more." %}
                     </p>
-                    
+                </div>
+                
+                <!-- Right Column - Dashboard Preview -->
+                <div class="col-lg-6 text-center">
+                    <div class="hero-dashboard-preview animate-on-scroll delay-1">
+                        <h3 class="mb-3" style="color: #e0e7ff; font-size: 1.2rem; font-weight: 600;">
+                            <i class="bi bi-grid-3x3-gap me-2"></i>{% trans "Your Dashboard" %}
+                        </h3>
+                        <p class="mb-4" style="color: #e0e7ff; font-size: 0.95rem; opacity: 0.9;">
+                            {% trans "Quick access to all your learning apps in one place" %}
+                        </p>
+                        
+                        <!-- Mini Dashboard Preview -->
+                        <div class="hero-mock-browser">
+                            <div class="hero-browser-header">
+                                <div class="browser-dots">
+                                    <span class="dot red"></span>
+                                    <span class="dot yellow"></span>
+                                    <span class="dot green"></span>
+                                </div>
+                                <div class="hero-browser-title">Dashboard - Open Linguify</div>
+                            </div>
+                            <div class="hero-browser-content">
+                                <!-- Mini Apps Grid -->
+                                <div class="hero-apps-grid">
+                                    <!-- Todo App -->
+                                    <div class="hero-app-card">
+                                        <div class="hero-app-icon" style="background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);">
+                                            <i class="bi bi-check2-square"></i>
+                                        </div>
+                                        <span class="hero-app-name">Todo</span>
+                                    </div>
+                                    
+                                    <!-- Revision App -->
+                                    <div class="hero-app-card">
+                                        <div class="hero-app-icon" style="background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%);">
+                                            <i class="bi bi-lightning-charge"></i>
+                                        </div>
+                                        <span class="hero-app-name">Revision</span>
+                                    </div>
+                                    
+                                    <!-- Notebook App -->
+                                    <div class="hero-app-card">
+                                        <div class="hero-app-icon" style="background: linear-gradient(135deg, #059669 0%, #0891B2 100%);">
+                                            <i class="bi bi-journal-text"></i>
+                                        </div>
+                                        <span class="hero-app-name">Notebook</span>
+                                    </div>
+                                    
+                                    <!-- Coming Soon Apps (Grayed out) -->
+                                    <div class="hero-app-card hero-app-coming-soon">
+                                        <div class="hero-app-icon">
+                                            <i class="bi bi-mortarboard"></i>
+                                        </div>
+                                        <span class="hero-app-name">Courses</span>
+                                    </div>
+                                    
+                                    <div class="hero-app-card hero-app-coming-soon">
+                                        <div class="hero-app-icon">
+                                            <i class="bi bi-question-circle"></i>
+                                        </div>
+                                        <span class="hero-app-name">Quiz</span>
+                                    </div>
+                                    
+                                    <div class="hero-app-card hero-app-coming-soon">
+                                        <div class="hero-app-icon">
+                                            <i class="bi bi-chat-dots"></i>
+                                        </div>
+                                        <span class="hero-app-name">Chat</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="mt-3 mb-4" style="color: #e0e7ff; font-size: 0.9rem; opacity: 0.8;">
+                            {% trans "Access all your apps from a unified dashboard" %}
+                        </p>
+                        
+                        <!-- CTA Button -->
+                        <a href="{% backend_url '/' %}" class="btn btn-light btn-lg animate-on-scroll delay-2" style="border-radius: 50px; padding: 12px 30px; font-weight: 600;">
+                            <i class="bi bi-arrow-right-circle me-2"></i>{% trans "Go to Dashboard" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Hero Content - Free Badge and Product Selection -->
+            <div class="row justify-content-center mt-5">
+                <div class="col-lg-10 text-center">
                     <!-- Free and Open Source Badge -->
                     <div class="free-badge animate-on-scroll delay-1" style="background: linear-gradient(135deg, #017e84, #015a5e); color: white; padding: 1rem 2rem; border-radius: 50px; margin: 1.5rem auto; display: inline-block; box-shadow: 0 8px 25px rgba(1, 126, 132, 0.3);">
                         <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -162,14 +251,14 @@
                     </div>
                     
                     <!-- User Type Selection -->
-                    <div id="user-products" class="user-type-selection mb-4 animate-on-scroll delay-2 user-type-enhanced text-center">
+                    <div id="user-products" class="user-type-selection mb-4 animate-on-scroll delay-2 user-type-enhanced">
                         <h3 class="mb-3" style="color: #e0e7ff; font-size: 1.1rem;">
                             {% trans "Choose your Linguify product:" %}
                         </h3>
                         <div class="row g-3 justify-content-center">
                             {% for product in products %}
                                 {% if product.key != 'lms' and product.key != 'cms' %}  <!-- Hide LMS and CMS products as they're not ready -->
-                                <div class="col-md-8 col-lg-6">
+                                <div class="col-md-6 col-lg-5">
                                     <div class="user-type-card" style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 1.5rem; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
                                         <i class="{{ product.icon }} fa-2x mb-2" style="color: #e0e7ff;"></i>
                                         <h5 style="color: white; margin-bottom: 0.5rem;">{{ product.name }}</h5>
@@ -187,18 +276,21 @@
                             {% endfor %}
                         </div>
                     </div>
-                    
-                    <div class="text-center mt-4 animate-on-scroll delay-3">
-                        <div class="d-flex gap-3 flex-wrap hero-cta-enhanced justify-content-center align-items-center">
-                            <a href="#features" class="btn-hero secondary mb-2">
-                                <i class="fas fa-globe"></i>
-                                {% trans "Discover our apps" %}
-                            </a>
-                            <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-hero primary pulse mb-2">
-                                <i class="fab fa-github"></i>
-                                {% trans "View Source Code" %}
-                            </a>
-                        </div>
+                </div>
+            </div>
+            
+            <!-- Call to Action Buttons - Full Width -->
+            <div class="row">
+                <div class="col-12 text-center mt-4 animate-on-scroll delay-3">
+                    <div class="d-flex gap-3 flex-wrap hero-cta-enhanced justify-content-center align-items-center">
+                        <a href="#features" class="btn-hero secondary mb-2">
+                            <i class="fas fa-globe"></i>
+                            {% trans "Discover our apps" %}
+                        </a>
+                        <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-hero primary pulse mb-2">
+                            <i class="fab fa-github"></i>
+                            {% trans "View Source Code" %}
+                        </a>
                     </div>
                 </div>
             </div>
@@ -212,7 +304,7 @@
             <div class="row g-4 justify-content-center">
                 <div class="col-6 col-md-4 col-lg-3 animate-on-scroll">
                     <div class="stat-card">
-                        <span class="stat-number" data-count="9">0</span>
+                        <span class="stat-number" data-count="3">0</span>
                         <div class="stat-label">{% trans "Educational Useful Apps for the students" %}</div>
                     </div>
                 </div>
@@ -911,6 +1003,346 @@
 
 .teacher-stats-card:hover {
     transform: scale(1.05);
+}
+
+/* Dashboard Preview Section */
+.dashboard-preview-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 20px;
+    margin: 4rem auto;
+    max-width: 1000px;
+}
+
+.dashboard-mock-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.mock-browser-dashboard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+    width: 100%;
+    max-width: 800px;
+    transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+    transition: transform 0.3s ease;
+}
+
+.mock-browser-dashboard:hover {
+    transform: perspective(1000px) rotateY(-3deg) rotateX(1deg);
+}
+
+.browser-header-dashboard {
+    background: #f5f5f5;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.browser-header-dashboard .browser-dots {
+    display: flex;
+    gap: 8px;
+    margin-right: 20px;
+}
+
+.browser-header-dashboard .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.browser-header-dashboard .dot.red { background: #ff5f57; }
+.browser-header-dashboard .dot.yellow { background: #ffbd2e; }
+.browser-header-dashboard .dot.green { background: #28ca42; }
+
+.browser-title {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.browser-content-dashboard {
+    background: #f8fafc;
+    padding: 3rem 2rem;
+    min-height: 300px;
+}
+
+.apps-grid-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.app-card-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.app-card-preview:hover {
+    transform: translateY(-5px);
+}
+
+.app-card-preview.coming-soon-app:hover {
+    transform: none;
+    opacity: 0.4;
+}
+
+.app-icon-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: box-shadow 0.3s ease;
+}
+
+.app-card-preview:hover .app-icon-preview {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.app-name-preview {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.coming-soon-app {
+    opacity: 0.6;
+}
+
+.coming-soon-app .app-icon-preview {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboard-preview-section {
+        margin: 2rem auto;
+        padding: 2rem 1rem !important;
+    }
+    
+    .dashboard-mock-container {
+        padding: 1rem;
+    }
+    
+    .mock-browser-dashboard {
+        transform: none;
+    }
+    
+    .mock-browser-dashboard:hover {
+        transform: none;
+    }
+    
+    .browser-content-dashboard {
+        padding: 2rem 1rem;
+        min-height: 250px;
+    }
+    
+    .apps-grid-preview {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .app-icon-preview {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .app-name-preview {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .apps-grid-preview {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .app-icon-preview {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .app-icon-preview i {
+        font-size: 20px !important;
+    }
+}
+
+/* Hero Dashboard Preview Styles */
+.hero-dashboard-preview {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.hero-mock-browser {
+    background: rgba(255,255,255,0.95);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    transform: perspective(1000px) rotateY(-3deg) rotateX(2deg);
+    transition: transform 0.3s ease;
+}
+
+.hero-mock-browser:hover {
+    transform: perspective(1000px) rotateY(-1deg) rotateX(1deg);
+}
+
+.hero-browser-header {
+    background: rgba(245,245,245,0.9);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(224,224,224,0.5);
+}
+
+.hero-browser-header .browser-dots {
+    display: flex;
+    gap: 6px;
+    margin-right: 16px;
+}
+
+.hero-browser-header .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.hero-browser-header .dot.red { background: #ff5f57; }
+.hero-browser-header .dot.yellow { background: #ffbd2e; }
+.hero-browser-header .dot.green { background: #28ca42; }
+
+.hero-browser-title {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+}
+
+.hero-browser-content {
+    background: #f8fafc;
+    padding: 20px 15px;
+    min-height: 180px;
+}
+
+.hero-apps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.hero-app-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.hero-app-card:hover {
+    transform: translateY(-3px);
+}
+
+.hero-app-card.hero-app-coming-soon:hover {
+    transform: none;
+}
+
+.hero-app-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    transition: box-shadow 0.3s ease;
+}
+
+.hero-app-card:hover .hero-app-icon {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.hero-app-icon i {
+    font-size: 16px;
+    color: white;
+}
+
+.hero-app-name {
+    font-size: 10px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.hero-app-coming-soon {
+    opacity: 0.5;
+}
+
+.hero-app-coming-soon .hero-app-icon {
+    background: #e2e8f0 !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.hero-app-coming-soon .hero-app-icon i {
+    color: #64748b !important;
+}
+
+.hero-app-coming-soon .hero-app-name {
+    color: #64748b;
+}
+
+/* Responsive adjustments for hero dashboard */
+@media (max-width: 768px) {
+    .hero-mock-browser {
+        transform: none;
+    }
+    
+    .hero-mock-browser:hover {
+        transform: none;
+    }
+    
+    .hero-browser-content {
+        padding: 15px 10px;
+        min-height: 150px;
+    }
+    
+    .hero-apps-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        max-width: 250px;
+    }
+    
+    .hero-app-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .hero-app-icon i {
+        font-size: 14px;
+    }
+    
+    .hero-app-name {
+        font-size: 9px;
+    }
 }
 </style>
 {% endblock %}
