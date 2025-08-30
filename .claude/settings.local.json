@@ -1,11 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3 manage.py makemessages:*)"
+      "Bash(python3 manage.py makemessages:*)",
+      "Bash(source:*)",
+      "Bash(python manage.py:*)"
     ],
     "deny": [],
-    "defaultMode": "acceptEdits",
-    "ask": []
+    "ask": [],
+    "defaultMode": "acceptEdits"
   },
   "enableAllProjectMcpServers": false
 }

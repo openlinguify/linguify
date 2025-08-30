@@ -153,7 +153,7 @@ msgstr "Cuaderno"
 
 #: public_web/templates/components/public_header.html:37
 msgid "View all apps"
-msgstr ""
+msgstr "Ver todas las aplicaciones"
 
 #: public_web/templates/components/public_header.html:49
 msgid "Documentation"
@@ -169,12 +169,12 @@ msgstr "IA de Idiomas"
 #: public_web/templates/components/public_header.html:164
 #: public_web/templates/components/public_header.html:209
 msgid "Log In"
-msgstr "Log In"
+msgstr "Iniciar Sesión"
 
 #: public_web/templates/components/public_header.html:167
 #: public_web/templates/components/public_header.html:212
 msgid "Sign Up"
-msgstr "Sign Up"
+msgstr "Registrarse"
 
 #: public_web/templates/public_web/about.html:6
 #, fuzzy
@@ -616,7 +616,7 @@ msgstr "Revisión"
 #: public_web/templates/public_web/apps/app_quizz.html:212
 #: public_web/templates/public_web/apps/app_revision.html:314
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #: public_web/templates/public_web/apps/app_chat.html:270
 msgid "Prêt à rejoindre la communauté ?"
@@ -733,7 +733,7 @@ msgstr ""
 #: public_web/templates/public_web/apps/app_community.html:158
 #: public_web/templates/public_web/apps/app_documents.html:158
 msgid "Tip"
-msgstr ""
+msgstr "Consejo"
 
 #: public_web/templates/public_web/apps/app_community.html:159
 msgid ""
