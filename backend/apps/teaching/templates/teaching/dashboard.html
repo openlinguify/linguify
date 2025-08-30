@@ -13,10 +13,10 @@
 <div class="app-flex-container">
     <!-- Sidebar -->
     <div id="teachingSidebar" class="app-sidebar-layout">
-        <div class="p-6">
+        <div class="px-4 py-6">
             <!-- Next Lesson (if any) -->
             {% if upcoming_lessons %}
-                <div class="mb-6">
+                <div class="mb-8">
                     <h3 class="text-sm font-semibold text-gray-900 mb-3">
                         <i class="bi bi-clock mr-2 text-linguify-primary"></i>
                         {% trans "Prochain cours" %}
@@ -46,7 +46,7 @@
                 </div>
             {% endif %}            
             <!-- Quick Stats -->
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-2 gap-3">
                 <div class="card-linguify text-center p-3">
                     <div class="text-lg font-bold text-linguify-primary">{{ upcoming_lessons|length }}</div>
                     <div class="text-xs text-linguify-gray">{% trans "Cours prévus" %}</div>
@@ -61,14 +61,14 @@
 
     <!-- Main Content Area -->
     <div class="app-content-layout">
-        <div class="p-6 h-full flex flex-col">
+        <div class="px-4 py-6 h-full flex flex-col">
             <!-- Header -->
             
             <!-- Main Content Grid -->
             <div class="flex-grow">
                 <!-- Upcoming Lessons -->
                 <div class="card-linguify">
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between mb-6">
                         <h2 class="text-xl font-semibold text-gray-900">
                             <i class="bi bi-calendar-event mr-2 text-linguify-primary"></i>
                             {% trans "Mes cours" %}
@@ -79,7 +79,7 @@
                     </div>
                     
                     {% if upcoming_lessons %}
-                        <div class="space-y-3">
+                        <div class="space-y-4">
                             {% for lesson in upcoming_lessons|slice:":3" %}
                             <div class="border border-linguify-gray-200 rounded-lg p-3 hover:bg-linguify-gray-50 transition-colors">
                                 <div class="flex justify-between items-start mb-2">
@@ -139,7 +139,7 @@
             </div>
             
             <!-- Modal Body -->
-            <div class="p-6">
+            <div class="px-4 py-6">
                 <div class="text-center mb-8">
                     <div class="w-20 h-20 mx-auto mb-4 bg-linguify-primary bg-opacity-10 rounded-full flex items-center justify-center">
                         <i class="bi bi-person-video3 text-3xl text-linguify-primary"></i>

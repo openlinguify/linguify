@@ -38,6 +38,17 @@
     {% block extra_css %}{% endblock %}
     
     <style>
+        /* Fix pour l'alignement avec la navbar */
+        .px-4 {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        /* Espacement vertical après la navbar */
+        .app-flex-container {
+            margin-top: 1rem;
+        }
+        
         /* Header app global fixe en haut */
         .app-header {
             position: fixed;
