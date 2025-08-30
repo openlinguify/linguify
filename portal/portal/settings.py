@@ -118,6 +118,10 @@ LANGUAGES = [
     ('nl', 'Nederlands'),
 ]
 
+LOCALE_PATHS = [
+    BASE_DIR / 'public_web' / 'i18n',
+]
+
 TIME_ZONE = 'Europe/Paris'
 USE_I18N = True
 USE_TZ = True
