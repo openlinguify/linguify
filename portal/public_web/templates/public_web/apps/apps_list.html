@@ -43,10 +43,18 @@
 <!-- Apps Section -->
 <section class="py-5">
     <div class="container">
-        <div class="row g-4">
+        <!-- Available Apps -->
+        <div class="text-center mb-5">
+            <h2 class="h3 mb-3" style="color: #017e84;">
+                <i class="bi bi-check-circle-fill me-2"></i>{% trans "Available Now" %}
+            </h2>
+        </div>
+        
+        <div class="row g-4 mb-5">
             {% for app in apps %}
+            {% if app.slug == 'todo' or app.slug == 'revision' or app.slug == 'notebook' %}
             <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100">
+                <div class="feature-card h-100" style="border: 2px solid #017e84; position: relative;">
                     <div class="feature-icon">
                         <img src="{% static 'img/app_icon/' %}{{ app.icon }}.png" alt="{{ app.name }}" style="width: 60px; height: 60px; object-fit: contain;">
                     </div>
@@ -58,22 +66,66 @@
                             <small class="text-muted">{{ app.category }}</small>
                             <small class="text-muted">v{{ app.version }}</small>
                         </div>
-                        <a href="{% url 'public_web:dynamic_app_detail' app_slug=app.slug %}" class="btn btn-outline-primary btn-sm w-100">
-                            <i class="bi bi-arrow-right me-1"></i>{% trans "Learn more" %}
+                        <div class="badge position-absolute top-0 end-0 m-2" style="background-color: #017e84; color: white;">
+                            <i class="bi bi-check-lg me-1"></i>{% trans "Ready" %}
+                        </div>
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug=app.slug %}" class="btn btn-primary btn-sm w-100">
+                            <i class="bi bi-arrow-right me-1"></i>{% trans "Use now" %}
                         </a>
                     </div>
                 </div>
             </div>
-            {% empty %}
-            <div class="col-12">
-                <div class="text-center py-5">
-                    <i class="bi bi-app-indicator" style="font-size: 4rem; opacity: 0.3;"></i>
-                    <h3 class="mt-3">{% trans "No applications available" %}</h3>
-                    <p class="text-muted">{% trans "Applications will appear here once they are configured." %}</p>
-                </div>
-            </div>
+            {% endif %}
             {% endfor %}
         </div>
+        
+        <!-- Coming Soon Apps -->
+        <div class="text-center mb-4 mt-5">
+            <h3 class="h4 mb-3" style="color: var(--warning-color);">
+                <i class="bi bi-clock-fill me-2"></i>{% trans "Coming Soon" %}
+            </h3>
+            <p class="text-muted">{% trans "These exciting apps are in active development" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for app in apps %}
+            {% if app.slug != 'todo' and app.slug != 'revision' and app.slug != 'notebook' %}
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 coming-soon" style="opacity: 0.7; position: relative;">
+                    <div class="feature-icon">
+                        <img src="{% static 'img/app_icon/' %}{{ app.icon }}.png" alt="{{ app.name }}" style="width: 60px; height: 60px; object-fit: contain; filter: grayscale(50%);">
+                    </div>
+                    <h3 class="h5 mb-3">{{ app.name }}</h3>
+                    <p class="text-muted mb-3">{{ app.summary }}</p>
+                    
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <small class="text-muted">{{ app.category }}</small>
+                            <small class="text-muted">v{{ app.version }}</small>
+                        </div>
+                        <div class="badge bg-warning position-absolute top-0 end-0 m-2">
+                            <i class="bi bi-clock me-1"></i>{% trans "Soon" %}
+                        </div>
+                        <span class="btn btn-outline-secondary btn-sm w-100 disabled">
+                            <i class="bi bi-clock me-1"></i>{% trans "Coming soon" %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        
+        <!-- Empty state if no apps -->
+        {% if not apps %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="bi bi-app-indicator" style="font-size: 4rem; opacity: 0.3;"></i>
+                <h3 class="mt-3">{% trans "No applications available" %}</h3>
+                <p class="text-muted">{% trans "Applications will appear here once they are configured." %}</p>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </section>
 

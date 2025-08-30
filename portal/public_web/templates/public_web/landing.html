@@ -253,6 +253,23 @@
             
             <div class="row g-4 justify-content-center mb-5">
                 <div class="col-lg-4 col-md-6 animate-on-scroll delay-1">
+                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='todo' %}" class="text-decoration-none">
+                        <div class="feature-card" style="border: 2px solid #017e84; position: relative;">
+                            <div class="feature-icon">
+                                <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo">
+                            </div>
+                            <h3 class="feature-title">{% trans "Todo" %}</h3>
+                            <p class="feature-description">
+                                {% trans "Organize your tasks and boost your productivity with intelligent task management." %}
+                            </p>
+                            <div class="badge position-absolute top-0 end-0 m-2" style="background-color: #017e84; color: white;">
+                                <i class="bi bi-check-lg me-1"></i>{% trans "Ready" %}
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-2">
                     <a href="{% url 'public_web:dynamic_app_detail' app_slug='revision' %}" class="text-decoration-none">
                         <div class="feature-card" style="border: 2px solid #017e84; position: relative;">
                             <div class="feature-icon">
@@ -269,7 +286,7 @@
                     </a>
                 </div>
                 
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-2">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-3">
                     <a href="{% url 'public_web:dynamic_app_detail' app_slug='notebook' %}" class="text-decoration-none">
                         <div class="feature-card" style="border: 2px solid #017e84; position: relative;">
                             <div class="feature-icon">
@@ -296,7 +313,7 @@
             </div>
             
             <div class="row g-4">
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-3">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-4">
                     <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
                         <div class="feature-icon">
                             <img src="{% static 'img/app_icon/langue.png' %}" alt="Courses" style="filter: grayscale(50%);">
@@ -311,7 +328,7 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-4">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-5">
                     <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
                         <div class="feature-icon">
                             <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quiz" style="filter: grayscale(50%);">
@@ -326,7 +343,7 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-5">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-6">
                     <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
                         <div class="feature-icon">
                             <img src="{% static 'img/app_icon/community.png' %}" alt="Community" style="filter: grayscale(50%);">
@@ -341,7 +358,7 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-6">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-7">
                     <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
                         <div class="feature-icon">
                             <img src="{% static 'img/app_icon/Chat.png' %}" alt="Chat" style="filter: grayscale(50%);">
@@ -356,7 +373,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-7">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-8">
                     <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
                         <div class="feature-icon">
                             <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents" style="filter: grayscale(50%);">
@@ -371,7 +388,7 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-8">
+                <div class="col-lg-4 col-md-6 animate-on-scroll delay-9">
                     <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
                         <div class="feature-icon">
                             <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" style="filter: grayscale(50%);">

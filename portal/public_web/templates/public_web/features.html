@@ -46,27 +46,33 @@
 <!-- Features Section -->
 <section class="py-5">
     <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="h3 mb-3" style="color: #017e84;">
+                <i class="bi bi-check-circle-fill me-2"></i>Applications Disponibles
+            </h2>
+        </div>
+        
         <div class="row g-4">
-            <!-- Course App -->
+            <!-- Todo App -->
             <div class="col-lg-4 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
-                        <i class="bi bi-book"></i>
+                <div class="feature-card" style="border: 2px solid #017e84;">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #017e84 0%, #015a5e 100%)">
+                        <i class="bi bi-check2-square"></i>
                     </div>
-                    <h3 class="h5 mb-3">Courses</h3>
+                    <h3 class="h5 mb-3">Todo <span class="badge bg-success ms-2">Disponible</span></h3>
                     <p class="text-muted mb-3">
-                        Cours structurés avec des leçons progressives, exercices interactifs 
-                        et évaluations personnalisées.
+                        Organisez vos tâches et boostez votre productivité avec 
+                        une gestion intelligente des tâches.
                     </p>
                     <ul class="list-unstyled small">
-                        <li><i class="bi bi-check text-success me-2"></i>Leçons de vocabulaire</li>
-                        <li><i class="bi bi-check text-success me-2"></i>Exercices de grammaire</li>
-                        <li><i class="bi bi-check text-success me-2"></i>Tests de compréhension</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Gestion des tâches</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Priorités et catégories</li>
                         <li><i class="bi bi-check text-success me-2"></i>Suivi de progression</li>
+                        <li><i class="bi bi-check text-success me-2"></i>Interface intuitive</li>
                     </ul>
                     <div class="mt-3">
-                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='course' %}" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='todo' %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>Utiliser maintenant
                         </a>
                     </div>
                 </div>
@@ -74,11 +80,11 @@
 
             <!-- Revision App -->
             <div class="col-lg-4 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
-                        <i class="bi bi-cards"></i>
+                <div class="feature-card" style="border: 2px solid #017e84;">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #017e84 0%, #015a5e 100%)">
+                        <i class="bi bi-arrow-repeat"></i>
                     </div>
-                    <h3 class="h5 mb-3">Revision</h3>
+                    <h3 class="h5 mb-3">Revision <span class="badge bg-success ms-2">Disponible</span></h3>
                     <p class="text-muted mb-3">
                         Système de révision espacée avec flashcards intelligentes 
                         pour une mémorisation optimale.
@@ -90,8 +96,8 @@
                         <li><i class="bi bi-check text-success me-2"></i>Import/Export de decks</li>
                     </ul>
                     <div class="mt-3">
-                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='revision' %}" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='revision' %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>Utiliser maintenant
                         </a>
                     </div>
                 </div>
@@ -99,11 +105,11 @@
 
             <!-- Notebook App -->
             <div class="col-lg-4 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
+                <div class="feature-card" style="border: 2px solid #017e84;">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #017e84 0%, #015a5e 100%)">
                         <i class="bi bi-journal-text"></i>
                     </div>
-                    <h3 class="h5 mb-3">Notebook</h3>
+                    <h3 class="h5 mb-3">Notebook <span class="badge bg-success ms-2">Disponible</span></h3>
                     <p class="text-muted mb-3">
                         Prise de notes centralisée avec organisation intelligente 
                         et recherche avancée.
@@ -115,59 +121,95 @@
                         <li><i class="bi bi-check text-success me-2"></i>Partage de notes</li>
                     </ul>
                     <div class="mt-3">
-                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='notebook' %}" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='notebook' %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>Utiliser maintenant
                         </a>
                     </div>
                 </div>
             </div>
 
+        </div>
+        
+        <!-- Coming Soon Apps -->
+        <div class="text-center mb-4 mt-5">
+            <h3 class="h4 mb-3" style="color: var(--warning-color);">
+                <i class="bi bi-clock-fill me-2"></i>Applications à Venir
+            </h3>
+            <p class="text-muted">Ces applications passionnantes sont en cours de développement</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Courses App -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Courses <span class="badge bg-warning ms-2">Bientôt</span></h3>
+                    <p class="text-muted mb-3">
+                        Cours structurés avec des leçons progressives, exercices interactifs 
+                        et évaluations personnalisées.
+                    </p>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-clock text-muted me-2"></i>Leçons de vocabulaire</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Exercices de grammaire</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Tests de compréhension</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Suivi de progression</li>
+                    </ul>
+                    <div class="mt-3">
+                        <span class="btn btn-outline-secondary btn-sm disabled">
+                            <i class="bi bi-clock me-1"></i>Bientôt disponible
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Quiz App -->
             <div class="col-lg-4 col-md-6">
-                <div class="feature-card">
+                <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
                     <div class="feature-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
                         <i class="bi bi-question-circle"></i>
                     </div>
-                    <h3 class="h5 mb-3">Quiz</h3>
+                    <h3 class="h5 mb-3">Quiz <span class="badge bg-warning ms-2">Bientôt</span></h3>
                     <p class="text-muted mb-3">
                         Système de quiz adaptatif pour tester vos connaissances 
                         et identifier vos points faibles.
                     </p>
                     <ul class="list-unstyled small">
-                        <li><i class="bi bi-check text-success me-2"></i>Quiz adaptatifs</li>
-                        <li><i class="bi bi-check text-success me-2"></i>Questions variées</li>
-                        <li><i class="bi bi-check text-success me-2"></i>Analyses détaillées</li>
-                        <li><i class="bi bi-check text-success me-2"></i>Recommandations</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Quiz adaptatifs</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Questions variées</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Analyses détaillées</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Recommandations</li>
                     </ul>
                     <div class="mt-3">
-                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='quizz' %}" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
-                        </a>
+                        <span class="btn btn-outline-secondary btn-sm disabled">
+                            <i class="bi bi-clock me-1"></i>Bientôt disponible
+                        </span>
                     </div>
                 </div>
             </div>
 
             <!-- Language AI -->
             <div class="col-lg-4 col-md-6">
-                <div class="feature-card">
+                <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
                     <div class="feature-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)">
                         <i class="bi bi-robot"></i>
                     </div>
-                    <h3 class="h5 mb-3">Language AI</h3>
+                    <h3 class="h5 mb-3">Language AI <span class="badge bg-warning ms-2">Bientôt</span></h3>
                     <p class="text-muted mb-3">
                         Assistant IA pour conversations naturelles et corrections 
                         intelligentes en temps réel.
                     </p>
                     <ul class="list-unstyled small">
-                        <li><i class="bi bi-check text-success me-2"></i>Chat conversationnel</li>
-                        <li><i class="bi bi-check text-success me-2"></i>Corrections automatiques</li>
-                        <li><i class="bi bi-check text-success me-2"></i>Suggestions contextuelles</li>
-                        <li><i class="bi bi-check text-success me-2"></i>Exercices personnalisés</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Chat conversationnel</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Corrections automatiques</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Suggestions contextuelles</li>
+                        <li><i class="bi bi-clock text-muted me-2"></i>Exercices personnalisés</li>
                     </ul>
                     <div class="mt-3">
-                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='language_ai' %}" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-arrow-right me-1"></i>En savoir plus
-                        </a>
+                        <span class="btn btn-outline-secondary btn-sm disabled">
+                            <i class="bi bi-clock me-1"></i>Bientôt disponible
+                        </span>
                     </div>
                 </div>
             </div>
