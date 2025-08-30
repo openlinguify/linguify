@@ -10,64 +10,62 @@
 {% endblock %}
 
 {% block content %}
-<div class="app-flex-container">
-    <!-- Sidebar -->
-    <div id="teachingSidebar" class="app-sidebar-layout">
-        <div class="px-4 py-6">
-            <!-- Next Lesson (if any) -->
-            {% if upcoming_lessons %}
-                <div class="mb-8">
-                    <h3 class="text-sm font-semibold text-gray-900 mb-3">
-                        <i class="bi bi-clock mr-2 text-linguify-primary"></i>
-                        {% trans "Prochain cours" %}
-                    </h3>
-                    {% with lesson=upcoming_lessons.0 %}
-                    <div class="card-linguify p-3">
-                        <div class="flex justify-between items-start mb-2">
-                            <h4 class="text-sm font-medium text-gray-900">{{ lesson.teacher.full_name }}</h4>
-                            <span class="badge-linguify status-{{ lesson.status }} text-xs">
-                                {{ lesson.get_status_display }}
-                            </span>
-                        </div>
-                        <div class="text-xs text-linguify-gray mb-2">
-                            {{ lesson.scheduled_datetime|date:"j M, H:i" }}
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-linguify-gray">{{ lesson.language|upper }}</span>
-                            {% if lesson.status == 'confirmed' %}
-                            <button onclick="startLesson('{{ lesson.id }}')" 
-                                    class="btn-linguify text-xs py-1 px-2">
-                                {% trans "Démarrer" %}
-                            </button>
-                            {% endif %}
-                        </div>
+<div class="px-4 py-6">
+
+    <!-- Next Lesson (if any) -->
+    {% if upcoming_lessons %}
+        <div class="card-linguify mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i class="bi bi-clock mr-2 text-linguify-primary"></i>
+                {% trans "Prochain cours" %}
+            </h3>
+            {% with lesson=upcoming_lessons.0 %}
+            <div class="border border-linguify-gray-200 rounded-lg p-4 bg-linguify-gray-50">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h4 class="font-medium text-gray-900">{{ lesson.teacher.full_name }}</h4>
+                        <p class="text-sm text-linguify-gray">{{ lesson.scheduled_datetime|date:"l j F, H:i" }}</p>
                     </div>
-                    {% endwith %}
+                    <span class="badge-linguify status-{{ lesson.status }} text-xs">
+                        {{ lesson.get_status_display }}
+                    </span>
                 </div>
-            {% endif %}            
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="card-linguify text-center p-3">
-                    <div class="text-lg font-bold text-linguify-primary">{{ upcoming_lessons|length }}</div>
-                    <div class="text-xs text-linguify-gray">{% trans "Cours prévus" %}</div>
-                </div>
-                <div class="card-linguify text-center p-3">
-                    <div class="text-lg font-bold text-linguify-success">{{ available_teachers|length }}</div>
-                    <div class="text-xs text-linguify-gray">{% trans "Enseignants" %}</div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-linguify-gray">{{ lesson.language|upper }}</span>
+                    {% if lesson.status == 'confirmed' %}
+                    <button onclick="startLesson('{{ lesson.id }}')" 
+                            class="btn-linguify text-sm py-2 px-4">
+                        {% trans "Démarrer" %}
+                    </button>
+                    {% endif %}
                 </div>
             </div>
+            {% endwith %}
+        </div>
+    {% endif %}
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="card-linguify text-center p-4">
+            <div class="text-2xl font-bold text-linguify-primary">{{ upcoming_lessons|length }}</div>
+            <div class="text-sm text-linguify-gray">{% trans "Cours prévus" %}</div>
+        </div>
+        <div class="card-linguify text-center p-4">
+            <div class="text-2xl font-bold text-linguify-success">{{ available_teachers|length }}</div>
+            <div class="text-sm text-linguify-gray">{% trans "Enseignants" %}</div>
+        </div>
+        <div class="card-linguify text-center p-4">
+            <div class="text-2xl font-bold text-linguify-warning">0</div>
+            <div class="text-sm text-linguify-gray">{% trans "En attente" %}</div>
+        </div>
+        <div class="card-linguify text-center p-4">
+            <div class="text-2xl font-bold text-linguify-secondary">{{ upcoming_lessons|length }}</div>
+            <div class="text-sm text-linguify-gray">{% trans "Total" %}</div>
         </div>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="app-content-layout">
-        <div class="px-4 py-6 h-full flex flex-col">
-            <!-- Header -->
-            
-            <!-- Main Content Grid -->
-            <div class="flex-grow">
-                <!-- Upcoming Lessons -->
-                <div class="card-linguify">
+    <!-- Upcoming Lessons -->
+    <div class="card-linguify">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-xl font-semibold text-gray-900">
                             <i class="bi bi-calendar-event mr-2 text-linguify-primary"></i>
@@ -111,8 +109,7 @@
                                 {% trans "Réserver votre premier cours" %}
                             </button>
                         </div>
-                    {% endif %}
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>

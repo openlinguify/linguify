@@ -49,6 +49,35 @@
             margin-top: 1rem;
         }
         
+        /* Modern tab styling */
+        .nav-tab-linguify {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            background-color: transparent;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .nav-tab-linguify:hover {
+            color: #2D5BBA;
+            background-color: rgba(45, 91, 186, 0.05);
+            border-color: rgba(45, 91, 186, 0.2);
+        }
+        
+        .nav-tab-linguify.active {
+            color: #2D5BBA;
+            background-color: rgba(45, 91, 186, 0.1);
+            border-color: #2D5BBA;
+            font-weight: 600;
+        }
+        
         /* Header app global fixe en haut */
         .app-header {
             position: fixed;

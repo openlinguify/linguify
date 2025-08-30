@@ -9,131 +9,117 @@
 {% endblock %}
 
 {% block content %}
-<div class="teaching-header">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="mb-3">
-                    <i class="bi bi-person-heart me-2"></i>
-                    {% trans "Mes professeurs" %}
-                </h1>
-                <p class="lead mb-0">
-                    {% trans "Les professeurs avec qui j'ai étudié ou vais étudier" %}
-                </p>
-            </div>
-            <div class="col-md-4 text-end">
-                <div class="text-white">
-                    <i class="bi bi-person-check me-2"></i>
-                    {{ teachers_count }} {% trans "professeur" %}{{ teachers_count|pluralize:"s" }}
-                </div>
-                <div class="text-white mt-1 small">
-                    <i class="bi bi-calendar-check me-2"></i>
-                    {{ total_lessons }} {% trans "cours au total" %}
-                </div>
-            </div>
+<div class="px-4 py-6">
+    <!-- Quick Stats -->
+    <div class="flex justify-end gap-4 mb-6">
+        <div class="card-linguify text-center p-3 min-w-24">
+            <div class="text-lg font-bold text-linguify-primary">{{ teachers_count|default:0 }}</div>
+            <div class="text-xs text-linguify-gray">{% trans "professeurs" %}</div>
+        </div>
+        <div class="card-linguify text-center p-3 min-w-24">
+            <div class="text-lg font-bold text-linguify-success">{{ total_lessons|default:0 }}</div>
+            <div class="text-xs text-linguify-gray">{% trans "cours au total" %}</div>
         </div>
     </div>
-</div>
 
-<div class="container mt-4">
-    {% if my_teachers %}
-        <div class="row">
-            {% for teacher in my_teachers %}
-            <div class="col-lg-6 mb-4">
-                <div class="teacher-card p-4 h-100">
-                    <!-- Teacher Info -->
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="me-3">
-                            {% if teacher.profile_picture_url %}
-                                <img src="{{ teacher.profile_picture_url }}" alt="{{ teacher.full_name }}" 
-                                     class="rounded-circle" width="60" height="60">
-                            {% else %}
-                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" 
-                                     style="width: 60px; height: 60px; color: white; font-size: 1.5rem;">
-                                    {{ teacher.full_name|first }}
+    <!-- Main Content Card -->
+    <div class="card-linguify">
+        {% if my_teachers %}
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                {% for teacher in my_teachers %}
+                <div class="border border-linguify-gray-200 rounded-lg p-4 hover:bg-linguify-gray-50 transition-colors">
+                            <!-- Teacher Info -->
+                            <div class="flex items-center mb-4">
+                                <div class="mr-3">
+                                    {% if teacher.profile_picture_url %}
+                                        <img src="{{ teacher.profile_picture_url }}" alt="{{ teacher.full_name }}" 
+                                             class="w-15 h-15 rounded-full object-cover">
+                                    {% else %}
+                                        <div class="w-15 h-15 rounded-full bg-linguify-primary flex items-center justify-center text-white text-xl font-bold">
+                                            {{ teacher.full_name|first }}
+                                        </div>
+                                    {% endif %}
                                 </div>
-                            {% endif %}
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="mb-1">{{ teacher.full_name }}</h5>
-                            <div class="d-flex align-items-center mb-1">
-                                <div class="text-warning me-2">
-                                    {% for i in "12345"|make_list %}
-                                        {% if forloop.counter <= teacher.average_rating|floatformat:0|add:0 %}
-                                            <i class="bi bi-star-fill"></i>
-                                        {% else %}
-                                            <i class="bi bi-star"></i>
-                                        {% endif %}
+                                <div class="flex-1">
+                                    <h5 class="font-semibold text-gray-900 mb-1">{{ teacher.full_name }}</h5>
+                                    <div class="flex items-center mb-1">
+                                        <div class="flex text-linguify-warning mr-2">
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= teacher.average_rating|floatformat:0|add:0 %}
+                                                    <i class="bi bi-star-fill"></i>
+                                                {% else %}
+                                                    <i class="bi bi-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <span class="text-sm text-linguify-gray">
+                                            {{ teacher.average_rating|floatformat:1 }}/5
+                                        </span>
+                                    </div>
+                                    <div class="text-sm text-linguify-gray">
+                                        {{ teacher.lessons_count }} {% trans "cours avec moi" %}
+                                        ({{ teacher.completed_lessons_count }} {% trans "terminés" %})
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Languages -->
+                            <div class="mb-4">
+                                {% for lang in teacher.teaching_languages.all|slice:":4" %}
+                                    <span class="inline-block bg-linguify-gray-100 text-linguify-gray-700 px-2 py-1 rounded text-xs mr-1 mb-1">{{ lang.language_code|upper }}</span>
+                                {% endfor %}
+                                {% if teacher.teaching_languages.count > 4 %}
+                                    <span class="inline-block bg-linguify-secondary text-white px-2 py-1 rounded text-xs">+{{ teacher.teaching_languages.count|add:"-4" }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Upcoming lessons -->
+                            {% if teacher.upcoming_lessons %}
+                                <div class="mb-4">
+                                    <h6 class="text-linguify-primary font-semibold mb-2">
+                                        <i class="bi bi-calendar-event mr-1"></i>
+                                        {% trans "Prochains cours" %}
+                                    </h6>
+                                    {% for lesson in teacher.upcoming_lessons %}
+                                        <div class="text-sm text-linguify-gray mb-1">
+                                            <i class="bi bi-clock mr-1"></i>
+                                            {{ lesson.scheduled_datetime|date:"j M Y H:i" }} 
+                                            <span class="badge-linguify status-{{ lesson.status }} ml-1">{{ lesson.get_status_display }}</span>
+                                        </div>
                                     {% endfor %}
                                 </div>
-                                <small class="text-muted">
-                                    {{ teacher.average_rating|floatformat:1 }}/5
-                                </small>
-                            </div>
-                            <div class="text-muted small">
-                                {{ teacher.lessons_count }} {% trans "cours avec moi" %}
-                                ({{ teacher.completed_lessons_count }} {% trans "terminés" %})
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Languages -->
-                    <div class="mb-3">
-                        {% for lang in teacher.teaching_languages.all|slice:":4" %}
-                            <span class="badge bg-light text-dark me-1">{{ lang.language_code|upper }}</span>
-                        {% endfor %}
-                        {% if teacher.teaching_languages.count > 4 %}
-                            <span class="badge bg-secondary">+{{ teacher.teaching_languages.count|add:"-4" }}</span>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Upcoming lessons -->
-                    {% if teacher.upcoming_lessons %}
-                        <div class="mb-3">
-                            <h6 class="text-primary mb-2">
-                                <i class="bi bi-calendar-event me-1"></i>
-                                {% trans "Prochains cours" %}
-                            </h6>
-                            {% for lesson in teacher.upcoming_lessons %}
-                                <div class="small text-muted mb-1">
-                                    <i class="bi bi-clock me-1"></i>
-                                    {{ lesson.scheduled_datetime|date:"j M Y H:i" }} 
-                                    <span class="badge status-{{ lesson.status }} ms-1">{{ lesson.get_status_display }}</span>
+                            {% endif %}
+                            
+                            <!-- Actions -->
+                            <div class="flex justify-between items-center">
+                                <div class="text-linguify-gray text-sm">
+                                    <i class="bi bi-currency-euro"></i>
+                                    {{ teacher.hourly_rate|floatformat:0 }}€/h
                                 </div>
-                            {% endfor %}
+                                <div class="flex gap-2">
+                                    <button class="btn-linguify-outline text-xs py-1 px-3" onclick="contactTeacher('{{ teacher.id }}')">
+                                        <i class="bi bi-chat-dots mr-1"></i> {% trans "Contacter" %}
+                                    </button>
+                                    <button class="btn-linguify text-xs py-1 px-3" onclick="bookWithTeacher('{{ teacher.id }}')">
+                                        <i class="bi bi-calendar-plus mr-1"></i> {% trans "Réserver" %}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    {% endif %}
-                    
-                    <!-- Actions -->
-                    <div class="d-flex justify-content-between align-items-center mt-auto">
-                        <div class="text-muted small">
-                            <i class="bi bi-currency-euro"></i>
-                            {{ teacher.hourly_rate|floatformat:0 }}€/h
-                        </div>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-primary" onclick="contactTeacher('{{ teacher.id }}')">
-                                <i class="bi bi-chat-dots"></i> {% trans "Contacter" %}
-                            </button>
-                            <button class="btn btn-primary-custom" onclick="bookWithTeacher('{{ teacher.id }}')">
-                                <i class="bi bi-calendar-plus"></i> {% trans "Réserver" %}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="text-center py-5">
-            <i class="bi bi-person-x display-1 text-muted"></i>
-            <h4 class="mt-3 text-muted">{% trans "Aucun professeur pour l'instant" %}</h4>
-            <p class="text-muted">{% trans "Vous n'avez pas encore de cours avec un professeur" %}</p>
-            <a href="{% url 'teaching:find_teachers' %}" class="btn btn-primary-custom">
-                <i class="bi bi-search me-2"></i>
-                {% trans "Trouver un professeur" %}
-            </a>
-        </div>
-    {% endif %}
+        {% else %}
+            <div class="text-center py-12">
+                <i class="bi bi-person-x text-6xl text-linguify-gray mb-4 block"></i>
+                <h4 class="text-lg font-semibold text-gray-900 mb-2">{% trans "Aucun professeur pour l'instant" %}</h4>
+                <p class="text-linguify-gray mb-6">{% trans "Vous n'avez pas encore de cours avec un professeur" %}</p>
+                <a href="{% url 'teaching:find_teachers' %}" class="btn-linguify">
+                    <i class="bi bi-search mr-2"></i>
+                    {% trans "Trouver un professeur" %}
+                </a>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
 

@@ -9,338 +9,76 @@
 {% endblock %}
 
 {% block content %}
-<div class="teaching-header">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="mb-3">
-                    <i class="bi bi-calendar-event me-2"></i>
-                    {% trans "Mes cours particuliers" %}
-                </h1>
-                <p class="lead mb-0">
-                    {% trans "Gérez vos cours passés, présents et futurs" %}
-                </p>
-            </div>
-            <div class="col-md-4 text-end">
-                <div class="text-white">
-                    <div class="row text-center">
-                        <div class="col-4">
-                            <div class="h4 mb-0">{{ lessons_stats.total }}</div>
-                            <small>{% trans "Total" %}</small>
-                        </div>
-                        <div class="col-4">
-                            <div class="h4 mb-0">{{ lessons_stats.upcoming }}</div>
-                            <small>{% trans "À venir" %}</small>
-                        </div>
-                        <div class="col-4">
-                            <div class="h4 mb-0">{{ lessons_stats.completed }}</div>
-                            <small>{% trans "Terminés" %}</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="px-4 py-6">
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="card-linguify text-center p-3">
+            <div class="text-lg font-bold text-linguify-primary">{{ lessons_stats.upcoming|default:0 }}</div>
+            <div class="text-xs text-linguify-gray">{% trans "À venir" %}</div>
+        </div>
+        <div class="card-linguify text-center p-3">
+            <div class="text-lg font-bold text-linguify-success">{{ lessons_stats.completed|default:0 }}</div>
+            <div class="text-xs text-linguify-gray">{% trans "Terminés" %}</div>
+        </div>
+        <div class="card-linguify text-center p-3">
+            <div class="text-lg font-bold text-linguify-warning">{{ lessons_stats.cancelled|default:0 }}</div>
+            <div class="text-xs text-linguify-gray">{% trans "Annulés" %}</div>
+        </div>
+        <div class="card-linguify text-center p-3">
+            <div class="text-lg font-bold text-linguify-secondary">{{ lessons_stats.total|default:0 }}</div>
+            <div class="text-xs text-linguify-gray">{% trans "Total" %}</div>
         </div>
     </div>
-</div>
 
-<div class="container mt-4">
-    <!-- Quick Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 text-center h-100">
-                <div class="card-body">
-                    <i class="bi bi-clock-history display-4 text-info"></i>
-                    <h4 class="mt-2">{{ lessons_stats.upcoming }}</h4>
-                    <p class="text-muted">{% trans "Cours programmés" %}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 text-center h-100">
-                <div class="card-body">
-                    <i class="bi bi-check-circle display-4 text-success"></i>
-                    <h4 class="mt-2">{{ lessons_stats.completed }}</h4>
-                    <p class="text-muted">{% trans "Cours terminés" %}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 text-center h-100">
-                <div class="card-body">
-                    <i class="bi bi-x-circle display-4 text-warning"></i>
-                    <h4 class="mt-2">{{ lessons_stats.cancelled }}</h4>
-                    <p class="text-muted">{% trans "Cours annulés" %}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 text-center h-100">
-                <div class="card-body">
-                    <i class="bi bi-calendar-plus display-4 text-primary"></i>
-                    <h4 class="mt-2">{{ lessons_stats.total }}</h4>
-                    <p class="text-muted">{% trans "Total des cours" %}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Tabs for different lesson categories -->
-    <ul class="nav nav-tabs mb-4" id="lessonsTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab">
-                <i class="bi bi-clock me-2"></i>{% trans "À venir" %} ({{ lessons_stats.upcoming }})
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab">
-                <i class="bi bi-check-circle me-2"></i>{% trans "Terminés" %} ({{ lessons_stats.completed }})
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="cancelled-tab" data-bs-toggle="tab" data-bs-target="#cancelled" type="button" role="tab">
-                <i class="bi bi-x-circle me-2"></i>{% trans "Annulés" %} ({{ lessons_stats.cancelled }})
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
-                <i class="bi bi-list me-2"></i>{% trans "Tous" %} ({{ lessons_stats.total }})
-            </button>
-        </li>
-    </ul>
-    
-    <!-- Tab content -->
-    <div class="tab-content" id="lessonsTabContent">
-        <!-- Upcoming Lessons -->
-        <div class="tab-pane fade show active" id="upcoming" role="tabpanel">
-            {% if upcoming_lessons %}
-                <div class="row">
-                    {% for lesson in upcoming_lessons %}
-                    <div class="col-md-6 col-lg-4 mb-4 lesson-item" data-status="{{ lesson.status }}">
-                        <div class="lesson-card p-3 h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="mb-1">{{ lesson.teacher.full_name }}</h6>
-                                <span class="status-badge status-{{ lesson.status }}">
-                                    {{ lesson.get_status_display }}
-                                </span>
-                            </div>
-                            
-                            <div class="text-muted mb-2">
-                                <i class="bi bi-calendar me-2"></i>
-                                {{ lesson.scheduled_datetime|date:"l j F Y" }}
-                            </div>
-                            
-                            <div class="text-muted mb-2">
-                                <i class="bi bi-clock me-2"></i>
-                                {{ lesson.scheduled_datetime|time:"H:i" }} 
-                                ({{ lesson.duration_minutes }}min)
-                            </div>
-                            
-                            <div class="text-muted mb-2">
-                                <i class="bi bi-flag me-2"></i>
-                                {{ lesson.language|upper }} - {{ lesson.get_level_display }}
-                            </div>
-                            
-                            {% if lesson.topic %}
-                            <div class="text-muted mb-3">
-                                <i class="bi bi-bookmark me-2"></i>
-                                {{ lesson.topic }}
-                            </div>
-                            {% endif %}
-                            
-                            <div class="d-flex justify-content-between align-items-center mt-auto">
-                                <span class="fw-bold text-success">
-                                    {{ lesson.total_price|floatformat:2 }}€
-                                </span>
-                                
-                                <div class="btn-group btn-group-sm">
-                                    {% if lesson.status == 'confirmed' %}
-                                    <button class="btn btn-outline-success btn-sm" onclick="startLesson('{{ lesson.id }}')">
-                                        <i class="bi bi-play-circle"></i>
-                                    </button>
-                                    {% endif %}
-                                    <button class="btn btn-outline-danger btn-sm" onclick="cancelLesson('{{ lesson.id }}')">
-                                        <i class="bi bi-x-circle"></i>
-                                    </button>
-                                    <button class="btn btn-outline-info btn-sm" onclick="viewLessonDetails('{{ lesson.id }}')">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Simple Lessons List -->
+    <div class="card-linguify">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-gray-900">
+                            <i class="bi bi-calendar-event mr-2 text-linguify-primary"></i>
+                            {% trans "Mes cours récents" %}
+                        </h2>
+                        <a href="{% url 'teaching:my_lessons' %}all" class="text-linguify-primary hover:text-linguify-primary-dark text-sm font-medium">
+                            {% trans "Voir tout" %}
+                        </a>
                     </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="text-center py-5">
-                    <i class="bi bi-calendar-x display-1 text-muted"></i>
-                    <h4 class="mt-3 text-muted">{% trans "Aucun cours programmé" %}</h4>
-                    <p class="text-muted">{% trans "Réservez votre prochain cours avec un professeur" %}</p>
-                    <a href="{% url 'teaching:teachers_list' %}" class="btn btn-primary-custom">
-                        {% trans "Trouver un professeur" %}
-                    </a>
-                </div>
-            {% endif %}
-        </div>
-        
-        <!-- Completed Lessons -->
-        <div class="tab-pane fade" id="completed" role="tabpanel">
-            {% if completed_lessons %}
-                <div class="row">
-                    {% for lesson in completed_lessons %}
-                    <div class="col-md-6 col-lg-4 mb-4 lesson-item" data-status="{{ lesson.status }}">
-                        <div class="lesson-card p-3 h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="mb-1">{{ lesson.teacher.full_name }}</h6>
-                                <span class="status-badge status-{{ lesson.status }}">
-                                    <i class="bi bi-check-circle me-1"></i>{{ lesson.get_status_display }}
-                                </span>
-                            </div>
-                            
-                            <div class="text-muted mb-2">
-                                <i class="bi bi-calendar me-2"></i>
-                                {{ lesson.scheduled_datetime|date:"l j F Y" }}
-                            </div>
-                            
-                            <div class="text-muted mb-2">
-                                <i class="bi bi-flag me-2"></i>
-                                {{ lesson.language|upper }} - {{ lesson.get_level_display }}
-                            </div>
-                            
-                            <div class="d-flex justify-content-between align-items-center mt-auto">
-                                <span class="fw-bold text-success">
-                                    {{ lesson.total_price|floatformat:2 }}€
-                                </span>
-                                
-                                <div class="btn-group btn-group-sm">
-                                    {% if not lesson.rating %}
-                                    <button class="btn btn-outline-warning btn-sm" onclick="rateLesson('{{ lesson.id }}')">
-                                        <i class="bi bi-star"></i> {% trans "Noter" %}
-                                    </button>
-                                    {% else %}
-                                    <span class="text-warning">
-                                        {% for i in "12345"|make_list %}
-                                            {% if forloop.counter <= lesson.rating.overall_rating %}
-                                                <i class="bi bi-star-fill"></i>
-                                            {% else %}
-                                                <i class="bi bi-star"></i>
-                                            {% endif %}
-                                        {% endfor %}
+                    
+                    {% if upcoming_lessons %}
+                        <div class="space-y-4">
+                            {% for lesson in upcoming_lessons|slice:":3" %}
+                            <div class="border border-linguify-gray-200 rounded-lg p-3 hover:bg-linguify-gray-50 transition-colors">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">{{ lesson.teacher.full_name }}</h4>
+                                        <p class="text-sm text-linguify-gray">{{ lesson.scheduled_datetime|date:"l j F, H:i" }}</p>
+                                    </div>
+                                    <span class="badge-linguify status-{{ lesson.status }} text-xs">
+                                        {{ lesson.get_status_display }}
                                     </span>
-                                    {% endif %}
-                                    <button class="btn btn-outline-info btn-sm" onclick="viewLessonDetails('{{ lesson.id }}')">
-                                        <i class="bi bi-eye"></i>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-linguify-gray">{{ lesson.language|upper }} - {{ lesson.total_price|floatformat:0 }}€</span>
+                                    {% if lesson.status == 'confirmed' %}
+                                    <button onclick="startLesson('{{ lesson.id }}')" 
+                                            class="btn-linguify text-xs py-1 px-2">
+                                        {% trans "Démarrer" %}
                                     </button>
+                                    {% endif %}
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
+                    {% else %}
+                        <div class="text-center py-12">
+                            <i class="bi bi-calendar-x text-6xl text-linguify-gray mb-4 block"></i>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{% trans "Aucun cours programmé" %}</h4>
+                            <p class="text-linguify-gray mb-6">{% trans "Réservez votre prochain cours avec un professeur" %}</p>
+                            <a href="{% url 'teaching:find_teachers' %}" class="btn-linguify">
+                                <i class="bi bi-search mr-2"></i>
+                                {% trans "Trouver un professeur" %}
+                            </a>
                     </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="text-center py-5">
-                    <i class="bi bi-clock-history display-1 text-muted"></i>
-                    <h4 class="mt-3 text-muted">{% trans "Aucun cours terminé" %}</h4>
-                    <p class="text-muted">{% trans "Vos cours terminés apparaîtront ici" %}</p>
-                </div>
-            {% endif %}
-        </div>
-        
-        <!-- Cancelled Lessons -->
-        <div class="tab-pane fade" id="cancelled" role="tabpanel">
-            {% if cancelled_lessons %}
-                <div class="row">
-                    {% for lesson in cancelled_lessons %}
-                    <div class="col-md-6 col-lg-4 mb-4 lesson-item" data-status="{{ lesson.status }}">
-                        <div class="lesson-card p-3 h-100 opacity-75">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="mb-1">{{ lesson.teacher.full_name }}</h6>
-                                <span class="status-badge status-{{ lesson.status }}">
-                                    <i class="bi bi-x-circle me-1"></i>{{ lesson.get_status_display }}
-                                </span>
-                            </div>
-                            
-                            <div class="text-muted mb-2">
-                                <i class="bi bi-calendar me-2"></i>
-                                {{ lesson.scheduled_datetime|date:"l j F Y" }}
-                            </div>
-                            
-                            <div class="d-flex justify-content-between align-items-center mt-auto">
-                                <span class="text-muted">
-                                    {{ lesson.total_price|floatformat:2 }}€
-                                </span>
-                                <button class="btn btn-outline-info btn-sm" onclick="viewLessonDetails('{{ lesson.id }}')">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="text-center py-5">
-                    <i class="bi bi-check-circle display-1 text-muted"></i>
-                    <h4 class="mt-3 text-muted">{% trans "Aucun cours annulé" %}</h4>
-                    <p class="text-muted">{% trans "Parfait ! Vous n'avez annulé aucun cours" %}</p>
-                </div>
-            {% endif %}
-        </div>
-        
-        <!-- All Lessons -->
-        <div class="tab-pane fade" id="all" role="tabpanel">
-            {% if all_lessons %}
-                <div class="row" id="allLessonsGrid">
-                    {% for lesson in all_lessons %}
-                    <div class="col-md-6 col-lg-4 mb-4 lesson-item" data-status="{{ lesson.status }}" data-teacher="{{ lesson.teacher.full_name|lower }}">
-                        <div class="lesson-card p-3 h-100 {% if lesson.status|slice:':9' == 'cancelled' %}opacity-75{% endif %}">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="mb-1">{{ lesson.teacher.full_name }}</h6>
-                                <span class="status-badge status-{{ lesson.status }}">
-                                    {{ lesson.get_status_display }}
-                                </span>
-                            </div>
-                            
-                            <div class="text-muted mb-2">
-                                <i class="bi bi-calendar me-2"></i>
-                                {{ lesson.scheduled_datetime|date:"l j F Y" }}
-                            </div>
-                            
-                            <div class="text-muted mb-2">
-                                <i class="bi bi-clock me-2"></i>
-                                {{ lesson.scheduled_datetime|time:"H:i" }}
-                            </div>
-                            
-                            <div class="d-flex justify-content-between align-items-center mt-auto">
-                                <span class="fw-bold {% if lesson.status|slice:':9' == 'cancelled' %}text-muted{% else %}text-success{% endif %}">
-                                    {{ lesson.total_price|floatformat:2 }}€
-                                </span>
-                                <button class="btn btn-outline-info btn-sm" onclick="viewLessonDetails('{{ lesson.id }}')">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                
-                <!-- Load more button if there are more lessons -->
-                {% if all_lessons.count >= 20 %}
-                <div class="text-center mt-4">
-                    <button class="btn btn-outline-primary" onclick="loadMoreLessons()">
-                        <i class="bi bi-arrow-down-circle me-2"></i>
-                        {% trans "Charger plus de cours" %}
-                    </button>
-                </div>
                 {% endif %}
-            {% else %}
-                <div class="text-center py-5">
-                    <i class="bi bi-calendar-x display-1 text-muted"></i>
-                    <h4 class="mt-3 text-muted">{% trans "Aucun cours" %}</h4>
-                    <p class="text-muted">{% trans "Commencez par réserver votre premier cours" %}</p>
-                    <a href="{% url 'teaching:teachers_list' %}" class="btn btn-primary-custom">
-                        {% trans "Trouver un professeur" %}
-                    </a>
-                </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 </div>

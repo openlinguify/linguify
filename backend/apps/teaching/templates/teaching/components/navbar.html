@@ -66,24 +66,18 @@
             </ul>
         </div>
         
-        {% elif request.resolver_match.url_name == 'my_lessons' %}
-        <!-- Filtres pour mes cours -->
-        <input type="text" id="searchLessons" class="form-control-linguify" 
-               placeholder="{% trans 'Rechercher dans mes cours...' %}" 
-               style="width: 180px; min-width: 140px;">
-        
-        <!-- Status Filter -->
-        <div class="dropdown">
-            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" 
-                    style="width: 120px; min-width: 100px;" data-bs-toggle="dropdown">
-                <span id="statusFilterText">{% trans "Tous statuts" %}</span>
+        {% elif request.resolver_match.url_name == 'my_lessons' or request.resolver_match.url_name == 'my_teachers' %}
+        <!-- Actions pour mes cours - simples -->
+        <div class="navbar-actions-group">
+            <a href="{% url 'teaching:find_teachers' %}" class="btn-navbar btn-navbar-outline">
+                <i class="bi bi-search"></i>
+                <span class="d-none d-xxl-inline">{% trans "Trouver un professeur" %}</span>
+            </a>
+            
+            <button id="bookLessonQuick" class="btn-navbar btn-navbar-primary">
+                <i class="bi bi-calendar-plus"></i>
+                <span class="d-none d-xxl-inline">{% trans "Réserver un cours" %}</span>
             </button>
-            <ul id="statusFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', '{% trans "Tous statuts" %}')">{% trans "Tous statuts" %}</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('confirmed', '{% trans "Confirmés" %}')">✅ {% trans "Confirmés" %}</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('pending', '{% trans "En attente" %}')">⏳ {% trans "En attente" %}</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('completed', '{% trans "Terminés" %}')">🎓 {% trans "Terminés" %}</a></li>
-            </ul>
         </div>
         
         {% else %}
