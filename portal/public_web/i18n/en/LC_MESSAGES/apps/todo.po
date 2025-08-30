@@ -285,3 +285,31 @@ msgstr "Ready to Get Organized?"
 
 msgid "Join thousands of users who have transformed their productivity with our todo app."
 msgstr "Join thousands of users who have transformed their productivity with our todo app."
+
+msgid "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive."
+
+msgid "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress."
+
+msgid "Group related tasks into projects with progress tracking, deadlines, and team collaboration features."
+
+msgid "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track."
+
+msgid "Organize tasks and notes with flexible tagging system and categories for better organization and filtering."
+
+msgid "Monitor your task activity and progress with a detailed activity feed showing all your recent actions."
+
+msgid "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer."
+
+msgid "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines."
+
+msgid "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer."
+
+msgid "Track your productivity with detailed analytics, completion rates, and progress insights."
+
+msgid "Enhanced team features with real-time collaboration, task assignment, and team analytics."
+
+msgid "Track time spent on tasks with built-in timer and detailed time analytics."
+
+msgid "Attach files and documents to your tasks and projects for better organization."
+
+msgid "Set up tasks that repeat automatically on a schedule you define."

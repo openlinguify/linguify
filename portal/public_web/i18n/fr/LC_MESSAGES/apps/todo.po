@@ -285,3 +285,62 @@ msgstr "Prêt à vous Organiser ?"
 
 msgid "Join thousands of users who have transformed their productivity with our todo app."
 msgstr "Rejoignez des milliers d'utilisateurs qui ont transformé leur productivité avec notre app de tâches."
+
+# Additional Hero Section
+msgid "Todo & Productivity"
+msgstr "Tâches et Productivité"
+
+msgid "Advanced productivity workspace"
+msgstr "Espace de travail productif avancé"
+
+msgid "Start for free"
+msgstr "Commencer gratuitement"
+
+msgid "Start organizing"
+msgstr "Commencer à organiser"
+
+# Additional CTA
+msgid "Launch Todo App"
+msgstr "Lancer l'App de Tâches"
+
+msgid "Start Now - It's Free"
+msgstr "Commencer Maintenant - C'est Gratuit"
+
+msgid "No credit card • No hidden fees • Always free"
+msgstr "Pas de carte de crédit • Pas de frais cachés • Toujours gratuit"
+
+msgid "Explore All Apps"
+msgstr "Explorer Toutes les Apps"
+
+msgid "Coming Soon"
+msgstr "Prochainement"
+
+msgid "Start Organizing"
+msgstr "Commencer à Organiser"
+
+msgid "Begin adding tasks, setting deadlines, and tracking your progress immediately."
+msgstr "Commencez à ajouter des tâches, fixer des échéances et suivre vos progrès immédiatement."
+
+msgid "Progress tracking"
+msgstr "Suivi des progrès"
+
+msgid "Ready"
+msgstr "Prêt"
+
+msgid "Revision"
+msgstr "Révision"
+
+msgid "Notebook"
+msgstr "Carnet"
+
+msgid "Tip"
+msgstr "Conseil"
+
+msgid "Create my notes"
+msgstr "Créer mes notes"
+
+msgid "Offline mode"
+msgstr "Mode hors ligne"
+
+msgid "This application is part of the Open Linguify educational suite."
+msgstr "Cette application fait partie de la suite éducative Open Linguify."

@@ -1580,51 +1580,51 @@ msgstr "Beginnen met organiseren"
 
 #: public_web/templates/public_web/apps/app_todo.html:73
 msgid "Kanban"
-msgstr ""
+msgstr "Kanban"
 
 #: public_web/templates/public_web/apps/app_todo.html:76
 msgid "List"
-msgstr ""
+msgstr "Lijst"
 
 #: public_web/templates/public_web/apps/app_todo.html:79
 msgid "Activity"
-msgstr ""
+msgstr "Activiteit"
 
 #: public_web/templates/public_web/apps/app_todo.html:89
 msgid "To Do"
-msgstr ""
+msgstr "Te Doen"
 
 #: public_web/templates/public_web/apps/app_todo.html:93
 msgid "Review course materials"
-msgstr ""
+msgstr "Cursusmateriaal doornemen"
 
 #: public_web/templates/public_web/apps/app_todo.html:95
 msgid "Today"
-msgstr ""
+msgstr "Vandaag"
 
 #: public_web/templates/public_web/apps/app_todo.html:96
 msgid "Study"
-msgstr ""
+msgstr "Studie"
 
 #: public_web/templates/public_web/apps/app_todo.html:100
 msgid "Complete assignment"
-msgstr ""
+msgstr "Opdracht voltooien"
 
 #: public_web/templates/public_web/apps/app_todo.html:102
 msgid "Priority"
-msgstr ""
+msgstr "Prioriteit"
 
 #: public_web/templates/public_web/apps/app_todo.html:103
 msgid "Urgent"
-msgstr ""
+msgstr "Dringend"
 
 #: public_web/templates/public_web/apps/app_todo.html:107
 msgid "Plan project timeline"
-msgstr ""
+msgstr "Projecttijdlijn plannen"
 
 #: public_web/templates/public_web/apps/app_todo.html:109
 msgid "Work"
-msgstr ""
+msgstr "Werk"
 
 #: public_web/templates/public_web/apps/app_todo.html:117
 #, fuzzy
@@ -1634,11 +1634,11 @@ msgstr "Press"
 
 #: public_web/templates/public_web/apps/app_todo.html:121
 msgid "Research presentation"
-msgstr ""
+msgstr "Onderzoek voor presentatie"
 
 #: public_web/templates/public_web/apps/app_todo.html:126
 msgid "Research"
-msgstr ""
+msgstr "Onderzoek"
 
 #: public_web/templates/public_web/apps/app_todo.html:130
 #, fuzzy
@@ -1654,32 +1654,32 @@ msgstr "My Notes"
 
 #: public_web/templates/public_web/apps/app_todo.html:140
 msgid "Done"
-msgstr ""
+msgstr "Klaar"
 
 #: public_web/templates/public_web/apps/app_todo.html:144
 msgid "Setup development environment"
-msgstr ""
+msgstr "Ontwikkelomgeving instellen"
 
 #: public_web/templates/public_web/apps/app_todo.html:146
 #: public_web/templates/public_web/apps/app_todo.html:152
 msgid "Completed"
-msgstr ""
+msgstr "Voltooid"
 
 #: public_web/templates/public_web/apps/app_todo.html:150
 msgid "Review team feedback"
-msgstr ""
+msgstr "Team feedback bekijken"
 
 #: public_web/templates/public_web/apps/app_todo.html:171
 msgid "Everything You Need for Productivity"
-msgstr ""
+msgstr "Alles wat je Nodig hebt voor Productiviteit"
 
 #: public_web/templates/public_web/apps/app_todo.html:172
 msgid "A complete workspace to organize your tasks, projects, and ideas"
-msgstr ""
+msgstr "Een complete werkruimte om je taken, projecten en ideeën te organiseren"
 
 #: public_web/templates/public_web/apps/app_todo.html:181
 msgid "Smart Task Management"
-msgstr ""
+msgstr "Slimme Taakbeheer"
 
 #: public_web/templates/public_web/apps/app_todo.html:182
 msgid ""
@@ -1689,7 +1689,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:191
 msgid "Kanban Boards"
-msgstr ""
+msgstr "Kanban Borden"
 
 #: public_web/templates/public_web/apps/app_todo.html:192
 msgid ""
@@ -1699,7 +1699,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:201
 msgid "Project Organization"
-msgstr ""
+msgstr "Project Organisatie"
 
 #: public_web/templates/public_web/apps/app_todo.html:202
 msgid ""
@@ -1709,7 +1709,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:211
 msgid "Rich Note-Taking"
-msgstr ""
+msgstr "Uitgebreide Notitiemaking"
 
 #: public_web/templates/public_web/apps/app_todo.html:212
 msgid ""
@@ -1719,7 +1719,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:222
 msgid "Smart Reminders"
-msgstr ""
+msgstr "Slimme Herinneringen"
 
 #: public_web/templates/public_web/apps/app_todo.html:223
 msgid ""
@@ -1729,7 +1729,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:232
 msgid "Tags & Categories"
-msgstr ""
+msgstr "Tags en Categorieën"
 
 #: public_web/templates/public_web/apps/app_todo.html:233
 msgid ""
@@ -1739,7 +1739,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:242
 msgid "Activity Tracking"
-msgstr ""
+msgstr "Activiteit Bijhouden"
 
 #: public_web/templates/public_web/apps/app_todo.html:243
 msgid ""
@@ -1749,7 +1749,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:252
 msgid "Multiple Views"
-msgstr ""
+msgstr "Meerdere Weergaven"
 
 #: public_web/templates/public_web/apps/app_todo.html:253
 msgid ""
@@ -1771,7 +1771,7 @@ msgstr "Deze spannende apps zijn in actieve ontwikkeling"
 
 #: public_web/templates/public_web/apps/app_todo.html:274
 msgid "Calendar Integration"
-msgstr ""
+msgstr "Agenda Integratie"
 
 #: public_web/templates/public_web/apps/app_todo.html:275
 msgid ""
@@ -1786,7 +1786,7 @@ msgstr ""
 #: public_web/templates/public_web/apps/app_todo.html:320
 #: public_web/templates/public_web/apps/app_todo.html:331
 msgid "In Development"
-msgstr ""
+msgstr "In Ontwikkeling"
 
 #: public_web/templates/public_web/apps/app_todo.html:285
 #, fuzzy
@@ -1802,7 +1802,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:296
 msgid "Advanced Team Collaboration"
-msgstr ""
+msgstr "Geavanceerde Teamsamenwerking"
 
 #: public_web/templates/public_web/apps/app_todo.html:297
 msgid ""
@@ -1812,7 +1812,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:307
 msgid "Time Tracking"
-msgstr ""
+msgstr "Tijdsregistratie"
 
 #: public_web/templates/public_web/apps/app_todo.html:308
 msgid ""
@@ -1821,7 +1821,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:318
 msgid "File Attachments"
-msgstr ""
+msgstr "Bestandsbijlagen"
 
 #: public_web/templates/public_web/apps/app_todo.html:319
 msgid ""
@@ -1831,11 +1831,11 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:329
 msgid "Recurring Tasks"
-msgstr ""
+msgstr "Terugkerende Taken"
 
 #: public_web/templates/public_web/apps/app_todo.html:330
 msgid "Set up tasks that repeat automatically on a schedule you define."
-msgstr ""
+msgstr "Stel taken in die automatisch herhalen volgens een schema dat je definieert."
 
 #: public_web/templates/public_web/apps/app_todo.html:337
 msgid ""
@@ -1844,15 +1844,15 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:346
 msgid "Perfect For Every Use Case"
-msgstr ""
+msgstr "Perfect voor Elke Toepassing"
 
 #: public_web/templates/public_web/apps/app_todo.html:347
 msgid "Whether you're a student, professional, or team leader"
-msgstr ""
+msgstr "Of je nu student, professional of teamleider bent"
 
 #: public_web/templates/public_web/apps/app_todo.html:356
 msgid "Students"
-msgstr ""
+msgstr "Studenten"
 
 #: public_web/templates/public_web/apps/app_todo.html:357
 msgid ""
@@ -1862,23 +1862,23 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:359
 msgid "Assignment tracking"
-msgstr ""
+msgstr "Opdracht bijhouden"
 
 #: public_web/templates/public_web/apps/app_todo.html:360
 msgid "Study planning"
-msgstr ""
+msgstr "Studie planning"
 
 #: public_web/templates/public_web/apps/app_todo.html:361
 msgid "Course organization"
-msgstr ""
+msgstr "Cursus organisatie"
 
 #: public_web/templates/public_web/apps/app_todo.html:362
 msgid "Research notes"
-msgstr ""
+msgstr "Onderzoeksnotities"
 
 #: public_web/templates/public_web/apps/app_todo.html:372
 msgid "Professionals"
-msgstr ""
+msgstr "Professionals"
 
 #: public_web/templates/public_web/apps/app_todo.html:373
 msgid ""
@@ -1888,23 +1888,23 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:375
 msgid "Project management"
-msgstr ""
+msgstr "Projectbeheer"
 
 #: public_web/templates/public_web/apps/app_todo.html:376
 msgid "Deadline tracking"
-msgstr ""
+msgstr "Deadline bijhouden"
 
 #: public_web/templates/public_web/apps/app_todo.html:377
 msgid "Meeting notes"
-msgstr ""
+msgstr "Vergadernotities"
 
 #: public_web/templates/public_web/apps/app_todo.html:378
 msgid "Goal setting"
-msgstr ""
+msgstr "Doelen stellen"
 
 #: public_web/templates/public_web/apps/app_todo.html:388
 msgid "Teams"
-msgstr ""
+msgstr "Teams"
 
 #: public_web/templates/public_web/apps/app_todo.html:389
 msgid ""
@@ -1914,11 +1914,11 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:391
 msgid "Shared workspaces"
-msgstr ""
+msgstr "Gedeelde werkruimtes"
 
 #: public_web/templates/public_web/apps/app_todo.html:392
 msgid "Task assignment"
-msgstr ""
+msgstr "Taaktoewijzing"
 
 #: public_web/templates/public_web/apps/app_todo.html:393
 #: public_web/templates/public_web/landing.html:43
@@ -1927,7 +1927,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:394
 msgid "Team analytics"
-msgstr ""
+msgstr "Team analyses"
 
 #: public_web/templates/public_web/apps/app_todo.html:406
 #, fuzzy
@@ -1937,7 +1937,7 @@ msgstr "Get Started Free"
 
 #: public_web/templates/public_web/apps/app_todo.html:407
 msgid "Simple setup process to get you organized right away"
-msgstr ""
+msgstr "Eenvoudig installatieproces om je meteen georganiseerd te krijgen"
 
 #: public_web/templates/public_web/apps/app_todo.html:414
 #, fuzzy
@@ -1947,11 +1947,11 @@ msgstr "Create an account"
 
 #: public_web/templates/public_web/apps/app_todo.html:415
 msgid "Sign up for free and access the todo app from your dashboard."
-msgstr ""
+msgstr "Meld je gratis aan en krijg toegang tot de taken-app vanaf je dashboard."
 
 #: public_web/templates/public_web/apps/app_todo.html:421
 msgid "Set Up Projects"
-msgstr ""
+msgstr "Projecten Instellen"
 
 #: public_web/templates/public_web/apps/app_todo.html:422
 msgid ""
@@ -1964,7 +1964,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:429
 msgid "Add tasks, set deadlines, take notes, and watch your productivity soar."
-msgstr ""
+msgstr "Voeg taken toe, stel deadlines in, maak notities en zie je productiviteit stijgen."
 
 #: public_web/templates/public_web/apps/app_todo.html:436
 msgid "Launch Todo App"
@@ -1972,19 +1972,19 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:446
 msgid "Seamless Integration"
-msgstr ""
+msgstr "Naadloze Integratie"
 
 #: public_web/templates/public_web/apps/app_todo.html:447
 msgid "Works perfectly with other Open Linguify apps"
-msgstr ""
+msgstr "Werkt perfect met andere Open Linguify apps"
 
 #: public_web/templates/public_web/apps/app_todo.html:457
 msgid "Create study tasks for flashcard reviews"
-msgstr ""
+msgstr "Maak studietaken voor flashcard beoordelingen"
 
 #: public_web/templates/public_web/apps/app_todo.html:469
 msgid "Link notes to tasks and projects"
-msgstr ""
+msgstr "Koppel notities aan taken en projecten"
 
 #: public_web/templates/public_web/apps/app_todo.html:481
 #, fuzzy

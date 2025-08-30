@@ -285,3 +285,62 @@ msgstr "Klaar om Georganiseerd te Raken?"
 
 msgid "Join thousands of users who have transformed their productivity with our todo app."
 msgstr "Sluit je aan bij duizenden gebruikers die hun productiviteit hebben getransformeerd met onze taken-app."
+
+# Additional Hero Section
+msgid "Todo & Productivity"
+msgstr "Taken en Productiviteit"
+
+msgid "Advanced productivity workspace"
+msgstr "Geavanceerde productiviteitsruimte"
+
+msgid "Start for free"
+msgstr "Gratis beginnen"
+
+msgid "Start organizing"
+msgstr "Beginnen met organiseren"
+
+# Additional CTA
+msgid "Launch Todo App"
+msgstr "Taken App Starten"
+
+msgid "Start Now - It's Free"
+msgstr "Begin Nu - Het is Gratis"
+
+msgid "No credit card • No hidden fees • Always free"
+msgstr "Geen creditcard • Geen verborgen kosten • Altijd gratis"
+
+msgid "Explore All Apps"
+msgstr "Alle Apps Verkennen"
+
+msgid "Coming Soon"
+msgstr "Binnenkort"
+
+msgid "Start Organizing"
+msgstr "Beginnen met Organiseren"
+
+msgid "Begin adding tasks, setting deadlines, and tracking your progress immediately."
+msgstr "Begin direct met het toevoegen van taken, het instellen van deadlines en het bijhouden van je voortgang."
+
+msgid "Progress tracking"
+msgstr "Voortgang bijhouden"
+
+msgid "Ready"
+msgstr "Klaar"
+
+msgid "Revision"
+msgstr "Herhaling"
+
+msgid "Notebook"
+msgstr "Notitieboek"
+
+msgid "Tip"
+msgstr "Tip"
+
+msgid "Create my notes"
+msgstr "Mijn notities maken"
+
+msgid "Offline mode"
+msgstr "Offline modus"
+
+msgid "This application is part of the Open Linguify educational suite."
+msgstr "Deze applicatie is onderdeel van de Open Linguify educatieve suite."

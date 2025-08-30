@@ -4,7 +4,8 @@
       "Bash(python3 manage.py makemessages:*)",
       "Bash(source:*)",
       "Bash(python manage.py:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": [],
