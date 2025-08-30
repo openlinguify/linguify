@@ -5,13 +5,13 @@
 
 {% block title %}{% trans "Todo & Productivity" %} - Open Linguify{% endblock %}
 
-{% block meta_description %}{% trans "Organize your tasks and ideas like Notion with our powerful productivity app. Task management, note-taking, projects, kanban boards and more." %}{% endblock %}
+{% block meta_description %}{% trans "Workspace de productivité avancé avec gestion des tâches, prise de notes, projets, tableaux Kanban et collaboration. Interface intuitive avec vues multiples." %}{% endblock %}
 
-{% block meta_keywords %}{% trans "todo app, task management, productivity, notion alternative, project management, note taking, kanban board, open source" %}{% endblock %}
+{% block meta_keywords %}{% trans "todo app, task management, productivity, project management, note taking, kanban board, workspace, open source" %}{% endblock %}
 
-{% block og_title %}{% trans "Todo & Productivity - Task Management Like Notion" %}{% endblock %}
+{% block og_title %}{% trans "Todo & Productivity - Workspace de Productivité Avancé" %}{% endblock %}
 
-{% block og_description %}{% trans "Powerful productivity app with task management, note-taking, projects, kanban boards. Organize everything in one place like Notion." %}{% endblock %}
+{% block og_description %}{% trans "Workspace de productivité complet avec gestion des tâches, prise de notes, projets hiérarchiques, tableaux Kanban et collaboration d'équipe." %}{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -26,7 +26,7 @@
                     {% trans "Todo & Productivity" %}
                 </h1>
                 <p class="lead mb-4">
-                    {% trans "Organize your tasks, projects, and ideas like Notion. A complete productivity workspace with kanban boards, note-taking, project management and more." %}
+                    {% trans "Workspace de productivité avancé pour organiser tâches, projets et idées. Interface complète avec tableaux Kanban, prise de notes, gestion de projets et collaboration." %}
                 </p>
                 <div class="d-flex gap-3 flex-wrap">
                     <a href="{% backend_url '/todo/' %}" class="btn btn-light btn-lg">
@@ -127,15 +127,6 @@
                 </div>
             </div>
             
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100">
-                    <div class="feature-icon">
-                        <i class="bi bi-calendar3"></i>
-                    </div>
-                    <h3>{% trans "Calendar Integration" %}</h3>
-                    <p>{% trans "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines." %}</p>
-                </div>
-            </div>
             
             <div class="col-lg-4 col-md-6">
                 <div class="feature-card h-100">
@@ -160,22 +151,104 @@
             <div class="col-lg-4 col-md-6">
                 <div class="feature-card h-100">
                     <div class="feature-icon">
-                        <i class="bi bi-speedometer2"></i>
+                        <i class="bi bi-activity"></i>
                     </div>
-                    <h3>{% trans "Analytics Dashboard" %}</h3>
-                    <p>{% trans "Track your productivity with detailed analytics, completion rates, and progress insights." %}</p>
+                    <h3>{% trans "Activity Tracking" %}</h3>
+                    <p>{% trans "Monitor your task activity and progress with a detailed activity feed showing all your recent actions." %}</p>
                 </div>
             </div>
             
             <div class="col-lg-4 col-md-6">
                 <div class="feature-card h-100">
                     <div class="feature-icon">
-                        <i class="bi bi-people"></i>
+                        <i class="bi bi-ui-checks"></i>
                     </div>
-                    <h3>{% trans "Team Collaboration" %}</h3>
-                    <p>{% trans "Share projects and tasks with team members. Collaborate on shared workspaces and track team progress." %}</p>
+                    <h3>{% trans "Multiple Views" %}</h3>
+                    <p>{% trans "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer." %}</p>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- Coming Soon Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">{% trans "Coming Soon" %}</h2>
+            <p class="lead text-muted">{% trans "Exciting features in active development" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 coming-soon" style="opacity: 0.8; border: 2px dashed #6c757d;">
+                    <div class="feature-icon" style="opacity: 0.7;">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+                    <h3>{% trans "Calendar Integration" %}</h3>
+                    <p>{% trans "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines." %}</p>
+                    <div class="badge bg-warning">{% trans "En développement" %}</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 coming-soon" style="opacity: 0.8; border: 2px dashed #6c757d;">
+                    <div class="feature-icon" style="opacity: 0.7;">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <h3>{% trans "Analytics Dashboard" %}</h3>
+                    <p>{% trans "Track your productivity with detailed analytics, completion rates, and progress insights." %}</p>
+                    <div class="badge bg-warning">{% trans "En développement" %}</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 coming-soon" style="opacity: 0.8; border: 2px dashed #6c757d;">
+                    <div class="feature-icon" style="opacity: 0.7;">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h3>{% trans "Advanced Team Collaboration" %}</h3>
+                    <p>{% trans "Enhanced team features with real-time collaboration, task assignment, and team analytics." %}</p>
+                    <div class="badge bg-warning">{% trans "En développement" %}</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 coming-soon" style="opacity: 0.8; border: 2px dashed #6c757d;">
+                    <div class="feature-icon" style="opacity: 0.7;">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h3>{% trans "Time Tracking" %}</h3>
+                    <p>{% trans "Track time spent on tasks with built-in timer and detailed time analytics." %}</p>
+                    <div class="badge bg-warning">{% trans "En développement" %}</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 coming-soon" style="opacity: 0.8; border: 2px dashed #6c757d;">
+                    <div class="feature-icon" style="opacity: 0.7;">
+                        <i class="bi bi-file-earmark"></i>
+                    </div>
+                    <h3>{% trans "File Attachments" %}</h3>
+                    <p>{% trans "Attach files and documents to your tasks and projects for better organization." %}</p>
+                    <div class="badge bg-warning">{% trans "En développement" %}</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 coming-soon" style="opacity: 0.8; border: 2px dashed #6c757d;">
+                    <div class="feature-icon" style="opacity: 0.7;">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                    <h3>{% trans "Recurring Tasks" %}</h3>
+                    <p>{% trans "Set up tasks that repeat automatically on a schedule you define." %}</p>
+                    <div class="badge bg-warning">{% trans "En développement" %}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <p class="text-muted">{% trans "Ces fonctionnalités seront bientôt disponibles. Restez connecté pour les dernières mises à jour!" %}</p>
         </div>
     </div>
 </section>
@@ -292,34 +365,10 @@
             <div class="col-lg-6">
                 <div class="integration-card">
                     <div class="d-flex align-items-center mb-3">
-                        <img src="{% static 'img/app_icon/revision.png' %}" alt="Revision" class="integration-icon me-3">
+                        <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision" class="integration-icon me-3">
                         <div>
-                            <h5>{% trans "Revision & Flashcards" %}</h5>
+                            <h5>{% trans "Revision" %}</h5>
                             <p class="text-muted mb-0">{% trans "Create study tasks for flashcard reviews" %}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-6">
-                <div class="integration-card">
-                    <div class="d-flex align-items-center mb-3">
-                        <img src="{% static 'img/app_icon/course.png' %}" alt="Courses" class="integration-icon me-3">
-                        <div>
-                            <h5>{% trans "Learning Platform" %}</h5>
-                            <p class="text-muted mb-0">{% trans "Convert course assignments to tasks" %}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-6">
-                <div class="integration-card">
-                    <div class="d-flex align-items-center mb-3">
-                        <img src="{% static 'img/app_icon/community.png' %}" alt="Community" class="integration-icon me-3">
-                        <div>
-                            <h5>{% trans "Community" %}</h5>
-                            <p class="text-muted mb-0">{% trans "Collaborative project management" %}</p>
                         </div>
                     </div>
                 </div>
