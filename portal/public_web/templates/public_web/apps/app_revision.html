@@ -28,11 +28,11 @@
                     
                     <div class="d-flex gap-3 flex-wrap">
                         {% if not user.is_authenticated %}
-                            <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-light btn-lg px-4 py-3">
+                            <a href="{% backend_url_with_lang '/auth/register/' %}" class="btn btn-light btn-lg px-4 py-3">
                                 <i class="bi bi-person-plus me-2"></i>{% trans "Start for free" %}
                             </a>
                         {% else %}
-                            <a href="/revision/" class="btn btn-light btn-lg px-4 py-3">
+                            <a href="{% backend_url '/revision/' %}" class="btn btn-light btn-lg px-4 py-3">
                                 <i class="bi bi-lightning-charge me-2"></i>{% trans "Start studying" %}
                             </a>
                         {% endif %}

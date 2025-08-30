@@ -19,34 +19,31 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <div class="app-icon-large mb-4">
-                    <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo & Productivity" class="img-fluid">
-                </div>
-                <h1 class="display-4 fw-bold mb-4">
-                    {% trans "Todo & Productivity" %}
-                </h1>
-                <p class="lead mb-4">
-                    {% trans "Advanced productivity workspace for organizing tasks, projects and ideas. Complete interface with Kanban boards, note-taking, project management and collaboration." %}
-                </p>
-                <div class="d-flex gap-3 flex-wrap">
-                    <a href="{% backend_url '/todo/' %}" class="btn btn-light btn-lg">
-                        <i class="bi bi-check2-square me-2"></i>{% trans "Start Organizing" %}
-                    </a>
-                    {% if not user.is_authenticated %}
-                        <a href="{% backend_url '/auth/register/' %}" class="btn btn-outline-light btn-lg">
-                            <i class="bi bi-person-plus me-2"></i>{% trans "Sign Up Free" %}
-                        </a>
-                    {% endif %}
+                <div class="d-flex align-items-center mb-4">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-white me-4" style="width: 80px; height: 80px; box-shadow: 0 8px 25px rgba(255,255,255,0.3);">
+                        <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo" style="width: 50px; height: 50px;">
+                    </div>
+                    <div>
+                        <h1 class="display-4 fw-bold mb-2 text-white">
+                            {% trans "Todo" %}
+                        </h1>
+                        <p class="lead mb-0 text-white" style="opacity: 0.9;">{% trans "Advanced productivity workspace" %}</p>
+                    </div>
                 </div>
                 
-                <!-- App Status Badge -->
-                <div class="mt-4">
-                    <span class="badge bg-success px-3 py-2">
-                        <i class="bi bi-check-circle me-1"></i>{% trans "Production Ready" %}
-                    </span>
-                    <span class="badge bg-primary px-3 py-2">
-                        <i class="bi bi-code-square me-1"></i>{% trans "Open Source" %}
-                    </span>
+                <div class="d-flex gap-3 flex-wrap">
+                    {% if not user.is_authenticated %}
+                        <a href="{% backend_url_with_lang '/auth/register/' %}" class="btn btn-light btn-lg px-4 py-3">
+                            <i class="bi bi-person-plus me-2"></i>{% trans "Start for free" %}
+                        </a>
+                    {% else %}
+                        <a href="{% backend_url '/todo/' %}" class="btn btn-light btn-lg px-4 py-3">
+                            <i class="bi bi-check2-square me-2"></i>{% trans "Start organizing" %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="bi bi-chat-dots me-2"></i>{% trans "Contact" %}
+                    </a>
                 </div>
             </div>
             <div class="col-lg-6">

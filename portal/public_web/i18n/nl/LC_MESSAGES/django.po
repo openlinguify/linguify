@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify Public Web\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-30 23:10+0200\n"
+"POT-Creation-Date: 2025-08-30 23:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: Nl\n"
@@ -93,6 +93,7 @@ msgstr "Carrières"
 #: public_web/templates/public_web/apps/app_quizz.html:358
 #: public_web/templates/public_web/apps/app_revision.html:40
 #: public_web/templates/public_web/apps/app_revision.html:460
+#: public_web/templates/public_web/apps/app_todo.html:45
 #: public_web/templates/public_web/contact.html:11
 msgid "Contact"
 msgstr "Contact"
@@ -135,18 +136,19 @@ msgid "Cookies"
 msgstr "Cookies"
 
 #: public_web/templates/components/public_header.html:27
+#: public_web/templates/public_web/apps/app_todo.html:28
 #: public_web/templates/public_web/landing.html:402
 msgid "Todo"
 msgstr "Taken"
 
 #: public_web/templates/components/public_header.html:30
-#: public_web/templates/public_web/apps/app_todo.html:459
+#: public_web/templates/public_web/apps/app_todo.html:456
 #: public_web/templates/public_web/landing.html:419
 msgid "Revision"
 msgstr "Herhaling"
 
 #: public_web/templates/components/public_header.html:33
-#: public_web/templates/public_web/apps/app_todo.html:471
+#: public_web/templates/public_web/apps/app_todo.html:468
 #: public_web/templates/public_web/landing.html:436
 msgid "Notebook"
 msgstr "Notitieboek"
@@ -228,7 +230,6 @@ msgstr "Languages Supported"
 #: public_web/templates/public_web/about.html:59
 #: public_web/templates/public_web/about.html:263
 #: public_web/templates/public_web/about.html:486
-#: public_web/templates/public_web/apps/app_todo.html:48
 #: public_web/templates/public_web/brand.html:119
 #: public_web/templates/public_web/landing.html:363
 #: public_web/templates/public_web/landing.html:738
@@ -877,6 +878,7 @@ msgstr ""
 #: public_web/templates/public_web/apps/app_notebook.html:449
 #: public_web/templates/public_web/apps/app_revision.html:32
 #: public_web/templates/public_web/apps/app_revision.html:452
+#: public_web/templates/public_web/apps/app_todo.html:37
 #: public_web/templates/public_web/apps/apps_list.html:25
 #: public_web/templates/public_web/apps/apps_list.html:143
 msgid "Start for free"
@@ -1461,10 +1463,8 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_notebook.html:36
 #: public_web/templates/public_web/apps/app_notebook.html:453
-#, fuzzy
-#| msgid "Create an account"
 msgid "Create my notes"
-msgstr "Create an account"
+msgstr "Mijn notities maken"
 
 #: public_web/templates/public_web/apps/app_notebook.html:158
 msgid "Smart Note Organization"
@@ -1508,7 +1508,7 @@ msgstr ""
 #: public_web/templates/public_web/apps/app_revision.html:36
 #: public_web/templates/public_web/apps/app_revision.html:456
 msgid "Start studying"
-msgstr ""
+msgstr "Beginnen met studeren"
 
 #: public_web/templates/public_web/apps/app_revision.html:68
 #, fuzzy
@@ -1545,7 +1545,6 @@ msgid ""
 msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:6
-#: public_web/templates/public_web/apps/app_todo.html:26
 msgid "Todo & Productivity"
 msgstr ""
 
@@ -1571,441 +1570,429 @@ msgid ""
 "hierarchical projects, Kanban boards and team collaboration."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:29
-msgid ""
-"Advanced productivity workspace for organizing tasks, projects and ideas. "
-"Complete interface with Kanban boards, note-taking, project management and "
-"collaboration."
-msgstr ""
+#: public_web/templates/public_web/apps/app_todo.html:30
+msgid "Advanced productivity workspace"
+msgstr "Geavanceerde productiviteitsruimte"
 
-#: public_web/templates/public_web/apps/app_todo.html:33
-#: public_web/templates/public_web/apps/app_todo.html:431
-msgid "Start Organizing"
-msgstr ""
+#: public_web/templates/public_web/apps/app_todo.html:41
+msgid "Start organizing"
+msgstr "Beginnen met organiseren"
 
-#: public_web/templates/public_web/apps/app_todo.html:37
-#, fuzzy
-#| msgid "Sign Up"
-msgid "Sign Up Free"
-msgstr "Sign Up"
-
-#: public_web/templates/public_web/apps/app_todo.html:45
-#, fuzzy
-#| msgid "Product"
-msgid "Production Ready"
-msgstr "Product"
-
-#: public_web/templates/public_web/apps/app_todo.html:76
+#: public_web/templates/public_web/apps/app_todo.html:73
 msgid "Kanban"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:79
+#: public_web/templates/public_web/apps/app_todo.html:76
 msgid "List"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:82
+#: public_web/templates/public_web/apps/app_todo.html:79
 msgid "Activity"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:92
+#: public_web/templates/public_web/apps/app_todo.html:89
 msgid "To Do"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:96
+#: public_web/templates/public_web/apps/app_todo.html:93
 msgid "Review course materials"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:98
+#: public_web/templates/public_web/apps/app_todo.html:95
 msgid "Today"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:99
+#: public_web/templates/public_web/apps/app_todo.html:96
 msgid "Study"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:103
+#: public_web/templates/public_web/apps/app_todo.html:100
 msgid "Complete assignment"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:105
+#: public_web/templates/public_web/apps/app_todo.html:102
 msgid "Priority"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:106
+#: public_web/templates/public_web/apps/app_todo.html:103
 msgid "Urgent"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:110
+#: public_web/templates/public_web/apps/app_todo.html:107
 msgid "Plan project timeline"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:112
+#: public_web/templates/public_web/apps/app_todo.html:109
 msgid "Work"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:120
+#: public_web/templates/public_web/apps/app_todo.html:117
 #, fuzzy
 #| msgid "Press"
 msgid "In Progress"
 msgstr "Press"
 
-#: public_web/templates/public_web/apps/app_todo.html:124
+#: public_web/templates/public_web/apps/app_todo.html:121
 msgid "Research presentation"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:129
+#: public_web/templates/public_web/apps/app_todo.html:126
 msgid "Research"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:133
+#: public_web/templates/public_web/apps/app_todo.html:130
 #, fuzzy
 #| msgid "Documentation"
 msgid "Write documentation"
 msgstr "Documentation"
 
-#: public_web/templates/public_web/apps/app_todo.html:135
+#: public_web/templates/public_web/apps/app_todo.html:132
 #, fuzzy
 #| msgid "My Notes"
 msgid "Notes"
 msgstr "My Notes"
 
-#: public_web/templates/public_web/apps/app_todo.html:143
+#: public_web/templates/public_web/apps/app_todo.html:140
 msgid "Done"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:147
+#: public_web/templates/public_web/apps/app_todo.html:144
 msgid "Setup development environment"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:149
-#: public_web/templates/public_web/apps/app_todo.html:155
+#: public_web/templates/public_web/apps/app_todo.html:146
+#: public_web/templates/public_web/apps/app_todo.html:152
 msgid "Completed"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:153
+#: public_web/templates/public_web/apps/app_todo.html:150
 msgid "Review team feedback"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:174
+#: public_web/templates/public_web/apps/app_todo.html:171
 msgid "Everything You Need for Productivity"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:175
+#: public_web/templates/public_web/apps/app_todo.html:172
 msgid "A complete workspace to organize your tasks, projects, and ideas"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:184
+#: public_web/templates/public_web/apps/app_todo.html:181
 msgid "Smart Task Management"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:185
+#: public_web/templates/public_web/apps/app_todo.html:182
 msgid ""
 "Create, organize, and track tasks with priorities, due dates, tags, and "
 "progress tracking. Everything you need to stay productive."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:194
+#: public_web/templates/public_web/apps/app_todo.html:191
 msgid "Kanban Boards"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:195
+#: public_web/templates/public_web/apps/app_todo.html:192
 msgid ""
 "Visualize your workflow with customizable kanban boards. Drag and drop tasks "
 "between columns to track progress."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:204
+#: public_web/templates/public_web/apps/app_todo.html:201
 msgid "Project Organization"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:205
+#: public_web/templates/public_web/apps/app_todo.html:202
 msgid ""
 "Group related tasks into projects with progress tracking, deadlines, and "
 "team collaboration features."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:214
+#: public_web/templates/public_web/apps/app_todo.html:211
 msgid "Rich Note-Taking"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:215
+#: public_web/templates/public_web/apps/app_todo.html:212
 msgid ""
 "Take notes with markdown support, attach them to tasks or projects, and "
 "organize with tags and categories."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:225
+#: public_web/templates/public_web/apps/app_todo.html:222
 msgid "Smart Reminders"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:226
+#: public_web/templates/public_web/apps/app_todo.html:223
 msgid ""
 "Set custom reminders for tasks and deadlines. Get notified at the right time "
 "to stay on track."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:235
+#: public_web/templates/public_web/apps/app_todo.html:232
 msgid "Tags & Categories"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:236
+#: public_web/templates/public_web/apps/app_todo.html:233
 msgid ""
 "Organize tasks and notes with flexible tagging system and categories for "
 "better organization and filtering."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:245
+#: public_web/templates/public_web/apps/app_todo.html:242
 msgid "Activity Tracking"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:246
+#: public_web/templates/public_web/apps/app_todo.html:243
 msgid ""
 "Monitor your task activity and progress with a detailed activity feed "
 "showing all your recent actions."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:255
+#: public_web/templates/public_web/apps/app_todo.html:252
 msgid "Multiple Views"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:256
+#: public_web/templates/public_web/apps/app_todo.html:253
 msgid ""
 "Switch between list view, Kanban board, and activity feed to visualize your "
 "tasks the way you prefer."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:267
+#: public_web/templates/public_web/apps/app_todo.html:264
 #: public_web/templates/public_web/apps/apps_list.html:85
 #: public_web/templates/public_web/landing.html:451
 msgid "Coming Soon"
 msgstr "Binnenkort Beschikbaar"
 
-#: public_web/templates/public_web/apps/app_todo.html:268
+#: public_web/templates/public_web/apps/app_todo.html:265
 #, fuzzy
 #| msgid "These exciting apps are in active development"
 msgid "Exciting features in active development"
 msgstr "Deze spannende apps zijn in actieve ontwikkeling"
 
-#: public_web/templates/public_web/apps/app_todo.html:277
+#: public_web/templates/public_web/apps/app_todo.html:274
 msgid "Calendar Integration"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:278
+#: public_web/templates/public_web/apps/app_todo.html:275
 msgid ""
 "View tasks and deadlines in calendar format. Plan your schedule and never "
 "miss important deadlines."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:279
-#: public_web/templates/public_web/apps/app_todo.html:290
-#: public_web/templates/public_web/apps/app_todo.html:301
-#: public_web/templates/public_web/apps/app_todo.html:312
-#: public_web/templates/public_web/apps/app_todo.html:323
-#: public_web/templates/public_web/apps/app_todo.html:334
+#: public_web/templates/public_web/apps/app_todo.html:276
+#: public_web/templates/public_web/apps/app_todo.html:287
+#: public_web/templates/public_web/apps/app_todo.html:298
+#: public_web/templates/public_web/apps/app_todo.html:309
+#: public_web/templates/public_web/apps/app_todo.html:320
+#: public_web/templates/public_web/apps/app_todo.html:331
 msgid "In Development"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:288
+#: public_web/templates/public_web/apps/app_todo.html:285
 #, fuzzy
 #| msgid "Access Dashboard"
 msgid "Analytics Dashboard"
 msgstr "Access Dashboard"
 
-#: public_web/templates/public_web/apps/app_todo.html:289
+#: public_web/templates/public_web/apps/app_todo.html:286
 msgid ""
 "Track your productivity with detailed analytics, completion rates, and "
 "progress insights."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:299
+#: public_web/templates/public_web/apps/app_todo.html:296
 msgid "Advanced Team Collaboration"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:300
+#: public_web/templates/public_web/apps/app_todo.html:297
 msgid ""
 "Enhanced team features with real-time collaboration, task assignment, and "
 "team analytics."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:310
+#: public_web/templates/public_web/apps/app_todo.html:307
 msgid "Time Tracking"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:311
+#: public_web/templates/public_web/apps/app_todo.html:308
 msgid ""
 "Track time spent on tasks with built-in timer and detailed time analytics."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:321
+#: public_web/templates/public_web/apps/app_todo.html:318
 msgid "File Attachments"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:322
+#: public_web/templates/public_web/apps/app_todo.html:319
 msgid ""
 "Attach files and documents to your tasks and projects for better "
 "organization."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:332
+#: public_web/templates/public_web/apps/app_todo.html:329
 msgid "Recurring Tasks"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:333
+#: public_web/templates/public_web/apps/app_todo.html:330
 msgid "Set up tasks that repeat automatically on a schedule you define."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:340
+#: public_web/templates/public_web/apps/app_todo.html:337
 msgid ""
 "These features will be available soon. Stay tuned for the latest updates!"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:349
+#: public_web/templates/public_web/apps/app_todo.html:346
 msgid "Perfect For Every Use Case"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:350
+#: public_web/templates/public_web/apps/app_todo.html:347
 msgid "Whether you're a student, professional, or team leader"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:359
+#: public_web/templates/public_web/apps/app_todo.html:356
 msgid "Students"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:360
+#: public_web/templates/public_web/apps/app_todo.html:357
 msgid ""
 "Organize assignments, track study progress, manage course projects, and plan "
 "your academic schedule."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:362
+#: public_web/templates/public_web/apps/app_todo.html:359
 msgid "Assignment tracking"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:363
+#: public_web/templates/public_web/apps/app_todo.html:360
 msgid "Study planning"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:364
+#: public_web/templates/public_web/apps/app_todo.html:361
 msgid "Course organization"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:365
+#: public_web/templates/public_web/apps/app_todo.html:362
 msgid "Research notes"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:375
+#: public_web/templates/public_web/apps/app_todo.html:372
 msgid "Professionals"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:376
+#: public_web/templates/public_web/apps/app_todo.html:373
 msgid ""
 "Manage work projects, track deadlines, organize meeting notes, and boost "
 "your productivity."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:378
+#: public_web/templates/public_web/apps/app_todo.html:375
 msgid "Project management"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:379
+#: public_web/templates/public_web/apps/app_todo.html:376
 msgid "Deadline tracking"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:380
+#: public_web/templates/public_web/apps/app_todo.html:377
 msgid "Meeting notes"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:381
+#: public_web/templates/public_web/apps/app_todo.html:378
 msgid "Goal setting"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:391
+#: public_web/templates/public_web/apps/app_todo.html:388
 msgid "Teams"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:392
+#: public_web/templates/public_web/apps/app_todo.html:389
 msgid ""
 "Collaborate on shared projects, assign tasks to team members, and track "
 "collective progress."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:394
+#: public_web/templates/public_web/apps/app_todo.html:391
 msgid "Shared workspaces"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:395
+#: public_web/templates/public_web/apps/app_todo.html:392
 msgid "Task assignment"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:396
+#: public_web/templates/public_web/apps/app_todo.html:393
 #: public_web/templates/public_web/landing.html:43
 msgid "Progress tracking"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:397
+#: public_web/templates/public_web/apps/app_todo.html:394
 msgid "Team analytics"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:409
+#: public_web/templates/public_web/apps/app_todo.html:406
 #, fuzzy
 #| msgid "Get Started Free"
 msgid "Get Started in Minutes"
 msgstr "Get Started Free"
 
-#: public_web/templates/public_web/apps/app_todo.html:410
+#: public_web/templates/public_web/apps/app_todo.html:407
 msgid "Simple setup process to get you organized right away"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:417
+#: public_web/templates/public_web/apps/app_todo.html:414
 #, fuzzy
 #| msgid "Create an account"
 msgid "Create Account"
 msgstr "Create an account"
 
-#: public_web/templates/public_web/apps/app_todo.html:418
+#: public_web/templates/public_web/apps/app_todo.html:415
 msgid "Sign up for free and access the todo app from your dashboard."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:424
+#: public_web/templates/public_web/apps/app_todo.html:421
 msgid "Set Up Projects"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:425
+#: public_web/templates/public_web/apps/app_todo.html:422
 msgid ""
 "Create your first project and organize tasks by categories and priorities."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:432
+#: public_web/templates/public_web/apps/app_todo.html:428
+msgid "Start Organizing"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:429
 msgid "Add tasks, set deadlines, take notes, and watch your productivity soar."
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:439
+#: public_web/templates/public_web/apps/app_todo.html:436
 msgid "Launch Todo App"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:449
+#: public_web/templates/public_web/apps/app_todo.html:446
 msgid "Seamless Integration"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:450
+#: public_web/templates/public_web/apps/app_todo.html:447
 msgid "Works perfectly with other Open Linguify apps"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:460
+#: public_web/templates/public_web/apps/app_todo.html:457
 msgid "Create study tasks for flashcard reviews"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:472
+#: public_web/templates/public_web/apps/app_todo.html:469
 msgid "Link notes to tasks and projects"
 msgstr ""
 
-#: public_web/templates/public_web/apps/app_todo.html:484
+#: public_web/templates/public_web/apps/app_todo.html:481
 #, fuzzy
 #| msgid "Ready to start learning?"
 msgid "Ready to Get Organized?"
 msgstr "Ready to start learning?"
 
-#: public_web/templates/public_web/apps/app_todo.html:485
+#: public_web/templates/public_web/apps/app_todo.html:482
 #, fuzzy
 #| msgid ""
 #| "Join thousands of learners who have already discovered the power of "
@@ -2017,13 +2004,13 @@ msgstr ""
 "Join thousands of learners who have already discovered the power of "
 "OpenLinguify's educational tools"
 
-#: public_web/templates/public_web/apps/app_todo.html:488
+#: public_web/templates/public_web/apps/app_todo.html:485
 #, fuzzy
 #| msgid "Start for free"
 msgid "Start Now - It's Free"
 msgstr "Gratis beginnen"
 
-#: public_web/templates/public_web/apps/app_todo.html:491
+#: public_web/templates/public_web/apps/app_todo.html:488
 #, fuzzy
 #| msgid "Explore Our Apps"
 msgid "Explore All Apps"
@@ -3052,6 +3039,16 @@ msgstr "Educatieve Apps"
 #: public_web/views.py:457 public_web/views.py:476
 msgid "Application not found"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Sign Up"
+#~ msgid "Sign Up Free"
+#~ msgstr "Sign Up"
+
+#, fuzzy
+#~| msgid "Product"
+#~ msgid "Production Ready"
+#~ msgstr "Product"
 
 #~ msgid "Quizzes Generated"
 #~ msgstr "Quizzen Gegenereerd"

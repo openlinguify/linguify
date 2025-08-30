@@ -3,7 +3,8 @@
     "allow": [
       "Bash(python3 manage.py makemessages:*)",
       "Bash(source:*)",
-      "Bash(python manage.py:*)"
+      "Bash(python manage.py:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": [],
