@@ -60,13 +60,102 @@
                                     <span class="dot yellow"></span>
                                     <span class="dot green"></span>
                                 </div>
-                                <div class="browser-title">Todo & Productivity</div>
+                                <div class="browser-title">Todo & Productivity - Open Linguify</div>
                             </div>
                             <div class="browser-content p-0">
-                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 300px; display: flex; align-items: center; justify-content: center;">
-                                    <div class="text-center text-white">
-                                        <i class="bi bi-kanban" style="font-size: 4rem; opacity: 0.8;"></i>
-                                        <h4 class="mt-3">{% trans "Powerful Task Management" %}</h4>
+                                <!-- Dashboard Preview -->
+                                <div class="dashboard-preview">
+                                    <!-- Top Navigation -->
+                                    <div class="nav-preview">
+                                        <div class="nav-brand">
+                                            <i class="bi bi-check2-square"></i>
+                                            <span>Todo</span>
+                                        </div>
+                                        <div class="nav-actions">
+                                            <span class="btn-preview active">
+                                                <i class="bi bi-kanban"></i> {% trans "Kanban" %}
+                                            </span>
+                                            <span class="btn-preview">
+                                                <i class="bi bi-list-ul"></i> {% trans "List" %}
+                                            </span>
+                                            <span class="btn-preview">
+                                                <i class="bi bi-activity"></i> {% trans "Activity" %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Kanban Board Preview -->
+                                    <div class="kanban-preview">
+                                        <!-- To Do Column -->
+                                        <div class="kanban-column-preview">
+                                            <div class="column-header-preview">
+                                                <span class="column-title">{% trans "To Do" %}</span>
+                                                <span class="task-count">3</span>
+                                            </div>
+                                            <div class="task-card-preview task-normal">
+                                                <div class="task-title">{% trans "Review course materials" %}</div>
+                                                <div class="task-meta">
+                                                    <i class="bi bi-calendar"></i> {% trans "Today" %}
+                                                    <span class="task-tag">{% trans "Study" %}</span>
+                                                </div>
+                                            </div>
+                                            <div class="task-card-preview task-starred">
+                                                <div class="task-title">{% trans "Complete assignment" %}</div>
+                                                <div class="task-meta">
+                                                    <i class="bi bi-star-fill"></i> {% trans "Priority" %}
+                                                    <span class="task-tag task-tag-red">{% trans "Urgent" %}</span>
+                                                </div>
+                                            </div>
+                                            <div class="task-card-preview task-normal">
+                                                <div class="task-title">{% trans "Plan project timeline" %}</div>
+                                                <div class="task-meta">
+                                                    <i class="bi bi-folder"></i> {% trans "Work" %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- In Progress Column -->
+                                        <div class="kanban-column-preview">
+                                            <div class="column-header-preview">
+                                                <span class="column-title">{% trans "In Progress" %}</span>
+                                                <span class="task-count">2</span>
+                                            </div>
+                                            <div class="task-card-preview task-progress">
+                                                <div class="task-title">{% trans "Research presentation" %}</div>
+                                                <div class="progress-bar-preview">
+                                                    <div class="progress-fill" style="width: 60%"></div>
+                                                </div>
+                                                <div class="task-meta">
+                                                    <span class="task-tag task-tag-blue">{% trans "Research" %}</span>
+                                                </div>
+                                            </div>
+                                            <div class="task-card-preview task-normal">
+                                                <div class="task-title">{% trans "Write documentation" %}</div>
+                                                <div class="task-meta">
+                                                    <i class="bi bi-file-text"></i> {% trans "Notes" %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Done Column -->
+                                        <div class="kanban-column-preview">
+                                            <div class="column-header-preview">
+                                                <span class="column-title">{% trans "Done" %}</span>
+                                                <span class="task-count">4</span>
+                                            </div>
+                                            <div class="task-card-preview task-completed">
+                                                <div class="task-title">{% trans "Setup development environment" %}</div>
+                                                <div class="task-meta">
+                                                    <i class="bi bi-check-circle-fill"></i> {% trans "Completed" %}
+                                                </div>
+                                            </div>
+                                            <div class="task-card-preview task-completed">
+                                                <div class="task-title">{% trans "Review team feedback" %}</div>
+                                                <div class="task-meta">
+                                                    <i class="bi bi-check-circle-fill"></i> {% trans "Completed" %}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -511,6 +600,220 @@
     width: 40px;
     height: 40px;
     object-fit: contain;
+}
+
+/* Dashboard Preview Styles */
+.dashboard-preview {
+    background: #f8fafc;
+    height: 350px;
+    overflow: hidden;
+    position: relative;
+}
+
+.nav-preview {
+    background: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #2D5BBA;
+    font-size: 16px;
+}
+
+.nav-brand i {
+    font-size: 18px;
+}
+
+.nav-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-preview {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
+    background: transparent;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-preview.active {
+    background: #2D5BBA;
+    color: white;
+    border-color: #2D5BBA;
+}
+
+.btn-preview i {
+    font-size: 11px;
+}
+
+.kanban-preview {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    height: 100%;
+    overflow-x: auto;
+}
+
+.kanban-column-preview {
+    min-width: 240px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 12px;
+    height: fit-content;
+}
+
+.column-header-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.column-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.task-count {
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.task-card-preview {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.task-card-preview:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.task-title {
+    font-weight: 500;
+    color: #1e293b;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.task-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+    font-size: 10px;
+}
+
+.task-meta i {
+    font-size: 9px;
+}
+
+.task-tag {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.task-tag-red {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.task-tag-blue {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.task-starred {
+    border-left: 3px solid #fbbf24;
+}
+
+.task-progress {
+    border-left: 3px solid #3b82f6;
+}
+
+.task-completed {
+    opacity: 0.7;
+    border-left: 3px solid #10b981;
+}
+
+.task-completed .task-title {
+    text-decoration: line-through;
+    color: #64748b;
+}
+
+.progress-bar-preview {
+    background: #f1f5f9;
+    height: 4px;
+    border-radius: 2px;
+    margin: 4px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboard-preview {
+        height: 300px;
+    }
+    
+    .kanban-preview {
+        padding: 12px;
+        gap: 12px;
+    }
+    
+    .kanban-column-preview {
+        min-width: 200px;
+    }
+    
+    .nav-actions {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    
+    .btn-preview {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
 }
 </style>
 {% endblock %}

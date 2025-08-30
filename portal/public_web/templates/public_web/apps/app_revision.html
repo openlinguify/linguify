@@ -42,9 +42,92 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-4 bg-white" style="width: 200px; height: 200px; box-shadow: 0 15px 40px rgba(255,255,255,0.2);">
-                            <img src="{% static 'img/app_icon/memory.png' %}" alt="Révision" style="width: 120px; height: 120px;">
+                    <div class="hero-image">
+                        <div class="app-preview">
+                            <!-- Revision App Preview -->
+                            <div class="mock-browser">
+                                <div class="browser-header">
+                                    <div class="browser-dots">
+                                        <span class="dot red"></span>
+                                        <span class="dot yellow"></span>
+                                        <span class="dot green"></span>
+                                    </div>
+                                    <div class="browser-title">Révision - Open Linguify</div>
+                                </div>
+                                <div class="browser-content p-0">
+                                    <!-- Flashcard Interface Preview -->
+                                    <div class="revision-preview">
+                                        <!-- Top Navigation -->
+                                        <div class="nav-preview">
+                                            <div class="nav-brand">
+                                                <i class="bi bi-lightning-charge"></i>
+                                                <span>Révision</span>
+                                            </div>
+                                            <div class="nav-actions">
+                                                <span class="btn-preview active">
+                                                    <i class="bi bi-stack"></i> {% trans "Flashcards" %}
+                                                </span>
+                                                <span class="btn-preview">
+                                                    <i class="bi bi-graph-up"></i> {% trans "Progrès" %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Study Area -->
+                                        <div class="study-preview">
+                                            <!-- Deck Info -->
+                                            <div class="deck-header-preview">
+                                                <h4>{% trans "Vocabulaire Anglais" %}</h4>
+                                                <div class="progress-info">
+                                                    <span class="progress-text">15/23 cartes</span>
+                                                    <div class="progress-bar-preview">
+                                                        <div class="progress-fill" style="width: 65%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Flashcard -->
+                                            <div class="flashcard-preview" id="flashcard-demo">
+                                                <div class="flashcard-inner">
+                                                    <div class="flashcard-front active">
+                                                        <div class="flashcard-text">
+                                                            <div class="word">{% trans "Beautiful" %}</div>
+                                                            <div class="pronunciation">/ˈbjuːtɪfʊl/</div>
+                                                        </div>
+                                                        <button class="speak-btn">
+                                                            <i class="bi bi-volume-up"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="flashcard-back">
+                                                        <div class="flashcard-text">
+                                                            <div class="translation">{% trans "Beau, magnifique" %}</div>
+                                                            <div class="example">
+                                                                <em>{% trans "She has beautiful eyes" %}</em>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Action Buttons -->
+                                            <div class="study-actions-preview">
+                                                <button class="action-btn difficult">
+                                                    <i class="bi bi-x-circle"></i>
+                                                    {% trans "Difficile" %}
+                                                </button>
+                                                <button class="action-btn medium">
+                                                    <i class="bi bi-dash-circle"></i>
+                                                    {% trans "Moyen" %}
+                                                </button>
+                                                <button class="action-btn easy">
+                                                    <i class="bi bi-check-circle"></i>
+                                                    {% trans "Facile" %}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -360,4 +443,339 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Revision Preview Styles */
+.hero-image {
+    position: relative;
+    transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+    transition: transform 0.3s ease;
+}
+
+.hero-image:hover {
+    transform: perspective(1000px) rotateY(-10deg) rotateX(2deg);
+}
+
+.mock-browser {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    max-width: 400px;
+}
+
+.browser-header {
+    background: #f5f5f5;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.browser-dots {
+    display: flex;
+    gap: 6px;
+    margin-right: 16px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.dot.red { background: #ff5f57; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #28ca42; }
+
+.browser-title {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.revision-preview {
+    background: #f8fafc;
+    height: 380px;
+    overflow: hidden;
+    position: relative;
+}
+
+.nav-preview {
+    background: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #2D5BBA;
+    font-size: 16px;
+}
+
+.nav-brand i {
+    font-size: 18px;
+    color: #fbbf24;
+}
+
+.nav-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-preview {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
+    background: transparent;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-preview.active {
+    background: #2D5BBA;
+    color: white;
+    border-color: #2D5BBA;
+}
+
+.btn-preview i {
+    font-size: 11px;
+}
+
+.study-preview {
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.deck-header-preview {
+    text-align: center;
+    width: 100%;
+    max-width: 300px;
+}
+
+.deck-header-preview h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.progress-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.progress-text {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.progress-bar-preview {
+    background: #f1f5f9;
+    height: 6px;
+    border-radius: 3px;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.flashcard-preview {
+    width: 280px;
+    height: 160px;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flashcard-preview:hover .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+.flashcard-front {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.flashcard-back {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    color: #1e293b;
+    transform: rotateY(180deg);
+}
+
+.flashcard-text {
+    text-align: center;
+    width: 100%;
+}
+
+.word {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.pronunciation {
+    font-size: 12px;
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.translation {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.example {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.speak-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.speak-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.1);
+}
+
+.study-actions-preview {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.action-btn {
+    background: white;
+    border: 2px solid;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.action-btn.difficult {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.action-btn.difficult:hover {
+    background: #ef4444;
+    color: white;
+}
+
+.action-btn.medium {
+    border-color: #f59e0b;
+    color: #f59e0b;
+}
+
+.action-btn.medium:hover {
+    background: #f59e0b;
+    color: white;
+}
+
+.action-btn.easy {
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.action-btn.easy:hover {
+    background: #10b981;
+    color: white;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .revision-preview {
+        height: 320px;
+    }
+    
+    .flashcard-preview {
+        width: 240px;
+        height: 140px;
+    }
+    
+    .word {
+        font-size: 18px;
+    }
+    
+    .translation {
+        font-size: 14px;
+    }
+    
+    .study-actions-preview {
+        gap: 8px;
+    }
+    
+    .action-btn {
+        padding: 6px 8px;
+        font-size: 10px;
+    }
+}
+</style>
 {% endblock %}
