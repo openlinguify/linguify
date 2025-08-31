@@ -1254,8 +1254,12 @@ let importState = {
 
 async function importNewDeck() {
     const elements = getElements();
-    const file = elements.importFile.files[0];
+    const file = elements.importFile.files[0] || window.selectedImportFile;
     const name = elements.importDeckName.value.trim();
+    
+    console.log('🚀 Import deck - file from input:', elements.importFile.files[0]);
+    console.log('🚀 Import deck - file from global:', window.selectedImportFile);
+    console.log('🚀 Import deck - using file:', file);
     
     if (!file) {
         window.notificationService.error('Veuillez sélectionner un fichier');
@@ -1317,6 +1321,14 @@ function initializeDragAndDrop() {
     
     if (!dropZone || !fileInput) return;
     
+    // Marquer comme initialisé pour éviter la duplication
+    if (dropZone.dataset.initialized === 'true') {
+        console.log('🔄 DragAndDrop déjà initialisé, on passe...');
+        return;
+    }
+    dropZone.dataset.initialized = 'true';
+    console.log('🚀 Initialisation DragAndDrop...');
+    
     // Prévenir les comportements par défaut
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
@@ -1335,9 +1347,11 @@ function initializeDragAndDrop() {
     // Handle dropped files
     dropZone.addEventListener('drop', handleDrop, false);
     
-    // Handle click on drop zone with forced reset
+    // Handle click on drop zone 
     dropZone.addEventListener('click', () => {
-        fileInput.value = ''; // Reset pour forcer l'événement change même avec le même fichier
+        console.log('🖱️ Clic sur la zone de drop');
+        // Reset juste avant le clic pour permettre la re-sélection
+        fileInput.value = '';
         fileInput.click();
     });
     
@@ -1369,22 +1383,37 @@ function initializeDragAndDrop() {
 }
 
 function handleFileSelect(e) {
+    console.log('🔥 handleFileSelect appelé', e);
+    console.log('🔥 Fichiers sélectionnés:', e.target.files);
+    
     const file = e.target.files[0];
     
     if (!file) {
+        console.log('❌ Aucun fichier sélectionné');
         clearSelectedFile();
         return;
     }
     
+    console.log('✅ Fichier trouvé:', file.name);
+    
     // Validation du fichier
     if (!validateFile(file)) {
+        console.log('❌ Fichier invalide');
         clearSelectedFile();
         return;
     }
+    
+    console.log('✅ Fichier valide, affichage des infos');
+    
+    // Sauvegarder le fichier dans une variable globale temporaire
+    window.selectedImportFile = file;
     
     // Afficher les informations du fichier
     showSelectedFileInfo(file);
     updateImportButton();
+    
+    // On ne reset plus automatiquement - on laisse le fichier dans l'input
+    // Le reset se fera seulement quand on efface volontairement le fichier
 }
 
 function validateFile(file) {
@@ -1431,7 +1460,10 @@ function showSelectedFileInfo(file) {
     if (selectedFileInfo && selectedFileName && selectedFileSize) {
         selectedFileName.textContent = file.name;
         selectedFileSize.textContent = formatFileSize(file.size);
-        selectedFileInfo.style.display = 'block';
+        
+        // Remplacer d-none par d-block pour Bootstrap
+        selectedFileInfo.classList.remove('d-none');
+        selectedFileInfo.classList.add('d-block');
         
         // Animer l'apparition
         selectedFileInfo.style.opacity = '0';
@@ -1449,8 +1481,14 @@ function clearSelectedFile() {
     const selectedFileInfo = document.getElementById('selectedFileInfo');
     const fileInput = document.getElementById('importFile');
     
-    if (selectedFileInfo) selectedFileInfo.style.display = 'none';
+    if (selectedFileInfo) {
+        selectedFileInfo.classList.remove('d-block');
+        selectedFileInfo.classList.add('d-none');
+    }
     if (fileInput) fileInput.value = '';
+    
+    // Nettoyer aussi la variable globale
+    window.selectedImportFile = null;
     
     updateImportButton();
 }
@@ -1554,7 +1592,7 @@ function updateImportButton() {
     
     if (!submitButton || !fileInput || !deckNameInput) return;
     
-    const hasFile = fileInput.files && fileInput.files.length > 0;
+    const hasFile = (fileInput.files && fileInput.files.length > 0) || window.selectedImportFile;
     const deckName = deckNameInput.value.trim();
     
     // Pour updateImportButton, on vérifie juste si le nom est valide sans afficher d'erreur visuelle
@@ -1562,6 +1600,13 @@ function updateImportButton() {
                          !appState.decks.find(deck => deck.name.toLowerCase() === deckName.toLowerCase());
     
     const isValid = hasFile && hasValidName;
+    
+    console.log('🔍 Debug updateImportButton:');
+    console.log('  - hasFile:', hasFile);
+    console.log('  - deckName:', deckName);
+    console.log('  - hasValidName:', hasValidName);
+    console.log('  - isValid:', isValid);
+    console.log('  - Button disabled before:', submitButton.disabled);
     
     submitButton.disabled = !isValid;
     
