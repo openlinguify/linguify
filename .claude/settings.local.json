@@ -8,7 +8,8 @@
       "Bash(python3:*)",
       "Bash(python:*)",
       "Bash(msgfmt:*)",
-      "WebFetch(domain:localhost)"
+      "WebFetch(domain:localhost)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": [],

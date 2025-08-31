@@ -191,7 +191,21 @@ class TagsManagement {
             const name = tagNameInput.value || 'Aperçu';
             const color = tagColorInput.value;
             
-            tagPreview.innerHTML = `<span class="badge" style="background: ${color}; color: white;">${name}</span>`;
+            // Utiliser le template pour le preview
+            const template = document.getElementById('tag-preview-template');
+            if (template) {
+                const clone = template.content.cloneNode(true);
+                const badge = clone.querySelector('.tag-color-preview');
+                badge.textContent = name;
+                badge.style.background = color;
+                badge.style.color = 'white';
+                
+                tagPreview.innerHTML = '';
+                tagPreview.appendChild(clone);
+            } else {
+                // Fallback
+                tagPreview.innerHTML = `<span class="badge" style="background: ${color}; color: white;">${name}</span>`;
+            }
         }
     }
 
@@ -290,38 +304,14 @@ class TagsManagement {
         const endIndex = startIndex + this.itemsPerPage;
         const paginatedTags = filteredTags.slice(startIndex, endIndex);
 
-        const htmlContent = paginatedTags.map(tag => `
-            <tr class="tag-row ${this.assignedTags.has(tag.name) ? 'table-success' : ''}" data-tag="${tag.name}">
-                <td>
-                    <input type="checkbox" class="form-check-input tag-assign-checkbox" 
-                           data-tag="${tag.name}" ${this.assignedTags.has(tag.name) ? 'checked' : ''}>
-                </td>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <span class="badge me-2" style="background: ${tag.color}; color: white;">${tag.name}</span>
-                    </div>
-                </td>
-                <td>
-                    <div class="color-display" style="width: 20px; height: 20px; background: ${tag.color}; border-radius: 3px; border: 1px solid #ddd;"></div>
-                </td>
-                <td>
-                    <span class="text-muted">${tag.usage_count}</span>
-                </td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="window.tagsManagement.editTag('${tag.name}')" title="Modifier">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-outline-danger" onclick="window.tagsManagement.deleteTag('${tag.name}')" title="Supprimer">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
+        // Vider le tbody
+        tbody.innerHTML = '';
         
-        console.log('🎨 HTML généré pour', paginatedTags.length, 'tags:', htmlContent.substring(0, 200) + '...');
-        tbody.innerHTML = htmlContent;
+        // Créer les lignes de tags à partir du template
+        paginatedTags.forEach(tag => {
+            const row = this.createTagTableRow(tag);
+            tbody.appendChild(row);
+        });
 
         // Event listeners pour les checkboxes d'assignation
         const checkboxes = tbody.querySelectorAll('.tag-assign-checkbox');
@@ -345,6 +335,60 @@ class TagsManagement {
         });
 
         this.renderPagination(filteredTags.length);
+    }
+
+    // Créer une ligne de tag dans le tableau à partir du template
+    createTagTableRow(tag) {
+        const template = document.getElementById('tag-table-row-template');
+        if (!template) {
+            console.error('❌ Template tag-table-row-template non trouvé');
+            // Fallback vers l'ancien système si le template n'existe pas
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <tr class="tag-row ${this.assignedTags.has(tag.name) ? 'table-success' : ''}" data-tag="${tag.name}">
+                    <td><input type="checkbox" class="form-check-input tag-assign-checkbox" data-tag="${tag.name}" ${this.assignedTags.has(tag.name) ? 'checked' : ''}></td>
+                    <td><div class="d-flex align-items-center"><span class="badge me-2" style="background: ${tag.color}; color: white;">${tag.name}</span></div></td>
+                    <td><div class="color-display" style="width: 20px; height: 20px; background: ${tag.color}; border-radius: 3px; border: 1px solid #ddd;"></div></td>
+                    <td><span class="text-muted">${tag.usage_count}</span></td>
+                    <td><div class="btn-group btn-group-sm"><button class="btn btn-outline-primary" onclick="window.tagsManagement.editTag('${tag.name}')" title="Modifier"><i class="bi bi-pencil"></i></button><button class="btn btn-outline-danger" onclick="window.tagsManagement.deleteTag('${tag.name}')" title="Supprimer"><i class="bi bi-trash"></i></button></div></td>
+                </tr>
+            `;
+            return row;
+        }
+        
+        const clone = template.content.cloneNode(true);
+        const row = clone.querySelector('.tag-row');
+        
+        // Configurer la ligne
+        row.classList.toggle('table-success', this.assignedTags.has(tag.name));
+        row.dataset.tag = tag.name;
+        
+        // Configurer la checkbox
+        const checkbox = row.querySelector('.tag-assign-checkbox');
+        checkbox.dataset.tag = tag.name;
+        checkbox.checked = this.assignedTags.has(tag.name);
+        
+        // Configurer le badge du nom
+        const badge = row.querySelector('.badge');
+        badge.textContent = tag.name;
+        badge.style.background = tag.color;
+        
+        // Configurer l'affichage de couleur
+        const colorDisplay = row.querySelector('.color-display');
+        colorDisplay.style.background = tag.color;
+        
+        // Configurer le compteur d'utilisation
+        const usageCount = row.querySelector('.usage-count');
+        usageCount.textContent = tag.usage_count;
+        
+        // Configurer les boutons d'action
+        const editBtn = row.querySelector('.edit-tag-btn');
+        const deleteBtn = row.querySelector('.delete-tag-btn');
+        
+        editBtn.addEventListener('click', () => this.editTag(tag.name));
+        deleteBtn.addEventListener('click', () => this.deleteTag(tag.name));
+        
+        return clone;
     }
 
     renderPagination(totalItems) {
@@ -710,197 +754,6 @@ class TagsManagement {
         }
     }
 
-    createTagsModal() {
-        console.log('🔨 Création de la modal HTML...');
-        
-        const modalHTML = `
-        <div class="modal fade" id="tagsManagementModal" tabindex="-1" aria-labelledby="tagsManagementModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="tagsManagementModalLabel">
-                            <i class="bi bi-tags me-2"></i>Gestion des étiquettes
-                        </h5>
-                        <button type="button" class="btn-close" onclick="window.tagsManagement.closeTagsManagement()" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Barre de recherche -->
-                        <div class="row mb-3">
-                            <div class="col-md-8">
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-search"></i>
-                                    </span>
-                                    <input type="text" id="tagsSearchInput" class="form-control" placeholder="Rechercher une étiquette...">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <button id="createNewTagBtn" class="btn btn-primary w-100">
-                                    <i class="bi bi-plus-lg me-1"></i>Nouvelle étiquette
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Liste des tags -->
-                        <div class="tags-management-container">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th style="width: 50px;">
-                                                <input type="checkbox" id="selectAllTags" class="form-check-input">
-                                            </th>
-                                            <th>Nom</th>
-                                            <th style="width: 80px;">Couleur</th>
-                                            <th style="width: 100px;">Utilisations</th>
-                                            <th style="width: 120px;">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tagsTableBody">
-                                        <!-- Les tags seront chargés dynamiquement ici -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Pagination -->
-                        <nav aria-label="Pagination des tags">
-                            <ul class="pagination justify-content-center" id="tagsPagination">
-                                <!-- Pagination sera générée dynamiquement -->
-                            </ul>
-                        </nav>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="d-flex w-100 justify-content-between align-items-center">
-                            <div>
-                                <button type="button" class="btn btn-primary" id="selectTagsBtn">
-                                    <i class="bi bi-check-lg me-1"></i>Sélectionner
-                                </button>
-                                <button type="button" class="btn btn-success ms-2" id="createNewTagFromModal">
-                                    <i class="bi bi-plus-lg me-1"></i>Nouveau
-                                </button>
-                            </div>
-                            <div class="d-flex align-items-center gap-3">
-                                <span id="tagsCount" class="text-muted">0 étiquette(s)</span>
-                                <button type="button" class="btn btn-secondary" onclick="window.tagsManagement.closeTagsManagement()">Fermer</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Modal de création/édition d'étiquette -->
-        <div class="modal fade" id="tagEditModal" tabindex="-1" aria-labelledby="tagEditModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="tagEditModalLabel">Nouvelle étiquette</h5>
-                        <button type="button" class="btn-close" onclick="window.tagsManagement.closeCreateTagModal()" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="tagEditForm">
-                            <div class="mb-3">
-                                <label for="tagNameInput" class="form-label">Nom de l'étiquette *</label>
-                                <input type="text" class="form-control" id="tagNameInput" required maxlength="50">
-                                <div class="form-text">Utilisez des noms courts et descriptifs</div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="tagColorInput" class="form-label">Couleur</label>
-                                <div class="d-flex align-items-center gap-2">
-                                    <input type="color" class="form-control form-control-color" id="tagColorInput" value="#667eea">
-                                    <div class="tag-preview" id="tagPreview">
-                                        <span class="badge" style="background: #667eea; color: white;">Aperçu</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="window.tagsManagement.closeCreateTagModal()">Annuler</button>
-                        <button type="button" class="btn btn-primary" id="saveTagBtn">
-                            <i class="bi bi-check-lg me-1"></i>Enregistrer
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
-        
-        // Créer un container temporaire pour parser le HTML
-        const container = document.createElement('div');
-        container.innerHTML = modalHTML;
-        
-        // Ajouter toutes les modals au body
-        while (container.firstChild) {
-            document.body.appendChild(container.firstChild);
-        }
-        
-        // Réattacher les event listeners après création
-        this.attachDynamicEventListeners();
-        
-        console.log('✅ Modal créée et ajoutée au DOM');
-        return document.getElementById('tagsManagementModal');
-    }
-
-    attachDynamicEventListeners() {
-        // Event listeners qui étaient attachés dans setupEventListeners mais pour la modal dynamique
-        
-        // Recherche
-        const searchInput = document.getElementById('tagsSearchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                this.searchQuery = e.target.value.toLowerCase();
-                this.renderTags();
-            });
-        }
-
-        // Nouveau tag
-        const createNewTagBtn = document.getElementById('createNewTagBtn');
-        if (createNewTagBtn) {
-            createNewTagBtn.addEventListener('click', () => this.showCreateTagModal());
-        }
-
-        // Sélection de tous les tags
-        const selectAllTags = document.getElementById('selectAllTags');
-        if (selectAllTags) {
-            selectAllTags.addEventListener('change', (e) => this.toggleSelectAll(e.target.checked));
-        }
-
-        // Boutons style OpenLinguify
-        const selectTagsBtn = document.getElementById('selectTagsBtn');
-        if (selectTagsBtn) {
-            selectTagsBtn.addEventListener('click', () => this.closeTagsManagement());
-        }
-
-        const createNewTagFromModal = document.getElementById('createNewTagFromModal');
-        if (createNewTagFromModal) {
-            createNewTagFromModal.addEventListener('click', () => this.showCreateTagModal());
-        }
-
-        // Sauvegarde du tag (création/édition)
-        const saveTagBtn = document.getElementById('saveTagBtn');
-        if (saveTagBtn) {
-            saveTagBtn.addEventListener('click', () => this.saveTag());
-        }
-
-        // Aperçu couleur
-        const tagColorInput = document.getElementById('tagColorInput');
-        const tagNameInput = document.getElementById('tagNameInput');
-        if (tagColorInput && tagNameInput) {
-            tagColorInput.addEventListener('input', () => this.updateTagPreview());
-            tagNameInput.addEventListener('input', () => this.updateTagPreview());
-        }
-
-        // Validation du formulaire
-        const tagEditForm = document.getElementById('tagEditForm');
-        if (tagEditForm) {
-            tagEditForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.saveTag();
-            });
-        }
-    }
 }
 
 // Instancier la classe globalement
@@ -922,6 +775,8 @@ window.testTagsManagement = function() {
 // Initialiser au chargement du DOM
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Initialisation TagsManagement...');
+    console.log('🔍 Modal trouvée:', !!document.getElementById('tagsManagementModal'));
+    console.log('🔍 window.tagsManagement existe:', !!window.tagsManagement);
     window.tagsManagement.init();
     console.log('✅ TagsManagement initialisé');
 });

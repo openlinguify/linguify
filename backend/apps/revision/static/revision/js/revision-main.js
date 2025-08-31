@@ -3481,6 +3481,10 @@ function quickEditTags(deckId) {
     
     console.log('✅ Deck trouvé:', deck.name, 'Tags actuels:', deck.tags);
     
+    // Debug pour vérifier la présence de la modal
+    const modal = document.getElementById('tagsManagementModal');
+    console.log('🔍 Modal tagsManagementModal existe dans le DOM:', !!modal);
+    
     // Store the deck ID for the tags management
     if (window.tagsManagement) {
         console.log('✅ tagsManagement trouvé, initialisation...');
@@ -3488,6 +3492,7 @@ function quickEditTags(deckId) {
         window.tagsManagement.showTagsManagement();
     } else {
         console.error('❌ window.tagsManagement non trouvé !');
+        console.log('🔍 Tentative de vérification des objets disponibles:', Object.keys(window).filter(k => k.includes('tags')));
     }
 }
 
