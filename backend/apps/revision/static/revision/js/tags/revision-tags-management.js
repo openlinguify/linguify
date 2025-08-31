@@ -112,8 +112,8 @@ class TagsManagement {
         console.log('🔍 Modal trouvée:', modal ? 'OUI' : 'NON');
         
         if (!modal) {
-            console.log('🔨 Création de la modal dynamiquement...');
-            modal = this.createTagsModal();
+            console.error('❌ Modal tags non trouvée dans le DOM. Vérifiez que le partiel est inclus.');
+            return;
         }
         
         this.updateModalTitle();
