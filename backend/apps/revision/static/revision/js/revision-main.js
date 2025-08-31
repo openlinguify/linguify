@@ -453,14 +453,12 @@ function renderDecksList() {
         <li class="deck-card ${appState.selectedDeck?.id === deck.id ? 'active' : ''}" 
             onclick="selectDeck(${deck.id})">
             <div class="deck-card-header">
-                <div class="flex items-center justify-between mb-2">
-                    <h4 class="deck-card-title">${deck.name || 'Sans nom'}</h4>
-                    <div class="flex items-center gap-2">
-                        <span class="badge-linguify">${deck.cards_count || 0}</span>
-                        ${deck.is_public ? '<i class="bi bi-globe2 text-linguify-accent" title="Public"></i>' : ''}
-                        ${deck.is_archived ? '<i class="bi bi-archive text-gray-400" title="Archivé"></i>' : ''}
-                    </div>
+                <span class="deck-card-count">${deck.cards_count || 0}</span>
+                <div class="deck-card-icons">
+                    ${deck.is_public ? '<i class="bi bi-globe2 text-linguify-accent" title="Public"></i>' : ''}
+                    ${deck.is_archived ? '<i class="bi bi-archive text-gray-400" title="Archivé"></i>' : ''}
                 </div>
+                <h4 class="deck-card-title">${deck.name || 'Sans nom'}</h4>
             </div>
             <div class="deck-card-description">${deck.description || 'Aucune description'}</div>
             <div class="deck-card-tags">

@@ -2059,9 +2059,7 @@ button.bg-linguify-gradient:hover,
 }
 
 .deck-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  position: relative;
   margin-bottom: 0.75rem;
 }
 
@@ -2071,14 +2069,29 @@ button.bg-linguify-gradient:hover,
   font-weight: 600;
   color: rgb(17 24 39);
   margin-bottom: 0.25rem;
+  padding-right: 3rem; /* Space for count badge */
 }
 
 .deck-card-count {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: rgb(107 114 128);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--linguify-primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  min-width: 1.5rem;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.deck-card-icons {
+  position: absolute;
+  top: 1.5rem;
+  right: 0;
   display: flex;
-  align-items: center;
   gap: 0.25rem;
 }
 
