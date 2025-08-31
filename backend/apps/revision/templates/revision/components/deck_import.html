@@ -30,9 +30,10 @@
                     <input type="text" id="importDeckName" 
                            class="form-control rounded" 
                            placeholder="Entrez le nom du nouveau deck..." 
-                           maxlength="100">
-                    <div class="position-absolute top-50 end-0 translate-middle-y me-3">
-                        <i class="bi bi-pencil-square text-muted"></i>
+                           maxlength="100"
+                           style="padding-right: 2.5rem;">
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-2" style="pointer-events: none; z-index: 10;">
+                        <i class="bi bi-pencil-square text-muted" style="font-size: 1rem;"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-center mt-1">
@@ -79,7 +80,7 @@
                         <p class="small text-muted mb-0">ou cliquez pour sélectionner un fichier</p>
                     </div>
                     <input type="file" id="importFile" class="d-none" accept=".csv,.xlsx,.xls">
-                    <button class="btn-linguify" onclick="document.getElementById('importFile').click()">
+                    <button class="btn-linguify" onclick="const input = document.getElementById('importFile'); input.value = ''; input.click();">
                         <i class="bi bi-folder2-open me-2"></i>
                         Parcourir les fichiers
                     </button>

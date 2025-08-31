@@ -668,6 +668,24 @@ function showImportForm() {
     elements.importFile.value = '';
     elements.importDeckName.value = '';
     
+    // Reset validation state - FORCE BRUTAL
+    elements.importDeckName.classList.remove('is-valid', 'is-invalid');
+    elements.importDeckName.removeAttribute('data-user-interacted');
+    elements.importDeckName.style.borderColor = '#dee2e6'; // Force bordure grise
+    elements.importDeckName.style.boxShadow = 'none'; // Supprime l'ombre
+    const errorElement = document.getElementById('deckNameError');
+    if (errorElement) {
+        errorElement.textContent = '';
+        errorElement.style.display = 'none';
+    }
+    
+    // Double vérification après un délai
+    setTimeout(() => {
+        elements.importDeckName.classList.remove('is-valid', 'is-invalid');
+        elements.importDeckName.style.borderColor = '#dee2e6';
+        console.log('Force reset classes:', elements.importDeckName.className);
+    }, 100);
+    
     // Reset form state
     clearSelectedFile();
     updateImportButton();
@@ -1317,8 +1335,11 @@ function initializeDragAndDrop() {
     // Handle dropped files
     dropZone.addEventListener('drop', handleDrop, false);
     
-    // Handle click on drop zone
-    dropZone.addEventListener('click', () => fileInput.click());
+    // Handle click on drop zone with forced reset
+    dropZone.addEventListener('click', () => {
+        fileInput.value = ''; // Reset pour forcer l'événement change même avec le même fichier
+        fileInput.click();
+    });
     
     // Handle file input change
     fileInput.addEventListener('change', handleFileSelect, false);
@@ -1456,7 +1477,13 @@ function initializeRealTimeValidation() {
         clearTimeout(validationTimeout);
         
         validationTimeout = setTimeout(() => {
-            validateDeckName(this.value.trim());
+            const value = this.value.trim();
+            // Ne pas montrer d'erreur si le champ est vide et que l'utilisateur n'a pas encore tapé
+            const skipEmpty = value === '' && !this.hasAttribute('data-user-interacted');
+            if (value !== '' || this.hasAttribute('data-user-interacted')) {
+                this.setAttribute('data-user-interacted', 'true');
+            }
+            validateDeckName(value, skipEmpty);
             updateImportButton();
         }, 300);
     });
@@ -1467,7 +1494,7 @@ function initializeRealTimeValidation() {
     });
 }
 
-function validateDeckName(name) {
+function validateDeckName(name, skipEmptyValidation = false) {
     const deckNameInput = document.getElementById('importDeckName');
     const errorElement = document.getElementById('deckNameError');
     
@@ -1478,8 +1505,10 @@ function validateDeckName(name) {
     errorElement.textContent = '';
     
     if (!name) {
-        deckNameInput.classList.add('is-invalid');
-        errorElement.textContent = 'Le nom du deck est requis';
+        if (!skipEmptyValidation) {
+            deckNameInput.classList.add('is-invalid');
+            errorElement.textContent = 'Le nom du deck est requis';
+        }
         return false;
     }
     
@@ -1526,7 +1555,11 @@ function updateImportButton() {
     if (!submitButton || !fileInput || !deckNameInput) return;
     
     const hasFile = fileInput.files && fileInput.files.length > 0;
-    const hasValidName = validateDeckName(deckNameInput.value.trim());
+    const deckName = deckNameInput.value.trim();
+    
+    // Pour updateImportButton, on vérifie juste si le nom est valide sans afficher d'erreur visuelle
+    const hasValidName = deckName && deckName.length >= 3 && deckName.length <= 100 && 
+                         !appState.decks.find(deck => deck.name.toLowerCase() === deckName.toLowerCase());
     
     const isValid = hasFile && hasValidName;
     
