@@ -2021,6 +2021,66 @@ async function saveEditDeck() {
     }
 }
 
+// Version de sauvegarde pour auto-save (sans fermer le formulaire)
+async function autoSaveEditDeck() {
+    if (!appState.selectedDeck) {
+        console.error('Aucun deck sélectionné pour auto-save');
+        return;
+    }
+    
+    const elements = getElements();
+    const name = elements.editDeckName.value.trim();
+    const description = elements.editDeckDescription.value.trim();
+    const isPublic = elements.editDeckVisibility.value === 'public';
+    
+    if (!name) {
+        console.warn('Nom vide, auto-save annulé');
+        return;
+    }
+    
+    try {
+        const deckData = {
+            name: name,
+            description: description,
+            is_public: isPublic,
+            tags: window.tagsManager ? window.tagsManager.getTags() : []
+        };
+        
+        const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, deckData);
+        
+        console.log('✅ Auto-save successful');
+        
+        // Mettre à jour l'état local
+        appState.selectedDeck = updatedDeck;
+        
+        // Update the deck in the decks list to reflect the changes
+        const deckIndex = appState.decks.findIndex(d => d.id === updatedDeck.id);
+        if (deckIndex !== -1) {
+            appState.decks[deckIndex] = { ...appState.decks[deckIndex], ...updatedDeck };
+        }
+        
+        // Update share button in case visibility changed
+        updateShareButtonText();
+        
+        // Re-render the decks list to show any changes (public icon, name, etc.)
+        renderDecksList();
+        
+        // Update deck header to show new name
+        const deckNameElement = document.getElementById('deckName');
+        if (deckNameElement && updatedDeck.name) {
+            deckNameElement.textContent = updatedDeck.name;
+        }
+        const deckDescElement = document.getElementById('deckDescription');
+        if (deckDescElement && updatedDeck.description !== undefined) {
+            deckDescElement.textContent = updatedDeck.description || 'Aucune description';
+        }
+        
+    } catch (error) {
+        console.error('Auto-save error:', error);
+        // Ne pas afficher d'erreur pour l'auto-save pour ne pas gêner l'utilisateur
+    }
+}
+
 // ===== ÉDITION EN PLACE DU NOM ET DESCRIPTION =====
 
 function enableInlineEditDeckName() {
@@ -4205,6 +4265,26 @@ function setupEventListeners() {
     elements.cancelEditDeck?.addEventListener('click', hideEditDeckForm);
     elements.cancelEditDeckAlt?.addEventListener('click', hideEditDeckForm);
     
+    // Auto-save for edit deck form
+    if (elements.editDeckName) {
+        elements.editDeckName.addEventListener('input', debounce(async () => {
+            console.log('🔄 Auto-saving deck name...');
+            await autoSaveEditDeck();
+        }, 1000));
+    }
+    if (elements.editDeckDescription) {
+        elements.editDeckDescription.addEventListener('input', debounce(async () => {
+            console.log('🔄 Auto-saving deck description...');
+            await autoSaveEditDeck();
+        }, 1000));
+    }
+    if (elements.editDeckVisibility) {
+        elements.editDeckVisibility.addEventListener('change', async () => {
+            console.log('🔄 Auto-saving deck visibility...');
+            await autoSaveEditDeck();
+        });
+    }
+    
     // Import form
     elements.submitImport?.addEventListener('click', importNewDeck);
     elements.cancelImport?.addEventListener('click', hideImportForm);
@@ -4680,6 +4760,7 @@ window.revisionMain = {
     showEditDeckForm,
     hideEditDeckForm,
     saveEditDeck,
+    autoSaveEditDeck,
     exportDeck,
     shareDeck,
     enableInlineEditDeckName,

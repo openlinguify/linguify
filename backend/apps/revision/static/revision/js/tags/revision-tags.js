@@ -105,6 +105,16 @@ class TagsManager {
             this.updateDisplay();
             this.hideSuggestions();
             
+            // Déclencher la sauvegarde si dans le formulaire d'édition
+            if (this.inputElement.id === 'editDeckTagsInput') {
+                setTimeout(async () => {
+                    console.log('🔄 Auto-saving after tag add...');
+                    if (window.revisionMain?.autoSaveEditDeck) {
+                        await window.revisionMain.autoSaveEditDeck();
+                    }
+                }, 500);
+            }
+            
             console.log(`✅ Tag ajouté avec succès: "${originalTag}"`);
             return true;
             
@@ -128,6 +138,16 @@ class TagsManager {
     removeTag(tagText) {
         this.tags.delete(tagText);
         this.updateDisplay();
+        
+        // Déclencher la sauvegarde si dans le formulaire d'édition
+        if (this.inputElement?.id === 'editDeckTagsInput') {
+            setTimeout(async () => {
+                console.log('🔄 Auto-saving after tag remove...');
+                if (window.revisionMain?.autoSaveEditDeck) {
+                    await window.revisionMain.autoSaveEditDeck();
+                }
+            }, 500);
+        }
     }
 
     removeLastTag() {

@@ -16,20 +16,6 @@
     <div class="study-content">
         <!-- Main content area -->
         <div style="padding: 0.75rem;">
-            
-            <!-- Auto-save info message -->
-            <div class="alert-box alert-primary rounded p-3 mb-4">
-                <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center justify-content-center bg-linguify-accent rounded me-3" style="width: 40px; height: 40px;">
-                        <i class="bi bi-cloud-check text-white"></i>
-                    </div>
-                    <div>
-                        <p class="small fw-semibold text-linguify-primary mb-1">Sauvegarde automatique activée</p>
-                        <p class="text-muted mb-0" style="font-size: 0.75rem;">Tous vos changements sont enregistrés automatiquement</p>
-                    </div>
-                </div>
-            </div>
-
             <!-- Nom du deck -->
             <div class="mb-4">
                 <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
@@ -84,12 +70,18 @@
             <!-- Tags -->
             <div class="mb-4">
                 <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
+                    <i class="bi bi-tags me-2"></i>
                     Tags
                 </label>
                 <div class="card-linguify border border-dashed border-primary border-opacity-25 p-3 position-relative">
                     <div class="tags-input-container">
                         <div class="bg-gray-50 rounded p-3 mb-3 border border-gray-200" style="min-height: 60px;">
-                            <div class="tags-display d-flex flex-wrap gap-2" id="editDeckTagsDisplay"></div>
+                            <div class="tags-display d-flex flex-wrap gap-2" id="editDeckTagsDisplay">
+                                <div id="noTagsMessage" class="text-muted d-flex align-items-center" style="font-size: 0.85rem;">
+                                    <i class="bi bi-tag me-1"></i>
+                                    Aucun tag - Ajoutez-en dans le champ ci-dessous
+                                </div>
+                            </div>
                         </div>
                         <input type="text" id="editDeckTagsInput" 
                                class="form-control rounded" 
