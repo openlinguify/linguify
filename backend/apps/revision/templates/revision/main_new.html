@@ -134,95 +134,111 @@
         <div class="p-4">
             <div class="study-mode-grid">
                 <a href="#" class="study-mode-card-linguify" id="studyFlashcards">
-                    <span class="study-mode-icon"><i class="bi bi-arrow-repeat"></i></span>
-                    <div class="study-mode-title">Flashcards</div>
-                    <div class="study-mode-description">
-                        Révisez avec les cartes traditionnelles. Idéal pour mémoriser le vocabulaire et les concepts.
+                    <div class="study-mode-content">
+                        <span class="study-mode-icon"><i class="bi bi-arrow-repeat"></i></span>
+                        <div class="study-mode-text">
+                            <div class="study-mode-title">Flashcards</div>
+                            <div class="study-mode-description">
+                                Cartes traditionnelles pour mémoriser le vocabulaire.
+                            </div>
+                        </div>
                     </div>
                 </a>
                 
                 <a href="#" class="study-mode-card-linguify" id="studyLearn">
-                    <span class="study-mode-icon"><i class="bi bi-bullseye"></i></span>
-                    <div class="study-mode-title">Apprendre</div>
-                    <div class="study-mode-description">
-                        Mode questionnaire à choix multiples pour tester vos connaissances de façon interactive.
+                    <div class="study-mode-content">
+                        <span class="study-mode-icon"><i class="bi bi-bullseye"></i></span>
+                        <div class="study-mode-text">
+                            <div class="study-mode-title">Apprendre</div>
+                            <div class="study-mode-description">
+                                Quiz à choix multiples interactifs.
+                            </div>
+                        </div>
                     </div>
                 </a>
                 
                 <a href="#" class="study-mode-card-linguify" id="studyMatch">
-                    <span class="study-mode-icon"><i class="bi bi-puzzle"></i></span>
-                    <div class="study-mode-title">Associer</div>
-                    <div class="study-mode-description">
-                        Jeu de mémoire pour associer les termes et définitions. Parfait pour s'amuser en apprenant.
+                    <div class="study-mode-content">
+                        <span class="study-mode-icon"><i class="bi bi-puzzle"></i></span>
+                        <div class="study-mode-text">
+                            <div class="study-mode-title">Associer</div>
+                            <div class="study-mode-description">
+                                Associez termes et définitions par paires.
+                            </div>
+                        </div>
                     </div>
                 </a>
                 
                 <a href="#" class="study-mode-card-linguify" id="studyReview">
-                    <span class="study-mode-icon"><i class="bi bi-lightning-fill"></i></span>
-                    <div class="study-mode-title">Révision rapide</div>
-                    <div class="study-mode-description">
-                        Révision éclair des cartes que vous devez revoir selon l'algorithme de répétition espacée.
+                    <div class="study-mode-content">
+                        <span class="study-mode-icon"><i class="bi bi-lightning-fill"></i></span>
+                        <div class="study-mode-text">
+                            <div class="study-mode-title">Révision rapide</div>
+                            <div class="study-mode-description">
+                                Révision rapide avec répétition espacée.
+                            </div>
+                        </div>
                     </div>
                 </a>
                 
                 <a href="#" class="study-mode-card-linguify" id="studyWrite">
-                    <span class="study-mode-icon"><i class="bi bi-pencil-square"></i></span>
-                    <div class="study-mode-title">Écriture</div>
-                    <div class="study-mode-description">
-                        Exercice d'écriture pour traduire les mots. Parfait pour améliorer l'orthographe et la mémorisation.
+                    <div class="study-mode-content">
+                        <span class="study-mode-icon"><i class="bi bi-pencil-square"></i></span>
+                        <div class="study-mode-text">
+                            <div class="study-mode-title">Écriture</div>
+                            <div class="study-mode-description">
+                                Exercices d'écriture et de traduction.
+                            </div>
+                        </div>
                     </div>
                 </a>
             </div>
             
             <!-- Cards Section -->
-            <div class="p-4 border-t border-gray-200">
-                <div class="flex items-center justify-between mb-4">
-                    <h6 class="text-lg font-semibold text-linguify-primary">Cartes du deck</h6>
-                    <span id="cardsCount" class="badge-linguify">0 carte(s)</span>
+            <div class="p-3 border-t border-gray-200">
+                <div class="flex items-center justify-between mb-3">
+                    <h6 class="text-base font-semibold text-linguify-primary">Cartes du deck</h6>
+                    <span id="cardsCount" class="badge-linguify text-sm">0 carte(s)</span>
                 </div>
                 
                 <!-- Language Settings for the Deck -->
-                <div id="deckLanguageSettings" class="card-linguify mb-4" style="display: none;">
-                    <div class="card-body">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="deckLanguageSettings" class="card-linguify mb-3" style="display: none;">
+                    <div class="card-body p-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="input-label text-sm font-semibold">Langue par défaut du recto</label>
-                                <select id="deckFrontLanguage" class="form-select-linguify">
-                                    <option value="">🔄 Détection automatique</option>
-                                    <option value="fr">🇫🇷 Français</option>
-                                    <option value="en">🇺🇸 Anglais</option>
-                                    <option value="es">🇪🇸 Espagnol</option>
-                                    <option value="it">🇮🇹 Italien</option>
-                                    <option value="de">🇩🇪 Allemand</option>
-                                    <option value="pt">🇵🇹 Portugais</option>
+                                <label class="input-label text-xs font-medium text-gray-600">Recto</label>
+                                <select id="deckFrontLanguage" class="form-select-linguify text-sm">
+                                    <option value="">🔄 Auto</option>
+                                    <option value="fr">🇫🇷 FR</option>
+                                    <option value="en">🇺🇸 EN</option>
+                                    <option value="es">🇪🇸 ES</option>
+                                    <option value="it">🇮🇹 IT</option>
+                                    <option value="de">🇩🇪 DE</option>
+                                    <option value="pt">🇵🇹 PT</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="input-label text-sm font-semibold">Langue par défaut du verso</label>
-                                <select id="deckBackLanguage" class="form-select-linguify">
-                                    <option value="">🔄 Détection automatique</option>
-                                    <option value="fr">🇫🇷 Français</option>
-                                    <option value="en">🇺🇸 Anglais</option>
-                                    <option value="es">🇪🇸 Espagnol</option>
-                                    <option value="it">🇮🇹 Italien</option>
-                                    <option value="de">🇩🇪 Allemand</option>
-                                    <option value="pt">🇵🇹 Portugais</option>
+                                <label class="input-label text-xs font-medium text-gray-600">Verso</label>
+                                <select id="deckBackLanguage" class="form-select-linguify text-sm">
+                                    <option value="">🔄 Auto</option>
+                                    <option value="fr">🇫🇷 FR</option>
+                                    <option value="en">🇺🇸 EN</option>
+                                    <option value="es">🇪🇸 ES</option>
+                                    <option value="it">🇮🇹 IT</option>
+                                    <option value="de">🇩🇪 DE</option>
+                                    <option value="pt">🇵🇹 PT</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="flex gap-3 mt-4">
-                            <button id="applyLanguagesToDeck" class="btn-linguify">
-                                <i class="bi bi-check-lg mr-2"></i>
-                                Appliquer à toutes les cartes
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <button id="applyLanguagesToDeck" class="btn-linguify btn-sm">
+                                <i class="bi bi-check-lg mr-1"></i>
+                                Appliquer
                             </button>
-                            <button id="applyLanguagesToNewCards" class="btn-linguify-secondary">
-                                <i class="bi bi-plus-circle mr-2"></i>
-                                Utiliser pour les nouvelles cartes
+                            <button id="applyLanguagesToNewCards" class="btn-linguify-secondary btn-sm">
+                                <i class="bi bi-plus-circle mr-1"></i>
+                                Par défaut
                             </button>
-                        </div>
-                        <div class="info-text mt-3">
-                            <i class="bi bi-info-circle text-linguify-accent mr-2"></i>
-                            Ces paramètres permettent une meilleure prononciation avec la synthèse vocale
                         </div>
                     </div>
                 </div>
