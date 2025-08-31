@@ -492,8 +492,28 @@ function refreshNotes() {
 
 // Basculer la sidebar sur mobile
 function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) sidebar.classList.toggle('show');
+    const sidebar = document.getElementById('notebookSidebar');
+    const isVisible = sidebar.classList.contains('show');
+    
+    // Toggle sidebar visibility
+    sidebar.classList.toggle('show');
+    
+    // Update button icon and accessibility attributes based on new state
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const icon = toggleBtn?.querySelector('i');
+    if (icon && toggleBtn) {
+        if (isVisible) {
+            // Sidebar will be hidden - show "expand" icon
+            icon.className = 'bi bi-layout-sidebar-inset-reverse';
+            toggleBtn.title = 'Afficher la barre latérale';
+            toggleBtn.setAttribute('aria-expanded', 'false');
+        } else {
+            // Sidebar will be shown - show "collapse" icon
+            icon.className = 'bi bi-layout-sidebar-inset';
+            toggleBtn.title = 'Masquer la barre latérale';
+            toggleBtn.setAttribute('aria-expanded', 'true');
+        }
+    }
 }
 
 // États d'affichage

@@ -3,9 +3,14 @@
 <div class="navbar-linguify">
     <!-- Gauche: Navigation + Actions principales -->
     <div class="navbar-section">
-        <!-- Bouton toggle sidebar mobile -->
-        <button id="toggleSidebar" class="btn-navbar-outline d-md-none" onclick="toggleSidebar()">
-            <i class="bi bi-list"></i>
+        <!-- Bouton toggle sidebar pour toutes les pages -->
+        <button id="toggleSidebar" 
+                class="btn-navbar-outline" 
+                title="Masquer/Afficher la barre latérale"
+                aria-label="Basculer la barre latérale"
+                aria-expanded="true"
+                onclick="toggleSidebar()">
+            <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
         </button>
         
         <!-- Navigation tabs -->

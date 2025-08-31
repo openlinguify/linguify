@@ -3463,6 +3463,57 @@ button.bg-linguify-gradient:hover,
   }
 }
 
+/* ===== NOTEBOOK SIDEBAR TOGGLE STYLES ===== */
+
+/* Sidebar collapsed state - ONLY for notebook app */
+#notebookSidebar.sidebar-linguify:not(.show) {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  border-right: none;
+  flex: 0 0 0;
+}
+
+/* Mobile responsiveness - ONLY for notebook app */
+@media (max-width: 768px) {
+  #notebookSidebar.sidebar-linguify {
+    position: fixed;
+    top: 64px; /* Height of navbar */
+    left: 0;
+    z-index: 1000;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  
+  #notebookSidebar.sidebar-linguify.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  #notebookSidebar.sidebar-linguify:not(.show) {
+    transform: translateX(-100%);
+    opacity: 0;
+    width: 280px; /* Maintain width on mobile */
+    flex: none;
+  }
+  
+  /* Overlay when sidebar is open on mobile */
+  #notebookSidebar.sidebar-linguify.show::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 280px;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -1;
+  }
+}
+
 .revision-study {
   height: 100vh;
   overflow-y: auto;
