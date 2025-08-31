@@ -13,17 +13,20 @@
         </div>
     </div>
     
-    <div class="study-content" style="height: calc(100vh - 120px); overflow: hidden; display: flex; flex-direction: column;">
-        <!-- Main content area with scroll -->
-        <div class="import-content-scrollable" style="flex: 1; overflow-y: auto; padding: 0.75rem; margin-right: -1rem; padding-right: 2rem;">
+    <div class="study-content" style="height: calc(100vh - 120px); overflow: hidden;">
+        <!-- Main content area with single scroll -->
+        <div style="height: 100%; overflow-y: auto; padding: 0.75rem;">
             
-            <!-- Info message -->
-            <div class="card-linguify p-3 mb-4">
+            <!-- Auto-save info message -->
+            <div class="alert-box alert-primary rounded p-3 mb-4">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-info-circle text-linguify-accent me-2"></i>
-                    <span class="text-muted" style="font-size: 0.75rem;">
-                        Modifiez les informations de votre deck. Ces changements seront sauvegardés immédiatement.
-                    </span>
+                    <div class="d-flex align-items-center justify-content-center bg-linguify-accent rounded me-3" style="width: 40px; height: 40px;">
+                        <i class="bi bi-cloud-check text-white"></i>
+                    </div>
+                    <div>
+                        <p class="small fw-semibold text-linguify-primary mb-1">Sauvegarde automatique activée</p>
+                        <p class="text-muted mb-0" style="font-size: 0.75rem;">Tous vos changements sont enregistrés automatiquement</p>
+                    </div>
                 </div>
             </div>
 
@@ -38,9 +41,14 @@
                            class="form-control rounded" 
                            placeholder="Ex: Vocabulaire anglais niveau B2" 
                            maxlength="100"
-                           style="padding-right: 2.5rem;">
+                           style="padding-right: 3rem;">
                     <div class="position-absolute top-50 end-0 translate-middle-y me-2" style="pointer-events: none; z-index: 10;">
-                        <i class="bi bi-pencil-square text-muted" style="font-size: 1rem;"></i>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-pencil-square text-muted me-1" style="font-size: 1rem;"></i>
+                            <div id="nameAutoSaveIndicator" class="d-none">
+                                <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="d-flex align-items-center mt-1">
@@ -61,9 +69,14 @@
                               rows="4"
                               placeholder="Décrivez le contenu de votre deck..." 
                               maxlength="500"
-                              style="padding-right: 2.5rem; resize: vertical;"></textarea>
+                              style="padding-right: 3rem; resize: vertical;"></textarea>
                     <div class="position-absolute top-0 end-0 mt-2 me-2" style="pointer-events: none; z-index: 10;">
-                        <i class="bi bi-chat-left-text text-muted" style="font-size: 1rem;"></i>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-chat-left-text text-muted me-1" style="font-size: 1rem;"></i>
+                            <div id="descriptionAutoSaveIndicator" class="d-none">
+                                <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="d-flex align-items-center mt-1">
@@ -78,7 +91,7 @@
                     <i class="bi bi-tags me-2"></i>
                     Tags
                 </label>
-                <div class="card-linguify border border-dashed border-primary border-opacity-25 p-3">
+                <div class="card-linguify border border-dashed border-primary border-opacity-25 p-3 position-relative">
                     <div class="tags-input-container">
                         <div class="bg-gray-50 rounded p-3 mb-3 border border-gray-200" style="min-height: 60px;">
                             <div class="tags-display d-flex flex-wrap gap-2" id="editDeckTagsDisplay"></div>
@@ -86,6 +99,11 @@
                         <input type="text" id="editDeckTagsInput" 
                                class="form-control rounded" 
                                placeholder="Ajouter des tags (appuyez sur Entrée)">
+                    </div>
+                    <div class="position-absolute top-0 end-0 mt-2 me-2" style="pointer-events: none; z-index: 10;">
+                        <div id="tagsAutoSaveIndicator" class="d-none">
+                            <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
+                        </div>
                     </div>
                 </div>
                 <div class="d-flex align-items-center mt-1">
@@ -95,14 +113,14 @@
             </div>
 
             <!-- Visibilité -->
-            <div class="mb-5">
+            <div class="mb-6">
                 <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
                     <i class="bi bi-eye me-2"></i>
                     Visibilité
                 </label>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="card-linguify p-3 border border-primary border-opacity-25" style="cursor: pointer;" onclick="document.getElementById('editDeckVisibility').value='private';">
+                        <div class="card-linguify p-3 border border-primary border-opacity-25 position-relative" style="cursor: pointer;" onclick="document.getElementById('editDeckVisibility').value='private';">
                             <div class="d-flex align-items-center">
                                 <div class="d-flex align-items-center justify-content-center bg-secondary rounded me-3" style="width: 40px; height: 40px;">
                                     <i class="bi bi-lock text-white"></i>
@@ -115,7 +133,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card-linguify p-3 border border-primary border-opacity-25" style="cursor: pointer;" onclick="document.getElementById('editDeckVisibility').value='public';">
+                        <div class="card-linguify p-3 border border-primary border-opacity-25 position-relative" style="cursor: pointer;" onclick="document.getElementById('editDeckVisibility').value='public';">
                             <div class="d-flex align-items-center">
                                 <div class="d-flex align-items-center justify-content-center bg-linguify-accent rounded me-3" style="width: 40px; height: 40px;">
                                     <i class="bi bi-globe text-white"></i>
@@ -132,26 +150,17 @@
                     <option value="private">🔒 Privé - Visible par vous seul</option>
                     <option value="public">🌍 Public - Visible par tous les utilisateurs</option>
                 </select>
-                <div class="d-flex align-items-center mt-1">
-                    <i class="bi bi-globe text-linguify-accent me-1" style="font-size: 0.75rem;"></i>
-                    <span class="text-muted" style="font-size: 0.75rem;">Les decks publics peuvent être découverts et utilisés par d'autres utilisateurs</span>
+                <div class="d-flex align-items-center justify-content-between mt-1">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-globe text-linguify-accent me-1" style="font-size: 0.75rem;"></i>
+                        <span class="text-muted" style="font-size: 0.75rem;">Les decks publics peuvent être découverts et utilisés par d'autres utilisateurs</span>
+                    </div>
+                    <div id="visibilityAutoSaveIndicator" class="d-none">
+                        <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
+                    </div>
                 </div>
             </div>
 
-        </div>
-        
-        <!-- Fixed bottom actions - positioned at absolute bottom -->
-        <div class="position-sticky bottom-0 bg-white border-top p-3 shadow-lg" style="margin-left: -0.75rem; margin-right: -2rem; z-index: 1000;">
-            <div class="d-flex gap-3 justify-content-end align-items-center">
-                <button id="cancelEditDeckAlt" class="btn-linguify-secondary">
-                    <i class="bi bi-x-lg me-2"></i>
-                    Annuler
-                </button>
-                <button id="saveEditDeck" class="btn-linguify d-flex align-items-center">
-                    <i class="bi bi-check-circle me-2"></i>
-                    Sauvegarder les modifications
-                </button>
-            </div>
         </div>
     </div>
 </div>
