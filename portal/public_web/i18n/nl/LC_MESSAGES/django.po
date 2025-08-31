@@ -3098,6 +3098,67 @@ msgstr ""
 #~ msgid "Plans adapted to your needs"
 #~ msgstr "Plans adapted to your needs"
 
+# Todo App Long Descriptions
+msgid "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive."
+msgstr "Maak, organiseer en volg taken met prioriteiten, vervaldatums, tags en voortgangsregistratie. Alles wat je nodig hebt om productief te blijven."
+
+msgid "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress."
+msgstr "Visualiseer je workflow met aanpasbare kanban borden. Sleep taken tussen kolommen om voortgang bij te houden."
+
+msgid "Group related tasks into projects with progress tracking, deadlines, and team collaboration features."
+msgstr "Groepeer gerelateerde taken in projecten met voortgangsregistratie, deadlines en teamsamenwerkingsfuncties."
+
+msgid "Take notes with markdown support, attach them to tasks or projects, and organize with tags and categories."
+msgstr "Maak notities met markdown ondersteuning, koppel ze aan taken of projecten, en organiseer met tags en categorieën."
+
+msgid "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track."
+msgstr "Stel aangepaste herinneringen in voor taken en deadlines. Ontvang meldingen op het juiste moment om op koers te blijven."
+
+msgid "Organize tasks and notes with flexible tagging system and categories for better organization and filtering."
+msgstr "Organiseer taken en notities met flexibel tagsysteem en categorieën voor betere organisatie en filtering."
+
+msgid "Monitor your task activity and progress with a detailed activity feed showing all your recent actions."
+msgstr "Houd je taakactiviteit en voortgang in de gaten met een gedetailleerde activiteitenfeed die al je recente acties toont."
+
+msgid "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer."
+msgstr "Wissel tussen lijstweergave, Kanban bord en activiteitenfeed om je taken te visualiseren zoals je dat wilt."
+
+msgid "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines."
+msgstr "Bekijk taken en deadlines in agendaformaat. Plan je schema en mis nooit belangrijke deadlines."
+
+msgid "Track your productivity with detailed analytics, completion rates, and progress insights."
+msgstr "Volg je productiviteit met gedetailleerde analyses, voltooiingspercentages en voortgangsinzichten."
+
+msgid "Enhanced team features with real-time collaboration, task assignment, and team analytics."
+msgstr "Verbeterde teamfuncties met real-time samenwerking, taaktoewijzing en teamanalyses."
+
+msgid "Track time spent on tasks with built-in timer and detailed time analytics."
+msgstr "Houd tijd bij die besteed wordt aan taken met ingebouwde timer en gedetailleerde tijdsanalyses."
+
+msgid "Attach files and documents to your tasks and projects for better organization."
+msgstr "Voeg bestanden en documenten toe aan je taken en projecten voor betere organisatie."
+
+msgid "Exciting features in active development"
+msgstr "Spannende functies in actieve ontwikkeling"
+
+msgid "Organize assignments, track study progress, manage course projects, and plan your academic schedule."
+msgstr "Organiseer opdrachten, volg studievoortgang, beheer cursusprojecten en plan je academische schema."
+
+msgid "Manage work projects, track deadlines, organize meeting notes, and boost your productivity."
+msgstr "Beheer werkprojecten, volg deadlines, organiseer vergadernotities en verhoog je productiviteit."
+
+msgid "Collaborate on shared projects, assign tasks to team members, and track collective progress."
+msgstr "Werk samen aan gedeelde projecten, wijs taken toe aan teamleden en volg collectieve voortgang."
+
+msgid "Create your first project and organize tasks by categories and priorities."
+msgstr "Maak je eerste project aan en organiseer taken op categorieën en prioriteiten."
+
+msgid "Join thousands of users who have transformed their productivity with our todo app."
+msgstr "Sluit je aan bij duizenden gebruikers die hun productiviteit hebben getransformeerd met onze taken-app."
+
+msgid "These features will be available soon. Stay tuned for the latest updates!"
+msgstr "Deze functies zijn binnenkort beschikbaar. Blijf op de hoogte van de laatste updates!"
+
 #~ msgid "Choose the offer that matches your goals and learning pace."
 #~ msgstr "Choose the offer that matches your goals and learning pace."
 

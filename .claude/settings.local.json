@@ -5,7 +5,10 @@
       "Bash(source:*)",
       "Bash(python manage.py:*)",
       "Bash(grep:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(msgfmt:*)",
+      "WebFetch(domain:localhost)"
     ],
     "deny": [],
     "ask": [],
