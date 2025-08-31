@@ -315,27 +315,10 @@ function displayDeckTags(deck) {
     }).join('');
 }
 
-// Créer l'élément "Aucun tag" à partir du template
+// Créer l'élément "Aucun tag" - Version simplifiée et robuste
 function createNoTagsElement(deckId) {
-    const template = document.getElementById('no-tags-template');
-    
-    if (!template) {
-        // Fallback avec onclick inline
-        return `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deckId})" style="cursor: pointer; color: #2d5bba;"></i> pour en ajouter</span>`;
-    }
-    
-    const clone = template.content.cloneNode(true);
-    const icon = clone.querySelector('.clickable-tag-icon');
-    
-    if (icon) {
-        // Utiliser onclick inline pour la compatibilité avec innerHTML
-        icon.setAttribute('onclick', `event.stopPropagation(); quickEditTags(${deckId})`);
-    }
-    
-    // Retourner le HTML comme string pour compatibilité
-    const div = document.createElement('div');
-    div.appendChild(clone);
-    return div.innerHTML;
+    // Version directe et robuste - toujours fonctionnelle
+    return `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deckId})" style="cursor: pointer; color: #2d5bba; font-size: 0.875rem; margin: 0 2px;"></i> pour en ajouter</span>`;
 }
 
 // Créer un élément tag à partir du template

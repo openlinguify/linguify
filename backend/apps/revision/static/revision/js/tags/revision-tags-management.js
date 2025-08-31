@@ -256,12 +256,20 @@ class TagsManagement {
         // Calculer la date de création (placeholder)
         const createdDate = new Date().toLocaleDateString();
         
+        // Déterminer si le tag est assigné au deck courant
+        const isAssigned = this.assignedTags.has(tag.name);
+        const assignIcon = isAssigned ? 'bi-check-circle-fill' : 'bi-circle';
+        const assignColor = isAssigned ? tag.color : '#d1d5db';
+        
         row.innerHTML = `
             <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
-                <span style="width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; background-color: ${tag.color};"></span>
+                <i class="bi ${assignIcon}" style="color: ${assignColor}; font-size: 0.875rem; cursor: pointer;" title="${isAssigned ? 'Cliquer pour désassigner' : 'Cliquer pour assigner'}"></i>
             </td>
             <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
-                <span style="font-weight: 500; color: #111827; cursor: pointer; font-size: 0.875rem;">${tag.name}</span>
+                <div style="display: flex; align-items: center;">
+                    <span style="width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; background-color: ${tag.color};"></span>
+                    <span style="font-weight: ${isAssigned ? '600' : '500'}; color: ${isAssigned ? '#2563eb' : '#111827'}; cursor: pointer; font-size: 0.875rem;">${tag.name}</span>
+                </div>
             </td>
             <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
                 <span style="font-size: 0.8125rem; color: #6b7280;">${tag.usage_count}</span>
@@ -285,28 +293,42 @@ class TagsManagement {
             </td>
         `;
         
-        // Ajouter un event listener pour la sélection de tag (clic sur le nom)
-        const tagNameElement = row.querySelector('td:nth-child(2) span');
-        if (tagNameElement) {
-            tagNameElement.addEventListener('click', () => {
+        // Ajouter des event listeners pour l'assignation de tag
+        const assignIcon = row.querySelector('td:nth-child(1) i');
+        const tagNameElement = row.querySelector('td:nth-child(2) span:last-child');
+        
+        // Clic sur l'icône d'assignation
+        if (assignIcon) {
+            assignIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
                 this.toggleTagAssignment(tag.name, row);
             });
         }
         
-        // Ajouter les effets hover et la sélection
+        // Clic sur le nom du tag
+        if (tagNameElement) {
+            tagNameElement.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleTagAssignment(tag.name, row);
+            });
+        }
+        
+        // Ajouter les effets hover
         row.addEventListener('mouseenter', () => {
-            if (!row.classList.contains('tag-assigned')) {
+            if (!this.assignedTags.has(tag.name)) {
                 row.style.backgroundColor = '#fafbfc';
             }
         });
         
         row.addEventListener('mouseleave', () => {
-            if (!row.classList.contains('tag-assigned')) {
+            if (!this.assignedTags.has(tag.name)) {
                 row.style.backgroundColor = '';
+            } else {
+                row.style.backgroundColor = '#f0f9ff';
             }
         });
         
-        // Marquer visuellement si le tag est assigné au deck courant
+        // Style initial pour les tags assignés
         if (this.assignedTags.has(tag.name)) {
             row.classList.add('tag-assigned');
             row.style.backgroundColor = '#f0f9ff';
@@ -316,21 +338,57 @@ class TagsManagement {
         return row;
     }
 
-    // Nouvelle méthode pour basculer l'assignation d'un tag
+    // Méthode pour basculer l'assignation d'un tag avec feedback visuel amélioré
     toggleTagAssignment(tagName, rowElement) {
-        if (this.assignedTags.has(tagName)) {
+        const tag = this.tags.find(t => t.name === tagName);
+        if (!tag) return;
+        
+        const assignIcon = rowElement.querySelector('td:nth-child(1) i');
+        const tagNameElement = rowElement.querySelector('td:nth-child(2) span:last-child');
+        const isCurrentlyAssigned = this.assignedTags.has(tagName);
+        
+        if (isCurrentlyAssigned) {
+            // Désassigner le tag
             this.assignedTags.delete(tagName);
             rowElement.classList.remove('tag-assigned');
             rowElement.style.backgroundColor = '';
             rowElement.style.borderLeft = '';
+            
+            // Mettre à jour l'icône
+            if (assignIcon) {
+                assignIcon.className = 'bi bi-circle';
+                assignIcon.style.color = '#d1d5db';
+                assignIcon.title = 'Cliquer pour assigner';
+            }
+            
+            // Mettre à jour le style du nom
+            if (tagNameElement) {
+                tagNameElement.style.fontWeight = '500';
+                tagNameElement.style.color = '#111827';
+            }
+            
+            window.notificationService?.success(`Tag "${tagName}" retiré du deck`);
         } else {
+            // Assigner le tag
             this.assignedTags.add(tagName);
             rowElement.classList.add('tag-assigned');
             rowElement.style.backgroundColor = '#f0f9ff';
-            const tag = this.tags.find(t => t.name === tagName);
-            if (tag) {
-                rowElement.style.borderLeft = `3px solid ${tag.color}`;
+            rowElement.style.borderLeft = `3px solid ${tag.color}`;
+            
+            // Mettre à jour l'icône
+            if (assignIcon) {
+                assignIcon.className = 'bi bi-check-circle-fill';
+                assignIcon.style.color = tag.color;
+                assignIcon.title = 'Cliquer pour désassigner';
             }
+            
+            // Mettre à jour le style du nom
+            if (tagNameElement) {
+                tagNameElement.style.fontWeight = '600';
+                tagNameElement.style.color = '#2563eb';
+            }
+            
+            window.notificationService?.success(`Tag "${tagName}" ajouté au deck`);
         }
         
         // Sauvegarder les changements immédiatement
