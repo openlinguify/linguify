@@ -3428,9 +3428,70 @@ button.bg-linguify-gradient:hover,
 }
 
 .study-mode-icon {
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin-bottom: 0.75rem;
-  color: #2D5BBA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, var(--linguify-primary-light), var(--linguify-primary));
+  color: white;
+  box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);
+}
+
+.study-mode-icon i {
+  font-size: 1.75rem;
+}
+
+/* Couleurs spécifiques pour chaque mode */
+#studyFlashcards .study-mode-icon {
+  background: linear-gradient(135deg, var(--linguify-primary-light), var(--linguify-primary));
+  box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);
+}
+
+#studyLearn .study-mode-icon {
+  background: linear-gradient(135deg, var(--linguify-accent-light), var(--linguify-accent));
+  box-shadow: 0 4px 15px rgba(1, 126, 132, 0.2);
+}
+
+#studyMatch .study-mode-icon {
+  background: linear-gradient(135deg, var(--linguify-secondary-light), var(--linguify-secondary));
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+}
+
+#studyReview .study-mode-icon {
+  background: linear-gradient(135deg, #FDE047, var(--linguify-warning));
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+}
+
+#studyWrite .study-mode-icon {
+  background: linear-gradient(135deg, #34D399, var(--linguify-success));
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+}
+
+/* Effet hover */
+.study-mode-card-linguify:hover .study-mode-icon {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3);
+}
+
+#studyLearn:hover .study-mode-icon {
+  box-shadow: 0 8px 25px rgba(1, 126, 132, 0.3);
+}
+
+#studyMatch:hover .study-mode-icon {
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+}
+
+#studyReview:hover .study-mode-icon {
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+}
+
+#studyWrite:hover .study-mode-icon {
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
 }
 
 .study-mode-title {
