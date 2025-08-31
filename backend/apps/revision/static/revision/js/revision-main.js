@@ -2023,6 +2023,185 @@ async function saveEditDeck() {
     }
 }
 
+// ===== ÉDITION EN PLACE DU NOM ET DESCRIPTION =====
+
+function enableInlineEditDeckName() {
+    const deckNameElement = document.getElementById('deckName');
+    if (!deckNameElement || !appState.selectedDeck) return;
+    
+    // Vérifier s'il y a déjà un input en cours d'édition
+    if (deckNameElement.parentNode.querySelector('.inline-edit-input')) return;
+    
+    const currentText = deckNameElement.textContent.trim();
+    const originalText = currentText;
+    
+    // Créer un input temporaire
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentText;
+    input.className = 'form-control text-xl font-semibold text-linguify-primary mb-1 inline-edit-input';
+    input.style.border = '2px solid #007bff';
+    input.style.borderRadius = '4px';
+    input.style.padding = '4px 8px';
+    input.style.background = '#fff';
+    input.style.width = '100%';
+    input.style.maxWidth = '400px';
+    
+    // Fonction de nettoyage et restauration
+    const cleanup = () => {
+        if (input.parentNode) {
+            input.remove();
+        }
+        deckNameElement.style.display = '';
+    };
+    
+    // Fonction de sauvegarde
+    const saveName = async () => {
+        const newName = input.value.trim();
+        if (newName && newName !== originalText) {
+            try {
+                const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
+                    name: newName,
+                    description: appState.selectedDeck.description
+                });
+                appState.selectedDeck.name = newName;
+                deckNameElement.textContent = newName;
+                
+                // Mettre à jour le deck dans la liste des decks
+                const deckIndex = appState.decks.findIndex(deck => deck.id === appState.selectedDeck.id);
+                if (deckIndex !== -1) {
+                    appState.decks[deckIndex].name = newName;
+                }
+                
+                // Rafraîchir la sidebar
+                renderDecksList();
+                
+                window.notificationService.success('Nom du deck modifié avec succès');
+            } catch (error) {
+                console.error('Error updating deck name:', error);
+                window.notificationService.error('Erreur lors de la modification du nom');
+                deckNameElement.textContent = originalText;
+            }
+        } else {
+            deckNameElement.textContent = originalText;
+        }
+        cleanup();
+    };
+    
+    // Fonction d'annulation
+    const cancel = () => {
+        deckNameElement.textContent = originalText;
+        cleanup();
+    };
+    
+    // Event listeners
+    input.addEventListener('blur', saveName);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveName();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancel();
+        }
+    });
+    
+    // Remplacer l'élément
+    deckNameElement.style.display = 'none';
+    deckNameElement.parentNode.insertBefore(input, deckNameElement);
+    input.focus();
+    input.select();
+}
+
+function enableInlineEditDeckDescription() {
+    const deckDescElement = document.getElementById('deckDescription');
+    if (!deckDescElement || !appState.selectedDeck) return;
+    
+    // Vérifier s'il y a déjà un input en cours d'édition
+    if (deckDescElement.parentNode.querySelector('.inline-edit-input')) return;
+    
+    const currentText = deckDescElement.textContent.trim();
+    const originalText = currentText;
+    
+    // Créer un input temporaire
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentText;
+    input.className = 'form-control text-gray-500 inline-edit-input';
+    input.style.border = '2px solid #007bff';
+    input.style.borderRadius = '4px';
+    input.style.padding = '4px 8px';
+    input.style.background = '#fff';
+    input.style.fontSize = '0.875rem';
+    input.style.width = '100%';
+    input.style.maxWidth = '600px';
+    
+    // Fonction de nettoyage et restauration
+    const cleanup = () => {
+        if (input.parentNode) {
+            input.remove();
+        }
+        deckDescElement.style.display = '';
+    };
+    
+    // Fonction de sauvegarde
+    const saveDescription = async () => {
+        const newDescription = input.value.trim();
+        if (newDescription !== originalText) {
+            try {
+                const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
+                    name: appState.selectedDeck.name,
+                    description: newDescription
+                });
+                appState.selectedDeck.description = newDescription;
+                deckDescElement.textContent = newDescription;
+                
+                // Mettre à jour le deck dans la liste des decks
+                const deckIndex = appState.decks.findIndex(deck => deck.id === appState.selectedDeck.id);
+                if (deckIndex !== -1) {
+                    appState.decks[deckIndex].description = newDescription;
+                }
+                
+                // Rafraîchir la sidebar
+                renderDecksList();
+                
+                window.notificationService.success('Description du deck modifiée avec succès');
+            } catch (error) {
+                console.error('Error updating deck description:', error);
+                window.notificationService.error('Erreur lors de la modification de la description');
+                deckDescElement.textContent = originalText;
+            }
+        } else {
+            deckDescElement.textContent = originalText;
+        }
+        cleanup();
+    };
+    
+    // Fonction d'annulation
+    const cancel = () => {
+        deckDescElement.textContent = originalText;
+        cleanup();
+    };
+    
+    // Event listeners
+    input.addEventListener('blur', saveDescription);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveDescription();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancel();
+        }
+    });
+    
+    // Remplacer l'élément
+    deckDescElement.style.display = 'none';
+    deckDescElement.parentNode.insertBefore(input, deckDescElement);
+    input.focus();
+    input.select();
+}
+
 async function exportDeck() {
     if (!appState.selectedDeck) {
         window.notificationService.error('Aucun deck sélectionné');
@@ -4013,6 +4192,10 @@ function setupEventListeners() {
     document.getElementById('archiveDeck')?.addEventListener('click', archiveDeck);
     document.getElementById('deleteDeck')?.addEventListener('click', deleteDeckConfirm);
     
+    // Double-click editing for deck name and description
+    document.getElementById('deckName')?.addEventListener('dblclick', enableInlineEditDeckName);
+    document.getElementById('deckDescription')?.addEventListener('dblclick', enableInlineEditDeckDescription);
+    
     // Create deck buttons
     document.querySelectorAll('.create-deck-btn').forEach(btn => {
         btn.addEventListener('click', showCreateForm);
@@ -4427,6 +4610,8 @@ window.revisionMain = {
     saveEditDeck,
     exportDeck,
     shareDeck,
+    enableInlineEditDeckName,
+    enableInlineEditDeckDescription,
     makePrivate,
     executeMakePrivate,
     archiveDeck,
