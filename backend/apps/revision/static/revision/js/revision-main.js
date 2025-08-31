@@ -1262,12 +1262,12 @@ async function importNewDeck() {
     console.log('🚀 Import deck - using file:', file);
     
     if (!file) {
-        window.notificationService.error('📁 Fichier requis !', 'Veuillez sélectionner un fichier Excel ou CSV avant de continuer.');
+        window.notificationService.error('Fichier requis !', 'Veuillez sélectionner un fichier Excel ou CSV avant de continuer.');
         return;
     }
     
     if (!name) {
-        window.notificationService.error('⚠️ Nom d\'une liste requis !', 'Veuillez saisir un nom pour votre liste avant de continuer.');
+        window.notificationService.error('Nom d\'une liste requis !', 'Veuillez saisir un nom pour votre liste avant de continuer.');
         // Focus sur le champ nom pour aider l'utilisateur
         elements.importDeckName.focus();
         return;
@@ -1385,13 +1385,13 @@ function initializeDragAndDrop() {
 }
 
 function handleFileSelect(e) {
-    console.log('🔥 handleFileSelect appelé', e);
-    console.log('🔥 Fichiers sélectionnés:', e.target.files);
+    console.log('handleFileSelect appelé', e);
+    console.log('Fichiers sélectionnés:', e.target.files);
     
     const file = e.target.files[0];
     
     if (!file) {
-        console.log('❌ Aucun fichier sélectionné');
+        console.log('Aucun fichier sélectionné');
         clearSelectedFile();
         return;
     }
@@ -1400,7 +1400,7 @@ function handleFileSelect(e) {
     
     // Validation du fichier
     if (!validateFile(file)) {
-        console.log('❌ Fichier invalide');
+        console.log('Fichier invalide');
         clearSelectedFile();
         return;
     }
@@ -1597,18 +1597,10 @@ function updateImportButton() {
     const hasFile = (fileInput.files && fileInput.files.length > 0) || window.selectedImportFile;
     const deckName = deckNameInput.value.trim();
     
-    // Pour updateImportButton, on vérifie juste si le nom est valide sans afficher d'erreur visuelle
-    const hasValidName = deckName && deckName.length >= 3 && deckName.length <= 100 && 
-                         !appState.decks.find(deck => deck.name.toLowerCase() === deckName.toLowerCase());
+    // Pour updateImportButton, on active le bouton si on a AU MOINS un fichier
+    // La validation complète du nom se fera au moment du clic
+    const isValid = hasFile;
     
-    const isValid = hasFile && hasValidName;
-    
-    console.log('🔍 Debug updateImportButton:');
-    console.log('  - hasFile:', hasFile);
-    console.log('  - deckName:', deckName);
-    console.log('  - hasValidName:', hasValidName);
-    console.log('  - isValid:', isValid);
-    console.log('  - Button disabled before:', submitButton.disabled);
     
     submitButton.disabled = !isValid;
     
@@ -3604,7 +3596,7 @@ function setupFilterDropdowns() {
             
             console.log('✅ Tags dropdown events configured');
         } else {
-            console.warn('⚠️ Tags toggle button not found');
+            console.warn('Tags toggle button not found');
         }
         
         // Set up error resilience for other dropdowns
@@ -3619,7 +3611,7 @@ function setupFilterDropdowns() {
                     console.log(`📊 ${toggleId} dropdown closed`);
                 });
             } else {
-                console.warn(`⚠️ ${toggleId} not found`);
+                console.warn(`${toggleId} not found`);
             }
         });
         
@@ -3677,7 +3669,7 @@ function selectStatusFilter(value, text) {
             try {
                 item.classList.remove('active');
             } catch (itemError) {
-                console.warn('⚠️ Error updating item state:', itemError.message);
+                console.warn('Error updating item state:', itemError.message);
             }
         });
         
@@ -3691,7 +3683,7 @@ function selectStatusFilter(value, text) {
         
         // Update app state and reload decks with validation
         if (!appState.filters) {
-            console.warn('⚠️ appState.filters not initialized, creating...');
+            console.warn('appState.filters not initialized, creating...');
             appState.filters = {};
         }
         
@@ -3727,7 +3719,7 @@ function selectSortFilter(value, text) {
             try {
                 item.classList.remove('active');
             } catch (itemError) {
-                console.warn('⚠️ Error updating sort item state:', itemError.message);
+                console.warn('Error updating sort item state:', itemError.message);
             }
         });
         
@@ -3741,7 +3733,7 @@ function selectSortFilter(value, text) {
         
         // Update app state and reload decks with validation
         if (!appState.filters) {
-            console.warn('⚠️ appState.filters not initialized, creating...');
+            console.warn('appState.filters not initialized, creating...');
             appState.filters = {};
         }
         
