@@ -2202,6 +2202,24 @@ function enableInlineEditDeckDescription() {
     input.select();
 }
 
+function showTagsEditor() {
+    if (!appState.selectedDeck) return;
+    
+    // Ouvrir le formulaire d'édition existant du deck
+    // qui contient déjà une interface pour gérer les tags
+    showEditDeckForm();
+    
+    // Focus automatiquement sur l'input des tags après un délai
+    setTimeout(() => {
+        const tagsInput = document.getElementById('editDeckTagsInput');
+        if (tagsInput) {
+            tagsInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            tagsInput.focus();
+        }
+    }, 500);
+}
+
+
 async function exportDeck() {
     if (!appState.selectedDeck) {
         window.notificationService.error('Aucun deck sélectionné');
@@ -4196,6 +4214,9 @@ function setupEventListeners() {
     document.getElementById('deckName')?.addEventListener('dblclick', enableInlineEditDeckName);
     document.getElementById('deckDescription')?.addEventListener('dblclick', enableInlineEditDeckDescription);
     
+    // Click on tags to edit
+    document.getElementById('deckTagsDisplay')?.addEventListener('click', showTagsEditor);
+    
     // Create deck buttons
     document.querySelectorAll('.create-deck-btn').forEach(btn => {
         btn.addEventListener('click', showCreateForm);
@@ -4612,6 +4633,7 @@ window.revisionMain = {
     shareDeck,
     enableInlineEditDeckName,
     enableInlineEditDeckDescription,
+    showTagsEditor,
     makePrivate,
     executeMakePrivate,
     archiveDeck,
