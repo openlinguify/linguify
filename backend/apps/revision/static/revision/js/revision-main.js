@@ -462,7 +462,7 @@ function renderDecksList() {
             </div>
             <div class="deck-card-description">${deck.description || 'Aucune description'}</div>
             <div class="deck-card-tags">
-                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ''}</div>
+                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ((!deck.tags || deck.tags.length === 0) ? `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deck.id})" style="cursor: pointer; color: #2d5bba; font-size: 0.875rem;"></i> pour en ajouter</span>` : deck.tags.map(tag => `<span class="tag-linguify tag-linguify-blue">${tag}</span>`).join(''))}</div>
                 <button class="btn-link-linguify text-sm" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="Ajouter des tags">
                     <i class="bi bi-tag"></i>
                 </button>
@@ -3486,13 +3486,41 @@ function quickEditTags(deckId) {
     console.log('🔍 Modal tagsManagementModal existe dans le DOM:', !!modal);
     
     // Store the deck ID for the tags management
-    if (window.tagsManagement) {
-        console.log('✅ tagsManagement trouvé, initialisation...');
-        window.tagsManagement.setCurrentDeck(deckId);
-        window.tagsManagement.showTagsManagement();
-    } else {
-        console.error('❌ window.tagsManagement non trouvé !');
-        console.log('🔍 Tentative de vérification des objets disponibles:', Object.keys(window).filter(k => k.includes('tags')));
+    // Essayer de charger le gestionnaire de tags de manière robuste
+    const loadTagsManager = () => {
+        if (window.tagsManagement) {
+            console.log('✅ window.tagsManagement trouvé');
+            window.tagsManagement.setCurrentDeck(deckId);
+            window.tagsManagement.showTagsManagement();
+            return true;
+        }
+        
+        // Fallback: Si tagsManagement n'existe pas, essayer de l'initialiser
+        if (window.TagsManagement && typeof window.TagsManagement === 'function') {
+            console.log('⚡ Initialisation de TagsManagement à la volée');
+            window.tagsManagement = new window.TagsManagement();
+            window.tagsManagement.init();
+            window.tagsManagement.setCurrentDeck(deckId);
+            window.tagsManagement.showTagsManagement();
+            return true;
+        }
+        
+        // Dernier fallback: Ouvrir la modal directement
+        console.warn('⚠️ Fallback: ouverture directe de la modal');
+        const modal = document.getElementById('tagsManagementModal');
+        if (modal) {
+            modal.style.display = 'block';
+            document.body.classList.add('modal-open');
+            console.log('✅ Modal ouverte directement');
+            return true;
+        }
+        
+        return false;
+    };
+    
+    if (!loadTagsManager()) {
+        console.error('❌ Impossible d\'ouvrir la gestion des tags');
+        console.log('🔍 Objets disponibles:', Object.keys(window).filter(k => k.includes('tags') || k.includes('Tags')));
     }
 }
 

@@ -99,18 +99,22 @@ class TagsManagement {
             return;
         }
         
+        // Afficher la modal IMMÉDIATEMENT
+        console.log('📋 Affichage de la modal...');
+        modal.style.display = 'block';
+        document.body.classList.add('modal-open');
+        console.log('✅ Modal affichée !');
+        
+        // Mettre à jour le titre
         this.updateModalTitle();
         
-        // Charger les tags APRÈS avoir créé la modal
-        await this.loadTags();
-        
-        if (modal) {
-            console.log('📋 Affichage de la modal...');
-            modal.style.display = 'block';
-            document.body.classList.add('modal-open');
-            console.log('✅ Modal affichée !');
-        } else {
-            console.error('❌ Impossible de créer la modal !');
+        // Charger les tags APRÈS avoir affiché la modal
+        console.log('📡 Début du chargement des tags...');
+        try {
+            await this.loadTags(true);  // true = forcer le rendu
+            console.log('✅ Chargement des tags terminé');
+        } catch (error) {
+            console.error('❌ Erreur lors du chargement des tags:', error);
         }
     }
 
@@ -130,38 +134,55 @@ class TagsManagement {
     }
 
     async loadTags(shouldRender = true) {
-        console.log('📡 Chargement des tags...');
+        console.log('📡 Chargement des tags...', { shouldRender });
+        console.log('🔍 window.apiService existe:', !!window.apiService);
         
         try {
+            console.log('🌐 Appel API: /api/v1/revision/tags/');
             const response = await window.apiService.request('/api/v1/revision/tags/', {
                 method: 'GET'
             });
 
-            console.log('📋 Réponse API tags:', response);
+            console.log('📋 Réponse API tags (brute):', response);
+            console.log('📋 Type de response:', typeof response);
+            console.log('📋 response.tags existe:', !!response?.tags);
+            console.log('📋 Longueur response.tags:', response?.tags?.length);
 
             if (response && response.tags) {
+                console.log('✅ Tags reçus de l\'API:', response.tags);
+                
                 // Enrichir les tags avec des couleurs et calculer les comptages réels
+                console.log('🎨 Traitement des tags avec couleurs...');
                 this.tags = await Promise.all(response.tags.map(async (tag, index) => {
                     const usageCount = await this.getTagUsageCount(tag);
-                    return {
+                    const processedTag = {
                         name: tag,
                         color: this.colors[index % this.colors.length],
                         usage_count: usageCount
                     };
+                    console.log(`🏷️ Tag traité: ${tag} -> couleur: ${processedTag.color}, usage: ${usageCount}`);
+                    return processedTag;
                 }));
-                console.log('✅ Tags traités:', this.tags);
+                console.log('✅ Tous les tags traités:', this.tags);
             } else {
                 this.tags = [];
-                console.log('⚠️ Aucun tag trouvé dans la réponse');
+                console.log('⚠️ Aucun tag trouvé dans la réponse - initialisation à tableau vide');
             }
 
+            console.log('📊 État final - nombre de tags:', this.tags.length);
+
             if (shouldRender) {
+                console.log('🎨 Rendu des tags demandé...');
                 this.renderTags();
                 this.updateTagsCount();
+                console.log('✅ Rendu terminé');
+            } else {
+                console.log('⏸️ Rendu des tags ignoré (shouldRender = false)');
             }
 
         } catch (error) {
             console.error('❌ Erreur lors du chargement des tags:', error);
+            console.error('❌ Stack trace:', error.stack);
             window.notificationService?.error('Erreur lors du chargement des étiquettes');
         }
     }
@@ -294,12 +315,12 @@ class TagsManagement {
         `;
         
         // Ajouter des event listeners pour l'assignation de tag
-        const assignIcon = row.querySelector('td:nth-child(1) i');
+        const assignIconElement = row.querySelector('td:nth-child(1) i');
         const tagNameElement = row.querySelector('td:nth-child(2) span:last-child');
         
         // Clic sur l'icône d'assignation
-        if (assignIcon) {
-            assignIcon.addEventListener('click', (e) => {
+        if (assignIconElement) {
+            assignIconElement.addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.toggleTagAssignment(tag.name, row);
             });
@@ -810,7 +831,13 @@ class TagsManagement {
 }
 
 // Instancier la classe globalement
-window.tagsManagement = new TagsManagement();
+console.log('🏷️ Tentative de création de TagsManagement...');
+try {
+    window.tagsManagement = new TagsManagement();
+    console.log('✅ window.tagsManagement créé avec succès');
+} catch (error) {
+    console.error('❌ Erreur lors de la création de TagsManagement:', error);
+}
 
 // Fonction de test pour vérifier que tout est bien chargé
 window.testTagsManagement = function() {
@@ -830,6 +857,15 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Initialisation TagsManagement...');
     console.log('🔍 Modal trouvée:', !!document.getElementById('tagsManagementModal'));
     console.log('🔍 window.tagsManagement existe:', !!window.tagsManagement);
-    window.tagsManagement.init();
-    console.log('✅ TagsManagement initialisé');
+    
+    if (window.tagsManagement) {
+        try {
+            window.tagsManagement.init();
+            console.log('✅ TagsManagement initialisé avec succès');
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'initialisation de TagsManagement:', error);
+        }
+    } else {
+        console.error('❌ window.tagsManagement n\'existe pas lors du DOMContentLoaded');
+    }
 });
