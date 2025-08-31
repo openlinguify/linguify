@@ -3951,7 +3951,27 @@ function selectSortFilter(value, text) {
 // UI functions
 function toggleSidebar() {
     const elements = getElements();
+    const isVisible = elements.sidebar.classList.contains('show');
+    
+    // Toggle sidebar visibility
     elements.sidebar.classList.toggle('show');
+    
+    // Update button icon and accessibility attributes based on new state
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const icon = toggleBtn?.querySelector('i');
+    if (icon && toggleBtn) {
+        if (isVisible) {
+            // Sidebar will be hidden - show "expand" icon
+            icon.className = 'bi bi-layout-sidebar-inset-reverse';
+            toggleBtn.title = 'Afficher la barre latérale';
+            toggleBtn.setAttribute('aria-expanded', 'false');
+        } else {
+            // Sidebar will be shown - show "collapse" icon
+            icon.className = 'bi bi-layout-sidebar-inset';
+            toggleBtn.title = 'Masquer la barre latérale';
+            toggleBtn.setAttribute('aria-expanded', 'true');
+        }
+    }
 }
 
 function backToList() {

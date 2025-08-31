@@ -2167,15 +2167,6 @@ button.bg-linguify-gradient:hover,
 }
 
 /* Sidebar - Linguify Design System */
-.sidebar-linguify {
-  background: white;
-  border-right: 1px solid rgb(229 231 235);
-  height: 100vh;
-  max-height: calc(100vh - 64px - 60px);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
 
 .sidebar-header {
   padding: 1.5rem;
@@ -3391,11 +3382,15 @@ button.bg-linguify-gradient:hover,
 
 /* Layout fixes for sidebar and main area */
 .sidebar-linguify {
+  background: white;
   width: 300px;
-  flex-shrink: 0;
+  flex: 0 0 300px;
   height: 100vh;
+  max-height: calc(100vh - 64px - 60px);
   overflow-y: auto;
   border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
   transition: width 0.3s ease, opacity 0.3s ease, flex 0.3s ease;
   position: relative;
 }
@@ -3416,6 +3411,43 @@ button.bg-linguify-gradient:hover,
 .main-content-area {
   flex: 1;
   transition: margin-left 0.3s ease;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .sidebar-linguify {
+    position: fixed;
+    top: 64px; /* Height of navbar */
+    left: 0;
+    z-index: 1000;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  
+  .sidebar-linguify.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  .sidebar-linguify:not(.show) {
+    transform: translateX(-100%);
+    opacity: 0;
+    width: 280px; /* Maintain width on mobile */
+    flex: none;
+  }
+  
+  /* Overlay when sidebar is open on mobile */
+  .sidebar-linguify.show::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 280px;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -1;
+  }
 }
 
 .revision-study {
@@ -3512,6 +3544,11 @@ button.bg-linguify-gradient:hover,
 .study-mode-card-linguify:hover .study-mode-icon {
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3);
+}
+
+.study-mode-card-linguify:active .study-mode-icon {
+  transform: translateY(0) scale(0.95);
+  transition: all 0.1s ease;
 }
 
 #studyLearn:hover .study-mode-icon {

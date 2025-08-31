@@ -4,8 +4,12 @@
     <div class="navbar-section">
         <!-- Bouton toggle sidebar pour toutes les pages -->
         {% if view_type != 'explore' %}
-        <button id="toggleSidebar" class="btn-navbar-outline" title="Masquer/Afficher la barre latérale">
-            <i class="bi bi-layout-sidebar-inset"></i>
+        <button id="toggleSidebar" 
+                class="btn-navbar-outline" 
+                title="Masquer/Afficher la barre latérale"
+                aria-label="Basculer la barre latérale"
+                aria-expanded="true">
+            <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
         </button>
         {% endif %}
         
