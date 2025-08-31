@@ -2170,8 +2170,6 @@ button.bg-linguify-gradient:hover,
 .sidebar-linguify {
   background: white;
   border-right: 1px solid rgb(229 231 235);
-  width: 320px;
-  flex: 0 0 320px;
   height: 100vh;
   max-height: calc(100vh - 64px - 60px);
   overflow-y: auto;
@@ -3398,6 +3396,26 @@ button.bg-linguify-gradient:hover,
   height: 100vh;
   overflow-y: auto;
   border-right: 1px solid #e5e7eb;
+  transition: width 0.3s ease, opacity 0.3s ease, flex 0.3s ease;
+  position: relative;
+}
+
+/* Sidebar collapsed state */
+.sidebar-linguify:not(.show) {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  border-right: none;
+  flex: 0 0 0;
+}
+
+/* Main content adjustment when sidebar is collapsed */
+.main-content-area {
+  flex: 1;
+  transition: margin-left 0.3s ease;
 }
 
 .revision-study {
