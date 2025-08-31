@@ -52,37 +52,12 @@ class TagsManagement {
             quickTagColor.addEventListener('input', () => this.updateQuickTagPreview());
         }
 
-        // Nouveau tag (bouton modal séparée)
-        const createNewTagBtn = document.getElementById('createNewTagBtn');
-        if (createNewTagBtn) {
-            createNewTagBtn.addEventListener('click', () => this.showCreateTagModal());
-        }
+        // Le bouton "Créer" est maintenant géré par le formulaire quickCreateTagForm
 
         // Les fonctionnalités de sélection multiple ont été supprimées dans le nouveau design
         // Plus simple et plus épuré comme dans Notebook
 
-        // Sauvegarde du tag (création/édition)
-        const saveTagBtn = document.getElementById('saveTagBtn');
-        if (saveTagBtn) {
-            saveTagBtn.addEventListener('click', () => this.saveTag());
-        }
-
-        // Aperçu couleur
-        const tagColorInput = document.getElementById('tagColorInput');
-        const tagNameInput = document.getElementById('tagNameInput');
-        if (tagColorInput && tagNameInput) {
-            tagColorInput.addEventListener('input', () => this.updateTagPreview());
-            tagNameInput.addEventListener('input', () => this.updateTagPreview());
-        }
-
-        // Validation du formulaire
-        const tagEditForm = document.getElementById('tagEditForm');
-        if (tagEditForm) {
-            tagEditForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.saveTag();
-            });
-        }
+        // Les fonctionnalités d'édition de tag sont maintenant intégrées au formulaire principal
 
         // Boutons style OpenLinguify
         const selectTagsBtn = document.getElementById('selectTagsBtn');
@@ -149,56 +124,6 @@ class TagsManagement {
         }
     }
 
-    showCreateTagModal(tagData = null) {
-        this.editingTag = tagData;
-        
-        const modal = document.getElementById('tagEditModal');
-        const modalTitle = document.getElementById('tagEditModalLabel');
-        const tagNameInput = document.getElementById('tagNameInput');
-        const tagColorInput = document.getElementById('tagColorInput');
-
-        if (tagData) {
-            modalTitle.textContent = 'Modifier l\'étiquette';
-            tagNameInput.value = tagData.name;
-            tagColorInput.value = tagData.color || this.getRandomColor();
-        } else {
-            modalTitle.textContent = 'Nouvelle étiquette';
-            tagNameInput.value = '';
-            tagColorInput.value = this.getRandomColor();
-        }
-
-        this.updateTagPreview();
-        
-        // Afficher la modal
-        if (modal) {
-            modal.style.display = 'block';
-            
-            // Focus sur le nom
-            setTimeout(() => tagNameInput.focus(), 300);
-        }
-    }
-
-    updateTagPreview() {
-        const tagNameInput = document.getElementById('tagNameInput');
-        const tagColorInput = document.getElementById('tagColorInput');
-        const tagPreview = document.getElementById('tagPreview');
-
-        if (tagNameInput && tagColorInput && tagPreview) {
-            const name = tagNameInput.value || 'Aperçu';
-            const color = tagColorInput.value;
-            
-            // Utiliser les classes tailwind-modals.css
-            const badge = tagPreview.querySelector('.tag-color-preview');
-            if (badge) {
-                badge.textContent = name;
-                badge.style.background = color;
-                badge.style.color = 'white';
-            } else {
-                // Fallback
-                tagPreview.innerHTML = `<span class="tag-badge-linguify" style="background: ${color}; color: white;">${name}</span>`;
-            }
-        }
-    }
 
     getRandomColor() {
         return this.colors[Math.floor(Math.random() * this.colors.length)];
@@ -332,35 +257,54 @@ class TagsManagement {
         const createdDate = new Date().toLocaleDateString();
         
         row.innerHTML = `
-            <td>
-                <span class="tag-dot" style="background-color: ${tag.color};"></span>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+                <span style="width: 14px; height: 14px; border-radius: 50%; display: inline-block; margin-right: 8px; background-color: ${tag.color};"></span>
             </td>
-            <td>
-                <span class="tag-name">${tag.name}</span>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+                <span style="font-weight: 500; color: #111827; cursor: pointer;">${tag.name}</span>
             </td>
-            <td>
-                <span class="tags-usage-count">${tag.usage_count}</span>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+                <span style="font-size: 0.875rem; color: #6b7280;">${tag.usage_count}</span>
             </td>
-            <td>
-                <span class="tags-usage-count">${createdDate}</span>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+                <span style="font-size: 0.875rem; color: #6b7280;">${createdDate}</span>
             </td>
-            <td class="tags-actions-cell">
-                <button class="tags-action-btn" title="Modifier" onclick="window.tagsManagement.editTag('${tag.name}')">
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; text-align: center; width: 100px;">
+                <button style="background: none; border: none; padding: 6px; border-radius: 4px; color: #6b7280; cursor: pointer; transition: all 0.2s; margin: 0 2px;" 
+                        onmouseover="this.style.background='#f3f4f6'; this.style.color='#374151';" 
+                        onmouseout="this.style.background='none'; this.style.color='#6b7280';"
+                        title="Modifier" onclick="window.tagsManagement.editTag('${tag.name}')">
                     <i class="bi bi-pencil"></i>
                 </button>
-                <button class="tags-action-btn delete" title="Supprimer" onclick="window.tagsManagement.deleteTag('${tag.name}')">
+                <button style="background: none; border: none; padding: 6px; border-radius: 4px; color: #6b7280; cursor: pointer; transition: all 0.2s; margin: 0 2px;" 
+                        onmouseover="this.style.background='#fef2f2'; this.style.color='#dc2626';" 
+                        onmouseout="this.style.background='none'; this.style.color='#6b7280';"
+                        title="Supprimer" onclick="window.tagsManagement.deleteTag('${tag.name}')">
                     <i class="bi bi-trash"></i>
                 </button>
             </td>
         `;
         
         // Ajouter un event listener pour la sélection de tag (clic sur le nom)
-        const tagNameElement = row.querySelector('.tag-name');
+        const tagNameElement = row.querySelector('td:nth-child(2) span');
         if (tagNameElement) {
             tagNameElement.addEventListener('click', () => {
                 this.toggleTagAssignment(tag.name, row);
             });
         }
+        
+        // Ajouter les effets hover et la sélection
+        row.addEventListener('mouseenter', () => {
+            if (!row.classList.contains('tag-assigned')) {
+                row.style.backgroundColor = '#fafbfc';
+            }
+        });
+        
+        row.addEventListener('mouseleave', () => {
+            if (!row.classList.contains('tag-assigned')) {
+                row.style.backgroundColor = '';
+            }
+        });
         
         // Marquer visuellement si le tag est assigné au deck courant
         if (this.assignedTags.has(tag.name)) {
@@ -447,10 +391,11 @@ class TagsManagement {
         }
     }
 
-    // Nouvelle méthode pour gérer le quick create form style Notebook
+    // Méthode pour gérer le formulaire intégré (création ET modification)
     async handleQuickCreateTag() {
         const quickTagName = document.getElementById('quickTagName');
         const quickTagColor = document.getElementById('quickTagColor');
+        const createBtn = document.getElementById('createNewTagBtn');
         
         if (!quickTagName || !quickTagColor) return;
         
@@ -463,40 +408,49 @@ class TagsManagement {
         }
 
         try {
-            // Valider le tag via l'API
-            const validationResponse = await window.apiService.request('/api/v1/revision/tags/', {
-                method: 'POST',
-                body: JSON.stringify({ tag: tagName })
-            });
-            
-            if (validationResponse && validationResponse.tag) {
-                // Ajouter automatiquement le nouveau tag au deck courant
-                if (this.currentDeckId) {
-                    this.assignedTags.add(tagName);
-                    await this.saveTagsToCurrentDeck();
-                }
+            if (this.editingTag) {
+                // MODE ÉDITION
+                await this.updateTagInAllDecks(this.editingTag.name, tagName);
+                window.notificationService?.success('Étiquette modifiée avec succès');
                 
-                // Réinitialiser le formulaire
-                quickTagName.value = '';
-                quickTagColor.value = '#3b82f6';
-                this.updateQuickTagPreview();
-                
-                window.notificationService?.success('Étiquette créée et ajoutée au deck');
-                
-                // Recharger la liste depuis le serveur
-                await this.loadTags();
-                
-                // Actualiser l'affichage du deck
-                if (this.currentDeckId && window.renderDecksList) {
-                    window.renderDecksList();
-                }
+                // Remettre le bouton en mode création
+                this.resetFormToCreateMode();
             } else {
-                throw new Error('Validation du tag échouée');
+                // MODE CRÉATION
+                const validationResponse = await window.apiService.request('/api/v1/revision/tags/', {
+                    method: 'POST',
+                    body: JSON.stringify({ tag: tagName })
+                });
+                
+                if (validationResponse && validationResponse.tag) {
+                    // Ajouter automatiquement le nouveau tag au deck courant
+                    if (this.currentDeckId) {
+                        this.assignedTags.add(tagName);
+                        await this.saveTagsToCurrentDeck();
+                    }
+                    
+                    window.notificationService?.success('Étiquette créée et ajoutée au deck');
+                    
+                    // Actualiser l'affichage du deck
+                    if (this.currentDeckId && window.renderDecksList) {
+                        window.renderDecksList();
+                    }
+                } else {
+                    throw new Error('Validation du tag échouée');
+                }
             }
+            
+            // Réinitialiser le formulaire
+            quickTagName.value = '';
+            quickTagColor.value = '#3b82f6';
+            this.updateQuickTagPreview();
+            
+            // Recharger la liste depuis le serveur
+            await this.loadTags();
 
         } catch (error) {
-            console.error('Erreur lors de la création du tag:', error);
-            let errorMessage = 'Erreur lors de la création de l\'étiquette';
+            console.error('Erreur lors de la sauvegarde du tag:', error);
+            let errorMessage = this.editingTag ? 'Erreur lors de la modification de l\'étiquette' : 'Erreur lors de la création de l\'étiquette';
             
             // Gérer les erreurs spécifiques de validation
             if (error.status === 400) {
@@ -510,6 +464,16 @@ class TagsManagement {
             
             window.notificationService?.error(errorMessage);
         }
+    }
+
+    // Remettre le formulaire en mode création
+    resetFormToCreateMode() {
+        const createBtn = document.getElementById('createNewTagBtn');
+        if (createBtn) {
+            createBtn.textContent = 'Créer';
+            createBtn.style.background = '#3b82f6';
+        }
+        this.editingTag = null;
     }
 
     // Mettre à jour l'aperçu du quick create
@@ -570,7 +534,31 @@ class TagsManagement {
     editTag(tagName) {
         const tag = this.tags.find(t => t.name === tagName);
         if (tag) {
-            this.showCreateTagModal(tag);
+            // Utiliser le formulaire intégré pour l'édition
+            const quickTagName = document.getElementById('quickTagName');
+            const quickTagColor = document.getElementById('quickTagColor');
+            const createBtn = document.getElementById('createNewTagBtn');
+            
+            if (quickTagName && quickTagColor && createBtn) {
+                // Pré-remplir le formulaire
+                quickTagName.value = tag.name;
+                quickTagColor.value = tag.color;
+                this.updateQuickTagPreview();
+                
+                // Changer le bouton en mode édition
+                createBtn.textContent = 'Modifier';
+                createBtn.style.background = '#f59e0b';
+                
+                // Mettre le tag en mode édition
+                this.editingTag = tag;
+                
+                // Focus sur l'input
+                quickTagName.focus();
+                quickTagName.select();
+                
+                // Scroll vers le formulaire
+                document.getElementById('quickCreateTagForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
     }
 
@@ -682,71 +670,6 @@ class TagsManagement {
         }
     }
 
-    async saveTag() {
-        const tagNameInput = document.getElementById('tagNameInput');
-        const tagColorInput = document.getElementById('tagColorInput');
-
-        if (!tagNameInput || !tagColorInput) return;
-
-        const tagName = tagNameInput.value.trim();
-        const tagColor = tagColorInput.value;
-
-        if (!tagName) {
-            window.notificationService?.error('Le nom de l\'étiquette est requis');
-            return;
-        }
-
-        try {
-            if (this.editingTag) {
-                // Modification - mettre à jour tous les decks qui utilisent ce tag
-                await this.updateTagInAllDecks(this.editingTag.name, tagName);
-                window.notificationService?.success('Étiquette modifiée avec succès');
-            } else {
-                // Création - valider le tag via l'API
-                const validationResponse = await window.apiService.request('/api/v1/revision/tags/', {
-                    method: 'POST',
-                    body: JSON.stringify({ tag: tagName })
-                });
-                
-                if (validationResponse && validationResponse.tag) {
-                    // Ajouter automatiquement le nouveau tag au deck courant
-                    if (this.currentDeckId) {
-                        this.assignedTags.add(tagName);
-                        await this.saveTagsToCurrentDeck();
-                    }
-                    window.notificationService?.success('Étiquette créée et ajoutée au deck');
-                } else {
-                    throw new Error('Validation du tag échouée');
-                }
-            }
-
-            // Fermer la modal
-            this.closeCreateTagModal();
-
-            // Recharger la liste depuis le serveur
-            await this.loadTags();
-            
-            // Actualiser l'affichage du deck si on a créé et assigné un tag
-            if (!this.editingTag && this.currentDeckId && window.renderDecksList) {
-                window.renderDecksList();
-            }
-
-        } catch (error) {
-            console.error('Erreur lors de la sauvegarde du tag:', error);
-            let errorMessage = 'Erreur lors de la sauvegarde de l\'étiquette';
-            
-            // Gérer les erreurs spécifiques de validation
-            if (error.message && error.message.includes('existe déjà')) {
-                errorMessage = 'Cette étiquette existe déjà';
-            } else if (error.message && error.message.includes('caractères')) {
-                errorMessage = 'Le nom de l\'étiquette contient des caractères invalides';
-            } else if (error.message && error.message.includes('long')) {
-                errorMessage = 'Le nom de l\'étiquette est trop long (50 caractères maximum)';
-            }
-            
-            window.notificationService?.error(errorMessage);
-        }
-    }
 
     async updateTagInAllDecks(oldTagName, newTagName) {
         if (!window.appState || !window.appState.decks) return;
@@ -788,12 +711,6 @@ class TagsManagement {
         }
     }
 
-    closeCreateTagModal() {
-        const modal = document.getElementById('tagEditModal');
-        if (modal) {
-            modal.style.display = 'none';
-        }
-    }
 
     async saveTagsToCurrentDeck() {
         if (!this.currentDeckId || !window.revisionAPI) {
