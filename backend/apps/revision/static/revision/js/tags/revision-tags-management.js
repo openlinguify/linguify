@@ -257,26 +257,26 @@ class TagsManagement {
         const createdDate = new Date().toLocaleDateString();
         
         row.innerHTML = `
-            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
-                <span style="width: 14px; height: 14px; border-radius: 50%; display: inline-block; margin-right: 8px; background-color: ${tag.color};"></span>
+            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+                <span style="width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; background-color: ${tag.color};"></span>
             </td>
-            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
-                <span style="font-weight: 500; color: #111827; cursor: pointer;">${tag.name}</span>
+            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+                <span style="font-weight: 500; color: #111827; cursor: pointer; font-size: 0.875rem;">${tag.name}</span>
             </td>
-            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
-                <span style="font-size: 0.875rem; color: #6b7280;">${tag.usage_count}</span>
+            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+                <span style="font-size: 0.8125rem; color: #6b7280;">${tag.usage_count}</span>
             </td>
-            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
-                <span style="font-size: 0.875rem; color: #6b7280;">${createdDate}</span>
+            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+                <span style="font-size: 0.8125rem; color: #6b7280;">${createdDate}</span>
             </td>
-            <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; text-align: center; width: 100px;">
-                <button style="background: none; border: none; padding: 6px; border-radius: 4px; color: #6b7280; cursor: pointer; transition: all 0.2s; margin: 0 2px;" 
+            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; text-align: center; width: 100px;">
+                <button style="background: none; border: none; padding: 4px; border-radius: 3px; color: #6b7280; cursor: pointer; transition: all 0.2s; margin: 0 1px; font-size: 0.8125rem;" 
                         onmouseover="this.style.background='#f3f4f6'; this.style.color='#374151';" 
                         onmouseout="this.style.background='none'; this.style.color='#6b7280';"
                         title="Modifier" onclick="window.tagsManagement.editTag('${tag.name}')">
                     <i class="bi bi-pencil"></i>
                 </button>
-                <button style="background: none; border: none; padding: 6px; border-radius: 4px; color: #6b7280; cursor: pointer; transition: all 0.2s; margin: 0 2px;" 
+                <button style="background: none; border: none; padding: 4px; border-radius: 3px; color: #6b7280; cursor: pointer; transition: all 0.2s; margin: 0 1px; font-size: 0.8125rem;" 
                         onmouseover="this.style.background='#fef2f2'; this.style.color='#dc2626';" 
                         onmouseout="this.style.background='none'; this.style.color='#6b7280';"
                         title="Supprimer" onclick="window.tagsManagement.deleteTag('${tag.name}')">
