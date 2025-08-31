@@ -1262,12 +1262,14 @@ async function importNewDeck() {
     console.log('🚀 Import deck - using file:', file);
     
     if (!file) {
-        window.notificationService.error('Veuillez sélectionner un fichier');
+        window.notificationService.error('📁 Fichier requis !', 'Veuillez sélectionner un fichier Excel ou CSV avant de continuer.');
         return;
     }
     
     if (!name) {
-        window.notificationService.error('Le nom du deck est requis');
+        window.notificationService.error('⚠️ Nom d\'une liste requis !', 'Veuillez saisir un nom pour votre liste avant de continuer.');
+        // Focus sur le champ nom pour aider l'utilisateur
+        elements.importDeckName.focus();
         return;
     }
     
