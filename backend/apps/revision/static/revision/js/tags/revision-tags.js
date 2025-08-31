@@ -43,11 +43,27 @@ class TagsManager {
         // Gestion du focus
         this.inputElement.addEventListener('focus', () => {
             this.inputElement.parentElement.classList.add('focused');
+            // Toujours afficher l'input quand il a le focus
+            this.inputElement.style.display = 'block';
+            // Cacher le message "aucun tag" quand on focus
+            const noTagsMessage = document.getElementById('noTagsMessage');
+            if (noTagsMessage) {
+                noTagsMessage.style.display = 'none';
+            }
         });
 
         this.inputElement.addEventListener('blur', () => {
             this.inputElement.parentElement.classList.remove('focused');
             setTimeout(() => this.hideSuggestions(), 200);
+            
+            // Re-afficher le message si aucun tag et input vide
+            if (this.tags.size === 0 && this.inputElement.value.trim() === '') {
+                const noTagsMessage = document.getElementById('noTagsMessage');
+                if (noTagsMessage) {
+                    noTagsMessage.style.display = 'flex';
+                }
+                this.inputElement.style.display = 'none';
+            }
         });
     }
 
@@ -181,17 +197,82 @@ class TagsManager {
     updateDisplay() {
         this.displayElement.innerHTML = '';
         
-        this.tags.forEach(tag => {
-            const tagElement = document.createElement('div');
-            tagElement.className = 'tag-item';
-            tagElement.innerHTML = `
-                <span>${tag}</span>
-                <button type="button" class="tag-remove" onclick="window.tagsManager.removeTag('${tag}')">
-                    <i class="bi bi-x"></i>
-                </button>
-            `;
-            this.displayElement.appendChild(tagElement);
-        });
+        // Gérer l'affichage du message "aucun tag" et de l'input
+        const noTagsMessage = document.getElementById('noTagsMessage');
+        const inputElement = document.getElementById('editDeckTagsInput');
+        
+        if (this.tags.size === 0) {
+            // Afficher le message et cacher l'input quand il est vide et non focusé
+            if (noTagsMessage) {
+                noTagsMessage.style.display = 'flex';
+            }
+            if (inputElement && document.activeElement !== inputElement) {
+                inputElement.style.display = 'none';
+            }
+        } else {
+            // Cacher le message et afficher l'input
+            if (noTagsMessage) {
+                noTagsMessage.style.display = 'none';
+            }
+            if (inputElement) {
+                inputElement.style.display = 'block';
+            }
+            
+            // Classes pour les couleurs des tags (style moderne)
+            const tagColors = [
+                'bg-primary text-white',
+                'bg-success text-white', 
+                'bg-info text-white',
+                'bg-warning text-dark',
+                'bg-danger text-white',
+                'bg-secondary text-white',
+                'bg-dark text-white',
+                'bg-linguify-accent text-white'
+            ];
+            
+            Array.from(this.tags).forEach((tag, index) => {
+                const tagElement = document.createElement('div');
+                const colorClass = tagColors[index % tagColors.length];
+                tagElement.className = `tag-item d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill ${colorClass} position-relative`;
+                tagElement.style.fontSize = '0.8rem';
+                tagElement.style.fontWeight = '500';
+                
+                tagElement.innerHTML = `
+                    <i class="bi bi-tag-fill" style="font-size: 0.65rem; opacity: 0.8;"></i>
+                    <span>${tag}</span>
+                    <button type="button" 
+                            class="tag-remove btn btn-sm p-0 ms-1 text-white-50" 
+                            onclick="window.tagsManager.removeTag('${tag}')"
+                            style="background: none; border: none; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s;"
+                            onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'; this.classList.remove('text-white-50'); this.classList.add('text-white');"
+                            onmouseout="this.style.backgroundColor='transparent'; this.classList.remove('text-white'); this.classList.add('text-white-50');"
+                            title="Supprimer le tag">
+                        <i class="bi bi-x" style="font-size: 0.8rem; line-height: 1;"></i>
+                    </button>
+                `;
+                this.displayElement.appendChild(tagElement);
+            });
+        }
+        
+        // Mettre à jour le compteur de tags
+        this.updateTagsCounter();
+    }
+    
+    updateTagsCounter() {
+        const counterElement = document.getElementById('tagsCount');
+        if (counterElement) {
+            const count = this.tags.size;
+            counterElement.textContent = `${count}/${this.maxTags} tags`;
+            
+            // Changer la couleur selon le nombre
+            if (count >= this.maxTags) {
+                counterElement.className = 'text-danger fw-semibold';
+            } else if (count >= this.maxTags * 0.8) {
+                counterElement.className = 'text-warning fw-semibold';
+            } else {
+                counterElement.className = 'text-muted';
+            }
+        }
     }
 
     getTags() {
@@ -261,14 +342,33 @@ class TagsManager {
     }
 
     createSuggestionsElement() {
+        // Chercher l'élément suggestions existant dans le template
+        const existingSuggestions = document.querySelector('.tags-suggestions');
+        if (existingSuggestions) {
+            this.suggestionsElement = existingSuggestions;
+            return;
+        }
+        
+        // Créer un nouvel élément suggestions s'il n'existe pas
         this.suggestionsElement = document.createElement('div');
-        this.suggestionsElement.className = 'tags-suggestions';
+        this.suggestionsElement.className = 'tags-suggestions position-absolute w-100 mt-1 bg-white border border-light rounded-3 shadow-sm d-none';
+        this.suggestionsElement.style.zIndex = '1050';
+        this.suggestionsElement.style.maxHeight = '200px';
+        this.suggestionsElement.style.overflowY = 'auto';
         this.suggestionsElement.style.display = 'none';
         
-        // Positionner par rapport au conteneur parent
-        const container = this.inputElement.parentElement;
-        container.style.position = 'relative';
-        container.appendChild(this.suggestionsElement);
+        // Positionner par rapport au conteneur tags-container
+        const container = document.querySelector('.tags-container');
+        if (container) {
+            container.appendChild(this.suggestionsElement);
+        } else {
+            // Fallback : positionner par rapport au parent de l'input
+            const parent = this.inputElement.closest('.tags-display-area')?.parentElement;
+            if (parent) {
+                parent.style.position = 'relative';
+                parent.appendChild(this.suggestionsElement);
+            }
+        }
     }
 
     async loadAvailableTags() {

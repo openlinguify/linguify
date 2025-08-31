@@ -72,24 +72,58 @@
                 <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
                     <i class="bi bi-tags me-2"></i>
                     Tags
+                    <span class="badge bg-light text-muted ms-2" style="font-size: 0.7rem;">Cliquez pour taper</span>
                 </label>
-                <div class="card-linguify border border-dashed border-primary border-opacity-25 p-3 position-relative">
-                    <div class="tags-input-container">
-                        <div class="bg-gray-50 rounded p-3 mb-3 border border-gray-200" style="min-height: 60px;">
-                            <div class="tags-display d-flex flex-wrap gap-2" id="editDeckTagsDisplay">
-                                <div id="noTagsMessage" class="text-muted d-flex align-items-center" style="font-size: 0.85rem;">
-                                    <i class="bi bi-tag me-1"></i>
-                                    Aucun tag - Ajoutez-en dans le champ ci-dessous
-                                </div>
+                
+                <!-- Zone d'affichage des tags avec input intégré -->
+                <div class="tags-container position-relative">
+                    <div id="tagsDisplayArea" 
+                         class="tags-display-area bg-white border border-primary border-opacity-25 rounded-3 p-3 d-flex flex-wrap gap-2 align-items-center" 
+                         style="min-height: 60px; cursor: text;"
+                         onclick="document.getElementById('editDeckTagsInput').focus()">
+                        
+                        <!-- Les tags seront ajoutés ici par JavaScript -->
+                        <div class="tags-display d-flex flex-wrap gap-2 align-items-center" id="editDeckTagsDisplay"></div>
+                        
+                        <!-- Input inline pour saisie -->
+                        <input type="text" 
+                               id="editDeckTagsInput" 
+                               class="tags-inline-input flex-grow-1" 
+                               placeholder="Tapez pour ajouter des tags..."
+                               style="border: none; outline: none; background: transparent; min-width: 200px; padding: 4px 0;">
+                        
+                        <!-- Message quand aucun tag -->
+                        <div id="noTagsMessage" class="text-muted d-flex align-items-center w-100" style="font-size: 0.85rem; display: none;">
+                            <i class="bi bi-tag me-2 text-linguify-accent" style="opacity: 0.6;"></i>
+                            Cliquez ici pour commencer à ajouter des tags...
+                        </div>
+                    </div>
+                    
+                    <!-- Suggestions dropdown -->
+                    <div class="tags-suggestions position-absolute w-100 mt-1 bg-white border border-light rounded-3 shadow-sm d-none" 
+                         style="z-index: 1050; max-height: 200px; overflow-y: auto;">
+                        <!-- Suggestions seront ajoutées par JavaScript -->
+                    </div>
+                    
+                    <!-- Indicateurs -->
+                    <div class="mt-2">
+                        <!-- Aide principale -->
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <small class="text-muted d-flex align-items-center">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Max 10 tags, appuyez sur Entrée pour ajouter
+                            </small>
+                            <div id="tagsAutoSaveIndicator" class="d-none">
+                                <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
+                                <small class="text-success ms-1">Sauvegardé</small>
                             </div>
                         </div>
-                        <input type="text" id="editDeckTagsInput" 
-                               class="form-control rounded" 
-                               placeholder="Ajouter des tags (appuyez sur Entrée)">
-                    </div>
-                    <div class="position-absolute top-0 end-0 mt-2 me-2" style="pointer-events: none; z-index: 10;">
-                        <div id="tagsAutoSaveIndicator" class="d-none">
-                            <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
+                        <!-- Compteur -->
+                        <div class="d-flex align-items-center">
+                            <small class="text-muted d-flex align-items-center">
+                                <i class="bi bi-tag me-1" style="color: #6c757d; font-size: 0.7rem;"></i>
+                                <span id="tagsCount">0/10 tags</span>
+                            </small>
                         </div>
                     </div>
                 </div>
