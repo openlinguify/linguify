@@ -294,10 +294,7 @@ window.tagsManager = new TagsManager();
 
 // Fonction d'aide pour afficher les tags dans la liste des decks
 function displayDeckTags(deck) {
-    console.log('🔍 displayDeckTags appelé pour le deck:', deck.id, deck.name, 'Tags:', deck.tags);
-    
     if (!deck.tags || deck.tags.length === 0) {
-        console.log('🔍 Aucun tag trouvé, création de l\'élément no-tags');
         return createNoTagsElement(deck.id);
     }
 
@@ -320,36 +317,25 @@ function displayDeckTags(deck) {
 
 // Créer l'élément "Aucun tag" à partir du template
 function createNoTagsElement(deckId) {
-    console.log('🔍 createNoTagsElement appelé avec deckId:', deckId);
-    
     const template = document.getElementById('no-tags-template');
-    console.log('🔍 Template no-tags-template trouvé:', !!template);
     
-    // TEMPORAIRE : forcer l'utilisation du fallback pour tester
-    if (!template || true) {
-        console.log('🔍 Force fallback pour test - utilisation du HTML direct');
+    if (!template) {
         // Fallback avec onclick inline
-        const fallbackHtml = `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deckId})" style="cursor: pointer; color: #2d5bba;"></i> pour en ajouter</span>`;
-        console.log('🔍 Fallback HTML généré:', fallbackHtml);
-        return fallbackHtml;
+        return `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deckId})" style="cursor: pointer; color: #2d5bba;"></i> pour en ajouter</span>`;
     }
     
     const clone = template.content.cloneNode(true);
     const icon = clone.querySelector('.clickable-tag-icon');
-    console.log('🔍 Icône trouvée dans le template:', !!icon);
     
     if (icon) {
         // Utiliser onclick inline pour la compatibilité avec innerHTML
         icon.setAttribute('onclick', `event.stopPropagation(); quickEditTags(${deckId})`);
-        console.log('🔍 onclick ajouté à l\'icône');
     }
     
     // Retourner le HTML comme string pour compatibilité
     const div = document.createElement('div');
     div.appendChild(clone);
-    const result = div.innerHTML;
-    console.log('🔍 HTML final généré:', result);
-    return result;
+    return div.innerHTML;
 }
 
 // Créer un élément tag à partir du template
