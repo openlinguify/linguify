@@ -9,7 +9,7 @@
                 <i class="bi bi-upload text-linguify-primary me-2"></i>
                 <h5 class="mb-0 text-linguify-primary">Importer un deck</h5>
             </div>
-            <button id="cancelImport" class="btn btn-outline-custom btn-sm">
+            <button id="cancelImport" class="btn-linguify-secondary btn-sm">
                 <i class="bi bi-x-lg"></i>
                 Annuler
             </button>
@@ -19,130 +19,133 @@
     <div class="study-content" style="height: calc(100vh - 220px); overflow: hidden; display: flex; flex-direction: column;">
         <!-- Main content area with scroll -->
         <div class="import-content-scrollable" style="flex: 1; overflow-y: auto; padding: 0.75rem; margin-right: -1rem; padding-right: 2rem;">
+
+            <!-- Deck name input -->
+            <div class="mb-4">
+                <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
+                    <i class="bi bi-tag me-2"></i>
+                    Nom du deck
+                </label>
+                <div class="position-relative">
+                    <input type="text" id="importDeckName" 
+                           class="form-control rounded" 
+                           placeholder="Entrez le nom du nouveau deck..." 
+                           maxlength="100">
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-3">
+                        <i class="bi bi-pencil-square text-muted"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center mt-1">
+                    <i class="bi bi-info-circle text-linguify-accent me-1" style="font-size: 0.75rem;"></i>
+                    <span class="text-muted" style="font-size: 0.75rem;">Ce nom doit être unique dans vos decks</span>
+                </div>
+                <div class="invalid-feedback" style="display: none;" id="deckNameError"></div>
+            </div>
+
             <!-- Enhanced steps indicator -->
-            <div class="flex items-center justify-center space-x-4 mb-6">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-gradient-to-br from-linguify-primary to-linguify-accent rounded-full flex items-center justify-center shadow-md">
-                        <span class="text-white text-sm font-bold">1</span>
-                    </div>
-                    <span class="text-sm font-medium text-linguify-primary">Sélection</span>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <div class="d-flex align-items-center me-3">
+                    <span class="badge bg-linguify-accent rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <span class="text-white fw-bold">1</span>
+                    </span>
+                    <span class="small fw-medium text-linguify-primary">Sélection</span>
                 </div>
-                <div class="h-px w-8 bg-gradient-to-r from-linguify-gray-200 to-linguify-gray-300"></div>
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-linguify-gray-200 rounded-full flex items-center justify-center">
-                        <span class="text-linguify-gray-500 text-sm font-bold">2</span>
-                    </div>
-                    <span class="text-sm text-linguify-gray">Aperçu</span>
+                <div class="border-top" style="width: 32px;"></div>
+                <div class="d-flex align-items-center mx-3">
+                    <span class="badge bg-secondary rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <span class="text-muted fw-bold">2</span>
+                    </span>
+                    <span class="small text-muted">Aperçu</span>
                 </div>
-                <div class="h-px w-8 bg-gradient-to-r from-linguify-gray-200 to-linguify-gray-300"></div>
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-linguify-gray-200 rounded-full flex items-center justify-center">
-                        <span class="text-linguify-gray-500 text-sm font-bold">3</span>
-                    </div>
-                    <span class="text-sm text-linguify-gray">Import</span>
+                <div class="border-top" style="width: 32px;"></div>
+                <div class="d-flex align-items-center ms-3">
+                    <span class="badge bg-secondary rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <span class="text-muted fw-bold">3</span>
+                    </span>
+                    <span class="small text-muted">Import</span>
                 </div>
             </div>
 
             <!-- Enhanced file drop zone with Tailwind -->
-            <div class="relative border-2 border-dashed border-linguify-primary/30 rounded-lg p-6 text-center bg-gradient-to-br from-linguify-gray-50 to-white hover:border-linguify-primary hover:shadow-lg transition-all duration-300 cursor-pointer group" id="fileDropZone">
-                <div class="drop-zone-content space-y-4">
-                    <div class="flex justify-center">
-                        <div class="w-16 h-16 bg-gradient-to-br from-linguify-primary to-linguify-accent rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <i class="bi bi-cloud-upload text-white text-2xl"></i>
+            <div class="card-linguify border border-dashed border-primary border-opacity-25 p-4 text-center cursor-pointer" id="fileDropZone">
+                <div class="drop-zone-content">
+                    <div class="text-center mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-linguify-accent rounded-circle shadow-sm" style="width: 64px; height: 64px;">
+                            <i class="bi bi-cloud-upload text-white" style="font-size: 1.5rem;"></i>
                         </div>
                     </div>
-                    <div class="space-y-2">
-                        <p class="text-lg font-semibold text-linguify-primary">Glissez votre fichier ici</p>
-                        <p class="text-sm text-linguify-gray">ou cliquez pour sélectionner un fichier</p>
+                    <div class="mb-3">
+                        <h6 class="text-linguify-primary mb-2">Glissez votre fichier ici</h6>
+                        <p class="small text-muted mb-0">ou cliquez pour sélectionner un fichier</p>
                     </div>
-                    <input type="file" id="importFile" class="hidden" accept=".csv,.xlsx,.xls">
-                    <button class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-linguify-primary to-linguify-accent text-white rounded-lg hover:shadow-md transition-all duration-300 font-medium" onclick="document.getElementById('importFile').click()">
-                        <i class="bi bi-folder2-open mr-2"></i>
+                    <input type="file" id="importFile" class="d-none" accept=".csv,.xlsx,.xls">
+                    <button class="btn-linguify" onclick="document.getElementById('importFile').click()">
+                        <i class="bi bi-folder2-open me-2"></i>
                         Parcourir les fichiers
                     </button>
                 </div>
-                <div class="absolute inset-0 bg-gradient-to-br from-linguify-primary to-linguify-accent rounded-lg flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none" id="dropZoneOverlay">
-                    <div class="w-20 h-20 border-4 border-white rounded-full flex items-center justify-center mb-4 animate-bounce">
-                        <i class="bi bi-cloud-upload-fill text-white text-3xl"></i>
+                <div class="position-absolute top-0 start-0 w-100 h-100 bg-linguify-accent rounded d-flex flex-column align-items-center justify-content-center" style="opacity: 0; pointer-events: none; z-index: 1;" id="dropZoneOverlay">
+                    <div class="d-flex align-items-center justify-content-center border border-white border-4 rounded-circle mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-cloud-upload-fill text-white" style="font-size: 2rem;"></i>
                     </div>
-                    <p class="text-white text-lg font-semibold">Déposez le fichier ici</p>
+                    <h6 class="text-white fw-bold mb-0">Déposez le fichier ici</h6>
                 </div>
             </div>
 
             <!-- Enhanced file info display -->
-            <div class="selected-file-info hidden" id="selectedFileInfo">
-                <div class="bg-gradient-to-r from-linguify-success/10 to-linguify-accent/10 border border-linguify-success/20 rounded-lg p-4 mb-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-gradient-to-br from-linguify-success to-linguify-accent rounded-lg flex items-center justify-center shadow-md">
-                                <i class="bi bi-file-earmark-check text-white text-lg"></i>
+            <div class="selected-file-info d-none" id="selectedFileInfo">
+                <div class="alert-box alert-primary rounded p-3 mb-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center justify-content-center bg-linguify-accent rounded me-3" style="width: 48px; height: 48px;">
+                                <i class="bi bi-file-earmark-check text-white"></i>
                             </div>
                             <div>
-                                <p id="selectedFileName" class="font-semibold text-linguify-primary text-sm"></p>
-                                <p id="selectedFileSize" class="text-xs text-linguify-gray"></p>
+                                <p id="selectedFileName" class="fw-semibold text-linguify-primary small mb-1"></p>
+                                <p id="selectedFileSize" class="text-muted" style="font-size: 0.75rem;"></p>
                             </div>
                         </div>
-                        <button class="w-8 h-8 bg-white hover:bg-linguify-gray-50 border border-linguify-gray-200 rounded-full flex items-center justify-center transition-colors duration-200" onclick="clearSelectedFile()">
-                            <i class="bi bi-x text-linguify-gray text-sm"></i>
+                        <button class="btn btn-light btn-sm rounded-circle" style="width: 32px; height: 32px;" onclick="clearSelectedFile()">
+                            <i class="bi bi-x text-muted"></i>
                         </button>
                     </div>
                 </div>
             </div>
 
             <!-- Enhanced supported formats -->
-            <div class="bg-white rounded-lg border border-linguify-gray-200 p-4 mb-4">
-                <div class="flex items-center flex-wrap gap-3">
-                    <span class="text-sm font-medium text-linguify-accent">Formats supportés:</span>
-                    <div class="flex items-center space-x-2">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-linguify-success/10 to-linguify-success/20 text-linguify-success border border-linguify-success/30">
-                            <i class="bi bi-file-earmark-excel mr-1"></i>
+            <div class="card-linguify p-3 mb-4">
+                <div class="d-flex align-items-center flex-wrap mb-2">
+                    <span class="small fw-medium text-linguify-accent me-3">Formats supportés:</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-green-100 text-success border border-success border-opacity-25 rounded-pill">
+                            <i class="bi bi-file-earmark-excel me-1"></i>
                             Excel (.xlsx, .xls)
                         </span>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-linguify-accent/10 to-linguify-accent/20 text-linguify-accent border border-linguify-accent/30">
-                            <i class="bi bi-filetype-csv mr-1"></i>
+                        <span class="badge bg-blue-50 text-linguify-accent border border-linguify-accent border-opacity-25 rounded-pill">
+                            <i class="bi bi-filetype-csv me-1"></i>
                             CSV
                         </span>
                     </div>
                 </div>
-                <div class="flex items-center mt-2">
-                    <i class="bi bi-info-circle text-linguify-warning mr-2"></i>
-                    <span class="text-xs text-linguify-gray">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-info-circle text-linguify-warning me-2"></i>
+                    <span class="text-muted" style="font-size: 0.75rem;">
                         Minimum 2 colonnes requises pour le recto et le verso des cartes
                     </span>
                 </div>
             </div>
             
-            <!-- Enhanced deck name input -->
-            <div class="space-y-2 mb-4">
-                <label class="flex items-center text-sm font-semibold text-linguify-primary">
-                    <i class="bi bi-tag mr-2"></i>
-                    Nom du deck
-                </label>
-                <div class="relative">
-                    <input type="text" id="importDeckName" 
-                           class="w-full px-4 py-3 border border-linguify-gray-200 rounded-lg focus:ring-2 focus:ring-linguify-primary/20 focus:border-linguify-primary transition-all duration-300 placeholder:text-linguify-gray-400" 
-                           placeholder="Entrez le nom du nouveau deck..." 
-                           maxlength="100">
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                        <i class="bi bi-pencil-square text-linguify-gray-400"></i>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <i class="bi bi-info-circle text-linguify-accent text-xs"></i>
-                    <span class="text-xs text-linguify-gray">Ce nom doit être unique dans vos decks</span>
-                </div>
-                <div class="invalid-feedback hidden" id="deckNameError"></div>
-            </div>
+
         </div>
         
         <!-- Enhanced fixed bottom actions -->
-        <div class="bg-white border-t border-linguify-gray-200 p-4 mt-auto shadow-lg" style="flex-shrink: 0;">
-            <div class="flex gap-3 justify-end items-center">
-                <button id="cancelImportAlt" class="px-4 py-2 border border-linguify-gray-300 text-linguify-gray-700 rounded-lg hover:bg-linguify-gray-50 transition-colors duration-200 font-medium">
+        <div class="bg-white border-top p-4 mt-auto shadow-sm" style="flex-shrink: 0;">
+            <div class="d-flex gap-3 justify-content-end align-items-center">
+                <button id="cancelImportAlt" class="btn-linguify-secondary">
                     Annuler
                 </button>
-                <button id="submitImport" class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-linguify-primary to-linguify-accent text-white rounded-lg hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium" disabled>
-                    <i class="bi bi-arrow-right mr-2"></i>
+                <button id="submitImport" class="btn-linguify d-flex align-items-center" disabled>
+                    <i class="bi bi-arrow-right me-2"></i>
                     Suivant - Aperçu
                 </button>
             </div>
@@ -158,7 +161,7 @@
                 <i class="bi bi-eye text-linguify-accent me-2"></i>
                 <h5 class="mb-0 text-linguify-accent">Aperçu de l'import</h5>
             </div>
-            <button id="cancelImportPreview" class="btn btn-outline-custom btn-sm">
+            <button id="cancelImportPreview" class="btn-linguify-secondary btn-sm">
                 <i class="bi bi-x-lg"></i>
                 Annuler
             </button>
@@ -168,111 +171,116 @@
     <div class="study-content" style="height: calc(100vh - 220px); overflow: hidden; display: flex; flex-direction: column;">
         <div class="import-content-scrollable" style="flex: 1; overflow-y: auto; padding: 0.75rem; margin-right: -1rem; padding-right: 2rem;">
             <!-- Enhanced steps indicator for preview -->
-            <div class="flex items-center justify-center space-x-4 mb-6">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-gradient-to-br from-linguify-success to-linguify-accent rounded-full flex items-center justify-center shadow-md">
-                        <i class="bi bi-check text-white text-sm font-bold"></i>
-                    </div>
-                    <span class="text-sm font-medium text-linguify-success">Sélection</span>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <div class="d-flex align-items-center me-3">
+                    <span class="badge bg-success rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-check text-white fw-bold"></i>
+                    </span>
+                    <span class="small fw-medium text-success">Sélection</span>
                 </div>
-                <div class="h-px w-8 bg-gradient-to-r from-linguify-success to-linguify-accent"></div>
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-gradient-to-br from-linguify-primary to-linguify-accent rounded-full flex items-center justify-center shadow-md">
-                        <span class="text-white text-sm font-bold">2</span>
-                    </div>
-                    <span class="text-sm font-medium text-linguify-primary">Aperçu</span>
+                <div class="border-top" style="width: 32px;"></div>
+                <div class="d-flex align-items-center mx-3">
+                    <span class="badge bg-linguify-accent rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <span class="text-white fw-bold">2</span>
+                    </span>
+                    <span class="small fw-medium text-linguify-primary">Aperçu</span>
                 </div>
-                <div class="h-px w-8 bg-gradient-to-r from-linguify-gray-200 to-linguify-gray-300"></div>
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-linguify-gray-200 rounded-full flex items-center justify-center">
-                        <span class="text-linguify-gray-500 text-sm font-bold">3</span>
-                    </div>
-                    <span class="text-sm text-linguify-gray">Import</span>
+                <div class="border-top" style="width: 32px;"></div>
+                <div class="d-flex align-items-center ms-3">
+                    <span class="badge bg-secondary rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <span class="text-muted fw-bold">3</span>
+                    </span>
+                    <span class="small text-muted">Import</span>
                 </div>
             </div>
 
             <!-- Enhanced file summary -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-white rounded-lg border border-linguify-gray-200 p-4 hover:shadow-md transition-shadow duration-300">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-linguify-primary to-linguify-accent rounded-lg flex items-center justify-center">
-                            <i class="bi bi-file-earmark text-white"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-linguify-gray uppercase tracking-wider">Fichier</p>
-                            <p class="text-sm font-semibold text-linguify-primary" id="previewFileName"></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg border border-linguify-gray-200 p-4 hover:shadow-md transition-shadow duration-300">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-linguify-success to-linguify-accent rounded-lg flex items-center justify-center">
-                            <i class="bi bi-list-ol text-white"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-linguify-gray uppercase tracking-wider">Lignes</p>
-                            <p class="text-sm font-semibold text-linguify-success" id="previewTotalRows"></p>
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card-linguify p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center justify-content-center bg-linguify-accent rounded me-3" style="width: 40px; height: 40px;">
+                                <i class="bi bi-file-earmark text-white"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted text-uppercase fw-medium mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">Fichier</p>
+                                <p class="small fw-semibold text-linguify-primary mb-0" id="previewFileName"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="bg-white rounded-lg border border-linguify-gray-200 p-4 hover:shadow-md transition-shadow duration-300">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-linguify-accent to-linguify-primary rounded-lg flex items-center justify-center">
-                            <i class="bi bi-credit-card text-white"></i>
+                <div class="col-md-4">
+                    <div class="card-linguify p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center justify-content-center bg-success rounded me-3" style="width: 40px; height: 40px;">
+                                <i class="bi bi-list-ol text-white"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted text-uppercase fw-medium mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">Lignes</p>
+                                <p class="small fw-semibold text-success mb-0" id="previewTotalRows"></p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-xs font-medium text-linguify-gray uppercase tracking-wider">Cartes à créer</p>
-                            <p class="text-sm font-semibold text-linguify-accent" id="previewEstimatedCards">~</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-linguify p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center justify-content-center bg-linguify-primary rounded me-3" style="width: 40px; height: 40px;">
+                                <i class="bi bi-credit-card text-white"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted text-uppercase fw-medium mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">Cartes à créer</p>
+                                <p class="small fw-semibold text-linguify-accent mb-0" id="previewEstimatedCards">~</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Enhanced column configuration -->
-            <div class="bg-white rounded-lg border border-linguify-gray-200 p-6 mb-6">
-                <h6 class="flex items-center text-lg font-semibold text-linguify-primary mb-4">
-                    <i class="bi bi-arrow-left-right mr-2"></i>
+            <div class="card-linguify p-4 mb-4">
+                <h6 class="d-flex align-items-center fs-6 fw-semibold text-linguify-primary mb-4">
+                    <i class="bi bi-arrow-left-right me-2"></i>
                     Configuration des colonnes
                 </h6>
                 
                 <!-- Enhanced header option -->
-                <div class="bg-linguify-gray-50 rounded-lg p-4 mb-6">
-                    <div class="flex items-start space-x-3">
-                        <div class="flex-shrink-0 pt-1">
-                            <input class="w-4 h-4 text-linguify-primary bg-linguify-gray-100 border-linguify-gray-300 rounded focus:ring-linguify-primary focus:ring-2" 
+                <div class="bg-gray-50 rounded p-3 mb-4">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0 pt-1 me-3">
+                            <input class="form-check-input" 
                                    type="checkbox" id="hasHeaderCheck" checked onchange="updatePreview()">
                         </div>
                         <div>
-                            <label class="text-sm font-medium text-linguify-primary cursor-pointer" for="hasHeaderCheck">
+                            <label class="form-check-label small fw-medium text-linguify-primary" for="hasHeaderCheck">
                                 La première ligne contient des en-têtes
                             </label>
-                            <p class="text-xs text-linguify-gray mt-1">
+                            <p class="text-muted mt-1" style="font-size: 0.75rem;">
                                 Cochez cette option si la première ligne contient les noms de colonnes et ne doit pas être importée comme une carte
                             </p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="flex items-center text-sm font-semibold text-linguify-primary mb-3">
-                                <i class="bi bi-card-text mr-2"></i>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
+                                <i class="bi bi-card-text me-2"></i>
                                 Recto des cartes
                             </label>
                             <select id="frontColumnSelect" 
-                                    class="w-full px-4 py-2 border border-linguify-gray-200 rounded-lg focus:ring-2 focus:ring-linguify-primary/20 focus:border-linguify-primary transition-all duration-300" 
+                                    class="form-select" 
                                     onchange="updatePreview()">
                             </select>
                         </div>
                         
                         <div>
-                            <label class="flex items-center text-sm font-medium text-linguify-accent mb-2">
-                                <i class="bi bi-globe mr-2"></i>
+                            <label class="form-label d-flex align-items-center small fw-medium text-linguify-accent mb-2">
+                                <i class="bi bi-globe me-2"></i>
                                 Langue du recto (optionnel)
                             </label>
-                            <select id="frontLanguageSelect" 
-                                    class="w-full px-4 py-2 border border-linguify-gray-200 rounded-lg focus:ring-2 focus:ring-linguify-accent/20 focus:border-linguify-accent transition-all duration-300">
+                            <select id="frontLanguageSelect" class="form-select">
                                 <option value="">-- Sélectionner une langue --</option>
                                 <option value="fr">🇫🇷 Français</option>
                                 <option value="en">🇺🇸 Anglais</option>
@@ -292,25 +300,24 @@
                             </select>
                         </div>
                     </div>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="flex items-center text-sm font-semibold text-linguify-accent mb-3">
-                                <i class="bi bi-card-text mr-2"></i>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label d-flex align-items-center small fw-semibold text-linguify-accent mb-2">
+                                <i class="bi bi-card-text me-2"></i>
                                 Verso des cartes
                             </label>
                             <select id="backColumnSelect" 
-                                    class="w-full px-4 py-2 border border-linguify-gray-200 rounded-lg focus:ring-2 focus:ring-linguify-accent/20 focus:border-linguify-accent transition-all duration-300" 
+                                    class="form-select" 
                                     onchange="updatePreview()">
                             </select>
                         </div>
                         
                         <div>
-                            <label class="flex items-center text-sm font-medium text-linguify-accent mb-2">
-                                <i class="bi bi-globe mr-2"></i>
+                            <label class="form-label d-flex align-items-center small fw-medium text-linguify-accent mb-2">
+                                <i class="bi bi-globe me-2"></i>
                                 Langue du verso (optionnel)
                             </label>
-                            <select id="backLanguageSelect" 
-                                    class="w-full px-4 py-2 border border-linguify-gray-200 rounded-lg focus:ring-2 focus:ring-linguify-accent/20 focus:border-linguify-accent transition-all duration-300">
+                            <select id="backLanguageSelect" class="form-select">
                                 <option value="">-- Sélectionner une langue --</option>
                                 <option value="fr">🇫🇷 Français</option>
                                 <option value="en">🇺🇸 Anglais</option>
@@ -331,10 +338,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-linguify-warning/10 border border-linguify-warning/20 rounded-lg p-3 mt-4">
-                    <div class="flex items-start space-x-2">
-                        <i class="bi bi-lightbulb text-linguify-warning flex-shrink-0 mt-0.5"></i>
-                        <span class="text-sm text-linguify-gray">
+                <div class="alert-box alert-warning rounded p-3 mt-3">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-lightbulb text-linguify-warning flex-shrink-0 mt-1 me-2"></i>
+                        <span class="small text-muted">
                             Modifiez la sélection pour voir l'aperçu mis à jour en temps réel
                         </span>
                     </div>
@@ -342,32 +349,32 @@
             </div>
             
             <!-- Enhanced preview cards -->
-            <div class="bg-white rounded-lg border border-linguify-gray-200 p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h6 class="flex items-center text-lg font-semibold text-linguify-primary">
-                        <i class="bi bi-stack mr-2"></i>
+            <div class="card-linguify p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="d-flex align-items-center fs-6 fw-semibold text-linguify-primary mb-0">
+                        <i class="bi bi-stack me-2"></i>
                         Aperçu des cartes (5 premières)
                     </h6>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-linguify-warning text-white hidden" id="previewUpdateIndicator">
-                        <i class="bi bi-arrow-repeat mr-1 animate-spin"></i>
+                    <span class="badge bg-linguify-warning text-white d-none" id="previewUpdateIndicator">
+                        <i class="bi bi-arrow-repeat me-1 spinner-border spinner-border-sm" style="--bs-spinner-width: .75rem; --bs-spinner-height: .75rem;"></i>
                         Mise à jour...
                     </span>
                 </div>
-                <div id="previewCardsContainer" class="space-y-4">
+                <div id="previewCardsContainer" class="d-flex flex-column gap-3">
                     <!-- Les cartes de preview seront ajoutées ici -->
                 </div>
             </div>
         </div>
         
         <!-- Enhanced bottom actions for preview -->
-        <div class="bg-white border-t border-linguify-gray-200 p-4 mt-auto shadow-lg" style="flex-shrink: 0;">
-            <div class="flex gap-3 justify-between items-center">
-                <button id="cancelImportPreviewAlt" class="inline-flex items-center px-4 py-2 border border-linguify-gray-300 text-linguify-gray-700 rounded-lg hover:bg-linguify-gray-50 transition-colors duration-200 font-medium">
-                    <i class="bi bi-arrow-left mr-2"></i>
+        <div class="bg-white border-top p-4 mt-auto shadow-sm" style="flex-shrink: 0;">
+            <div class="d-flex gap-3 justify-content-between align-items-center">
+                <button id="cancelImportPreviewAlt" class="btn-linguify-secondary d-flex align-items-center">
+                    <i class="bi bi-arrow-left me-2"></i>
                     Retour
                 </button>
-                <button id="confirmImport" class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-linguify-success to-linguify-accent text-white rounded-lg hover:shadow-lg transition-all duration-300 font-medium">
-                    <i class="bi bi-check-circle mr-2"></i>
+                <button id="confirmImport" class="btn btn-success d-flex align-items-center">
+                    <i class="bi bi-check-circle me-2"></i>
                     Confirmer l'import
                 </button>
             </div>
