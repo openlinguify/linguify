@@ -1597,9 +1597,9 @@ function updateImportButton() {
     const hasFile = (fileInput.files && fileInput.files.length > 0) || window.selectedImportFile;
     const deckName = deckNameInput.value.trim();
     
-    // Pour updateImportButton, on active le bouton si on a AU MOINS un fichier
-    // La validation complète du nom se fera au moment du clic
-    const isValid = hasFile;
+    // Pour updateImportButton, on active TOUJOURS le bouton
+    // La validation complète (fichier + nom) se fera au moment du clic
+    const isValid = true;
     
     
     submitButton.disabled = !isValid;
