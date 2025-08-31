@@ -1,108 +1,135 @@
-<!-- Modal de gestion des tags -->
-<div class="modal fade" id="tagsManagementModal" tabindex="-1" aria-labelledby="tagsManagementModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+<!-- Modal de gestion des tags - Utilisant le style tailwind-modals.css -->
+
+<div class="modal-overlay" id="tagsManagementModal" style="display: none;">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" onclick="window.tagsManagement.closeTagsManagement()"></div>
+        <div class="modal-content" style="max-width: 900px;">
+            <!-- Header -->
             <div class="modal-header">
-                <h5 class="modal-title" id="tagsManagementModalLabel">
-                    <i class="bi bi-tags me-2"></i>Gestion des étiquettes
-                </h5>
-                <button type="button" class="btn-close" onclick="window.tagsManagement.closeTagsManagement()" aria-label="Close"></button>
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-primary">
+                        <i class="bi bi-tags" style="color: #2d5bba; font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <h4 class="modal-title" id="tagsManagementModalLabel">Mes étiquettes</h4>
+                        <p class="modal-subtitle">Organisez vos decks avec des étiquettes personnalisées</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="window.tagsManagement.closeTagsManagement()" aria-label="Close">
+                    <i class="bi bi-x" style="font-size: 1.5rem;"></i>
+                </button>
             </div>
+
+            <!-- Corps du modal -->
             <div class="modal-body">
                 <!-- Barre de recherche -->
-                <div class="row mb-3">
-                    <div class="col-md-8">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text" id="tagsSearchInput" class="form-control" placeholder="Rechercher une étiquette...">
+                <div class="mb-4">
+                    <input type="text" id="tagsSearchInput" class="form-control" 
+                           placeholder="Rechercher une étiquette...">
+                </div>
+
+                <!-- Formulaire de création rapide dans le style tailwind -->
+                <div class="tags-container-linguify">
+                    <form id="quickCreateTagForm">
+                        <div class="d-flex gap-3 align-items-center p-3 mb-4" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <input type="text" id="quickTagName" class="form-control" 
+                                   placeholder="Nom de l'étiquette" required maxlength="50">
+                            <input type="color" id="quickTagColor" class="form-control form-control-color" 
+                                   value="#3b82f6" style="width: 50px;">
+                            <div id="quickTagPreview">
+                                <span class="tag-badge-linguify" style="background: #3b82f6; color: white;">
+                                    <span id="quickPreviewText">Aperçu</span>
+                                </span>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="createNewTagBtn">Créer</button>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <button id="createNewTagBtn" class="btn btn-primary w-100">
-                            <i class="bi bi-plus-lg me-1"></i>Nouvelle étiquette
-                        </button>
-                    </div>
+                    </form>
                 </div>
 
-                <!-- Liste des tags -->
-                <div class="tags-management-container">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="w-50px">
-                                        <input type="checkbox" id="selectAllTags" class="form-check-input">
-                                    </th>
-                                    <th>Nom</th>
-                                    <th class="w-80px">Couleur</th>
-                                    <th class="w-100px">Utilisations</th>
-                                    <th class="w-120px">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tagsTableBody">
-                                <!-- Les tags seront chargés dynamiquement ici -->
-                            </tbody>
-                        </table>
-                    </div>
+                <!-- Tableau simple -->
+                <div style="overflow-y: auto; max-height: 400px;">
+                    <table id="tagsTable" class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;"></th>
+                                <th>Nom de l'étiquette</th>
+                                <th style="width: 100px;">Usage</th>
+                                <th style="width: 100px;">Créé</th>
+                                <th style="width: 100px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tagsTableBody">
+                            <!-- Tags seront chargés ici -->
+                        </tbody>
+                    </table>
                 </div>
 
-                <!-- Pagination -->
-                <nav aria-label="Pagination des tags">
-                    <ul class="pagination justify-content-center" id="tagsPagination">
-                        <!-- Pagination sera générée dynamiquement -->
-                    </ul>
-                </nav>
+                <!-- État vide -->
+                <div id="tagsEmptyState" class="text-center py-5" style="display: none;">
+                    <i class="bi bi-tags text-muted" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <h5>Aucune étiquette trouvée</h5>
+                    <p class="text-muted">Commencez par créer votre première étiquette pour organiser vos decks</p>
+                </div>
             </div>
+
+            <!-- Footer -->
             <div class="modal-footer">
-                <div class="d-flex w-100 justify-content-between align-items-center">
-                    <div>
-                        <button type="button" class="btn btn-primary" id="selectTagsBtn">
-                            <i class="bi bi-check-lg me-1"></i>Sélectionner
-                        </button>
-                        <button type="button" class="btn btn-success ms-2" id="createNewTagFromModal">
-                            <i class="bi bi-plus-lg me-1"></i>Nouveau
-                        </button>
-                    </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <span id="tagsCount" class="text-muted">0 étiquette(s)</span>
-                        <button type="button" class="btn btn-secondary" onclick="window.tagsManagement.closeTagsManagement()">Fermer</button>
-                    </div>
-                </div>
+                <span class="text-muted me-auto">
+                    <span id="tagsCount">0</span> étiquette(s)
+                </span>
+                <button type="button" class="btn btn-secondary" onclick="window.tagsManagement.closeTagsManagement()">
+                    Fermer
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal de création/édition d'étiquette -->
-<div class="modal fade" id="tagEditModal" tabindex="-1" aria-labelledby="tagEditModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal-overlay" id="tagEditModal" style="display: none;">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" onclick="window.tagsManagement.closeCreateTagModal()"></div>
         <div class="modal-content">
+            <!-- Header -->
             <div class="modal-header">
-                <h5 class="modal-title" id="tagEditModalLabel">Nouvelle étiquette</h5>
-                <button type="button" class="btn-close" onclick="window.tagsManagement.closeCreateTagModal()" aria-label="Close"></button>
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-primary">
+                        <i class="bi bi-tag" style="color: #2d5bba; font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <h4 class="modal-title" id="tagEditModalLabel">Nouvelle étiquette</h4>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="window.tagsManagement.closeCreateTagModal()" aria-label="Close">
+                    <i class="bi bi-x" style="font-size: 1.5rem;"></i>
+                </button>
             </div>
+
+            <!-- Corps -->
             <div class="modal-body">
                 <form id="tagEditForm">
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label for="tagNameInput" class="form-label">Nom de l'étiquette *</label>
                         <input type="text" class="form-control" id="tagNameInput" required maxlength="50">
                         <div class="form-text">Utilisez des noms courts et descriptifs</div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label for="tagColorInput" class="form-label">Couleur</label>
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="color" class="form-control form-control-color" id="tagColorInput" value="#2D5BBA">
-                            <div class="tag-preview" id="tagPreview">
-                                <span class="badge tag-color-preview">Aperçu</span>
+                        <div class="d-flex align-items-center gap-3">
+                            <input type="color" class="form-control form-control-color" id="tagColorInput" value="#2d5bba" style="width: 50px;">
+                            <div id="tagPreview">
+                                <span class="tag-badge-linguify tag-color-preview" style="background: #2d5bba; color: white;">Aperçu</span>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
+
+            <!-- Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="window.tagsManagement.closeCreateTagModal()">Annuler</button>
+                <button type="button" class="btn btn-secondary" onclick="window.tagsManagement.closeCreateTagModal()">
+                    Annuler
+                </button>
                 <button type="button" class="btn btn-primary" id="saveTagBtn">
                     <i class="bi bi-check-lg me-1"></i>Enregistrer
                 </button>

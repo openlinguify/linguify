@@ -35,23 +35,31 @@ class TagsManagement {
             });
         }
 
-        // Nouveau tag
+        // Quick create form - nouvelle approche style Notebook
+        const quickCreateForm = document.getElementById('quickCreateTagForm');
+        if (quickCreateForm) {
+            quickCreateForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleQuickCreateTag();
+            });
+        }
+
+        // Aperçu en temps réel pour le quick create
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+        if (quickTagName && quickTagColor) {
+            quickTagName.addEventListener('input', () => this.updateQuickTagPreview());
+            quickTagColor.addEventListener('input', () => this.updateQuickTagPreview());
+        }
+
+        // Nouveau tag (bouton modal séparée)
         const createNewTagBtn = document.getElementById('createNewTagBtn');
         if (createNewTagBtn) {
             createNewTagBtn.addEventListener('click', () => this.showCreateTagModal());
         }
 
-        // Sélection de tous les tags
-        const selectAllTags = document.getElementById('selectAllTags');
-        if (selectAllTags) {
-            selectAllTags.addEventListener('change', (e) => this.toggleSelectAll(e.target.checked));
-        }
-
-        // Suppression des tags sélectionnés
-        const deleteSelectedTagsBtn = document.getElementById('deleteSelectedTagsBtn');
-        if (deleteSelectedTagsBtn) {
-            deleteSelectedTagsBtn.addEventListener('click', () => this.deleteSelectedTags());
-        }
+        // Les fonctionnalités de sélection multiple ont été supprimées dans le nouveau design
+        // Plus simple et plus épuré comme dans Notebook
 
         // Sauvegarde du tag (création/édition)
         const saveTagBtn = document.getElementById('saveTagBtn');
@@ -124,18 +132,7 @@ class TagsManagement {
         if (modal) {
             console.log('📋 Affichage de la modal...');
             modal.style.display = 'block';
-            modal.classList.add('show');
             document.body.classList.add('modal-open');
-            
-            // Ajouter overlay
-            if (!document.querySelector('.modal-backdrop')) {
-                const backdrop = document.createElement('div');
-                backdrop.className = 'modal-backdrop fade show';
-                backdrop.addEventListener('click', () => this.closeTagsManagement());
-                document.body.appendChild(backdrop);
-                console.log('✅ Backdrop ajouté');
-            }
-            
             console.log('✅ Modal affichée !');
         } else {
             console.error('❌ Impossible de créer la modal !');
@@ -175,7 +172,6 @@ class TagsManagement {
         // Afficher la modal
         if (modal) {
             modal.style.display = 'block';
-            modal.classList.add('show');
             
             // Focus sur le nom
             setTimeout(() => tagNameInput.focus(), 300);
@@ -191,20 +187,15 @@ class TagsManagement {
             const name = tagNameInput.value || 'Aperçu';
             const color = tagColorInput.value;
             
-            // Utiliser le template pour le preview
-            const template = document.getElementById('tag-preview-template');
-            if (template) {
-                const clone = template.content.cloneNode(true);
-                const badge = clone.querySelector('.tag-color-preview');
+            // Utiliser les classes tailwind-modals.css
+            const badge = tagPreview.querySelector('.tag-color-preview');
+            if (badge) {
                 badge.textContent = name;
                 badge.style.background = color;
                 badge.style.color = 'white';
-                
-                tagPreview.innerHTML = '';
-                tagPreview.appendChild(clone);
             } else {
                 // Fallback
-                tagPreview.innerHTML = `<span class="badge" style="background: ${color}; color: white;">${name}</span>`;
+                tagPreview.innerHTML = `<span class="tag-badge-linguify" style="background: ${color}; color: white;">${name}</span>`;
             }
         }
     }
@@ -269,8 +260,12 @@ class TagsManagement {
 
     renderTags() {
         const tbody = document.getElementById('tagsTableBody');
+        const emptyState = document.getElementById('tagsEmptyState');
+        const table = document.getElementById('tagsTable');
+        
         console.log('🎨 renderTags: tbody trouvé:', tbody ? 'OUI' : 'NON');
         console.log('🎨 renderTags: nombre de tags à afficher:', this.tags.length);
+        
         if (!tbody) {
             console.error('❌ Élément tagsTableBody non trouvé dans le DOM');
             // Retry after a short delay to allow DOM to be ready
@@ -286,7 +281,15 @@ class TagsManagement {
             return;
         }
         
-        this.renderTagsInternal(tbody);
+        // Gérer l'état vide style Notebook
+        if (this.tags.length === 0) {
+            if (table) table.style.display = 'none';
+            if (emptyState) emptyState.style.display = 'block';
+        } else {
+            if (table) table.style.display = 'table';
+            if (emptyState) emptyState.style.display = 'none';
+            this.renderTagsInternal(tbody);
+        }
     }
     
     renderTagsInternal(tbody) {
@@ -313,82 +316,81 @@ class TagsManagement {
             tbody.appendChild(row);
         });
 
-        // Event listeners pour les checkboxes d'assignation
-        const checkboxes = tbody.querySelectorAll('.tag-assign-checkbox');
-        console.log('🎨 Attachement des event listeners sur', checkboxes.length, 'checkboxes');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', (e) => {
-                const tagName = e.target.dataset.tag;
-                const row = e.target.closest('tr');
-                
-                if (e.target.checked) {
-                    this.assignedTags.add(tagName);
-                    row.classList.add('table-success');
-                } else {
-                    this.assignedTags.delete(tagName);
-                    row.classList.remove('table-success');
-                }
-                
-                // Sauvegarder les changements immédiatement
-                this.saveTagsToCurrentDeck();
-            });
-        });
+        // Les event listeners pour les tags sont maintenant gérés dans createTagTableRow()
+        // via les clics sur le nom du tag (plus simple et moderne)
 
         this.renderPagination(filteredTags.length);
     }
 
-    // Créer une ligne de tag dans le tableau à partir du template
+    // Créer une ligne de tag dans le tableau - style Notebook simplifié
     createTagTableRow(tag) {
-        const template = document.getElementById('tag-table-row-template');
-        if (!template) {
-            console.error('❌ Template tag-table-row-template non trouvé');
-            // Fallback vers l'ancien système si le template n'existe pas
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <tr class="tag-row ${this.assignedTags.has(tag.name) ? 'table-success' : ''}" data-tag="${tag.name}">
-                    <td><input type="checkbox" class="form-check-input tag-assign-checkbox" data-tag="${tag.name}" ${this.assignedTags.has(tag.name) ? 'checked' : ''}></td>
-                    <td><div class="d-flex align-items-center"><span class="badge me-2" style="background: ${tag.color}; color: white;">${tag.name}</span></div></td>
-                    <td><div class="color-display" style="width: 20px; height: 20px; background: ${tag.color}; border-radius: 3px; border: 1px solid #ddd;"></div></td>
-                    <td><span class="text-muted">${tag.usage_count}</span></td>
-                    <td><div class="btn-group btn-group-sm"><button class="btn btn-outline-primary" onclick="window.tagsManagement.editTag('${tag.name}')" title="Modifier"><i class="bi bi-pencil"></i></button><button class="btn btn-outline-danger" onclick="window.tagsManagement.deleteTag('${tag.name}')" title="Supprimer"><i class="bi bi-trash"></i></button></div></td>
-                </tr>
-            `;
-            return row;
-        }
-        
-        const clone = template.content.cloneNode(true);
-        const row = clone.querySelector('.tag-row');
-        
-        // Configurer la ligne
-        row.classList.toggle('table-success', this.assignedTags.has(tag.name));
+        const row = document.createElement('tr');
+        row.className = 'tag-row';
         row.dataset.tag = tag.name;
         
-        // Configurer la checkbox
-        const checkbox = row.querySelector('.tag-assign-checkbox');
-        checkbox.dataset.tag = tag.name;
-        checkbox.checked = this.assignedTags.has(tag.name);
+        // Calculer la date de création (placeholder)
+        const createdDate = new Date().toLocaleDateString();
         
-        // Configurer le badge du nom
-        const badge = row.querySelector('.badge');
-        badge.textContent = tag.name;
-        badge.style.background = tag.color;
+        row.innerHTML = `
+            <td>
+                <span class="tag-dot" style="background-color: ${tag.color};"></span>
+            </td>
+            <td>
+                <span class="tag-name">${tag.name}</span>
+            </td>
+            <td>
+                <span class="tags-usage-count">${tag.usage_count}</span>
+            </td>
+            <td>
+                <span class="tags-usage-count">${createdDate}</span>
+            </td>
+            <td class="tags-actions-cell">
+                <button class="tags-action-btn" title="Modifier" onclick="window.tagsManagement.editTag('${tag.name}')">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="tags-action-btn delete" title="Supprimer" onclick="window.tagsManagement.deleteTag('${tag.name}')">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
         
-        // Configurer l'affichage de couleur
-        const colorDisplay = row.querySelector('.color-display');
-        colorDisplay.style.background = tag.color;
+        // Ajouter un event listener pour la sélection de tag (clic sur le nom)
+        const tagNameElement = row.querySelector('.tag-name');
+        if (tagNameElement) {
+            tagNameElement.addEventListener('click', () => {
+                this.toggleTagAssignment(tag.name, row);
+            });
+        }
         
-        // Configurer le compteur d'utilisation
-        const usageCount = row.querySelector('.usage-count');
-        usageCount.textContent = tag.usage_count;
+        // Marquer visuellement si le tag est assigné au deck courant
+        if (this.assignedTags.has(tag.name)) {
+            row.classList.add('tag-assigned');
+            row.style.backgroundColor = '#f0f9ff';
+            row.style.borderLeft = `3px solid ${tag.color}`;
+        }
         
-        // Configurer les boutons d'action
-        const editBtn = row.querySelector('.edit-tag-btn');
-        const deleteBtn = row.querySelector('.delete-tag-btn');
+        return row;
+    }
+
+    // Nouvelle méthode pour basculer l'assignation d'un tag
+    toggleTagAssignment(tagName, rowElement) {
+        if (this.assignedTags.has(tagName)) {
+            this.assignedTags.delete(tagName);
+            rowElement.classList.remove('tag-assigned');
+            rowElement.style.backgroundColor = '';
+            rowElement.style.borderLeft = '';
+        } else {
+            this.assignedTags.add(tagName);
+            rowElement.classList.add('tag-assigned');
+            rowElement.style.backgroundColor = '#f0f9ff';
+            const tag = this.tags.find(t => t.name === tagName);
+            if (tag) {
+                rowElement.style.borderLeft = `3px solid ${tag.color}`;
+            }
+        }
         
-        editBtn.addEventListener('click', () => this.editTag(tag.name));
-        deleteBtn.addEventListener('click', () => this.deleteTag(tag.name));
-        
-        return clone;
+        // Sauvegarder les changements immédiatement
+        this.saveTagsToCurrentDeck();
     }
 
     renderPagination(totalItems) {
@@ -441,7 +443,91 @@ class TagsManagement {
     updateTagsCount() {
         const tagsCount = document.getElementById('tagsCount');
         if (tagsCount) {
-            tagsCount.textContent = `${this.tags.length} étiquette(s)`;
+            tagsCount.textContent = this.tags.length;
+        }
+    }
+
+    // Nouvelle méthode pour gérer le quick create form style Notebook
+    async handleQuickCreateTag() {
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+        
+        if (!quickTagName || !quickTagColor) return;
+        
+        const tagName = quickTagName.value.trim();
+        const tagColor = quickTagColor.value;
+        
+        if (!tagName) {
+            window.notificationService?.error('Le nom de l\'étiquette est requis');
+            return;
+        }
+
+        try {
+            // Valider le tag via l'API
+            const validationResponse = await window.apiService.request('/api/v1/revision/tags/', {
+                method: 'POST',
+                body: JSON.stringify({ tag: tagName })
+            });
+            
+            if (validationResponse && validationResponse.tag) {
+                // Ajouter automatiquement le nouveau tag au deck courant
+                if (this.currentDeckId) {
+                    this.assignedTags.add(tagName);
+                    await this.saveTagsToCurrentDeck();
+                }
+                
+                // Réinitialiser le formulaire
+                quickTagName.value = '';
+                quickTagColor.value = '#3b82f6';
+                this.updateQuickTagPreview();
+                
+                window.notificationService?.success('Étiquette créée et ajoutée au deck');
+                
+                // Recharger la liste depuis le serveur
+                await this.loadTags();
+                
+                // Actualiser l'affichage du deck
+                if (this.currentDeckId && window.renderDecksList) {
+                    window.renderDecksList();
+                }
+            } else {
+                throw new Error('Validation du tag échouée');
+            }
+
+        } catch (error) {
+            console.error('Erreur lors de la création du tag:', error);
+            let errorMessage = 'Erreur lors de la création de l\'étiquette';
+            
+            // Gérer les erreurs spécifiques de validation
+            if (error.status === 400) {
+                try {
+                    const errorData = await error.response?.json?.() || {};
+                    errorMessage = errorData.detail || 'Cette étiquette ne peut pas être ajoutée';
+                } catch (parseError) {
+                    errorMessage = 'Cette étiquette ne peut pas être ajoutée';
+                }
+            }
+            
+            window.notificationService?.error(errorMessage);
+        }
+    }
+
+    // Mettre à jour l'aperçu du quick create
+    updateQuickTagPreview() {
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+        const quickPreviewText = document.getElementById('quickPreviewText');
+        const quickTagPreview = document.getElementById('quickTagPreview');
+        
+        if (quickTagName && quickTagColor && quickPreviewText && quickTagPreview) {
+            const name = quickTagName.value.trim() || 'Aperçu';
+            const color = quickTagColor.value;
+            
+            quickPreviewText.textContent = name;
+            const badge = quickTagPreview.querySelector('.tag-badge-linguify');
+            if (badge) {
+                badge.style.backgroundColor = color;
+            }
         }
     }
 
@@ -698,14 +784,7 @@ class TagsManagement {
         const modal = document.getElementById('tagsManagementModal');
         if (modal) {
             modal.style.display = 'none';
-            modal.classList.remove('show');
             document.body.classList.remove('modal-open');
-            
-            // Supprimer backdrop
-            const backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) {
-                backdrop.remove();
-            }
         }
     }
 
@@ -713,7 +792,6 @@ class TagsManagement {
         const modal = document.getElementById('tagEditModal');
         if (modal) {
             modal.style.display = 'none';
-            modal.classList.remove('show');
         }
     }
 
