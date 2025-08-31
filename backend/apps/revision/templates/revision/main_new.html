@@ -565,6 +565,20 @@
         </div>
     </div>
     </div> <!-- End flex container -->
+
+<!-- Modals de partage -->
+<!-- DEBUG: Template main_new.html is being rendered -->
+<div id="template-debug-marker" class="display-none">main_new.html loaded</div>
+{% include "revision/components/share_deck.html" %}
+
+<!-- DEBUG: Avant inclusion tags_management -->
+<div id="debug-before-tags-modal">BEFORE TAGS MODAL</div>
+{% include "revision/partials/tags/tags_management.html" %}
+<div id="debug-after-tags-modal">AFTER TAGS MODAL</div>
+<!-- DEBUG: Après inclusion tags_management -->
+
+{% include "revision/partials/tags/tag_templates.html" %}
+
 </div>
 {% endblock %}
 
@@ -600,15 +614,6 @@
 </style>
 {% endblock %}
 
-
-
-<!-- Modals de partage -->
-<!-- DEBUG: Template main_new.html is being rendered -->
-<div id="template-debug-marker" class="display-none">main_new.html loaded</div>
-{% include "revision/components/share_deck.html" %}
-{% include "revision/partials/tags/tags_management.html" %}
-{% include "revision/partials/tags/tag_templates.html" %}
-
 {% block extra_js %}
 <!-- CSRF Token for API calls -->
 {% csrf_token %}
@@ -634,6 +639,6 @@ window.clearSelectedFile = window.revisionMain.clearSelectedFile;
 
 // Paramètres audio utilisateur depuis le serveur
 window.userAudioSettings = {{ audio_settings_json|safe }};
-console.log('🎵 Paramètres audio chargés depuis le serveur:', window.userAudioSettings);
+console.log('Paramètres audio chargés depuis le serveur:', window.userAudioSettings);
 </script>
 {% endblock %}

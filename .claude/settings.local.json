@@ -9,7 +9,8 @@
       "Bash(python:*)",
       "Bash(msgfmt:*)",
       "WebFetch(domain:localhost)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": [],
