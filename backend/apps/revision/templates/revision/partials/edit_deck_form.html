@@ -1,0 +1,130 @@
+<!-- Edit Deck Form -->
+<div id="editDeckForm" class="display-none">
+    <div class="study-header bg-white shadow-sm border-b border-gray-200">
+        <div class="container-fluid px-4 py-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="bg-gradient-to-r from-linguify-primary to-linguify-accent rounded-lg p-2 me-3">
+                        <i class="bi bi-pencil text-white" style="font-size: 1.2rem;"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0 text-gray-800 font-weight-bold">Modifier le deck</h3>
+                        <p class="mb-0 text-sm text-gray-600">Modifiez les informations de votre deck. Ces changements seront sauvegardés immédiatement.</p>
+                    </div>
+                </div>
+                <button id="cancelEditDeck" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    <i class="bi bi-x-lg me-1"></i>
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="study-content bg-gray-50" style="min-height: calc(100vh - 120px);">
+        <div class="container-fluid px-4 py-4">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8 col-xl-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                        
+                        <!-- Nom du deck -->
+                        <div class="mb-4">
+                            <label class="form-label d-flex align-items-center mb-3" style="font-size: 1.1rem; font-weight: 600; color: #374151;">
+                                <div class="bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg p-2 me-3">
+                                    <i class="bi bi-tag text-blue-600"></i>
+                                </div>
+                                Nom du deck
+                            </label>
+                            <input type="text" id="editDeckName" class="form-control form-control-lg rounded-lg border-gray-300 shadow-sm" 
+                                   placeholder="Ex: Vocabulaire anglais niveau B2" maxlength="100"
+                                   style="border: 2px solid #e5e7eb; transition: all 0.2s ease;"
+                                   onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                                   onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">
+                            <div class="form-text text-gray-500 mt-2">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Le nom doit être unique parmi vos decks
+                            </div>
+                        </div>
+                        
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label class="form-label d-flex align-items-center mb-3" style="font-size: 1.1rem; font-weight: 600; color: #374151;">
+                                <div class="bg-gradient-to-r from-green-100 to-green-200 rounded-lg p-2 me-3">
+                                    <i class="bi bi-card-text text-green-600"></i>
+                                </div>
+                                Description
+                            </label>
+                            <textarea id="editDeckDescription" class="form-control rounded-lg border-gray-300 shadow-sm" 
+                                      rows="4" placeholder="Décrivez le contenu de votre deck..." maxlength="500"
+                                      style="border: 2px solid #e5e7eb; transition: all 0.2s ease; resize: vertical;"
+                                      onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                                      onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"></textarea>
+                            <div class="form-text text-gray-500 mt-2">
+                                <i class="bi bi-lightbulb me-1"></i>
+                                Décrivez le contenu de votre deck en quelques mots
+                            </div>
+                        </div>
+                        
+                        <!-- Tags -->
+                        <div class="mb-4">
+                            <label class="form-label d-flex align-items-center mb-3" style="font-size: 1.1rem; font-weight: 600; color: #374151;">
+                                <div class="bg-gradient-to-r from-purple-100 to-purple-200 rounded-lg p-2 me-3">
+                                    <i class="bi bi-tags text-purple-600"></i>
+                                </div>
+                                Tags
+                            </label>
+                            <div class="tags-input-container">
+                                <div class="bg-gray-50 rounded-lg p-3 mb-3 border-2 border-gray-200" style="min-height: 60px;">
+                                    <div class="tags-display d-flex flex-wrap gap-2" id="editDeckTagsDisplay"></div>
+                                </div>
+                                <input type="text" id="editDeckTagsInput" class="form-control rounded-lg border-gray-300 shadow-sm" 
+                                       placeholder="Ajouter des tags (appuyez sur Entrée)"
+                                       style="border: 2px solid #e5e7eb; transition: all 0.2s ease;"
+                                       onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                                       onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">
+                            </div>
+                            <div class="form-text text-gray-500 mt-2">
+                                <i class="bi bi-collection me-1"></i>
+                                Les tags aident à organiser vos decks
+                            </div>
+                        </div>
+                        
+                        <!-- Visibilité -->
+                        <div class="mb-5">
+                            <label class="form-label d-flex align-items-center mb-3" style="font-size: 1.1rem; font-weight: 600; color: #374151;">
+                                <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-lg p-2 me-3">
+                                    <i class="bi bi-eye text-yellow-600"></i>
+                                </div>
+                                Visibilité
+                            </label>
+                            <select id="editDeckVisibility" class="form-select form-select-lg rounded-lg border-gray-300 shadow-sm"
+                                    style="border: 2px solid #e5e7eb; transition: all 0.2s ease;"
+                                    onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                                    onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">
+                                <option value="private">🔒 Privé - Visible par vous seul</option>
+                                <option value="public">🌍 Public - Visible par tous les utilisateurs</option>
+                            </select>
+                            <div class="form-text text-gray-500 mt-2">
+                                <i class="bi bi-globe me-1"></i>
+                                Les decks publics peuvent être découverts et utilisés par d'autres utilisateurs
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-end pt-4 mt-4 border-top border-gray-200">
+                            <button id="cancelEditDeckAlt" class="btn btn-outline-secondary btn-lg rounded-pill px-4 order-2 order-sm-1"
+                                    style="border: 2px solid #e5e7eb; font-weight: 500;">
+                                <i class="bi bi-x-lg me-2"></i>
+                                Annuler
+                            </button>
+                            <button id="saveEditDeck" class="btn btn-lg rounded-pill px-4 text-white order-1 order-sm-2"
+                                    style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border: none; font-weight: 600; box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Sauvegarder les modifications
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

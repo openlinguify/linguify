@@ -281,7 +281,7 @@ class TagsManager {
     
     // Méthode de debug pour diagnostiquer les problèmes
     debugTagsState(action = '') {
-        console.group(`🔍 Debug Tags State ${action ? '- ' + action : ''}`);
+        console.group(`Debug Tags State ${action ? '- ' + action : ''}`);
         console.log('Tags actuels dans la liste:', Array.from(this.tags));
         console.log('Tags disponibles globaux:', Array.from(this.availableTags));
         console.log('Input value:', this.inputElement?.value || 'N/A');
@@ -294,11 +294,11 @@ window.tagsManager = new TagsManager();
 
 // Fonction d'aide pour afficher les tags dans la liste des decks
 function displayDeckTags(deck) {
-    console.log('🏷️ displayDeckTags appelé pour deck:', deck.name, 'Tags:', deck.tags);
+    console.log('displayDeckTags appelé pour deck:', deck.name, 'Tags:', deck.tags);
     
     if (!deck.tags || deck.tags.length === 0) {
         const noTagsHTML = createNoTagsElement(deck.id);
-        console.log('📤 Retour HTML pour aucun tag:', noTagsHTML);
+        console.log('Retour HTML pour aucun tag:', noTagsHTML);
         return noTagsHTML;
     }
 
@@ -318,19 +318,19 @@ function displayDeckTags(deck) {
         return createTagElement(tag, tagClasses[index % tagClasses.length]);
     }).join('');
     
-    console.log('📤 Retour HTML pour tags existants:', tagsHTML);
+    console.log('Retour HTML pour tags existants:', tagsHTML);
     return tagsHTML;
 }
 
 // Créer l'élément "Aucun tag" - Version simplifiée et robuste
 function createNoTagsElement(deckId) {
-    console.log('🏷️ createNoTagsElement appelé pour deck ID:', deckId);
-    console.log('🔍 Fonction quickEditTags existe:', typeof quickEditTags !== 'undefined');
+    console.log('createNoTagsElement appelé pour deck ID:', deckId);
+    console.log('Fonction quickEditTags existe:', typeof quickEditTags !== 'undefined');
     
     // Version directe et robuste avec icône plus visible
-    const htmlContent = `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); console.log('🎯 Clic sur icône tag, deck:', ${deckId}); if(typeof quickEditTags !== 'undefined') { quickEditTags(${deckId}); } else { console.error('❌ quickEditTags non définie'); }" style="cursor: pointer; color: #2d5bba; font-size: 1rem; margin: 0 4px; font-weight: bold; background: #f0f9ff; padding: 2px 4px; border-radius: 3px;">🏷️</i> pour en ajouter</span>`;
+    const htmlContent = `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); console.log('Clic sur icône tag, deck:', ${deckId}); if(typeof quickEditTags !== 'undefined') { quickEditTags(${deckId}); } else { console.error('quickEditTags non définie'); }" style="cursor: pointer; color: #2d5bba; font-size: 1rem; margin: 0 4px; font-weight: bold; background: #f0f9ff; padding: 2px 4px; border-radius: 3px;">🏷️</i> pour en ajouter</span>`;
     
-    console.log('📤 HTML généré:', htmlContent);
+    console.log('HTML généré:', htmlContent);
     return htmlContent;
 }
 
@@ -338,7 +338,7 @@ function createNoTagsElement(deckId) {
 function createTagElement(tagName, tagClass) {
     const template = document.getElementById('tag-template');
     if (!template) {
-        console.error('❌ Template tag-template non trouvé');
+        console.error('Template tag-template non trouvé');
         return `<span class="tag-linguify ${tagClass}">${tagName}</span>`;
     }
     
