@@ -2,34 +2,34 @@
 {% load static %}
 
 {% block header_content %}
-{% include 'components/navbar.html' %}
+{% include 'notebook/components/navbar.html' %}
 {% endblock %}
 
 {% block content %}
 <div class="notebook-workspace d-flex h-100">
-    {% include 'components/sidebar.html' %}
+    {% include 'notebook/components/sidebar.html' %}
 
     <!-- Zone d'edition principale -->
     <div class="notebook-editor flex-grow-1">
         <!-- Editeur de note -->
         <div id="noteEditor" class="h-100 d-flex flex-column">
-            {% include 'components/editor-header.html' %}
+            {% include 'notebook/components/editor-header.html' %}
             
             <!-- Contenu de l'editeur avec onglets -->
             <div class="editor-content flex-grow-1 d-flex flex-column">
-                {% include 'components/editor-tabs.html' %}
+                {% include 'notebook/components/editor-tabs.html' %}
                 
                 <!-- Contenu des onglets -->
                 <div class="tab-content flex-grow-1" id="noteEditorContent">
-                    {% include 'components/content-panel.html' %}
-                    {% include 'components/metadata-panel.html' %}
+                    {% include 'notebook/components/content-panel.html' %}
+                    {% include 'notebook/components/metadata-panel.html' %}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{% include 'components/tags-management-modal.html' %}
+{% include 'notebook/components/tags-management-modal.html' %}
 
 <!-- CSRF Token hidden input -->
 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">

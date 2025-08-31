@@ -3408,8 +3408,8 @@ button.bg-linguify-gradient:hover,
   position: relative;
 }
 
-/* Sidebar collapsed state */
-.sidebar-linguify:not(.show) {
+/* Sidebar collapsed state - ONLY for revision app */
+#revisionSidebar.sidebar-linguify:not(.show) {
   width: 0 !important;
   min-width: 0 !important;
   max-width: 0 !important;
@@ -3426,9 +3426,9 @@ button.bg-linguify-gradient:hover,
   transition: margin-left 0.3s ease;
 }
 
-/* Mobile responsiveness */
+/* Mobile responsiveness - ONLY for revision app */
 @media (max-width: 768px) {
-  .sidebar-linguify {
+  #revisionSidebar.sidebar-linguify {
     position: fixed;
     top: 64px; /* Height of navbar */
     left: 0;
@@ -3438,12 +3438,12 @@ button.bg-linguify-gradient:hover,
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
   
-  .sidebar-linguify.show {
+  #revisionSidebar.sidebar-linguify.show {
     transform: translateX(0);
     opacity: 1;
   }
   
-  .sidebar-linguify:not(.show) {
+  #revisionSidebar.sidebar-linguify:not(.show) {
     transform: translateX(-100%);
     opacity: 0;
     width: 280px; /* Maintain width on mobile */
@@ -3451,7 +3451,7 @@ button.bg-linguify-gradient:hover,
   }
   
   /* Overlay when sidebar is open on mobile */
-  .sidebar-linguify.show::before {
+  #revisionSidebar.sidebar-linguify.show::before {
     content: '';
     position: fixed;
     top: 0;
