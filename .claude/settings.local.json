@@ -10,7 +10,8 @@
       "Bash(msgfmt:*)",
       "WebFetch(domain:localhost)",
       "Bash(node:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(make create-app:*)"
     ],
     "deny": [],
     "ask": [],

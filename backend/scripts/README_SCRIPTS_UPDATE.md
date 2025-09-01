@@ -28,7 +28,7 @@
 
 ### 2. **Author Correcte**
 - ❌ **Avant**: Utilisait `os.uname().nodename` → "MSI"
-- ✅ **Maintenant**: Author fixe → "LPLG-3"
+- ✅ **Maintenant**: Author fixe → "LGPL" (Lesser General Public License)
 
 ### 3. **Composant Navbar Intégré**
 - ✅ **Nouveau**: Crée automatiquement un composant navbar réutilisable
@@ -45,11 +45,11 @@
 
 ## 🆕 Nouveaux Scripts
 
-### 1. `create_complete_app_fixed.py`
-**Remplace** l'ancien script avec toutes les corrections:
+### 1. `create_complete_app.py` *(mis à jour)*
+**Script principal** avec toutes les corrections (ancien script sauvegardé en `create_complete_app_old.py`):
 ```bash
 # Via Python
-poetry run python scripts/create_complete_app_fixed.py learn_write "Writing Learning" education
+poetry run python scripts/create_complete_app.py learn_write "Writing Learning" education
 
 # Via Makefile (recommandé)
 make create-app APP=learn_write NAME="Writing Learning" CATEGORY=education
@@ -62,7 +62,7 @@ make create-app APP=learn_write NAME="Writing Learning" CATEGORY=education
 - ✅ JavaScript amélioré
 - ✅ Serializers pour API
 - ✅ Tests organisés
-- ✅ Author LPLG-3
+- ✅ Author LGPL
 - ✅ Templates responsive
 
 ### 2. `delete_app.py`
@@ -91,12 +91,16 @@ make app-delete  # Sans APP= pour voir la liste
 
 ### Commandes Modifiées:
 ```bash
-# Création d'app (utilise maintenant le script fixé)
+# Création d'app (utilise maintenant le script corrigé - même nom)
 make create-app APP=mon_app NAME="Mon App" CATEGORY=productivity
 
-# Suppression d'app (utilise maintenant le nouveau script)
+# Suppression d'app (utilise maintenant le nouveau script de suppression)
 make app-delete APP=mon_app
 ```
+
+### Sauvegarde:
+- ✅ Ancien script sauvegardé en `create_complete_app_old.py`
+- ✅ Script corrigé maintenant en `create_complete_app.py`
 
 ### Nouvelles Fonctionnalités:
 - 🆕 Auto-liste des apps disponibles lors d'erreur
@@ -144,7 +148,7 @@ make app-delete APP=test_writing
 - ✅ Dossiers models/, views/, forms/, admin/, serializers/
 - ✅ Templates avec component navbar
 - ✅ CSS et JS modernes
-- ✅ Manifest avec author LPLG-3
+- ✅ Manifest avec author LGPL
 
 ## 🚀 Utilisation Recommandée
 

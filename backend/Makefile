@@ -88,11 +88,11 @@ create-app:
 	fi
 	@echo "🚀 Creating complete app with full integration: $(APP)"
 	@if [ -n "$(NAME)" ] && [ -n "$(CATEGORY)" ]; then \
-		poetry run python scripts/create_complete_app_fixed.py $(APP) "$(NAME)" $(CATEGORY); \
+		poetry run python scripts/create_complete_app.py $(APP) "$(NAME)" $(CATEGORY); \
 	elif [ -n "$(NAME)" ]; then \
-		poetry run python scripts/create_complete_app_fixed.py $(APP) "$(NAME)"; \
+		poetry run python scripts/create_complete_app.py $(APP) "$(NAME)"; \
 	else \
-		poetry run python scripts/create_complete_app_fixed.py $(APP); \
+		poetry run python scripts/create_complete_app.py $(APP); \
 	fi
 
 apps:
