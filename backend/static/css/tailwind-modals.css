@@ -2196,6 +2196,12 @@ button.bg-linguify-gradient:hover,
   margin: 0 0 8px 0;
 }
 
+/* Override h6 margin for normal (non-folded) columns only */
+.kanban-column:not(.o_column_folded) .sidebar-header-linguify h6,
+.kanban-column:not(.o_column_folded) .sidebar-header-linguify .column-title-linguify {
+  margin: 0 !important;
+}
+
 /* Tailwind utility classes for revision app state management */
 .hidden { 
   display: none; 
