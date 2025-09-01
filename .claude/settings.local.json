@@ -15,7 +15,8 @@
       "Bash(poetry run:*)",
       "Bash(ss:*)",
       "Bash(pkill:*)",
-      "Bash(wget:*)"
+      "Bash(wget:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": [],

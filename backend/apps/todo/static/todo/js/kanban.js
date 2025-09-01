@@ -95,9 +95,9 @@ class TodoKanban {
             }
         });
         
-        // Allow clicking anywhere on folded column to unfold
+        // Allow clicking anywhere on accordion-folded column to unfold
         document.addEventListener('click', (e) => {
-            const foldedColumn = e.target.closest('.kanban-column.folded');
+            const foldedColumn = e.target.closest('.kanban-column.accordion-folded');
             if (foldedColumn && !e.target.closest('.kanban-tasks-container')) {
                 e.preventDefault();
                 const stageId = foldedColumn.dataset.stageId;
@@ -559,34 +559,31 @@ class TodoKanban {
     toggleStage(stageId) {
         const column = document.querySelector(`[data-stage-id="${stageId}"]`);
         const tasksContainer = column?.querySelector('.kanban-tasks-container');
-        const toggleBtn = column?.querySelector('.btn-linguify-ghost i');
         
-        if (!tasksContainer) return;
+        if (!column) return;
         
-        const isHidden = tasksContainer.style.display === 'none';
+        const isCurrentlyFolded = column.classList.contains('accordion-folded');
         
-        if (isHidden) {
-            // Show tasks container
-            tasksContainer.style.display = 'block';
-            column.classList.remove('folded');
-            
-            // Update button icon if exists
-            if (toggleBtn) {
-                toggleBtn.className = 'bi bi-chevron-down';
+        console.log(`Toggling stage ${stageId}: currently folded = ${isCurrentlyFolded}`);
+        
+        if (isCurrentlyFolded) {
+            // Expand: Remove accordion class and show tasks
+            column.classList.remove('accordion-folded');
+            if (tasksContainer) {
+                tasksContainer.style.display = 'block';
             }
+            console.log(`Expanded stage ${stageId}`);
         } else {
-            // Hide tasks container
-            tasksContainer.style.display = 'none';
-            column.classList.add('folded');
-            
-            // Update button icon if exists
-            if (toggleBtn) {
-                toggleBtn.className = 'bi bi-chevron-right';
+            // Fold: Add accordion class and hide tasks
+            column.classList.add('accordion-folded');
+            if (tasksContainer) {
+                tasksContainer.style.display = 'none';
             }
+            console.log(`Folded stage ${stageId}`);
         }
         
-        // Save column state
-        this.saveColumnState(stageId, !isHidden);
+        // Save the new state (folded = true if we just folded it)
+        this.saveColumnState(stageId, !isCurrentlyFolded);
     }
     
     saveColumnState(stageId, folded) {

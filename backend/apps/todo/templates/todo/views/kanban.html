@@ -16,21 +16,15 @@
             <div class="kanban-columns" id="kanbanBoard">
                 {% for stage_id, stage_data in kanban_data.items %}
                 <!-- Kanban Column -->
-                <div class="kanban-column{% if stage_data.stage.fold %} folded{% endif %}" data-stage-id="{{ stage_id }}">
+                <div class="kanban-column{% if stage_data.stage.fold or stage_data.stage.name == 'Archive' %} accordion-folded{% endif %}" data-stage-id="{{ stage_id }}">
                     <div class="kanban-column-card">
                         <!-- Column Header -->
                         <div class="sidebar-header-linguify">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    {% if stage_data.stage.fold %}
-                                    <button class="btn-linguify-ghost p-1" onclick="toggleStage('{{ stage_id }}')" title="{% trans 'Unfold stage' %}">
-                                        <i class="bi bi-chevron-right"></i>
+                                    <button class="btn-linguify-ghost p-1 stage-fold-btn" onclick="toggleStage('{{ stage_id }}')" title="{% trans 'Fold/Unfold stage' %}">
+                                        <i class="bi bi-arrows-collapse" style="font-size: 12px;"></i>
                                     </button>
-                                    {% else %}
-                                    <button class="btn-linguify-ghost p-1" onclick="toggleStage('{{ stage_id }}')" title="{% trans 'Fold stage' %}">
-                                        <i class="bi bi-chevron-down"></i>
-                                    </button>
-                                    {% endif %}
                                     <h6 class="column-title-linguify" onclick="toggleStage('{{ stage_id }}')" style="cursor: pointer;">{{ stage_data.stage.name }}</h6>
                                     <span class="badge-linguify">{{ stage_data.count }}</span>
                                 </div>
@@ -379,76 +373,127 @@
     color: var(--bs-gray-800);
 }
 
-/* Accordion-style folded columns */
+/* Force kanban columns basic layout */
+.kanban-columns {
+    display: flex !important;
+    gap: 20px;
+    align-items: flex-start;
+}
+
 .kanban-column {
-    transition: all 0.3s ease;
-    min-width: 280px;
-    flex: 0 0 280px;
+    min-width: 300px;
+    width: 300px;
+    flex-shrink: 0;
+    transition: all 0.4s ease;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-.kanban-column.folded {
-    min-width: 50px;
-    max-width: 50px;
-    flex: 0 0 50px;
-    background: var(--bs-gray-100);
-    border-radius: 8px;
-    margin: 0 2px;
-}
-
-.kanban-column.folded .kanban-column-card {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 5px;
-}
-
-.kanban-column.folded .sidebar-header-linguify {
-    transform: rotate(-90deg);
-    transform-origin: center;
-    width: max-content;
-    white-space: nowrap;
-}
-
-.kanban-column.folded .column-title-linguify {
-    font-size: 14px;
-    font-weight: 600;
-    margin: 0;
-    color: var(--bs-gray-700);
+/* Professional accordion-folded columns */
+.kanban-column.accordion-folded {
+    min-width: 45px !important;
+    width: 45px !important;
+    max-width: 45px !important;
+    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border: 1px solid #e0e6ed !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06) !important;
     cursor: pointer;
+    overflow: hidden;
+    flex-shrink: 0 !important;
+    position: relative;
+    margin: 0 5px;
 }
 
-.kanban-column.folded .badge-linguify {
-    position: absolute;
-    top: 10px;
-    right: 50%;
-    transform: translateX(50%);
-    font-size: 10px;
-    min-width: 18px;
-    height: 18px;
-    display: flex;
+.kanban-column.accordion-folded .kanban-column-card {
+    padding: 15px 0 !important;
+    height: 100%;
+    min-height: 300px;
+    display: flex !important;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    position: relative;
+    background: none !important;
 }
 
-.kanban-column.folded .btn-linguify-ghost,
-.kanban-column.folded .btn-linguify-secondary,
-.kanban-column.folded .dropdown {
+/* Hide all header elements except title */
+.kanban-column.accordion-folded .btn-linguify-ghost,
+.kanban-column.accordion-folded .btn-linguify-secondary,
+.kanban-column.accordion-folded .dropdown,
+.kanban-column.accordion-folded .kanban-tasks-container,
+.kanban-column.accordion-folded .add-task-container {
     display: none !important;
 }
 
-/* Hover effect on folded columns */
-.kanban-column.folded:hover {
-    background: var(--bs-gray-200);
+/* Vertical title styling */
+.kanban-column.accordion-folded .sidebar-header-linguify {
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    width: 200px;
+    height: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -10px;
+    margin-left: -100px;
+}
+
+.kanban-column.accordion-folded .column-title-linguify {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #495057 !important;
+    margin: 0 !important;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-align: center;
     cursor: pointer;
 }
 
-/* Smooth width transitions for kanban board */
-.kanban-columns {
+/* Task count badge */
+.kanban-column.accordion-folded .badge-linguify {
+    position: absolute !important;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #495057 !important;
+    color: white !important;
+    font-size: 9px;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
     display: flex;
-    gap: 20px;
-    transition: all 0.3s ease;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+
+/* Hover effects */
+.kanban-column.accordion-folded:hover {
+    background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    border-color: #007bff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12) !important;
+}
+
+/* Expand indicator */
+.kanban-column.accordion-folded::before {
+    content: "▶";
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #6c757d;
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+.kanban-column.accordion-folded:hover::before {
+    color: #007bff;
+    opacity: 1;
 }
 </style>
 
@@ -482,6 +527,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     initializeKanban();
+    
+    // Force Archive stage to be folded immediately after DOM load
+    setTimeout(() => {
+        document.querySelectorAll('.kanban-column').forEach(column => {
+            const titleElement = column.querySelector('.column-title-linguify');
+            if (titleElement && titleElement.textContent.trim() === 'Archive') {
+                console.log('Found Archive column, forcing accordion fold...');
+                column.classList.add('accordion-folded');
+                const tasksContainer = column.querySelector('.kanban-tasks-container');
+                if (tasksContainer) {
+                    tasksContainer.style.display = 'none';
+                }
+            }
+        });
+    }, 100);
     
     // Add event listener for delete stage confirmation
     const confirmDeleteBtn = document.getElementById('confirmDeleteStage');
@@ -536,5 +596,23 @@ function archiveTask(taskId) {
         todoKanban.archiveTask(taskId);
     }
 }
+
+// Test function for accordion
+function testAccordion() {
+    document.querySelectorAll('.kanban-column').forEach(column => {
+        const titleElement = column.querySelector('.column-title-linguify');
+        const stageId = column.dataset.stageId;
+        console.log('Column:', titleElement?.textContent, 'ID:', stageId, 'Classes:', column.className);
+        
+        // Test toggleStage function for all columns
+        if (todoKanban && stageId) {
+            console.log(`Testing toggle for stage: ${titleElement?.textContent}`);
+            todoKanban.toggleStage(stageId);
+        }
+    });
+}
+
+// Make it globally accessible for debugging
+window.testAccordion = testAccordion;
 </script>
 {% endblock %}
