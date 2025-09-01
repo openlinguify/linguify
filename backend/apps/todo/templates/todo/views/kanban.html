@@ -22,10 +22,7 @@
                         <div class="sidebar-header-linguify">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <button class="btn-linguify-ghost p-1 stage-fold-btn" onclick="toggleStage('{{ stage_id }}')" title="{% trans 'Fold/Unfold stage' %}">
-                                        <i class="bi bi-arrows-collapse" style="font-size: 12px;"></i>
-                                    </button>
-                                    <h6 class="column-title-linguify" onclick="toggleStage('{{ stage_id }}')" style="cursor: pointer;">{{ stage_data.stage.name }}</h6>
+                                    <h6 class="column-title-linguify">{{ stage_data.stage.name }}</h6>
                                     <span class="badge-linguify">{{ stage_data.count }}</span>
                                 </div>
                                 <div class="flex items-center gap-1">
@@ -40,14 +37,14 @@
                                             <i class="bi bi-three-dots"></i>
                                         </button>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" onclick="toggleStage('{{ stage_id }}')">
-                                                <i class="bi bi-eye{% if stage_data.stage.fold %}-slash{% endif %} me-2"></i>
-                                                {% if stage_data.stage.fold %}{% trans "Show" %}{% else %}{% trans "Hide" %}{% endif %}
-                                            </a></li>
+                                            <li><button class="dropdown-item" type="button" onclick="event.preventDefault(); event.stopPropagation(); toggleStage('{{ stage_id }}');">
+                                                <i class="bi bi-arrows-collapse me-2"></i>
+                                                {% trans "Hide" %}
+                                            </button></li>
                                             <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteStage('{{ stage_id }}')">
+                                            <li><button class="dropdown-item text-danger" type="button" onclick="event.preventDefault(); event.stopPropagation(); deleteStage('{{ stage_id }}');">
                                                 <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
-                                            </a></li>
+                                            </button></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -406,13 +403,18 @@
     padding: 16px 0 !important;
     width: auto !important;
     background: none !important;
+    min-height: 400px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
 }
 
 .kanban-column.o_column_folded .sidebar-header-linguify {
     writing-mode: vertical-lr !important;
     text-orientation: mixed !important;
-    padding: 16px 8px !important;
+    padding: 8px 8px !important;
     margin: 0 !important;
+    display: block !important;
 }
 
 .kanban-column.o_column_folded .column-title-linguify {
@@ -602,21 +604,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 column.style.background = '#f9fafb';
                 column.style.padding = '0';
                 
-                // Style the card
+                // Style the card with top alignment and horizontal centering
                 const card = column.querySelector('.kanban-column-card');
                 if (card) {
-                    card.style.padding = '16px 0';
-                    card.style.width = 'auto';
-                    card.style.background = 'none';
+                    card.style.cssText = `
+                        padding: 16px 0 !important;
+                        width: auto !important;
+                        background: none !important;
+                        min-height: 400px !important;
+                        display: flex !important;
+                        align-items: flex-start !important;
+                        justify-content: center !important;
+                    `;
                 }
                 
                 // Style the header for vertical text
                 const header = column.querySelector('.sidebar-header-linguify');
                 if (header) {
-                    header.style.writingMode = 'vertical-lr';
-                    header.style.textOrientation = 'mixed';
-                    header.style.padding = '16px 8px';
-                    header.style.margin = '0';
+                    header.style.cssText = `
+                        writing-mode: vertical-lr !important;
+                        text-orientation: mixed !important;
+                        padding: 8px 8px !important;
+                        margin: 0 !important;
+                        display: block !important;
+                    `;
                 }
                 
                 // Style the title

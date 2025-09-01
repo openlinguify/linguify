@@ -567,15 +567,67 @@ class TodoKanban {
         console.log(`Toggling stage ${stageId}: currently folded = ${isCurrentlyFolded}`);
         
         if (isCurrentlyFolded) {
-            // Expand: Remove folded class and show tasks
+            // Expand: Remove folded class and restore normal layout
             column.classList.remove('o_column_folded');
-            // Clear any inline styles
-            column.style.width = '';
-            column.style.minWidth = '';
-            column.style.maxWidth = '';
-            column.style.background = '';
-            column.style.border = '';
-            column.style.flex = '';
+            
+            // Reset column styles to normal
+            column.style.cssText = `
+                flex: 0 0 300px !important;
+                min-width: 300px !important;
+                max-width: 300px !important;
+                background: #f9fafb !important;
+                border-right: 1px solid #e7e9ed !important;
+                position: relative !important;
+                transition: all 0.3s ease !important;
+                padding: '';
+                width: '';
+                cursor: '';
+            `;
+            
+            // Reset header styles to normal horizontal layout
+            const header = column.querySelector('.sidebar-header-linguify');
+            if (header) {
+                header.style.cssText = `
+                    writing-mode: horizontal-tb !important;
+                    text-orientation: mixed !important;
+                    padding: '' !important;
+                    margin: '' !important;
+                `;
+            }
+            
+            // Reset title styles
+            const titleElement = column.querySelector('.column-title-linguify');
+            if (titleElement) {
+                titleElement.style.cssText = `
+                    font-size: '' !important;
+                    font-weight: '' !important;
+                    color: '' !important;
+                    margin: '' !important;
+                    white-space: '' !important;
+                    letter-spacing: '' !important;
+                    text-transform: '' !important;
+                `;
+            }
+            
+            // Reset badge styles
+            const badge = column.querySelector('.badge-linguify');
+            if (badge) {
+                badge.style.cssText = `
+                    writing-mode: horizontal-tb !important;
+                    margin-left: '' !important;
+                    background: '' !important;
+                    color: '' !important;
+                    border: '' !important;
+                    font-size: '' !important;
+                    font-weight: '' !important;
+                `;
+            }
+            
+            // Show hidden elements
+            const hiddenElements = column.querySelectorAll('.btn-linguify-ghost, .btn-linguify-secondary, .dropdown');
+            hiddenElements.forEach(el => {
+                el.style.display = '';
+            });
             
             if (tasksContainer) {
                 tasksContainer.style.display = 'block';
