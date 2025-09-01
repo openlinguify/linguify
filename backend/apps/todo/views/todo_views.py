@@ -25,6 +25,17 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
     
+    def destroy(self, request, *args, **kwargs):
+        """Override destroy to prevent deletion of the last stage"""
+        user_stages_count = self.get_queryset().count()
+        
+        if user_stages_count <= 1:
+            return Response({
+                'error': 'Impossible de supprimer le dernier stage. Vous devez avoir au moins un stage.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        return super().destroy(request, *args, **kwargs)
+    
     @action(detail=False, methods=['post'])
     def reorder(self, request):
         """Reorder stages by sequence"""
@@ -39,6 +50,29 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
                 continue
         
         return Response({'message': 'Stages reordered successfully'})
+    
+    @action(detail=True, methods=['post'])
+    def reorder_tasks(self, request, pk=None):
+        """Reorder tasks within a stage"""
+        stage = self.get_object()
+        task_ids = request.data.get('task_ids', [])
+        
+        # Import Task model here to avoid circular imports
+        from ..models import Task
+        
+        for index, task_id in enumerate(task_ids):
+            try:
+                task = Task.objects.get(
+                    id=task_id, 
+                    user=request.user, 
+                    personal_stage_type=stage
+                )
+                task.sequence = (index + 1) * 10
+                task.save()
+            except Task.DoesNotExist:
+                continue
+        
+        return Response({'message': 'Tasks reordered successfully'})
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -298,7 +332,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         
         kanban_data = {}
         for stage in stages:
-            stage_tasks = tasks.filter(personal_stage_type=stage)
+            stage_tasks = tasks.filter(personal_stage_type=stage).order_by('sequence', '-created_at')
             kanban_data[str(stage.id)] = {
                 'stage': PersonalStageTypeSerializer(stage).data,
                 'tasks': TaskKanbanSerializer(stage_tasks, many=True).data

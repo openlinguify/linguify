@@ -43,7 +43,12 @@ class TodoKanban {
                     ghostClass: 'kanban-card-ghost',
                     chosenClass: 'kanban-card-chosen',
                     dragClass: 'kanban-card-drag',
-                    onEnd: this.handleSortableEnd.bind(this)
+                    filter: '.add-task-container', // Exclude add task button from sorting
+                    onEnd: this.handleSortableEnd.bind(this),
+                    onMove: function(evt) {
+                        // Allow all moves
+                        return true;
+                    }
                 });
             });
         }
@@ -103,6 +108,19 @@ class TodoKanban {
                 this.closeAllForms();
             }
         });
+        
+        // Double-click to edit stage names
+        document.addEventListener('dblclick', (e) => {
+            const stageTitle = e.target.closest('.column-title-linguify');
+            if (stageTitle) {
+                e.preventDefault();
+                const stageColumn = stageTitle.closest('.kanban-column');
+                const stageId = stageColumn?.dataset.stageId;
+                if (stageId) {
+                    this.editStageName(stageId);
+                }
+            }
+        });
     }
     
     handleDragStart(e) {
@@ -155,13 +173,11 @@ class TodoKanban {
         const newStageId = column.dataset.stageId;
         const taskId = this.draggedTask.taskId;
         
-        // Don't move if dropped in same stage
-        if (newStageId === this.draggedTask.originalStageId) {
-            return;
+        // Only move if dropped in different stage (SortableJS handles same-stage reordering)
+        if (newStageId !== this.draggedTask.originalStageId) {
+            // Move task to new stage
+            this.moveTaskToStage(taskId, newStageId, this.draggedTask.element);
         }
-        
-        // Move task to new stage
-        this.moveTaskToStage(taskId, newStageId, this.draggedTask.element);
     }
     
     handleSortableEnd(e) {
@@ -170,11 +186,12 @@ class TodoKanban {
         const oldStageId = e.from.closest('.kanban-column').dataset.stageId;
         
         if (newStageId !== oldStageId) {
+            // Move task to different stage
             this.moveTaskToStage(taskId, newStageId, e.item);
+        } else {
+            // Just reorder within the same stage
+            this.updateTaskSequence(newStageId);
         }
-        
-        // Update task sequence
-        this.updateTaskSequence(newStageId);
     }
     
     async moveTaskToStage(taskId, newStageId, taskElement) {
@@ -510,21 +527,34 @@ class TodoKanban {
         });
     }
     
-    updateTaskSequence(stageId) {
+    async updateTaskSequence(stageId) {
         const tasks = document.querySelectorAll(`[data-stage-id="${stageId}"] .kanban-card`);
-        const taskIds = Array.from(tasks).map(task => task.dataset.taskId);
+        const taskIds = Array.from(tasks)
+            .map(task => task.dataset.taskId)
+            .filter(id => id); // Filter out empty IDs
         
-        // Send sequence update to server
-        fetch(`/api/v1/todo/stages/${stageId}/reorder_tasks/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': this.getCSRFToken()
-            },
-            body: JSON.stringify({ task_ids: taskIds })
-        }).catch(error => {
-            console.warn('Could not update task sequence:', error);
-        });
+        if (taskIds.length === 0) return;
+        
+        try {
+            const response = await fetch(`/api/v1/todo/stages/${stageId}/reorder_tasks/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({ task_ids: taskIds })
+            });
+            
+            if (response.ok) {
+                // Optional: show subtle success feedback
+                console.log('Tasks reordered successfully');
+            } else {
+                throw new Error('Failed to reorder tasks');
+            }
+        } catch (error) {
+            console.error('Could not update task sequence:', error);
+            this.showError('Impossible de sauvegarder l\'ordre des tâches');
+        }
     }
     
     closeAllForms() {
@@ -555,6 +585,10 @@ class TodoKanban {
     
     showError(message) {
         this.showToast(message, 'error');
+    }
+    
+    showInfo(message) {
+        this.showToast(message, 'info');
     }
     
     showToast(message, type = 'info') {
@@ -600,7 +634,13 @@ class TodoKanban {
         window.location.href = `/todo/task/${taskId}/`;
     }
     
-    async createNewStage(stageName) {
+    async createNewStage(stageName = null) {
+        // If no name provided, create a default name
+        if (!stageName) {
+            const existingStages = document.querySelectorAll('.kanban-column').length - 1; // -1 for the "Add Stage" column
+            stageName = `Nouveau Stage ${existingStages + 1}`;
+        }
+        
         try {
             const response = await fetch('/api/v1/todo/stages/', {
                 method: 'POST',
@@ -626,8 +666,170 @@ class TodoKanban {
         }
     }
     
+    showDeleteStageModal(stageId) {
+        // Find stage name and task count
+        const stageColumn = document.querySelector(`[data-stage-id="${stageId}"]`);
+        const stageName = stageColumn?.querySelector('.column-title-linguify')?.textContent || 'ce stage';
+        const taskCount = stageColumn?.querySelectorAll('.kanban-card').length || 0;
+        
+        // Update modal content
+        const modal = document.getElementById('deleteStageModal');
+        const stageNameElement = document.getElementById('stageNameToDelete');
+        const tasksWarning = document.getElementById('tasksWarning');
+        
+        if (stageNameElement) {
+            stageNameElement.textContent = stageName;
+        }
+        
+        // Show/hide tasks warning based on task count
+        if (tasksWarning) {
+            if (taskCount > 0) {
+                tasksWarning.style.display = 'block';
+                // Update the text to show task count
+                const strongElement = tasksWarning.querySelector('p strong');
+                if (strongElement) {
+                    const taskText = taskCount === 1 
+                        ? 'Que se passe-t-il avec la tâche ?' 
+                        : `Que se passe-t-il avec les ${taskCount} tâches ?`;
+                    strongElement.textContent = taskText;
+                }
+            } else {
+                tasksWarning.style.display = 'none';
+            }
+        }
+        
+        // Store stageId for the confirm button
+        this.pendingDeleteStageId = stageId;
+        
+        // Show modal
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+    }
+    
+    async deleteStage(stageId) {
+        const stageColumn = document.querySelector(`[data-stage-id="${stageId}"]`);
+        const taskCount = stageColumn?.querySelectorAll('.kanban-card').length || 0;
+        
+        try {
+            const response = await fetch(`/api/v1/todo/stages/${stageId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+            
+            if (response.ok) {
+                this.showSuccess('Stage supprimé avec succès');
+                // Remove the stage column from the UI
+                stageColumn?.remove();
+                
+                // If there were tasks, show a message about orphaned tasks
+                if (taskCount > 0) {
+                    setTimeout(() => {
+                        this.showInfo(`${taskCount} tâche(s) ont été déplacées vers aucun stage. Vous pouvez les réassigner depuis la vue Liste.`);
+                    }, 2000);
+                }
+            } else if (response.status === 404) {
+                this.showError('Stage non trouvé');
+            } else if (response.status === 400) {
+                // Handle the "last stage" protection error
+                const errorData = await response.json();
+                this.showError(errorData.error || 'Impossible de supprimer ce stage');
+            } else {
+                throw new Error('Failed to delete stage');
+            }
+        } catch (error) {
+            console.error('Error deleting stage:', error);
+            this.showError('Erreur lors de la suppression du stage');
+        }
+    }
+    
     showAddStageForm() {
         console.log('Add new stage form - to be implemented');
+    }
+    
+    editStageName(stageId) {
+        const stageColumn = document.querySelector(`[data-stage-id="${stageId}"]`);
+        const titleElement = stageColumn?.querySelector('.column-title-linguify');
+        
+        if (!titleElement) return;
+        
+        const currentName = titleElement.textContent.trim();
+        
+        // Create input element
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentName;
+        input.className = 'form-control form-control-sm';
+        input.style.cssText = `
+            width: auto;
+            min-width: 120px;
+            background: transparent;
+            border: 1px solid var(--linguify-primary);
+            color: var(--linguify-primary-dark);
+            font-weight: 600;
+            font-size: inherit;
+        `;
+        
+        // Replace title with input
+        titleElement.style.display = 'none';
+        titleElement.parentNode.insertBefore(input, titleElement.nextSibling);
+        
+        // Focus and select
+        input.focus();
+        input.select();
+        
+        // Handle save/cancel
+        const saveStage = async () => {
+            const newName = input.value.trim();
+            
+            if (!newName || newName === currentName) {
+                cancelEdit();
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/v1/todo/stages/${stageId}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCSRFToken()
+                    },
+                    body: JSON.stringify({ name: newName })
+                });
+                
+                if (response.ok) {
+                    titleElement.textContent = newName;
+                    this.showSuccess('Nom du stage modifié');
+                } else {
+                    throw new Error('Failed to update stage name');
+                }
+            } catch (error) {
+                console.error('Error updating stage name:', error);
+                this.showError('Erreur lors de la modification du nom');
+            }
+            
+            cancelEdit();
+        };
+        
+        const cancelEdit = () => {
+            input.remove();
+            titleElement.style.display = '';
+        };
+        
+        // Events
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveStage();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                cancelEdit();
+            }
+        });
+        
+        input.addEventListener('blur', saveStage);
     }
 }
 
@@ -674,9 +876,14 @@ window.openTask = function(taskId) {
 };
 
 window.addNewStage = function() {
-    const stageName = prompt('Nom du nouveau stage :');
-    if (stageName && stageName.trim()) {
-        todoKanban.createNewStage(stageName.trim());
+    if (todoKanban) {
+        todoKanban.createNewStage();
+    }
+};
+
+window.deleteStage = function(stageId) {
+    if (todoKanban) {
+        todoKanban.showDeleteStageModal(stageId);
     }
 };
 

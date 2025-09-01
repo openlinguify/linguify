@@ -42,7 +42,7 @@
                                                 {% if stage_data.stage.fold %}{% trans "Show" %}{% else %}{% trans "Hide" %}{% endif %}
                                             </a></li>
                                             <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item text-danger" href="#">
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteStage('{{ stage_id }}')">
                                                 <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
                                             </a></li>
                                         </ul>
@@ -213,16 +213,168 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Stage Confirmation Modal -->
+<div class="modal fade" id="deleteStageModal" tabindex="-1" aria-labelledby="deleteStageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title text-danger" id="deleteStageModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Supprimer le stage
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="text-danger mb-3" style="font-size: 3rem;">
+                        <i class="bi bi-trash"></i>
+                    </div>
+                    <h6 class="fw-bold mb-3" id="stageNameToDelete">Nom du stage</h6>
+                </div>
+                
+                <div class="alert alert-warning border-0 mb-3" style="background: #fff3cd;">
+                    <div class="d-flex">
+                        <i class="bi bi-exclamation-triangle text-warning me-3 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <p class="mb-2"><strong>Êtes-vous sûr de vouloir supprimer ce stage ?</strong></p>
+                            <p class="mb-0" id="deleteStageWarning">Cette action est irréversible.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tasksWarning" class="alert alert-info border-0" style="background: #d1ecf1; display: none;">
+                    <div class="d-flex">
+                        <i class="bi bi-info-circle text-info me-3 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <p class="mb-2"><strong>Que se passe-t-il avec les tâches ?</strong></p>
+                            <ul class="mb-0 ps-0" style="list-style: none;">
+                                <li class="mb-1"><i class="bi bi-shield-check text-info me-2"></i>Les tâches <strong>ne seront pas supprimées</strong></li>
+                                <li class="mb-1"><i class="bi bi-arrow-right text-info me-2"></i>Elles n'appartiendront plus à aucun stage</li>
+                                <li><i class="bi bi-list-task text-info me-2"></i>Vous pourrez les réassigner depuis la vue Liste</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>Annuler
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteStage">
+                    <i class="bi bi-trash me-2"></i>Supprimer définitivement
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% comment %} Tous les styles sont centralisés dans tailwind-modals.css {% endcomment %}
 
+<style>
+/* SortableJS drag & drop styles */
+.kanban-card-ghost {
+    opacity: 0.4;
+    background: #f8f9fa;
+    border: 2px dashed #6c757d;
+}
+
+.kanban-card-chosen {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: rotate(2deg);
+}
+
+.kanban-card-drag {
+    transform: rotate(5deg);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.kanban-tasks-container.sortable-drag-over {
+    background-color: rgba(45, 91, 186, 0.05);
+    border-radius: 8px;
+}
+
+/* Améliorer l'apparence des cartes pendant le drag */
+.task-card-linguify {
+    transition: all 0.2s ease;
+    cursor: grab;
+}
+
+.task-card-linguify:active {
+    cursor: grabbing;
+}
+
+.task-card-linguify.dragging {
+    opacity: 0.8;
+    transform: rotate(3deg);
+}
+
+/* Styles for editable stage titles */
+.column-title-linguify {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    padding: 2px 6px;
+    position: relative;
+    display: inline-block;
+}
+
+.column-title-linguify:hover {
+    background-color: rgba(45, 91, 186, 0.1);
+    transform: scale(1.02);
+}
+
+/* Hint tooltip for stage editing */
+.column-title-linguify::after {
+    content: "Double-cliquez pour éditer";
+    position: absolute;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-100%) translateX(-50%);
+    left: 50%;
+    top: -8px;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.column-title-linguify:hover::after {
+    opacity: 1;
+}
+</style>
+
 {% block extra_js %}
+<!-- SortableJS for drag & drop -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="{% static 'todo/js/kanban.js' %}"></script>
 <script>
 // Initialize Kanban functionality
 document.addEventListener('DOMContentLoaded', function() {
     initializeKanban();
+    
+    // Add event listener for delete stage confirmation
+    const confirmDeleteBtn = document.getElementById('confirmDeleteStage');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (todoKanban && todoKanban.pendingDeleteStageId) {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteStageModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+                // Execute deletion
+                todoKanban.deleteStage(todoKanban.pendingDeleteStageId);
+                todoKanban.pendingDeleteStageId = null;
+            }
+        });
+    }
 });
 
 // Tailwind Modal functions
