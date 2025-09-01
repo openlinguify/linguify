@@ -88,11 +88,11 @@ create-app:
 	fi
 	@echo "🚀 Creating complete app with full integration: $(APP)"
 	@if [ -n "$(NAME)" ] && [ -n "$(CATEGORY)" ]; then \
-		poetry run python scripts/create_complete_app.py $(APP) "$(NAME)" $(CATEGORY); \
+		poetry run python scripts/create_complete_app_fixed.py $(APP) "$(NAME)" $(CATEGORY); \
 	elif [ -n "$(NAME)" ]; then \
-		poetry run python scripts/create_complete_app.py $(APP) "$(NAME)"; \
+		poetry run python scripts/create_complete_app_fixed.py $(APP) "$(NAME)"; \
 	else \
-		poetry run python scripts/create_complete_app.py $(APP); \
+		poetry run python scripts/create_complete_app_fixed.py $(APP); \
 	fi
 
 apps:
@@ -141,11 +141,13 @@ app-delete:
 	@if [ -z "$(APP)" ]; then \
 		echo "❌ Usage: make app-delete APP=<code>"; \
 		echo "📝 Example: make app-delete APP=demo_app_test"; \
+		echo "📋 Available apps:"; \
+		poetry run python scripts/delete_app.py --list; \
 		exit 1; \
 	fi
 	@echo "🗑️  Deleting application: $(APP)"
-	@$(eval ENV_VAL := $(shell grep DJANGO_ENV .env | cut -d'=' -f2 | tr -d '"'))
-	@DJANGO_ENV=$(ENV_VAL) poetry run python scripts/database/app_manager.py delete $(APP)
+	@echo "⚠️  This will completely remove the app from the system!"
+	@poetry run python scripts/delete_app.py $(APP)
 
 sync-manifests:
 	@echo "🔄 Complete manifest synchronization..."
