@@ -33,10 +33,11 @@ class PersonalStageType(models.Model):
     def create_default_stages(cls, user):
         """Create default stages for new users - Open Linguify inspired onboarding"""
         default_stages = [
-            {'name': 'To Do', 'sequence': 1, 'color': '#6c757d', 'is_closed': False},
-            {'name': 'In Progress', 'sequence': 2, 'color': '#007bff', 'is_closed': False},
-            {'name': 'Waiting', 'sequence': 3, 'color': '#ffc107', 'is_closed': False},
-            {'name': 'Done', 'sequence': 4, 'color': '#28a745', 'is_closed': True},
+            {'name': 'To Do', 'sequence': 1, 'color': '#6c757d', 'is_closed': False, 'fold': False},
+            {'name': 'In Progress', 'sequence': 2, 'color': '#007bff', 'is_closed': False, 'fold': False},
+            {'name': 'Waiting', 'sequence': 3, 'color': '#ffc107', 'is_closed': False, 'fold': False},
+            {'name': 'Done', 'sequence': 4, 'color': '#28a745', 'is_closed': True, 'fold': False},
+            {'name': 'Archive', 'sequence': 5, 'color': '#6f42c1', 'is_closed': True, 'fold': True},
         ]
         
         stages = []

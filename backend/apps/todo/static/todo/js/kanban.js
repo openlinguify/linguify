@@ -95,6 +95,16 @@ class TodoKanban {
             }
         });
         
+        // Allow clicking anywhere on folded column to unfold
+        document.addEventListener('click', (e) => {
+            const foldedColumn = e.target.closest('.kanban-column.folded');
+            if (foldedColumn && !e.target.closest('.kanban-tasks-container')) {
+                e.preventDefault();
+                const stageId = foldedColumn.dataset.stageId;
+                this.toggleStage(stageId);
+            }
+        });
+        
         // Add new stage
         document.addEventListener('click', (e) => {
             if (e.target.closest('.add-stage-btn')) {
@@ -549,18 +559,30 @@ class TodoKanban {
     toggleStage(stageId) {
         const column = document.querySelector(`[data-stage-id="${stageId}"]`);
         const tasksContainer = column?.querySelector('.kanban-tasks-container');
-        const toggleBtn = column?.querySelector('[onclick*="toggleStage"] i');
+        const toggleBtn = column?.querySelector('.btn-linguify-ghost i');
         
-        if (!tasksContainer || !toggleBtn) return;
+        if (!tasksContainer) return;
         
         const isHidden = tasksContainer.style.display === 'none';
         
         if (isHidden) {
+            // Show tasks container
             tasksContainer.style.display = 'block';
-            toggleBtn.className = 'bi bi-chevron-down';
+            column.classList.remove('folded');
+            
+            // Update button icon if exists
+            if (toggleBtn) {
+                toggleBtn.className = 'bi bi-chevron-down';
+            }
         } else {
+            // Hide tasks container
             tasksContainer.style.display = 'none';
-            toggleBtn.className = 'bi bi-chevron-up';
+            column.classList.add('folded');
+            
+            // Update button icon if exists
+            if (toggleBtn) {
+                toggleBtn.className = 'bi bi-chevron-right';
+            }
         }
         
         // Save column state
@@ -580,8 +602,24 @@ class TodoKanban {
     loadColumnStates() {
         try {
             const states = JSON.parse(localStorage.getItem('kanbanColumnStates') || '{}');
-            Object.entries(states).forEach(([stageId, state]) => {
-                if (state.folded) {
+            
+            // First, handle stages with server-side fold=true that should be folded by default
+            document.querySelectorAll('.kanban-column').forEach(column => {
+                const stageId = column.dataset.stageId;
+                const tasksContainer = column.querySelector('.kanban-tasks-container');
+                
+                // Check if stage should be folded by default (from server)
+                const isHiddenByDefault = tasksContainer && tasksContainer.style.display === 'none';
+                
+                // If localStorage has no state for this stage and it should be hidden by default, keep it hidden
+                if (!states[stageId] && isHiddenByDefault) {
+                    // Stage is already hidden by server-side rendering, don't change anything
+                    return;
+                }
+                
+                // Apply localStorage state if it exists
+                const savedState = states[stageId];
+                if (savedState && savedState.folded !== isHiddenByDefault) {
                     this.toggleStage(stageId);
                 }
             });
@@ -745,6 +783,47 @@ class TodoKanban {
     
     openTask(taskId) {
         window.location.href = `/todo/task/${taskId}/`;
+    }
+    
+    async archiveTask(taskId) {
+        try {
+            // Find the Archive stage for the current user
+            const user = window.USER_DATA;
+            const response = await fetch(`/api/v1/todo/tasks/${taskId}/archive/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                
+                // Move task visually to Archive stage
+                const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+                if (taskCard) {
+                    const archiveStage = document.querySelector('[data-stage-id="' + result.archive_stage_id + '"]');
+                    if (archiveStage) {
+                        const archiveTasksList = archiveStage.querySelector('.tasks-list');
+                        if (archiveTasksList) {
+                            archiveTasksList.appendChild(taskCard.cloneNode(true));
+                        }
+                    }
+                    
+                    // Remove from current stage
+                    taskCard.remove();
+                }
+                
+                this.updateStageCounts();
+                this.showSuccess('Tâche archivée avec succès');
+            } else {
+                throw new Error('Erreur lors de l\'archivage');
+            }
+        } catch (error) {
+            console.error('Archive error:', error);
+            this.showError('Impossible d\'archiver la tâche');
+        }
     }
     
     reinitializeSortable(tasksList) {

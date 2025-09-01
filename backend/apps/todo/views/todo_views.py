@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Q, Count, Avg
+from django.db.models import Q, Count, Avg, Max
 from django.utils import timezone
 from datetime import timedelta
 from ..models import Project, Task, Note, Category, Tag, Reminder, TaskTemplate, PersonalStageType
@@ -39,7 +39,7 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Prevent deletion of critical system stages
-        critical_stage_names = ['To Do', 'Done']
+        critical_stage_names = ['To Do', 'Done', 'Archive']
         if stage.name in critical_stage_names:
             return Response({
                 'error': f'Impossible de supprimer le stage "{stage.name}" car il est nécessaire au bon fonctionnement de l\'application.',
@@ -345,6 +345,45 @@ class TaskViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(task)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def archive(self, request, pk=None):
+        """Archive a completed task - move to Archive stage"""
+        task = self.get_object()
+        
+        # Ensure task is completed before archiving
+        if task.state != '1_done':
+            return Response({
+                'error': 'Seules les tâches complétées peuvent être archivées'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Find or create Archive stage for user
+        archive_stage = task.user.personal_stages.filter(name='Archive').first()
+        if not archive_stage:
+            # Create Archive stage if it doesn't exist
+            max_sequence = task.user.personal_stages.aggregate(
+                max_seq=Max('sequence')
+            )['max_seq'] or 0
+            
+            archive_stage = PersonalStageType.objects.create(
+                user=task.user,
+                name='Archive',
+                sequence=max_sequence + 1,
+                color='#6f42c1',
+                is_closed=True,
+                fold=True
+            )
+        
+        # Move task to Archive stage
+        task.personal_stage_type = archive_stage
+        task.save()
+        
+        return Response({
+            'success': True,
+            'message': 'Tâche archivée avec succès',
+            'archive_stage_id': str(archive_stage.id),
+            'task': TaskListSerializer(task).data
+        })
     
     @action(detail=False, methods=['post'])
     def quick_create(self, request):
