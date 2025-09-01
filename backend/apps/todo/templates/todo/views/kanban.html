@@ -370,7 +370,7 @@
     color: var(--bs-gray-800);
 }
 
-/* CLEAN openlinguify STYLE KANBAN COLUMNS */
+/* CLEAN ODOO STYLE KANBAN COLUMNS */
 .kanban-columns {
     display: flex !important;
     gap: 0 !important;
@@ -378,21 +378,22 @@
 }
 
 .kanban-column {
-    flex: 0 0 300px !important;
-    min-width: 300px !important;
-    max-width: 300px !important;
-    transition: all 0.3s ease !important;
-    background: #f9fafb !important;
-    border-right: 1px solid #e7e9ed !important;
-    position: relative !important;
+    flex: 0 0 300px;
+    min-width: 300px;
+    max-width: 300px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #f9fafb;
+    border-right: 1px solid #e7e9ed;
+    position: relative;
+    overflow: hidden;
 }
 
-/* CLEAN openlinguify STYLE FOLDED COLUMN */
+/* CLEAN ODOO STYLE FOLDED COLUMN */
 .kanban-column.o_column_folded {
-    flex: 0 0 auto !important;
-    min-width: auto !important;
-    max-width: none !important;
-    width: auto !important;
+    flex: 0 0 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    width: 36px !important;
     cursor: pointer !important;
     background: #f9fafb !important;
     border-right: 1px solid #e7e9ed !important;
@@ -400,49 +401,80 @@
 }
 
 .kanban-column.o_column_folded .kanban-column-card {
-    padding: 20px 8px !important;
-    width: auto !important;
-    background: none !important;
-    min-height: 300px !important;
+    padding: 12px 4px !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important;
+    min-height: 400px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .kanban-column.o_column_folded .sidebar-header-linguify {
     writing-mode: vertical-lr !important;
     text-orientation: mixed !important;
+    transform: rotate(180deg) !important;
     padding: 0 !important;
     margin: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
 }
 
 .kanban-column.o_column_folded .column-title-linguify {
-    font-size: 16px !important;
-    font-weight: 400 !important;
-    color: rgba(0,0,0,0.6) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #6b7280 !important;
     margin: 0 !important;
+    margin-bottom: 8px !important;
     white-space: nowrap !important;
-    letter-spacing: normal !important;
+    letter-spacing: 0.025em !important;
     text-transform: none !important;
-    transition: all 0.2s ease !important;
+    transition: color 0.2s ease !important;
 }
 
 .kanban-column.o_column_folded:hover .column-title-linguify {
-    color: rgba(0,0,0,1) !important;
+    color: #374151 !important;
 }
 
 .kanban-column.o_column_folded .badge-linguify {
-    writing-mode: vertical-lr !important;
-    margin-left: 6px !important;
-    background: none !important;
-    color: rgba(0,0,0,0.6) !important;
+    writing-mode: horizontal-tb !important;
+    margin: 0 !important;
+    background: #e5e7eb !important;
+    color: #6b7280 !important;
     border: none !important;
-    font-size: 13px !important;
-    font-weight: normal !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 2px 6px !important;
+    border-radius: 10px !important;
+    min-width: 18px !important;
+    text-align: center !important;
 }
 
 .kanban-column.o_column_folded .btn-linguify-ghost,
 .kanban-column.o_column_folded .btn-linguify-secondary,
-.kanban-column.o_column_folded .dropdown,
+.kanban-column.o_column_folded .dropdown {
+    display: none !important;
+}
+
 .kanban-column.o_column_folded .kanban-tasks-container {
     display: none !important;
+}
+
+/* Hover effect for folded columns */
+.kanban-column.o_column_folded:hover {
+    background: #f3f4f6 !important;
+}
+
+/* Smooth transitions for all elements */
+.kanban-column .sidebar-header-linguify,
+.kanban-column .column-title-linguify,
+.kanban-column .badge-linguify,
+.kanban-column .kanban-column-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 </style>
@@ -477,83 +509,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     initializeKanban();
-    
-    // Apply initial openlinguify styles (one time only, no continuous interference)
-    setTimeout(() => {
-        const foldedColumns = document.querySelectorAll('.kanban-column.o_column_folded');
-        
-        foldedColumns.forEach(column => {
-            const titleElement = column.querySelector('.column-title-linguify');
-            
-            // Apply folded visual styles
-            column.style.flex = '0 0 auto';
-            column.style.minWidth = 'auto';
-            column.style.maxWidth = 'none';
-            column.style.width = 'auto';
-            column.style.cursor = 'pointer';
-            column.style.padding = '0';
-            
-            // Style the card
-            const card = column.querySelector('.kanban-column-card');
-            if (card) {
-                card.style.cssText = `
-                    width: auto !important;
-                    background: none !important;
-                    min-height: 400px !important;
-                    display: flex !important;
-                    align-items: flex-start !important;
-                    justify-content: center !important;
-                    padding: 20px 8px !important;
-                `;
-            }
-            
-            // Style the header for vertical text
-            const header = column.querySelector('.sidebar-header-linguify');
-            if (header) {
-                header.style.cssText = `
-                    writing-mode: vertical-lr !important;
-                    text-orientation: mixed !important;
-                    padding: 0 !important;
-                    margin: 0 !important;
-                `;
-            }
-            
-            // Style the title
-            if (titleElement) {
-                titleElement.style.fontSize = '16px';
-                titleElement.style.fontWeight = '400';
-                titleElement.style.color = 'rgba(0,0,0,0.6)';
-                titleElement.style.margin = '0';
-                titleElement.style.whiteSpace = 'nowrap';
-                titleElement.style.letterSpacing = 'normal';
-                titleElement.style.textTransform = 'none';
-            }
-            
-            // Style the badge
-            const badge = column.querySelector('.badge-linguify');
-            if (badge) {
-                badge.style.writingMode = 'vertical-lr';
-                badge.style.marginLeft = '6px';
-                badge.style.background = 'none';
-                badge.style.color = 'rgba(0,0,0,0.6)';
-                badge.style.border = 'none';
-                badge.style.fontSize = '13px';
-                badge.style.fontWeight = 'normal';
-            }
-            
-            // Hide elements
-            const elementsToHide = column.querySelectorAll('.btn-linguify-ghost, .btn-linguify-secondary, .dropdown');
-            elementsToHide.forEach(el => {
-                el.style.display = 'none';
-            });
-            
-            // Hide tasks
-            const tasksContainer = column.querySelector('.kanban-tasks-container');
-            if (tasksContainer) {
-                tasksContainer.style.display = 'none';
-            }
-        });
-    }, 50);
     
     
     // Add event listener for delete stage confirmation

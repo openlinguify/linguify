@@ -88,11 +88,16 @@ class TodoKanban {
         
         // Handle Hide button clicks
         document.addEventListener('click', (e) => {
+            console.log('Click detected on:', e.target);
             const hideBtn = e.target.closest('.hide-stage-btn');
+            console.log('Hide button found:', hideBtn);
+            
             if (hideBtn) {
+                console.log('Processing hide button click');
                 e.preventDefault();
                 e.stopPropagation();
                 const stageId = hideBtn.dataset.stageId;
+                console.log('Stage ID:', stageId);
                 this.toggleStage(stageId);
                 
                 // Close the dropdown
@@ -580,97 +585,54 @@ class TodoKanban {
     }
     
     toggleStage(stageId) {
+        console.log('toggleStage called with ID:', stageId);
         const column = document.querySelector(`[data-stage-id="${stageId}"]`);
         const tasksContainer = column?.querySelector('.kanban-tasks-container');
         
-        if (!column) return;
+        console.log('Column found:', column);
+        console.log('Tasks container found:', tasksContainer);
+        
+        if (!column) {
+            console.error('No column found for stage ID:', stageId);
+            return;
+        }
         
         const isCurrentlyFolded = column.classList.contains('o_column_folded');
-        
+        console.log('Currently folded:', isCurrentlyFolded);
         
         if (isCurrentlyFolded) {
-            // Expand: Remove folded class and restore normal layout
+            // Expand: Remove folded class and clear all inline styles
             column.classList.remove('o_column_folded');
             
-            // Reset column styles to normal
-            column.style.cssText = `
-                flex: 0 0 300px !important;
-                min-width: 300px !important;
-                max-width: 300px !important;
-                background: #f9fafb !important;
-                border-right: 1px solid #e7e9ed !important;
-                position: relative !important;
-                transition: all 0.3s ease !important;
-                padding: '';
-                width: '';
-                cursor: '';
-            `;
+            // Clear all inline styles to let CSS take over
+            column.removeAttribute('style');
             
-            // Reset card styles to normal layout
+            // Clear styles for all child elements
             const card = column.querySelector('.kanban-column-card');
-            if (card) {
-                card.style.cssText = `
-                    width: '' !important;
-                    background: '' !important;
-                    min-height: '' !important;
-                    display: '' !important;
-                    align-items: '' !important;
-                    justify-content: '' !important;
-                `;
-            }
+            if (card) card.removeAttribute('style');
             
-            // Reset header styles to normal horizontal layout
             const header = column.querySelector('.sidebar-header-linguify');
-            if (header) {
-                header.style.cssText = `
-                    writing-mode: horizontal-tb !important;
-                    text-orientation: mixed !important;
-                    padding: '' !important;
-                    margin: '' !important;
-                `;
-            }
+            if (header) header.removeAttribute('style');
             
-            // Reset title styles
             const titleElement = column.querySelector('.column-title-linguify');
-            if (titleElement) {
-                titleElement.style.cssText = `
-                    font-size: '' !important;
-                    font-weight: '' !important;
-                    color: '' !important;
-                    margin: '' !important;
-                    white-space: '' !important;
-                    letter-spacing: '' !important;
-                    text-transform: '' !important;
-                `;
-            }
+            if (titleElement) titleElement.removeAttribute('style');
             
-            // Reset badge styles
             const badge = column.querySelector('.badge-linguify');
-            if (badge) {
-                badge.style.cssText = `
-                    writing-mode: horizontal-tb !important;
-                    margin-left: '' !important;
-                    background: '' !important;
-                    color: '' !important;
-                    border: '' !important;
-                    font-size: '' !important;
-                    font-weight: '' !important;
-                `;
-            }
+            if (badge) badge.removeAttribute('style');
             
             // Show hidden elements
             const hiddenElements = column.querySelectorAll('.btn-linguify-ghost, .btn-linguify-secondary, .dropdown');
-            hiddenElements.forEach(el => {
-                el.style.display = '';
-            });
+            hiddenElements.forEach(el => el.removeAttribute('style'));
             
+            // Show tasks container
             if (tasksContainer) {
-                tasksContainer.style.display = 'block';
+                tasksContainer.removeAttribute('style');
             }
         } else {
-            // Fold: Add folded class and hide tasks (CSS handles the rest)
+            // Fold: Add folded class (CSS handles most of the styling)
             column.classList.add('o_column_folded');
             
+            // Only hide tasks container explicitly
             if (tasksContainer) {
                 tasksContainer.style.display = 'none';
             }
@@ -678,6 +640,9 @@ class TodoKanban {
         
         // Save the new state (folded = true if we just folded it)
         this.saveColumnState(stageId, !isCurrentlyFolded);
+        
+        // Persist to backend if needed
+        this.persistFoldState(stageId, !isCurrentlyFolded);
     }
     
     saveColumnState(stageId, folded) {
@@ -687,6 +652,25 @@ class TodoKanban {
             localStorage.setItem('kanbanColumnStates', JSON.stringify(states));
         } catch (e) {
             console.warn('Could not save column state:', e);
+        }
+    }
+    
+    async persistFoldState(stageId, folded) {
+        try {
+            const response = await fetch(`/api/v1/todo/stages/${stageId}/toggle_fold/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({ fold: folded })
+            });
+            
+            if (!response.ok) {
+                console.warn('Could not persist fold state to backend');
+            }
+        } catch (error) {
+            console.warn('Error persisting fold state:', error);
         }
     }
     
@@ -1268,9 +1252,11 @@ window.submitQuickTask = function() {
 // Initialize Kanban
 let todoKanban;
 function initializeKanban() {
+    console.log('Initializing TodoKanban...');
     todoKanban = new TodoKanban();
     todoKanban.loadColumnStates();
     window.todoKanban = todoKanban;
+    console.log('TodoKanban initialized:', todoKanban);
 }
 
 // Auto-initialize on DOM load

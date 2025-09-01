@@ -105,6 +105,22 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
                 continue
         
         return Response({'message': 'Tasks reordered successfully'})
+    
+    @action(detail=True, methods=['post'])
+    def toggle_fold(self, request, pk=None):
+        """Toggle stage fold state - Odoo kanban style"""
+        stage = self.get_object()
+        fold_state = request.data.get('fold', not stage.fold)
+        
+        stage.fold = fold_state
+        stage.save(update_fields=['fold'])
+        
+        return Response({
+            'success': True,
+            'stage_id': str(stage.id),
+            'fold': stage.fold,
+            'message': f'Stage {"plié" if stage.fold else "déplié"} avec succès'
+        })
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
