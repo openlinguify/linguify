@@ -1,0 +1,67 @@
+{% load i18n %}
+<!-- Create Deck Form -->
+<div id="createDeckForm" class="create-deck-form-hidden">
+    <div class="study-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">{% trans "Create New Deck" %}</h5>
+            <button id="cancelCreate" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-x-lg"></i>
+                {% trans "Cancel" %}
+            </button>
+        </div>
+    </div>
+    
+    <div class="study-content p-4">
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label">{% trans "Deck Name" %} <span class="text-danger">*</span></label>
+                <input type="text" 
+                       id="newDeckName" 
+                       class="form-control rounded-3 border-2" 
+                       placeholder="{% trans 'Ex: English Vocabulary Level B2' %}" 
+                       required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">{% trans "Visibility" %}</label>
+                <select id="newDeckVisibility" class="form-select rounded-3 border-2">
+                    <option value="private">🔒 {% trans "Private" %}</option>
+                    <option value="public">🌍 {% trans "Public" %}</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <label class="form-label">{% trans "Description" %}</label>
+            <textarea id="newDeckDescription" 
+                      class="form-control rounded-3 border-2" 
+                      rows="3" 
+                      placeholder="{% trans 'Briefly describe the content of this deck...' %}"></textarea>
+        </div>
+        
+        <div class="mt-4">
+            <label class="form-label">{% trans "Tags" %}</label>
+            <div class="tags-input-container position-relative">
+                <div class="tags-display mb-2" id="newDeckTagsDisplay"></div>
+                <input type="text" 
+                       id="newDeckTagsInput" 
+                       class="form-control rounded-3 border-2" 
+                       placeholder="{% trans 'Add tags (press Enter)' %}">
+            </div>
+            <div class="form-text text-muted small">
+                <i class="bi bi-info-circle me-1"></i>
+                {% trans "Tags help organize your decks. Press Enter to add a tag." %}
+            </div>
+        </div>
+        
+        <div class="mt-5 d-flex justify-content-end gap-3">
+            <button id="cancelCreateAlt" class="btn btn-outline-secondary rounded-3 px-4">
+                <i class="bi bi-x-circle me-2"></i>
+                {% trans "Cancel" %}
+            </button>
+            <button id="submitCreate" class="btn btn-primary rounded-3 px-4">
+                <i class="bi bi-plus-lg me-2"></i>
+                {% trans "Create Deck" %}
+            </button>
+        </div>
+    </div>
+</div>

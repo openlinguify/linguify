@@ -1,0 +1,96 @@
+<!-- Create Card Form -->
+<div id="createCardForm" class="create-card-form-hidden">
+    <div class="study-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-plus-circle text-linguify-primary me-2" style="font-size: 1.5rem;"></i>
+                <h4 class="mb-0 text-linguify-primary">Ajouter une nouvelle carte</h4>
+            </div>
+            <button id="cancelCardCreate" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-x-lg"></i>
+                Annuler
+            </button>
+        </div>
+    </div>
+    
+    <div class="study-content p-4">
+        <div class="alert bg-gradient-subtle-linguify border-linguify p-3 mb-4">
+            <i class="bi bi-info-circle text-linguify-accent me-2" style="font-size: 1rem;"></i>
+            <span class="text-linguify-primary" style="font-size: 0.9rem; font-weight: 500;">Les langues par défaut du deck seront utilisées. Vous pouvez les modifier uniquement pour cette carte si nécessaire.</span>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
+                    <i class="bi bi-card-text me-2"></i>
+                    Recto (Question) <span class="text-danger">*</span>
+                </label>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-gradient-subtle-linguify text-linguify-primary border-linguify px-2 py-1">
+                            <i class="bi bi-translate me-1" style="font-size: 0.75rem;"></i>
+                            <span id="deckFrontLangDisplay">Langue par défaut du deck</span>
+                        </span>
+                    </div>
+                    <button type="button" class="btn btn-link btn-sm text-linguify-accent p-0" id="changeFrontLang" title="Modifier la langue pour cette carte">
+                        <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                        <span class="ms-1" style="font-size: 0.75rem;">Modifier</span>
+                    </button>
+                </div>
+                <div id="frontLangSelector" style="display: none;" class="mb-2">
+                    <select id="newCardFrontLang" class="form-select form-select-sm">
+                        <option value="">Utiliser langue par défaut du deck</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="en">🇺🇸 Anglais</option>
+                        <option value="es">🇪🇸 Espagnol</option>
+                        <option value="it">🇮🇹 Italien</option>
+                        <option value="de">🇩🇪 Allemand</option>
+                        <option value="pt">🇵🇹 Portugais</option>
+                    </select>
+                </div>
+                <textarea id="newCardFront" class="form-control" rows="4" 
+                          placeholder="Ex: Comment dit-on 'bonjour' en anglais ?" required></textarea>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
+                    <i class="bi bi-card-text-reverse me-2"></i>
+                    Verso (Réponse) <span class="text-danger">*</span>
+                </label>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-gradient-subtle-linguify text-linguify-primary border-linguify px-2 py-1">
+                            <i class="bi bi-translate me-1" style="font-size: 0.75rem;"></i>
+                            <span id="deckBackLangDisplay">Langue par défaut du deck</span>
+                        </span>
+                    </div>
+                    <button type="button" class="btn btn-link btn-sm text-linguify-accent p-0" id="changeBackLang" title="Modifier la langue pour cette carte">
+                        <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                        <span class="ms-1" style="font-size: 0.75rem;">Modifier</span>
+                    </button>
+                </div>
+                <div id="backLangSelector" style="display: none;" class="mb-2">
+                    <select id="newCardBackLang" class="form-select form-select-sm">
+                        <option value="">Utiliser langue par défaut du deck</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="en">🇺🇸 Anglais</option>
+                        <option value="es">🇪🇸 Espagnol</option>
+                        <option value="it">🇮🇹 Italien</option>
+                        <option value="de">🇩🇪 Allemand</option>
+                        <option value="pt">🇵🇹 Portugais</option>
+                    </select>
+                </div>
+                <textarea id="newCardBack" class="form-control" rows="4" 
+                          placeholder="Ex: Hello" required></textarea>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <button id="submitCardCreate" class="btn btn-gradient me-2">
+                <i class="bi bi-plus-lg me-1"></i>
+                Ajouter la carte
+            </button>
+            <button id="cancelCardCreateAlt" class="btn btn-outline-custom">
+                Annuler
+            </button>
+        </div>
+    </div>
+</div>
