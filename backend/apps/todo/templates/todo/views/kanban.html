@@ -378,18 +378,18 @@
 }
 
 .kanban-column {
-    flex: 0 0 300px;
-    min-width: 300px;
-    max-width: 300px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #f9fafb;
-    border-right: 1px solid #e7e9ed;
-    position: relative;
-    overflow: hidden;
+    flex: 0 0 300px !important;
+    min-width: 300px !important;
+    max-width: 300px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: #f9fafb !important;
+    border-right: 1px solid #e7e9ed !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
-/* CLEAN ODOO STYLE FOLDED COLUMN */
-.kanban-column.o_column_folded {
+/* CLEAN ODOO STYLE FOLDED COLUMN - MAXIMUM SPECIFICITY */
+.kanban-columns .kanban-column.o_column_folded {
     flex: 0 0 36px !important;
     min-width: 36px !important;
     max-width: 36px !important;
@@ -398,9 +398,10 @@
     background: #f9fafb !important;
     border-right: 1px solid #e7e9ed !important;
     padding: 0 !important;
+    overflow: visible !important;
 }
 
-.kanban-column.o_column_folded .kanban-column-card {
+.kanban-columns .kanban-column.o_column_folded .kanban-column-card {
     padding: 12px 4px !important;
     width: 100% !important;
     height: 100% !important;
@@ -411,7 +412,7 @@
     justify-content: center !important;
 }
 
-.kanban-column.o_column_folded .sidebar-header-linguify {
+.kanban-columns .kanban-column.o_column_folded .sidebar-header-linguify {
     writing-mode: vertical-lr !important;
     text-orientation: mixed !important;
     transform: rotate(180deg) !important;
@@ -424,7 +425,7 @@
     justify-content: flex-start !important;
 }
 
-.kanban-column.o_column_folded .column-title-linguify {
+.kanban-columns .kanban-column.o_column_folded .column-title-linguify {
     font-size: 14px !important;
     font-weight: 500 !important;
     color: #6b7280 !important;
@@ -436,11 +437,11 @@
     transition: color 0.2s ease !important;
 }
 
-.kanban-column.o_column_folded:hover .column-title-linguify {
+.kanban-columns .kanban-column.o_column_folded:hover .column-title-linguify {
     color: #374151 !important;
 }
 
-.kanban-column.o_column_folded .badge-linguify {
+.kanban-columns .kanban-column.o_column_folded .badge-linguify {
     writing-mode: horizontal-tb !important;
     margin: 0 !important;
     background: #e5e7eb !important;
@@ -454,18 +455,18 @@
     text-align: center !important;
 }
 
-.kanban-column.o_column_folded .btn-linguify-ghost,
-.kanban-column.o_column_folded .btn-linguify-secondary,
-.kanban-column.o_column_folded .dropdown {
+.kanban-columns .kanban-column.o_column_folded .btn-linguify-ghost,
+.kanban-columns .kanban-column.o_column_folded .btn-linguify-secondary,
+.kanban-columns .kanban-column.o_column_folded .dropdown {
     display: none !important;
 }
 
-.kanban-column.o_column_folded .kanban-tasks-container {
+.kanban-columns .kanban-column.o_column_folded .kanban-tasks-container {
     display: none !important;
 }
 
 /* Hover effect for folded columns */
-.kanban-column.o_column_folded:hover {
+.kanban-columns .kanban-column.o_column_folded:hover {
     background: #f3f4f6 !important;
 }
 

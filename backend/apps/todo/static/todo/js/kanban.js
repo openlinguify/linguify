@@ -88,16 +88,11 @@ class TodoKanban {
         
         // Handle Hide button clicks
         document.addEventListener('click', (e) => {
-            console.log('Click detected on:', e.target);
             const hideBtn = e.target.closest('.hide-stage-btn');
-            console.log('Hide button found:', hideBtn);
-            
             if (hideBtn) {
-                console.log('Processing hide button click');
                 e.preventDefault();
                 e.stopPropagation();
                 const stageId = hideBtn.dataset.stageId;
-                console.log('Stage ID:', stageId);
                 this.toggleStage(stageId);
                 
                 // Close the dropdown
@@ -585,20 +580,12 @@ class TodoKanban {
     }
     
     toggleStage(stageId) {
-        console.log('toggleStage called with ID:', stageId);
         const column = document.querySelector(`[data-stage-id="${stageId}"]`);
         const tasksContainer = column?.querySelector('.kanban-tasks-container');
         
-        console.log('Column found:', column);
-        console.log('Tasks container found:', tasksContainer);
-        
-        if (!column) {
-            console.error('No column found for stage ID:', stageId);
-            return;
-        }
+        if (!column) return;
         
         const isCurrentlyFolded = column.classList.contains('o_column_folded');
-        console.log('Currently folded:', isCurrentlyFolded);
         
         if (isCurrentlyFolded) {
             // Expand: Remove folded class and clear all inline styles
@@ -629,10 +616,100 @@ class TodoKanban {
                 tasksContainer.removeAttribute('style');
             }
         } else {
-            // Fold: Add folded class (CSS handles most of the styling)
+            // Fold: Add folded class and force styles inline (highest specificity)
+            console.log('FOLDING - Before:', column.style.cssText);
             column.classList.add('o_column_folded');
             
-            // Only hide tasks container explicitly
+            // Force critical folded styles with inline CSS (overrides everything)
+            column.style.cssText = `
+                flex: 0 0 36px !important;
+                min-width: 36px !important;
+                max-width: 36px !important;
+                width: 36px !important;
+                cursor: pointer !important;
+                background: #f9fafb !important;
+                border-right: 1px solid #e7e9ed !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            `;
+            console.log('FOLDING - After:', column.style.cssText);
+            console.log('FOLDING - Classes:', column.className);
+            console.log('FOLDING - Computed width:', window.getComputedStyle(column).width);
+            
+            // Force card styles
+            const card = column.querySelector('.kanban-column-card');
+            if (card) {
+                card.style.cssText = `
+                    padding: 12px 4px !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    background: transparent !important;
+                    min-height: 400px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                `;
+            }
+            
+            // Force header styles for vertical text
+            const header = column.querySelector('.sidebar-header-linguify');
+            if (header) {
+                header.style.cssText = `
+                    writing-mode: vertical-lr !important;
+                    text-orientation: mixed !important;
+                    transform: rotate(180deg) !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    height: 100% !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    justify-content: flex-start !important;
+                `;
+            }
+            
+            // Force title styles
+            const title = column.querySelector('.column-title-linguify');
+            if (title) {
+                title.style.cssText = `
+                    font-size: 14px !important;
+                    font-weight: 500 !important;
+                    color: #6b7280 !important;
+                    margin: 0 !important;
+                    margin-bottom: 8px !important;
+                    white-space: nowrap !important;
+                    letter-spacing: 0.025em !important;
+                    text-transform: none !important;
+                    transition: color 0.2s ease !important;
+                `;
+            }
+            
+            // Force badge styles
+            const badge = column.querySelector('.badge-linguify');
+            if (badge) {
+                badge.style.cssText = `
+                    writing-mode: horizontal-tb !important;
+                    margin: 0 !important;
+                    background: #e5e7eb !important;
+                    color: #6b7280 !important;
+                    border: none !important;
+                    font-size: 11px !important;
+                    font-weight: 600 !important;
+                    padding: 2px 6px !important;
+                    border-radius: 10px !important;
+                    min-width: 18px !important;
+                    text-align: center !important;
+                `;
+            }
+            
+            // Hide buttons
+            const buttonsToHide = column.querySelectorAll('.btn-linguify-ghost, .btn-linguify-secondary, .dropdown');
+            buttonsToHide.forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Hide tasks container
             if (tasksContainer) {
                 tasksContainer.style.display = 'none';
             }
@@ -1252,11 +1329,9 @@ window.submitQuickTask = function() {
 // Initialize Kanban
 let todoKanban;
 function initializeKanban() {
-    console.log('Initializing TodoKanban...');
     todoKanban = new TodoKanban();
     todoKanban.loadColumnStates();
     window.todoKanban = todoKanban;
-    console.log('TodoKanban initialized:', todoKanban);
 }
 
 // Auto-initialize on DOM load
