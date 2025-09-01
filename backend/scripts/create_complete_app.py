@@ -1079,7 +1079,10 @@ window.{app_name}Page = {app_name.replace('_', '').title()}Page;
     # 13. Créer et appliquer les migrations
     create_and_apply_migrations(app_name)
     
-    # 14. Synchroniser avec le système
+    # 14. Ajouter l'URL à core/urls.py
+    add_app_url_to_core_urls(app_name)
+    
+    # 15. Synchroniser avec le système
     sync_app_to_system(app_name)
     
     print(f"🎯 App {app_name} créée avec succès!")
@@ -1296,6 +1299,67 @@ def create_and_apply_migrations(app_name):
         print(f"      poetry run python manage.py migrate {app_name}")
 
 
+def add_app_url_to_core_urls(app_name):
+    """Ajoute l'URL de l'app à core/urls.py automatiquement."""
+    try:
+        print(f"🔗 Ajout de l'URL à core/urls.py...")
+        
+        core_urls_path = Path(__file__).parent.parent / 'core' / 'urls.py'
+        
+        # Lire le fichier
+        with open(core_urls_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Vérifier si l'URL existe déjà
+        url_pattern = f"path('{app_name}/', include('apps.{app_name}.urls', namespace='{app_name}'))"
+        if url_pattern in content:
+            print(f"   ℹ️ URL déjà présente dans core/urls.py")
+            return True
+        
+        # Chercher l'endroit où insérer (avant les SEO URLs)
+        seo_marker = "    # SEO URLs - Organized sitemap serving"
+        
+        if seo_marker in content:
+            # Insérer avant la section SEO
+            new_url_line = f"    path('{app_name}/', include('apps.{app_name}.urls', namespace='{app_name}')),\n"
+            content = content.replace(
+                seo_marker,
+                f"{new_url_line}{seo_marker}"
+            )
+        else:
+            # Fallback: chercher un autre pattern
+            fallback_marker = "# Marketplace apps"
+            if fallback_marker in content:
+                # Trouver la fin de cette section
+                lines = content.split('\n')
+                insert_index = -1
+                in_marketplace_section = False
+                
+                for i, line in enumerate(lines):
+                    if fallback_marker in line:
+                        in_marketplace_section = True
+                    elif in_marketplace_section and line.strip().startswith('#') and 'SEO' in line:
+                        insert_index = i
+                        break
+                
+                if insert_index > 0:
+                    lines.insert(insert_index, f"    path('{app_name}/', include('apps.{app_name}.urls', namespace='{app_name}')),")
+                    content = '\n'.join(lines)
+        
+        # Écrire le fichier modifié
+        with open(core_urls_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        
+        print(f"   ✅ URL ajoutée: {url_pattern}")
+        return True
+        
+    except Exception as e:
+        print(f"   ❌ Erreur lors de l'ajout d'URL: {e}")
+        print(f"      Vous devrez ajouter manuellement à core/urls.py:")
+        print(f"      path('{app_name}/', include('apps.{app_name}.urls', namespace='{app_name}')),")
+        return False
+
+
 def sync_app_to_system(app_name):
     """Synchronise l'app avec le système."""
     try:
@@ -1398,6 +1462,7 @@ if __name__ == '__main__':
         print("✅ JavaScript amélioré")
         print("✅ Manifest avec author LGPL")
         print("✅ Migrations créées et appliquées")
+        print("✅ URL ajoutée automatiquement à core/urls.py")
         print("✅ App synchronisée avec la base de données")
         print()
         print("🌐 Votre app est maintenant disponible à:")
