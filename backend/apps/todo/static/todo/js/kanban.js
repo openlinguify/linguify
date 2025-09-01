@@ -86,7 +86,30 @@ class TodoKanban {
             }
         });
         
-        // Toggle column fold
+        // Handle Hide button clicks
+        document.addEventListener('click', (e) => {
+            const hideBtn = e.target.closest('.hide-stage-btn');
+            if (hideBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const stageId = hideBtn.dataset.stageId;
+                this.toggleStage(stageId);
+                
+                // Close the dropdown
+                const dropdown = hideBtn.closest('.dropdown');
+                if (dropdown) {
+                    const dropdownToggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
+                    if (dropdownToggle && bootstrap?.Dropdown) {
+                        const dropdownInstance = bootstrap.Dropdown.getInstance(dropdownToggle);
+                        if (dropdownInstance) {
+                            dropdownInstance.hide();
+                        }
+                    }
+                }
+            }
+        });
+
+        // Toggle column fold (legacy onclick support)
         document.addEventListener('click', (e) => {
             if (e.target.matches('[onclick*="toggleStage"]')) {
                 e.preventDefault();
@@ -95,7 +118,7 @@ class TodoKanban {
             }
         });
         
-        // Allow clicking anywhere on folded column to unfold (Odoo style)
+        // Allow clicking anywhere on folded column to unfold (openlinguify style)
         document.addEventListener('click', (e) => {
             const foldedColumn = e.target.closest('.kanban-column.o_column_folded');
             if (foldedColumn && !e.target.closest('.kanban-tasks-container')) {
@@ -392,7 +415,7 @@ class TodoKanban {
             </div>
         `;
         
-        // Insert at the top of the tasks container (Odoo behavior)
+        // Insert at the top of the tasks container (openlinguify behavior)
         tasksContainer.insertBefore(form, tasksContainer.firstChild);
         
         // Add event listeners to the buttons
@@ -564,7 +587,6 @@ class TodoKanban {
         
         const isCurrentlyFolded = column.classList.contains('o_column_folded');
         
-        console.log(`Toggling stage ${stageId}: currently folded = ${isCurrentlyFolded}`);
         
         if (isCurrentlyFolded) {
             // Expand: Remove folded class and restore normal layout
@@ -583,6 +605,19 @@ class TodoKanban {
                 width: '';
                 cursor: '';
             `;
+            
+            // Reset card styles to normal layout
+            const card = column.querySelector('.kanban-column-card');
+            if (card) {
+                card.style.cssText = `
+                    width: '' !important;
+                    background: '' !important;
+                    min-height: '' !important;
+                    display: '' !important;
+                    align-items: '' !important;
+                    justify-content: '' !important;
+                `;
+            }
             
             // Reset header styles to normal horizontal layout
             const header = column.querySelector('.sidebar-header-linguify');
@@ -632,7 +667,6 @@ class TodoKanban {
             if (tasksContainer) {
                 tasksContainer.style.display = 'block';
             }
-            console.log(`Expanded stage ${stageId}`);
         } else {
             // Fold: Add folded class and hide tasks (CSS handles the rest)
             column.classList.add('o_column_folded');
@@ -640,7 +674,6 @@ class TodoKanban {
             if (tasksContainer) {
                 tasksContainer.style.display = 'none';
             }
-            console.log(`Folded stage ${stageId}`);
         }
         
         // Save the new state (folded = true if we just folded it)
@@ -1157,7 +1190,7 @@ class TodoKanban {
 
 // Global functions
 window.addTaskToStage = function(stageId) {
-    // Look for the kanban-quick-add button first (Odoo style)
+    // Look for the kanban-quick-add button first (openlinguify style)
     let addBtn = document.querySelector(`[data-stage-id="${stageId}"] .kanban-quick-add`);
     
     // If not found, look for the bottom add button
@@ -1179,7 +1212,14 @@ window.addTaskToStage = function(stageId) {
 };
 
 window.toggleStage = function(stageId) {
-    todoKanban.toggleStage(stageId);
+    if (!window.todoKanban) {
+        initializeKanban();
+    }
+    if (window.todoKanban) {
+        window.todoKanban.toggleStage(stageId);
+    } else {
+        console.error('TodoKanban instance not available');
+    }
 };
 
 window.toggleTaskComplete = function(taskId) {
@@ -1231,4 +1271,11 @@ function initializeKanban() {
     todoKanban = new TodoKanban();
     todoKanban.loadColumnStates();
     window.todoKanban = todoKanban;
+}
+
+// Auto-initialize on DOM load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeKanban);
+} else {
+    initializeKanban();
 }

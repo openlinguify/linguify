@@ -3900,7 +3900,7 @@ button.bg-linguify-gradient:hover,
 
 /* ===== FORM LINGUIFY COMPONENTS ===== */
 
-/* Form Layout - Odoo style full height */
+/* Form Layout - openlinguify style full height */
 .form-layout {
     height: 100vh; /* Full viewport height */
     min-height: 100vh;
@@ -4806,7 +4806,7 @@ button.bg-linguify-gradient:hover,
 
 /* ===== LIST LINGUIFY COMPONENTS ===== */
 
-/* List Layout - Odoo style full height */
+/* List Layout - openlinguify style full height */
 .list-layout {
     height: 100%; /* Use 100% instead of 100vh since we're inside app-main-layout */
     min-height: 100%; /* Same for min-height */

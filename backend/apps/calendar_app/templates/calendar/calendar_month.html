@@ -7,13 +7,13 @@
 {% block page_title %}{% trans "Calendar" %}{% endblock %}
 
 {% block extra_calendar_css %}
-<!-- Odoo-style layout CSS is now integrated in calendar.css -->
+<!-- openlinguify-style layout CSS is now integrated in calendar.css -->
 {% endblock %}
 
 {% block calendar_content %}
 <div class="container-fluid">
-    <!-- Odoo-style Calendar Toolbar -->
-    <div class="odoo-calendar-toolbar">
+    <!-- openlinguify-style Calendar Toolbar -->
+    <div class="openlinguify-calendar-toolbar">
         <div class="toolbar-content">
             <!-- Left: View Switcher + Today Button -->
             <div class="toolbar-left">
@@ -106,30 +106,30 @@
         </div>
     </div>
 
-<!-- Odoo-style Full Height Layout -->
+<!-- openlinguify-style Full Height Layout -->
 <div class="calendar-main-row">
     <!-- Main Calendar Area -->
     <div class="calendar-column">
-        <div class="odoo-calendar-grid">
+        <div class="openlinguify-calendar-grid">
             <!-- Calendar Header -->
-            <div class="odoo-calendar-header">
-                <div class="odoo-day-header">LUN</div>
-                <div class="odoo-day-header">MAR</div>
-                <div class="odoo-day-header">MER</div>
-                <div class="odoo-day-header">JEU</div>
-                <div class="odoo-day-header">VEN</div>
-                <div class="odoo-day-header">SAM</div>
-                <div class="odoo-day-header">DIM</div>
+            <div class="openlinguify-calendar-header">
+                <div class="openlinguify-day-header">LUN</div>
+                <div class="openlinguify-day-header">MAR</div>
+                <div class="openlinguify-day-header">MER</div>
+                <div class="openlinguify-day-header">JEU</div>
+                <div class="openlinguify-day-header">VEN</div>
+                <div class="openlinguify-day-header">SAM</div>
+                <div class="openlinguify-day-header">DIM</div>
             </div>
             
             <!-- Calendar Body -->
-            <div class="odoo-calendar-body" id="calendar"></div>
+            <div class="openlinguify-calendar-body" id="calendar"></div>
         </div>
     </div>
     
     <!-- Right Sidebar -->
     <div class="sidebar-column">
-        <div class="odoo-sidebar">
+        <div class="openlinguify-sidebar">
             <!-- Mini Calendar -->
             <div class="mini-calendar">
                 <h6>{{ current_date|date:"F Y"|title }}</h6>
@@ -297,7 +297,7 @@ function forceInitializeCalendar() {
                 const isCurrentMonth = date.getMonth() === month;
                 const isToday = date.toDateString() === today.toDateString();
                 
-                let cellClasses = 'odoo-calendar-cell';
+                let cellClasses = 'openlinguify-calendar-cell';
                 if (!isCurrentMonth) cellClasses += ' other-month';
                 if (isToday) cellClasses += ' today';
                 
@@ -314,7 +314,7 @@ function forceInitializeCalendar() {
                         const eventType = event.extendedProps?.type || 'default';
                         const eventTitle = event.title.length > 20 ? event.title.substring(0, 20) + '...' : event.title;
                         
-                        let eventClass = 'odoo-event';
+                        let eventClass = 'openlinguify-event';
                         if (eventType === 'meeting') eventClass += ' event-type-meeting';
                         else if (eventType === 'personal') eventClass += ' event-type-personal';
                         else if (eventType === 'work') eventClass += ' event-type-work';
@@ -329,14 +329,14 @@ function forceInitializeCalendar() {
                     });
                     
                     if (dayEvents.length > 4) {
-                        eventsHtml += `<div class="odoo-event" style="opacity: 0.7; font-size: 0.65rem;">+${dayEvents.length - 4} plus</div>`;
+                        eventsHtml += `<div class="openlinguify-event" style="opacity: 0.7; font-size: 0.65rem;">+${dayEvents.length - 4} plus</div>`;
                     }
                 }
                 
                 html += `
                     <div class="${cellClasses}" onclick="handleDateClick('${dateString}')">
-                        <div class="odoo-day-number">${date.getDate()}</div>
-                        <div class="odoo-events-container">${eventsHtml}</div>
+                        <div class="openlinguify-day-number">${date.getDate()}</div>
+                        <div class="openlinguify-events-container">${eventsHtml}</div>
                     </div>
                 `;
             }
@@ -349,7 +349,7 @@ function forceInitializeCalendar() {
     const debugElements = calendarEl.parentElement.querySelectorAll('.calendar-header-debug, .calendar-debug-info');
     debugElements.forEach(el => el.remove());
     
-    // Render Odoo-style calendar
+    // Render openlinguify-style calendar
     calendarEl.innerHTML = renderOdooCalendar();
     
     // Create global calendar object

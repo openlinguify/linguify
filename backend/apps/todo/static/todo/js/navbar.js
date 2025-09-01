@@ -1,5 +1,5 @@
 /**
- * Todo App Navbar JavaScript - Odoo Style
+ * Todo App Navbar JavaScript - openlinguify Style
  * Handles navigation, filtering, and global interactions
  */
 

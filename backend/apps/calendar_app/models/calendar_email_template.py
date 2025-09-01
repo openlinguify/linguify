@@ -1,6 +1,6 @@
 """
 Email template model for calendar notifications
-Based on Odoo's mail.template functionality
+Based on openlinguify's mail.template functionality
 """
 from django.db import models
 from django.contrib.auth import get_user_model

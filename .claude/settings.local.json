@@ -16,7 +16,8 @@
       "Bash(ss:*)",
       "Bash(pkill:*)",
       "Bash(wget:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": [],

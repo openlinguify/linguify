@@ -2,8 +2,8 @@
 MANIFEST DU SYSTÈME DE TAGS GLOBAL LINGUIFY
 ==========================================
 
-Vision: Un système unifié de tags cross-apps inspiré d'Odoo base
-Analogue au module "base" d'Odoo, core contient les fonctionnalités fondamentales
+Vision: Un système unifié de tags cross-apps inspiré d'openlinguify base
+Analogue au module "base" d'openlinguify, core contient les fonctionnalités fondamentales
 partagées par toutes les applications Linguify.
 
 ## 🎯 OBJECTIF

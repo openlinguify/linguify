@@ -255,8 +255,8 @@
     z-index: 9998 !important; /* High z-index for calendar navigation dropdowns */
 }
 
-.calendar-body .odoo-calendar-toolbar .dropdown-menu {
-    z-index: 9997 !important; /* High z-index for Odoo toolbar dropdowns */
+.calendar-body .openlinguify-calendar-toolbar .dropdown-menu {
+    z-index: 9997 !important; /* High z-index for openlinguify toolbar dropdowns */
 }
 
 /* Ensure header has higher z-index than other fixed elements */
@@ -1078,8 +1078,8 @@
     }
 }
 
-/* Odoo-style Calendar Layout */
-.odoo-calendar-toolbar {
+/* openlinguify-style Calendar Layout */
+.openlinguify-calendar-toolbar {
     background: var(--calendar-bg-white);
     border-bottom: 1px solid var(--calendar-border);
     box-shadow: var(--calendar-shadow);
@@ -1179,21 +1179,21 @@
     border-left: 1px solid var(--calendar-border);
 }
 
-/* Odoo Calendar Grid */
-.odoo-calendar-grid {
+/* openlinguify Calendar Grid */
+.openlinguify-calendar-grid {
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-.odoo-calendar-header {
+.openlinguify-calendar-header {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     background: var(--calendar-border-light);
     border-bottom: 1px solid var(--calendar-border);
 }
 
-.odoo-day-header {
+.openlinguify-day-header {
     padding: 12px 8px;
     text-align: center;
     font-weight: 600;
@@ -1202,11 +1202,11 @@
     border-right: 1px solid var(--calendar-border);
 }
 
-.odoo-day-header:last-child {
+.openlinguify-day-header:last-child {
     border-right: none;
 }
 
-.odoo-calendar-body {
+.openlinguify-calendar-body {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -1214,7 +1214,7 @@
     background: var(--calendar-bg-white);
 }
 
-.odoo-calendar-cell {
+.openlinguify-calendar-cell {
     border-right: 1px solid var(--calendar-border);
     border-bottom: 1px solid var(--calendar-border);
     padding: 8px;
@@ -1227,38 +1227,38 @@
     flex-direction: column;
 }
 
-.odoo-calendar-cell:hover {
+.openlinguify-calendar-cell:hover {
     background: var(--calendar-border-light);
 }
 
-.odoo-calendar-cell.today {
+.openlinguify-calendar-cell.today {
     background: rgba(102, 126, 234, 0.1);
     border: 2px solid var(--calendar-primary);
 }
 
-.odoo-calendar-cell.other-month {
+.openlinguify-calendar-cell.other-month {
     background: #fafafa;
     color: var(--calendar-text-light);
 }
 
-.odoo-calendar-cell:nth-child(7n) {
+.openlinguify-calendar-cell:nth-child(7n) {
     border-right: none;
 }
 
-.odoo-day-number {
+.openlinguify-day-number {
     font-weight: 600;
     color: var(--calendar-text);
     margin-bottom: 4px;
     font-size: 0.875rem;
 }
 
-.odoo-events-container {
+.openlinguify-events-container {
     display: flex;
     flex-direction: column;
     gap: 1px;
 }
 
-.odoo-event {
+.openlinguify-event {
     background: var(--calendar-primary);
     color: white;
     font-size: 0.7rem;
@@ -1271,24 +1271,24 @@
     transition: opacity 0.2s ease;
 }
 
-.odoo-event:hover {
+.openlinguify-event:hover {
     opacity: 0.8;
 }
 
-.odoo-event.event-type-meeting {
+.openlinguify-event.event-type-meeting {
     background: var(--calendar-info);
 }
 
-.odoo-event.event-type-personal {
+.openlinguify-event.event-type-personal {
     background: var(--calendar-success);
 }
 
-.odoo-event.event-type-work {
+.openlinguify-event.event-type-work {
     background: var(--calendar-warning);
 }
 
-/* Odoo Sidebar */
-.odoo-sidebar {
+/* openlinguify Sidebar */
+.openlinguify-sidebar {
     padding: 16px;
     height: 100%;
     overflow-y: auto; /* Allow scroll in sidebar only */
@@ -1370,13 +1370,13 @@
     font-size: 0.875rem;
 }
 
-/* Responsive Design for Odoo Layout */
+/* Responsive Design for openlinguify Layout */
 @media (max-width: 1024px) {
     .sidebar-column {
         width: 240px;
     }
     
-    .odoo-calendar-cell {
+    .openlinguify-calendar-cell {
         min-height: 80px;
         padding: 6px;
     }
@@ -1409,7 +1409,7 @@
         min-height: 0; /* Allow flex to shrink */
     }
     
-    .odoo-sidebar {
+    .openlinguify-sidebar {
         flex-direction: row;
         height: 100%;
         padding: 12px;
@@ -1453,21 +1453,21 @@
         order: 3;
     }
     
-    .odoo-calendar-toolbar {
+    .openlinguify-calendar-toolbar {
         height: 80px !important; /* Taller for mobile */
         padding: 12px 16px;
     }
     
-    .odoo-calendar-cell {
+    .openlinguify-calendar-cell {
         min-height: 0; /* Let flex control height */
         padding: 4px;
     }
     
-    .odoo-day-number {
+    .openlinguify-day-number {
         font-size: 0.75rem;
     }
     
-    .odoo-event {
+    .openlinguify-event {
         font-size: 0.65rem;
         padding: 1px 3px;
     }
@@ -1501,7 +1501,7 @@
     .calendar-navbar-container,
     .btn,
     .dropdown,
-    .odoo-calendar-toolbar,
+    .openlinguify-calendar-toolbar,
     .sidebar-column {
         display: none !important;
     }

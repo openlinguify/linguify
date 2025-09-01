@@ -52,7 +52,7 @@ class TodoMainView(LoginRequiredMixin, TemplateView):
 
 
 class TodoKanbanView(LoginRequiredMixin, TemplateView):
-    """Kanban board view - Odoo-style"""
+    """Kanban board view - openlinguify-style"""
     template_name = 'todo/views/kanban.html'
     
     def get_context_data(self, **kwargs):
@@ -92,7 +92,7 @@ class TodoKanbanView(LoginRequiredMixin, TemplateView):
 
 
 class TodoListView(LoginRequiredMixin, TemplateView):
-    """List view - Odoo-style editable list"""
+    """List view - openlinguify-style editable list"""
     template_name = 'todo/views/list.html'
     
     def get_context_data(self, **kwargs):
@@ -187,7 +187,7 @@ class TodoListView(LoginRequiredMixin, TemplateView):
 
 
 class TodoActivityView(LoginRequiredMixin, TemplateView):
-    """Activity/Timeline view - Odoo-style activity tracking"""
+    """Activity/Timeline view - openlinguify-style activity tracking"""
     template_name = 'todo/views/activity.html'
     
     def get_context_data(self, **kwargs):
@@ -270,7 +270,7 @@ class TodoActivityView(LoginRequiredMixin, TemplateView):
 
 
 class TodoFormView(LoginRequiredMixin, TemplateView):
-    """Task creation/editing form - Odoo-style"""
+    """Task creation/editing form - openlinguify-style"""
     template_name = 'todo/views/form.html'
     
     def get_context_data(self, **kwargs):
