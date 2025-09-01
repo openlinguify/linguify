@@ -38,7 +38,7 @@ class TodoKanban {
         if (typeof Sortable !== 'undefined') {
             // Apply SortableJS directly to tasks-list containers where tasks actually are
             document.querySelectorAll('.tasks-list').forEach(tasksList => {
-                new Sortable(tasksList, {
+                tasksList.sortableInstance = new Sortable(tasksList, {
                     group: 'kanban-tasks',
                     animation: 150,
                     ghostClass: 'kanban-card-ghost',
@@ -464,26 +464,24 @@ class TodoKanban {
         const container = document.querySelector(`[data-stage-id="${stageId}"] .kanban-tasks-container`);
         if (!container) return;
         
-        const addBtn = container.querySelector('.add-task-btn');
+        // Find the tasks-list container (where tasks should be inserted)
+        const tasksList = container.querySelector('.tasks-list');
+        if (!tasksList) return;
+        
         const taskCard = this.createTaskCard(taskData);
         
-        if (addBtn) {
-            addBtn.before(taskCard);
-        } else {
-            container.appendChild(taskCard);
-        }
+        // Insert at the end of tasks-list (before the add-task-container)
+        tasksList.appendChild(taskCard);
         
         this.updateStageCounts();
         
-        // Make new task draggable
-        taskCard.draggable = true;
-        taskCard.addEventListener('dragstart', this.handleDragStart.bind(this));
-        taskCard.addEventListener('dragend', this.handleDragEnd.bind(this));
+        // Re-initialize SortableJS for the updated tasks list to make new task draggable
+        this.reinitializeSortable(tasksList);
     }
     
     createTaskCard(taskData) {
         const card = document.createElement('div');
-        card.className = 'card mb-3 kanban-task-card kanban-card';
+        card.className = 'task-card-linguify kanban-card';
         card.dataset.taskId = taskData.id;
         card.dataset.stageId = taskData.personal_stage_type;
         card.onclick = () => window.openTask(taskData.id);
@@ -506,45 +504,41 @@ class TodoKanban {
         const titleStyle = 'color: var(--linguify-primary-dark, #1E4A8C);';
         
         card.innerHTML = `
-            <div class="card-body p-3">
-                <!-- Task Header -->
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h6 class="${titleClasses}" style="${titleStyle}">${taskData.title}</h6>
-                    ${priorityIcon}
-                </div>
+            <!-- Task Header -->
+            <div class="flex items-start justify-between mb-2">
+                <h6 class="task-title-linguify">${taskData.title}</h6>
+                ${priorityIcon}
+            </div>
 
-                <!-- Task Meta Information -->
-                ${(taskData.due_date || taskData.project) ? `
-                <div class="d-flex align-items-center gap-3 mb-2 small text-muted">
-                    ${taskData.due_date ? `
-                    <span class="d-flex align-items-center gap-1">
-                        <i class="bi bi-calendar"></i>
-                        ${new Date(taskData.due_date).toLocaleDateString()}
-                    </span>` : ''}
-                    ${taskData.project ? `
-                    <span class="d-flex align-items-center gap-1">
-                        <i class="bi bi-folder"></i>
-                        ${taskData.project}
-                    </span>` : ''}
-                </div>` : ''}
+            <!-- Task Meta -->
+            ${(taskData.due_date || taskData.project) ? `
+            <div class="flex items-center gap-3 mb-2 text-xs text-gray-500">
+                ${taskData.due_date ? `
+                <span class="flex items-center gap-1">
+                    <i class="bi bi-calendar"></i>
+                    ${new Date(taskData.due_date).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}
+                </span>` : ''}
+                ${taskData.project ? `
+                <span class="flex items-center gap-1">
+                    <i class="bi bi-folder"></i>
+                    ${taskData.project}
+                </span>` : ''}
+            </div>` : ''}
 
-                <!-- Task Footer -->
-                <div class="d-flex justify-content-between align-items-center pt-2" 
-                     style="border-top: 1px solid var(--linguify-gray-100, #f3f4f6);">
-                    <small class="text-muted">Just now</small>
-                    <div class="d-flex align-items-center gap-1">
-                        <button class="btn btn-sm btn-outline-primary p-1" 
-                                onclick="event.stopPropagation(); editTask('${taskData.id}')" 
-                                title="Edit"
-                                style="border-color: var(--linguify-primary, #2D5BBA); color: var(--linguify-primary, #2D5BBA);">
-                            <i class="bi bi-pencil" style="font-size: 0.8rem;"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-success p-1" 
-                                onclick="event.stopPropagation(); toggleTaskComplete('${taskData.id}')" 
-                                title="Toggle Complete">
-                            <i class="${completeBtnIcon}"></i>
-                        </button>
-                    </div>
+            <!-- Task Footer -->
+            <div class="flex items-center justify-between pt-2" style="border-top: 1px solid var(--bs-gray-200);">
+                <small class="text-muted">À l'instant</small>
+                <div class="flex items-center gap-1">
+                    <button class="btn btn-sm btn-outline-primary p-1" 
+                            onclick="event.stopPropagation(); editTask('${taskData.id}')" 
+                            title="Edit">
+                        <i class="bi bi-pencil" style="font-size: 10px;"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success p-1" 
+                            onclick="event.stopPropagation(); toggleTaskComplete('${taskData.id}')" 
+                            title="Toggle Complete">
+                        <i class="${completeBtnIcon}" style="font-size: 10px;"></i>
+                    </button>
                 </div>
             </div>
         `;
@@ -751,6 +745,29 @@ class TodoKanban {
     
     openTask(taskId) {
         window.location.href = `/todo/task/${taskId}/`;
+    }
+    
+    reinitializeSortable(tasksList) {
+        // Destroy existing sortable instance if it exists
+        if (tasksList.sortableInstance) {
+            tasksList.sortableInstance.destroy();
+        }
+        
+        // Create new sortable instance
+        if (typeof Sortable !== 'undefined') {
+            tasksList.sortableInstance = new Sortable(tasksList, {
+                group: 'kanban-tasks',
+                animation: 150,
+                ghostClass: 'kanban-card-ghost',
+                chosenClass: 'kanban-card-chosen',
+                dragClass: 'kanban-card-drag',
+                draggable: '.kanban-card',
+                onEnd: this.handleSortableEnd.bind(this),
+                onMove: function(evt) {
+                    return true;
+                }
+            });
+        }
     }
     
     async createNewStage(stageName = null) {
