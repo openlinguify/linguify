@@ -463,88 +463,134 @@ class {app_name.replace('_', '').title()}ViewsTest(TestCase):
     print(f"✅ Templates directories created")
     
     # Template base avec navbar component
-    base_template = f'''{{% extends "base.html" %}}
-{{% load static %}}
-
-{{% block title %}}{display_name}{{% endblock %}}
-
-{{% block extra_head %}}
-    <link rel="stylesheet" href="{{% static '{app_name}/css/style.css' %}}">
-    <link rel="stylesheet" href="{{% static '{app_name}/css/{app_name}_page.css' %}}">
-{{% endblock %}}
-
-{{% block content %}}
-    <div class="{app_name}-page">
-        <!-- Include navbar component -->
-        {{% include 'components/{app_name}_navbar.html' with app_name='{display_name}' %}}
-        
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    {{% block app_content %}}
-                    {{% endblock %}}
-                </div>
+    base_template = f'''{{% load static %}}
+{{% load i18n %}}
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{% block title %}}{display_name}{{% endblock %}} - Open Linguify</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{% static 'images/favicon.png' %}}">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="Application {display_name} avec Linguify">
+    <meta name="author" content="Linguify">
+    {{% csrf_token %}}
+    <meta name="csrf-token" content="{{{{ csrf_token }}}}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{% static 'saas_web/css/main.css' %}}">
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="{{% static 'css/tailwind-global.css' %}}">
+    <link rel="stylesheet" href="{{% static 'css/tailwind-modals.css' %}}">
+    
+    <!-- CSS du header (en dernier pour avoir la priorité) -->
+    <link rel="stylesheet" href="{{% static 'saas_web/css/app_header.css' %}}">
+    
+    {{% block extra_css %}}{{% endblock %}}
+    
+    <style>
+        /* Header app global fixe en haut */
+        .app-header {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+        }}
+    </style>
+</head>
+<body class="app-body-layout">
+    <!-- Include the unified app header -->
+    {{% include 'components/header/app_header.html' %}}
+    
+    <div class="app-container-layout">
+        <!-- App-specific header section (below main header) -->
+        <div class="app-header-layout">
+            <div class="header-content">
+                {{% block header_content %}}{{% endblock %}}
             </div>
         </div>
+        
+        <!-- Main Content -->
+        <div class="app-main-layout">
+            {{% block content %}}{{% endblock %}}
+        </div>
     </div>
-{{% endblock %}}
 
-{{% block extra_js %}}
-    <script src="{{% static '{app_name}/js/app.js' %}}"></script>
-    <script src="{{% static '{app_name}/js/{app_name}_page.js' %}}"></script>
-{{% endblock %}}
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {{% block extra_js %}}{{% endblock %}}
+</body>
+</html>
 '''
     
     (templates_dir / 'base.html').write_text(base_template)
     
     # Component navbar
     navbar_component = f'''{{% load static %}}
-
-<nav class="{app_name}-navbar navbar navbar-expand-lg">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="{{% url '{app_name}:home' %}}">
-            <i class="bi bi-app me-2"></i>{{{{ app_name }}}}
-        </a>
+{{% load i18n %}}
+<!-- {display_name} App Navbar - Linguify Style -->
+<div class="navbar-linguify">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="navbar-section">    
+        <!-- New Item Button - Left side -->
+        <button id="createItem" class="btn-navbar btn-navbar-primary" onclick="createNewItem()">
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-xl-inline">{{% trans "New Item" %}}</span>
+        </button>    
         
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#{app_name}NavbarContent">
-            <span class="navbar-toggler-icon"></span>
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <a href="{{% url '{app_name}:home' %}}" 
+               class="nav-tab {{% if active_view == 'home' %}}active{{% endif %}}">
+                <i class="bi bi-house"></i>
+                {{% trans "Home" %}}
+            </a>
+            <a href="{{% url '{app_name}:create_item' %}}" 
+               class="nav-tab {{% if active_view == 'create' %}}active{{% endif %}}">
+                <i class="bi bi-plus"></i>
+                {{% trans "Create" %}}
+            </a>
+        </div>
+        
+        <!-- Refresh -->
+        <button id="refreshItems" class="btn-navbar btn-navbar-outline" title="{{% trans 'Refresh items' %}}">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-xl-inline">{{% trans "Refresh" %}}</span>
         </button>
-        
-        <div class="collapse navbar-collapse" id="{app_name}NavbarContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link {{{{ request.resolver_match.url_name == 'home'|yesno:'active,,' }}}}" 
-                       href="{{% url '{app_name}:home' %}}">
-                        <i class="bi bi-house me-1"></i>Accueil
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{{{ request.resolver_match.url_name == 'create_item'|yesno:'active,,' }}}}" 
-                       href="{{% url '{app_name}:create_item' %}}">
-                        <i class="bi bi-plus me-1"></i>Nouveau
-                    </a>
-                </li>
-            </ul>
+    </div>
             
-            <div class="navbar-nav">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-gear me-1"></i>Actions
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{% url '{app_name}:api_items' %}}">
-                            <i class="bi bi-code me-2"></i>API
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" onclick="{app_name}Page.refreshData()">
-                            <i class="bi bi-arrow-clockwise me-2"></i>Actualiser
-                        </a></li>
-                    </ul>
-                </div>
-            </div>
+    <!-- Droite: Actions et filtres contextuels -->
+    <div class="navbar-section-right">
+        <!-- Search -->
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{{% trans 'Search items...' %}}" style="width: 140px; min-width: 100px;">
+        
+        <!-- Actions -->
+        <div class="navbar-actions-group">
+            <button id="configureApp" class="btn-navbar btn-navbar-outline" onclick="configureApp()" title="{{% trans 'Configure' %}}">
+                <i class="bi bi-gear"></i>
+                <span class="d-none d-xxl-inline">{{% trans "Configure" %}}</span>
+            </button>
+            
+            <button id="exportItems" class="btn-navbar btn-navbar-outline" onclick="exportItems()" title="{{% trans 'Export' %}}">
+                <i class="bi bi-download"></i>
+                <span class="d-none d-xxl-inline">{{% trans "Export" %}}</span>
+            </button>
         </div>
     </div>
-</nav>
+</div>
 '''
     
     (components_dir / f'{app_name}_navbar.html').write_text(navbar_component)
@@ -552,7 +598,11 @@ class {app_name.replace('_', '').title()}ViewsTest(TestCase):
     # Template home
     home_template = f'''{{% extends "{app_name}/base.html" %}}
 
-{{% block app_content %}}
+{{% block header_content %}}
+    {{% include 'components/{app_name}_navbar.html' with active_view='home' %}}
+{{% endblock %}}
+
+{{% block content %}}
     <div class="{app_name}-page-header">
         <div class="container">
             <h1 class="{app_name}-page-title">{display_name}</h1>
@@ -660,7 +710,11 @@ class {app_name.replace('_', '').title()}ViewsTest(TestCase):
     # Create form templates
     create_template = f'''{{% extends "{app_name}/base.html" %}}
 
-{{% block app_content %}}
+{{% block header_content %}}
+    {{% include 'components/{app_name}_navbar.html' %}}
+{{% endblock %}}
+
+{{% block content %}}
     <div class="container mt-4">
         <div class="{app_name}-content-wrapper">
             <h2><i class="bi bi-plus me-2"></i>Créer un nouvel élément</h2>

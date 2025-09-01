@@ -13,7 +13,9 @@
       "Bash(curl:*)",
       "Bash(make create-app:*)",
       "Bash(poetry run:*)",
-      "Bash(ss:*)"
+      "Bash(ss:*)",
+      "Bash(pkill:*)",
+      "Bash(wget:*)"
     ],
     "deny": [],
     "ask": [],
