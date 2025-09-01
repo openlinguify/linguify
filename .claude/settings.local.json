@@ -11,7 +11,9 @@
       "WebFetch(domain:localhost)",
       "Bash(node:*)",
       "Bash(curl:*)",
-      "Bash(make create-app:*)"
+      "Bash(make create-app:*)",
+      "Bash(poetry run:*)",
+      "Bash(ss:*)"
     ],
     "deny": [],
     "ask": [],

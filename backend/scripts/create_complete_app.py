@@ -463,46 +463,46 @@ class {app_name.replace('_', '').title()}ViewsTest(TestCase):
     print(f"✅ Templates directories created")
     
     # Template base avec navbar component
-    base_template = f'''{{{{ extends "base.html" }}}}
-{{{{ load static }}}}
+    base_template = f'''{{% extends "base.html" %}}
+{{% load static %}}
 
-{{{{ block title }}}}{display_name}{{{{ endblock }}}}
+{{% block title %}}{display_name}{{% endblock %}}
 
-{{{{ block extra_head }}}}
-    <link rel="stylesheet" href="{{{{ static '{app_name}/css/style.css' }}}}">
-    <link rel="stylesheet" href="{{{{ static '{app_name}/css/{app_name}_page.css' }}}}">
-{{{{ endblock }}}}
+{{% block extra_head %}}
+    <link rel="stylesheet" href="{{% static '{app_name}/css/style.css' %}}">
+    <link rel="stylesheet" href="{{% static '{app_name}/css/{app_name}_page.css' %}}">
+{{% endblock %}}
 
-{{{{ block content }}}}
+{{% block content %}}
     <div class="{app_name}-page">
         <!-- Include navbar component -->
-        {{{{ include 'components/{app_name}_navbar.html' with app_name='{display_name}' }}}}
+        {{% include 'components/{app_name}_navbar.html' with app_name='{display_name}' %}}
         
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    {{{{ block app_content }}}}
-                    {{{{ endblock }}}}
+                    {{% block app_content %}}
+                    {{% endblock %}}
                 </div>
             </div>
         </div>
     </div>
-{{{{ endblock }}}}
+{{% endblock %}}
 
-{{{{ block extra_js }}}}
-    <script src="{{{{ static '{app_name}/js/app.js' }}}}"></script>
-    <script src="{{{{ static '{app_name}/js/{app_name}_page.js' }}}}"></script>
-{{{{ endblock }}}}
+{{% block extra_js %}}
+    <script src="{{% static '{app_name}/js/app.js' %}}"></script>
+    <script src="{{% static '{app_name}/js/{app_name}_page.js' %}}"></script>
+{{% endblock %}}
 '''
     
     (templates_dir / 'base.html').write_text(base_template)
     
     # Component navbar
-    navbar_component = f'''{{{{ load static }}}}
+    navbar_component = f'''{{% load static %}}
 
 <nav class="{app_name}-navbar navbar navbar-expand-lg">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{{{ url '{app_name}:home' }}}}">
+        <a class="navbar-brand" href="{{% url '{app_name}:home' %}}">
             <i class="bi bi-app me-2"></i>{{{{ app_name }}}}
         </a>
         
@@ -514,13 +514,13 @@ class {app_name.replace('_', '').title()}ViewsTest(TestCase):
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link {{{{ request.resolver_match.url_name == 'home'|yesno:'active,,' }}}}" 
-                       href="{{{{ url '{app_name}:home' }}}}">
+                       href="{{% url '{app_name}:home' %}}">
                         <i class="bi bi-house me-1"></i>Accueil
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{{{ request.resolver_match.url_name == 'create_item'|yesno:'active,,' }}}}" 
-                       href="{{{{ url '{app_name}:create_item' }}}}">
+                       href="{{% url '{app_name}:create_item' %}}">
                         <i class="bi bi-plus me-1"></i>Nouveau
                     </a>
                 </li>
@@ -532,7 +532,7 @@ class {app_name.replace('_', '').title()}ViewsTest(TestCase):
                         <i class="bi bi-gear me-1"></i>Actions
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{{{ url '{app_name}:api_items' }}}}">
+                        <li><a class="dropdown-item" href="{{% url '{app_name}:api_items' %}}">
                             <i class="bi bi-code me-2"></i>API
                         </a></li>
                         <li><hr class="dropdown-divider"></li>
@@ -550,9 +550,9 @@ class {app_name.replace('_', '').title()}ViewsTest(TestCase):
     (components_dir / f'{app_name}_navbar.html').write_text(navbar_component)
     
     # Template home
-    home_template = f'''{{{{ extends "{app_name}/base.html" }}}}
+    home_template = f'''{{% extends "{app_name}/base.html" %}}
 
-{{{{ block app_content }}}}
+{{% block app_content %}}
     <div class="{app_name}-page-header">
         <div class="container">
             <h1 class="{app_name}-page-title">{display_name}</h1>
@@ -561,14 +561,14 @@ class {app_name.replace('_', '').title()}ViewsTest(TestCase):
     </div>
 
     <div class="container">
-        {{{{ if messages }}}}
-            {{{{ for message in messages }}}}
+        {{% if messages %}}
+            {{% for message in messages %}}
                 <div class="alert alert-{{{{ message.tags }}}} alert-dismissible fade show" role="alert">
                     {{{{ message }}}}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-            {{{{ endfor }}}}
-        {{{{ endif }}}}
+            {{% endfor %}}
+        {{% endif %}}
 
         <div class="{app_name}-content-wrapper">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -577,15 +577,15 @@ class {app_name.replace('_', '').title()}ViewsTest(TestCase):
                     <p class="text-muted mb-0">{{{{ total_items }}}} élément{{{{ total_items|pluralize }}}} au total</p>
                 </div>
                 <div class="{app_name}-action-buttons">
-                    <a href="{{{{ url '{app_name}:create_item' }}}}" class="{app_name}-btn-primary btn">
+                    <a href="{{% url '{app_name}:create_item' %}}" class="{app_name}-btn-primary btn">
                         <i class="bi bi-plus me-2"></i>Nouveau
                     </a>
                 </div>
             </div>
 
-            {{{{ if items }}}}
+            {{% if items %}}
                 <div class="{app_name}-item-grid">
-                    {{{{ for item in items }}}}
+                    {{% for item in items %}}
                         <div class="{app_name}-item-card">
                             <div class="card-header">
                                 <h5 class="mb-0">{{{{ item.title }}}}</h5>
@@ -597,89 +597,89 @@ class {app_name.replace('_', '').title()}ViewsTest(TestCase):
                                 </small>
                             </div>
                             <div class="card-footer">
-                                <a href="{{{{ url '{app_name}:edit_item' item.id }}}}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{% url '{app_name}:edit_item' item.id %}}" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-pencil me-1"></i>Modifier
                                 </a>
-                                <a href="{{{{ url '{app_name}:delete_item' item.id }}}}" class="btn btn-sm btn-outline-danger">
+                                <a href="{{% url '{app_name}:delete_item' item.id %}}" class="btn btn-sm btn-outline-danger">
                                     <i class="bi bi-trash me-1"></i>Supprimer
                                 </a>
                             </div>
                         </div>
-                    {{{{ endfor }}}}
+                    {{% endfor %}}
                 </div>
                 
                 <!-- Pagination -->
-                {{{{ if items.has_other_pages }}}}
+                {{% if items.has_other_pages %}}
                     <nav class="mt-4">
                         <ul class="pagination justify-content-center">
-                            {{{{ if items.has_previous }}}}
+                            {{% if items.has_previous %}}
                                 <li class="page-item">
                                     <a class="page-link" href="?page={{{{ items.previous_page_number }}}}">Précédent</a>
                                 </li>
-                            {{{{ endif }}}}
+                            {{% endif %}}
                             
-                            {{{{ for num in items.paginator.page_range }}}}
-                                {{{{ if items.number == num }}}}
+                            {{% for num in items.paginator.page_range %}}
+                                {{% if items.number == num %}}
                                     <li class="page-item active">
                                         <span class="page-link">{{{{ num }}}}</span>
                                     </li>
-                                {{{{ else }}}}
+                                {{% else %}}
                                     <li class="page-item">
                                         <a class="page-link" href="?page={{{{ num }}}}">{{{{ num }}}}</a>
                                     </li>
-                                {{{{ endif }}}}
-                            {{{{ endfor }}}}
+                                {{% endif %}}
+                            {{% endfor %}}
                             
-                            {{{{ if items.has_next }}}}
+                            {{% if items.has_next %}}
                                 <li class="page-item">
                                     <a class="page-link" href="?page={{{{ items.next_page_number }}}}">Suivant</a>
                                 </li>
-                            {{{{ endif }}}}
+                            {{% endif %}}
                         </ul>
                     </nav>
-                {{{{ endif }}}}
-            {{{{ else }}}}
+                {{% endif %}}
+            {{% else %}}
                 <div class="{app_name}-empty-state">
                     <div class="{app_name}-empty-icon">
                         <i class="bi bi-inbox"></i>
                     </div>
                     <h3>Aucun élément</h3>
                     <p>Commencez par créer votre premier élément.</p>
-                    <a href="{{{{ url '{app_name}:create_item' }}}}" class="{app_name}-btn-primary btn">
+                    <a href="{{% url '{app_name}:create_item' %}}" class="{app_name}-btn-primary btn">
                         <i class="bi bi-plus me-2"></i>Créer le premier élément
                     </a>
                 </div>
-            {{{{ endif }}}}
+            {{% endif %}}
         </div>
     </div>
-{{{{ endblock }}}}
+{{% endblock %}}
 '''
     
     (templates_dir / 'home.html').write_text(home_template)
     
     # Create form templates
-    create_template = f'''{{{{ extends "{app_name}/base.html" }}}}
+    create_template = f'''{{% extends "{app_name}/base.html" %}}
 
-{{{{ block app_content }}}}
+{{% block app_content %}}
     <div class="container mt-4">
         <div class="{app_name}-content-wrapper">
             <h2><i class="bi bi-plus me-2"></i>Créer un nouvel élément</h2>
             
             <form method="post">
-                {{{{ csrf_token }}}}
+                {{% csrf_token %}}
                 {{{{ form.as_p }}}}
                 <div class="d-flex gap-2 mt-4">
                     <button type="submit" class="{app_name}-btn-primary btn">
                         <i class="bi bi-check me-2"></i>Créer
                     </button>
-                    <a href="{{{{ url '{app_name}:home' }}}}" class="btn btn-outline-secondary">
+                    <a href="{{% url '{app_name}:home' %}}" class="btn btn-outline-secondary">
                         <i class="bi bi-x me-2"></i>Annuler
                     </a>
                 </div>
             </form>
         </div>
     </div>
-{{{{ endblock }}}}
+{{% endblock %}}
 '''
     
     (templates_dir / 'create_item.html').write_text(create_template)
@@ -1022,7 +1022,10 @@ window.{app_name}Page = {app_name.replace('_', '').title()}Page;
     # 12. Créer urls.py
     create_urls_file(app_dir, app_name)
     
-    # 13. Synchroniser avec le système
+    # 13. Créer et appliquer les migrations
+    create_and_apply_migrations(app_name)
+    
+    # 14. Synchroniser avec le système
     sync_app_to_system(app_name)
     
     print(f"🎯 App {app_name} créée avec succès!")
@@ -1176,6 +1179,69 @@ urlpatterns = [
     print(f"✅ urls.py created")
 
 
+def create_and_apply_migrations(app_name):
+    """Crée et applique les migrations Django pour la nouvelle app."""
+    try:
+        import subprocess
+        
+        print(f"🗃️ Création des migrations pour {app_name}...")
+        
+        # Créer les migrations
+        makemigrations_cmd = [
+            'poetry', 'run', 'python', 'manage.py', 
+            'makemigrations', app_name
+        ]
+        
+        result = subprocess.run(
+            makemigrations_cmd, 
+            capture_output=True, 
+            text=True,
+            cwd=Path(__file__).parent.parent
+        )
+        
+        if result.returncode == 0:
+            print(f"   ✅ Migrations créées pour {app_name}")
+            if result.stdout:
+                print(f"   📝 {result.stdout.strip()}")
+        else:
+            print(f"   ⚠️ Avertissement lors de la création des migrations:")
+            if result.stderr:
+                print(f"   {result.stderr.strip()}")
+        
+        # Appliquer les migrations
+        print(f"   🔄 Application des migrations...")
+        migrate_cmd = [
+            'poetry', 'run', 'python', 'manage.py', 
+            'migrate', app_name
+        ]
+        
+        result = subprocess.run(
+            migrate_cmd, 
+            capture_output=True, 
+            text=True,
+            cwd=Path(__file__).parent.parent
+        )
+        
+        if result.returncode == 0:
+            print(f"   ✅ Migrations appliquées avec succès!")
+            if result.stdout:
+                # Filtrer les lignes importantes
+                lines = result.stdout.strip().split('\n')
+                for line in lines:
+                    if 'Applying' in line and 'OK' in line:
+                        print(f"   📊 {line}")
+        else:
+            print(f"   ❌ Erreur lors de l'application des migrations:")
+            if result.stderr:
+                print(f"   {result.stderr.strip()}")
+                
+    except Exception as e:
+        print(f"   ❌ Erreur lors des migrations: {e}")
+        print("      Vous pourrez exécuter manuellement:")
+        print(f"      poetry run python manage.py makemigrations {app_name}")
+        print(f"      poetry run python manage.py migrate {app_name}")
+
+
 def sync_app_to_system(app_name):
     """Synchronise l'app avec le système."""
     try:
@@ -1277,6 +1343,7 @@ if __name__ == '__main__':
         print("✅ CSS moderne avec animations")
         print("✅ JavaScript amélioré")
         print("✅ Manifest avec author LGPL")
+        print("✅ Migrations créées et appliquées")
         print("✅ App synchronisée avec la base de données")
         print()
         print("🌐 Votre app est maintenant disponible à:")
