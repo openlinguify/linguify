@@ -283,8 +283,40 @@ class TodoKanban {
             
             if (response.ok) {
                 const data = await response.json();
-                this.updateTaskCard(taskCard, data);
-                this.showSuccess('Task updated successfully');
+                
+                // Check if task moved to a different stage
+                const currentStageId = taskCard.dataset.stageId;
+                const newStageId = data.personal_stage_type?.id;
+                
+                if (newStageId && newStageId !== currentStageId) {
+                    // Task moved to a different stage - move it visually
+                    const newStageColumn = document.querySelector(`[data-stage-id="${newStageId}"]`);
+                    const newTasksList = newStageColumn?.querySelector('.tasks-list');
+                    
+                    if (newTasksList) {
+                        // Update task's stage ID
+                        taskCard.dataset.stageId = newStageId;
+                        
+                        // Move task to new stage
+                        newTasksList.appendChild(taskCard);
+                        
+                        // Update task card content
+                        this.updateTaskCard(taskCard, data);
+                        
+                        // Update stage counts
+                        this.updateStageCounts();
+                        
+                        this.showSuccess('Tâche déplacée automatiquement vers ' + (data.personal_stage_type.name || 'Done'));
+                    } else {
+                        // Fallback: reload page if stage not found
+                        this.showSuccess('Tâche mise à jour');
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } else {
+                    // Just update the task card in place
+                    this.updateTaskCard(taskCard, data);
+                    this.showSuccess('Tâche mise à jour');
+                }
             } else {
                 throw new Error('Failed to toggle task');
             }
@@ -567,7 +599,7 @@ class TodoKanban {
     updateStageCounts() {
         document.querySelectorAll('.kanban-column').forEach(column => {
             const tasks = column.querySelectorAll('.kanban-card');
-            const countBadge = column.querySelector('.task-count');
+            const countBadge = column.querySelector('.badge-linguify');
             if (countBadge) {
                 countBadge.textContent = tasks.length;
             }
@@ -638,7 +670,45 @@ class TodoKanban {
         this.showToast(message, 'info');
     }
     
-    showToast(message, type = 'info') {
+    showWarning(message) {
+        this.showToast(message, 'warning');
+    }
+    
+    handleStageDeleteError(errorData) {
+        const errorType = errorData.type;
+        const errorMessage = errorData.error;
+        
+        switch (errorType) {
+            case 'CRITICAL_STAGE_ERROR':
+                this.showCriticalStageError(errorData);
+                break;
+            case 'LAST_STAGE_ERROR':
+                this.showError('⚠️ ' + errorMessage);
+                break;
+            case 'LAST_CLOSED_STAGE_ERROR':
+                this.showError('⚠️ ' + errorMessage + '\n💡 Créez un autre stage fermé avant de supprimer celui-ci.');
+                break;
+            case 'LAST_OPEN_STAGE_ERROR':
+                this.showError('⚠️ ' + errorMessage + '\n💡 Créez un autre stage ouvert avant de supprimer celui-ci.');
+                break;
+            default:
+                this.showError(errorMessage || 'Impossible de supprimer ce stage');
+        }
+    }
+    
+    showCriticalStageError(errorData) {
+        // Special handling for critical system stages
+        const stageName = errorData.stage_name;
+        const reason = errorData.reason;
+        
+        this.showToast(
+            `🚫 Stage "${stageName}" protégé\n\n${reason}\n\n💡 Ce stage est essentiel au fonctionnement de l'application.`,
+            'error',
+            8000 // Show longer for important message
+        );
+    }
+    
+    showToast(message, type = 'info', duration = 5000) {
         // Create toast if it doesn't exist
         let toastContainer = document.getElementById('toastContainer');
         if (!toastContainer) {
@@ -661,7 +731,9 @@ class TodoKanban {
         
         toastContainer.appendChild(toast);
         
-        const bsToast = new bootstrap.Toast(toast);
+        const bsToast = new bootstrap.Toast(toast, {
+            delay: duration
+        });
         bsToast.show();
         
         // Remove after hide
@@ -719,18 +791,67 @@ class TodoKanban {
         const stageName = stageColumn?.querySelector('.column-title-linguify')?.textContent || 'ce stage';
         const taskCount = stageColumn?.querySelectorAll('.kanban-card').length || 0;
         
+        // Check if this is a critical stage
+        const isCriticalStage = ['To Do', 'Done'].includes(stageName);
+        
         // Update modal content
         const modal = document.getElementById('deleteStageModal');
         const stageNameElement = document.getElementById('stageNameToDelete');
         const tasksWarning = document.getElementById('tasksWarning');
+        const confirmButton = document.getElementById('confirmDeleteStage');
         
         if (stageNameElement) {
             stageNameElement.textContent = stageName;
         }
         
+        // Add critical stage warning
+        let criticalWarning = modal.querySelector('#criticalStageWarning');
+        if (isCriticalStage) {
+            if (!criticalWarning) {
+                criticalWarning = document.createElement('div');
+                criticalWarning.id = 'criticalStageWarning';
+                criticalWarning.className = 'alert alert-danger border-0 mb-3';
+                criticalWarning.style.background = '#f8d7da';
+                
+                const warningContainer = modal.querySelector('.modal-body');
+                const firstAlert = warningContainer.querySelector('.alert');
+                warningContainer.insertBefore(criticalWarning, firstAlert);
+            }
+            
+            criticalWarning.innerHTML = `
+                <div class="d-flex">
+                    <i class="bi bi-shield-exclamation text-danger me-3 mt-1 flex-shrink-0"></i>
+                    <div>
+                        <p class="mb-2"><strong>🚫 Stage système protégé</strong></p>
+                        <p class="mb-0">Le stage "<strong>${stageName}</strong>" est essentiel au fonctionnement de l'application et ne peut pas être supprimé.</p>
+                    </div>
+                </div>
+            `;
+            criticalWarning.style.display = 'block';
+            
+            // Disable the delete button for critical stages
+            if (confirmButton) {
+                confirmButton.disabled = true;
+                confirmButton.textContent = '🔒 Suppression impossible';
+                confirmButton.className = 'btn btn-secondary';
+            }
+        } else {
+            // Remove critical warning if exists
+            if (criticalWarning) {
+                criticalWarning.style.display = 'none';
+            }
+            
+            // Re-enable delete button for non-critical stages
+            if (confirmButton) {
+                confirmButton.disabled = false;
+                confirmButton.innerHTML = '<i class="bi bi-trash me-2"></i>Supprimer définitivement';
+                confirmButton.className = 'btn btn-danger';
+            }
+        }
+        
         // Show/hide tasks warning based on task count
         if (tasksWarning) {
-            if (taskCount > 0) {
+            if (taskCount > 0 && !isCriticalStage) {
                 tasksWarning.style.display = 'block';
                 // Update the text to show task count
                 const strongElement = tasksWarning.querySelector('p strong');
@@ -780,9 +901,9 @@ class TodoKanban {
             } else if (response.status === 404) {
                 this.showError('Stage non trouvé');
             } else if (response.status === 400) {
-                // Handle the "last stage" protection error
+                // Handle various protection errors
                 const errorData = await response.json();
-                this.showError(errorData.error || 'Impossible de supprimer ce stage');
+                this.handleStageDeleteError(errorData);
             } else {
                 throw new Error('Failed to delete stage');
             }

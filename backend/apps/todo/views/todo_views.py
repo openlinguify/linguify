@@ -26,13 +26,45 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
     
     def destroy(self, request, *args, **kwargs):
-        """Override destroy to prevent deletion of the last stage"""
-        user_stages_count = self.get_queryset().count()
+        """Override destroy to prevent deletion of critical stages"""
+        stage = self.get_object()
+        user_stages = self.get_queryset()
+        user_stages_count = user_stages.count()
         
+        # Prevent deletion of the last stage
         if user_stages_count <= 1:
             return Response({
-                'error': 'Impossible de supprimer le dernier stage. Vous devez avoir au moins un stage.'
+                'error': 'Impossible de supprimer le dernier stage. Vous devez avoir au moins un stage.',
+                'type': 'LAST_STAGE_ERROR'
             }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Prevent deletion of critical system stages
+        critical_stage_names = ['To Do', 'Done']
+        if stage.name in critical_stage_names:
+            return Response({
+                'error': f'Impossible de supprimer le stage "{stage.name}" car il est nécessaire au bon fonctionnement de l\'application.',
+                'type': 'CRITICAL_STAGE_ERROR',
+                'stage_name': stage.name,
+                'reason': f'Le stage "{stage.name}" est utilisé automatiquement par le système.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Prevent deletion of the only closed stage (Done stage)
+        if stage.is_closed:
+            other_closed_stages = user_stages.filter(is_closed=True).exclude(id=stage.id)
+            if not other_closed_stages.exists():
+                return Response({
+                    'error': 'Impossible de supprimer le dernier stage fermé. Au moins un stage fermé est nécessaire pour les tâches complétées.',
+                    'type': 'LAST_CLOSED_STAGE_ERROR'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Prevent deletion of the only open stage
+        if not stage.is_closed:
+            other_open_stages = user_stages.filter(is_closed=False).exclude(id=stage.id)
+            if not other_open_stages.exists():
+                return Response({
+                    'error': 'Impossible de supprimer le dernier stage ouvert. Au moins un stage ouvert est nécessaire pour les nouvelles tâches.',
+                    'type': 'LAST_OPEN_STAGE_ERROR'
+                }, status=status.HTTP_400_BAD_REQUEST)
         
         return super().destroy(request, *args, **kwargs)
     

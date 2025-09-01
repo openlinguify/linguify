@@ -310,12 +310,28 @@ class Task(models.Model):
             self.status = 'todo'
             self.completed_at = None
             self.progress_percentage = 0
+            
+            # Move to first non-closed stage (usually "To Do")
+            if self.user:
+                first_stage = self.user.personal_stages.filter(is_closed=False).order_by('sequence').first()
+                if first_stage:
+                    self.personal_stage_type = first_stage
         else:
             # Move to done state
             self.state = '1_done'
             self.status = 'completed'
             self.completed_at = timezone.now()
             self.progress_percentage = 100
+            
+            # Move to "Done" stage (closed stage)
+            if self.user:
+                done_stage = self.user.personal_stages.filter(is_closed=True).order_by('sequence').first()
+                if not done_stage:
+                    # Try to find by name if no closed stage exists
+                    done_stage = self.user.personal_stages.filter(name__iexact='Done').first()
+                if done_stage:
+                    self.personal_stage_type = done_stage
+        
         self.save()
         
         # Update project progress if task belongs to a project
