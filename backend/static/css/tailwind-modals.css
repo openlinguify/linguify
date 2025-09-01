@@ -6181,3 +6181,78 @@ input#importDeckName:focus {
 .shadow-xl {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
 }
+
+/* ===== KANBAN COLUMN FOLDING - HIGHEST PRIORITY ===== */
+/* Force folded styles with maximum specificity to override everything */
+.kanban-columns .kanban-column.force-folded {
+    flex: 0 0 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    width: 36px !important;
+    background: #ff6b6b !important;
+    border: 3px solid #0066cc !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    z-index: 9999 !important;
+    position: relative !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.kanban-columns .kanban-column.force-folded .kanban-tasks-container {
+    display: none !important;
+}
+
+.kanban-columns .kanban-column.force-folded .sidebar-header-linguify {
+    writing-mode: vertical-lr !important;
+    text-orientation: mixed !important;
+    transform: rotate(180deg) !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.kanban-columns .kanban-column.force-folded .btn-linguify-secondary,
+.kanban-columns .kanban-column.force-folded .dropdown,
+.kanban-columns .kanban-column.force-folded .kanban-quick-add {
+    display: none !important;
+}
+
+/* Normal folded styles (without visible colors for production) */
+.kanban-columns .kanban-column.o_column_folded {
+    flex: 0 0 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    width: 36px !important;
+    background: var(--linguify-gray-50) !important;
+    border-right: 1px solid var(--linguify-gray-200) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .kanban-tasks-container {
+    display: none !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .sidebar-header-linguify {
+    writing-mode: vertical-lr !important;
+    text-orientation: mixed !important;
+    transform: rotate(180deg) !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .btn-linguify-secondary,
+.kanban-columns .kanban-column.o_column_folded .dropdown,
+.kanban-columns .kanban-column.o_column_folded .kanban-quick-add {
+    display: none !important;
+}

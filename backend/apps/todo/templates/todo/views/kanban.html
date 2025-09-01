@@ -478,15 +478,65 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* FORCE FOLDED STYLES - MAXIMUM PRIORITY */
+.kanban-column.force-folded {
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    flex: 0 0 36px !important;
+    background: #ff6b6b !important;
+    border: 3px solid #0066cc !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    z-index: 9999 !important;
+    position: relative !important;
+}
+
+.kanban-column.force-folded .kanban-tasks-container {
+    display: none !important;
+}
+
+.kanban-column.force-folded .sidebar-header-linguify {
+    writing-mode: vertical-lr !important;
+    transform: rotate(180deg) !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.kanban-column.force-folded .btn-linguify-secondary,
+.kanban-column.force-folded .dropdown,
+.kanban-column.force-folded .kanban-quick-add {
+    display: none !important;
+}
+
 </style>
 
 {% block extra_js %}
 <!-- SortableJS for drag & drop -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="{% static 'todo/js/kanban.js' %}"></script>
+<script src="{% static 'todo/js/kanban.js' %}?v={{ timestamp|default:'1' }}"></script>
 <script>
 // Initialize Kanban functionality
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded - Kanban page');
+    
+    // Debug: Check if buttons exist
+    const hideButtons = document.querySelectorAll('.hide-stage-btn');
+    console.log('Found hide buttons:', hideButtons.length);
+    hideButtons.forEach((btn, index) => {
+        console.log(`Hide button ${index}:`, btn, 'Stage ID:', btn.dataset.stageId);
+    });
+    
+    // Debug: Check if columns exist
+    const columns = document.querySelectorAll('.kanban-column');
+    console.log('Found columns:', columns.length);
+    columns.forEach((col, index) => {
+        console.log(`Column ${index}:`, col, 'Stage ID:', col.dataset.stageId);
+    });
     // Clear any localStorage states for Archive stages to respect server-side fold state
     try {
         const states = JSON.parse(localStorage.getItem('kanbanColumnStates') || '{}');
@@ -563,6 +613,243 @@ document.addEventListener('keydown', function(e) {
 function archiveTask(taskId) {
     if (todoKanban) {
         todoKanban.archiveTask(taskId);
+    }
+}
+
+// Test function for debugging
+function testHideButton() {
+    console.log('=== TESTING HIDE FUNCTIONALITY ===');
+    
+    // Check if todoKanban is initialized
+    console.log('todoKanban instance:', window.todoKanban);
+    
+    // Find first stage ID
+    const firstColumn = document.querySelector('.kanban-column');
+    if (firstColumn) {
+        const stageId = firstColumn.dataset.stageId;
+        console.log('Testing with first stage ID:', stageId);
+        
+        // Test toggle function directly
+        if (window.todoKanban) {
+            window.todoKanban.toggleStage(stageId);
+            
+            // Check result after 500ms
+            setTimeout(() => {
+                const columnAfter = document.querySelector(`[data-stage-id="${stageId}"]`);
+                const computedWidth = window.getComputedStyle(columnAfter).width;
+                const isFolded = columnAfter.classList.contains('o_column_folded');
+                console.log('=== RESULT ===');
+                console.log('Column has o_column_folded class:', isFolded);
+                console.log('Column computed width:', computedWidth);
+                console.log('Column style attribute:', columnAfter.getAttribute('style'));
+                console.log('Tasks container visible:', columnAfter.querySelector('.kanban-tasks-container').style.display !== 'none');
+            }, 500);
+        } else {
+            console.error('TodoKanban not initialized!');
+        }
+    } else {
+        console.error('No columns found!');
+    }
+    
+    return 'Test completed - check console for details';
+}
+
+// Force fold function for testing
+function forceFoldFirst() {
+    const firstColumn = document.querySelector('.kanban-column');
+    const stageId = firstColumn.dataset.stageId;
+    console.log('Force folding column:', stageId);
+    
+    if (window.todoKanban) {
+        window.todoKanban.foldColumn(firstColumn, firstColumn.querySelector('.kanban-tasks-container'));
+        console.log('Column width after force fold:', window.getComputedStyle(firstColumn).width);
+    }
+}
+
+// Direct CSS test - bypasses any cache issues
+function testDirectCSS() {
+    const firstColumn = document.querySelector('.kanban-column');
+    console.log('Testing direct CSS application...');
+    
+    // Apply styles directly with highest specificity
+    firstColumn.style.cssText = `
+        width: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+        flex: 0 0 36px !important;
+        background: red !important;
+        transition: all 0.3s ease !important;
+    `;
+    
+    const tasksContainer = firstColumn.querySelector('.kanban-tasks-container');
+    if (tasksContainer) {
+        tasksContainer.style.display = 'none';
+    }
+    
+    console.log('Direct CSS applied - column should be red and 36px wide');
+    console.log('Computed width:', window.getComputedStyle(firstColumn).width);
+    console.log('Computed background:', window.getComputedStyle(firstColumn).backgroundColor);
+}
+
+// Test the Hide button programmatically
+function testHideButtonClick() {
+    console.log('=== TESTING HIDE BUTTON CLICK ===');
+    
+    // Find the first hide button
+    const hideBtn = document.querySelector('.hide-stage-btn');
+    console.log('Found hide button:', hideBtn);
+    
+    if (hideBtn) {
+        console.log('Stage ID:', hideBtn.dataset.stageId);
+        
+        // Simulate a click
+        console.log('Simulating click...');
+        hideBtn.click();
+    } else {
+        console.error('No hide button found!');
+    }
+}
+
+// Direct test of TodoKanban methods
+function testKanbanMethods() {
+    console.log('=== TESTING TODOKANBAN METHODS ===');
+    
+    if (!window.todoKanban) {
+        console.error('TodoKanban not available!');
+        return;
+    }
+    
+    const firstColumn = document.querySelector('.kanban-column');
+    const stageId = firstColumn.dataset.stageId;
+    
+    console.log('Testing with stage:', stageId);
+    console.log('Column before:', firstColumn);
+    
+    // Test the foldColumn method directly
+    const tasksContainer = firstColumn.querySelector('.kanban-tasks-container');
+    window.todoKanban.foldColumn(firstColumn, tasksContainer);
+    
+    console.log('Direct foldColumn method called');
+}
+
+// Test CSS class directly
+function testCSSClass() {
+    console.log('=== TESTING CSS CLASS DIRECTLY ===');
+    
+    const firstColumn = document.querySelector('.kanban-column');
+    console.log('Column before:', firstColumn.className);
+    console.log('Width before:', window.getComputedStyle(firstColumn).width);
+    console.log('Background before:', window.getComputedStyle(firstColumn).backgroundColor);
+    
+    // Add the force-folded class directly
+    firstColumn.classList.add('force-folded');
+    
+    console.log('Column after adding force-folded:', firstColumn.className);
+    console.log('Width after:', window.getComputedStyle(firstColumn).width);
+    console.log('Background after:', window.getComputedStyle(firstColumn).backgroundColor);
+    console.log('Border after:', window.getComputedStyle(firstColumn).border);
+    
+    // If you see red background and 36px width, the CSS works
+    // If not, there's a CSS priority issue
+}
+
+// Debug To-do column specifically
+function debugTodoColumn() {
+    console.log('=== DEBUGGING TO DO COLUMN ===');
+    
+    // Find To-do column
+    const todoColumn = Array.from(document.querySelectorAll('.kanban-column')).find(col => {
+        const title = col.querySelector('.column-title-linguify');
+        return title && title.textContent.trim() === 'To Do';
+    });
+    
+    if (!todoColumn) {
+        console.error('To Do column not found!');
+        return;
+    }
+    
+    console.log('To Do column found:', todoColumn);
+    console.log('Current classes:', todoColumn.className);
+    console.log('Current inline styles:', todoColumn.getAttribute('style'));
+    console.log('Current width:', window.getComputedStyle(todoColumn).width);
+    console.log('Current display:', window.getComputedStyle(todoColumn).display);
+    
+    const tasksContainer = todoColumn.querySelector('.kanban-tasks-container');
+    if (tasksContainer) {
+        console.log('Tasks container display:', window.getComputedStyle(tasksContainer).display);
+        console.log('Tasks container inline style:', tasksContainer.getAttribute('style'));
+    }
+    
+    // Try to fold it
+    console.log('Attempting to fold...');
+    if (window.todoKanban) {
+        window.todoKanban.foldColumn(todoColumn, tasksContainer);
+    }
+}
+
+// Reset To-do column completely
+function resetTodoColumn() {
+    console.log('=== RESETTING TO DO COLUMN ===');
+    
+    const todoColumn = Array.from(document.querySelectorAll('.kanban-column')).find(col => {
+        const title = col.querySelector('.column-title-linguify');
+        return title && title.textContent.trim() === 'To Do';
+    });
+    
+    if (!todoColumn) {
+        console.error('To Do column not found!');
+        return;
+    }
+    
+    // Reset everything
+    todoColumn.classList.remove('o_column_folded');
+    todoColumn.removeAttribute('style');
+    
+    const tasksContainer = todoColumn.querySelector('.kanban-tasks-container');
+    if (tasksContainer) {
+        tasksContainer.removeAttribute('style');
+    }
+    
+    console.log('To Do column reset. Try clicking Hide button now.');
+}
+
+// Test if CSS is working
+function testCSS() {
+    console.log('=== TESTING CSS RULES ===');
+    
+    const todoColumn = Array.from(document.querySelectorAll('.kanban-column')).find(col => {
+        const title = col.querySelector('.column-title-linguify');
+        return title && title.textContent.trim() === 'To Do';
+    });
+    
+    if (!todoColumn) {
+        console.error('To Do column not found!');
+        return;
+    }
+    
+    console.log('Before adding o_column_folded:');
+    console.log('Width:', window.getComputedStyle(todoColumn).width);
+    console.log('Background:', window.getComputedStyle(todoColumn).backgroundColor);
+    
+    // Add the class
+    todoColumn.classList.add('o_column_folded');
+    
+    console.log('After adding o_column_folded:');
+    console.log('Width:', window.getComputedStyle(todoColumn).width);
+    console.log('Background:', window.getComputedStyle(todoColumn).backgroundColor);
+    
+    // Check if the CSS rule exists
+    const computedStyles = window.getComputedStyle(todoColumn);
+    console.log('All CSS rules for this element:');
+    console.log('Flex:', computedStyles.flex);
+    console.log('Min-width:', computedStyles.minWidth);
+    console.log('Max-width:', computedStyles.maxWidth);
+    
+    // If width is still not 36px, the CSS isn't loaded or applied
+    if (parseFloat(computedStyles.width) > 100) {
+        console.error('❌ CSS rules are not applying! The styles in tailwind-modals.css might not be loaded.');
+    } else {
+        console.log('✅ CSS rules are working correctly!');
     }
 }
 
