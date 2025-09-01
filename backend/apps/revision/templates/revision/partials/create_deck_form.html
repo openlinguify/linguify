@@ -18,13 +18,14 @@
         <div style="padding: 0.75rem;">
             <!-- Deck Name -->
             <div class="form-group-linguify">
-                <label class="form-label-linguify d-flex align-items-center">
-                    <i class="bi bi-tag me-2"></i>
+                <label for="newDeckName" class="form-label-linguify d-flex align-items-center">
+                    <i class="bi bi-tag me-2 text-linguify-primary"></i>
                     {% trans "Deck Name" %} <span class="text-danger">*</span>
                 </label>
                 <input type="text" 
                        id="newDeckName" 
-                       class="form-control-linguify" 
+                       name="newDeckName"
+                       class="form-control-linguify w-100" 
                        placeholder="{% trans 'Ex: English Vocabulary Level B2' %}" 
                        maxlength="100"
                        required>
@@ -32,14 +33,16 @@
 
             <!-- Description -->
             <div class="form-group-linguify">
-                <label class="form-label-linguify d-flex align-items-center">
-                    <i class="bi bi-card-text me-2"></i>
+                <label for="newDeckDescription" class="form-label-linguify d-flex align-items-center">
+                    <i class="bi bi-card-text me-2 text-linguify-primary"></i>
                     {% trans "Description" %}
                 </label>
                 <textarea id="newDeckDescription" 
-                          class="form-control-linguify" 
+                          name="newDeckDescription"
+                          class="form-control-linguify w-100" 
                           rows="4"
                           maxlength="500"
+                          style="resize: vertical;"
                           placeholder="{% trans 'Briefly describe the content of this deck...' %}"></textarea>
             </div>
 
