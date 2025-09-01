@@ -36,20 +36,40 @@ class TodoKanban {
     initSortable() {
         // Initialize sortable for each column if SortableJS is available
         if (typeof Sortable !== 'undefined') {
-            document.querySelectorAll('.kanban-tasks-container').forEach(container => {
-                new Sortable(container, {
+            // Apply SortableJS directly to tasks-list containers where tasks actually are
+            document.querySelectorAll('.tasks-list').forEach(tasksList => {
+                new Sortable(tasksList, {
                     group: 'kanban-tasks',
                     animation: 150,
                     ghostClass: 'kanban-card-ghost',
                     chosenClass: 'kanban-card-chosen',
                     dragClass: 'kanban-card-drag',
-                    filter: '.add-task-container', // Exclude add task button from sorting
+                    draggable: '.kanban-card', // Only individual task cards are draggable
                     onEnd: this.handleSortableEnd.bind(this),
                     onMove: function(evt) {
                         // Allow all moves
                         return true;
                     }
                 });
+            });
+            
+            // Also handle the kanban-tasks-container for new tasks added dynamically
+            document.querySelectorAll('.kanban-tasks-container').forEach(container => {
+                // Find the tasks-list inside
+                const tasksList = container.querySelector('.tasks-list');
+                if (!tasksList) {
+                    // If no tasks-list, apply directly to container
+                    new Sortable(container, {
+                        group: 'kanban-tasks',
+                        animation: 150,
+                        ghostClass: 'kanban-card-ghost',
+                        chosenClass: 'kanban-card-chosen',
+                        dragClass: 'kanban-card-drag',
+                        draggable: '.kanban-card',
+                        filter: '.add-task-container',
+                        onEnd: this.handleSortableEnd.bind(this)
+                    });
+                }
             });
         }
     }
@@ -187,14 +207,14 @@ class TodoKanban {
         
         if (newStageId !== oldStageId) {
             // Move task to different stage
-            this.moveTaskToStage(taskId, newStageId, e.item);
+            this.moveTaskToStage(taskId, newStageId, e.item, oldStageId);
         } else {
             // Just reorder within the same stage
             this.updateTaskSequence(newStageId);
         }
     }
     
-    async moveTaskToStage(taskId, newStageId, taskElement) {
+    async moveTaskToStage(taskId, newStageId, taskElement, oldStageId = null) {
         if (this.isLoading) return;
         
         this.isLoading = true;
@@ -208,24 +228,37 @@ class TodoKanban {
                     'X-CSRFToken': this.getCSRFToken()
                 },
                 body: JSON.stringify({
-                    personal_stage_type: newStageId
+                    personal_stage_type_id: newStageId
                 })
             });
             
             if (response.ok) {
-                this.showSuccess('Task moved successfully');
+                this.showSuccess('Tâche déplacée avec succès');
                 this.updateStageCounts();
+                // Update task's stage ID in DOM
+                taskElement.dataset.stageId = newStageId;
             } else {
-                throw new Error('Failed to move task');
+                const errorData = await response.json();
+                console.error('API Error:', errorData);
+                throw new Error(`Failed to move task: ${response.status}`);
             }
         } catch (error) {
             console.error('Error moving task:', error);
-            this.showError('Failed to move task');
+            this.showError('Erreur lors du déplacement de la tâche');
             
-            // Revert the move
-            const originalColumn = document.querySelector(`[data-stage-id="${this.draggedTask.originalStageId}"] .kanban-tasks-container`);
+            // Revert the move - find the original tasks list
+            const originalColumn = document.querySelector(`[data-stage-id="${oldStageId || taskElement.dataset.stageId || 'unknown'}"]`);
             if (originalColumn) {
-                originalColumn.appendChild(taskElement);
+                const originalTasksList = originalColumn.querySelector('.tasks-list');
+                if (originalTasksList) {
+                    originalTasksList.appendChild(taskElement);
+                } else {
+                    // Fallback to kanban-tasks-container
+                    const container = originalColumn.querySelector('.kanban-tasks-container');
+                    if (container) {
+                        container.appendChild(taskElement);
+                    }
+                }
             }
         } finally {
             this.hideTaskLoading(taskElement);
@@ -298,7 +331,7 @@ class TodoKanban {
         
         // Create Linguify-style inline form
         const form = document.createElement('div');
-        form.className = 'task-card-linguify';
+        form.className = 'task-card-linguify quick-add-form';
         form.dataset.stageId = stageId;
         form.innerHTML = `
             <input type="text" 
@@ -308,12 +341,10 @@ class TodoKanban {
                    style="border: 1px solid var(--linguify-primary); font-size: 14px; width: 100%;"
                    autofocus>
             <div class="d-flex gap-2">
-                <button class="btn-linguify-secondary" 
-                        onclick="todoKanban.submitQuickTask('${stageId}')">
+                <button class="btn-linguify-secondary submit-task-btn" type="button">
                     <i class="bi bi-check me-1"></i>Ajouter
                 </button>
-                <button class="btn-linguify-secondary" 
-                        onclick="todoKanban.closeAllForms()">
+                <button class="btn-linguify-secondary cancel-task-btn" type="button">
                     <i class="bi bi-x me-1"></i>Annuler
                 </button>
             </div>
@@ -321,6 +352,22 @@ class TodoKanban {
         
         // Insert at the top of the tasks container (Odoo behavior)
         tasksContainer.insertBefore(form, tasksContainer.firstChild);
+        
+        // Add event listeners to the buttons
+        const submitBtn = form.querySelector('.submit-task-btn');
+        const cancelBtn = form.querySelector('.cancel-task-btn');
+        
+        if (submitBtn) {
+            submitBtn.addEventListener('click', () => {
+                this.submitQuickTask(stageId);
+            });
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                this.closeAllForms();
+            });
+        }
         
         // Focus and keyboard handling
         const input = form.querySelector(`#quickTaskTitle_${stageId}`);
@@ -338,7 +385,7 @@ class TodoKanban {
         }
         
         // Hide the reference button if it's an add button
-        if (referenceElement && referenceElement.classList.contains('add-task-btn')) {
+        if (referenceElement && referenceElement.classList.contains('add-task-btn-linguify')) {
             referenceElement.style.display = 'none';
         }
     }
@@ -562,7 +609,7 @@ class TodoKanban {
         document.querySelectorAll('.quick-add-form').forEach(form => form.remove());
         
         // Restore any hidden add buttons
-        document.querySelectorAll('.add-task-btn').forEach(btn => {
+        document.querySelectorAll('.add-task-btn-linguify').forEach(btn => {
             btn.style.display = 'block';
         });
     }
@@ -840,7 +887,7 @@ window.addTaskToStage = function(stageId) {
     
     // If not found, look for the bottom add button
     if (!addBtn) {
-        addBtn = document.querySelector(`[data-stage-id="${stageId}"] .add-task-btn`);
+        addBtn = document.querySelector(`[data-stage-id="${stageId}"] .add-task-btn-linguify`);
     }
     
     // If still not found, create a reference from the column header
