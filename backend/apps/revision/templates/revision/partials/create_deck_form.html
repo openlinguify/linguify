@@ -3,65 +3,120 @@
 <div id="createDeckForm" class="create-deck-form-hidden">
     <div class="study-header">
         <div class="d-flex align-items-center justify-content-between">
-            <h5 class="mb-0">{% trans "Create New Deck" %}</h5>
-            <button id="cancelCreate" class="btn btn-outline-custom btn-sm">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-plus-circle text-linguify-primary me-2"></i>
+                <h5 class="mb-0 text-linguify-primary">{% trans "Create New Deck" %}</h5>
+            </div>
+            <button id="cancelCreate" class="btn-linguify-secondary btn-sm">
                 <i class="bi bi-x-lg"></i>
                 {% trans "Cancel" %}
             </button>
         </div>
     </div>
     
-    <div class="study-content p-4">
-        <div class="row g-3">
-            <div class="col-md-8">
-                <label class="form-label">{% trans "Deck Name" %} <span class="text-danger">*</span></label>
+    <div class="study-content">
+        <div style="padding: 0.75rem;">
+            <!-- Deck Name -->
+            <div class="form-group-linguify">
+                <label class="form-label-linguify d-flex align-items-center">
+                    <i class="bi bi-tag me-2"></i>
+                    {% trans "Deck Name" %} <span class="text-danger">*</span>
+                </label>
                 <input type="text" 
                        id="newDeckName" 
-                       class="form-control rounded-3 border-2" 
+                       class="form-control-linguify" 
                        placeholder="{% trans 'Ex: English Vocabulary Level B2' %}" 
+                       maxlength="100"
                        required>
             </div>
-            <div class="col-md-4">
-                <label class="form-label">{% trans "Visibility" %}</label>
-                <select id="newDeckVisibility" class="form-select rounded-3 border-2">
+
+            <!-- Description -->
+            <div class="form-group-linguify">
+                <label class="form-label-linguify d-flex align-items-center">
+                    <i class="bi bi-card-text me-2"></i>
+                    {% trans "Description" %}
+                </label>
+                <textarea id="newDeckDescription" 
+                          class="form-control-linguify" 
+                          rows="4"
+                          maxlength="500"
+                          placeholder="{% trans 'Briefly describe the content of this deck...' %}"></textarea>
+            </div>
+
+            <!-- Tags -->
+            <div class="form-group-linguify">
+                <label class="form-label-linguify d-flex align-items-center">
+                    <i class="bi bi-tags me-2"></i>
+                    {% trans "Tags" %}
+                </label>
+                <div class="card-linguify border border-dashed border-primary border-opacity-25 p-3 position-relative">
+                    <div class="tags-input-container">
+                        <div class="bg-gray-50 rounded p-3 mb-3 border border-gray-200" style="min-height: 60px;">
+                            <div class="tags-display d-flex flex-wrap gap-2" id="newDeckTagsDisplay">
+                                <div class="text-muted d-flex align-items-center" style="font-size: 0.85rem;">
+                                    <i class="bi bi-tag me-1"></i>
+                                    {% trans "No tags - Add them in the field below" %}
+                                </div>
+                            </div>
+                        </div>
+                        <input type="text" 
+                               id="newDeckTagsInput" 
+                               class="form-control-linguify" 
+                               placeholder="{% trans 'Add tags (press Enter)' %}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visibility -->
+            <div class="form-group-linguify">
+                <label class="form-label-linguify d-flex align-items-center">
+                    <i class="bi bi-eye me-2"></i>
+                    {% trans "Visibility" %}
+                </label>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card-linguify p-3 border border-primary border-opacity-25 position-relative" style="cursor: pointer;" onclick="document.getElementById('newDeckVisibility').value='private';">
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center justify-content-center bg-secondary rounded me-3" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-lock text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="small fw-semibold text-linguify-primary mb-1">{% trans "Private" %}</p>
+                                    <p class="text-muted mb-0" style="font-size: 0.75rem;">{% trans "Visible by you only" %}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-linguify p-3 border border-primary border-opacity-25 position-relative" style="cursor: pointer;" onclick="document.getElementById('newDeckVisibility').value='public';">
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center justify-content-center bg-linguify-accent rounded me-3" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-globe text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="small fw-semibold text-linguify-primary mb-1">{% trans "Public" %}</p>
+                                    <p class="text-muted mb-0" style="font-size: 0.75rem;">{% trans "Visible by everyone" %}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <select id="newDeckVisibility" class="form-select d-none">
                     <option value="private">🔒 {% trans "Private" %}</option>
                     <option value="public">🌍 {% trans "Public" %}</option>
                 </select>
             </div>
-        </div>
-        
-        <div class="mt-4">
-            <label class="form-label">{% trans "Description" %}</label>
-            <textarea id="newDeckDescription" 
-                      class="form-control rounded-3 border-2" 
-                      rows="3" 
-                      placeholder="{% trans 'Briefly describe the content of this deck...' %}"></textarea>
-        </div>
-        
-        <div class="mt-4">
-            <label class="form-label">{% trans "Tags" %}</label>
-            <div class="tags-input-container position-relative">
-                <div class="tags-display mb-2" id="newDeckTagsDisplay"></div>
-                <input type="text" 
-                       id="newDeckTagsInput" 
-                       class="form-control rounded-3 border-2" 
-                       placeholder="{% trans 'Add tags (press Enter)' %}">
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button id="cancelCreateAlt" class="btn-linguify-secondary">
+                    {% trans "Cancel" %}
+                </button>
+                <button id="submitCreateDeck" class="btn-linguify">
+                    <i class="bi bi-check-lg me-1"></i>
+                    {% trans "Create Deck" %}
+                </button>
             </div>
-            <div class="form-text text-muted small">
-                <i class="bi bi-info-circle me-1"></i>
-                {% trans "Tags help organize your decks. Press Enter to add a tag." %}
-            </div>
-        </div>
-        
-        <div class="mt-5 d-flex justify-content-end gap-3">
-            <button id="cancelCreateAlt" class="btn btn-outline-secondary rounded-3 px-4">
-                <i class="bi bi-x-circle me-2"></i>
-                {% trans "Cancel" %}
-            </button>
-            <button id="submitCreate" class="btn btn-primary rounded-3 px-4">
-                <i class="bi bi-plus-lg me-2"></i>
-                {% trans "Create Deck" %}
-            </button>
         </div>
     </div>
 </div>
