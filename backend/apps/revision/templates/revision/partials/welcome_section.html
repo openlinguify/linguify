@@ -1,0 +1,19 @@
+{% load i18n %}
+<!-- Welcome state -->
+<div id="welcomeState" class="welcome-state">
+    <i class="bi bi-lightning-charge welcome-state-icon"></i>
+    <div class="welcome-state-title">{% trans "Welcome to your study space" %}</div>
+    <div class="welcome-state-description">
+        {% trans "Select a deck from the list or create a new one to start studying with flashcards" %}
+    </div>
+    <div class="flex flex-wrap gap-4 justify-center">
+        <button class="btn-linguify btn-lg create-deck-btn">
+            <i class="bi bi-plus-lg mr-2"></i>
+            {% trans "Create deck" %}
+        </button>
+        <a href="{% url 'revision_web:explore' %}" class="btn-linguify-secondary btn-lg">
+            <i class="bi bi-globe2 mr-2"></i>
+            {% trans "Explore public decks" %}
+        </a>
+    </div>
+</div>

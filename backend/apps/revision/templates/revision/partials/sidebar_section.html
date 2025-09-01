@@ -1,0 +1,27 @@
+{% load i18n %}
+<!-- Sidebar -->
+<div id="revisionSidebar" class="sidebar-linguify show">
+    <div class="sidebar-content">
+        <!-- Decks list -->
+        <ul id="decksList" class="deck-list"></ul>
+        
+        <!-- Empty state -->
+        <div id="decksEmpty" class="empty-state empty-state-hidden">
+            <i class="bi bi-stack empty-state-icon"></i>
+            <div class="empty-state-title">{% trans "No decks" %}</div>
+            <div class="empty-state-description">{% trans "Create your first flashcard deck to start studying" %}</div>
+            <button class="btn-linguify create-deck-btn">
+                <i class="bi bi-plus-lg mr-2"></i>
+                {% trans "Create deck" %}
+            </button>
+        </div>
+        
+        <!-- Load more -->
+        <div id="loadMoreContainer" class="text-center load-more-container">
+            <button id="loadMoreBtn" class="btn-linguify-secondary">
+                <i class="bi bi-arrow-down-circle mr-2"></i>
+                {% trans "Load more" %}
+            </button>
+        </div>
+    </div>
+</div>
