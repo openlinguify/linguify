@@ -95,9 +95,9 @@ class TodoKanban {
             }
         });
         
-        // Allow clicking anywhere on accordion-folded column to unfold
+        // Allow clicking anywhere on folded column to unfold (Odoo style)
         document.addEventListener('click', (e) => {
-            const foldedColumn = e.target.closest('.kanban-column.accordion-folded');
+            const foldedColumn = e.target.closest('.kanban-column.o_column_folded');
             if (foldedColumn && !e.target.closest('.kanban-tasks-container')) {
                 e.preventDefault();
                 const stageId = foldedColumn.dataset.stageId;
@@ -562,20 +562,29 @@ class TodoKanban {
         
         if (!column) return;
         
-        const isCurrentlyFolded = column.classList.contains('accordion-folded');
+        const isCurrentlyFolded = column.classList.contains('o_column_folded');
         
         console.log(`Toggling stage ${stageId}: currently folded = ${isCurrentlyFolded}`);
         
         if (isCurrentlyFolded) {
-            // Expand: Remove accordion class and show tasks
-            column.classList.remove('accordion-folded');
+            // Expand: Remove folded class and show tasks
+            column.classList.remove('o_column_folded');
+            // Clear any inline styles
+            column.style.width = '';
+            column.style.minWidth = '';
+            column.style.maxWidth = '';
+            column.style.background = '';
+            column.style.border = '';
+            column.style.flex = '';
+            
             if (tasksContainer) {
                 tasksContainer.style.display = 'block';
             }
             console.log(`Expanded stage ${stageId}`);
         } else {
-            // Fold: Add accordion class and hide tasks
-            column.classList.add('accordion-folded');
+            // Fold: Add folded class and hide tasks (CSS handles the rest)
+            column.classList.add('o_column_folded');
+            
             if (tasksContainer) {
                 tasksContainer.style.display = 'none';
             }

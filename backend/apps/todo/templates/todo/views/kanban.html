@@ -16,7 +16,7 @@
             <div class="kanban-columns" id="kanbanBoard">
                 {% for stage_id, stage_data in kanban_data.items %}
                 <!-- Kanban Column -->
-                <div class="kanban-column{% if stage_data.stage.fold or stage_data.stage.name == 'Archive' %} accordion-folded{% endif %}" data-stage-id="{{ stage_id }}">
+                <div class="kanban-column{% if stage_data.stage.fold or stage_data.stage.name == 'Archive' %} o_column_folded{% endif %}" data-stage-id="{{ stage_id }}">
                     <div class="kanban-column-card">
                         <!-- Column Header -->
                         <div class="sidebar-header-linguify">
@@ -373,37 +373,79 @@
     color: var(--bs-gray-800);
 }
 
-/* Force kanban columns basic layout */
+/* ODOO STYLE KANBAN COLUMNS */
 .kanban-columns {
     display: flex !important;
-    gap: 20px;
-    align-items: flex-start;
+    gap: 0 !important;
+    align-items: flex-start !important;
 }
 
 .kanban-column {
-    min-width: 300px;
-    width: 300px;
-    flex-shrink: 0;
-    transition: all 0.4s ease;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    flex: 0 0 300px !important;
+    min-width: 300px !important;
+    max-width: 300px !important;
+    transition: all 0.3s ease !important;
+    background: #f9fafb !important;
+    border-right: 1px solid #e7e9ed !important;
+    position: relative !important;
 }
 
-/* Professional accordion-folded columns */
-.kanban-column.accordion-folded {
-    min-width: 45px !important;
-    width: 45px !important;
-    max-width: 45px !important;
-    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%) !important;
-    border: 1px solid #e0e6ed !important;
-    border-radius: 12px !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.06) !important;
-    cursor: pointer;
-    overflow: hidden;
-    flex-shrink: 0 !important;
-    position: relative;
-    margin: 0 5px;
+/* ODOO STYLE FOLDED COLUMN */
+.kanban-column.o_column_folded {
+    flex: 0 0 auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+    width: auto !important;
+    cursor: pointer !important;
+    background: #f9fafb !important;
+    border-right: 1px solid #e7e9ed !important;
+    padding: 0 !important;
+}
+
+.kanban-column.o_column_folded .kanban-column-card {
+    padding: 16px 0 !important;
+    width: auto !important;
+    background: none !important;
+}
+
+.kanban-column.o_column_folded .sidebar-header-linguify {
+    writing-mode: vertical-lr !important;
+    text-orientation: mixed !important;
+    padding: 16px 8px !important;
+    margin: 0 !important;
+}
+
+.kanban-column.o_column_folded .column-title-linguify {
+    font-size: 18px !important;
+    font-weight: 400 !important;
+    color: rgba(0,0,0,0.5) !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.kanban-column.o_column_folded:hover .column-title-linguify {
+    color: rgba(0,0,0,1) !important;
+}
+
+.kanban-column.o_column_folded .badge-linguify {
+    writing-mode: vertical-lr !important;
+    margin-left: 4px !important;
+    background: none !important;
+    color: rgba(0,0,0,0.5) !important;
+    border: none !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+}
+
+/* Hide all other elements in folded column */
+.kanban-column.o_column_folded .btn-linguify-ghost,
+.kanban-column.o_column_folded .btn-linguify-secondary,
+.kanban-column.o_column_folded .dropdown,
+.kanban-column.o_column_folded .kanban-tasks-container {
+    display: none !important;
 }
 
 .kanban-column.accordion-folded .kanban-column-card {
@@ -528,19 +570,90 @@ document.addEventListener('DOMContentLoaded', function() {
     
     initializeKanban();
     
-    // Force Archive stage to be folded immediately after DOM load
+    // FORCE ODOO STYLE IMMEDIATELY WITH JAVASCRIPT (BYPASS CSS CACHE)
     setTimeout(() => {
+        console.log('Applying Odoo-style formatting...');
+        
+        // Apply base styles to all columns
+        document.querySelectorAll('.kanban-column').forEach(column => {
+            column.style.flex = '0 0 300px';
+            column.style.minWidth = '300px';
+            column.style.maxWidth = '300px';
+            column.style.background = '#f9fafb';
+            column.style.borderRight = '1px solid #e7e9ed';
+            column.style.position = 'relative';
+            column.style.transition = 'all 0.3s ease';
+        });
+        
+        // Apply Odoo folded style to Archive and any folded columns
         document.querySelectorAll('.kanban-column').forEach(column => {
             const titleElement = column.querySelector('.column-title-linguify');
-            if (titleElement && titleElement.textContent.trim() === 'Archive') {
-                console.log('Found Archive column, forcing accordion fold...');
-                column.classList.add('accordion-folded');
-                const tasksContainer = column.querySelector('.kanban-tasks-container');
-                if (tasksContainer) {
-                    tasksContainer.style.display = 'none';
+            const stageName = titleElement ? titleElement.textContent.trim() : '';
+            
+            if (stageName === 'Archive' || column.classList.contains('o_column_folded')) {
+                console.log(`Applying Odoo fold to: ${stageName}`);
+                
+                // Apply folded styles directly
+                column.style.flex = '0 0 auto';
+                column.style.minWidth = 'auto';
+                column.style.maxWidth = 'none';
+                column.style.width = 'auto';
+                column.style.cursor = 'pointer';
+                column.style.background = '#f9fafb';
+                column.style.padding = '0';
+                
+                // Style the card
+                const card = column.querySelector('.kanban-column-card');
+                if (card) {
+                    card.style.padding = '16px 0';
+                    card.style.width = 'auto';
+                    card.style.background = 'none';
                 }
+                
+                // Style the header for vertical text
+                const header = column.querySelector('.sidebar-header-linguify');
+                if (header) {
+                    header.style.writingMode = 'vertical-lr';
+                    header.style.textOrientation = 'mixed';
+                    header.style.padding = '16px 8px';
+                    header.style.margin = '0';
+                }
+                
+                // Style the title
+                if (titleElement) {
+                    titleElement.style.fontSize = '18px';
+                    titleElement.style.fontWeight = '400';
+                    titleElement.style.color = 'rgba(0,0,0,0.5)';
+                    titleElement.style.margin = '0';
+                    titleElement.style.whiteSpace = 'nowrap';
+                    titleElement.style.letterSpacing = 'normal';
+                    titleElement.style.textTransform = 'none';
+                    titleElement.style.transition = 'all 0.2s ease';
+                }
+                
+                // Style the badge
+                const badge = column.querySelector('.badge-linguify');
+                if (badge) {
+                    badge.style.writingMode = 'vertical-lr';
+                    badge.style.marginLeft = '4px';
+                    badge.style.background = 'none';
+                    badge.style.color = 'rgba(0,0,0,0.5)';
+                    badge.style.border = 'none';
+                    badge.style.fontSize = '14px';
+                    badge.style.fontWeight = 'normal';
+                }
+                
+                // Hide other elements
+                const elementsToHide = column.querySelectorAll('.btn-linguify-ghost, .btn-linguify-secondary, .dropdown, .kanban-tasks-container');
+                elementsToHide.forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                column.classList.add('o_column_folded');
             }
         });
+        
+        console.log('Odoo-style formatting applied!');
     }, 100);
     
     // Add event listener for delete stage confirmation
@@ -612,7 +725,68 @@ function testAccordion() {
     });
 }
 
-// Make it globally accessible for debugging
+// Force Odoo style function
+function forceOdooStyle() {
+    console.log('Forcing Odoo style...');
+    
+    document.querySelectorAll('.kanban-column').forEach(column => {
+        const titleElement = column.querySelector('.column-title-linguify');
+        const stageName = titleElement ? titleElement.textContent.trim() : '';
+        
+        if (stageName === 'Archive') {
+            // FORCE ARCHIVE TO BE VERTICAL
+            console.log('Forcing Archive to vertical...');
+            
+            column.style.cssText = `
+                flex: 0 0 auto !important;
+                min-width: auto !important;
+                max-width: none !important;
+                width: auto !important;
+                cursor: pointer !important;
+                background: #f9fafb !important;
+                padding: 0 !important;
+                border-right: 1px solid #e7e9ed !important;
+                position: relative !important;
+                transition: all 0.3s ease !important;
+            `;
+            
+            const header = column.querySelector('.sidebar-header-linguify');
+            if (header) {
+                header.style.cssText = `
+                    writing-mode: vertical-lr !important;
+                    text-orientation: mixed !important;
+                    padding: 16px 8px !important;
+                    margin: 0 !important;
+                `;
+            }
+            
+            if (titleElement) {
+                titleElement.style.cssText = `
+                    font-size: 18px !important;
+                    font-weight: 400 !important;
+                    color: rgba(0,0,0,0.5) !important;
+                    margin: 0 !important;
+                    white-space: nowrap !important;
+                    letter-spacing: normal !important;
+                    text-transform: none !important;
+                    transition: all 0.2s ease !important;
+                `;
+            }
+            
+            // Hide everything else
+            const elementsToHide = column.querySelectorAll('.btn-linguify-ghost, .btn-linguify-secondary, .dropdown, .kanban-tasks-container');
+            elementsToHide.forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+    });
+}
+
+// Make functions globally accessible for debugging
 window.testAccordion = testAccordion;
+window.forceOdooStyle = forceOdooStyle;
+
+// Auto-apply on load
+setTimeout(forceOdooStyle, 500);
 </script>
 {% endblock %}
