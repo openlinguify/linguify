@@ -20,32 +20,29 @@
                     <div class="kanban-column-card">
                         <!-- Column Header -->
                         <div class="sidebar-header-linguify">
-                            <div class="flex items-start justify-between w-full">
-                                <div class="flex items-center min-w-0 flex-1">
+                            <div class="flex items-center justify-between w-full">
+                                <div class="flex items-center gap-2 min-w-0 flex-1">
                                     <h6 class="column-title-linguify" title="{{ stage_data.stage.name }}">{{ stage_data.stage.name }}</h6>
+                                    <span class="badge-linguify-compact">{{ stage_data.count }}</span>
                                 </div>
-                                <div class="flex items-center">
-                                    <span class="badge-linguify flex-shrink-0">{{ stage_data.count }}</span>
-                                </div>
-                            </div>
-                            <!-- Buttons positioned at bottom right -->
-                            <div class="kanban-header-actions">
-                                <button class="kanban-action-btn kanban-quick-add" 
-                                        onclick="addTaskToStage('{{ stage_id }}')" 
-                                        title="{% trans 'Add task' %}">+</button>
-                                <div class="dropdown">
-                                    <button class="kanban-action-btn dropdown-toggle" 
-                                            data-bs-toggle="dropdown">⋮</button>
-                                    <ul class="dropdown-menu">
-                                        <li><button class="dropdown-item hide-stage-btn" type="button" data-stage-id="{{ stage_id }}">
-                                            <i class="bi bi-arrows-collapse me-2"></i>
-                                            {% trans "Hide" %}
-                                        </button></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><button class="dropdown-item text-danger" type="button" onclick="event.preventDefault(); event.stopPropagation(); deleteStage('{{ stage_id }}');">
-                                            <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
-                                        </button></li>
-                                    </ul>
+                                <div class="kanban-header-actions-inline">
+                                    <button class="kanban-action-btn-mini kanban-quick-add" 
+                                            onclick="addTaskToStage('{{ stage_id }}')" 
+                                            title="{% trans 'Add task' %}">+</button>
+                                    <div class="dropdown">
+                                        <button class="kanban-action-btn-mini dropdown-toggle" 
+                                                data-bs-toggle="dropdown">⋮</button>
+                                        <ul class="dropdown-menu">
+                                            <li><button class="dropdown-item hide-stage-btn" type="button" data-stage-id="{{ stage_id }}">
+                                                <i class="bi bi-arrows-collapse me-2"></i>
+                                                {% trans "Hide" %}
+                                            </button></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><button class="dropdown-item text-danger" type="button" onclick="event.preventDefault(); event.stopPropagation(); deleteStage('{{ stage_id }}');">
+                                                <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
+                                            </button></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>

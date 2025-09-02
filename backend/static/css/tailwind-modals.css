@@ -2181,13 +2181,13 @@ button.bg-linguify-gradient:hover,
 
 /* Linguify Sidebar Header - Définition unique et complète */
 .sidebar-header-linguify {
-  padding: 1.5rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
   background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(0, 212, 170, 0.03) 100%);
   border-radius: 8px 8px 0 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
   position: relative;
-  min-height: 70px;
+  min-height: 42px;
 }
 
 /* Kanban header actions positioned at bottom right */
@@ -2200,33 +2200,54 @@ button.bg-linguify-gradient:hover,
   align-items: center;
 }
 
-/* Simple clean action buttons without frames */
-.kanban-action-btn {
+/* Ultra-compact inline actions */
+.kanban-header-actions-inline {
+  display: flex;
+  gap: 0.15rem;
+  align-items: center;
+}
+
+/* Mini action buttons for inline layout */
+.kanban-action-btn-mini {
   background: none;
   border: none;
-  color: var(--linguify-gray-600);
-  font-size: 16px;
+  color: var(--linguify-gray-500);
+  font-size: 14px;
   font-weight: bold;
   line-height: 1;
-  padding: 4px;
+  padding: 2px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 3px;
-  width: 20px;
-  height: 20px;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.kanban-action-btn:hover {
+.kanban-action-btn-mini:hover {
   color: var(--linguify-primary);
   background-color: var(--linguify-gray-100);
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
-.kanban-action-btn:active {
-  transform: scale(0.95);
+.kanban-action-btn-mini:active {
+  transform: scale(0.9);
+}
+
+/* Compact badge for inline layout */
+.badge-linguify-compact {
+  background: var(--linguify-primary);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 8px;
+  line-height: 1.2;
+  min-width: 16px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .sidebar-header-linguify::before {
@@ -2292,7 +2313,13 @@ button.bg-linguify-gradient:hover,
 }
 
 /* Hide actions for folded columns */
-.kanban-column.o_column_folded .kanban-header-actions {
+.kanban-column.o_column_folded .kanban-header-actions,
+.kanban-column.o_column_folded .kanban-header-actions-inline {
+    display: none;
+}
+
+/* Hide old action elements */
+.kanban-header-actions {
     display: none;
 }
 
@@ -2309,32 +2336,28 @@ button.bg-linguify-gradient:hover,
     }
 }
 
-/* Responsive adjustments for the new layout */
+/* Ultra-compact responsive adjustments */
 @media (max-width: 480px) {
     .sidebar-header-linguify {
-        min-height: 80px;
+        min-height: 38px;
+        padding: 0.5rem 0.75rem;
     }
     
-    .kanban-header-actions {
-        bottom: 4px;
-        right: 4px;
-        gap: 0.15rem;
-    }
-    
-    .kanban-action-btn {
-        font-size: 14px;
-        width: 18px;
-        height: 18px;
+    .kanban-action-btn-mini {
+        font-size: 12px;
+        width: 14px;
+        height: 14px;
     }
     
     .column-title-linguify {
-        max-width: none;
-        font-size: 14px;
+        max-width: 120px;
+        font-size: 13px;
     }
     
-    .badge-linguify {
-        font-size: 11px;
-        padding: 2px 6px;
+    .badge-linguify-compact {
+        font-size: 9px;
+        padding: 1px 3px;
+        min-width: 14px;
     }
 }
 
