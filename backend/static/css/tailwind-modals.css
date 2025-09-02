@@ -99,6 +99,17 @@
     font-size: 15px;
     letter-spacing: -0.01em;
     white-space: nowrap;
+    /* Prevent title from growing too much */
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    padding: 2px 6px;
+    position: relative;
+    display: inline-block;
 }
 
 .badge-linguify {
@@ -138,7 +149,6 @@
 .kanban-tasks-container {
     flex: 1;
     padding: 16px;
-    padding-bottom: 20px;
     overflow-y: auto;
     height: calc(100% - 90px);
     background: linear-gradient(to bottom, #ffffff 0%, var(--linguify-gray-50) 100%);
@@ -2177,6 +2187,46 @@ button.bg-linguify-gradient:hover,
   border-radius: 8px 8px 0 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
   position: relative;
+  min-height: 70px;
+}
+
+/* Kanban header actions positioned at bottom right */
+.kanban-header-actions {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* Simple clean action buttons without frames */
+.kanban-action-btn {
+  background: none;
+  border: none;
+  color: var(--linguify-gray-600);
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 3px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kanban-action-btn:hover {
+  color: var(--linguify-primary);
+  background-color: var(--linguify-gray-100);
+  transform: scale(1.1);
+}
+
+.kanban-action-btn:active {
+  transform: scale(0.95);
 }
 
 .sidebar-header-linguify::before {
@@ -2200,6 +2250,92 @@ button.bg-linguify-gradient:hover,
 .kanban-column:not(.o_column_folded) .sidebar-header-linguify h6,
 .kanban-column:not(.o_column_folded) .sidebar-header-linguify .column-title-linguify {
   margin: 0 !important;
+}
+
+/* Column title hover effects and tooltips */
+.column-title-linguify:hover {
+    background-color: rgba(45, 91, 186, 0.1);
+    transform: scale(1.02);
+}
+
+/* Show full title in tooltip if text is truncated */
+.column-title-linguify:hover::before {
+    content: attr(title);
+    position: absolute;
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 1;
+    pointer-events: none;
+    transform: translateY(-100%) translateX(-50%);
+    left: 50%;
+    top: -32px;
+    z-index: 1001;
+    max-width: 200px;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+/* Better header layout for long titles */
+.sidebar-header-linguify .flex.items-start.justify-between {
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Badge should not shrink */
+.badge-linguify {
+    flex-shrink: 0;
+    min-width: fit-content;
+}
+
+/* Hide actions for folded columns */
+.kanban-column.o_column_folded .kanban-header-actions {
+    display: none;
+}
+
+/* Responsive title width adjustment */
+@media (max-width: 768px) {
+    .column-title-linguify {
+        max-width: 120px;
+    }
+}
+
+@media (max-width: 600px) {
+    .column-title-linguify {
+        max-width: 100px;
+    }
+}
+
+/* Responsive adjustments for the new layout */
+@media (max-width: 480px) {
+    .sidebar-header-linguify {
+        min-height: 80px;
+    }
+    
+    .kanban-header-actions {
+        bottom: 4px;
+        right: 4px;
+        gap: 0.15rem;
+    }
+    
+    .kanban-action-btn {
+        font-size: 14px;
+        width: 18px;
+        height: 18px;
+    }
+    
+    .column-title-linguify {
+        max-width: none;
+        font-size: 14px;
+    }
+    
+    .badge-linguify {
+        font-size: 11px;
+        padding: 2px 6px;
+    }
 }
 
 /* Tailwind utility classes for revision app state management */

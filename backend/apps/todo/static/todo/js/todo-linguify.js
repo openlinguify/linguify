@@ -452,8 +452,13 @@ class TodoApp {
     }
 
     async createNewTask() {
-        const title = prompt('Enter task title:');
+        const title = prompt('Enter task title (max 200 characters):');
         if (!title) return;
+        
+        if (title.length > 200) {
+            alert('Task title is too long. Maximum 200 characters allowed.');
+            return;
+        }
         
         try {
             const response = await fetch('/api/v1/todo/tasks/quick_create/', {

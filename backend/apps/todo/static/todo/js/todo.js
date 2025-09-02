@@ -630,9 +630,13 @@ class TodoApp {
     }
 
     showQuickAdd() {
-        // Simple prompt for now - in a real app this would be a modal
-        const title = prompt('Enter task title:');
+        // Simple prompt with character limit validation
+        const title = prompt('Enter task title (max 200 characters):');
         if (title) {
+            if (title.length > 200) {
+                alert('Task title is too long. Maximum 200 characters allowed.');
+                return;
+            }
             this.createTask({ title });
         }
     }

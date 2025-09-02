@@ -150,6 +150,12 @@ class TaskDetailSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
     
+    def validate_title(self, value):
+        """Validate title length with custom error message"""
+        if len(value) > 200:
+            raise serializers.ValidationError("Title cannot exceed 200 characters.")
+        return value
+    
     def create(self, validated_data):
         project_id = validated_data.pop('project_id', None)
         parent_task_id = validated_data.pop('parent_task_id', None)
@@ -362,6 +368,12 @@ class TaskQuickCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['title', 'description']
+    
+    def validate_title(self, value):
+        """Validate title length with custom error message"""
+        if len(value) > 200:
+            raise serializers.ValidationError("Title cannot exceed 200 characters.")
+        return value
     
     def create(self, validated_data):
         # Auto-set user from request context

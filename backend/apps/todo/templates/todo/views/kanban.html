@@ -20,33 +20,32 @@
                     <div class="kanban-column-card">
                         <!-- Column Header -->
                         <div class="sidebar-header-linguify">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <h6 class="column-title-linguify">{{ stage_data.stage.name }}</h6>
-                                    <span class="badge-linguify">{{ stage_data.count }}</span>
+                            <div class="flex items-start justify-between w-full">
+                                <div class="flex items-center min-w-0 flex-1">
+                                    <h6 class="column-title-linguify" title="{{ stage_data.stage.name }}">{{ stage_data.stage.name }}</h6>
                                 </div>
-                                <div class="flex items-center gap-1">
-                                    <button class="btn-linguify-secondary kanban-quick-add" 
-                                            onclick="addTaskToStage('{{ stage_id }}')" 
-                                            title="{% trans 'Add task' %}">
-                                        <i class="bi bi-plus"></i>
-                                    </button>
-                                    <div class="dropdown">
-                                        <button class="btn-linguify-secondary dropdown-toggle" 
-                                                data-bs-toggle="dropdown">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><button class="dropdown-item hide-stage-btn" type="button" data-stage-id="{{ stage_id }}">
-                                                <i class="bi bi-arrows-collapse me-2"></i>
-                                                {% trans "Hide" %}
-                                            </button></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><button class="dropdown-item text-danger" type="button" onclick="event.preventDefault(); event.stopPropagation(); deleteStage('{{ stage_id }}');">
-                                                <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
-                                            </button></li>
-                                        </ul>
-                                    </div>
+                                <div class="flex items-center">
+                                    <span class="badge-linguify flex-shrink-0">{{ stage_data.count }}</span>
+                                </div>
+                            </div>
+                            <!-- Buttons positioned at bottom right -->
+                            <div class="kanban-header-actions">
+                                <button class="kanban-action-btn kanban-quick-add" 
+                                        onclick="addTaskToStage('{{ stage_id }}')" 
+                                        title="{% trans 'Add task' %}">+</button>
+                                <div class="dropdown">
+                                    <button class="kanban-action-btn dropdown-toggle" 
+                                            data-bs-toggle="dropdown">⋮</button>
+                                    <ul class="dropdown-menu">
+                                        <li><button class="dropdown-item hide-stage-btn" type="button" data-stage-id="{{ stage_id }}">
+                                            <i class="bi bi-arrows-collapse me-2"></i>
+                                            {% trans "Hide" %}
+                                        </button></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><button class="dropdown-item text-danger" type="button" onclick="event.preventDefault(); event.stopPropagation(); deleteStage('{{ stage_id }}');">
+                                            <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
+                                        </button></li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -189,7 +188,11 @@
                 {% csrf_token %}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{% trans "Task Title" %}</label>
-                    <input type="text" name="title" class="input-linguify" required>
+                    <input type="text" name="title" class="input-linguify" required maxlength="200" 
+                           placeholder="{% trans 'Enter task title (max 200 characters)' %}">
+                    <div class="text-xs text-gray-500 mt-1">
+                        <span id="titleCharCount">0</span>/200 {% trans "characters" %}
+                    </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{% trans "Stage" %}</label>
@@ -325,6 +328,12 @@
     padding: 2px 6px;
     position: relative;
     display: inline-block;
+    /* Prevent title from growing too much */
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 1;
 }
 
 .column-title-linguify:hover {
@@ -332,7 +341,7 @@
     transform: scale(1.02);
 }
 
-/* Hint tooltip for stage editing */
+/* Hint tooltip for stage editing - only show on hover if text is not truncated */
 .column-title-linguify::after {
     content: "Double-cliquez pour éditer";
     position: absolute;
@@ -351,8 +360,86 @@
     z-index: 1000;
 }
 
+/* Show full title in tooltip if text is truncated */
+.column-title-linguify:hover::before {
+    content: attr(title);
+    position: absolute;
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-100%) translateX(-50%);
+    left: 50%;
+    top: -32px;
+    transition: opacity 0.3s ease 0.5s;
+    z-index: 1001;
+    max-width: 200px;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.column-title-linguify:hover::before {
+    opacity: 1;
+}
+
 .column-title-linguify:hover::after {
     opacity: 1;
+}
+
+/* Better header layout for long titles */
+.sidebar-header-linguify .flex.items-center.justify-between {
+    gap: 0.5rem;
+}
+
+/* Badge should not shrink */
+.badge-linguify {
+    flex-shrink: 0;
+    min-width: fit-content;
+}
+
+/* Ensure buttons container never shrinks */
+.sidebar-header-linguify .flex-shrink-0 {
+    min-width: fit-content;
+}
+
+/* Alternative layout: Stack buttons vertically on very small screens */
+@media (max-width: 480px) {
+    .sidebar-header-linguify .flex.items-center.justify-between {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    
+    .sidebar-header-linguify .flex.items-center.gap-3 {
+        justify-content: center;
+    }
+    
+    .sidebar-header-linguify .flex-shrink-0 {
+        justify-content: center;
+        margin-left: 0;
+    }
+    
+    .column-title-linguify {
+        max-width: none;
+        text-align: center;
+    }
+}
+
+/* Responsive title width adjustment */
+@media (max-width: 768px) {
+    .column-title-linguify {
+        max-width: 120px;
+    }
+}
+
+@media (max-width: 600px) {
+    .column-title-linguify {
+        max-width: 100px;
+    }
 }
 
 /* Styles for fold/unfold button */
@@ -435,6 +522,10 @@
     letter-spacing: 0.025em !important;
     text-transform: none !important;
     transition: color 0.2s ease !important;
+    /* Ensure text doesn't overflow in folded columns */
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: none !important;
 }
 
 .kanban-columns .kanban-column.o_column_folded:hover .column-title-linguify {
@@ -586,6 +677,33 @@ function showQuickTaskModal() {
     const modal = document.getElementById('quickTaskModal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+    
+    // Initialize character counter
+    const titleInput = modal.querySelector('input[name="title"]');
+    const charCount = document.getElementById('titleCharCount');
+    
+    if (titleInput && charCount) {
+        // Update counter on input
+        titleInput.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = length;
+            
+            // Change color based on length
+            if (length > 180) {
+                charCount.classList.add('text-red-500');
+                charCount.classList.remove('text-gray-500');
+            } else if (length > 150) {
+                charCount.classList.add('text-yellow-500');
+                charCount.classList.remove('text-gray-500', 'text-red-500');
+            } else {
+                charCount.classList.add('text-gray-500');
+                charCount.classList.remove('text-red-500', 'text-yellow-500');
+            }
+        });
+        
+        // Initialize counter
+        charCount.textContent = titleInput.value.length;
+    }
 }
 
 function closeQuickTaskModal() {

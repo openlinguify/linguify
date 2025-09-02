@@ -25,7 +25,11 @@
                             {% trans "Title" %} <span class="text-required">*</span>
                         </label>
                         <input type="text" class="input-linguify" id="title" name="title" 
-                               value="{{ task.title|default:'' }}" required autofocus>
+                               value="{{ task.title|default:'' }}" required autofocus maxlength="200"
+                               placeholder="{% trans 'Enter task title (max 200 characters)' %}">
+                        <div class="text-xs text-gray-500 mt-1">
+                            <span id="titleCharCount">{{ task.title|length|default:0 }}</span>/200 {% trans "characters" %}
+                        </div>
                     </div>
                     
                     <!-- Description -->
@@ -241,6 +245,29 @@
 <script src="{% static 'js/commands-editor/index.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // Title character counter
+    const titleInput = document.getElementById('title');
+    const charCount = document.getElementById('titleCharCount');
+    
+    if (titleInput && charCount) {
+        titleInput.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = length;
+            
+            // Change color based on length
+            if (length > 180) {
+                charCount.classList.add('text-red-500');
+                charCount.classList.remove('text-gray-500', 'text-yellow-500');
+            } else if (length > 150) {
+                charCount.classList.add('text-yellow-500');
+                charCount.classList.remove('text-gray-500', 'text-red-500');
+            } else {
+                charCount.classList.add('text-gray-500');
+                charCount.classList.remove('text-red-500', 'text-yellow-500');
+            }
+        });
+    }
     
     // Tag management
     const tagInput = document.getElementById('tagInput');
