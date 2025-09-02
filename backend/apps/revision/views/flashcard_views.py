@@ -132,7 +132,7 @@ class OptimizedQuerysetMixin:
 
 # ===== VIEWSETS PRINCIPAUX =====
 
-class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQuerysetMixin, viewsets.ModelViewSet):
+class FlashcardDeckViewSet(DeckPermissionMixin, OptimizedQuerysetMixin, viewsets.ModelViewSet):
     serializer_class = FlashcardDeckSerializer
     permission_classes = [FlashcardDeckPermission]  # Permissions granulaires
     pagination_class = DeckPagination
@@ -263,12 +263,7 @@ class FlashcardDeckViewSet(DeckCloneMixin, DeckPermissionMixin, OptimizedQueryse
             )
         return super().destroy(request, *args, **kwargs)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def clone(self, request, pk=None):
-        """Action pour cloner un deck"""
-        source_deck = self.get_object()
-        logger.debug(f"Tentative de clonage du deck {pk} par l'utilisateur {request.user.username}")
-        return self.clone_deck(source_deck, request)
+    # Action clone déplacée vers PublicDecksViewSet dans explorer_views.py
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def toggle_public(self, request, pk=None):
