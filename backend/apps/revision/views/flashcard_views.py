@@ -346,19 +346,62 @@ class FlashcardDeckViewSet(DeckPermissionMixin, OptimizedQuerysetMixin, viewsets
                     status=status.HTTP_403_FORBIDDEN
                 )
             
-            cards_query = deck.flashcards.all()
+            # Check if smart study mode is requested
+            study_mode = request.query_params.get('study_mode', 'normal')
             
-            # Filtres optionnels
-            learned = request.query_params.get('learned')
-            if learned is not None:
-                is_learned = learned.lower() == 'true'
-                cards_query = cards_query.filter(learned=is_learned)
+            if study_mode == 'smart':
+                # Use spaced repetition algorithm
+                from .spaced_repetition_views import SpacedRepetitionMixin
                 
-            # Trier par date de création décroissante
-            cards = cards_query.order_by('-created_at')
-            
-            serializer = FlashcardSerializer(cards, many=True, context={'request': request})
-            return Response(serializer.data)
+                # Create mixin instance and get user preferences
+                sr_mixin = SpacedRepetitionMixin()
+                user_prefs = sr_mixin._get_user_preferences(request.user)
+                
+                # Build session config from query parameters
+                session_config = {
+                    'max_cards': int(request.query_params.get('max_cards', user_prefs.get('session_size', 20))),
+                    'new_cards_limit': int(request.query_params.get('new_cards', user_prefs.get('new_cards_per_day', 10))),
+                    'review_ahead_days': int(request.query_params.get('ahead_days', user_prefs.get('review_ahead_days', 1))),
+                    'prioritize_overdue': request.query_params.get('prioritize_overdue', 'true') == 'true',
+                    'mixed_order': request.query_params.get('mixed_order', 'true') == 'true'
+                }
+                
+                # Get smart card selection
+                study_data = sr_mixin.get_cards_to_review(deck, session_config, user_prefs)
+                
+                # Extract cards from session data
+                session_cards = study_data['session_cards']
+                cards = [card_data['card'] for card_data in session_cards]
+                
+                # Prepare response with additional study data
+                serializer = FlashcardSerializer(cards, many=True, context={'request': request})
+                
+                return Response({
+                    'cards': serializer.data,
+                    'study_session': {
+                        'total_cards': len(cards),
+                        'statistics': study_data['statistics'],
+                        'recommendations': study_data['recommendations'],
+                        'user_preferences': user_prefs,
+                        'session_config': session_config,
+                        'study_mode': 'smart'
+                    }
+                })
+            else:
+                # Normal mode - all cards or filtered
+                cards_query = deck.flashcards.all()
+                
+                # Filtres optionnels
+                learned = request.query_params.get('learned')
+                if learned is not None:
+                    is_learned = learned.lower() == 'true'
+                    cards_query = cards_query.filter(learned=is_learned)
+                    
+                # Trier par date de création décroissante
+                cards = cards_query.order_by('-created_at')
+                
+                serializer = FlashcardSerializer(cards, many=True, context={'request': request})
+                return Response(serializer.data)
         
         except Exception as e:
             return Response(

@@ -51,37 +51,59 @@ class FlashcardStudyMode {
             console.log('Starting flashcard study for deck:', deck.name);
             this.currentDeck = deck;
             
-            // Load cards for this deck
+            // Load cards for this deck using smart spaced repetition algorithm
             console.log('Loading cards for deck ID:', deck.id);
-            const response = await window.revisionMain.revisionAPI.getCards(deck.id);
-            const allCards = response.results || response || [];
+            const response = await window.revisionMain.revisionAPI.getCards(deck.id, {
+                studyMode: 'smart',
+                mixedOrder: true,
+                prioritizeOverdue: true
+            });
+            
+            // Handle smart mode response structure
+            const allCards = response.cards || response.results || response || [];
+            const studySession = response.study_session || null;
             console.log('Loaded cards:', allCards.length);
             
-            // Appliquer d'abord la limite des paramètres utilisateur
-            console.log('[FlashcardStudy] About to apply user settings limit...');
-            let cardsToStudy;
-            try {
-                const userSettings = await this.getUserSettings();
-                const maxCards = userSettings.cards_per_session || 20;
-                console.log(`[FlashcardStudy] User wants ${maxCards} cards per session`);
-                
-                // Filter cards that need study (not learned or due for review)
-                let filteredCards = this.filterCardsForStudy(allCards);
-                console.log('Cards to study after filtering:', filteredCards.length);
-                
-                // Si pas assez de cartes après filtrage, inclure toutes les cartes disponibles
-                if (filteredCards.length < maxCards && allCards.length > filteredCards.length) {
-                    console.log(`[FlashcardStudy] Not enough filtered cards (${filteredCards.length}), using all available cards (${allCards.length}) to maximize study content`);
-                    cardsToStudy = allCards.slice(0, maxCards);
-                } else {
-                    cardsToStudy = filteredCards.slice(0, maxCards);
+            // Log spaced repetition information if available
+            if (studySession) {
+                console.log('Smart study session data:', studySession);
+                if (studySession.recommendations?.length > 0) {
+                    console.log('Study recommendations:', studySession.recommendations);
                 }
-                
-                console.log('[FlashcardStudy] Successfully applied user settings limit');
-            } catch (error) {
-                console.error('[FlashcardStudy] Error applying user settings:', error);
-                // Fallback au comportement original
-                cardsToStudy = this.filterCardsForStudy(allCards).slice(0, 20);
+            }
+            
+            // Check if we're using smart mode (cards already intelligently selected)
+            let cardsToStudy;
+            if (studySession && studySession.study_mode === 'smart') {
+                // Smart mode: use cards exactly as provided by the spaced repetition algorithm
+                console.log('[FlashcardStudy] Using smart mode - cards already optimally selected by algorithm');
+                cardsToStudy = allCards; // These are already filtered and prioritized by the algorithm
+            } else {
+                // Legacy mode: apply manual filtering
+                console.log('[FlashcardStudy] Using legacy mode - applying manual filtering...');
+                try {
+                    const userSettings = await this.getUserSettings();
+                    const maxCards = userSettings.cards_per_session || 20;
+                    console.log(`[FlashcardStudy] User wants ${maxCards} cards per session`);
+                    
+                    // Filter cards that need study (not learned or due for review)
+                    let filteredCards = this.filterCardsForStudy(allCards);
+                    console.log('Cards to study after filtering:', filteredCards.length);
+                    
+                    // Si pas assez de cartes après filtrage, inclure toutes les cartes disponibles
+                    if (filteredCards.length < maxCards && allCards.length > filteredCards.length) {
+                        console.log(`[FlashcardStudy] Not enough filtered cards (${filteredCards.length}), using all available cards (${allCards.length}) to maximize study content`);
+                        cardsToStudy = allCards.slice(0, maxCards);
+                    } else {
+                        cardsToStudy = filteredCards.slice(0, maxCards);
+                    }
+                    
+                    console.log('[FlashcardStudy] Successfully applied user settings limit');
+                } catch (error) {
+                    console.error('[FlashcardStudy] Error applying user settings:', error);
+                    // Fallback au comportement original
+                    cardsToStudy = this.filterCardsForStudy(allCards).slice(0, 20);
+                }
             }
             
             this.studyCards = cardsToStudy;

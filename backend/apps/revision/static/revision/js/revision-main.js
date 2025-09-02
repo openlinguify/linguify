@@ -133,10 +133,33 @@ const revisionAPI = {
         });
     },
     
-    async getCards(deckId) {
+    async getCards(deckId, options = {}) {
         // Add timestamp to prevent caching issues
         const timestamp = Date.now();
-        return await window.apiService.request(`/api/v1/revision/flashcards/?deck=${deckId}&_t=${timestamp}`);
+        
+        // Build query parameters
+        const params = new URLSearchParams({
+            _t: timestamp
+        });
+        
+        // Add study mode if specified
+        if (options.studyMode === 'smart') {
+            params.append('study_mode', 'smart');
+            
+            // Add other spaced repetition parameters
+            if (options.maxCards) params.append('max_cards', options.maxCards);
+            if (options.newCards) params.append('new_cards', options.newCards);
+            if (options.aheadDays) params.append('ahead_days', options.aheadDays);
+            if (options.prioritizeOverdue !== undefined) params.append('prioritize_overdue', options.prioritizeOverdue);
+            if (options.mixedOrder !== undefined) params.append('mixed_order', options.mixedOrder);
+            
+            // Use the deck cards endpoint for smart mode
+            return await window.apiService.request(`/api/v1/revision/decks/${deckId}/cards/?${params}`);
+        } else {
+            // Normal mode - use flashcards endpoint
+            params.append('deck', deckId);
+            return await window.apiService.request(`/api/v1/revision/flashcards/?${params}`);
+        }
     },
     
     async updateCard(cardId, cardData) {
