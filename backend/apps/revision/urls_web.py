@@ -1,5 +1,5 @@
 # apps/revision/urls_web.py - Web interface URLs
-from django.urls import path
+from django.urls import path, include
 from .views.web_views import (
     RevisionMainView,
     stats_dashboard,
@@ -11,16 +11,34 @@ from .views.web_views import (
     revision_explore,
     revision_public_deck
 )
+# HTMX Explorer views
+from .views.explorer_views import (
+    ExploreMainView,
+    SearchDecksView, 
+    DeckDetailsView,
+    import_deck_view,
+    FilterOptionsView,
+    StatsView,
+    TrendingDecksView,
+    SearchSuggestionsView,
+    toggle_favorite_view,
+    add_to_collection_view,
+    rate_deck_view
+)
 
 app_name = 'revision_web'
 
 urlpatterns = [
-    # === WEB INTERFACE PAGES ===
+    # ==========================================
+    # === MAIN PAGES - INTERFACE PRINCIPALE ===
+    # ==========================================
     
-    # Main pages
     path('', RevisionMainView.as_view(), name='main'),
-    path('stats/', stats_dashboard, name='stats_dashboard'),
-    path('explore/', revision_explore, name='explore'),
+    
+    
+    # ==========================================
+    # === LISTES DE CARTES - DECK MANAGEMENT ===
+    # ==========================================
     
     # Deck pages  
     path('deck/<int:deck_id>/', revision_deck, name='deck'),
@@ -31,6 +49,43 @@ urlpatterns = [
     path('deck/<int:deck_id>/study/match/', revision_study_match, name='study_match'),
     path('deck/<int:deck_id>/study/review/', revision_study_review, name='study_review'),
     
-    # Public deck exploration
-    path('explore/deck/<int:deck_id>/', revision_public_deck, name='public_deck'),
+    
+    # ==========================================
+    # === STATISTIQUES - ANALYTICS & REPORTS ===
+    # ==========================================
+    
+    path('stats/', stats_dashboard, name='stats_dashboard'),
+    
+    
+    # ==========================================
+    # === EXPLORER - HTMX PUBLIC DECKS ===
+    # ==========================================
+    
+    # Vue principale explorer
+    path('explore/', ExploreMainView.as_view(), name='explore'),
+    
+    # Recherche et filtrage HTMX
+    path('explore/search/', SearchDecksView.as_view(), name='explore_search'),
+    path('explore/suggestions/', SearchSuggestionsView.as_view(), name='explore_suggestions'),
+    path('explore/filters/<str:filter_type>/', FilterOptionsView.as_view(), name='explore_filter_options'),
+    
+    # Détails et actions sur les decks HTMX
+    path('explore/deck/<int:deck_id>/', DeckDetailsView.as_view(), name='explore_deck_details'),
+    path('explore/deck/<int:deck_id>/import/', import_deck_view, name='explore_import_deck'),
+    path('explore/deck/<int:deck_id>/favorite/', toggle_favorite_view, name='explore_toggle_favorite'),
+    path('explore/deck/<int:deck_id>/collection/', add_to_collection_view, name='explore_add_to_collection'),
+    path('explore/deck/<int:deck_id>/rate/', rate_deck_view, name='explore_rate_deck'),
+    
+    # Statistiques et tendances HTMX
+    path('explore/stats/', StatsView.as_view(), name='explore_stats'),
+    path('explore/trending/', TrendingDecksView.as_view(), name='explore_trending'),
+    
+    
+    # ==========================================
+    # === LEGACY ROUTES - BACKWARD COMPATIBILITY ===
+    # ==========================================
+    
+    # Redirections vers la nouvelle exploration HTMX
+    path('explore/legacy/', revision_explore, name='explore_legacy'),
+    path('explore/deck/<int:deck_id>/', revision_public_deck, name='public_deck_legacy'),
 ]

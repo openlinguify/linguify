@@ -1,0 +1,45 @@
+<!-- Statistiques communautaires -->
+<div class="stats-header">
+    <div class="stats-title">
+        <i class="bi bi-graph-up-arrow"></i>
+        <span>Statistiques globales</span>
+    </div>
+</div>
+<div class="stats-grid-modern">
+    <div class="stat-card">
+        <div class="stat-icon decks">
+            <i class="bi bi-stack"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ stats.total_decks }}</div>
+            <div class="stat-label">Decks publics</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon cards">
+            <i class="bi bi-card-text"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ stats.total_cards }}</div>
+            <div class="stat-label">Cartes totales</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon users">
+            <i class="bi bi-people"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ stats.total_authors }}</div>
+            <div class="stat-label">Créateurs actifs</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon activity">
+            <i class="bi bi-activity"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ stats.weekly_activity }}</div>
+            <div class="stat-label">Cette semaine</div>
+        </div>
+    </div>
+</div>

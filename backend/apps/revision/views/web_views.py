@@ -235,7 +235,7 @@ def revision_explore(request):
         'debug': settings.DEBUG,
     }
     
-    return render(request, 'revision/revision/explore.html', context)
+    return render(request, 'revision/explore/explore.html', context)
 
 
 def revision_public_deck(request, deck_id):
