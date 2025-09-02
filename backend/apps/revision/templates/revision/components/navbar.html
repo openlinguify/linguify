@@ -3,15 +3,15 @@
     <!-- Gauche: Navigation + Actions principales -->
     <div class="navbar-section">
         <!-- Bouton toggle sidebar pour toutes les pages -->
-        {% if view_type != 'explore' %}
-        <button id="toggleSidebar" 
+        <div>
+            <button id="toggleSidebar" 
                 class="btn-navbar-outline" 
                 title="Masquer/Afficher la barre latérale"
                 aria-label="Basculer la barre latérale"
                 aria-expanded="true">
             <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
-        </button>
-        {% endif %}
+            </button>
+        </div>
         
         <!-- Navigation tabs -->
         <div class="nav-tabs-group">
@@ -31,7 +31,7 @@
                 Statistiques
             </a>
         </div>
-        
+
         <!-- Refresh - Always show, but different for stats -->
         {% if view_type == 'stats' %}
         <button id="refreshStats" class="btn-navbar btn-navbar-outline" title="Actualiser les statistiques">

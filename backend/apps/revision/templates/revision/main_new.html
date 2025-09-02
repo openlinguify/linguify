@@ -23,7 +23,6 @@
     <!-- Create Deck Form -->
     {% include 'revision/partials/create_deck_form.html' %}
     
-    
     <!-- Create Card Form -->
     {% include 'revision/partials/create_card_form.html' %}
     
@@ -46,10 +45,10 @@
     {% include 'revision/partials/edit_deck_form.html' %}
     </div> <!-- End flex container -->
 
-<!-- Modals de partage -->
-{% include "revision/components/share_deck.html" %}
-{% include "revision/partials/tags/tags_management.html" %}
-{% include "revision/partials/tags/tag_templates.html" %}
+    <!-- Modals de partage -->
+    {% include "revision/components/share_deck.html" %}
+    {% include "revision/partials/tags/tags_management.html" %}
+    {% include "revision/partials/tags/tag_templates.html" %}
 
 </div>
 {% endblock %}

@@ -8,198 +8,399 @@
 {% endblock %}
 
 {% block content %}
-<!-- Sidebar pour les filtres avancés -->
-<div id="exploreSidebar" class="revision-sidebar show">
+<div class="flex" style="height: 100%; min-height: 100%;">
+    <!-- Sidebar pour les filtres avancés - Interface améliorée avec layout Liste de cartes -->
+    <div id="exploreSidebar" class="sidebar-linguify show">
         <div class="sidebar-content">
-        <!-- Filtres avancés -->
-        <div class="sidebar-header-linguify">
-            <h6 class="mb-0">
-                <i class="bi bi-funnel me-2"></i>
-                Filtres avancés
-            </h6>
-        </div>
-        
-        <div class="p-3">
-            <!-- Filtre par catégorie -->
-            <div class="mb-3">
-                <label class="form-label small fw-bold text-linguify-primary">
-                    <i class="bi bi-folder me-1"></i>
-                    Catégorie
-                </label>
-                <select id="categoryFilter" class="form-select-linguify form-select-sm">
-                    <option value="">Toutes les catégories</option>
-                    <option value="languages">🌐 Langues</option>
-                    <option value="science">🔬 Sciences</option>
-                    <option value="history">📚 Histoire</option>
-                    <option value="math">🔢 Mathématiques</option>
-                    <option value="literature">📖 Littérature</option>
-                    <option value="medicine">⚕️ Médecine</option>
-                    <option value="technology">💻 Technologie</option>
-                    <option value="business">💼 Business</option>
-                    <option value="art">🎨 Art & Culture</option>
-                    <option value="other">📋 Autres</option>
-                </select>
-            </div>
-
-            <!-- Filtre par langue -->
-            <div class="mb-3">
-                <label class="form-label small fw-bold text-linguify-primary">
-                    <i class="bi bi-translate me-1"></i>
-                    Langue
-                </label>
-                <select id="languageFilter" class="form-select-linguify form-select-sm">
-                    <option value="">Toutes les langues</option>
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="en">🇺🇸 Anglais</option>
-                    <option value="es">🇪🇸 Espagnol</option>
-                    <option value="de">🇩🇪 Allemand</option>
-                    <option value="it">🇮🇹 Italien</option>
-                    <option value="pt">🇵🇹 Portugais</option>
-                    <option value="zh">🇨🇳 Chinois</option>
-                    <option value="ja">🇯🇵 Japonais</option>
-                    <option value="ru">🇷🇺 Russe</option>
-                </select>
-            </div>
-
-            <!-- Filtre par niveau -->
-            <div class="mb-3">
-                <label class="form-label small fw-bold text-linguify-primary">
-                    <i class="bi bi-bar-chart me-1"></i>
-                    Niveau
-                </label>
-                <select id="levelFilter" class="form-select-linguify form-select-sm">
-                    <option value="">Tous les niveaux</option>
-                    <option value="beginner">🟢 Débutant</option>
-                    <option value="intermediate">🟡 Intermédiaire</option>
-                    <option value="advanced">🔴 Avancé</option>
-                    <option value="expert">⚫ Expert</option>
-                </select>
-            </div>
-            
-            <!-- Filtre par auteur -->
-            <div class="mb-3">
-                <label class="form-label small fw-bold text-linguify-primary">
-                    <i class="bi bi-person me-1"></i>
-                    Auteur
-                </label>
-                <input type="text" id="authorFilter" class="form-control-linguify form-control-sm" 
-                       placeholder="Nom d'utilisateur...">
-            </div>
-            
-            <!-- Filtre par nombre de cartes -->
-            <div class="mb-3">
-                <label class="form-label small fw-bold text-linguify-primary">
-                    <i class="bi bi-stack me-1"></i>
-                    Nombre de cartes
-                </label>
-                <div class="d-flex gap-1">
-                    <input type="number" id="minCards" class="form-control-linguify form-control-sm" 
-                           placeholder="Min" min="1">
-                    <input type="number" id="maxCards" class="form-control-linguify form-control-sm" 
-                           placeholder="Max" min="1">
+        <!-- Header avec toggle moderne -->
+        <div class="sidebar-modern-header">
+            <div class="header-title-group">
+                <div class="sidebar-icon-primary">
+                    <i class="bi bi-funnel-fill"></i>
+                </div>
+                <div>
+                    <h6 class="sidebar-title">Filtres intelligents</h6>
+                    <small class="sidebar-subtitle">Affinez votre recherche</small>
                 </div>
             </div>
-
-            <!-- Filtre par rating -->
-            <div class="mb-3">
-                <label class="form-label small fw-bold text-linguify-primary">
-                    <i class="bi bi-star me-1"></i>
-                    Note minimale
-                </label>
-                <select id="ratingFilter" class="form-select-linguify form-select-sm">
-                    <option value="">Toutes les notes</option>
-                    <option value="4">⭐⭐⭐⭐ 4+ étoiles</option>
-                    <option value="3">⭐⭐⭐ 3+ étoiles</option>
-                    <option value="2">⭐⭐ 2+ étoiles</option>
-                    <option value="1">⭐ 1+ étoile</option>
-                </select>
-            </div>
-            
-            <!-- Actions -->
-            <div class="d-flex gap-2">
-                <button id="applyFilters" class="btn-linguify btn-sm flex-1">
-                    <i class="bi bi-search me-1"></i>
-                    Appliquer
-                </button>
-                <button id="clearFilters" class="btn-linguify-secondary btn-sm">
-                    <i class="bi bi-x-circle me-1"></i>
-                    Effacer
-                </button>
-            </div>
-        </div>
-        
-        <!-- Collections personnelles -->
-        <div class="sidebar-header-linguify">
-            <h6 class="mb-0">
-                <i class="bi bi-heart me-2 text-linguify-accent"></i>
-                Mes Collections
-            </h6>
-            <button class="btn-link-linguify btn-sm p-0" id="createCollectionBtn" title="Créer une collection">
-                <i class="bi bi-plus-circle"></i>
+            <button class="sidebar-collapse-btn" id="collapseSidebar" title="Réduire">
+                <i class="bi bi-chevron-left"></i>
             </button>
         </div>
         
-        <div id="myCollections" class="p-2">
-            <!-- Sera rempli par JavaScript -->
-        </div>
-
-        <!-- Favoris -->
-        <div class="sidebar-header-linguify">
-            <h6 class="mb-0">
-                <i class="bi bi-bookmark me-2 text-linguify-secondary"></i>
-                Favoris
-            </h6>
-            <small class="text-muted" id="favoritesCount">0</small>
-        </div>
-        
-        <div id="favoriteDecks" class="p-2">
-            <!-- Sera rempli par JavaScript -->
-        </div>
-
-        <!-- Decks populaires -->
-        <div class="sidebar-header-linguify">
-            <h6 class="mb-0">
-                <i class="bi bi-fire me-2 text-linguify-warning"></i>
-                Trending cette semaine
-            </h6>
-        </div>
-        
-        <div id="popularDecks" class="p-2">
-            <!-- Sera rempli par JavaScript -->
-        </div>
-
-        <!-- Statistiques globales -->
-        <div class="sidebar-header-linguify">
-            <h6 class="mb-0">
-                <i class="bi bi-graph-up me-2 text-linguify-success"></i>
-                Communauté
-            </h6>
-        </div>
-        
-        <div class="p-3">
-            <div class="community-stats">
-                <div class="stat-item">
-                    <i class="bi bi-stack text-linguify-primary"></i>
-                    <span class="stat-value" id="totalDecksCount">-</span>
-                    <span class="stat-label">Decks publics</span>
+        <!-- Filtres rapides en chips -->
+        <div class="quick-filters-section">
+            <div class="quick-filters-grid">
+                <div class="filter-chip active" data-category="all">
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                    <span>Tout</span>
                 </div>
-                <div class="stat-item">
-                    <i class="bi bi-card-text text-linguify-accent"></i>
-                    <span class="stat-value" id="totalCardsCount">-</span>
-                    <span class="stat-label">Cartes totales</span>
+                <div class="filter-chip" data-category="languages">
+                    <i class="bi bi-globe2"></i>
+                    <span>Langues</span>
                 </div>
-                <div class="stat-item">
-                    <i class="bi bi-people text-linguify-secondary"></i>
-                    <span class="stat-value" id="totalAuthorsCount">-</span>
-                    <span class="stat-label">Créateurs</span>
+                <div class="filter-chip" data-category="science">
+                    <i class="bi bi-microscope"></i>
+                    <span>Sciences</span>
+                </div>
+                <div class="filter-chip" data-category="technology">
+                    <i class="bi bi-cpu"></i>
+                    <span>Tech</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Filtres avancés - Collapsible -->
+        <div class="filter-section" data-section="advanced">
+            <div class="section-header" data-toggle="advanced">
+                <div class="section-title">
+                    <i class="bi bi-sliders"></i>
+                    <span>Filtres avancés</span>
+                </div>
+                <i class="bi bi-chevron-down toggle-icon"></i>
+            </div>
+            <div class="section-content" id="advancedFilters">
+                <!-- Filtre par catégorie -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="bi bi-folder2"></i>
+                        Domaine d'études
+                    </label>
+                    <div class="custom-select-wrapper">
+                        <select id="categoryFilter" class="modern-select">
+                            <option value="">Tous les domaines</option>
+                            <option value="languages">🌍 Langues étrangères</option>
+                            <option value="science">🧬 Sciences & Recherche</option>
+                            <option value="history">📜 Histoire & Géographie</option>
+                            <option value="math">📐 Mathématiques</option>
+                            <option value="literature">📚 Littérature & Arts</option>
+                            <option value="medicine">⚕️ Médecine & Santé</option>
+                            <option value="technology">💻 Informatique & Tech</option>
+                            <option value="business">💼 Économie & Business</option>
+                            <option value="other">📋 Autre</option>
+                        </select>
+                        <i class="bi bi-chevron-down select-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Filtre par langue -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="bi bi-translate"></i>
+                        Langue du contenu
+                    </label>
+                    <div class="language-filter-grid">
+                        <button class="language-option active" data-lang="all">
+                            <span class="lang-flag">🌐</span>
+                            <span class="lang-name">Toutes</span>
+                        </button>
+                        <button class="language-option" data-lang="fr">
+                            <span class="lang-flag">🇫🇷</span>
+                            <span class="lang-name">FR</span>
+                        </button>
+                        <button class="language-option" data-lang="en">
+                            <span class="lang-flag">🇺🇸</span>
+                            <span class="lang-name">EN</span>
+                        </button>
+                        <button class="language-option" data-lang="es">
+                            <span class="lang-flag">🇪🇸</span>
+                            <span class="lang-name">ES</span>
+                        </button>
+                        <button class="language-option" data-lang="de">
+                            <span class="lang-flag">🇩🇪</span>
+                            <span class="lang-name">DE</span>
+                        </button>
+                        <button class="language-option" data-lang="it">
+                            <span class="lang-flag">🇮🇹</span>
+                            <span class="lang-name">IT</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtre par niveau avec slider visuel -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="bi bi-speedometer2"></i>
+                        Niveau de difficulté
+                    </label>
+                    <div class="level-selector">
+                        <button class="level-btn active" data-level="all">
+                            <div class="level-icon all-levels">📚</div>
+                            <span>Tous</span>
+                        </button>
+                        <button class="level-btn" data-level="beginner">
+                            <div class="level-icon beginner"></div>
+                            <span>Débutant</span>
+                        </button>
+                        <button class="level-btn" data-level="intermediate">
+                            <div class="level-icon intermediate"></div>
+                            <span>Intermédiaire</span>
+                        </button>
+                        <button class="level-btn" data-level="advanced">
+                            <div class="level-icon advanced"></div>
+                            <span>Avancé</span>
+                        </button>
+                        <button class="level-btn" data-level="expert">
+                            <div class="level-icon expert"></div>
+                            <span>Expert</span>
+                        </button>
+                    </div>
+                </div>
+            
+                <!-- Filtre par créateur -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="bi bi-person-circle"></i>
+                        Créateur
+                    </label>
+                    <div class="search-input-enhanced">
+                        <i class="bi bi-search search-icon-small"></i>
+                        <input type="text" id="authorFilter" class="modern-input" 
+                               placeholder="Rechercher un créateur...">
+                        <button class="clear-input" style="display: none;">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Filtre par taille du deck -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="bi bi-stack"></i>
+                        Nombre de cartes
+                    </label>
+                    <div class="range-selector">
+                        <div class="range-inputs">
+                            <input type="number" id="minCards" class="range-input" 
+                                   placeholder="Min" min="1" value="">
+                            <span class="range-separator">à</span>
+                            <input type="number" id="maxCards" class="range-input" 
+                                   placeholder="Max" min="1" value="">
+                        </div>
+                        <div class="range-presets">
+                            <button class="preset-btn" data-range="1-20">Petit (1-20)</button>
+                            <button class="preset-btn" data-range="21-50">Moyen (21-50)</button>
+                            <button class="preset-btn" data-range="51+">Large (51+)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtre par rating avec étoiles interactives -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="bi bi-star-fill"></i>
+                        Note minimale
+                    </label>
+                    <div class="rating-selector">
+                        <div class="star-rating-filter" id="ratingFilter">
+                            <button class="star-btn active" data-rating="0" title="Toutes les notes">
+                                <span class="star-text">Toutes</span>
+                            </button>
+                            <button class="star-btn" data-rating="1" title="1+ étoiles">
+                                <i class="bi bi-star-fill"></i>
+                            </button>
+                            <button class="star-btn" data-rating="2" title="2+ étoiles">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                            </button>
+                            <button class="star-btn" data-rating="3" title="3+ étoiles">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                            </button>
+                            <button class="star-btn" data-rating="4" title="4+ étoiles">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                            </button>
+                            <button class="star-btn" data-rating="5" title="5 étoiles uniquement">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Actions avec compteur de filtres -->
+                <div class="filter-actions">
+                    <div class="active-filters-count" id="activeFiltersCount" style="display: none;">
+                        <span class="count-badge">3</span>
+                        <span class="count-text">filtres actifs</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="clearFilters" class="clear-btn">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                            Réinitialiser
+                        </button>
+                        <button id="applyFilters" class="apply-btn">
+                            <i class="bi bi-search"></i>
+                            Rechercher
+                            <div class="btn-loading" style="display: none;">
+                                <div class="spinner"></div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Collections personnelles avec design moderne -->
+        <div class="filter-section" data-section="collections">
+            <div class="section-header" data-toggle="collections">
+                <div class="section-title">
+                    <i class="bi bi-collection-fill"></i>
+                    <span>Mes Collections</span>
+                    <div class="collection-count-badge" id="myCollectionsCount">0</div>
+                </div>
+                <i class="bi bi-chevron-down toggle-icon"></i>
+            </div>
+            <div class="section-content" id="collectionsContent">
+                <div class="collection-actions">
+                    <button class="create-collection-btn" id="createCollectionBtn">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>Nouvelle collection</span>
+                    </button>
+                </div>
+                <div id="myCollections" class="collections-list">
+                    <!-- Collections vides par défaut -->
+                    <div class="empty-collections">
+                        <div class="empty-icon">
+                            <i class="bi bi-collection"></i>
+                        </div>
+                        <p>Aucune collection créée</p>
+                        <small>Organisez vos decks favoris en collections</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Favoris avec affichage amélioré -->
+        <div class="filter-section" data-section="favorites">
+            <div class="section-header" data-toggle="favorites">
+                <div class="section-title">
+                    <i class="bi bi-heart-fill"></i>
+                    <span>Favoris</span>
+                    <div class="favorites-count-badge" id="favoritesCount">0</div>
+                </div>
+                <i class="bi bi-chevron-down toggle-icon"></i>
+            </div>
+            <div class="section-content" id="favoritesContent">
+                <div id="favoriteDecks" class="favorites-list">
+                    <!-- Favoris vides par défaut -->
+                    <div class="empty-favorites">
+                        <div class="empty-icon">
+                            <i class="bi bi-heart"></i>
+                        </div>
+                        <p>Aucun favori sauvegardé</p>
+                        <small>Cliquez sur ❤️ pour ajouter des decks</small>
+                    </div>
+                </div>
+                <div class="favorites-actions">
+                    <button class="view-all-favorites" id="viewAllFavorites" style="display: none;">
+                        <i class="bi bi-arrow-right"></i>
+                        <span>Voir tous mes favoris</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trending avec meilleur design -->
+        <div class="filter-section" data-section="trending">
+            <div class="section-header" data-toggle="trending">
+                <div class="section-title">
+                    <i class="bi bi-fire"></i>
+                    <span>🔥 Tendances</span>
+                    <div class="trending-badge">Semaine</div>
+                </div>
+                <i class="bi bi-chevron-down toggle-icon"></i>
+            </div>
+            <div class="section-content" id="trendingContent">
+                <div class="trending-period-selector">
+                    <button class="period-btn active" data-period="week">Semaine</button>
+                    <button class="period-btn" data-period="month">Mois</button>
+                    <button class="period-btn" data-period="all">All-time</button>
+                </div>
+                <div id="popularDecks" class="trending-list">
+                    <!-- Exemple de trending deck avec design amélioré -->
+                    <div class="trending-item">
+                        <div class="trending-rank">1</div>
+                        <div class="trending-content">
+                            <div class="trending-title">Vocabulaire Anglais B2</div>
+                            <div class="trending-meta">
+                                <span class="trend-stat">
+                                    <i class="bi bi-graph-up-arrow"></i>
+                                    +47%
+                                </span>
+                                <span class="trend-stat">
+                                    <i class="bi bi-eye"></i>
+                                    1.2k vues
+                                </span>
+                            </div>
+                        </div>
+                        <div class="trending-indicator">
+                            <i class="bi bi-arrow-up"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques communautaires modernisées -->
+        <div class="community-stats-section">
+            <div class="stats-header">
+                <div class="stats-title">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span>Statistiques globales</span>
+                </div>
+            </div>
+            <div class="stats-grid-modern">
+                <div class="stat-card">
+                    <div class="stat-icon decks">
+                        <i class="bi bi-stack"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalDecksCount">---</div>
+                        <div class="stat-label">Decks publics</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon cards">
+                        <i class="bi bi-card-text"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalCardsCount">---</div>
+                        <div class="stat-label">Cartes totales</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon users">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalAuthorsCount">---</div>
+                        <div class="stat-label">Créateurs actifs</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon activity">
+                        <i class="bi bi-activity"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="weeklyActivity">---</div>
+                        <div class="stat-label">Cette semaine</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Zone principale -->
-<div class="revision-study">
+    <!-- Zone principale avec la même structure que Liste de cartes -->
+    <div class="flex-1 revision-study main-content-area" style="overflow-y: auto; height: 100%;">
     <!-- Vue d'accueil -->
     <div id="exploreWelcome" class="study-content">
         <div class="text-center p-5">
@@ -255,34 +456,121 @@
     
     <!-- Résultats de recherche -->
     <div id="exploreResults" style="display: none;">
-        <!-- Advanced Search Bar -->
-        <div class="advanced-search-container">
-            <div class="search-input-wrapper">
-                <div class="search-input-group">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" id="exploreSearchInput" class="form-control-linguify search-input" 
-                           placeholder="Rechercher des decks par titre, description, tags..." 
-                           autocomplete="off">
-                    <div class="search-actions">
-                        <button id="notificationBtn" class="btn-link-linguify notification-btn" title="Notifications">
-                            <i class="bi bi-bell notification-icon"></i>
-                            <span id="notificationBadge" class="notification-badge-linguify">5</span>
+        <!-- Advanced Search Bar - Interface modernisée -->
+        <div class="modern-search-container">
+            <div class="search-header-enhanced">
+                <div class="search-title-group">
+                    <h4 class="search-title">Découvrez des milliers de decks</h4>
+                    <p class="search-subtitle">Plus de <span class="highlight-number" id="totalDecksDisplay">---</span> decks créés par la communauté</p>
+                </div>
+                <div class="view-mode-selector">
+                    <button class="view-mode-btn active" data-view="grid" title="Vue grille">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                    </button>
+                    <button class="view-mode-btn" data-view="list" title="Vue liste">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+                    <button class="view-mode-btn" data-view="compact" title="Vue compacte">
+                        <i class="bi bi-layout-three-columns"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-input-wrapper-enhanced">
+                <div class="search-main-container">
+                    <div class="search-input-group-modern">
+                        <div class="search-icon-container">
+                            <i class="bi bi-search search-icon-main"></i>
+                        </div>
+                        <input type="text" id="exploreSearchInput" class="search-input-modern" 
+                               placeholder="Rechercher par titre, sujet, créateur..." 
+                               autocomplete="off">
+                        <div class="search-actions-modern">
+                            <button id="voiceSearchBtn" class="search-action-btn voice-search" title="Recherche vocale">
+                                <i class="bi bi-mic"></i>
+                                <span class="action-text">Vocal</span>
+                            </button>
+                            <button id="aiSearchBtn" class="search-action-btn ai-search" title="Recherche intelligente">
+                                <i class="bi bi-stars"></i>
+                                <span class="action-text">IA</span>
+                            </button>
+                            <button id="advancedSearchToggle" class="search-action-btn advanced-toggle" title="Options avancées">
+                                <i class="bi bi-sliders"></i>
+                                <span class="action-text">Filtres</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="search-secondary-actions">
+                        <button id="sidebarToggle" class="secondary-action-btn sidebar-toggle" title="Panneau latéral">
+                            <i class="bi bi-layout-sidebar"></i>
+                            <span>Panneau</span>
                         </button>
-                        <button id="voiceSearchBtn" class="btn-link-linguify search-voice" title="Recherche vocale">
-                            <i class="bi bi-mic"></i>
+                        <button id="notificationBtn" class="secondary-action-btn notification-toggle" title="Notifications">
+                            <i class="bi bi-bell"></i>
+                            <span class="notification-badge-modern" id="notificationBadge">3</span>
                         </button>
-                        <button id="sidebarToggle" class="btn-link-linguify search-sidebar" title="Filtres et collections">
-                            <i class="bi bi-funnel"></i>
-                        </button>
-                        <button id="advancedSearchToggle" class="btn-link-linguify search-advanced" title="Recherche avancée">
-                            <i class="bi bi-sliders"></i>
+                        <button id="savedSearchBtn" class="secondary-action-btn saved-search" title="Recherches sauvegardées">
+                            <i class="bi bi-bookmark"></i>
+                            <span>Sauvegardées</span>
                         </button>
                     </div>
                 </div>
                 
-                <!-- Auto-completion dropdown -->
-                <div id="searchSuggestions" class="search-suggestions" style="display: none;">
-                    <!-- Will be filled by JavaScript -->
+                <!-- Auto-completion intelligente -->
+                <div id="searchSuggestions" class="search-suggestions-modern" style="display: none;">
+                    <div class="suggestions-header">
+                        <span class="suggestions-title">Suggestions</span>
+                        <button class="close-suggestions">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                    <div class="suggestions-content">
+                        <!-- Suggestions récentes -->
+                        <div class="suggestion-section">
+                            <div class="section-label">
+                                <i class="bi bi-clock-history"></i>
+                                <span>Recherches récentes</span>
+                            </div>
+                            <div class="suggestion-items" id="recentSearches">
+                                <!-- Sera rempli dynamiquement -->
+                            </div>
+                        </div>
+                        
+                        <!-- Suggestions populaires -->
+                        <div class="suggestion-section">
+                            <div class="section-label">
+                                <i class="bi bi-fire"></i>
+                                <span>Recherches populaires</span>
+                            </div>
+                            <div class="suggestion-items" id="popularSearches">
+                                <div class="suggestion-item popular">
+                                    <div class="suggestion-content">
+                                        <span class="suggestion-text">Vocabulaire anglais</span>
+                                        <span class="suggestion-count">2.1k résultats</span>
+                                    </div>
+                                    <i class="bi bi-arrow-up-right"></i>
+                                </div>
+                                <div class="suggestion-item popular">
+                                    <div class="suggestion-content">
+                                        <span class="suggestion-text">Grammaire française</span>
+                                        <span class="suggestion-count">1.8k résultats</span>
+                                    </div>
+                                    <i class="bi bi-arrow-up-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Smart suggestions -->
+                        <div class="suggestion-section" id="smartSuggestions" style="display: none;">
+                            <div class="section-label">
+                                <i class="bi bi-stars"></i>
+                                <span>Suggestions intelligentes</span>
+                            </div>
+                            <div class="suggestion-items" id="aiSuggestions">
+                                <!-- IA suggestions basées sur le contexte -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Notification Center -->
@@ -407,17 +695,48 @@
                 </div>
             </div>
             
-            <!-- Quick filters chips -->
-            <div class="quick-filters" id="quickFilters">
-                <div class="filter-chip" data-filter="category" data-value="languages">
-                    🌐 Langues
-                    <i class="bi bi-x-circle filter-remove"></i>
+            <!-- Filtres actifs modernisés -->
+            <div class="active-filters-display" id="activeFiltersDisplay" style="display: none;">
+                <div class="filters-header">
+                    <span class="filters-label">
+                        <i class="bi bi-funnel"></i>
+                        Filtres actifs
+                    </span>
+                    <button class="clear-all-filters" id="clearAllActiveFilters">
+                        <i class="bi bi-x-circle"></i>
+                        Tout effacer
+                    </button>
                 </div>
-                <div class="filter-chip" data-filter="level" data-value="beginner">
-                    🟢 Débutant
-                    <i class="bi bi-x-circle filter-remove"></i>
+                <div class="active-filters-list" id="activeFiltersList">
+                    <!-- Les filtres actifs apparaîtront ici dynamiquement -->
                 </div>
-                <!-- More chips will be added dynamically -->
+            </div>
+            
+            <!-- Suggestions de recherche rapide -->
+            <div class="quick-search-suggestions" id="quickSearchSuggestions">
+                <div class="quick-suggestions-label">Recherches rapides :</div>
+                <div class="quick-suggestions-list">
+                    <button class="quick-suggestion" data-search="vocabulaire anglais">
+                        <i class="bi bi-globe2"></i>
+                        <span>Vocabulaire anglais</span>
+                    </button>
+                    <button class="quick-suggestion" data-search="mathématiques lycée">
+                        <i class="bi bi-calculator"></i>
+                        <span>Maths lycée</span>
+                    </button>
+                    <button class="quick-suggestion" data-search="histoire france">
+                        <i class="bi bi-book"></i>
+                        <span>Histoire de France</span>
+                    </button>
+                    <button class="quick-suggestion" data-search="sciences physiques">
+                        <i class="bi bi-atom"></i>
+                        <span>Sciences physiques</span>
+                    </button>
+                    <button class="quick-suggestion" data-search="informatique">
+                        <i class="bi bi-laptop"></i>
+                        <span>Informatique</span>
+                    </button>
+                </div>
             </div>
             
             <!-- Search history dropdown -->
@@ -434,42 +753,61 @@
             </div>
         </div>
         
-        <div class="study-header">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <div>
-                    <h5 class="mb-0">Decks publics</h5>
-                    <small class="text-muted">
-                        <span id="resultsCount">0</span> deck(s) trouvé(s)
-                    </small>
+        <!-- Header des résultats modernisé -->
+        <div class="results-header-modern">
+            <div class="results-info-section">
+                <div class="results-title-group">
+                    <h3 class="results-title">Résultats de recherche</h3>
+                    <div class="results-count-display">
+                        <span class="count-number" id="resultsCount">0</span>
+                        <span class="count-text">deck(s) trouvé(s)</span>
+                        <div class="search-time" id="searchTime" style="display: none;">
+                            en <span class="time-value">0.2s</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-query-display" id="currentQuery" style="display: none;">
+                    Recherche pour : <strong id="queryText"></strong>
+                    <button class="modify-search" id="modifySearch">
+                        <i class="bi bi-pencil"></i>
+                        Modifier
+                    </button>
+                </div>
+            </div>
+            
+            <div class="results-controls-section">
+                <!-- Contrôles de tri améliorés -->
+                <div class="sort-controls">
+                    <label class="sort-label">
+                        <i class="bi bi-sort-down"></i>
+                        Trier par :
+                    </label>
+                    <div class="sort-dropdown">
+                        <select id="sortBy" class="modern-sort-select">
+                            <option value="relevance" data-icon="bi-stars">🎯 Pertinence</option>
+                            <option value="popularity" data-icon="bi-fire">🔥 Popularité</option>
+                            <option value="rating" data-icon="bi-star-fill">⭐ Mieux notés</option>
+                            <option value="created_at" data-icon="bi-clock">🆕 Plus récents</option>
+                            <option value="name" data-icon="bi-alphabetical">📝 Alphabétique</option>
+                            <option value="cards_count" data-icon="bi-stack">📚 Nb. de cartes</option>
+                            <option value="downloads" data-icon="bi-download">⬇️ Plus téléchargés</option>
+                        </select>
+                    </div>
+                    <button class="sort-order-toggle" id="sortOrder" title="Ordre croissant/décroissant">
+                        <i class="bi bi-sort-up"></i>
+                    </button>
                 </div>
                 
-                <!-- Options de tri et vue -->
-                <div class="d-flex align-items-center gap-2">
-                    <!-- Vue -->
-                    <div class="btn-group-linguify btn-group-sm" role="group" aria-label="Vue">
-                        <input type="radio" class="btn-check" name="viewMode" id="gridView" autocomplete="off" checked>
-                        <label class="btn-linguify-secondary" for="gridView" title="Vue grille">
-                            <i class="bi bi-grid"></i>
-                        </label>
-                        <input type="radio" class="btn-check" name="viewMode" id="listView" autocomplete="off">
-                        <label class="btn-linguify-secondary" for="listView" title="Vue liste">
-                            <i class="bi bi-list"></i>
-                        </label>
-                    </div>
-                    
-                    <!-- Tri -->
-                    <select id="sortBy" class="form-select-linguify form-select-sm" style="width: auto;">
-                        <option value="created_at">➡️ Plus récents</option>
-                        <option value="name">📝 A-Z</option>
-                        <option value="popularity">🔥 Popularité</option>
-                        <option value="rating">⭐ Mieux notés</option>
-                        <option value="cards_count">📚 Plus de cartes</option>
-                        <option value="downloads">⬇️ Plus téléchargés</option>
-                    </select>
-                    
-                    <button id="backToWelcome" class="btn-linguify-secondary btn-sm">
-                        <i class="bi bi-arrow-left"></i>
-                        Retour
+                <!-- Actions rapides -->
+                <div class="results-actions">
+                    <button class="action-btn save-search" id="saveCurrentSearch" title="Sauvegarder cette recherche">
+                        <i class="bi bi-bookmark-plus"></i>
+                    </button>
+                    <button class="action-btn export-results" id="exportResults" title="Exporter les résultats">
+                        <i class="bi bi-download"></i>
+                    </button>
+                    <button class="action-btn refresh-results" id="refreshResults" title="Actualiser">
+                        <i class="bi bi-arrow-clockwise"></i>
                     </button>
                 </div>
             </div>
@@ -484,25 +822,131 @@
                 <p class="mt-3 text-muted">Recherche en cours...</p>
             </div>
             
-            <!-- Grille des decks -->
-            <div id="publicDecksGrid" class="row g-4 p-4">
-                <!-- Sera rempli par JavaScript -->
+            <!-- Grille des decks avec loading states -->
+            <div class="decks-display-container">
+                <!-- Loading skeleton -->
+                <div id="loadingDecks" class="loading-skeleton-grid" style="display: none;">
+                    <div class="skeleton-card" v-for="i in 6">
+                        <div class="skeleton-header"></div>
+                        <div class="skeleton-content">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                        <div class="skeleton-footer"></div>
+                    </div>
+                </div>
+                
+                <!-- Grille principale -->
+                <div id="publicDecksGrid" class="decks-grid-modern" data-view="grid">
+                    <!-- Les cartes seront générées dynamiquement -->
+                </div>
+                
+                <!-- Vue liste alternative -->
+                <div id="publicDecksList" class="decks-list-modern" data-view="list" style="display: none;">
+                    <!-- Vue liste des decks -->
+                </div>
+                
+                <!-- Vue compacte -->
+                <div id="publicDecksCompact" class="decks-compact-modern" data-view="compact" style="display: none;">
+                    <!-- Vue compacte des decks -->
+                </div>
             </div>
             
-            <!-- Aucun résultat -->
-            <div id="noResults" class="text-center p-5" style="display: none;">
-                <i class="bi bi-search text-muted mb-4" style="font-size: 4rem;"></i>
-                <h4 class="text-muted">Aucun deck trouvé</h4>
-                <p class="text-muted">Essayez d'ajuster vos critères de recherche.</p>
-                <button id="clearSearch" class="btn-linguify-secondary">
-                    <i class="bi bi-arrow-clockwise me-1"></i>
-                    Effacer la recherche
-                </button>
+            <!-- États vides améliorés -->
+            <div id="noResults" class="no-results-modern" style="display: none;">
+                <div class="no-results-content">
+                    <div class="no-results-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h3 class="no-results-title">Aucun deck trouvé</h3>
+                    <p class="no-results-description">
+                        Nous n'avons trouvé aucun deck correspondant à vos critères.
+                    </p>
+                    
+                    <div class="no-results-suggestions">
+                        <div class="suggestions-title">Suggestions :</div>
+                        <ul class="suggestions-list">
+                            <li>Vérifiez l'orthographe de vos mots-clés</li>
+                            <li>Utilisez des termes plus généraux</li>
+                            <li>Réduisez le nombre de filtres actifs</li>
+                            <li>Essayez une recherche dans une autre langue</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="no-results-actions">
+                        <button id="clearSearch" class="clear-search-btn">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                            <span>Effacer la recherche</span>
+                        </button>
+                        <button id="browsePopular" class="browse-popular-btn">
+                            <i class="bi bi-fire"></i>
+                            <span>Parcourir les populaires</span>
+                        </button>
+                        <button id="createDeck" class="create-deck-btn">
+                            <i class="bi bi-plus-circle"></i>
+                            <span>Créer votre propre deck</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Decks suggérés en cas de recherche vide -->
+                <div class="suggested-decks" id="suggestedDecks">
+                    <h4>Vous pourriez aimer :</h4>
+                    <div class="suggested-decks-grid">
+                        <!-- Suggestions basées sur les tendances -->
+                    </div>
+                </div>
             </div>
             
-            <!-- Pagination -->
-            <div id="explorePagination" class="d-flex justify-content-center mt-4">
-                <!-- Sera rempli par JavaScript -->
+            <!-- Pagination modernisée -->
+            <div id="explorePagination" class="pagination-container-modern">
+                <div class="pagination-info">
+                    <span class="showing-text">Affichage de</span>
+                    <span class="range-start">1</span>-<span class="range-end">20</span>
+                    <span class="total-text">sur</span>
+                    <span class="total-results">156</span>
+                    <span class="results-text">résultats</span>
+                </div>
+                <div class="pagination-controls">
+                    <!-- Navigation par pages -->
+                    <nav class="pagination-nav">
+                        <button class="page-btn prev" disabled>
+                            <i class="bi bi-chevron-left"></i>
+                            <span>Précédent</span>
+                        </button>
+                        <div class="page-numbers">
+                            <button class="page-number active">1</button>
+                            <button class="page-number">2</button>
+                            <button class="page-number">3</button>
+                            <span class="page-separator">...</span>
+                            <button class="page-number">8</button>
+                        </div>
+                        <button class="page-btn next">
+                            <span>Suivant</span>
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </nav>
+                    
+                    <!-- Options d'affichage -->
+                    <div class="results-per-page">
+                        <label>Résultats par page :</label>
+                        <select id="resultsPerPage">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Scroll infini toggle -->
+                <div class="infinite-scroll-toggle">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="infiniteScroll">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">Défilement infini</span>
+                </div>
             </div>
         </div>
     </div>
@@ -1042,7 +1486,7 @@
                 </button>
             </div>
         </div>
-    </div>
+    </div> <!-- End flex container -->
 </div>
 
 <!-- Sidebar Overlay -->
@@ -1059,7 +1503,7 @@
 <script src="{% static 'revision/js/explorer/main.js' %}?v=20250111-optimized"></script>
 
 <!-- 3. Page-specific functionality (Notifications, UI interactions) -->
-<script src="{% static 'revision/js/explorer/explore_new.js' %}?v=20250823"></script>
+<script src="{% static 'revision/js/explorer/explore.js' %}?v=20250823"></script>
 
 <!-- 4. Development tools -->
 {% if debug or request.GET.test %}
