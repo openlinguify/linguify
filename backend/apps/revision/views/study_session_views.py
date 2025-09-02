@@ -14,7 +14,7 @@ import json
 import logging
 
 from ..models.revision_flashcard import FlashcardDeck, Flashcard
-from .mixin import SpacedRepetitionMixin
+from .spaced_repetition_views import SpacedRepetitionMixin
 
 logger = logging.getLogger(__name__)
 

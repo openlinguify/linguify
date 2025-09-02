@@ -4,7 +4,9 @@
 from .flashcard_views import (
     FlashcardDeckViewSet, 
     FlashcardViewSet, 
-    FlashcardImportView,
+    FlashcardImportView
+    )
+from .explorer_views import (
     PublicDecksViewSet
     )
 from .session_views import (
