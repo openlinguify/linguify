@@ -8,11 +8,12 @@ from .views import (
     FlashcardDeckViewSet, 
     FlashcardViewSet, 
     FlashcardImportView,
-    PublicDecksViewSet,
     RevisionSessionViewSet, 
     VocabularyWordViewSet, 
     VocabularyListViewSet
 )
+# Import exploration views - migrated to explorer_views.py
+from .views.explorer_views import PublicDecksViewSet
 from .views.flashcard_views import TagsAPIView, WordStatsAPIView
 from .views.revision_settings_views import (
     get_user_revision_settings,

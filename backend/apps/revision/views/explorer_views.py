@@ -16,10 +16,118 @@ from django.utils import timezone
 from datetime import timedelta
 import json
 from typing import Dict, Any, List
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import filters
+from rest_framework.pagination import PageNumberPagination
 
 from ..models.revision_flashcard import FlashcardDeck, Flashcard
 from ..models.revision_schedule import RevisionSession
 from apps.authentication.models import User
+from django.core.exceptions import ValidationError, ObjectDoesNotExist, PermissionDenied
+from django.db import IntegrityError, OperationalError
+from rest_framework import status
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class DeckPagination(PageNumberPagination):
+    """Pagination pour l'exploration des decks publics."""
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+# ===== MIXINS POUR L'EXPLORATION =====
+
+class DeckCloneMixin:
+    """Mixin pour la fonctionnalité de clonage des decks publics dans l'exploration."""
+    
+    def clone_deck(self, source_deck, request):
+        """
+        Méthode commune pour cloner un deck public.
+        """
+        # Vérifier que le deck est public ou appartient à l'utilisateur
+        if not source_deck.is_public and source_deck.user != request.user:
+            return JsonResponse(
+                {"detail": "You can only clone public decks or your own decks"},
+                status=403
+            )
+        
+        # Ne pas permettre de cloner un deck archivé, sauf s'il appartient à l'utilisateur
+        if source_deck.is_archived and source_deck.user != request.user:
+            return JsonResponse(
+                {"detail": "You cannot clone an archived deck from another user"},
+                status=400
+            )
+        
+        try:
+            # Récupérer le nom personnalisé depuis la requête POST
+            custom_name = request.POST.get('deck_name', '').strip()
+            
+            # Créer un nouveau deck pour l'utilisateur
+            new_deck = FlashcardDeck.objects.create(
+                user=request.user,
+                name=custom_name if custom_name else f"Clone of {source_deck.name}",
+                description=f"Cloned from {source_deck.user.username}'s deck: {source_deck.description}",
+                is_public=False,  # Par défaut, les clones sont privés
+                is_archived=False # Les clones ne sont jamais archivés
+            )
+            
+            # Copier toutes les cartes
+            cards_created = 0
+            for card in source_deck.flashcards.all():
+                Flashcard.objects.create(
+                    user=request.user,
+                    deck=new_deck,
+                    question=card.question,
+                    answer=card.answer,
+                    category=card.category,
+                    difficulty=card.difficulty,
+                    notes=card.notes,
+                    learned=False,  # Réinitialiser l'état d'apprentissage
+                    review_count=0  # Réinitialiser les stats d'apprentissage
+                )
+                cards_created += 1
+            
+            # Retourner les informations sur le nouveau deck pour HTMX
+            return JsonResponse({
+                "success": True,
+                "message": f"Successfully cloned '{source_deck.name}' with {cards_created} cards",
+                "deck": {
+                    "id": new_deck.id,
+                    "name": new_deck.name,
+                    "cards_count": cards_created
+                }
+            })
+            
+        except ValidationError as e:
+            logger.error(f"Validation error cloning deck {source_deck.id}: {str(e)}")
+            return JsonResponse(
+                {"detail": f"Validation failed: {str(e)}"},
+                status=400
+            )
+        except IntegrityError as e:
+            logger.error(f"Database integrity error cloning deck {source_deck.id}: {str(e)}")
+            return JsonResponse(
+                {"detail": "Database integrity error - this deck might already exist"},
+                status=409
+            )
+        except PermissionDenied as e:
+            logger.error(f"Permission denied cloning deck {source_deck.id}: {str(e)}")
+            return JsonResponse(
+                {"detail": "Permission denied"},
+                status=403
+            )
+        except Exception as e:
+            logger.exception(f"Unexpected error cloning deck {source_deck.id}")
+            return JsonResponse(
+                {"detail": "An unexpected error occurred. Please contact support."},
+                status=500
+            )
 
 
 class ExploreBaseView(View):
@@ -119,24 +227,30 @@ class SearchDecksView(ExploreBaseView):
             downloads_count=Count('revision_sessions__user', distinct=True)
         ).select_related('user')
         
-        # Tri
+        # Tri optimisé pour l'exploration
         if sort_by == 'popularity':
             order_field = 'downloads_count'
         elif sort_by == 'rating':
-            order_field = 'avg_rating'
+            order_field = 'avg_rating'  
         elif sort_by == 'created_at':
             order_field = 'created_at'
         elif sort_by == 'name':
             order_field = 'name'
         elif sort_by == 'cards_count':
             order_field = 'cards_count'
-        else:  # relevance par défaut
-            order_field = 'created_at'
+        else:  # relevance par défaut - utiliser popularité
+            # Pour l'exploration, on privilégie les decks avec plus de cartes
+            order_field = 'cards_count'
         
         if sort_order == 'asc':
             decks = decks.order_by(order_field)
         else:
             decks = decks.order_by(f'-{order_field}')
+        
+        # Optimisation spéciale pour l'exploration : prioriser les decks actifs et bien remplis
+        if sort_by == 'relevance' or not sort_by:
+            # Filtrer les decks avec au moins 5 cartes pour la pertinence
+            decks = decks.filter(cards_count__gte=5)
         
         # Pagination
         paginator = Paginator(decks, per_page)
@@ -206,58 +320,52 @@ class DeckDetailsView(ExploreBaseView):
         return render(request, 'revision/explore/partials/deck_details.html', context)
 
 
+class ImportDeckView(DeckCloneMixin, View):
+    """Vue HTMX pour importer un deck public utilisant le mixin de clonage"""
+    
+    @method_decorator(login_required)
+    def post(self, request, deck_id):
+        """Import d'un deck public via HTMX"""
+        source_deck = get_object_or_404(FlashcardDeck, id=deck_id, is_public=True)
+        
+        # Utiliser le mixin pour cloner le deck
+        clone_result = self.clone_deck(source_deck, request)
+        
+        # Si c'est un JsonResponse d'erreur, on la convertit en HttpResponse pour HTMX
+        if hasattr(clone_result, 'status_code') and clone_result.status_code != 200:
+            response = HttpResponse()
+            response['HX-Trigger'] = json.dumps({
+                'showToast': {
+                    'type': 'error',
+                    'message': json.loads(clone_result.content)['detail']
+                }
+            })
+            return response
+        
+        # Succès - extraire les données et créer la réponse HTMX
+        clone_data = json.loads(clone_result.content)
+        response = HttpResponse()
+        response['HX-Trigger'] = json.dumps({
+            'deckImported': {
+                'deck_id': clone_data['deck']['id'],
+                'deck_name': clone_data['deck']['name'],
+                'cards_count': clone_data['deck']['cards_count']
+            },
+            'showToast': {
+                'type': 'success',
+                'message': clone_data['message']
+            }
+        })
+        
+        return response
+
+# Vue fonction wrapper pour compatibilité URLs
 @require_http_methods(["POST"])
-@login_required
+@login_required  
 def import_deck_view(request, deck_id):
-    """Vue HTMX pour importer un deck public"""
-    
-    source_deck = get_object_or_404(FlashcardDeck, id=deck_id, is_public=True)
-    custom_name = request.POST.get('deck_name', '').strip()
-    
-    # Nom du nouveau deck
-    if custom_name:
-        new_name = custom_name
-    else:
-        new_name = f"{source_deck.name} (Copie)"
-    
-    # Création du deck copié
-    new_deck = FlashcardDeck.objects.create(
-        user=request.user,
-        name=new_name,
-        description=source_deck.description,
-        category=source_deck.category,
-        language=source_deck.language,
-        level=source_deck.level,
-        is_public=False,  # Copie privée par défaut
-        original_deck_id=source_deck.id  # Référence au deck original
-    )
-    
-    # Copie des flashcards
-    for card in source_deck.flashcards.all():
-        Flashcard.objects.create(
-            deck=new_deck,
-            question=card.question,
-            answer=card.answer,
-            category=card.category,
-            difficulty=card.difficulty,
-            notes=card.notes
-        )
-    
-    # Réponse HTMX
-    response = HttpResponse()
-    response['HX-Trigger'] = json.dumps({
-        'deckImported': {
-            'deck_id': new_deck.id,
-            'deck_name': new_name,
-            'cards_count': new_deck.flashcards.count()
-        },
-        'showToast': {
-            'type': 'success',
-            'message': f'Deck "{new_name}" importé avec succès!'
-        }
-    })
-    
-    return response
+    """Wrapper fonction pour ImportDeckView"""
+    view = ImportDeckView()
+    return view.post(request, deck_id)
 
 
 class FilterOptionsView(ExploreBaseView):
@@ -362,6 +470,235 @@ class TrendingDecksView(ExploreBaseView):
         })
         
         return render(request, 'revision/explore/partials/trending_decks.html', context)
+
+
+class PopularDecksView(ExploreBaseView):
+    """Vue HTMX pour les decks publics populaires - optimisée exploration"""
+    
+    def get(self, request):
+        limit = int(request.GET.get('limit', 10))
+        category = request.GET.get('category', '')
+        
+        # Requête optimisée pour les decks populaires
+        queryset = FlashcardDeck.objects.filter(
+            is_public=True,
+            is_archived=False,
+        ).select_related('user').annotate(
+            cards_count=Count('flashcards'),
+            sessions_count=Count('revision_sessions', distinct=True),
+            # Score de popularité composite
+            popularity_score=F('cards_count') + F('sessions_count') * 2
+        )
+        
+        # Filtre par catégorie si spécifié
+        if category and category != 'all':
+            queryset = queryset.filter(category=category)
+        
+        # Filtrer les decks avec au moins 3 cartes
+        queryset = queryset.filter(cards_count__gte=3)
+        
+        # Trier par score de popularité
+        popular_decks = queryset.order_by('-popularity_score', '-cards_count')[:limit]
+        
+        context = self.get_base_context(request)
+        context.update({
+            'decks': popular_decks,
+            'category': category,
+            'limit': limit,
+        })
+        
+        return render(request, 'revision/explore/partials/popular_decks.html', context)
+
+
+class PublicDecksViewSet(DeckCloneMixin, viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet API pour explorer les decks publics.
+    En lecture seule, ne permet pas de modification.
+    Migré depuis flashcard_views.py pour centraliser la logique d'exploration.
+    """
+    permission_classes = [AllowAny]
+    pagination_class = DeckPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description', 'user__username']
+    ordering_fields = ['created_at', 'name', 'user__username']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        """Ne retourne que les decks publics actifs et non archivés."""
+        queryset = FlashcardDeck.objects.filter(
+            is_public=True,
+            is_active=True,
+            is_archived=False
+        ).select_related('user').prefetch_related('flashcards').annotate(
+            cards_count=Count('flashcards'),
+            learned_count=Count('flashcards', filter=Q(flashcards__learned=True))
+        )
+        
+        # Filtres supplémentaires
+        username = self.request.query_params.get('username')
+        author = self.request.query_params.get('author')
+        search = self.request.query_params.get('search')
+        min_cards = self.request.query_params.get('minCards')
+        max_cards = self.request.query_params.get('maxCards')
+            
+        # Filtrer par nom d'utilisateur si spécifié
+        if username:
+            queryset = queryset.filter(user__username__icontains=username)
+            
+        # Filtrer par auteur (alternative pour username)
+        if author:
+            queryset = queryset.filter(user__username__icontains=author)
+
+        # Recherche textuelle
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | 
+                Q(description__icontains=search) | 
+                Q(user__username__icontains=search)
+            ).distinct()
+
+        # Filtrer par nombre de cartes
+        if min_cards:
+            try:
+                min_cards = int(min_cards)
+                queryset = queryset.filter(cards_count__gte=min_cards)
+            except ValueError:
+                pass
+                
+        if max_cards:
+            try:
+                max_cards = int(max_cards)
+                queryset = queryset.filter(cards_count__lte=max_cards)
+            except ValueError:
+                pass
+
+        # Tri par popularité si demandé
+        sort_by = self.request.query_params.get('sort_by') or self.request.query_params.get('sortBy')
+        if sort_by == 'popularity':
+            queryset = queryset.order_by('-cards_count')
+        elif sort_by == 'cards_count':
+            queryset = queryset.order_by('-cards_count')
+        elif sort_by == 'name':
+            queryset = queryset.order_by('name')
+                
+        return queryset
+
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Récupérer les statistiques des decks publics."""
+        try:
+            public_decks = FlashcardDeck.objects.filter(
+                is_public=True,
+                is_active=True,
+                is_archived=False
+            ).select_related('user').prefetch_related('flashcards')
+            
+            total_decks = public_decks.count()
+            total_cards = sum(deck.flashcards.count() for deck in public_decks)
+            total_authors = public_decks.values('user').distinct().count()
+            
+            stats = {
+                'totalDecks': total_decks,
+                'totalCards': total_cards,
+                'totalAuthors': total_authors
+            }
+            
+            return Response(stats)
+            
+        except Exception as e:
+            logger.error(f"Error fetching public decks stats: {str(e)}")
+            return Response(
+                {"detail": f"Failed to fetch stats: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @action(detail=True, methods=['get'])
+    def cards(self, request, pk=None):
+        """Récupérer toutes les cartes d'un deck public spécifique."""
+        try:
+            deck = self.get_object()
+            
+            # Vérifier que le deck est bien public
+            if not deck.is_public:
+                return Response(
+                    {"detail": "This deck is not public."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+                
+            # Ne pas permettre de voir les cartes d'un deck archivé
+            if deck.is_archived:
+                return Response(
+                    {"detail": "This deck is archived and not available for viewing"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            cards = deck.flashcards.all().order_by('-created_at')
+            # Note: Nous utiliserions FlashcardSerializer ici, mais nous gardons la logique simple
+            # pour éviter les dépendances circulaires dans cette migration
+            cards_data = [{
+                'id': card.id,
+                'front': card.front,
+                'back': card.back,
+                'learned': card.learned,
+                'created_at': card.created_at.isoformat() if card.created_at else None
+            } for card in cards]
+            
+            return Response(cards_data)
+            
+        except Exception as e:
+            logger.error(f"Error fetching cards for public deck {pk}: {str(e)}")
+            return Response(
+                {"detail": f"Failed to fetch cards: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def clone(self, request, pk=None):
+        """
+        Action pour cloner un deck public d'un autre utilisateur.
+        Utilise le mixin DeckCloneMixin pour la logique de clonage.
+        """
+        source_deck = self.get_object()
+        return self.clone_deck(source_deck, request)
+
+    @action(detail=False, methods=['get'])
+    def popular(self, request):
+        """
+        Liste les decks publics les plus populaires.
+        """
+        queryset = self.get_queryset().annotate(
+            card_count=Count('flashcards')
+        ).order_by('-card_count')
+        
+        # Limiter le nombre de résultats
+        limit = int(request.query_params.get('limit', 10))
+        queryset = queryset[:limit]
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            # Utilisation d'une sérialisation simple pour éviter les dépendances
+            data = self._serialize_decks_simple(page)
+            return self.get_paginated_response(data)
+            
+        data = self._serialize_decks_simple(queryset)
+        return Response(data)
+
+    def _serialize_decks_simple(self, decks):
+        """Sérialisation simple des decks pour éviter les dépendances circulaires."""
+        return [{
+            'id': deck.id,
+            'name': deck.name,
+            'description': deck.description,
+            'cards_count': getattr(deck, 'cards_count', deck.flashcards.count()),
+            'learned_count': getattr(deck, 'learned_count', 0),
+            'user': {
+                'username': deck.user.username,
+                'id': deck.user.id
+            },
+            'created_at': deck.created_at.isoformat() if deck.created_at else None,
+            'is_public': deck.is_public,
+            'is_archived': deck.is_archived
+        } for deck in decks]
 
 
 class SearchSuggestionsView(ExploreBaseView):

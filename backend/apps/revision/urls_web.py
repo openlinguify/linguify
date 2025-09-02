@@ -20,6 +20,7 @@ from .views.explorer_views import (
     FilterOptionsView,
     StatsView,
     TrendingDecksView,
+    PopularDecksView,
     SearchSuggestionsView,
     toggle_favorite_view,
     add_to_collection_view,
@@ -79,6 +80,7 @@ urlpatterns = [
     # Statistiques et tendances HTMX
     path('explore/stats/', StatsView.as_view(), name='explore_stats'),
     path('explore/trending/', TrendingDecksView.as_view(), name='explore_trending'),
+    path('explore/popular/', PopularDecksView.as_view(), name='explore_popular'),
     
     
     # ==========================================
