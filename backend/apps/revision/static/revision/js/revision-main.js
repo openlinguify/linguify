@@ -722,6 +722,23 @@ function hideImportForm() {
     const elements = getElements();
     elements.importDeckForm.style.display = 'none';
     
+    // Remettre les éléments du formulaire à leur état normal
+    if (elements.importDeckName) {
+        elements.importDeckName.readOnly = false;
+        elements.importDeckName.style.backgroundColor = '';
+        const formTitle = elements.importDeckForm.querySelector('h5');
+        if (formTitle) {
+            formTitle.textContent = 'Importer une liste de cartes';
+        }
+        if (elements.submitImport) {
+            elements.submitImport.textContent = 'Prévisualiser';
+        }
+    }
+    
+    // Réinitialiser les flags d'import dans deck existant
+    window.importToExistingDeck = false;
+    window.targetDeckId = null;
+    
     if (appState.selectedDeck) {
         elements.deckDetails.style.display = 'block';
     } else {
@@ -1287,7 +1304,10 @@ async function importNewDeck() {
         return;
     }
     
-    if (!name) {
+    // Vérifier si c'est un import dans un deck existant ou création d'un nouveau deck
+    const isImportToExisting = window.importToExistingDeck && window.targetDeckId;
+    
+    if (!isImportToExisting && !name) {
         window.notificationService.error('Nom d\'une liste requis !', 'Veuillez saisir un nom pour votre liste avant de continuer.');
         // Focus sur le champ nom pour aider l'utilisateur
         elements.importDeckName.focus();
@@ -1299,15 +1319,25 @@ async function importNewDeck() {
         importState.file = file;
         importState.deckName = name;
         
-        // First, create the deck
-        const deckData = {
-            name: name,
-            description: `Deck importé depuis ${file.name}`,
-            is_public: false
-        };
+        let targetDeck;
         
-        const newDeck = await revisionAPI.createDeck(deckData);
-        importState.tempDeck = newDeck;
+        if (isImportToExisting) {
+            // Import dans un deck existant
+            targetDeck = appState.selectedDeck;
+            importState.tempDeck = targetDeck;
+            console.log('🔄 Import de cartes dans le deck existant:', targetDeck.name);
+        } else {
+            // Création d'un nouveau deck
+            const deckData = {
+                name: name,
+                description: `Deck importé depuis ${file.name}`,
+                is_public: false
+            };
+            
+            targetDeck = await revisionAPI.createDeck(deckData);
+            importState.tempDeck = targetDeck;
+            console.log('✨ Nouveau deck créé pour l\'import:', targetDeck.name);
+        }
         
         // Then, get preview of the file
         const formData = new FormData();
@@ -1317,7 +1347,7 @@ async function importNewDeck() {
         formData.append('front_column', '0');
         formData.append('back_column', '1');
         
-        const previewResult = await revisionAPI.previewImport(newDeck.id, formData);
+        const previewResult = await revisionAPI.previewImport(targetDeck.id, formData);
         importState.previewData = previewResult.preview || [];
         importState.columns = previewResult.columns || [];
         
@@ -1910,7 +1940,13 @@ async function confirmImport() {
         
         const importResult = await revisionAPI.importDeck(importState.tempDeck.id, formData);
         
-        window.notificationService.success(`Import réussi ! ${importResult.cards_created} cartes créées`);
+        // Adapter le message selon le contexte
+        const isImportToExisting = window.importToExistingDeck && window.targetDeckId;
+        const message = isImportToExisting 
+            ? `${importResult.cards_created} cartes ajoutées au deck "${importState.tempDeck.name}" !`
+            : `Import réussi ! ${importResult.cards_created} cartes créées`;
+            
+        window.notificationService.success(message);
         
         // Reload decks and select the new one
         await loadDecks();
@@ -1924,6 +1960,10 @@ async function confirmImport() {
             columns: null,
             tempDeck: null
         };
+        
+        // Réinitialiser les flags d'import dans deck existant
+        window.importToExistingDeck = false;
+        window.targetDeckId = null;
         
     } catch (error) {
         console.error('Erreur lors de l\'import final:', error);
@@ -2300,6 +2340,60 @@ function showTagsEditor() {
     }, 500);
 }
 
+
+function showImportCardsForm() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    // Réutiliser le formulaire d'import existant mais pour import de cartes dans le deck actuel
+    hideAllSections();
+    
+    const elements = getElements();
+    elements.importDeckForm.style.display = 'block';
+    
+    // Clear form
+    elements.importFile.value = '';
+    // Pré-remplir le nom avec le deck actuel (en lecture seule)
+    elements.importDeckName.value = `${appState.selectedDeck.name} (ajout de cartes)`;
+    elements.importDeckName.readOnly = true;
+    elements.importDeckName.style.backgroundColor = '#f8f9fa';
+    
+    // Reset validation state
+    elements.importDeckName.classList.remove('is-valid', 'is-invalid');
+    elements.importDeckName.removeAttribute('data-user-interacted');
+    elements.importDeckName.style.borderColor = '#dee2e6';
+    elements.importDeckName.style.boxShadow = 'none';
+    
+    const errorElement = document.getElementById('deckNameError');
+    if (errorElement) {
+        errorElement.textContent = '';
+        errorElement.style.display = 'none';
+    }
+    
+    // Changer le titre du formulaire pour indiquer qu'on importe dans un deck existant
+    const formTitle = elements.importDeckForm.querySelector('h5');
+    if (formTitle) {
+        formTitle.textContent = `Importer des cartes dans "${appState.selectedDeck.name}"`;
+    }
+    
+    // Modifier le texte du bouton de soumission
+    if (elements.submitImport) {
+        elements.submitImport.textContent = 'Importer les cartes';
+    }
+    
+    // Stocker l'information que c'est un import de cartes dans un deck existant
+    window.importToExistingDeck = true;
+    window.targetDeckId = appState.selectedDeck.id;
+    
+    // Réinitialiser le drag & drop maintenant que le DOM est visible
+    setTimeout(() => {
+        console.log('🔧 Réinitialisation du drag & drop pour l\'import de cartes');
+        initializeDragAndDrop();
+        initializeRealTimeValidation();
+    }, 100);
+}
 
 async function exportDeck() {
     if (!appState.selectedDeck) {
@@ -3931,7 +4025,19 @@ function setupFilterDropdowns() {
             try {
                 const target = event.target;
                 if (target.classList.contains('dropdown-item')) {
-                    console.log('📊 Dropdown item clicked:', target.textContent.trim());
+                    const itemText = target.textContent.trim();
+                    console.log('📊 Dropdown item clicked:', itemText);
+                    
+                    // Gérer les actions spécifiques
+                    if (target.id === 'importCards' || itemText === 'Import Cards') {
+                        event.preventDefault();
+                        console.log('🔧 Calling showImportCardsForm()');
+                        if (typeof showImportCardsForm === 'function') {
+                            showImportCardsForm();
+                        } else {
+                            console.error('❌ showImportCardsForm function not found');
+                        }
+                    }
                 }
             } catch (error) {
                 console.warn('⚠️ Minor error in dropdown click handler:', error.message);
@@ -4335,6 +4441,8 @@ function setupEventListeners() {
     // Deck Management buttons
     document.getElementById('editDeck')?.addEventListener('click', showEditDeckForm);
     document.getElementById('exportDeck')?.addEventListener('click', exportDeck);
+    
+    // Import cards button - géré par le gestionnaire global des dropdown-item
     const shareButton = document.getElementById('shareDeck');
     if (shareButton) {
         shareButton.addEventListener('click', (e) => {
@@ -4717,6 +4825,7 @@ window.revisionMain = {
     showCreateForm,
     hideCreateForm,
     showImportForm,
+    showImportCardsForm,
     hideImportForm,
     showCreateCardForm,
     hideCreateCardForm,
