@@ -723,10 +723,12 @@
         // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
+            if (navbar) {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
             }
         });
 
@@ -889,7 +891,10 @@
             // Afficher notre prompt personnalisé après 5 secondes si pas installé
             if (!pwaInstalled) {
                 setTimeout(() => {
-                    document.getElementById('pwaInstallPrompt').classList.add('show');
+                    const prompt = document.getElementById('pwaInstallPrompt');
+                    if (prompt) {
+                        prompt.classList.add('show');
+                    }
                 }, 5000);
             }
         });
@@ -909,7 +914,10 @@
         }
 
         function dismissPWA() {
-            document.getElementById('pwaInstallPrompt').classList.remove('show');
+            const prompt = document.getElementById('pwaInstallPrompt');
+            if (prompt) {
+                prompt.classList.remove('show');
+            }
             localStorage.setItem('pwaDismissed', 'true');
         }
 

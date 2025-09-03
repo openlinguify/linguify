@@ -27,7 +27,7 @@
                                     <div>
                                         <h5 class="mb-1">{% trans "Email Support" %}</h5>
                                         <p class="mb-0 text-muted">{% trans "General inquiries and support" %}</p>
-                                        <a href="mailto:support@openlinguify.org" class="text-primary text-decoration-none">support@openlinguify.org</a>
+                                        <a href="mailto:info@openlinguify.com" class="text-primary text-decoration-none">info@openlinguify.com</a>
                                     </div>
                                 </div>
                             </div>
@@ -80,43 +80,55 @@
                         <div class="card-body p-4">
                             <h3 class="mb-4">{% trans "Send us a Message" %}</h3>
                             
-                            <form class="contact-form">
+                            {% if error %}
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    {{ error }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if success %}
+                                <div class="alert alert-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    {{ success }}
+                                </div>
+                            {% else %}
+                            
+                            <form class="contact-form" method="post">
+                                {% csrf_token %}
                                 <div class="mb-3">
                                     <label for="contact-name" class="form-label">{% trans "Name" %} <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="contact-name" required>
+                                    <input type="text" class="form-control" id="contact-name" name="name" value="{{ name|default:'' }}" required>
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="contact-email" class="form-label">{% trans "Email" %} <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" id="contact-email" required>
+                                    <input type="email" class="form-control" id="contact-email" name="email" value="{{ email|default:'' }}" required>
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="contact-subject" class="form-label">{% trans "Subject" %} <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="contact-subject" required>
+                                    <select class="form-select" id="contact-subject" name="subject" required>
                                         <option value="">{% trans "Select a topic" %}</option>
-                                        <option value="general">{% trans "General Inquiry" %}</option>
-                                        <option value="support">{% trans "Technical Support" %}</option>
-                                        <option value="partnership">{% trans "Partnership" %}</option>
-                                        <option value="feedback">{% trans "Feedback" %}</option>
-                                        <option value="other">{% trans "Other" %}</option>
+                                        <option value="general" {% if subject == 'general' %}selected{% endif %}>{% trans "General Inquiry" %}</option>
+                                        <option value="support" {% if subject == 'support' %}selected{% endif %}>{% trans "Technical Support" %}</option>
+                                        <option value="partnership" {% if subject == 'partnership' %}selected{% endif %}>{% trans "Partnership" %}</option>
+                                        <option value="feedback" {% if subject == 'feedback' %}selected{% endif %}>{% trans "Feedback" %}</option>
+                                        <option value="other" {% if subject == 'other' %}selected{% endif %}>{% trans "Other" %}</option>
                                     </select>
                                 </div>
                                 
                                 <div class="mb-4">
                                     <label for="contact-message" class="form-label">{% trans "Message" %} <span class="text-danger">*</span></label>
-                                    <textarea class="form-control" id="contact-message" rows="5" placeholder="{% trans 'Tell us more about your inquiry...' %}" required></textarea>
+                                    <textarea class="form-control" id="contact-message" name="message" rows="5" placeholder="{% trans 'Tell us more about your inquiry...' %}" required>{{ message|default:'' }}</textarea>
                                 </div>
                                 
-                                <div class="alert alert-info">
-                                    <i class="bi bi-info-circle me-2"></i>
-                                    {% trans "Contact form functionality coming soon! For now, please reach out via email at" %} 
-                                    <a href="mailto:support@openlinguify.org" class="alert-link">support@openlinguify.org</a>
-                                </div>
-                                
-                                <button type="button" class="btn btn-primary btn-lg w-100" disabled>
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
                                     <i class="bi bi-send me-2"></i>{% trans "Send Message" %}
                                 </button>
+                            </form>
+                            
+                            {% endif %}
                             </form>
                         </div>
                     </div>

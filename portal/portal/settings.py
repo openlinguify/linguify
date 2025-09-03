@@ -99,11 +99,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DB_NAME', default='db_linguify_portal'),
-            'USER': env('DB_USER', default='postgres'),
-            'PASSWORD': env('DB_PASSWORD', default='azerty'),
-            'HOST': env('DB_HOST', default='localhost'),
-            'PORT': env('DB_PORT', default='5432'),
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST'),
+            'PORT': env('DB_PORT'),
         }
     }
     print("📊 Using local PostgreSQL (Portal)")
@@ -177,8 +177,9 @@ LINGUIFY_PRODUCTS = {
 }
 
 # Email configuration
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@openlinguify.com')
-BUG_REPORT_EMAIL = env('BUG_REPORT_EMAIL', default='bugs@openlinguify.com')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+BUG_REPORT_EMAIL = env('BUG_REPORT_EMAIL')
+CONTACT_EMAIL = env('CONTACT_EMAIL')
 
 # Email backend for development/production
 if DEBUG:
