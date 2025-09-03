@@ -3323,3 +3323,60 @@ msgstr "Únete a miles de usuarios que han transformado su productividad con nue
 
 msgid "These features will be available soon. Stay tuned for the latest updates!"
 msgstr "¡Estas funciones estarán disponibles pronto. Mantente atento a las últimas actualizaciones!"
+
+msgid "Open Source Education Apps"
+msgstr "Aplicaciones Educativas Open Source"
+
+msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, to-do and much more."
+msgstr "Una suite completa de aplicaciones educativas open source: memorización, flashcards, toma de notas, tareas y mucho más."
+
+msgid "Choose your Linguify product:"
+msgstr "Elige tu producto Linguify:"
+
+msgid "For all students"
+msgstr "Para todos los estudiantes"
+
+msgid "Discover our apps"
+msgstr "Descubre nuestras aplicaciones"
+
+msgid "View Source Code"
+msgstr "Ver Código Fuente"
+
+msgid "Access all your apps from a unified dashboard"
+msgstr "Accede a todas tus aplicaciones desde un panel unificado"
+
+msgid "Educational Useful Apps for the students"
+msgstr "Aplicaciones Educativas Útiles para los estudiantes"
+
+msgid "Open Source"
+msgstr "Open Source"
+
+msgid "Our Educational Apps"
+msgstr "Nuestras Aplicaciones Educativas"
+
+msgid "Community"
+msgstr "Comunidad"
+
+msgid "Documents"
+msgstr "Documentos"
+
+msgid "Language AI"
+msgstr "IA de Idiomas"
+
+msgid "Productivity"
+msgstr "Productividad"
+
+msgid "Spaced Learning"
+msgstr "Aprendizaje Espaciado"
+
+msgid "Note Taking"
+msgstr "Toma de Notas"
+
+msgid "Structured Learning"
+msgstr "Aprendizaje Estructurado"
+
+msgid "Assessment"
+msgstr "Evaluación"
+
+msgid "Collaboration"
+msgstr "Colaboración"

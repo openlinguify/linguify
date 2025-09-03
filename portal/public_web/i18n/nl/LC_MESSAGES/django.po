@@ -3162,6 +3162,63 @@ msgstr "Sluit je aan bij duizenden gebruikers die hun productiviteit hebben getr
 msgid "These features will be available soon. Stay tuned for the latest updates!"
 msgstr "Deze functies zijn binnenkort beschikbaar. Blijf op de hoogte van de laatste updates!"
 
+msgid "Open Source Education Apps"
+msgstr "Open Source Educatieve Apps"
+
+msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, to-do and much more."
+msgstr "Een complete suite van open source educatieve apps: memorisatie, flashcards, notities maken, to-do en veel meer."
+
+msgid "Choose your Linguify product:"
+msgstr "Kies uw Linguify product:"
+
+msgid "For all students"
+msgstr "Voor alle studenten"
+
+msgid "Discover our apps"
+msgstr "Ontdek onze apps"
+
+msgid "View Source Code"
+msgstr "Bekijk Broncode"
+
+msgid "Access all your apps from a unified dashboard"
+msgstr "Toegang tot al uw apps vanuit een uniform dashboard"
+
+msgid "Educational Useful Apps for the students"
+msgstr "Educatieve Nuttige Apps voor de studenten"
+
+msgid "Open Source"
+msgstr "Open Source"
+
+msgid "Our Educational Apps"
+msgstr "Onze Educatieve Apps"
+
+msgid "Community"
+msgstr "Gemeenschap"
+
+msgid "Documents"
+msgstr "Documenten"
+
+msgid "Language AI"
+msgstr "Taal AI"
+
+msgid "Productivity"
+msgstr "Productiviteit"
+
+msgid "Spaced Learning"
+msgstr "Gespreide Leerprocessen"
+
+msgid "Note Taking"
+msgstr "Notities Maken"
+
+msgid "Structured Learning"
+msgstr "Gestructureerd Leren"
+
+msgid "Assessment"
+msgstr "Beoordeling"
+
+msgid "Collaboration"
+msgstr "Samenwerking"
+
 #~ msgid "Choose the offer that matches your goals and learning pace."
 #~ msgstr "Choose the offer that matches your goals and learning pace."
 
