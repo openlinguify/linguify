@@ -73,6 +73,9 @@ msgstr "Bedrijf"
 msgid "About"
 msgstr "Over"
 
+msgid "Requests"
+msgstr "Verzoeken"
+
 #: public_web/templates/components/public_footer.html:53
 msgid "Brand"
 msgstr "Merk"

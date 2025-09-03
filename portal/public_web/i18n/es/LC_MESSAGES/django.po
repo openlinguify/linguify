@@ -2136,6 +2136,9 @@ msgstr "Empresa"
 msgid "About"
 msgstr "Acerca de"
 
+msgid "Requests"
+msgstr "Solicitudes"
+
 #: public_web/templates/components/public_footer.html:53
 msgid "Brand"
 msgstr "Marca"

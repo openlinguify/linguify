@@ -42,6 +42,9 @@ msgstr "Contact"
 msgid "About"
 msgstr "À propos"
 
+msgid "Requests"
+msgstr "Demandes"
+
 msgid "Privacy"
 msgstr "Confidentialité"
 

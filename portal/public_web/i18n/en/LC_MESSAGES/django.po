@@ -67,6 +67,9 @@ msgstr "Company"
 msgid "About"
 msgstr "About"
 
+msgid "Requests"
+msgstr "Requests"
+
 #: public_web/templates/components/public_footer.html:53
 msgid "Brand"
 msgstr "Brand"
