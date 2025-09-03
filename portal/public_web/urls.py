@@ -16,7 +16,6 @@ urlpatterns = [
     path('features/', views.FeaturesView.as_view(), name='features'),
     path('about/', views.AboutView.as_view(), name='about'),
     path('contact/', views.ContactView.as_view(), name='contact'),
-    path('report-bug/', views.ReportBugView.as_view(), name='report_bug'),
     
     # SEO brand variations - all redirect to main landing
     path('openlinguify/', RedirectView.as_view(pattern_name='public_web:landing', permanent=True), name='openlinguify_redirect'),

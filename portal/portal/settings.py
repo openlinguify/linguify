@@ -178,7 +178,6 @@ LINGUIFY_PRODUCTS = {
 
 # Email configuration
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
-BUG_REPORT_EMAIL = env('BUG_REPORT_EMAIL')
 CONTACT_EMAIL = env('CONTACT_EMAIL')
 
 # Email backend for development/production
