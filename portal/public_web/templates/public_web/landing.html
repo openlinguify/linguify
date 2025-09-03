@@ -210,8 +210,8 @@
                                 <!-- Top Navigation Bar -->
                                 <div class="dashboard-nav-bar">
                                     <div class="nav-brand">
-                                        <div class="brand-logo">L</div>
-                                        <span class="brand-text">Linguify</span>
+                                        <div class="brand-logo">{% 'static' /images/favicon.ico %}</div>
+                                        <span class="brand-text">Open Linguify</span>
                                     </div>
                                     <div class="nav-user">
                                         <div class="user-avatar">
@@ -234,8 +234,8 @@
                                             </div>
                                         </div>
                                         <div class="hero-app-info">
-                                            <span class="hero-app-name-pro">Todo</span>
-                                            <span class="hero-app-desc">Productivity</span>
+                                            <span class="hero-app-name-pro">{% trans "Todo" %}</span>
+                                            <span class="hero-app-desc">{% trans "Productivity" %}</span>
                                         </div>
                                     </div>
                                     
@@ -248,8 +248,8 @@
                                             </div>
                                         </div>
                                         <div class="hero-app-info">
-                                            <span class="hero-app-name-pro">Revision</span>
-                                            <span class="hero-app-desc">Spaced Learning</span>
+                                            <span class="hero-app-name-pro">{% trans "Revision" %}</span>
+                                            <span class="hero-app-desc">{% trans "Spaced Learning" %}</span>
                                         </div>
                                     </div>
                                     
@@ -262,8 +262,8 @@
                                             </div>
                                         </div>
                                         <div class="hero-app-info">
-                                            <span class="hero-app-name-pro">Notebook</span>
-                                            <span class="hero-app-desc">Note Taking</span>
+                                            <span class="hero-app-name-pro">{% trans "Notebook" %}</span>
+                                            <span class="hero-app-desc">{% trans "Note Taking" %}</span>
                                         </div>
                                     </div>
                                     
@@ -276,8 +276,8 @@
                                             </div>
                                         </div>
                                         <div class="hero-app-info">
-                                            <span class="hero-app-name-pro">Courses</span>
-                                            <span class="hero-app-desc">Structured Learning</span>
+                                            <span class="hero-app-name-pro">{% trans "Courses" %}</span>
+                                            <span class="hero-app-desc">{% trans "Structured Learning" %}</span>
                                         </div>
                                     </div>
                                     
@@ -290,8 +290,8 @@
                                             </div>
                                         </div>
                                         <div class="hero-app-info">
-                                            <span class="hero-app-name-pro">Quiz</span>
-                                            <span class="hero-app-desc">Assessment</span>
+                                            <span class="hero-app-name-pro">{% trans "Quiz" %}</span>
+                                            <span class="hero-app-desc">{% trans "Assessement" %}</span>
                                         </div>
                                     </div>
                                     
@@ -304,8 +304,8 @@
                                             </div>
                                         </div>
                                         <div class="hero-app-info">
-                                            <span class="hero-app-name-pro">Chat</span>
-                                            <span class="hero-app-desc">Collaboration</span>
+                                            <span class="hero-app-name-pro">{% trans "Chat" %}</span>
+                                            <span class="hero-app-desc">{% trans "Collaboration" %}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -315,11 +315,6 @@
                         <p class="mt-3 mb-4" style="color: #e0e7ff; font-size: 0.9rem; opacity: 0.8;">
                             {% trans "Access all your apps from a unified dashboard" %}
                         </p>
-                        
-                        <!-- CTA Button -->
-                        <a href="{% backend_url '/' %}" class="btn btn-light btn-lg animate-on-scroll delay-2" style="border-radius: 50px; padding: 12px 30px; font-weight: 600;">
-                            <i class="bi bi-arrow-right-circle me-2"></i>{% trans "Go to Dashboard" %}
-                        </a>
                     </div>
                 </div>
             </div>
