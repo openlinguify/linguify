@@ -734,12 +734,15 @@
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
                 }
             });
         });
@@ -760,7 +763,7 @@
             });
         });
 
-        // Animation on scroll
+        // Lazy load animations on scroll
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -770,38 +773,48 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
-        // Observe all elements with animate-on-scroll class
-        document.querySelectorAll('.animate-on-scroll').forEach(el => {
-            observer.observe(el);
+        // Lazy observe all elements with animate-on-scroll class
+        requestIdleCallback(() => {
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
         });
 
-        // Animated counters for stats
+        // Lazy load animated counters for stats
         function animateCounters() {
             const counters = document.querySelectorAll('.stat-number[data-count]');
             
-            counters.forEach(counter => {
-                const target = parseInt(counter.getAttribute('data-count'));
-                const duration = 2000; // 2 seconds
-                const step = target / (duration / 16); // 60fps
-                let current = 0;
-                
-                const timer = setInterval(() => {
-                    current += step;
-                    if (current >= target) {
-                        counter.textContent = target;
-                        clearInterval(timer);
-                    } else {
-                        counter.textContent = Math.floor(current);
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counter = entry.target;
+                        const target = parseInt(counter.getAttribute('data-count'));
+                        const duration = 2000;
+                        const step = target / (duration / 16);
+                        let current = 0;
+                        
+                        const timer = setInterval(() => {
+                            current += step;
+                            if (current >= target) {
+                                counter.textContent = target;
+                                clearInterval(timer);
+                            } else {
+                                counter.textContent = Math.floor(current);
+                            }
+                        }, 16);
+                        
+                        counter.classList.add('counting');
+                        counterObserver.unobserve(counter);
                     }
-                }, 16);
-                
-                // Add counting animation class
-                counter.classList.add('counting');
-            });
+                });
+            }, { threshold: 0.5 });
+            
+            counters.forEach(counter => counterObserver.observe(counter));
         }
 
         // Stats section observer
@@ -958,16 +971,20 @@
 
         // Initialize everything
         document.addEventListener('DOMContentLoaded', function() {
-            preloadCriticalResources();
-            
-            // Add fade-in to body
+            // Critical path optimizations
             document.body.classList.add('fade-in');
             
-            // Check if PWA was dismissed
-            if (localStorage.getItem('pwaDismissed') === 'true') {
-                const prompt = document.getElementById('pwaInstallPrompt');
-                if (prompt) prompt.style.display = 'none';
-            }
+            // Defer non-critical resources
+            requestIdleCallback(() => {
+                preloadCriticalResources();
+                animateCounters();
+                
+                // Check if PWA was dismissed
+                if (localStorage.getItem('pwaDismissed') === 'true') {
+                    const prompt = document.getElementById('pwaInstallPrompt');
+                    if (prompt) prompt.style.display = 'none';
+                }
+            });
         });
 
         // Console welcome message
