@@ -60,9 +60,8 @@ fi
 echo "==> Collecting static files..."
 python3 manage.py collectstatic --noinput --verbosity=1
 
-# Run database migrations
-echo "==> Running database migrations..."
-python3 manage.py migrate --verbosity=1
+# Skip migrations - database is managed by backend service
+echo "==> Skipping database migrations (managed by backend service)..."
 
 # Verify the build worked
 echo "==> Final verification..."
