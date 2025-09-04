@@ -34,7 +34,7 @@ if not DEBUG:
     is_production = True
 
 if is_production:
-    ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['openlinguify.com', 'www.openlinguify.com', 'linguify-portal.onrender.com'])
+    ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['openlinguify.com', 'www.openlinguify.com', 'linguify-portal.onrender.com', 'linguify-kdot.onrender.com'])
 else:
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.openlinguify.com', 'testserver']
 

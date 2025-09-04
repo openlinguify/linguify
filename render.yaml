@@ -31,7 +31,7 @@ services:
       - key: SECRET_KEY
         sync: false
       - key: ALLOWED_HOSTS
-        value: "openlinguify.com,www.openlinguify.com,linguify-portal.onrender.com"
+        value: "openlinguify.com,www.openlinguify.com,linguify-portal.onrender.com,linguify-kdot.onrender.com"
       - key: DATABASE_URL
         sync: false
       - key: BACKEND_API_URL
