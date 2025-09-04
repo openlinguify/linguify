@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.openlinguify.com" target="_blank">
-    <img src="backend/static/images/Linguify (2).png" alt="OpenLinguify" width="200" />
+    <img src="backend/static/images/linguify.png" alt="OpenLinguify" width="200" />
   </a>
 </p>
 
