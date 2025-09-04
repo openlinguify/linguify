@@ -73,7 +73,6 @@ FRONTEND_BUILD_CONFIG = {
         'authentication': 'apps/authentication/static/src/js/app.js',
         'course': 'apps/course/static/src/js/app.js',
         'notebook': 'apps/notebook/static/src/js/app.js',
-        'revision': 'apps/revision/static/src/js/app.js',
     },
     'output': {
         'path': os.path.join(BASE_DIR, 'static/dist'),

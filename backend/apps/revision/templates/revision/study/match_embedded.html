@@ -1,14 +1,14 @@
 <!-- Matching Study Mode -->
 <div id="matchingStudyMode" class="study-mode-hidden">
     <div class="study-header">
-        <div class="d-flex align-items-center justify-content-between">
-            <h5 class="mb-0">Mode Associer - <span id="matchingDeckName"></span></h5>
-            <div class="d-flex align-items-center gap-2">
-                <button id="newMatchingGame" class="btn btn-outline-custom btn-sm">
+        <div class="flex items-center justify-between">
+            <h5 class="text-linguify-primary font-weight-600">Mode Associer - <span id="matchingDeckName"></span></h5>
+            <div class="flex items-center gap-2">
+                <button id="newMatchingGame" class="flashcard-btn-return">
                     <i class="bi bi-arrow-clockwise"></i>
                     Nouveau jeu
                 </button>
-                <button id="exitMatchingMode" class="btn btn-outline-custom btn-sm">
+                <button id="exitMatchingMode" class="flashcard-btn-return">
                     <i class="bi bi-arrow-left"></i>
                     Retour au deck
                 </button>
@@ -18,10 +18,10 @@
     
     <div class="study-content">
         <!-- Game Area -->
-        <div id="matchingGameArea" class="p-4">
+        <div id="matchingGameArea" class="matching-game-area">
             <!-- Instructions -->
-            <div class="alert alert-info mb-4">
-                <i class="bi bi-info-circle me-2"></i>
+            <div class="matching-instructions">
+                <i class="bi bi-info-circle mr-2"></i>
                 <strong>Comment jouer :</strong> Cliquez sur les éléments pour les associer. Trouvez toutes les paires terme-définition !
             </div>
             
@@ -37,31 +37,31 @@
                 <!-- Completion message will be generated dynamically -->
             </div>
             
-            <div class="d-flex gap-2 justify-content-center mt-4">
-                <button class="btn btn-outline-custom" onclick="window.matchingMode.restartMatching()">
-                    <i class="bi bi-arrow-clockwise me-1"></i>
+            <div class="flex gap-2 justify-center mt-4">
+                <button class="flashcard-btn-medium" onclick="window.matchingMode.restartMatching()">
+                    <i class="bi bi-arrow-clockwise mr-1"></i>
                     Rejouer
                 </button>
-                <button class="btn btn-gradient" onclick="window.matchingMode.exitMatchingMode()">
-                    <i class="bi bi-arrow-left me-1"></i>
+                <button class="flashcard-btn-easy" onclick="window.matchingMode.exitMatchingMode()">
+                    <i class="bi bi-arrow-left mr-1"></i>
                     Retour au deck
                 </button>
             </div>
         </div>
         
         <!-- Game Stats -->
-        <div class="border-top p-3">
-            <div class="row text-center">
-                <div class="col">
+        <div class="study-stats">
+            <div class="flex justify-center items-center gap-12 text-center w-full">
+                <div>
                     <div class="stat-value text-linguify-success"><span id="matchingPairs">0</span>/<span id="matchingTotal">0</span></div>
                     <div class="stat-label">Paires trouvées</div>
                 </div>
-                <div class="col">
+                <div>
                     <div class="stat-value text-linguify-primary" id="matchingAttempts">0</div>
                     <div class="stat-label">Tentatives</div>
                 </div>
-                <div class="col">
-                    <div class="stat-value text-linguify-warning" id="matchingAccuracy">100%</div>
+                <div>
+                    <div class="stat-value text-linguify-accent" id="matchingAccuracy">100%</div>
                     <div class="stat-label">Précision</div>
                 </div>
             </div>

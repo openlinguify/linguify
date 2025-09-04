@@ -190,3 +190,7 @@ class SystemManagement(models.Model):
             # If trying to create a new instance when one already exists
             return
         super().save(*args, **kwargs)
+
+
+# Import the tags models to make them discoverable by Django
+from .models.tags import Tag, TagRelation, get_tags_for_object, add_tag_to_object, remove_tag_from_object, get_objects_with_tag

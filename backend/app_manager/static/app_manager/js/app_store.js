@@ -35,36 +35,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const appCards = document.querySelectorAll('.app-card');
         let visibleCount = 0;
         
-        console.log(`=== FILTRAGE CATÉGORIE: ${currentCategory} ===`);
-        
         appCards.forEach(card => {
             const category = card.dataset.category || '';
             const title = card.querySelector('.app-title').textContent;
             const titleLower = title.toLowerCase();
             const description = card.querySelector('.app-description').textContent.toLowerCase();
             
-            // Category matching avec mapping des catégories
+            // Category matching avec correspondance exacte (pas d'includes)
             let matchesCategory = currentCategory === 'all';
             if (!matchesCategory) {
-                const categoryLower = category.toLowerCase();
-                switch(currentCategory) {
-                    case 'learning':
-                        matchesCategory = categoryLower.includes('apprentissage') || 
-                                        categoryLower.includes('learning') || 
-                                        categoryLower.includes('education');
-                        break;
-                    case 'productivity':
-                        matchesCategory = categoryLower.includes('productivité') || 
-                                        categoryLower.includes('productivity');
-                        break;
-                    case 'ai':
-                        matchesCategory = categoryLower.includes('intelligence') || 
-                                        categoryLower.includes('ia') || 
-                                        categoryLower.includes('ai');
-                        break;
-                    default:
-                        matchesCategory = categoryLower === currentCategory;
-                }
+                // Correspondance exacte avec les catégories du backend
+                matchesCategory = category === currentCategory;
             }
             
             const matchesSearch = currentSearch === '' || 
@@ -72,16 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 description.includes(currentSearch);
             
             const shouldShow = matchesCategory && matchesSearch;
-            
-            // Debug pour productivité
-            if (currentCategory === 'productivity') {
-                console.log(`${title}:`);
-                console.log(`  - Catégorie: "${category}"`);
-                console.log(`  - Catégorie lowercase: "${category.toLowerCase()}"`);
-                console.log(`  - Matches category: ${matchesCategory}`);
-                console.log(`  - Matches search: ${matchesSearch}`);
-                console.log(`  - Should show: ${shouldShow}`);
-            }
             
             if (shouldShow) {
                 card.style.display = 'block';
@@ -302,27 +273,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Mettre à jour les compteurs de catégories
+    // Mettre à jour les compteurs de catégories avec correspondance exacte
     function updateCategoryCounts() {
         const appCards = document.querySelectorAll('.app-card');
         const counts = {
             all: appCards.length,
-            learning: 0,
             productivity: 0,
+            communication: 0,
+            social: 0,
+            education: 0,
+            collaboration: 0,
             ai: 0
         };
         
         appCards.forEach(card => {
-            const category = (card.dataset.category || '').toLowerCase();
+            const category = card.dataset.category || '';
             
-            if (category.includes('apprentissage') || category.includes('learning') || category.includes('education')) {
-                counts.learning++;
-            }
-            if (category.includes('productivité') || category.includes('productivity')) {
-                counts.productivity++;
-            }
-            if (category.includes('intelligence') || category.includes('ia') || category.includes('ai')) {
-                counts.ai++;
+            // Correspondance exacte avec les vraies catégories du backend
+            if (counts.hasOwnProperty(category)) {
+                counts[category]++;
             }
         });
         
@@ -333,26 +302,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Appeler la fonction au chargement
+    // Appeler la fonction au chargement pour initialiser les compteurs
     updateCategoryCounts();
-    
-    // Debug: afficher les catégories des apps au chargement
-    console.log('=== DEBUG CATÉGORIES ===');
-    document.querySelectorAll('.app-card').forEach(card => {
-        const title = card.querySelector('.app-title').textContent;
-        const category = card.dataset.category;
-        const categoryLower = (category || '').toLowerCase();
-        
-        const isLearning = categoryLower.includes('apprentissage') || categoryLower.includes('learning') || categoryLower.includes('education');
-        const isProductivity = categoryLower.includes('productivité') || categoryLower.includes('productivity');
-        const isAI = categoryLower.includes('intelligence') || categoryLower.includes('ia') || categoryLower.includes('ai');
-        
-        console.log(`${title}:`);
-        console.log(`  - Catégorie brute: "${category}"`);
-        console.log(`  - Catégorie lowercase: "${categoryLower}"`);
-        console.log(`  - Apprentissage: ${isLearning}`);
-        console.log(`  - Productivité: ${isProductivity}`);
-        console.log(`  - IA: ${isAI}`);
-        console.log('---');
-    });
 });

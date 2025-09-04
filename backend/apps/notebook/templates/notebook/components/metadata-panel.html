@@ -1,0 +1,86 @@
+<!-- Onglet Organisation -->
+<div class="tab-pane fade h-100" id="metadata-panel" role="tabpanel">
+    <div class="editor-panel h-100">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <select class="form-select" id="noteType" onchange="saveCurrentNote()">
+                        <option value="NOTE">Note</option>
+                        <option value="VOCABULARY">Vocabulaire</option>
+                        <option value="GRAMMAR">Grammaire</option>
+                        <option value="EXPRESSION">Expression</option>
+                        <option value="CULTURE">Culture</option>
+                        <option value="TASK">Tache</option>
+                        <option value="REMINDER">Rappel</option>
+                        <option value="MEETING">Reunion</option>
+                        <option value="IDEA">Idee</option>
+                        <option value="PROJECT">Projet</option>
+                    </select>
+                    <label for="noteType">Type de note</label>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <select class="form-select" id="notePriority" onchange="saveCurrentNote()">
+                        <option value="LOW">Basse</option>
+                        <option value="MEDIUM" selected>Moyenne</option>
+                        <option value="HIGH">Haute</option>
+                    </select>
+                    <label for="notePriority">Priorite</label>
+                </div>
+            </div>
+            
+            <div class="col-12">
+                <label class="form-label">
+                    <i class="bi bi-tags me-1"></i>
+                    Etiquettes
+                </label>
+                <div class="tags-input-container">
+                    <div class="tags-display" id="noteTagsDisplay"></div>
+                    <input type="text" id="noteTagsInput" class="form-control tags-input" 
+                           placeholder="Ajouter des etiquettes (appuyez sur Entree)">
+                </div>
+                <div class="form-text">Organisez vos notes avec des etiquettes. Appuyez sur Entree pour ajouter.</div>
+            </div>
+            
+            <div class="col-12">
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" id="notePinned" onchange="saveCurrentNote()">
+                    <label class="form-check-label" for="notePinned">
+                        <i class="bi bi-pin-angle me-1"></i>
+                        Epingler cette note
+                    </label>
+                </div>
+                
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="noteArchived" onchange="saveCurrentNote()">
+                    <label class="form-check-label" for="noteArchived">
+                        <i class="bi bi-archive me-1"></i>
+                        Archiver cette note
+                    </label>
+                </div>
+            </div>
+            
+            <div class="col-12">
+                <div class="stats-info">
+                    <h6 class="text-muted mb-2">Statistiques</h6>
+                    <div class="d-flex gap-3 text-muted small">
+                        <div>
+                            <i class="bi bi-calendar-plus me-1"></i>
+                            Creee: <span id="noteCreatedAt">-</span>
+                        </div>
+                        <div>
+                            <i class="bi bi-pencil me-1"></i>
+                            Modifiee: <span id="noteUpdatedAt">-</span>
+                        </div>
+                        <div>
+                            <i class="bi bi-eye me-1"></i>
+                            Revisions: <span id="noteReviewCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

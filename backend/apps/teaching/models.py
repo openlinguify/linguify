@@ -59,6 +59,11 @@ class Teacher(models.Model):
         return (self.status == self.Status.ACTIVE and 
                 self.available_for_individual)
     
+    @property 
+    def total_lessons(self):
+        """Get total number of completed lessons."""
+        return self.teaching_sessions.filter(status='completed').count()
+    
     def get_bio(self, language='fr'):
         """Get bio in specified language with fallback."""
         bio_field = f"bio_{language}"

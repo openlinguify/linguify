@@ -1,0 +1,536 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% trans "Cours Particuliers" %}{% endblock %} - Linguify</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="{% trans 'Réservez des cours particuliers avec des enseignants professionnels' %}">
+    <meta name="author" content="Linguify">
+    {% csrf_token %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="{% static 'css/tailwind-built.css' %}">
+    
+    <!-- Tailwind CSS for modals -->
+    <link rel="stylesheet" href="{% static 'css/tailwind-modals.css' %}">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'saas_web/css/main.css' %}">
+    
+    <!-- CSS du header (en dernier pour avoir la priorité) -->
+    <link rel="stylesheet" href="{% static 'saas_web/css/app_header.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+        /* Fix pour l'alignement avec la navbar */
+        .px-4 {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        /* Espacement vertical après la navbar */
+        .app-flex-container {
+            margin-top: 1rem;
+        }
+        
+        /* Modern tab styling */
+        .nav-tab-linguify {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            background-color: transparent;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .nav-tab-linguify:hover {
+            color: #2D5BBA;
+            background-color: rgba(45, 91, 186, 0.05);
+            border-color: rgba(45, 91, 186, 0.2);
+        }
+        
+        .nav-tab-linguify.active {
+            color: #2D5BBA;
+            background-color: rgba(45, 91, 186, 0.1);
+            border-color: #2D5BBA;
+            font-weight: 600;
+        }
+        
+        /* Header app global fixe en haut */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+        }
+        
+        /* Ajustements spécifiques pour l'app teaching */
+        .teaching-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 60px; /* Espace pour la navbar fixe */
+        }
+        
+        .teaching-header h1 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .teaching-header .lead {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .lesson-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e3e6f0;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .lesson-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .teacher-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e3e6f0;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .teacher-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-confirmed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-cancelled_student,
+        .status-cancelled_teacher {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Layout avec navbar */
+        .app-body-layout {
+            padding-top: 70px; /* Espace pour la navbar fixe */
+        }
+        
+        .app-container-layout {
+            min-height: calc(100vh - 70px);
+        }
+        
+        .app-main-layout {
+            padding: 0;
+        }
+        
+        /* Status badges with Tailwind colors */
+        .status-pending {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-confirmed {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-cancelled_student,
+        .status-cancelled_teacher {
+            background-color: #fecaca;
+            color: #b91c1c;
+        }
+        
+        /* Enhanced card interactions */
+        .card-linguify {
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-linguify:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-linguify.cursor-pointer:hover {
+            border-color: var(--linguify-primary);
+            box-shadow: 0 8px 25px rgba(45, 91, 186, 0.1);
+        }
+        
+        /* Smooth view transitions */
+        #welcomeState,
+        #lessonDetails {
+            will-change: opacity, transform;
+        }
+        
+        /* Teacher avatar enhancement */
+        #teacherAvatar {
+            transition: all 0.3s ease;
+        }
+        
+        #teacherAvatar:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Button hover effects */
+        .btn-linguify:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(45, 91, 186, 0.2);
+        }
+        
+        .btn-linguify-outline:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Sidebar lesson cards active state */
+        .lesson-card-active {
+            border-color: var(--linguify-primary) !important;
+            background-color: rgba(45, 91, 186, 0.05);
+        }
+        
+        /* Notes textarea enhancement */
+        #lessonNotes {
+            transition: all 0.2s ease;
+        }
+        
+        #lessonNotes:focus {
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+        }
+        
+        /* Button loading state */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Micro-interaction animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+            40%, 43% { transform: translateY(-8px); }
+            70% { transform: translateY(-4px); }
+            90% { transform: translateY(-2px); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        /* Success state for buttons */
+        .bg-linguify-success {
+            background-color: #065f46 !important;
+            color: white !important;
+        }
+        
+        /* Enhanced hover effects for quick actions */
+        .card-linguify button:hover,
+        .card-linguify a:hover {
+            transform: translateY(-1px);
+        }
+        
+        /* Staggered animation for cards */
+        .card-linguify:nth-child(1) { animation-delay: 0.1s; }
+        .card-linguify:nth-child(2) { animation-delay: 0.2s; }
+        .card-linguify:nth-child(3) { animation-delay: 0.3s; }
+        .card-linguify:nth-child(4) { animation-delay: 0.4s; }
+        
+        /* Focus states for accessibility */
+        .btn-linguify:focus,
+        .btn-linguify-outline:focus {
+            outline: 2px solid var(--linguify-primary);
+            outline-offset: 2px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .teaching-header {
+                padding: 1.5rem 0;
+                text-align: center;
+            }
+            
+            .teaching-header .btn-lg {
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="app-body-layout">
+    <!-- Include the unified app header -->
+    {% include 'components/header/app_header.html' %}
+    
+    <div class="app-container-layout">
+        <!-- App-specific header section (below main header) -->
+        <div class="app-header-layout">
+            <div class="header-content">
+                {% block header_content %}{% endblock %}
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="app-main-layout">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Configuration globale -->
+    <script id="django-data" type="application/json">
+    {
+        "DEBUG": {{ debug|yesno:"true,false" }},
+        "API_BASE_URL": "{{ request.scheme }}://{{ request.get_host }}",
+        "USER_DATA": {
+            "id": {{ request.user.id|default:"null"|escapejs }},
+            "username": "{{ request.user.username|default:''|escapejs }}",
+            "email": "{{ request.user.email|default:''|escapejs }}",
+            "is_authenticated": {{ user.is_authenticated|yesno:"true,false" }}
+        },
+        "TEACHING_CONFIG": {
+            "apiBaseUrl": "/teaching/api"
+        }
+    }
+    </script>
+    <script>
+        // Parse configuration from JSON
+        const djangoData = JSON.parse(document.getElementById('django-data').textContent);
+        window.DEBUG = djangoData.DEBUG;
+        window.API_BASE_URL = djangoData.API_BASE_URL;
+        window.USER_DATA = djangoData.USER_DATA;
+        window.TEACHING_CONFIG = djangoData.TEACHING_CONFIG;
+        
+        // Enhanced notification service
+        window.notificationService = {
+            success: function(message) {
+                this.show(message, 'success');
+            },
+            
+            error: function(message, options = {}) {
+                this.show(message, 'error');
+            },
+            
+            info: function(message) {
+                this.show(message, 'info');
+            },
+            
+            warning: function(message) {
+                this.show(message, 'warning');
+            },
+            
+            show: function(message, type = 'info', duration = 5000) {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">${message}</div>
+                        <button type="button" class="btn-close ms-2" onclick="this.parentElement.parentElement.remove()"></button>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, duration);
+            }
+        };
+        
+        // Enhanced API service
+        window.apiService = {
+            async request(url, options = {}) {
+                const defaultOptions = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCSRFToken(),
+                    },
+                    credentials: 'include',
+                };
+                
+                const finalOptions = { ...defaultOptions, ...options };
+                
+                try {
+                    const response = await fetch(url, finalOptions);
+                    
+                    if (!response.ok) {
+                        const error = await this.handleApiError(response);
+                        throw error;
+                    }
+                    
+                    if (response.status === 204) {
+                        return null;
+                    }
+                    
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    } else {
+                        return response.text();
+                    }
+                } catch (networkError) {
+                    if (networkError instanceof TypeError && networkError.message.includes('fetch')) {
+                        const error = new Error('Erreur de connexion - Vérifiez votre connexion internet');
+                        error.status = 'NETWORK_ERROR';
+                        error.isNetworkError = true;
+                        throw error;
+                    }
+                    throw networkError;
+                }
+            },
+            
+            async handleApiError(response) {
+                let errorMessage = `HTTP error! status: ${response.status}`;
+                
+                switch (response.status) {
+                    case 400:
+                        errorMessage = 'Requête invalide - Vérifiez les données envoyées';
+                        break;
+                    case 401:
+                        errorMessage = 'Session expirée - Veuillez vous reconnecter';
+                        break;
+                    case 403:
+                        errorMessage = 'Accès refusé - Permissions insuffisantes';
+                        break;
+                    case 404:
+                        errorMessage = 'Ressource non trouvée';
+                        break;
+                    case 500:
+                        errorMessage = 'Erreur serveur - Veuillez réessayer plus tard';
+                        break;
+                }
+                
+                const error = new Error(errorMessage);
+                error.status = response.status;
+                error.response = response;
+                return error;
+            },
+            
+            getCSRFToken() {
+                const token = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                             document.querySelector('meta[name="csrf-token"]')?.content || 
+                             this.getCookieValue('csrftoken') || '';
+                return token;
+            },
+            
+            getCookieValue(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+                return null;
+            }
+        };
+        
+        console.log('Configuration teaching:', {
+            debug: window.DEBUG,
+            apiBaseUrl: window.API_BASE_URL,
+            user: window.USER_DATA,
+            teaching: window.TEACHING_CONFIG
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!-- Cards Section - Optimisé -->
+<div class="px-3 py-2 border-t border-gray-200">
+    <div class="flex items-center justify-between mb-2">
+        <h6 class="text-sm font-semibold text-linguify-primary mb-0">Cartes du deck</h6>
+        <span id="cardsCount" class="badge-linguify text-xs px-2 py-1">0 carte(s)</span>
+    </div>
+    
+    <!-- Language Settings for the Deck - Compact -->
+    <div id="deckLanguageSettings" class="bg-gray-50 rounded-lg p-2 mb-2" style="display: none;">
+        <div class="grid grid-cols-2 gap-2 mb-2">
+            <div class="flex flex-col">
+                <label class="text-xs font-medium text-gray-600 mb-1">Recto</label>
+                <select id="deckFrontLanguage" class="form-select text-xs py-1 px-2 rounded border border-gray-300">
+                    <option value="">🔄 Auto</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="en">🇺🇸 EN</option>
+                    <option value="es">🇪🇸 ES</option>
+                    <option value="it">🇮🇹 IT</option>
+                    <option value="de">🇩🇪 DE</option>
+                    <option value="pt">🇵🇹 PT</option>
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label class="text-xs font-medium text-gray-600 mb-1">Verso</label>
+                <select id="deckBackLanguage" class="form-select text-xs py-1 px-2 rounded border border-gray-300">
+                    <option value="">🔄 Auto</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="en">🇺🇸 EN</option>
+                    <option value="es">🇪🇸 ES</option>
+                    <option value="it">🇮🇹 IT</option>
+                    <option value="de">🇩🇪 DE</option>
+                    <option value="pt">🇵🇹 PT</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button id="applyLanguagesToDeck" class="btn-linguify text-xs px-3 py-1 flex items-center">
+                <i class="bi bi-check-lg me-1"></i>
+                Appliquer
+            </button>
+            <button id="applyLanguagesToNewCards" class="btn-linguify-secondary text-xs px-3 py-1 flex items-center">
+                <i class="bi bi-plus-circle me-1"></i>
+                Par défaut
+            </button>
+        </div>
+    </div>
+    
+    <div id="cardsContainer">
+        <!-- Cards will be loaded here -->
+    </div>
+    
+    <!-- Empty State -->
+    <div id="noCardsMessage" class="welcome-state no-cards-message-hidden">
+        <i class="bi bi-stack text-gray-400" style="font-size: 3rem;"></i>
+        <h5 class="welcome-state-title">Aucune carte dans ce deck</h5>
+        <p class="welcome-state-description">Commencez par ajouter quelques cartes pour réviser !</p>
+        <button class="btn-linguify" onclick="window.revisionMain.showCreateCardForm()">
+            <i class="bi bi-plus-lg mr-2"></i>
+            Ajouter une carte
+        </button>
+    </div>
+</div>

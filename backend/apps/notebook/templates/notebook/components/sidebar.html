@@ -1,0 +1,26 @@
+<!-- Sidebar -->
+<div id="notebookSidebar" class="sidebar-linguify show">
+    <div class="sidebar-content">
+        <!-- Notes list -->
+        <ul id="notesList" class="note-list"></ul>
+        
+        <!-- Empty state -->
+        <div id="notesEmpty" class="empty-state empty-state-hidden">
+            <i class="bi bi-journal-text empty-state-icon"></i>
+            <div class="empty-state-title">Aucune note</div>
+            <div class="empty-state-description">Creez votre premiere note pour commencer a organiser vos idees</div>
+            <button class="btn-linguify create-note-btn" onclick="createNewNote()">
+                <i class="bi bi-plus-lg mr-2"></i>
+                Creer une note
+            </button>
+        </div>
+        
+        <!-- Load more -->
+        <div id="loadMoreContainer" class="text-center load-more-container">
+            <button id="loadMoreBtn" class="btn-linguify-secondary">
+                <i class="bi bi-arrow-down-circle mr-2"></i>
+                Charger plus
+            </button>
+        </div>
+    </div>
+</div>

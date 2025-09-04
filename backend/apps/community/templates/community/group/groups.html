@@ -1,0 +1,663 @@
+{% extends "saas_web/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Study Groups" %} | Open Linguify{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/groups_page.css' %}">
+<style>
+/* 🎯 Toast Notifications - Style Linguify */
+.toast-container {
+    max-width: 350px;
+}
+
+.linguify-toast {
+    background: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(45, 91, 186, 0.15);
+    border-left: 4px solid #10b981;
+    margin-bottom: 0.75rem;
+    animation: slideInRight 0.4s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.linguify-toast .toast-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
+    padding: 0.75rem 1rem;
+}
+
+.linguify-toast .toast-header .toast-icon {
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.linguify-toast .toast-header .toast-title {
+    color: #2D5BBA;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin: 0;
+    flex: 1;
+}
+
+.linguify-toast .toast-body {
+    padding: 0.75rem 1rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.toast-close-btn {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-close-btn:hover {
+    color: #6b7280;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Notification Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 10000;"></div>
+
+<div class="community-page">
+    <div class="community-container">
+        <!-- Header avec navbar intégrée -->
+        <div class="community-header">
+            <!-- Navigation unifiée -->
+            {% include 'community/components/navbar.html' %}
+        </div>
+
+        <!-- Main scrollable content -->
+        <div class="community-main">
+
+        <!-- My Groups -->
+        <div class="section my-groups-section mb-4">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="bi bi-bookmark-heart me-2"></i>
+                    {% trans "My Groups" %}
+                </h3>
+            </div>
+            <div class="section-content">
+                <div class="groups-grid">
+                    <!-- Create New Group Card -->
+                    <div class="group-card create-group-card" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                        <i class="bi bi-plus-circle create-group-icon"></i>
+                        <h4>{% trans "Create New Group" %}</h4>
+                        <p class="create-group-subtitle">{% trans "Start your own study group" %}</p>
+                    </div>
+                    
+                    <!-- My Groups -->
+                    {% for group in my_groups %}
+                    <div class="group-card">
+                        <div class="group-header">
+                            <div>
+                                <div class="group-title">{{ group.name }}</div>
+                                <div class="group-badges">
+                                    {% if group.language %}
+                                    <span class="group-badge language">{{ group.get_language_display }}</span>
+                                    {% endif %}
+                                    {% if group.difficulty_level %}
+                                    <span class="group-badge level">{{ group.get_difficulty_level_display }}</span>
+                                    {% endif %}
+                                    <span class="group-badge status">{% if group.is_active %}Active{% else %}Inactive{% endif %}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if group.description %}
+                        <div class="group-description">
+                            {{ group.description|truncatewords:20 }}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="group-stats">
+                            <div class="group-stat">
+                                <div class="group-stat-number">{{ group.members.count }}</div>
+                                <div class="group-stat-label">Members</div>
+                            </div>
+                            <div class="group-stat">
+                                <div class="group-stat-number">{{ group.active_members_count|default:0 }}</div>
+                                <div class="group-stat-label">Online</div>
+                            </div>
+                            <div class="group-stat">
+                                <div class="group-stat-number">{{ group.message_count|default:0 }}</div>
+                                <div class="group-stat-label">Messages</div>
+                            </div>
+                        </div>
+                        
+                        <div class="group-members">
+                            {% for member in group.members.all|slice:":4" %}
+                            <div class="member-avatar">{{ member.user.first_name.0|upper|default:member.user.username.0|upper }}</div>
+                            {% endfor %}
+                            {% if group.members.count > 4 %}
+                            <span class="member-count">+{{ group.members.count|add:"-4" }} more</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="group-actions">
+                            <a href="{% url 'community:group_detail' group.id %}" class="btn-simple btn-sm">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>
+                                {% trans "Enter Group" %}
+                            </a>
+                            <a href="{% url 'community:group_manage' group.id %}" class="btn-simple btn-secondary btn-sm">
+                                <i class="bi bi-gear me-1"></i>
+                                {% trans "Manage" %}
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="bi bi-people large-icon"></i>
+                        <h4>{% trans "No groups yet" %}</h4>
+                        <p>{% trans "Join or create a study group to start learning with others!" %}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- All Groups -->
+        <div class="section">
+            <div class="section-header">
+                <h3 class="section-title">{% trans "Discover Groups" %}</h3>
+                <div class="d-flex gap-2">
+                    <input type="text" class="form-control search-input-groups" placeholder="{% trans 'Search groups...' %}">
+                    <button class="btn-simple btn-secondary">
+                        <i class="bi bi-funnel"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="groups-grid">
+                    {% for group in groups %}
+                    <div class="group-card group-item" data-language="{{ group.language|lower }}">
+                        <div class="group-header">
+                            <div>
+                                <div class="group-title">{{ group.name }}</div>
+                                <div class="group-badges">
+                                    {% if group.language %}
+                                    <span class="group-badge language">{{ group.get_language_display }}</span>
+                                    {% endif %}
+                                    {% if group.difficulty_level %}
+                                    <span class="group-badge level">{{ group.get_difficulty_level_display }}</span>
+                                    {% endif %}
+                                    {% if group.group_type %}
+                                    <span class="group-badge type">{{ group.get_group_type_display }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if group.description %}
+                        <div class="group-description">
+                            {{ group.description|truncatewords:25 }}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="group-stats">
+                            <div class="group-stat">
+                                <div class="group-stat-number">{{ group.members.count }}</div>
+                                <div class="group-stat-label">Members</div>
+                            </div>
+                            <div class="group-stat">
+                                <div class="group-stat-number">{{ group.active_members_count|default:0 }}</div>
+                                <div class="group-stat-label">Online</div>
+                            </div>
+                            <div class="group-stat">
+                                <div class="group-stat-number">{{ group.message_count|default:0 }}</div>
+                                <div class="group-stat-label">Messages</div>
+                            </div>
+                        </div>
+                        
+                        <div class="group-members">
+                            {% for member in group.members.all|slice:":4" %}
+                            <div class="member-avatar">{{ member.user.first_name.0|upper|default:member.user.username.0|upper }}</div>
+                            {% endfor %}
+                            {% if group.members.count > 4 %}
+                            <span class="member-count">+{{ group.members.count|add:"-4" }} more</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="group-actions">
+                            <a href="{% url 'community:group_detail' group.id %}" class="btn-simple btn-sm">
+                                <i class="bi bi-plus me-1"></i>
+                                {% trans "Join Group" %}
+                            </a>
+                            <a href="{% url 'community:group_detail' group.id %}" class="btn-simple btn-secondary btn-sm">
+                                <i class="bi bi-eye me-1"></i>
+                                {% trans "Preview" %}
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="bi bi-people large-icon"></i>
+                        <h4>{% trans "No groups available" %}</h4>
+                        <p>{% trans "Be the first to create a study group for your language!" %}</p>
+                        <button class="btn-simple" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                            <i class="bi bi-plus me-1"></i>
+                            {% trans "Create Group" %}
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Group Modal -->
+<div class="modal fade" id="createGroupModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header gradient">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    {% trans "Create New Study Group" %}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createGroupForm">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="groupName" class="form-label fw-semibold">{% trans "Group Name" %} *</label>
+                                <input type="text" class="form-control-modern" id="groupName" placeholder="{% trans 'e.g., French Conversation Practice' %}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="groupLanguage" class="form-label fw-semibold">{% trans "Language" %} *</label>
+                                <select class="form-control-modern" id="groupLanguage" required>
+                                    <option value="">{% trans "Select language" %}</option>
+                                    <option value="english">🇬🇧 English</option>
+                                    <option value="french">🇫🇷 Français</option>
+                                    <option value="spanish">🇪🇸 Español</option>
+                                    <option value="german">🇩🇪 Deutsch</option>
+                                    <option value="italian">🇮🇹 Italiano</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="groupDescription" class="form-label fw-semibold">{% trans "Description" %} *</label>
+                        <textarea class="form-control-modern" id="groupDescription" rows="3" 
+                                  placeholder="{% trans 'Describe what your group is about, what level, meeting schedule, etc.' %}" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="groupLevel" class="form-label fw-semibold">{% trans "Level" %}</label>
+                                <select class="form-control-modern" id="groupLevel">
+                                    <option value="beginner">{% trans "Beginner (A1-A2)" %}</option>
+                                    <option value="intermediate" selected>{% trans "Intermediate (B1-B2)" %}</option>
+                                    <option value="advanced">{% trans "Advanced (C1-C2)" %}</option>
+                                    <option value="mixed">{% trans "Mixed Levels" %}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="groupType" class="form-label fw-semibold">{% trans "Focus Area" %}</label>
+                                <select class="form-control-modern" id="groupType">
+                                    <option value="conversation">{% trans "Conversation Practice" %}</option>
+                                    <option value="grammar">{% trans "Grammar Study" %}</option>
+                                    <option value="vocabulary">{% trans "Vocabulary Building" %}</option>
+                                    <option value="reading">{% trans "Reading Club" %}</option>
+                                    <option value="writing">{% trans "Writing Practice" %}</option>
+                                    <option value="culture">{% trans "Culture & Traditions" %}</option>
+                                    <option value="business">{% trans "Business Language" %}</option>
+                                    <option value="test">{% trans "Test Preparation" %}</option>
+                                    <option value="general">{% trans "General Study" %}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{% trans "Group Guidelines" %}</label>
+                        <div class="modal-guidelines">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="respectfulRule" checked disabled>
+                                <label class="form-check-label" for="respectfulRule">
+                                    <i class="bi bi-heart text-danger me-1"></i>
+                                    {% trans "Members must be respectful and encouraging" %}
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="activeRule">
+                                <label class="form-check-label" for="activeRule">
+                                    <i class="bi bi-chat-dots text-primary me-1"></i>
+                                    {% trans "Members should participate actively" %}
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="languageRule">
+                                <label class="form-check-label" for="languageRule">
+                                    <i class="bi bi-translate text-success me-1"></i>
+                                    {% trans "Practice target language primarily" %}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-simple btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn-simple" id="createGroupBtn">
+                    <i class="bi bi-plus me-1"></i>
+                    {% trans "Create Group" %}
+                </button>
+            </div>
+        </div>
+        </div> <!-- End community-main -->
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Language filter functionality
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active from all tabs
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            
+            // Add active to clicked tab
+            this.classList.add('active');
+            
+            // Filter groups
+            const language = this.dataset.filter;
+            filterGroups(language);
+        });
+    });
+    
+    // Join group functionality
+    document.querySelectorAll('.join-group').forEach(button => {
+        button.addEventListener('click', function() {
+            const groupId = this.dataset.groupId;
+            joinGroup(this);
+        });
+    });
+    
+    // View group functionality
+    document.querySelectorAll('.view-group').forEach(button => {
+        button.addEventListener('click', function() {
+            const groupId = this.dataset.groupId;
+            alert('{% trans "Group preview coming soon!" %}');
+        });
+    });
+    
+    // Create group functionality
+    document.getElementById('createGroupBtn').addEventListener('click', function() {
+        createGroup();
+    });
+    
+    function filterGroups(language) {
+        const groups = document.querySelectorAll('.group-item');
+        
+        groups.forEach(group => {
+            if (language === 'all' || group.dataset.language === language) {
+                group.style.display = 'block';
+            } else {
+                group.style.display = 'none';
+            }
+        });
+    }
+    
+    function joinGroup(button) {
+        const originalText = button.innerHTML;
+        button.disabled = true;
+        button.classList.add('btn-loading');
+        button.innerHTML = '{% trans "Joining..." %}';
+        
+        setTimeout(() => {
+            button.innerHTML = '<i class="bi bi-check me-1"></i>{% trans "Joined!" %}';
+            button.classList.remove('btn-loading');
+            button.classList.add('btn-success');
+            
+            // Update to "Enter Group" after a moment
+            setTimeout(() => {
+                button.innerHTML = '<i class="bi bi-box-arrow-in-right me-1"></i>{% trans "Enter Group" %}';
+                button.classList.remove('join-group', 'btn-success');
+                button.classList.add('open-group');
+                button.disabled = false;
+            }, 1500);
+        }, 1200);
+    }
+    
+    function createGroup() {
+        const name = document.getElementById('groupName').value.trim();
+        const description = document.getElementById('groupDescription').value.trim();
+        const language = document.getElementById('groupLanguage').value;
+        const difficultyLevel = document.getElementById('groupLevel').value;
+        const groupType = document.getElementById('groupType').value;
+        
+        if (!name || !description || !language) {
+            showErrorToast('Validation Error', '{% trans "Please fill in all required fields." %}');
+            return;
+        }
+        
+        const createBtn = document.getElementById('createGroupBtn');
+        createBtn.disabled = true;
+        createBtn.classList.add('btn-loading');
+        createBtn.innerHTML = '{% trans "Creating..." %}';
+        
+        // Appel API réel
+        fetch('{% url "community:create_group" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                name: name,
+                description: description,
+                language: language,
+                difficulty_level: difficultyLevel,
+                group_type: groupType
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessToast('Success', data.message);
+                
+                // Fermer le modal de façon plus fiable
+                const modal = document.getElementById('createGroupModal');
+                const modalInstance = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
+                modalInstance.hide();
+                
+                // Reset form
+                document.getElementById('createGroupForm').reset();
+                
+                // Recharger la page pour afficher le nouveau groupe après un délai
+                setTimeout(() => {
+                    location.reload();
+                }, 2000); // Délai plus long pour voir le toast
+            } else {
+                showErrorToast('Error', data.error || '{% trans "Error creating group" %}');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorToast('Error', '{% trans "Error creating group" %}');
+        })
+        .finally(() => {
+            createBtn.disabled = false;
+            createBtn.classList.remove('btn-loading');
+            createBtn.innerHTML = '<i class="bi bi-plus me-1"></i>{% trans "Create Group" %}';
+        });
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // 🎯 Toast Notification Functions - Style Linguify (Sans Bootstrap)
+    function showSuccessToast(title, message) {
+        console.log('showSuccessToast called:', title, message); // Debug
+        
+        // Vérifier que le container existe
+        const container = document.getElementById('toastContainer');
+        if (!container) {
+            console.error('toastContainer not found!');
+            alert(message); // Fallback
+            return;
+        }
+        
+        const toastId = 'toast-' + Date.now();
+        const toastHtml = `
+            <div id="${toastId}" class="linguify-toast" style="display: none;">
+                <div class="toast-header d-flex align-items-center">
+                    <div class="toast-icon">
+                        <i class="bi bi-check"></i>
+                    </div>
+                    <div class="toast-title">${title}</div>
+                    <button type="button" class="toast-close-btn" onclick="closeToast('${toastId}')">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', toastHtml);
+        
+        const toastElement = document.getElementById(toastId);
+        
+        // Show with animation
+        setTimeout(() => {
+            toastElement.style.display = 'block';
+            toastElement.style.opacity = '0';
+            toastElement.style.transform = 'translateX(100%)';
+            
+            setTimeout(() => {
+                toastElement.style.transition = 'all 0.4s ease-out';
+                toastElement.style.opacity = '1';
+                toastElement.style.transform = 'translateX(0)';
+            }, 10);
+        }, 10);
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            closeToast(toastId);
+        }, 3000);
+    }
+
+    function showErrorToast(title, message) {
+        console.log('showErrorToast called:', title, message); // Debug
+        
+        // Vérifier que le container existe
+        const container = document.getElementById('toastContainer');
+        if (!container) {
+            console.error('toastContainer not found!');
+            alert(message); // Fallback
+            return;
+        }
+        
+        const toastId = 'toast-' + Date.now();
+        const toastHtml = `
+            <div id="${toastId}" class="linguify-toast" style="display: none; border-left-color: #dc3545;">
+                <div class="toast-header d-flex align-items-center">
+                    <div class="toast-icon" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+                        <i class="bi bi-exclamation"></i>
+                    </div>
+                    <div class="toast-title">${title}</div>
+                    <button type="button" class="toast-close-btn" onclick="closeToast('${toastId}')">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', toastHtml);
+        
+        const toastElement = document.getElementById(toastId);
+        
+        // Show with animation
+        setTimeout(() => {
+            toastElement.style.display = 'block';
+            toastElement.style.opacity = '0';
+            toastElement.style.transform = 'translateX(100%)';
+            
+            setTimeout(() => {
+                toastElement.style.transition = 'all 0.4s ease-out';
+                toastElement.style.opacity = '1';
+                toastElement.style.transform = 'translateX(0)';
+            }, 10);
+        }, 10);
+        
+        // Auto-hide after 4 seconds for errors
+        setTimeout(() => {
+            closeToast(toastId);
+        }, 4000);
+    }
+
+    function closeToast(toastId) {
+        const toastElement = document.getElementById(toastId);
+        if (toastElement) {
+            toastElement.style.transition = 'all 0.3s ease-out';
+            toastElement.style.opacity = '0';
+            toastElement.style.transform = 'translateX(100%)';
+            
+            setTimeout(() => {
+                toastElement.remove();
+            }, 300);
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Drag & Drop</title>
+    <style>
+        .apps-grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .app-link {
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .app-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .app-card-simple {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: grab;
+        }
+
+        .app-icon-simple {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            margin: 0 auto 1rem;
+        }
+
+        .app-name-simple {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        /* Drag states */
+        .app-card-simple.dragging {
+            opacity: 0.6;
+            transform: rotate(2deg) scale(0.95);
+            z-index: 1000;
+            cursor: grabbing !important;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+            border: 2px dashed #2D5BBA !important;
+        }
+
+        .app-link.drag-over {
+            background: rgba(45, 91, 186, 0.1);
+            border-radius: 16px;
+        }
+
+        .app-link.drag-over::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px dashed #2D5BBA;
+            border-radius: 16px;
+            animation: dragHighlight 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes dragHighlight {
+            0% {
+                background: rgba(45, 91, 186, 0.05);
+                border-color: rgba(45, 91, 186, 0.3);
+            }
+            100% {
+                background: rgba(45, 91, 186, 0.15);
+                border-color: rgba(45, 91, 186, 0.6);
+            }
+        }
+
+        #log {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 300px;
+            height: 400px;
+            background: black;
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            border-radius: 8px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; margin: 2rem;">Test Drag & Drop des Apps</h1>
+    
+    <div class="apps-grid-container" id="installedApps">
+        <a href="#" class="app-link" data-app-name="Teaching">
+            <div class="app-card-simple">
+                <div class="app-icon-simple">📚</div>
+                <h6 class="app-name-simple">Teaching</h6>
+            </div>
+        </a>
+        <a href="#" class="app-link" data-app-name="Révision">
+            <div class="app-card-simple">
+                <div class="app-icon-simple">📝</div>
+                <h6 class="app-name-simple">Révision</h6>
+            </div>
+        </a>
+        <a href="#" class="app-link" data-app-name="Quiz">
+            <div class="app-card-simple">
+                <div class="app-icon-simple">❓</div>
+                <h6 class="app-name-simple">Quiz</h6>
+            </div>
+        </a>
+        <a href="#" class="app-link" data-app-name="Notes">
+            <div class="app-card-simple">
+                <div class="app-icon-simple">📔</div>
+                <h6 class="app-name-simple">Notes</h6>
+            </div>
+        </a>
+        <a href="#" class="app-link" data-app-name="Community">
+            <div class="app-card-simple">
+                <div class="app-icon-simple">👥</div>
+                <h6 class="app-name-simple">Community</h6>
+            </div>
+        </a>
+        <a href="#" class="app-link" data-app-name="Chat">
+            <div class="app-card-simple">
+                <div class="app-icon-simple">💬</div>
+                <h6 class="app-name-simple">Chat</h6>
+            </div>
+        </a>
+    </div>
+
+    <div id="log"></div>
+
+    <script>
+        let draggedElement = null;
+        let draggedIndex = null;
+        let isDragging = false;
+
+        function log(message) {
+            const logEl = document.getElementById('log');
+            logEl.innerHTML += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function initializeDragAndDrop() {
+            const appsContainer = document.querySelector('.apps-grid-container');
+            if (!appsContainer) {
+                log('❌ Apps container not found');
+                return;
+            }
+
+            const appLinks = appsContainer.querySelectorAll('.app-link');
+            log(`🚀 Initializing drag & drop for ${appLinks.length} apps`);
+
+            appLinks.forEach((appLink, index) => {
+                const appCard = appLink.querySelector('.app-card-simple');
+                if (!appCard) return;
+
+                // Make draggable
+                appLink.draggable = true;
+                appLink.setAttribute('data-app-index', index);
+
+                // Add all event listeners
+                appLink.addEventListener('dragstart', handleDragStart);
+                appLink.addEventListener('dragend', handleDragEnd);
+                appLink.addEventListener('dragover', handleDragOver);
+                appLink.addEventListener('drop', handleDrop);
+                appLink.addEventListener('dragenter', handleDragEnter);
+                appLink.addEventListener('dragleave', handleDragLeave);
+                appLink.addEventListener('click', handleClick);
+
+                log(`✅ Initialized: ${appLink.getAttribute('data-app-name')}`);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            draggedIndex = parseInt(this.getAttribute('data-app-index'));
+            const appName = this.getAttribute('data-app-name');
+            isDragging = true;
+
+            log(`🚁 Drag started: ${appName} (index ${draggedIndex})`);
+
+            const appCard = this.querySelector('.app-card-simple');
+            if (appCard) {
+                appCard.classList.add('dragging');
+            }
+
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', appName);
+        }
+
+        function handleDragEnd(e) {
+            log(`🏁 Drag ended`);
+            
+            const appCard = this.querySelector('.app-card-simple');
+            if (appCard) {
+                appCard.classList.remove('dragging');
+            }
+
+            // Remove all highlights
+            document.querySelectorAll('.app-link').forEach(link => {
+                link.classList.remove('drag-over');
+            });
+
+            isDragging = false;
+            draggedElement = null;
+            draggedIndex = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            if (draggedElement && this !== draggedElement) {
+                this.classList.add('drag-over');
+                log(`📍 Enter drop zone: ${this.getAttribute('data-app-name')}`);
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (!this.contains(e.relatedTarget)) {
+                this.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            this.classList.remove('drag-over');
+
+            if (draggedElement && this !== draggedElement) {
+                const targetIndex = Array.from(this.parentNode.children).indexOf(this);
+                const draggedAppName = e.dataTransfer.getData('text/plain');
+                const targetAppName = this.getAttribute('data-app-name');
+
+                log(`🎯 Drop: "${draggedAppName}" -> "${targetAppName}" (${draggedIndex} -> ${targetIndex})`);
+
+                // Perform reorder
+                reorderApps(draggedIndex, targetIndex);
+            }
+        }
+
+        function handleClick(e) {
+            if (isDragging) {
+                e.preventDefault();
+                log(`🚫 Click prevented during drag`);
+                return false;
+            }
+            
+            e.preventDefault();
+            log(`🖱️  Click: ${this.getAttribute('data-app-name')}`);
+        }
+
+        function reorderApps(fromIndex, toIndex) {
+            const appsContainer = document.querySelector('.apps-grid-container');
+            const appLinks = Array.from(appsContainer.children);
+
+            log(`🔄 Reordering: ${fromIndex} -> ${toIndex}`);
+
+            const draggedLink = appLinks[fromIndex];
+            const targetLink = appLinks[toIndex];
+
+            if (fromIndex < toIndex) {
+                targetLink.parentNode.insertBefore(draggedLink, targetLink.nextSibling);
+            } else {
+                targetLink.parentNode.insertBefore(draggedLink, targetLink);
+            }
+
+            // Re-initialize with new indices
+            setTimeout(() => {
+                initializeDragAndDrop();
+            }, 100);
+
+            log(`✅ Reorder complete`);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            log('📄 DOM loaded');
+            initializeDragAndDrop();
+        });
+    </script>
+</body>
+</html>

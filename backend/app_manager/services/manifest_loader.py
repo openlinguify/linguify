@@ -57,6 +57,18 @@ class ManifestLoader:
         self._manifests_cache = manifests
         return manifests
     
+    def get_user_applications(self) -> Dict[str, Dict[str, Any]]:
+        """Retourne seulement les vraies applications utilisateur (pas les modules techniques)"""
+        all_manifests = self.get_all_manifests()
+        user_apps = {}
+        
+        for app_code, manifest_data in all_manifests.items():
+            # Filtrer seulement les apps marquées comme 'application': True
+            if manifest_data.get('application', True):  # True par défaut pour rétrocompatibilité
+                user_apps[app_code] = manifest_data
+        
+        return user_apps
+    
     def get_apps_with_icons(self) -> set:
         """Retourne la liste des apps qui ont des icônes PNG"""
         manifests = self.get_all_manifests()

@@ -37,6 +37,7 @@ pyttsx3 = "^2.90"
 SpeechRecognition = "^3.10.0"
 # pyaudio = "^0.2.13"  # Optional - difficile à installer sur Windows
 supabase = "^2.17.0"
+cryptography = "^45.0.6"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"

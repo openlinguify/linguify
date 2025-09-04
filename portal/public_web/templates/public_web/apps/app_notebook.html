@@ -3,9 +3,9 @@
 {% load app_tags %}
 {% load static %}
 
-{% block title %}Notes - Carnet de Notes Intelligent{% endblock %}
+{% block title %}Notes - Smart Notebook{% endblock %}
 
-{% block meta_description %}Organisez vos notes d'apprentissage de manière intelligente. Éditeur riche, catégorisation automatique, recherche rapide et synchronisation cloud.{% endblock %}
+{% block meta_description %}Organize your learning notes intelligently. Rich editor, automatic categorization, fast search and cloud synchronization.{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -20,20 +20,20 @@
                         </div>
                         <div>
                             <h1 class="display-4 fw-bold mb-2 text-white">
-                                Carnet de Notes
+                                Notebook
                             </h1>
-                            <p class="lead mb-0 text-white" style="opacity: 0.9;">Organisez vos apprentissages de manière intelligente</p>
+                            <p class="lead mb-0 text-white" style="opacity: 0.9;">Organize your learning intelligently</p>
                         </div>
                     </div>
                     
                     <div class="d-flex gap-3 flex-wrap">
                         {% if not user.is_authenticated %}
-                            <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-light btn-lg px-4 py-3">
-                                <i class="bi bi-person-plus me-2"></i>{% trans "Commencer gratuitement" %}
+                            <a href="{% backend_url_with_lang '/auth/register/' %}" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-person-plus me-2"></i>{% trans "Start for free" %}
                             </a>
                         {% else %}
-                            <a href="/notebook/" class="btn btn-light btn-lg px-4 py-3">
-                                <i class="bi bi-journal-text me-2"></i>{% trans "Créer mes notes" %}
+                            <a href="{% backend_url '/notebook/' %}" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-journal-text me-2"></i>{% trans "Create my notes" %}
                             </a>
                         {% endif %}
                         <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-4 py-3">
@@ -42,9 +42,100 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-4 bg-white" style="width: 200px; height: 200px; box-shadow: 0 15px 40px rgba(255,255,255,0.2);">
-                            <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" style="width: 120px; height: 120px;">
+                    <div class="hero-image">
+                        <div class="app-preview">
+                            <!-- Notebook App Preview -->
+                            <div class="mock-browser">
+                                <div class="browser-header">
+                                    <div class="browser-dots">
+                                        <span class="dot red"></span>
+                                        <span class="dot yellow"></span>
+                                        <span class="dot green"></span>
+                                    </div>
+                                    <div class="browser-title">Notebook - Open Linguify</div>
+                                </div>
+                                <div class="browser-content p-0">
+                                    <!-- Notebook Interface Preview -->
+                                    <div class="notebook-preview">
+                                        <!-- Left Sidebar -->
+                                        <div class="notebook-sidebar">
+                                            <div class="sidebar-header">
+                                                <div class="nav-brand">
+                                                    <i class="bi bi-journal-text"></i>
+                                                    <span>Notes</span>
+                                                </div>
+                                                <button class="new-note-btn">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </div>
+                                            <div class="notes-list">
+                                                <div class="note-item active">
+                                                    <div class="note-title">French Grammar</div>
+                                                    <div class="note-preview">French verb tenses and conjugations...</div>
+                                                    <div class="note-meta">
+                                                        <span class="note-date">Today</span>
+                                                        <div class="note-tags">
+                                                            <span class="tag">Grammar</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="note-item">
+                                                    <div class="note-title">Spanish Vocabulary</div>
+                                                    <div class="note-preview">New words from chapter 5...</div>
+                                                    <div class="note-meta">
+                                                        <span class="note-date">Yesterday</span>
+                                                        <div class="note-tags">
+                                                            <span class="tag tag-blue">Vocabulary</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="note-item">
+                                                    <div class="note-title">Research Project</div>
+                                                    <div class="note-preview">Ideas and references...</div>
+                                                    <div class="note-meta">
+                                                        <span class="note-date">2 days ago</span>
+                                                        <div class="note-tags">
+                                                            <span class="tag tag-green">Research</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Editor Area -->
+                                        <div class="notebook-editor">
+                                            <div class="editor-header">
+                                                <input type="text" class="note-title-input" value="French Grammar" readonly>
+                                                <div class="editor-actions">
+                                                    <button class="editor-btn">
+                                                        <i class="bi bi-type-bold"></i>
+                                                    </button>
+                                                    <button class="editor-btn">
+                                                        <i class="bi bi-type-italic"></i>
+                                                    </button>
+                                                    <button class="editor-btn">
+                                                        <i class="bi bi-list-ul"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="editor-content">
+                                                <div class="editor-text">
+                                                    <h3>French Verb Tenses</h3>
+                                                    <p>The present indicative is used for:</p>
+                                                    <ul>
+                                                        <li>Expressing an action happening now</li>
+                                                        <li>Describing a general truth</li>
+                                                        <li>Talking about habits</li>
+                                                    </ul>
+                                                    <p><strong>Examples:</strong></p>
+                                                    <p><em>Je mange une pomme.</em> (present action)</p>
+                                                    <p><em>Le soleil se lève à l'est.</em> (general truth)</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -64,11 +155,11 @@
                             <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
                                 <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" style="width: 50px; height: 50px;">
                             </div>
-                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "Organisation Intelligente de Notes" %}</h2>
+                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "Smart Note Organization" %}</h2>
                         </div>
                         
                         <div class="description-content">
-                            <p class="lead text-center mb-4" style="color: #6b7280;">Gardez une trace de votre parcours d'apprentissage avec notre système de notes intelligent. Capturez, organisez et retrouvez facilement toutes vos connaissances en un seul endroit.</p>
+                            <p class="lead text-center mb-4" style="color: #6b7280;">Keep track of your learning journey with our smart note system. Capture, organize and easily find all your knowledge in one place.</p>
                             
                             <div class="row g-3 mb-4">
                                 <div class="col-md-6">
@@ -79,8 +170,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Éditeur de texte enrichi</h6>
-                                            <small class="text-muted">Mise en forme avancée</small>
+                                            <h6 class="fw-bold mb-1">Rich text editor</h6>
+                                            <small class="text-muted">Advanced formatting</small>
                                         </div>
                                     </div>
                                 </div>
@@ -92,8 +183,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Catégorisation intelligente</h6>
-                                            <small class="text-muted">Organisation automatique</small>
+                                            <h6 class="fw-bold mb-1">Smart categorization</h6>
+                                            <small class="text-muted">Automatic organization</small>
                                         </div>
                                     </div>
                                 </div>
@@ -105,8 +196,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Recherche instantanée</h6>
-                                            <small class="text-muted">Dans toutes vos notes</small>
+                                            <h6 class="fw-bold mb-1">Instant search</h6>
+                                            <small class="text-muted">In all your notes</small>
                                         </div>
                                     </div>
                                 </div>
@@ -118,8 +209,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Synchronisation cloud</h6>
-                                            <small class="text-muted">Accès partout</small>
+                                            <h6 class="fw-bold mb-1">Cloud synchronization</h6>
+                                            <small class="text-muted">Access everywhere</small>
                                         </div>
                                     </div>
                                 </div>
@@ -131,8 +222,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Organisation par tags</h6>
-                                            <small class="text-muted">Dossiers personnalisés</small>
+                                            <h6 class="fw-bold mb-1">Tag organization</h6>
+                                            <small class="text-muted">Custom folders</small>
                                         </div>
                                     </div>
                                 </div>
@@ -144,8 +235,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Intégration vocabulaire</h6>
-                                            <small class="text-muted">Depuis vos cours</small>
+                                            <h6 class="fw-bold mb-1">Vocabulary integration</h6>
+                                            <small class="text-muted">From your lessons</small>
                                         </div>
                                     </div>
                                 </div>
@@ -157,8 +248,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Partage et collaboration</h6>
-                                            <small class="text-muted">Avec d'autres apprenants</small>
+                                            <h6 class="fw-bold mb-1">Sharing and collaboration</h6>
+                                            <small class="text-muted">With other learners</small>
                                         </div>
                                     </div>
                                 </div>
@@ -170,8 +261,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Mode révision</h6>
-                                            <small class="text-muted">Notes en quiz</small>
+                                            <h6 class="fw-bold mb-1">Review mode</h6>
+                                            <small class="text-muted">Notes to quiz</small>
                                         </div>
                                     </div>
                                 </div>
@@ -181,8 +272,8 @@
                                 <div class="d-flex align-items-center">
                                     <i class="bi bi-lightbulb me-3" style="color: var(--linguify-primary); font-size: 1.2rem;"></i>
                                     <div>
-                                        <strong style="color: var(--linguify-primary);">Astuce :</strong>
-                                        <span class="text-muted">Utilisez les hashtags pour organiser automatiquement vos notes par thème !</span>
+                                        <strong style="color: var(--linguify-primary);">Tip:</strong>
+                                        <span class="text-muted">Use hashtags to automatically organize your notes by theme!</span>
                                     </div>
                                 </div>
                             </div>
@@ -196,7 +287,7 @@
                                     <i class="bi bi-tag text-white"></i>
                                 </div>
                                 <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Category" %}</h6>
-                                <p class="text-muted small">Productivité & Notes</p>
+                                <p class="text-muted small">Productivity & Notes</p>
                             </div>
                             <div class="col-md-4">
                                 <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
@@ -225,8 +316,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center mb-5">
-                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Pourquoi choisir notre Carnet de Notes ?</h2>
-                <p class="lead text-muted">Toutes les fonctionnalités pour un apprentissage organisé</p>
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Why choose our Notebook?</h2>
+                <p class="lead text-muted">All features for organized learning</p>
             </div>
         </div>
         <div class="row g-4">
@@ -235,8 +326,8 @@
                     <div class="feature-icon mx-auto mb-3">
                         <i class="bi bi-journal-text"></i>
                     </div>
-                    <h5 class="fw-bold mb-3">Éditeur Enrichi</h5>
-                    <p class="text-muted">Formatez vos notes avec style et clarté</p>
+                    <h5 class="fw-bold mb-3">Rich Editor</h5>
+                    <p class="text-muted">Format your notes with style and clarity</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -244,8 +335,8 @@
                     <div class="feature-icon mx-auto mb-3">
                         <i class="bi bi-search"></i>
                     </div>
-                    <h5 class="fw-bold mb-3">Recherche Intelligente</h5>
-                    <p class="text-muted">Retrouvez instantanément n'importe quelle information</p>
+                    <h5 class="fw-bold mb-3">Smart Search</h5>
+                    <p class="text-muted">Find any information instantly</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -253,8 +344,8 @@
                     <div class="feature-icon mx-auto mb-3">
                         <i class="bi bi-tags"></i>
                     </div>
-                    <h5 class="fw-bold mb-3">Organisation Auto</h5>
-                    <p class="text-muted">Catégorisation automatique par thèmes</p>
+                    <h5 class="fw-bold mb-3">Auto Organization</h5>
+                    <p class="text-muted">Automatic categorization by themes</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -263,7 +354,7 @@
                         <i class="bi bi-cloud"></i>
                     </div>
                     <h5 class="fw-bold mb-3">Sync Cloud</h5>
-                    <p class="text-muted">Accès depuis tous vos appareils</p>
+                    <p class="text-muted">Access from all your devices</p>
                 </div>
             </div>
         </div>
@@ -275,8 +366,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center mb-5">
-                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Cas d'Usage Parfaits</h2>
-                <p class="lead text-muted">Adaptez votre prise de notes à vos besoins</p>
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Perfect Use Cases</h2>
+                <p class="lead text-muted">Adapt your note-taking to your needs</p>
             </div>
         </div>
         <div class="row g-4">
@@ -287,9 +378,9 @@
                             <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
                                 <i class="bi bi-book text-white"></i>
                             </div>
-                            <h5 class="mb-0 fw-bold">Notes de Cours</h5>
+                            <h5 class="mb-0 fw-bold">Lesson Notes</h5>
                         </div>
-                        <p class="text-muted">Prenez des notes structurées pendant vos leçons et organisez-les par chapitre ou thème.</p>
+                        <p class="text-muted">Take structured notes during your lessons and organize them by chapter or theme.</p>
                     </div>
                 </div>
             </div>
@@ -300,9 +391,9 @@
                             <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
                                 <i class="bi bi-translate text-white"></i>
                             </div>
-                            <h5 class="mb-0 fw-bold">Vocabulaire</h5>
+                            <h5 class="mb-0 fw-bold">Vocabulary</h5>
                         </div>
-                        <p class="text-muted">Collectez et organisez le nouveau vocabulaire avec définitions, exemples et contexte.</p>
+                        <p class="text-muted">Collect and organize new vocabulary with definitions, examples and context.</p>
                     </div>
                 </div>
             </div>
@@ -313,9 +404,9 @@
                             <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
                                 <i class="bi bi-lightbulb text-white"></i>
                             </div>
-                            <h5 class="mb-0 fw-bold">Idées et Réflexions</h5>
+                            <h5 class="mb-0 fw-bold">Ideas and Reflections</h5>
                         </div>
-                        <p class="text-muted">Capturez vos idées d'apprentissage et réflexions sur votre progression.</p>
+                        <p class="text-muted">Capture your learning ideas and reflections on your progress.</p>
                     </div>
                 </div>
             </div>
@@ -326,9 +417,9 @@
                             <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
                                 <i class="bi bi-journal-check text-white"></i>
                             </div>
-                            <h5 class="mb-0 fw-bold">Résumés de Révision</h5>
+                            <h5 class="mb-0 fw-bold">Review Summaries</h5>
                         </div>
-                        <p class="text-muted">Créez des résumés concis pour vos sessions de révision et examens.</p>
+                        <p class="text-muted">Create concise summaries for your review sessions and exams.</p>
                     </div>
                 </div>
             </div>
@@ -346,20 +437,20 @@
         </div>
         
         <h2 class="display-5 fw-bold mb-4 text-white">
-            {% trans "Prêt à organiser vos apprentissages ?" %}
+            {% trans "Ready to organize your learning?" %}
         </h2>
         <p class="lead mb-5 text-white" style="opacity: 0.95; max-width: 600px; margin: 0 auto;">
-            {% trans "Commencez à prendre des notes intelligentes et gardez une trace de votre progression." %}
+            {% trans "Start taking smart notes and keep track of your progress." %}
         </p>
         
         <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
             {% if not user.is_authenticated %}
                 <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
-                    <i class="bi bi-rocket-takeoff me-2"></i>{% trans "Commencer gratuitement" %}
+                    <i class="bi bi-rocket-takeoff me-2"></i>{% trans "Start for free" %}
                 </a>
             {% else %}
                 <a href="/notebook/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
-                    <i class="bi bi-journal-text me-2"></i>{% trans "Créer mes notes" %}
+                    <i class="bi bi-journal-text me-2"></i>{% trans "Create my notes" %}
                 </a>
             {% endif %}
             <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 16px; border: 2px solid rgba(255,255,255,0.8);">
@@ -368,4 +459,347 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Notebook Preview Styles */
+.hero-image {
+    position: relative;
+    transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+    transition: transform 0.3s ease;
+}
+
+.hero-image:hover {
+    transform: perspective(1000px) rotateY(-10deg) rotateX(2deg);
+}
+
+.mock-browser {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 550px;
+}
+
+.browser-header {
+    background: #f5f5f5;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.browser-dots {
+    display: flex;
+    gap: 6px;
+    margin-right: 16px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.dot.red { background: #ff5f57; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #28ca42; }
+
+.browser-title {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.notebook-preview {
+    display: flex;
+    height: 400px;
+    background: #f8fafc;
+}
+
+.notebook-sidebar {
+    min-width: 240px;
+    flex: 0 0 240px;
+    background: white;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: #2D5BBA;
+    font-size: 14px;
+}
+
+.nav-brand i {
+    font-size: 16px;
+}
+
+.new-note-btn {
+    background: #2D5BBA;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.new-note-btn:hover {
+    background: #1E3A8A;
+    transform: scale(1.05);
+}
+
+.notes-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.note-item {
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.note-item:hover {
+    background: #f1f5f9;
+}
+
+.note-item.active {
+    background: #eff6ff;
+    border-color: #2D5BBA;
+}
+
+.note-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.note-preview {
+    font-size: 10px;
+    color: #64748b;
+    margin-bottom: 6px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.note-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+}
+
+.note-date {
+    font-size: 9px;
+    color: #94a3b8;
+}
+
+.note-tags {
+    display: flex;
+    gap: 2px;
+}
+
+.tag {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 8px;
+    font-weight: 500;
+}
+
+.tag.tag-blue {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.tag.tag-green {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.notebook-editor {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    min-width: 0;
+}
+
+.editor-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fafbfc;
+}
+
+.note-title-input {
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    outline: none;
+    flex-grow: 1;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.editor-btn {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.editor-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.editor-content {
+    flex: 1;
+    padding: 20px 24px;
+    overflow-y: auto;
+}
+
+.editor-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #1e293b;
+    max-width: none;
+}
+
+.editor-text h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 6px;
+}
+
+.editor-text p {
+    margin-bottom: 8px;
+}
+
+.editor-text ul {
+    margin: 8px 0;
+    padding-left: 16px;
+}
+
+.editor-text li {
+    margin-bottom: 4px;
+}
+
+.editor-text strong {
+    color: #2D5BBA;
+}
+
+.editor-text em {
+    color: #7c3aed;
+    font-style: italic;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .mock-browser {
+        max-width: 480px;
+    }
+    
+    .notebook-preview {
+        height: 320px;
+    }
+    
+    .notebook-sidebar {
+        min-width: 180px;
+        flex: 0 0 180px;
+    }
+    
+    .note-title {
+        font-size: 11px;
+    }
+    
+    .note-preview {
+        font-size: 9px;
+        -webkit-line-clamp: 1;
+    }
+    
+    .editor-text {
+        font-size: 11px;
+    }
+    
+    .editor-text h3 {
+        font-size: 14px;
+    }
+    
+    .editor-content {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .notebook-sidebar {
+        width: 140px;
+    }
+    
+    .sidebar-header {
+        padding: 8px 12px;
+    }
+    
+    .nav-brand {
+        font-size: 12px;
+    }
+    
+    .new-note-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+    }
+}
+</style>
 {% endblock %}

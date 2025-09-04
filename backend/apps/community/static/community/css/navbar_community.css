@@ -1,0 +1,251 @@
+/* ===== NAVBAR COMMUNITY - Styles identiques à revision ===== */
+
+/* Variables Linguify pour cohérence */
+:root {
+    --primary-color: #2D5BBA;
+    --primary-gradient: linear-gradient(135deg, #2D5BBA 0%, #017e84 100%);
+    --linguify-gray: #6b7280;
+    --linguify-border: #e2e8f0;
+}
+
+/* Navigation tabs - transitions améliorées */
+.nav-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: var(--linguify-gray);
+    font-weight: 500;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+}
+
+.nav-tab:hover:not(.active) {
+    color: var(--primary-color);
+    background: rgba(45, 91, 186, 0.05);
+    text-decoration: none;
+    border-color: rgba(45, 91, 186, 0.1);
+    transform: none;
+}
+
+.nav-tab.active {
+    background: var(--primary-gradient);
+    color: white;
+    border-color: transparent;
+    transform: none;
+}
+
+.nav-tab.active:hover {
+    background: var(--primary-gradient);
+    color: white;
+    transform: none;
+    cursor: default;
+}
+
+/* États de transition optimisés */
+.nav-tab:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.nav-tab:not(.active):focus {
+    background: rgba(45, 91, 186, 0.05);
+    color: var(--primary-color);
+}
+
+/* Boutons outline custom - transitions améliorées */
+.btn-outline-custom {
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: var(--linguify-gray);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
+    font-weight: 500;
+    transform: none;
+}
+
+.btn-outline-custom:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: rgba(45, 91, 186, 0.05);
+    transform: none;
+    box-shadow: none;
+}
+
+/* Boutons gradient - transitions améliorées */
+.btn-gradient {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    font-weight: 500;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
+    transform: none;
+}
+
+.btn-gradient:hover {
+    background: var(--primary-gradient);
+    filter: brightness(1.05);
+    color: white;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(45, 91, 186, 0.2);
+}
+
+/* Boutons small - identique revision */
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    min-height: 36px;
+}
+
+/* Inputs et selects small - transitions améliorées */
+.form-control-sm, .form-select-sm {
+    font-size: 0.875rem;
+    border-radius: 6px;
+    border: 1px solid var(--linguify-border);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0.375rem 0.75rem;
+    background: white;
+}
+
+.form-control-sm:focus, .form-select-sm:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.15);
+    outline: none;
+    transform: none;
+}
+
+.form-control-sm:hover:not(:focus), .form-select-sm:hover:not(:focus) {
+    border-color: rgba(45, 91, 186, 0.3);
+}
+
+/* Classes utilitaires Bootstrap overrides pour cohérence */
+.px-2 {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+
+.gap-1 {
+    gap: 0.25rem !important;
+}
+
+.gap-2 {
+    gap: 0.5rem !important;
+}
+
+.gap-3 {
+    gap: 1rem !important;
+}
+
+/* Style spécial pour search input dans navbar */
+.search-input {
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.15);
+}
+
+/* Container navbar - hauteur et style identiques à revision */
+.community-navbar-container {
+    min-height: 40px;
+    overflow-x: auto;
+    position: relative;
+    z-index: 1000;
+    contain: layout style;
+}
+
+/* Navigation container stabilisé */
+.community-navbar-container .d-flex {
+    min-height: 40px;
+    align-items: center;
+}
+
+/* Responsive - identique revision */
+@media (max-width: 768px) {
+    .nav-tab span {
+        display: none;
+    }
+    
+    .nav-tab {
+        padding: 0.5rem;
+        font-size: 13px;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.7rem;
+        min-height: 32px;
+    }
+    
+    .form-control-sm, .form-select-sm {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .community-navbar-container {
+        min-height: 36px;
+    }
+    
+    .nav-tab {
+        padding: 0.375rem 0.5rem;
+        font-size: 12px;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.375rem;
+        font-size: 0.65rem;
+        min-height: 28px;
+    }
+}
+
+/* Focus states améliorés pour accessibilité */
+.btn-outline-custom:focus,
+.btn-gradient:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Animation uniforme pour tous les éléments */
+.nav-tab,
+.btn-outline-custom,
+.btn-gradient,
+.form-control-sm,
+.form-select-sm {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: background-color, border-color, color, box-shadow;
+}
+
+/* Prévention des effets de scintillement */
+.nav-tab,
+.btn-outline-custom,
+.btn-gradient {
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* States pour boutons disabled */
+.btn-outline-custom:disabled,
+.btn-gradient:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-outline-custom:disabled:hover,
+.btn-gradient:disabled:hover {
+    transform: none;
+    box-shadow: none;
+    background: initial;
+    border-color: initial;
+    color: initial;
+}

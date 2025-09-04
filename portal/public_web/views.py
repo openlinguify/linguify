@@ -166,61 +166,47 @@ class AboutView(BaseSEOView):
     vary_on_headers('Accept-Language')
 ], name='dispatch')
 
-class ContactView(BaseSEOView):
-    """Page contact sans cache (peut contenir des formulaires)"""
-    template_name = 'public_web/contact.html'
-    page_title = 'Contact - Open Linguify Support & Information'
-    meta_description = 'Contact the Open Linguify team for support, partnerships, or questions about our educational platform.'
-    meta_keywords = 'contact, support, partnerships, help, customer service'
-
-
-class ReportBugView(View):
-    """Page pour signaler un bug avec envoi d'email"""
+class ContactView(View):
+    """Page contact avec formulaire d'envoi d'email"""
     
     def get(self, request):
         context = {
-            'title': _('Report a Bug - Open Linguify'),
-            'meta_description': _('Report bugs and issues with Open Linguify platform to help us improve your experience.'),
-            'meta_keywords': _('bug report, issues, support, help, feedback'),
+            'title': _('Contact - Open Linguify Support & Information'),
+            'meta_description': _('Contact the Open Linguify team for support, partnerships, or questions about our educational platform.'),
+            'meta_keywords': _('contact, support, partnerships, help, customer service'),
         }
-        return render(request, 'public_web/report_bug.html', context)
+        return render(request, 'public_web/contact.html', context)
     
     def post(self, request):
         name = request.POST.get('name', '').strip()
         email = request.POST.get('email', '').strip()
         subject = request.POST.get('subject', '').strip()
-        description = request.POST.get('description', '').strip()
-        url = request.POST.get('url', '').strip()
-        browser = request.POST.get('browser', '').strip()
+        message = request.POST.get('message', '').strip()
         
-        if not all([name, email, subject, description]):
+        if not all([name, email, subject, message]):
             context = {
-                'title': _('Report a Bug - Open Linguify'),
+                'title': _('Contact - Open Linguify Support & Information'),
                 'error': _('Please fill in all required fields.'),
                 'name': name,
                 'email': email,
                 'subject': subject,
-                'description': description,
-                'url': url,
-                'browser': browser,
+                'message': message,
             }
-            return render(request, 'public_web/report_bug.html', context)
+            return render(request, 'public_web/contact.html', context)
         
         try:
-            email_subject = f'[Bug Report] {subject}'
+            email_subject = f'[Contact Form] {subject}'
             email_body = f"""
-New bug report from Open Linguify:
+New contact form submission from Open Linguify:
 
 Name: {name}
 Email: {email}
 Subject: {subject}
 
-Description:
-{description}
+Message:
+{message}
 
 Additional Information:
-URL: {url or 'Not provided'}
-Browser: {browser or 'Not provided'}
 User IP: {request.META.get('REMOTE_ADDR', 'Unknown')}
 User Agent: {request.META.get('HTTP_USER_AGENT', 'Unknown')}
 Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
@@ -230,29 +216,28 @@ Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                 subject=email_subject,
                 message=email_body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[settings.BUG_REPORT_EMAIL],
+                recipient_list=[settings.CONTACT_EMAIL],
                 fail_silently=False,
             )
             
             context = {
-                'title': _('Bug Report Sent - Open Linguify'),
-                'success': _('Thank you for your bug report. We will review it and get back to you if needed.'),
+                'title': _('Message Sent - Open Linguify'),
+                'success': _('Thank you for your message. We will get back to you soon.'),
             }
-            return render(request, 'public_web/report_bug.html', context)
+            return render(request, 'public_web/contact.html', context)
             
         except Exception as e:
-            logger.error(f"Failed to send bug report email: {e}")
+            logger.error(f"Failed to send contact form email: {e}")
             context = {
-                'title': _('Report a Bug - Open Linguify'),
-                'error': _('An error occurred while sending your report. Please try again later.'),
+                'title': _('Contact - Open Linguify Support & Information'),
+                'error': _('An error occurred while sending your message. Please try again later.'),
                 'name': name,
                 'email': email,
                 'subject': subject,
-                'description': description,
-                'url': url,
-                'browser': browser,
+                'message': message,
             }
-            return render(request, 'public_web/report_bug.html', context)
+            return render(request, 'public_web/contact.html', context)
+
 
 
 # Legal Pages - Cache plus long car rarement modifiées

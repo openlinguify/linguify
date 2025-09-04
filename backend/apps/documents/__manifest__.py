@@ -32,7 +32,7 @@ Usage:
         'app_manager',     # App management system
         'notification',    # For collaboration notifications
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,  # In developement - Not ready for the production
     'sequence': 25,

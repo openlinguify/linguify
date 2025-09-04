@@ -19,24 +19,28 @@ class SupabaseStorageService:
     
     def __init__(self):
         try:
-            logger.info(f"Initializing Supabase client with URL: {settings.SUPABASE_URL[:30]}...")
-            if not settings.SUPABASE_URL or not settings.SUPABASE_SERVICE_ROLE_KEY:
-                raise ValueError("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured")
+            # Check if Supabase configuration is available
+            supabase_url = getattr(settings, 'SUPABASE_URL', '')
+            supabase_key = getattr(settings, 'SUPABASE_SERVICE_ROLE_KEY', '')
             
-            # Utiliser la clé SERVICE_ROLE pour les opérations d'écriture
-            self.supabase: Client = create_client(
-                settings.SUPABASE_URL,
-                settings.SUPABASE_SERVICE_ROLE_KEY
-            )
-            self.bucket_name = "profile-pictures"
-            logger.info("Supabase client initialized successfully with SERVICE_ROLE key")
+            if supabase_url and supabase_key:
+                logger.info(f"Initializing Supabase client with URL: {supabase_url[:30]}...")
+                # Utiliser la clé SERVICE_ROLE pour les opérations d'écriture
+                self.supabase: Client = create_client(supabase_url, supabase_key)
+                self.bucket_name = "profile-pictures"
+                logger.info("Supabase client initialized successfully with SERVICE_ROLE key")
+            else:
+                logger.info("Supabase not configured - using local file storage fallback")
+                self.supabase = None
+                self.bucket_name = None
         except Exception as e:
             logger.error(f"Failed to initialize Supabase client: {str(e)}")
-            raise
+            self.supabase = None
+            self.bucket_name = None
     
     def upload_profile_picture(self, user_id: str, file, original_filename: str) -> Dict[str, Any]:
         """
-        Upload une photo de profil vers Supabase Storage
+        Upload une photo de profil vers Supabase Storage ou stockage local
         
         Args:
             user_id: ID de l'utilisateur
@@ -46,6 +50,10 @@ class SupabaseStorageService:
         Returns:
             Dict contenant les URLs et informations du fichier uploadé
         """
+        # Fallback vers stockage local si Supabase n'est pas disponible
+        if not self.supabase:
+            logger.info("Using local file storage fallback for profile picture")
+            return self._upload_to_local_storage(user_id, file, original_filename)
         try:
             logger.info(f"Starting upload for user {user_id}, file: {original_filename}")
             
@@ -262,11 +270,60 @@ class SupabaseStorageService:
     
     def get_profile_picture_url(self, filename: str) -> Optional[str]:
         """Récupère l'URL publique d'une photo de profil"""
+        if not self.supabase:
+            # Fallback local - retourner le chemin local
+            return f"/media/profile_pictures/{filename}" if filename else None
+            
         try:
             return self.supabase.storage.from_(self.bucket_name).get_public_url(filename)
         except Exception as e:
             logger.error(f"Erreur récupération URL: {str(e)}")
             return None
+
+    def _upload_to_local_storage(self, user_id: str, file, original_filename: str) -> Dict[str, Any]:
+        """
+        Fallback: Upload vers le stockage local Django
+        """
+        import os
+        from django.conf import settings as django_settings
+        
+        try:
+            # Créer le répertoire s'il n'existe pas
+            upload_dir = os.path.join(django_settings.MEDIA_ROOT, 'profile_pictures', str(user_id))
+            os.makedirs(upload_dir, exist_ok=True)
+            
+            # Générer un nom de fichier unique
+            file_extension = original_filename.split('.')[-1].lower() if '.' in original_filename else 'jpg'
+            unique_filename = f"{uuid.uuid4().hex}.{file_extension}"
+            file_path = os.path.join(upload_dir, unique_filename)
+            
+            # Sauvegarder le fichier
+            with open(file_path, 'wb') as f:
+                if hasattr(file, 'read'):
+                    f.write(file.read())
+                else:
+                    f.write(file)
+            
+            relative_path = f"profile_pictures/{user_id}/{unique_filename}"
+            
+            logger.info(f"File saved locally: {relative_path}")
+            
+            return {
+                'success': True,
+                'original_url': f"/media/{relative_path}",
+                'optimized_url': f"/media/{relative_path}",
+                'filename': relative_path,
+                'size': os.path.getsize(file_path),
+                'storage_type': 'local'
+            }
+            
+        except Exception as e:
+            logger.error(f"Erreur upload local: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e),
+                'storage_type': 'local'
+            }
 
 
 # Instance globale du service

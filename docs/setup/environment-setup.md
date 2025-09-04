@@ -56,12 +56,27 @@ SECRET_KEY=your_django_secret_key
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 
-# Database
-DB_NAME=linguify
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_HOST=localhost
-DB_PORT=5432
+# Database configuration (PostgreSQL local)
+# Development database
+DEV_DB_NAME=db_linguify_dev
+DEV_DB_USER=postgres
+DEV_DB_PASSWORD=motdepasse
+DEV_DB_HOST=localhost
+DEV_DB_PORT=5432
+
+# Production database
+PROD_DB_NAME=db_linguify_prod
+PROD_DB_USER=postgres
+PROD_DB_PASSWORD=azerty
+PROD_DB_HOST=localhost
+PROD_DB_PORT=5432
+
+# Test database
+TEST_DB_NAME=db_linguify_test
+TEST_DB_USER=postgres
+TEST_DB_PASSWORD=azerty
+TEST_DB_HOST=localhost
+TEST_DB_PORT=5432
 
 # Auth0
 AUTH0_DOMAIN=your-tenant.region.auth0.com

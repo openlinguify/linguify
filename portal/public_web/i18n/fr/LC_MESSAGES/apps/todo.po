@@ -1,0 +1,346 @@
+# French translations for Todo app
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Todo App\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-30 23:45+0200\n"
+"PO-Revision-Date: 2025-08-30 23:45+0200\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Interface elements
+msgid "Todo"
+msgstr "Tâches"
+
+msgid "Kanban"
+msgstr "Kanban"
+
+msgid "List"
+msgstr "Liste"
+
+msgid "Activity"
+msgstr "Activité"
+
+msgid "To Do"
+msgstr "À Faire"
+
+msgid "In Progress"
+msgstr "En Cours"
+
+msgid "Done"
+msgstr "Terminé"
+
+# Task management
+msgid "Review course materials"
+msgstr "Réviser les supports de cours"
+
+msgid "Complete assignment"
+msgstr "Terminer le devoir"
+
+msgid "Plan project timeline"
+msgstr "Planifier l'échéancier du projet"
+
+msgid "Research presentation"
+msgstr "Recherche pour la présentation"
+
+msgid "Write documentation"
+msgstr "Rédiger la documentation"
+
+msgid "Setup development environment"
+msgstr "Configurer l'environnement de développement"
+
+msgid "Review team feedback"
+msgstr "Examiner les commentaires de l'équipe"
+
+# Time and status
+msgid "Today"
+msgstr "Aujourd'hui"
+
+msgid "Priority"
+msgstr "Priorité"
+
+msgid "Urgent"
+msgstr "Urgent"
+
+msgid "Work"
+msgstr "Travail"
+
+msgid "Study"
+msgstr "Étude"
+
+msgid "Research"
+msgstr "Recherche"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Completed"
+msgstr "Terminé"
+
+# Features section
+msgid "Everything You Need for Productivity"
+msgstr "Tout ce dont vous avez besoin pour être productif"
+
+msgid "A complete workspace to organize your tasks, projects, and ideas"
+msgstr "Un espace de travail complet pour organiser vos tâches, projets et idées"
+
+msgid "Smart Task Management"
+msgstr "Gestion Intelligente des Tâches"
+
+msgid "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive."
+msgstr "Créez, organisez et suivez les tâches avec des priorités, des échéances, des étiquettes et un suivi des progrès. Tout ce dont vous avez besoin pour rester productif."
+
+msgid "Kanban Boards"
+msgstr "Tableaux Kanban"
+
+msgid "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress."
+msgstr "Visualisez votre flux de travail avec des tableaux kanban personnalisables. Glissez-déposez les tâches entre les colonnes pour suivre les progrès."
+
+msgid "Project Organization"
+msgstr "Organisation de Projets"
+
+msgid "Group related tasks into projects with progress tracking, deadlines, and team collaboration features."
+msgstr "Regroupez les tâches connexes en projets avec suivi des progrès, échéances et fonctionnalités de collaboration d'équipe."
+
+msgid "Rich Note-Taking"
+msgstr "Prise de Notes Enrichie"
+
+msgid "Take notes with markdown support, attach them to tasks or projects, and organize with tags and categories."
+msgstr "Prenez des notes avec le support markdown, attachez-les aux tâches ou projets, et organisez avec des étiquettes et catégories."
+
+msgid "Smart Reminders"
+msgstr "Rappels Intelligents"
+
+msgid "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track."
+msgstr "Définissez des rappels personnalisés pour les tâches et échéances. Recevez des notifications au bon moment pour rester sur la bonne voie."
+
+msgid "Tags & Categories"
+msgstr "Étiquettes et Catégories"
+
+msgid "Organize tasks and notes with flexible tagging system and categories for better organization and filtering."
+msgstr "Organisez les tâches et notes avec un système d'étiquetage flexible et des catégories pour une meilleure organisation et filtrage."
+
+msgid "Activity Tracking"
+msgstr "Suivi d'Activité"
+
+msgid "Monitor your task activity and progress with a detailed activity feed showing all your recent actions."
+msgstr "Surveillez l'activité et les progrès de vos tâches avec un flux d'activité détaillé montrant toutes vos actions récentes."
+
+msgid "Multiple Views"
+msgstr "Vues Multiples"
+
+msgid "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer."
+msgstr "Basculez entre la vue liste, le tableau Kanban et le flux d'activité pour visualiser vos tâches comme vous le préférez."
+
+# Coming soon features
+msgid "Exciting features in active development"
+msgstr "Fonctionnalités passionnantes en développement actif"
+
+msgid "Calendar Integration"
+msgstr "Intégration Calendrier"
+
+msgid "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines."
+msgstr "Consultez les tâches et échéances au format calendrier. Planifiez votre emploi du temps et ne manquez jamais d'échéances importantes."
+
+msgid "In Development"
+msgstr "En Développement"
+
+msgid "Analytics Dashboard"
+msgstr "Tableau de Bord Analytique"
+
+msgid "Track your productivity with detailed analytics, completion rates, and progress insights."
+msgstr "Suivez votre productivité avec des analyses détaillées, des taux de completion et des insights de progrès."
+
+msgid "Advanced Team Collaboration"
+msgstr "Collaboration d'Équipe Avancée"
+
+msgid "Enhanced team features with real-time collaboration, task assignment, and team analytics."
+msgstr "Fonctionnalités d'équipe améliorées avec collaboration en temps réel, assignation de tâches et analyses d'équipe."
+
+msgid "Time Tracking"
+msgstr "Suivi du Temps"
+
+msgid "Track time spent on tasks with built-in timer and detailed time analytics."
+msgstr "Suivez le temps passé sur les tâches avec minuteur intégré et analyses temporelles détaillées."
+
+msgid "File Attachments"
+msgstr "Pièces Jointes"
+
+msgid "Attach files and documents to your tasks and projects for better organization."
+msgstr "Joignez des fichiers et documents à vos tâches et projets pour une meilleure organisation."
+
+msgid "Recurring Tasks"
+msgstr "Tâches Récurrentes"
+
+msgid "Set up tasks that repeat automatically on a schedule you define."
+msgstr "Configurez des tâches qui se répètent automatiquement selon un horaire que vous définissez."
+
+msgid "These features will be available soon. Stay tuned for the latest updates!"
+msgstr "Ces fonctionnalités seront bientôt disponibles. Restez à l'écoute pour les dernières mises à jour !"
+
+# Use cases
+msgid "Perfect For Every Use Case"
+msgstr "Parfait pour Tous les Cas d'Usage"
+
+msgid "Whether you're a student, professional, or team leader"
+msgstr "Que vous soyez étudiant, professionnel ou chef d'équipe"
+
+msgid "Students"
+msgstr "Étudiants"
+
+msgid "Organize assignments, track study progress, manage course projects, and plan your academic schedule."
+msgstr "Organisez les devoirs, suivez les progrès d'étude, gérez les projets de cours et planifiez votre horaire académique."
+
+msgid "Assignment tracking"
+msgstr "Suivi des devoirs"
+
+msgid "Study planning"
+msgstr "Planification d'étude"
+
+msgid "Course organization"
+msgstr "Organisation de cours"
+
+msgid "Research notes"
+msgstr "Notes de recherche"
+
+msgid "Professionals"
+msgstr "Professionnels"
+
+msgid "Manage work projects, track deadlines, organize meeting notes, and boost your productivity."
+msgstr "Gérez les projets de travail, suivez les échéances, organisez les notes de réunion et boostez votre productivité."
+
+msgid "Project management"
+msgstr "Gestion de projets"
+
+msgid "Deadline tracking"
+msgstr "Suivi des échéances"
+
+msgid "Meeting notes"
+msgstr "Notes de réunion"
+
+msgid "Goal setting"
+msgstr "Définition d'objectifs"
+
+msgid "Teams"
+msgstr "Équipes"
+
+msgid "Collaborate on shared projects, assign tasks to team members, and track collective progress."
+msgstr "Collaborez sur des projets partagés, assignez des tâches aux membres de l'équipe et suivez les progrès collectifs."
+
+msgid "Shared workspaces"
+msgstr "Espaces de travail partagés"
+
+msgid "Task assignment"
+msgstr "Assignation de tâches"
+
+msgid "Team analytics"
+msgstr "Analyses d'équipe"
+
+# Getting started
+msgid "Get Started in Minutes"
+msgstr "Commencez en Quelques Minutes"
+
+msgid "Simple setup process to get you organized right away"
+msgstr "Processus de configuration simple pour vous organiser tout de suite"
+
+msgid "Create Account"
+msgstr "Créer un Compte"
+
+msgid "Sign up for free and access the todo app from your dashboard."
+msgstr "Inscrivez-vous gratuitement et accédez à l'app de tâches depuis votre tableau de bord."
+
+msgid "Set Up Projects"
+msgstr "Configurer les Projets"
+
+msgid "Create your first project and organize tasks by categories and priorities."
+msgstr "Créez votre premier projet et organisez les tâches par catégories et priorités."
+
+msgid "Add tasks, set deadlines, take notes, and watch your productivity soar."
+msgstr "Ajoutez des tâches, fixez des échéances, prenez des notes et regardez votre productivité s'envoler."
+
+# Integration
+msgid "Seamless Integration"
+msgstr "Intégration Transparente"
+
+msgid "Works perfectly with other Open Linguify apps"
+msgstr "Fonctionne parfaitement avec les autres apps Open Linguify"
+
+msgid "Create study tasks for flashcard reviews"
+msgstr "Créez des tâches d'étude pour les révisions de cartes mémoire"
+
+msgid "Link notes to tasks and projects"
+msgstr "Liez les notes aux tâches et projets"
+
+# CTA
+msgid "Ready to Get Organized?"
+msgstr "Prêt à vous Organiser ?"
+
+msgid "Join thousands of users who have transformed their productivity with our todo app."
+msgstr "Rejoignez des milliers d'utilisateurs qui ont transformé leur productivité avec notre app de tâches."
+
+# Additional Hero Section
+msgid "Todo & Productivity"
+msgstr "Tâches et Productivité"
+
+msgid "Advanced productivity workspace"
+msgstr "Espace de travail productif avancé"
+
+msgid "Start for free"
+msgstr "Commencer gratuitement"
+
+msgid "Start organizing"
+msgstr "Commencer à organiser"
+
+# Additional CTA
+msgid "Launch Todo App"
+msgstr "Lancer l'App de Tâches"
+
+msgid "Start Now - It's Free"
+msgstr "Commencer Maintenant - C'est Gratuit"
+
+msgid "No credit card • No hidden fees • Always free"
+msgstr "Pas de carte de crédit • Pas de frais cachés • Toujours gratuit"
+
+msgid "Explore All Apps"
+msgstr "Explorer Toutes les Apps"
+
+msgid "Coming Soon"
+msgstr "Prochainement"
+
+msgid "Start Organizing"
+msgstr "Commencer à Organiser"
+
+msgid "Begin adding tasks, setting deadlines, and tracking your progress immediately."
+msgstr "Commencez à ajouter des tâches, fixer des échéances et suivre vos progrès immédiatement."
+
+msgid "Progress tracking"
+msgstr "Suivi des progrès"
+
+msgid "Ready"
+msgstr "Prêt"
+
+msgid "Revision"
+msgstr "Révision"
+
+msgid "Notebook"
+msgstr "Carnet"
+
+msgid "Tip"
+msgstr "Conseil"
+
+msgid "Create my notes"
+msgstr "Créer mes notes"
+
+msgid "Offline mode"
+msgstr "Mode hors ligne"
+
+msgid "This application is part of the Open Linguify educational suite."
+msgstr "Cette application fait partie de la suite éducative Open Linguify."

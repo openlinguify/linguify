@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mes annonces - Professeur{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>Mes annonces</h1>
+                <div>
+                    <a href="{% url 'teachers:create_announcement' %}" class="btn btn-primary">
+                        <i class="fa fa-plus"></i> Nouvelle annonce
+                    </a>
+                    <a href="{% url 'teachers:dashboard' %}" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Retour
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ stats.total_announcements }}</h4>
+                            <p class="mb-0">Total annonces</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fa fa-bullhorn fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ stats.active_announcements }}</h4>
+                            <p class="mb-0">Annonces actives</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fa fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ stats.total_views }}</h4>
+                            <p class="mb-0">Vues totales</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fa fa-eye fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ stats.total_bookings }}</h4>
+                            <p class="mb-0">Réservations générées</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fa fa-calendar-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcements List -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Mes annonces</h5>
+        </div>
+        <div class="card-body">
+            {% if announcements %}
+                <div class="row">
+                    {% for announcement in announcements %}
+                    <div class="col-lg-6 col-xl-4 mb-4">
+                        <div class="card h-100 {% if announcement.is_featured %}border-warning{% endif %}">
+                            {% if announcement.is_featured %}
+                                <div class="card-header bg-warning text-dark">
+                                    <small><i class="fa fa-star"></i> Annonce mise en avant</small>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-{% if announcement.type == 'promotion' %}success{% elif announcement.type == 'new_course' %}primary{% elif announcement.type == 'schedule_change' %}warning{% else %}secondary{% endif %}">
+                                        {{ announcement.get_type_display }}
+                                    </span>
+                                    <span class="badge bg-{% if announcement.status == 'active' %}success{% elif announcement.status == 'draft' %}secondary{% elif announcement.status == 'expired' %}danger{% else %}warning{% endif %}">
+                                        {{ announcement.get_status_display }}
+                                    </span>
+                                </div>
+                                
+                                <h5 class="card-title">{{ announcement.title|truncatechars:50 }}</h5>
+                                <p class="card-text text-muted">{{ announcement.description|truncatechars:100 }}</p>
+                                
+                                {% if announcement.discount_percentage %}
+                                    <div class="alert alert-success py-2">
+                                        <small><strong>Remise: {{ announcement.discount_percentage }}%</strong></small>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if announcement.special_price %}
+                                    <div class="alert alert-info py-2">
+                                        <small><strong>Prix spécial: €{{ announcement.special_price }}/h</strong></small>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="small text-muted mb-3">
+                                    <div><i class="fa fa-calendar"></i> Du {{ announcement.start_date|date:"d/m/Y" }} au {{ announcement.end_date|date:"d/m/Y" }}</div>
+                                    <div class="mt-1">
+                                        <i class="fa fa-eye"></i> {{ announcement.view_count }} vues • 
+                                        <i class="fa fa-mouse-pointer"></i> {{ announcement.click_count }} clics • 
+                                        <i class="fa fa-calendar-check"></i> {{ announcement.booking_count }} réservations
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer">
+                                <div class="btn-group w-100" role="group">
+                                    <a href="{% url 'teachers:edit_announcement' announcement.pk %}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fa fa-edit"></i> Modifier
+                                    </a>
+                                    
+                                    {% if announcement.status == 'draft' %}
+                                        <button type="button" class="btn btn-success btn-sm"
+                                                onclick="publishAnnouncement({{ announcement.pk }})"
+                                                title="Publier">
+                                            <i class="fa fa-paper-plane"></i> Publier
+                                        </button>
+                                    {% elif announcement.status == 'active' %}
+                                        <button type="button" class="btn btn-warning btn-sm"
+                                                onclick="pauseAnnouncement({{ announcement.pk }})"
+                                                title="Suspendre">
+                                            <i class="fa fa-pause"></i> Suspendre
+                                        </button>
+                                    {% endif %}
+                                    
+                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                            onclick="deleteAnnouncement({{ announcement.pk }})"
+                                            title="Supprimer">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <nav aria-label="Navigation des annonces">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">Premier</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Dernier</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fa fa-bullhorn fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Aucune annonce créée</h5>
+                    <p class="text-muted">Créez votre première annonce pour promouvoir vos cours et attirer de nouveaux étudiants.</p>
+                    <a href="{% url 'teachers:create_announcement' %}" class="btn btn-primary">
+                        <i class="fa fa-plus"></i> Créer ma première annonce
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Success Tips -->
+{% if announcements|length > 0 %}
+<div class="row mt-4">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="fa fa-lightbulb text-warning"></i> Conseils pour maximiser l'impact de vos annonces</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="fa fa-check text-success"></i> Utilisez des titres accrocheurs et descriptifs</li>
+                            <li><i class="fa fa-check text-success"></i> Ajoutez des remises pour attirer l'attention</li>
+                            <li><i class="fa fa-check text-success"></i> Mettez à jour régulièrement vos annonces</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="fa fa-check text-success"></i> Ciblez les langues et niveaux appropriés</li>
+                            <li><i class="fa fa-check text-success"></i> Utilisez la mise en avant pour les promotions importantes</li>
+                            <li><i class="fa fa-check text-success"></i> Surveillez les statistiques pour optimiser</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function publishAnnouncement(announcementId) {
+    if (confirm('Êtes-vous sûr de vouloir publier cette annonce ?')) {
+        // TODO: Implement announcement publishing via AJAX
+        alert('Publication de l\'annonce #' + announcementId + ' - À implémenter');
+    }
+}
+
+function pauseAnnouncement(announcementId) {
+    if (confirm('Suspendre cette annonce ? Elle ne sera plus visible par les étudiants.')) {
+        // TODO: Implement announcement pausing via AJAX
+        alert('Suspension de l\'annonce #' + announcementId + ' - À implémenter');
+    }
+}
+
+function deleteAnnouncement(announcementId) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer définitivement cette annonce ? Cette action ne peut pas être annulée.')) {
+        // TODO: Implement announcement deletion via AJAX
+        alert('Suppression de l\'annonce #' + announcementId + ' - À implémenter');
+    }
+}
+</script>
+{% endblock %}

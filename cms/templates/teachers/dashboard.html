@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tableau de bord - Professeur{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Tableau de bord</h1>
+            <p class="text-muted">Bienvenue {{ teacher.full_name }} !</p>
+        </div>
+    </div>
+
+    <!-- Profile Setup Alert -->
+    {% if not has_setup_profile %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <h6><i class="fa fa-exclamation-triangle"></i> Complétez votre profil</h6>
+        <p class="mb-2">Votre profil n'est pas complet. Pour recevoir des réservations, vous devez :</p>
+        <ul class="mb-3">
+            <li>Ajouter une biographie</li>
+            <li>Définir vos disponibilités</li>
+            <li>Ajouter au moins une langue enseignée</li>
+        </ul>
+        <a href="{% url 'teachers:profile_edit' %}" class="btn btn-warning btn-sm">Compléter mon profil</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ stats.total_lessons }}</h4>
+                            <p class="mb-0">Cours total</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fa fa-graduation-cap fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ stats.completed_lessons }}</h4>
+                            <p class="mb-0">Cours terminés</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fa fa-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ stats.this_week_lessons }}</h4>
+                            <p class="mb-0">Cette semaine</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fa fa-calendar-week fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>€{{ stats.this_month_earnings|floatformat:0 }}</h4>
+                            <p class="mb-0">Gains ce mois</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fa fa-euro-sign fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Upcoming Lessons -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Prochains cours</h5>
+                    <a href="{% url 'teachers:lessons' %}" class="btn btn-sm btn-outline-primary">Voir tous</a>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_lessons %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Heure</th>
+                                        <th>Étudiant</th>
+                                        <th>Langue</th>
+                                        <th>Durée</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lesson in upcoming_lessons %}
+                                    <tr>
+                                        <td>{{ lesson.scheduled_date|date:"d/m/Y H:i" }}</td>
+                                        <td>Étudiant #{{ lesson.student_id }}</td>
+                                        <td>{{ lesson.language }}</td>
+                                        <td>{{ lesson.duration_minutes }}min</td>
+                                        <td>
+                                            <span class="badge {% if lesson.status == 'confirmed' %}bg-success{% else %}bg-warning{% endif %}">
+                                                {{ lesson.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                {% if lesson.meeting_url %}
+                                                <a href="{{ lesson.meeting_url }}" target="_blank" class="btn btn-success btn-sm">
+                                                    <i class="fa fa-video"></i>
+                                                </a>
+                                                {% endif %}
+                                                <button class="btn btn-info btn-sm" onclick="showLessonDetails({{ lesson.id }})">
+                                                    <i class="fa fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fa fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">Aucun cours programmé</h6>
+                            <p class="text-muted">Les nouveaux cours apparaîtront ici</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Actions rapides</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'teachers:profile_edit' %}" class="btn btn-primary">
+                            <i class="fa fa-user-edit"></i> Modifier mon profil
+                        </a>
+                        <a href="{% url 'teachers:availability' %}" class="btn btn-info">
+                            <i class="fa fa-clock"></i> Gérer mes disponibilités
+                        </a>
+                        <a href="{% url 'teachers:lessons' %}" class="btn btn-success">
+                            <i class="fa fa-graduation-cap"></i> Mes cours
+                        </a>
+                        <a href="{% url 'teachers:announcements' %}" class="btn btn-warning">
+                            <i class="fa fa-bullhorn"></i> Mes annonces
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Status -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Statut du profil</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge {% if teacher.status == 'approved' %}bg-success{% elif teacher.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %} me-2">
+                            {{ teacher.get_status_display }}
+                        </span>
+                    </div>
+                    
+                    {% if teacher.status == 'pending' %}
+                        <div class="alert alert-info alert-sm">
+                            <small><i class="fa fa-info-circle"></i> Votre profil est en cours d'examen par notre équipe.</small>
+                        </div>
+                    {% elif teacher.status == 'approved' %}
+                        <div class="alert alert-success alert-sm">
+                            <small><i class="fa fa-check-circle"></i> Votre profil est approuvé et visible aux étudiants.</small>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="small text-muted">
+                        <p><strong>Taux horaire:</strong> €{{ teacher.hourly_rate }}</p>
+                        <p><strong>Note moyenne:</strong> {{ teacher.average_rating|floatformat:1 }}/5</p>
+                        <p><strong>Total heures enseignées:</strong> {{ teacher.total_hours_taught }}h</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+.card-body {
+    padding: 1.25rem;
+}
+.alert-sm {
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+}
+</style>
+
+<script>
+function showLessonDetails(lessonId) {
+    // TODO: Implement lesson details modal
+    alert('Détails du cours #' + lessonId);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,440 @@
+{% extends 'public_web/public_base.html' %}
+{% load static %}
+{% load app_tags %}
+{% load i18n %}
+
+{% block title %}{% trans "Todo & Productivity" %} - Open Linguify{% endblock %}
+
+{% block meta_description %}{% trans "Advanced productivity workspace with task management, note-taking, projects, Kanban boards and collaboration. Intuitive interface with multiple views." %}{% endblock %}
+
+{% block meta_keywords %}{% trans "todo app, task management, productivity, project management, note taking, kanban board, workspace, open source" %}{% endblock %}
+
+{% block og_title %}{% trans "Todo & Productivity - Advanced Productivity Workspace" %}{% endblock %}
+
+{% block og_description %}{% trans "Complete productivity workspace with task management, note-taking, hierarchical projects, Kanban boards and team collaboration." %}{% endblock %}
+
+{% block content %}
+<section class="todo-hero">
+    <div class="container">
+        <div class="todo-hero-content">
+            <div class="todo-hero-text">
+                <div class="todo-hero-header">
+                    <div class="todo-app-icon">
+                        <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo">
+                    </div>
+                    <div class="todo-app-info">
+                        <h1 class="section-heading">{% trans "Todo" %}</h1>
+                        <p class="todo-app-tagline">{% trans "Tâches" %}</p>
+                        <p class="section-subtitle">{% trans "Espace de travail de productivité avancé" %}</p>
+                    </div>
+                </div>
+                
+                <div class="todo-hero-actions">
+                    {% if not user.is_authenticated %}
+                        <a href="{% backend_url_with_lang '/auth/register/' %}" class="btn-hero primary">
+                            <i class="bi bi-person-plus"></i>{% trans "Start for free" %}
+                        </a>
+                    {% else %}
+                        <a href="{% backend_url '/todo/' %}" class="btn-hero primary">
+                            <i class="bi bi-check2-square"></i>{% trans "Start organizing" %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'public_web:contact' %}" class="btn-hero secondary">
+                        <i class="bi bi-chat-dots"></i>{% trans "Contact" %}
+                    </a>
+                </div>
+            </div>
+            <div class="todo-hero-preview">
+                <div class="todo-dashboard-mockup">
+                    <div class="todo-browser">
+                        <div class="todo-browser-header">
+                            <div class="todo-browser-dots">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                            </div>
+                            <div class="todo-browser-title">Todo & Productivity - Open Linguify</div>
+                        </div>
+                        <div class="todo-browser-content">
+                            <div class="todo-dashboard">
+                                <div class="todo-nav">
+                                    <div class="todo-nav-brand">
+                                        <i class="bi bi-check2-square"></i>
+                                        <span>Todo</span>
+                                    </div>
+                                    <div class="todo-nav-actions">
+                                        <span class="todo-btn active">
+                                            <i class="bi bi-kanban"></i> {% trans "Kanban" %}
+                                        </span>
+                                        <span class="todo-btn">
+                                            <i class="bi bi-list-ul"></i> {% trans "List" %}
+                                        </span>
+                                        <span class="todo-btn">
+                                            <i class="bi bi-activity"></i> {% trans "Activity" %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="todo-kanban">
+                                    <div class="todo-column">
+                                        <div class="todo-column-header">
+                                            <span class="todo-column-title">{% trans "To Do" %}</span>
+                                            <span class="todo-task-count">3</span>
+                                        </div>
+                                        <div class="todo-task-card">
+                                            <div class="todo-task-title">{% trans "Review course materials" %}</div>
+                                            <div class="todo-task-meta">
+                                                <i class="bi bi-calendar"></i> {% trans "Today" %}
+                                                <span class="todo-task-tag study">{% trans "Study" %}</span>
+                                            </div>
+                                        </div>
+                                        <div class="todo-task-card priority">
+                                            <div class="todo-task-title">{% trans "Complete assignment" %}</div>
+                                            <div class="todo-task-meta">
+                                                <i class="bi bi-star-fill"></i> {% trans "Priority" %}
+                                                <span class="todo-task-tag urgent">{% trans "Urgent" %}</span>
+                                            </div>
+                                        </div>
+                                        <div class="todo-task-card">
+                                            <div class="todo-task-title">{% trans "Plan project timeline" %}</div>
+                                            <div class="todo-task-meta">
+                                                <i class="bi bi-folder"></i> {% trans "Work" %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="todo-column">
+                                        <div class="todo-column-header">
+                                            <span class="todo-column-title">{% trans "In Progress" %}</span>
+                                            <span class="todo-task-count">2</span>
+                                        </div>
+                                        <div class="todo-task-card progress">
+                                            <div class="todo-task-title">{% trans "Research presentation" %}</div>
+                                            <div class="todo-progress-bar">
+                                                <div class="todo-progress-fill"></div>
+                                            </div>
+                                            <div class="todo-task-meta">
+                                                <span class="todo-task-tag research">{% trans "Research" %}</span>
+                                            </div>
+                                        </div>
+                                        <div class="todo-task-card">
+                                            <div class="todo-task-title">{% trans "Write documentation" %}</div>
+                                            <div class="todo-task-meta">
+                                                <i class="bi bi-file-text"></i> {% trans "Notes" %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="todo-column">
+                                        <div class="todo-column-header">
+                                            <span class="todo-column-title">{% trans "Done" %}</span>
+                                            <span class="todo-task-count">4</span>
+                                        </div>
+                                        <div class="todo-task-card completed">
+                                            <div class="todo-task-title">{% trans "Setup development environment" %}</div>
+                                            <div class="todo-task-meta">
+                                                <i class="bi bi-check-circle-fill"></i> {% trans "Completed" %}
+                                            </div>
+                                        </div>
+                                        <div class="todo-task-card completed">
+                                            <div class="todo-task-title">{% trans "Review team feedback" %}</div>
+                                            <div class="todo-task-meta">
+                                                <i class="bi bi-check-circle-fill"></i> {% trans "Completed" %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="todo-features">
+    <div class="container">
+        <div class="section-text">
+            <h2 class="section-heading">{% trans "Tout ce dont vous avez besoin pour être productif" %}</h2>
+            <p class="section-description">{% trans "Un espace de travail complet pour organiser vos tâches, projets et idées" %}</p>
+        </div>
+        
+        <div class="todo-features-grid">
+            <div class="todo-feature-card">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-list-task"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Gestion Intelligente des Tâches" %}</h3>
+                <p class="todo-feature-description">{% trans "Créez, organisez et suivez les tâches avec des priorités, des dates d'échéance, des étiquettes et un suivi des progrès. Tout ce dont vous avez besoin pour rester productif." %}</p>
+            </div>
+            
+            <div class="todo-feature-card">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-kanban"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Tableaux Kanban" %}</h3>
+                <p class="todo-feature-description">{% trans "Visualisez votre flux de travail avec des tableaux kanban personnalisables. Glissez-déposez les tâches entre les colonnes pour suivre les progrès." %}</p>
+            </div>
+            
+            <div class="todo-feature-card">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-folder"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Organisation de Projets" %}</h3>
+                <p class="todo-feature-description">{% trans "Regroupez les tâches liées en projets avec suivi des progrès, échéances et fonctionnalités de collaboration d'équipe." %}</p>
+            </div>
+            
+            <div class="todo-feature-card">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Prise de Notes Enrichie" %}</h3>
+                <p class="todo-feature-description">{% trans "Prenez des notes avec support markdown, attachez-les aux tâches ou projets, et organisez avec des étiquettes et catégories." %}</p>
+            </div>
+            
+            <div class="todo-feature-card">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-bell"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Rappels Intelligents" %}</h3>
+                <p class="todo-feature-description">{% trans "Définissez des rappels personnalisés pour les tâches et échéances. Recevez des notifications au bon moment pour rester sur la bonne voie." %}</p>
+            </div>
+            
+            <div class="todo-feature-card">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-tags"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Tags & Categories" %}</h3>
+                <p class="todo-feature-description">{% trans "Organize tasks and notes with flexible tagging system and categories for better organization and filtering." %}</p>
+            </div>
+            
+            <div class="todo-feature-card">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-activity"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Activity Tracking" %}</h3>
+                <p class="todo-feature-description">{% trans "Monitor your task activity and progress with a detailed activity feed showing all your recent actions." %}</p>
+            </div>
+            
+            <div class="todo-feature-card">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-ui-checks"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Multiple Views" %}</h3>
+                <p class="todo-feature-description">{% trans "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer." %}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="todo-coming-soon">
+    <div class="container">
+        <div class="section-text">
+            <h2 class="section-heading">{% trans "Prochainement" %}</h2>
+            <p class="section-description">{% trans "Exciting features in active development" %}</p>
+        </div>
+        
+        <div class="todo-features-grid">
+            <div class="todo-feature-card coming-soon">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-calendar3"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Calendar Integration" %}</h3>
+                <p class="todo-feature-description">{% trans "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines." %}</p>
+                <div class="todo-feature-badge">{% trans "In Development" %}</div>
+            </div>
+            
+            <div class="todo-feature-card coming-soon">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-speedometer2"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Analytics Dashboard" %}</h3>
+                <p class="todo-feature-description">{% trans "Track your productivity with detailed analytics, completion rates, and progress insights." %}</p>
+                <div class="todo-feature-badge">{% trans "In Development" %}</div>
+            </div>
+            
+            <div class="todo-feature-card coming-soon">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Advanced Team Collaboration" %}</h3>
+                <p class="todo-feature-description">{% trans "Enhanced team features with real-time collaboration, task assignment, and team analytics." %}</p>
+                <div class="todo-feature-badge">{% trans "In Development" %}</div>
+            </div>
+            
+            <div class="todo-feature-card coming-soon">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Time Tracking" %}</h3>
+                <p class="todo-feature-description">{% trans "Track time spent on tasks with built-in timer and detailed time analytics." %}</p>
+                <div class="todo-feature-badge">{% trans "In Development" %}</div>
+            </div>
+            
+            <div class="todo-feature-card coming-soon">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-file-earmark"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "File Attachments" %}</h3>
+                <p class="todo-feature-description">{% trans "Attach files and documents to your tasks and projects for better organization." %}</p>
+                <div class="todo-feature-badge">{% trans "In Development" %}</div>
+            </div>
+            
+            <div class="todo-feature-card coming-soon">
+                <div class="todo-feature-icon">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
+                <h3 class="todo-feature-title">{% trans "Recurring Tasks" %}</h3>
+                <p class="todo-feature-description">{% trans "Set up tasks that repeat automatically on a schedule you define." %}</p>
+                <div class="todo-feature-badge">{% trans "In Development" %}</div>
+            </div>
+        </div>
+        
+        <div class="todo-coming-soon-note">
+            <p>{% trans "These features will be available soon. Stay tuned for the latest updates!" %}</p>
+        </div>
+    </div>
+</section>
+
+<section class="todo-use-cases">
+    <div class="container">
+        <div class="section-text">
+            <h2 class="section-heading">{% trans "Perfect For Every Use Case" %}</h2>
+            <p class="section-description">{% trans "Whether you're a student, professional, or team leader" %}</p>
+        </div>
+        
+        <div class="todo-use-cases-grid">
+            <div class="todo-use-case-card">
+                <div class="todo-use-case-icon">
+                    <i class="bi bi-mortarboard"></i>
+                </div>
+                <h4 class="todo-use-case-title">{% trans "Students" %}</h4>
+                <p class="todo-use-case-description">{% trans "Organize assignments, track study progress, manage course projects, and plan your academic schedule." %}</p>
+                <ul class="todo-use-case-features">
+                    <li><i class="bi bi-check"></i>{% trans "Assignment tracking" %}</li>
+                    <li><i class="bi bi-check"></i>{% trans "Study planning" %}</li>
+                    <li><i class="bi bi-check"></i>{% trans "Course organization" %}</li>
+                    <li><i class="bi bi-check"></i>{% trans "Research notes" %}</li>
+                </ul>
+            </div>
+            
+            <div class="todo-use-case-card">
+                <div class="todo-use-case-icon">
+                    <i class="bi bi-briefcase"></i>
+                </div>
+                <h4 class="todo-use-case-title">{% trans "Professionals" %}</h4>
+                <p class="todo-use-case-description">{% trans "Manage work projects, track deadlines, organize meeting notes, and boost your productivity." %}</p>
+                <ul class="todo-use-case-features">
+                    <li><i class="bi bi-check"></i>{% trans "Project management" %}</li>
+                    <li><i class="bi bi-check"></i>{% trans "Deadline tracking" %}</li>
+                    <li><i class="bi bi-check"></i>{% trans "Meeting notes" %}</li>
+                    <li><i class="bi bi-check"></i>{% trans "Goal setting" %}</li>
+                </ul>
+            </div>
+            
+            <div class="todo-use-case-card">
+                <div class="todo-use-case-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h4 class="todo-use-case-title">{% trans "Teams" %}</h4>
+                <p class="todo-use-case-description">{% trans "Collaborate on shared projects, assign tasks to team members, and track collective progress." %}</p>
+                <ul class="todo-use-case-features">
+                    <li><i class="bi bi-check"></i>{% trans "Shared workspaces" %}</li>
+                    <li><i class="bi bi-check"></i>{% trans "Task assignment" %}</li>
+                    <li><i class="bi bi-check"></i>{% trans "Progress tracking" %}</li>
+                    <li><i class="bi bi-check"></i>{% trans "Team analytics" %}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="todo-getting-started">
+    <div class="container">
+        <div class="section-text">
+            <h2 class="section-heading">{% trans "Commencez en Minutes" %}</h2>
+            <p class="section-description">{% trans "Simple setup process to get you organized right away" %}</p>
+        </div>
+        
+        <div class="todo-steps-grid">
+            <div class="todo-step">
+                <div class="todo-step-number">1</div>
+                <h4 class="todo-step-title">{% trans "Créer un Compte" %}</h4>
+                <p class="todo-step-description">{% trans "Sign up for free and access the todo app from your dashboard." %}</p>
+            </div>
+            <div class="todo-step">
+                <div class="todo-step-number">2</div>
+                <h4 class="todo-step-title">{% trans "Set Up Projects" %}</h4>
+                <p class="todo-step-description">{% trans "Create your first project and organize tasks by categories and priorities." %}</p>
+            </div>
+            <div class="todo-step">
+                <div class="todo-step-number">3</div>
+                <h4 class="todo-step-title">{% trans "Commencer à Organiser" %}</h4>
+                <p class="todo-step-description">{% trans "Add tasks, set deadlines, take notes, and watch your productivity soar." %}</p>
+            </div>
+        </div>
+        
+        <div class="todo-getting-started-cta">
+            <a href="{% backend_url '/todo/' %}" class="btn-cta primary">
+                <i class="bi bi-rocket"></i>{% trans "Launch Todo App" %}
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="todo-integration">
+    <div class="container">
+        <div class="section-text">
+            <h2 class="section-heading">{% trans "Seamless Integration" %}</h2>
+            <p class="section-description">{% trans "Works perfectly with other Open Linguify apps" %}</p>
+        </div>
+        
+        <div class="todo-integration-grid">
+            <div class="todo-integration-card">
+                <div class="todo-integration-content">
+                    <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision" class="todo-integration-icon">
+                    <div class="todo-integration-info">
+                        <h5 class="todo-integration-title">{% trans "Revision" %}</h5>
+                        <p class="todo-integration-description">{% trans "Révision" %}</p>
+                        <p class="todo-integration-detail">{% trans "Create study tasks for flashcard reviews" %}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="todo-integration-card">
+                <div class="todo-integration-content">
+                    <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" class="todo-integration-icon">
+                    <div class="todo-integration-info">
+                        <h5 class="todo-integration-title">{% trans "Notebook" %}</h5>
+                        <p class="todo-integration-description">{% trans "Carnet" %}</p>
+                        <p class="todo-integration-detail">{% trans "Link notes to tasks and projects" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="todo-cta">
+    <div class="container">
+        <div class="todo-cta-content">
+            <div class="todo-cta-icon">
+                <i class="bi bi-rocket-takeoff-fill"></i>
+            </div>
+            
+            <h2 class="todo-cta-heading">{% trans "Prêt à vous Organiser ?" %}</h2>
+            <p class="todo-cta-description">{% trans "Join thousands of users who have transformed their productivity with our todo app." %}</p>
+            
+            <div class="todo-cta-buttons">
+                <a href="{% backend_url '/todo/' %}" class="btn-cta primary">
+                    <i class="bi bi-check2-square"></i>{% trans "Start Now - It's Free" %}
+                </a>
+                <a href="{% url 'public_web:apps' %}" class="btn-cta secondary">
+                    <i class="bi bi-grid-3x3-gap"></i>{% trans "Explore All Apps" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,57 @@
+<!-- Templates HTML pour les éléments de tags -->
+
+<!-- Template pour afficher "Aucun tag" avec icône cliquable -->
+<template id="no-tags-template">
+    <span class="no-tags-message">
+        Aucun tag - Cliquez sur 
+        <i class="bi bi-tag clickable-tag-icon" style="cursor: pointer; color: #2d5bba;"></i> 
+        pour en ajouter
+    </span>
+</template>
+
+<!-- Template pour un tag individuel -->
+<template id="tag-template">
+    <span class="tag-linguify"></span>
+</template>
+
+<!-- Template pour le preview d'un tag -->
+<template id="tag-preview-template">
+    <span class="badge tag-color-preview">Aperçu</span>
+</template>
+
+<!-- Template pour une ligne de tag dans le tableau de gestion -->
+<template id="tag-table-row-template">
+    <tr class="tag-row" data-tag="">
+        <td>
+            <input type="checkbox" class="form-check-input tag-assign-checkbox" data-tag="">
+        </td>
+        <td>
+            <div class="d-flex align-items-center">
+                <span class="badge me-2" style="color: white;"></span>
+            </div>
+        </td>
+        <td>
+            <div class="color-display" style="width: 20px; height: 20px; border-radius: 3px; border: 1px solid #ddd;"></div>
+        </td>
+        <td>
+            <span class="text-muted usage-count">0</span>
+        </td>
+        <td>
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary edit-tag-btn" title="Modifier">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-outline-danger delete-tag-btn" title="Supprimer">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<!-- Template pour les boutons de pagination -->
+<template id="pagination-item-template">
+    <li class="page-item">
+        <a class="page-link" href="#"></a>
+    </li>
+</template>

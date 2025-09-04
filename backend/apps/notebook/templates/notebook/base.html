@@ -28,31 +28,37 @@
     
     <!-- CSS personnalisé pour le notebook (avant app_header pour ne pas écraser) -->
     <link rel="stylesheet" href="{% static 'notebook/css/notebook.css' %}">
-    
+    <link rel="stylesheet" href="{% static 'css/tailwind-modals.css' %}">
     <!-- CSS du header (en dernier pour avoir la priorité) -->
     <link rel="stylesheet" href="{% static 'saas_web/css/app_header.css' %}">
     
     {% block extra_css %}{% endblock %}
     
     <style>
-        /* Ajustement minimal pour le header fixe */
-        body {
-            padding-top: 64px; /* Hauteur standard du header */
+        /* Header app global fixe en haut */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
         }
     </style>
 </head>
-<body>
-    <div class="notebook-container">
-        <!-- Header -->
-        {% include 'components/header/app_header.html' %}
-        
-        <!-- App-specific header content -->
-        <div class="app-header-content border-bottom" style="background: #f8fafc; padding: 1rem 1.5rem;">
-            {% block header_content %}{% endblock %}
+<body class="app-body-layout">
+    <!-- Include the unified app header -->
+    {% include 'components/header/app_header.html' %}
+    
+    <div class="app-container-layout">
+        <!-- App-specific header section (below main header) -->
+        <div class="app-header-layout">
+            <div class="header-content">
+                {% block header_content %}{% endblock %}
+            </div>
         </div>
         
         <!-- Main Content -->
-        <div class="notebook-main">
+        <div class="app-main-layout">
             {% block content %}{% endblock %}
         </div>
     </div>

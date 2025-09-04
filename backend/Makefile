@@ -12,7 +12,7 @@ help:
 	@echo "========================================"
 	@echo ""
 	@echo "📋 DETAILED HELP:"
-	@echo "  help-apps        Application management: status, visibility, sync, deletion"
+	@echo "  help-apps        Application management: create, status, visibility, sync, deletion"
 	@echo "  help-db          Database management: status, sync, config, migrations"  
 	@echo "  help-dev         Development: server, tests, code formatting, cleanup"
 	@echo "  help-deploy      Deployment: production, validation, comparisons, workflow"
@@ -21,6 +21,7 @@ help:
 	@echo "⚡ QUICK COMMANDS:"
 	@echo "  st               Quick status (dev + prod)"
 	@echo "  apps             List applications"
+	@echo "  apps-prod        List apps in PRODUCTION"
 	@echo "  env              Show current environment"
 	@echo "  env-dev          Switch to DEVELOPMENT"
 	@echo "  env-prod         ⚠️  Switch to PRODUCTION"
@@ -40,8 +41,13 @@ help-apps:
 	@echo "📱 APPLICATION MANAGEMENT"
 	@echo "========================="
 	@echo ""
+	@echo "🚀 Create new app:"
+	@echo "  create-app APP=<name> [NAME='Display Name'] [CATEGORY=productivity]"
+	@echo "      Complete app creation with all files + App Store integration"
+	@echo ""
 	@echo "📋 Status and information:"
-	@echo "  apps                     List all applications"
+	@echo "  apps                    List all applications"
+	@echo "  apps-prod               List apps in PRODUCTION"
 	@echo "  apps-manifests          List found manifests"
 	@echo "  app-info APP=<code>     Detailed app info"
 	@echo ""
@@ -60,16 +66,42 @@ help-apps:
 	@echo "  app-delete APP=<code>   Permanently delete app"
 	@echo ""
 	@echo "📝 Examples:"
+	@echo "  make create-app APP=task_manager NAME='Task Manager'"
+	@echo "  make create-app APP=fitness_tracker CATEGORY=health"
 	@echo "  make apps"
 	@echo "  make app-hide APP=demo_app_test"
 	@echo "  make app-show APP=community"
 	@echo "  make sync-app APP=course"
-	@echo "  make sync-icons"
+
+create-app:
+	@if [ -z "$(APP)" ]; then \
+		echo "❌ Usage: make create-app APP=<name> [NAME='Display Name'] [CATEGORY=productivity]"; \
+		echo "📝 Examples:"; \
+		echo "  make create-app APP=task_manager NAME='Task Manager'"; \
+		echo "  make create-app APP=fitness_tracker CATEGORY=health"; \
+		echo "📋 Features:"; \
+		echo "  ✅ Complete Django app structure"; \
+		echo "  ✅ Manifest + URL configuration"; \
+		echo "  ✅ CSS/JS files (general + page-specific)"; \
+		echo "  ✅ Auto-sync to App Store & Dashboard"; \
+		exit 1; \
+	fi
+	@echo "🚀 Creating complete app with full integration: $(APP)"
+	@if [ -n "$(NAME)" ] && [ -n "$(CATEGORY)" ]; then \
+		poetry run python scripts/create_complete_app.py $(APP) "$(NAME)" $(CATEGORY); \
+	elif [ -n "$(NAME)" ]; then \
+		poetry run python scripts/create_complete_app.py $(APP) "$(NAME)"; \
+	else \
+		poetry run python scripts/create_complete_app.py $(APP); \
+	fi
 
 apps:
 	@echo "📱 Listing applications..."
 	@$(eval ENV_VAL := $(shell grep DJANGO_ENV .env | cut -d'=' -f2 | tr -d '"'))
 	@DJANGO_ENV=$(ENV_VAL) poetry run python scripts/database/app_manager.py list
+
+apps-prod:
+	@poetry run python scripts/check_prod_apps.py
 
 apps-manifests:
 	@echo "📋 Application manifests..."
@@ -109,11 +141,13 @@ app-delete:
 	@if [ -z "$(APP)" ]; then \
 		echo "❌ Usage: make app-delete APP=<code>"; \
 		echo "📝 Example: make app-delete APP=demo_app_test"; \
+		echo "📋 Available apps:"; \
+		poetry run python scripts/delete_app.py --list; \
 		exit 1; \
 	fi
 	@echo "🗑️  Deleting application: $(APP)"
-	@$(eval ENV_VAL := $(shell grep DJANGO_ENV .env | cut -d'=' -f2 | tr -d '"'))
-	@DJANGO_ENV=$(ENV_VAL) poetry run python scripts/database/app_manager.py delete $(APP)
+	@echo "⚠️  This will completely remove the app from the system!"
+	@poetry run python scripts/delete_app.py $(APP)
 
 sync-manifests:
 	@echo "🔄 Complete manifest synchronization..."

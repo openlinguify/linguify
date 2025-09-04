@@ -1,0 +1,193 @@
+{% load i18n %}
+<!-- Navbar spécifique à l'app Teaching -->
+<div class="navbar-linguify">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="navbar-section">
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <a href="{% url 'teaching:dashboard' %}" 
+               class="nav-tab {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-house-door"></i>
+                {% trans "Accueil" %}
+            </a>
+            <a href="{% url 'teaching:my_teachers' %}" 
+               class="nav-tab {% if request.resolver_match.url_name == 'my_teachers' %}active{% endif %}">
+                <i class="bi bi-people"></i>
+                {% trans "Professeurs" %}
+            </a>
+            <a href="{% url 'teaching:my_lessons' %}" 
+               class="nav-tab {% if request.resolver_match.url_name == 'my_lessons' %}active{% endif %}">
+                <i class="bi bi-calendar-event"></i>
+                {% trans "Mes cours" %}
+            </a>
+        </div>
+        
+        <!-- Refresh button -->
+        <button id="refreshTeaching" class="btn-navbar btn-navbar-outline" title="{% trans 'Actualiser' %}">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-xl-inline">{% trans "Actualiser" %}</span>
+        </button>
+    </div>
+    
+    <!-- Droite: Actions et filtres -->
+    <div class="navbar-section-right">
+        {% if request.resolver_match.url_name == 'find_teachers' or request.resolver_match.url_name == 'teachers_list' %}
+        <!-- Filtres pour la liste des professeurs -->
+        <input type="text" id="searchTeachers" class="form-control-linguify" 
+               placeholder="{% trans 'Rechercher un professeur...' %}" 
+               style="width: 180px; min-width: 140px;">
+        
+        <!-- Language Filter -->
+        <div class="dropdown">
+            <button id="languageFilterToggle" class="btn btn-outline-linguify dropdown-toggle" 
+                    style="width: 120px; min-width: 100px;" data-bs-toggle="dropdown">
+                <span id="languageFilterText">{% trans "Toutes langues" %}</span>
+            </button>
+            <ul id="languageFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectLanguageFilter('', '{% trans "Toutes langues" %}')">{% trans "Toutes langues" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectLanguageFilter('fr', '{% trans "Français" %}')">🇫🇷 {% trans "Français" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectLanguageFilter('en', '{% trans "Anglais" %}')">🇺🇸 {% trans "Anglais" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectLanguageFilter('es', '{% trans "Espagnol" %}')">🇪🇸 {% trans "Espagnol" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectLanguageFilter('de', '{% trans "Allemand" %}')">🇩🇪 {% trans "Allemand" %}</a></li>
+            </ul>
+        </div>
+        
+        <!-- Sort Filter -->
+        <div class="dropdown">
+            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" 
+                    style="width: 120px; min-width: 100px;" data-bs-toggle="dropdown">
+                <span id="sortFilterText">{% trans "Mieux notés" %}</span>
+            </button>
+            <ul id="sortFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('rating_desc', '{% trans "Mieux notés" %}')">{% trans "Mieux notés" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('price_asc', '{% trans "Prix croissant" %}')">{% trans "Prix croissant" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('price_desc', '{% trans "Prix décroissant" %}')">{% trans "Prix décroissant" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('experience_desc', '{% trans "Expérience" %}')">{% trans "Expérience" %}</a></li>
+            </ul>
+        </div>
+        
+        {% elif request.resolver_match.url_name == 'my_lessons' or request.resolver_match.url_name == 'my_teachers' %}
+        <!-- Actions pour mes cours - simples -->
+        <div class="navbar-actions-group">
+            <a href="{% url 'teaching:find_teachers' %}" class="btn-navbar btn-navbar-outline">
+                <i class="bi bi-search"></i>
+                <span class="d-none d-xxl-inline">{% trans "Trouver un professeur" %}</span>
+            </a>
+            
+            <button id="bookLessonQuick" class="btn-navbar btn-navbar-primary">
+                <i class="bi bi-calendar-plus"></i>
+                <span class="d-none d-xxl-inline">{% trans "Réserver un cours" %}</span>
+            </button>
+        </div>
+        
+        {% else %}
+        <!-- Actions par défaut pour dashboard -->
+        <div class="navbar-actions-group">
+            <a href="{% url 'teaching:find_teachers' %}" class="btn-navbar btn-navbar-outline">
+                <i class="bi bi-search"></i>
+                <span class="d-none d-xxl-inline">{% trans "Trouver un professeur" %}</span>
+            </a>
+            
+            <button id="bookLessonQuick" class="btn-navbar btn-navbar-primary">
+                <i class="bi bi-calendar-plus"></i>
+                <span class="d-none d-xxl-inline">{% trans "Réserver un cours" %}</span>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript pour les filtres -->
+<script>
+// Fonctions pour les filtres de la navbar teaching
+window.teachingFilters = {
+    // Filtres professeurs
+    selectLanguageFilter: function(value, text) {
+        document.getElementById('languageFilterText').textContent = text;
+        // Ici on peut ajouter la logique de filtrage
+        console.log('Filter by language:', value);
+        this.applyTeacherFilters();
+    },
+    
+    selectSortFilter: function(value, text) {
+        document.getElementById('sortFilterText').textContent = text;
+        console.log('Sort by:', value);
+        this.applyTeacherFilters();
+    },
+    
+    selectStatusFilter: function(value, text) {
+        document.getElementById('statusFilterText').textContent = text;
+        console.log('Filter by status:', value);
+        this.applyLessonFilters();
+    },
+    
+    // Appliquer filtres professeurs
+    applyTeacherFilters: function() {
+        const search = document.getElementById('searchTeachers')?.value || '';
+        const language = this.getCurrentFilter('languageFilterText');
+        const sort = this.getCurrentFilter('sortFilterText');
+        
+        // Ici on peut faire une requête AJAX pour filtrer
+        if (window.teachingAPI) {
+            window.teachingAPI.filterTeachers({ search, language, sort });
+        }
+    },
+    
+    // Appliquer filtres cours
+    applyLessonFilters: function() {
+        const search = document.getElementById('searchLessons')?.value || '';
+        const status = this.getCurrentFilter('statusFilterText');
+        
+        if (window.teachingAPI) {
+            window.teachingAPI.filterLessons({ search, status });
+        }
+    },
+    
+    getCurrentFilter: function(elementId) {
+        const element = document.getElementById(elementId);
+        return element ? element.textContent.trim() : '';
+    }
+};
+
+// Exposer les fonctions globalement pour les événements inline
+window.selectLanguageFilter = window.teachingFilters.selectLanguageFilter.bind(window.teachingFilters);
+window.selectSortFilter = window.teachingFilters.selectSortFilter.bind(window.teachingFilters);
+window.selectStatusFilter = window.teachingFilters.selectStatusFilter.bind(window.teachingFilters);
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Refresh button
+    const refreshBtn = document.getElementById('refreshTeaching');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+            window.location.reload();
+        });
+    }
+    
+    // Quick book lesson button
+    const quickBookBtn = document.getElementById('bookLessonQuick');
+    if (quickBookBtn) {
+        quickBookBtn.addEventListener('click', function() {
+            window.location.href = '{% url "teaching:find_teachers" %}';
+        });
+    }
+    
+    // Search inputs avec debounce
+    ['searchTeachers', 'searchLessons'].forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            let timeout;
+            input.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    if (inputId === 'searchTeachers') {
+                        window.teachingFilters.applyTeacherFilters();
+                    } else {
+                        window.teachingFilters.applyLessonFilters();
+                    }
+                }, 500);
+            });
+        }
+    });
+});
+</script>

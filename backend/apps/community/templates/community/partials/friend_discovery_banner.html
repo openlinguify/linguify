@@ -1,0 +1,274 @@
+{% load i18n %}
+
+<!-- Friend Discovery Banner -->
+<div class="friend-discovery-banner">
+    <div class="banner-content">
+        <div class="banner-icon">
+            <i class="bi bi-globe-americas"></i>
+        </div>
+        <div class="banner-text">
+            <h3>{% trans "Find Your Perfect Language Partner" %}</h3>
+            <p>{% trans "Connect with native speakers who want to learn your language" %}</p>
+        </div>
+        <div class="banner-actions">
+            <a href="{% url 'community:discover' %}" class="btn-primary-gradient">
+                <i class="bi bi-search me-2"></i>
+                {% trans "Discover Partners" %}
+            </a>
+            <button class="btn-secondary-outline" data-bs-toggle="modal" data-bs-target="#quickMatchModal">
+                <i class="bi bi-lightning-charge me-2"></i>
+                {% trans "Quick Match" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Match Modal -->
+<div class="modal fade" id="quickMatchModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-lightning-charge me-2"></i>
+                    {% trans "Quick Language Partner Match" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="quick-match-form">
+                    <h6>{% trans "Tell us what you're looking for:" %}</h6>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "I want to practice:" %}</label>
+                        <select class="form-select" id="practice-language">
+                            <option value="">{% trans "Select language" %}</option>
+                            <option value="en">English</option>
+                            <option value="fr">Français</option>
+                            <option value="es">Español</option>
+                            <option value="de">Deutsch</option>
+                            <option value="it">Italiano</option>
+                            <option value="pt">Português</option>
+                            <option value="zh">中文</option>
+                            <option value="ja">日本語</option>
+                            <option value="ko">한국어</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "My availability:" %}</label>
+                        <div class="availability-options">
+                            <label class="availability-option">
+                                <input type="radio" name="availability" value="now">
+                                <span>{% trans "Available now" %}</span>
+                            </label>
+                            <label class="availability-option">
+                                <input type="radio" name="availability" value="weekdays">
+                                <span>{% trans "Weekdays" %}</span>
+                            </label>
+                            <label class="availability-option">
+                                <input type="radio" name="availability" value="weekends">
+                                <span>{% trans "Weekends" %}</span>
+                            </label>
+                            <label class="availability-option">
+                                <input type="radio" name="availability" value="flexible">
+                                <span>{% trans "Flexible" %}</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Preferred practice type:" %}</label>
+                        <div class="practice-types">
+                            <label class="practice-type">
+                                <input type="checkbox" value="conversation">
+                                <span>{% trans "Conversation" %}</span>
+                            </label>
+                            <label class="practice-type">
+                                <input type="checkbox" value="text">
+                                <span>{% trans "Text Chat" %}</span>
+                            </label>
+                            <label class="practice-type">
+                                <input type="checkbox" value="video">
+                                <span>{% trans "Video Call" %}</span>
+                            </label>
+                            <label class="practice-type">
+                                <input type="checkbox" value="grammar">
+                                <span>{% trans "Grammar Help" %}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-simple btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn-primary-gradient" id="findMatchBtn">
+                    <i class="bi bi-search me-1"></i>
+                    {% trans "Find Matches" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.friend-discovery-banner {
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.15);
+}
+
+.banner-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.banner-icon {
+    font-size: 48px;
+    color: white;
+    opacity: 0.9;
+}
+
+.banner-text {
+    flex: 1;
+    min-width: 250px;
+}
+
+.banner-text h3 {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.banner-text p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    margin: 0;
+}
+
+.banner-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-primary-gradient {
+    background: white;
+    color: var(--linguify-primary);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: var(--linguify-primary-dark);
+}
+
+.btn-secondary-outline {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+}
+
+/* Quick Match Modal Styles */
+.quick-match-form {
+    padding: 20px;
+}
+
+.availability-options, .practice-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.availability-option, .practice-type {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 2px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.availability-option:hover, .practice-type:hover {
+    border-color: var(--linguify-primary);
+    background: var(--linguify-gray-50);
+}
+
+.availability-option input, .practice-type input {
+    margin-right: 8px;
+}
+
+.availability-option input:checked + span,
+.practice-type input:checked + span {
+    color: var(--linguify-primary);
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .banner-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .banner-actions {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-primary-gradient, .btn-secondary-outline {
+        flex: 1;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const findMatchBtn = document.getElementById('findMatchBtn');
+    
+    if (findMatchBtn) {
+        findMatchBtn.addEventListener('click', function() {
+            const language = document.getElementById('practice-language').value;
+            const availability = document.querySelector('input[name="availability"]:checked')?.value;
+            const practiceTypes = Array.from(document.querySelectorAll('.practice-type input:checked'))
+                .map(input => input.value);
+            
+            if (!language) {
+                alert("{% trans 'Please select a language to practice' %}");
+                return;
+            }
+            
+            // Build URL with parameters
+            let url = "{% url 'community:discover' %}?quick_match=1";
+            if (language) url += `&target_language=${language}`;
+            if (availability) url += `&availability=${availability}`;
+            if (practiceTypes.length) url += `&practice_types=${practiceTypes.join(',')}`;
+            
+            // Redirect to discover page with filters
+            window.location.href = url;
+        });
+    }
+});
+</script>

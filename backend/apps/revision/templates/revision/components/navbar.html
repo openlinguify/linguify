@@ -1,110 +1,167 @@
-<!-- Interface unifiée sur une seule ligne -->
-<div class="d-flex align-items-center justify-content-between gap-2" style="min-height: 40px; overflow-x: auto; position: relative; z-index: 1000;">
+<!-- Interface unifiée Linguify -->
+<div class="navbar-linguify">
     <!-- Gauche: Navigation + Actions principales -->
-    <div class="d-flex align-items-center gap-3">
-        <!-- Bouton toggle sidebar mobile pour autres pages -->
-        {% if view_type != 'explore' %}
-        <button id="toggleSidebar" class="btn btn-outline-custom btn-sm d-md-none">
-            <i class="bi bi-list"></i>
-        </button>
-        {% endif %}
+    <div class="navbar-section">
+        <!-- Bouton toggle sidebar pour toutes les pages -->
+        <div>
+            <button id="toggleSidebar" 
+                class="btn-navbar-outline" 
+                title="Masquer/Afficher la barre latérale"
+                aria-label="Basculer la barre latérale"
+                aria-expanded="true">
+            <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
+            </button>
+        </div>
         
         <!-- Navigation tabs -->
-        <div class="d-flex align-items-center gap-1">
+        <div class="nav-tabs-group">
             <a href="{% url 'revision_web:main' %}" 
                class="nav-tab {% if app_name == 'revision' and not study_mode and not view_type %}active{% endif %}">
-                <i class="bi bi-stack me-1"></i>
+                <i class="bi bi-stack"></i>
                 Liste de cartes
             </a>
-            <a href="{% url 'revision_web:explore' %}" 
+            <a href="/revision/explore/" 
                class="nav-tab {% if view_type == 'explore' %}active{% endif %}">
-                <i class="bi bi-globe2 me-1"></i>
+                <i class="bi bi-globe2"></i>
                 Explorer
             </a>
             <a href="{% url 'revision_web:stats_dashboard' %}" 
                class="nav-tab {% if view_type == 'stats' %}active{% endif %}">
-                <i class="bi bi-graph-up me-1"></i>
+                <i class="bi bi-graph-up"></i>
                 Statistiques
             </a>
         </div>
-        
-        <!-- Refresh -->
-        <button id="refreshDecks" class="btn btn-outline-custom btn-sm">
+
+        <!-- Refresh - Always show, but different for stats -->
+        {% if view_type == 'stats' %}
+        <button id="refreshStats" class="btn-navbar btn-navbar-outline" title="Actualiser les statistiques">
             <i class="bi bi-arrow-clockwise"></i>
-            <span class="d-none d-xl-inline ms-1">Actualiser</span>
+            <span class="d-none d-xl-inline">Actualiser</span>
         </button>
+        {% else %}
+        <button id="refreshDecks" class="btn-navbar btn-navbar-outline" title="Actualiser la liste des decks">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-xl-inline">Actualiser</span>
+        </button>
+        {% endif %}
     </div>
     
-    
     <!-- Droite: Actions et filtres contextuels -->
-    <div class="d-flex align-items-center gap-1 flex-nowrap">
-        {% if view_type == 'explore' %}
-        <!-- Bouton toggle sidebar pour Explorer -->
-        <button id="toggleSidebar" class="btn btn-outline-custom btn-sm px-2" onclick="toggleSidebar()">
-            <i class="bi bi-layout-sidebar"></i>
-            <span class="d-none d-lg-inline ms-1">Filtres</span>
+    <div class="navbar-section-right">
+        {% if view_type == 'stats' %}
+        <!-- Filtres pour la page Statistiques - Simplifiés -->
+        <!-- Time Range Filter - Spécifique aux statistiques -->
+        <select id="statsTimeRange" class="form-select-linguify" style="width: 140px; min-width: 120px;">
+            <option value="7">7 derniers jours</option>
+            <option value="30" selected>30 derniers jours</option>
+            <option value="90">3 derniers mois</option>
+            <option value="365">Cette année</option>
+            <option value="all">Toute la période</option>
+        </select>
+        
+        <button id="exportStats" class="btn-navbar btn-navbar-outline" title="Exporter les statistiques">
+            <i class="bi bi-download"></i>
+            <span class="d-none d-lg-inline">Exporter</span>
         </button>
         
-        <!-- Filtres pour la page Explorer -->
-        <input type="text" id="searchInput" class="form-control form-control-sm search-input" placeholder="Rechercher des decks..." style="width: 180px; min-width: 120px;">
+        {% elif view_type == 'explore' %}
+        <!-- Bouton toggle sidebar pour Explorer -->
+        <button id="toggleSidebar" class="btn-navbar btn-navbar-outline" onclick="toggleSidebar()">
+            <i class="bi bi-layout-sidebar"></i>
+            <span class="d-none d-lg-inline">Filtres</span>
+        </button>
         
-        <select id="statusFilter" class="form-select form-select-sm filter-select" style="width: 120px; min-width: 100px;">
-            <option value="">Tous les decks</option>
-            <option value="new">Récents</option>
-            <option value="popular">Populaires</option>
-        </select>
+        <!-- Filtres pour la page Explorer - Alignés avec la Liste de cartes -->
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
         
-        <select id="sortFilter" class="form-select form-select-sm filter-select" style="width: 120px; min-width: 100px;">
-            <option value="created_at">Plus récents</option>
-            <option value="name">A-Z</option>
-            <option value="popularity">Popularité</option>
-            <option value="cards_count">Nb. cartes</option>
-        </select>
+        <!-- Status Filter Dropdown -->
+        <div class="dropdown">
+            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="statusFilterText">Tous les statuts</span>
+            </button>
+            <ul id="statusFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous les statuts')">Tous les statuts</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('new', 'Récents')">Récents</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('popular', 'Populaires')">Populaires</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('public', 'Publics')">Publics</a></li>
+            </ul>
+        </div>
         
-        <!-- Bouton retour vers mes decks -->
-        <a href="{% url 'revision_web:main' %}" class="btn btn-outline-custom btn-sm px-2">
-            <i class="bi bi-arrow-left"></i>
-            <span class="d-none d-xxl-inline ms-1">Mes Decks</span>
-        </a>
+        <!-- Sort Filter Dropdown -->
+        <div class="dropdown">
+            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="sortFilterText">Plus récents</span>
+            </button>
+            <ul id="sortFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">Plus récents</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('popularity_desc', 'Popularité')">Popularité</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('cards_desc', 'Nb. cartes')">Nb. cartes</a></li>
+            </ul>
+        </div>
+        
+        <!-- Tags Filter Dropdown -->
+        <div class="dropdown">
+            <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="tagsFilterText">Tous les tags</span>
+            </button>
+            <ul id="tagsFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectTagsFilter('', 'Tous les tags')">Tous les tags</a></li>
+                <!-- More tags will be dynamically loaded here -->
+            </ul>
+        </div>
         
         {% else %}
         <!-- Filtres pour les pages personnelles -->
-        <input type="text" id="searchInput" class="form-control form-control-sm search-input" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
         
-        <select id="statusFilter" class="form-select form-select-sm filter-select" style="width: 110px; min-width: 90px;">
-            <option value="">Tous les statuts</option>
-            <option value="active">Actifs</option>
-            <option value="archived">Archivés</option>
-            <option value="public">Publics</option>
-        </select>
-        
-        <select id="sortFilter" class="form-select form-select-sm filter-select" style="width: 110px; min-width: 90px;">
-            <option value="updated_desc">Plus récents</option>
-            <option value="name_asc">A-Z</option>
-            <option value="progress_desc">Progression</option>
-        </select>
-        
-        <div class="tags-filter-container">
-            <button id="tagsFilterToggle" class="btn btn-tags-filter btn-sm px-2">
-                <i class="bi bi-tags"></i>
-                <span class="tags-filter-label d-none d-lg-inline">Tags</span>
-                <span class="tags-filter-count" id="tagsFilterCount">0</span>
+        <!-- Status Filter Dropdown -->
+        <div class="dropdown">
+            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="statusFilterText">Tous les statuts</span>
             </button>
-            <div id="tagsFilterDropdown" class="tags-filter-dropdown">
-                <!-- Tags will be dynamically loaded here -->
-            </div>
+            <ul id="statusFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous les statuts')">Tous les statuts</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('active', 'Actifs')">Actifs</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('archived', 'Archivés')">Archivés</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('public', 'Publics')">Publics</a></li>
+            </ul>
         </div>
         
-        <!-- Actions -->
-        <button id="importDeck" class="btn btn-outline-custom btn-sm px-2">
-            <i class="bi bi-upload"></i>
-            <span class="d-none d-xxl-inline ms-1">Importer</span>
-        </button>
+        <!-- Sort Filter Dropdown -->
+        <div class="dropdown">
+            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="sortFilterText">Plus récents</span>
+            </button>
+            <ul id="sortFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">Plus récents</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('progress_desc', 'Progression')">Progression</a></li>
+            </ul>
+        </div>
         
-        <button id="createDeck" class="btn btn-gradient btn-sm px-2">
-            <i class="bi bi-plus-lg"></i>
-            <span class="d-none d-xxl-inline ms-1">Nouveau</span>
-        </button>
+        <!-- Tags Filter Dropdown -->
+        <div class="dropdown">
+            <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="tagsFilterText">Tous les tags</span>
+            </button>
+            <ul id="tagsFilterDropdown" class="dropdown-menu">
+                <!-- Tags will be dynamically loaded here -->
+            </ul>
+        </div>
+        
+        <!-- Actions - Only show when no deck is selected -->
+        <div id="generalActions" class="navbar-actions-group">
+            <button id="importDeck" class="btn-navbar btn-navbar-outline">
+                <i class="bi bi-upload"></i>
+                <span class="d-none d-xxl-inline">Importer</span>
+            </button>
+            
+            <button id="createDeck" class="btn-navbar btn-navbar-primary">
+                <i class="bi bi-plus-lg"></i>
+                <span class="d-none d-xxl-inline">Nouveau</span>
+            </button>
+        </div>
         {% endif %}
     </div>
 </div>

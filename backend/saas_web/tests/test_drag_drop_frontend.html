@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tests Frontend Drag & Drop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        .test-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .apps-grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            max-width: 400px;
+            margin: 20px 0;
+        }
+        
+        .app-link {
+            cursor: grab;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .app-card-simple {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .app-icon-simple {
+            width: 40px;
+            height: 40px;
+            background: #007bff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin: 0 auto 0.5rem;
+        }
+        
+        .app-name-simple {
+            font-size: 0.8rem;
+            margin: 0;
+        }
+        
+        .test-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Tests Frontend Drag & Drop</h1>
+    
+    <div class="test-container">
+        <h2>Test 1: Initialisation du système</h2>
+        <div id="test1-result" class="test-result"></div>
+        <div id="test1-log" class="test-log"></div>
+        
+        <!-- Apps de test -->
+        <div class="apps-grid-container" id="test-apps">
+            <a href="#" class="app-link" data-app-name="App1">
+                <div class="app-card-simple">
+                    <div class="app-icon-simple">1</div>
+                    <h6 class="app-name-simple">App 1</h6>
+                </div>
+            </a>
+            <a href="#" class="app-link" data-app-name="App2">
+                <div class="app-card-simple">
+                    <div class="app-icon-simple">2</div>
+                    <h6 class="app-name-simple">App 2</h6>
+                </div>
+            </a>
+            <a href="#" class="app-link" data-app-name="App3">
+                <div class="app-link" data-app-name="App3">
+                <div class="app-card-simple">
+                    <div class="app-icon-simple">3</div>
+                    <h6 class="app-name-simple">App 3</h6>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h2>Test 2: Événements de drag</h2>
+        <div id="test2-result" class="test-result"></div>
+        <div id="test2-log" class="test-log"></div>
+        <button onclick="runDragEventTests()">Lancer les tests d'événements</button>
+    </div>
+    
+    <div class="test-container">
+        <h2>Test 3: API de sauvegarde</h2>
+        <div id="test3-result" class="test-result"></div>
+        <div id="test3-log" class="test-log"></div>
+        <button onclick="runAPITests()">Tester l'API (nécessite serveur)</button>
+    </div>
+
+    <script>
+        // Copie des fonctions du dashboard pour les tests
+        let draggedElement = null;
+        let draggedIndex = null;
+        let isDragging = false;
+        let dragStartTime = 0;
+        
+        // Mock CSRF token pour les tests
+        window.csrfToken = 'test-csrf-token';
+        
+        // Logs de test
+        function logTest(testId, message) {
+            const logElement = document.getElementById(`${testId}-log`);
+            if (logElement) {
+                logElement.innerHTML += new Date().toLocaleTimeString() + ': ' + message + '\n';
+                logElement.scrollTop = logElement.scrollHeight;
+            }
+        }
+        
+        function setTestResult(testId, passed, message) {
+            const resultElement = document.getElementById(`${testId}-result`);
+            if (resultElement) {
+                resultElement.className = `test-result ${passed ? 'test-pass' : 'test-fail'}`;
+                resultElement.textContent = `${passed ? '✅ PASS' : '❌ FAIL'}: ${message}`;
+            }
+        }
+        
+        // Fonctions drag & drop (copiées du dashboard)
+        function initializeDragAndDrop() {
+            const appsContainer = document.querySelector('.apps-grid-container');
+            if (!appsContainer) {
+                logTest('test1', '❌ Apps container not found');
+                return false;
+            }
+            
+            const appLinks = appsContainer.querySelectorAll('.app-link');
+            logTest('test1', `🚀 Initializing drag & drop for ${appLinks.length} apps`);
+            
+            let initCount = 0;
+            appLinks.forEach((appLink, index) => {
+                const appCard = appLink.querySelector('.app-card-simple');
+                if (!appCard) return;
+                
+                // Make draggable
+                appLink.draggable = true;
+                appLink.setAttribute('data-app-index', index);
+                
+                // Add event listeners
+                appLink.addEventListener('dragstart', handleDragStart);
+                appLink.addEventListener('dragend', handleDragEnd);
+                appLink.addEventListener('dragover', handleDragOver);
+                appLink.addEventListener('drop', handleDrop);
+                appLink.addEventListener('dragenter', handleDragEnter);
+                appLink.addEventListener('dragleave', handleDragLeave);
+                appLink.addEventListener('click', handleAppLinkClick);
+                
+                initCount++;
+                logTest('test1', `✅ Initialized: ${appLink.getAttribute('data-app-name')}`);
+            });
+            
+            logTest('test1', `✅ Drag & drop initialization complete (${initCount} apps)`);
+            return initCount > 0;
+        }
+        
+        function handleDragStart(e) {
+            draggedElement = this;
+            draggedIndex = parseInt(this.getAttribute('data-app-index'));
+            const appName = this.getAttribute('data-app-name');
+            
+            isDragging = true;
+            dragStartTime = Date.now();
+            
+            logTest('test2', `🚁 Drag started: ${appName} (index ${draggedIndex})`);
+            
+            const appCard = this.querySelector('.app-card-simple');
+            if (appCard) {
+                appCard.classList.add('dragging');
+            }
+            
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', appName);
+            e.dataTransfer.setData('application/app-index', draggedIndex.toString());
+        }
+        
+        function handleDragEnd(e) {
+            logTest('test2', '🏁 Drag ended');
+            
+            const appCard = this.querySelector('.app-card-simple');
+            if (appCard) {
+                appCard.classList.remove('dragging');
+            }
+            
+            setTimeout(() => {
+                isDragging = false;
+            }, 100);
+            
+            document.querySelectorAll('.app-link').forEach(link => {
+                link.classList.remove('drag-over');
+            });
+            
+            draggedElement = null;
+            draggedIndex = null;
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+        
+        function handleDragEnter(e) {
+            if (draggedElement && this !== draggedElement) {
+                this.classList.add('drag-over');
+                logTest('test2', `📍 Enter drop zone: ${this.getAttribute('data-app-name')}`);
+            }
+        }
+        
+        function handleDragLeave(e) {
+            if (!this.contains(e.relatedTarget)) {
+                this.classList.remove('drag-over');
+            }
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            this.classList.remove('drag-over');
+            
+            if (draggedElement && this !== draggedElement) {
+                const targetIndex = Array.from(this.parentNode.children).indexOf(this);
+                const draggedAppName = e.dataTransfer.getData('text/plain');
+                const targetAppName = this.getAttribute('data-app-name');
+                
+                logTest('test2', `🎯 Drop: "${draggedAppName}" -> "${targetAppName}" (${draggedIndex} -> ${targetIndex})`);
+                
+                reorderApps(draggedIndex, targetIndex);
+            }
+        }
+        
+        function handleAppLinkClick(e) {
+            const timeSinceDrag = Date.now() - dragStartTime;
+            if (isDragging || timeSinceDrag < 300) {
+                e.preventDefault();
+                logTest('test2', '🚫 Click prevented due to recent drag');
+                return false;
+            }
+            
+            e.preventDefault(); // Prevent navigation in tests
+            logTest('test2', `🖱️ Click: ${this.getAttribute('data-app-name')}`);
+        }
+        
+        function reorderApps(fromIndex, toIndex) {
+            logTest('test2', `🔄 Reordering: ${fromIndex} -> ${toIndex}`);
+            
+            const appsContainer = document.querySelector('.apps-grid-container');
+            const appLinks = Array.from(appsContainer.children);
+            
+            const appOrder = appLinks.map(link => {
+                const appName = link.querySelector('.app-name-simple');
+                return appName ? appName.textContent.trim() : '';
+            });
+            
+            const draggedLink = appLinks[fromIndex];
+            const targetLink = appLinks[toIndex];
+            
+            if (fromIndex < toIndex) {
+                targetLink.parentNode.insertBefore(draggedLink, targetLink.nextSibling);
+            } else {
+                targetLink.parentNode.insertBefore(draggedLink, targetLink);
+            }
+            
+            const movedApp = appOrder.splice(fromIndex, 1)[0];
+            appOrder.splice(toIndex, 0, movedApp);
+            
+            setTimeout(() => {
+                initializeDragAndDrop();
+            }, 100);
+            
+            logTest('test2', `✅ Reorder complete: ${appOrder.join(', ')}`);
+        }
+        
+        // Mock de la fonction saveAppOrder pour les tests
+        function saveAppOrder(appOrder) {
+            logTest('test3', `💾 Saving order: ${appOrder.join(', ')}`);
+            
+            // Simulation d'appel API
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    logTest('test3', '✅ Order saved successfully (mocked)');
+                    resolve({success: true});
+                }, 500);
+            });
+        }
+        
+        // Tests spécifiques
+        
+        // Test 1: Initialisation
+        function runInitializationTest() {
+            logTest('test1', '🧪 Starting initialization test...');
+            
+            const success = initializeDragAndDrop();
+            
+            // Vérifier que les attributs draggable sont définis
+            const draggableElements = document.querySelectorAll('[draggable="true"]');
+            const hasEventListeners = draggableElements.length > 0;
+            
+            const passed = success && hasEventListeners;
+            setTestResult('test1', passed, 
+                passed ? 'Drag & drop initialisé correctement' : 'Échec de l\'initialisation');
+            
+            logTest('test1', `🔍 Found ${draggableElements.length} draggable elements`);
+        }
+        
+        // Test 2: Événements de drag
+        function runDragEventTests() {
+            logTest('test2', '🧪 Starting drag event tests...');
+            
+            const appLinks = document.querySelectorAll('.app-link');
+            if (appLinks.length === 0) {
+                setTestResult('test2', false, 'Aucun élément app-link trouvé');
+                return;
+            }
+            
+            // Test simulation d'événement dragstart
+            const firstApp = appLinks[0];
+            const dragStartEvent = new DragEvent('dragstart', {
+                bubbles: true,
+                cancelable: true,
+                dataTransfer: new DataTransfer()
+            });
+            
+            logTest('test2', '🎭 Simulating dragstart event...');
+            firstApp.dispatchEvent(dragStartEvent);
+            
+            // Vérifier que les variables de drag sont définies
+            const dragVariablesSet = draggedElement !== null && draggedIndex !== null && isDragging;
+            
+            // Test simulation d'événement dragend
+            const dragEndEvent = new DragEvent('dragend', {
+                bubbles: true,
+                cancelable: true
+            });
+            
+            logTest('test2', '🎭 Simulating dragend event...');
+            firstApp.dispatchEvent(dragEndEvent);
+            
+            const passed = dragVariablesSet;
+            setTestResult('test2', passed, 
+                passed ? 'Événements de drag fonctionnels' : 'Problème avec les événements de drag');
+        }
+        
+        // Test 3: API
+        function runAPITests() {
+            logTest('test3', '🧪 Starting API tests...');
+            
+            // Test avec un ordre d'apps
+            const testOrder = ['App 3', 'App 1', 'App 2'];
+            
+            // Vérifier si le CSRF token est disponible
+            if (!window.csrfToken) {
+                setTestResult('test3', false, 'CSRF token non disponible');
+                return;
+            }
+            
+            logTest('test3', '🌐 Testing API call with mock data...');
+            
+            // Test avec fonction mock
+            saveAppOrder(testOrder).then((result) => {
+                const passed = result.success;
+                setTestResult('test3', passed, 
+                    passed ? 'API fonctionnelle (test mocké)' : 'Erreur API');
+            });
+            
+            // Test d'appel API réel (si serveur disponible)
+            fetch('/dashboard/save-app-order/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': window.csrfToken
+                },
+                body: JSON.stringify({app_order: testOrder})
+            })
+            .then(response => {
+                logTest('test3', `🌐 Real API response: ${response.status}`);
+                if (response.status === 403) {
+                    logTest('test3', '🔒 CSRF validation expected (test environment)');
+                }
+                return response.json().catch(() => ({error: 'Parse error'}));
+            })
+            .then(data => {
+                logTest('test3', `📦 API data: ${JSON.stringify(data)}`);
+            })
+            .catch(error => {
+                logTest('test3', `❌ API error: ${error.message}`);
+            });
+        }
+        
+        // Lancement automatique du test d'initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            logTest('test1', '📄 DOM loaded, starting tests...');
+            setTimeout(runInitializationTest, 100);
+        });
+    </script>
+</body>
+</html>

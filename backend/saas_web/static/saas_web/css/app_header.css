@@ -15,16 +15,11 @@
     left: 0;
     right: 0;
     z-index: 1030; /* Bootstrap z-index for fixed elements */
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--shadow-light);
     height: var(--header-height);
     transition: box-shadow var(--transition-medium);
-}
-
-.fixed-header.scrolled {
-    box-shadow: var(--shadow-medium);
 }
 
 .fixed-header .navbar {
@@ -38,7 +33,6 @@
 .fixed-header .navbar-brand {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #007ACC !important;
     text-decoration: none;
     transition: opacity var(--transition-fast);
     display: flex;
@@ -46,8 +40,12 @@
     margin-bottom: 0;
 }
 
-.fixed-header .navbar-brand:hover {
-    opacity: 0.8;
+.fixed-header .navbar-brand:not(.app-brand-gradient) {
+    color: #007ACC !important;
+}
+
+.fixed-header .navbar-brand:hover:not(.app-brand-gradient) {
+    opacity: 0.9;
 }
 
 /* Improved button styles */
@@ -229,4 +227,126 @@ body {
     padding: 0.25rem 0.5rem !important;
     font-size: 0.875rem !important;
     line-height: 1.5 !important;
+}
+
+/* App brand gradient styling */
+.app-brand-gradient {
+    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+    transition: all var(--transition-medium);
+}
+
+.app-brand-gradient:hover {
+    background: linear-gradient(135deg, #3d6bca 0%, #00e4ba 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: scale(1.05);
+    text-decoration: none;
+}
+
+/* Fallback pour les navigateurs qui ne supportent pas background-clip: text */
+@supports not (-webkit-background-clip: text) {
+    .app-brand-gradient {
+        color: #2D5BBA;
+    }
+    .app-brand-gradient:hover {
+        color: #00D4AA;
+    }
+}
+
+/* App icon styling in header */
+.app-brand-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-medium);
+    height: var(--header-height);
+}
+
+/* Header specific app icon styling - override other app-icon styles */
+.fixed-header .app-icon {
+    width: 32px !important;
+    height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    transition: all var(--transition-medium) !important;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)) !important;
+    border-radius: 0 !important;
+    border: none !important;
+    clip-path: none !important;
+    mask: none !important;
+    display: block !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+}
+
+.app-brand-icon:hover .app-icon {
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+}
+
+/* Keep gradient for Linguify text when not in an app */
+.app-brand-icon .app-brand-gradient {
+    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.app-brand-icon:hover .app-brand-gradient {
+    background: linear-gradient(135deg, #3d6bca 0%, #00e4ba 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: scale(1.05);
+}
+
+/* Fix icon alignment in header */
+.fixed-header .bi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+/* Ensure buttons with icons are properly aligned */
+.header-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.header-btn .bi {
+    vertical-align: baseline;
+    line-height: inherit;
+}
+
+/* Fix dropdown toggle alignment */
+.dropdown-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* Profile picture and user menu alignment */
+.profile-picture {
+    vertical-align: middle;
+}
+
+/* Navigation mobile items alignment */
+.mobile-nav-item {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.mobile-nav-item .bi {
+    vertical-align: baseline;
 }

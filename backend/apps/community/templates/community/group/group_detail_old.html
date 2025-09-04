@@ -1,0 +1,309 @@
+{% extends "saas_web/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ group.name }} | Open Linguify{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/group_chat_simple.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="community-page">
+    <div class="community-container">
+        <!-- Header avec navbar intégrée -->
+        <div class="community-header">
+            <!-- Navigation unifiée -->
+            {% include 'community/components/navbar.html' %}
+        </div>
+
+        <!-- 📱 CHAT DE GROUPE SIMPLE ET FONCTIONNEL -->
+        <div class="group-chat-layout">
+            
+            <!-- 📋 INFOS GROUPE -->
+            <div class="group-info-section">
+                <div class="group-header">
+                    <h2>{{ group.name }}</h2>
+                    <div class="group-badges">
+                        {% if group.language %}
+                        <span class="badge language">{{ group.get_language_display }}</span>
+                        {% endif %}
+                        {% if group.level %}
+                        <span class="badge level">{{ group.get_level_display }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if group.description %}
+                <p class="group-description">{{ group.description }}</p>
+                {% endif %}
+                
+                <div class="group-stats">
+                    <span>{{ members_count }} {% trans "members" %}</span>
+                    <span>{{ online_members.count }} {% trans "online" %}</span>
+                    {% if is_creator %}
+                    <a href="{% url 'community:group_manage' group.id %}" class="btn-manage">
+                        <i class="bi bi-gear"></i> {% trans "Manage" %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 💬 CHAT PRINCIPAL -->
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h3>
+                        <i class="bi bi-chat-dots"></i>
+                        {% trans "Group Chat" %}
+                    </h3>
+                    <div class="chat-options">
+                        <button class="btn-option" id="testClaudeBtn" title="{% trans 'Test with Claude AI' %}">
+                            <i class="bi bi-robot"></i>
+                        </button>
+                        <button class="btn-option" id="addPhotoBtn" title="{% trans 'Add Photo' %}">
+                            <i class="bi bi-image"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Messages -->
+                <div class="messages-area" id="messagesArea">
+                    <!-- Message exemple -->
+                    <div class="message">
+                        <div class="message-avatar">{{ user.username.0|upper|default:"U" }}</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                <span class="message-time">{% trans "2 min ago" %}</span>
+                            </div>
+                            <div class="message-text">Salut tout le monde ! Comment ça va ?</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Message avec photo exemple -->
+                    <div class="message">
+                        <div class="message-avatar">M</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <strong>Marie</strong>
+                                <span class="message-time">{% trans "1 min ago" %}</span>
+                            </div>
+                            <div class="message-text">Regardez ce que j'ai trouvé !</div>
+                            <div class="message-photo">
+                                <img src="https://via.placeholder.com/200x150" alt="Photo partagée">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Input -->
+                <div class="chat-input">
+                    <input type="file" id="photoInput" accept="image/*" style="display: none;">
+                    <div class="input-area">
+                        <textarea id="messageInput" 
+                                  placeholder="{% trans 'Type your message...' %}" 
+                                  rows="2"></textarea>
+                        <div class="input-actions">
+                            <button class="btn-input" id="photoBtn">
+                                <i class="bi bi-image"></i>
+                            </button>
+                            <button class="btn-send" id="sendBtn">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 👥 MEMBRES EN LIGNE -->
+            <div class="members-sidebar">
+                <h4>{% trans "Online" %} ({{ online_members.count }})</h4>
+                <div class="members-list">
+                    {% for member in online_members %}
+                    <div class="member-item">
+                        <div class="member-avatar">
+                            {{ member.user.first_name.0|upper|default:member.user.username.0|upper }}
+                        </div>
+                        <div class="member-name">
+                            {{ member.user.get_full_name|default:member.user.username }}
+                        </div>
+                        <div class="member-status online"></div>
+                    </div>
+                    {% empty %}
+                    <p class="no-members">{% trans "No one online" %}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+        </div> <!-- End community-main -->
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const messagesArea = document.getElementById('messagesArea');
+    const photoBtn = document.getElementById('photoBtn');
+    const photoInput = document.getElementById('photoInput');
+    const testClaudeBtn = document.getElementById('testClaudeBtn');
+    
+    function updateRotationTimer() {
+        const minutes = Math.floor(rotationTimer / 60);
+        const seconds = rotationTimer % 60;
+        document.querySelector('.timer-text').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Update progress circle
+        const progress = ((180 - rotationTimer) / 180) * 283; // 283 is circumference of circle
+        document.querySelector('.timer-circle').style.setProperty('--progress', progress + 'px');
+        
+        rotationTimer--;
+        
+        if (rotationTimer < 0) {
+            switchLanguage();
+            rotationTimer = 180; // Reset timer
+        }
+    }
+    
+    function switchLanguage() {
+        currentIndex = (currentIndex + 1) % languages.length;
+        currentLanguage = languages[currentIndex];
+        
+        // Update UI
+        const languageNames = { 'fr': 'French', 'en': 'English' };
+        const languageFlags = { 'fr': '🇫🇷', 'en': '🇬🇧' };
+        
+        document.querySelector('.current-language .language-name').textContent = languageNames[currentLanguage];
+        document.querySelector('.current-language .language-flag').textContent = languageFlags[currentLanguage];
+        
+        // Show rotation message
+        const chatMessages = document.getElementById('chatMessages');
+        const rotationMessage = document.createElement('div');
+        rotationMessage.className = 'system-message rotation-message';
+        rotationMessage.innerHTML = `
+            <i class="bi bi-arrow-repeat text-primary"></i>
+            {% trans "Language switched to" %} ${languageNames[currentLanguage]}. {% trans "Practice time!" %}
+        `;
+        chatMessages.appendChild(rotationMessage);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Update placeholder
+        const placeholders = {
+            'fr': '{% trans "Type your message in French..." %}',
+            'en': '{% trans "Type your message in English..." %}'
+        };
+        const textarea = document.getElementById('chatTextarea');
+        if (textarea) {
+            textarea.placeholder = placeholders[currentLanguage];
+        }
+    }
+    
+    // Start rotation timer
+    setInterval(updateRotationTimer, 1000);
+    
+    // AI Auto-correction simulation
+    const chatInput = document.getElementById('chatTextarea');
+    if (chatInput) {
+        chatInput.addEventListener('input', function() {
+            const text = this.value;
+            // Simple correction simulation
+            if (text.includes('je suis content de')) {
+                showAISuggestion("Try: 'Je suis content d\\'être...' (d'être instead of de être)");
+            }
+        });
+    }
+    
+    function showAISuggestion(suggestion) {
+        const suggestionsContainer = document.getElementById('liveSuggestions');
+        if (suggestionsContainer) {
+            suggestionsContainer.innerHTML = `
+                <div class="suggestion-item active">
+                    <i class="bi bi-magic"></i>
+                    ${suggestion}
+                </div>
+            `;
+        }
+    }
+    
+    // Send message functionality
+    const sendBtn = document.getElementById('sendBtn');
+    if (sendBtn) {
+        sendBtn.addEventListener('click', function() {
+                const input = document.getElementById('chatTextarea');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add message to chat
+            const chatMessages = document.getElementById('messagesArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user-msg';
+            messageDiv.innerHTML = `
+                <div class="msg-avatar user-avatar">{{ user.username.0|upper|default:"U" }}</div>
+                <div class="msg-bubble user-bubble">
+                    <div class="msg-content">${message}</div>
+                    <div class="msg-meta">
+                        <span class="msg-time">{% trans "now" %}</span>
+                        <span class="msg-lang">🇫🇷</span>
+                    </div>
+                </div>
+            `;
+            
+            if (chatMessages) {
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Clear input
+            input.value = '';
+            
+            // Simulate AI response after 1-2 seconds
+            setTimeout(simulateAIResponse, 1500);
+        });
+    }
+    
+    function simulateAIResponse() {
+        const responses = [
+            "Excellent ! Your French is improving. 👏",
+            "Good job! Try to use more complex sentences next time.",
+            "Perfect! I can see you're getting more confident."
+        ];
+        
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        const chatMessages = document.getElementById('messagesArea');
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message other-msg';
+        messageDiv.innerHTML = `
+            <div class="msg-avatar other-avatar">AI</div>
+            <div class="msg-bubble other-bubble">
+                <div class="msg-content">${randomResponse}</div>
+                <div class="msg-meta">
+                    <span class="msg-time">{% trans "now" %}</span>
+                    <span class="msg-lang">🤖</span>
+                </div>
+            </div>
+        `;
+        
+        if (chatMessages) {
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }
+    
+    // Enter key to send message
+    if (chatInput) {
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const sendBtn = document.getElementById('sendBtn');
+                if (sendBtn) sendBtn.click();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

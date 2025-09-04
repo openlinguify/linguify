@@ -2,34 +2,11 @@
 # Part of Open Linguify. See LICENSE file for full copyright and licensing details.
 from rest_framework import serializers
 from django.utils import timezone
-from ..models import Note, NoteCategory, Tag, SharedNote
+from ..models import Note, NoteCategory, SharedNote
+from core.models.tags import Tag
+from core.serializers.tag_serializers import TagSerializer
 
-class TagSerializer(serializers.ModelSerializer):
-    notes_count = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = Tag
-        fields = ['id', 'name', 'color', 'notes_count']
-        
-    def get_notes_count(self, obj):
-        return obj.note_set.count()
-
-    def validate_name(self, value):
-        user = self.context['request'].user
-        if Tag.objects.filter(name__iexact=value, user=user).exists():
-            raise serializers.ValidationError("A tag with this name already exists")
-        return value.lower()
-
-    def validate_color(self, value):
-        if not value.startswith('#'):
-            raise serializers.ValidationError("Color must be a valid hex color code starting with #")
-        if len(value) != 7:
-            raise serializers.ValidationError("Color must be in #RRGGBB format")
-        return value
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        return Tag.objects.create(user=user, **validated_data)
+# TagSerializer is now imported from core.serializers.tag_serializers
 
 class NoteCategorySerializer(serializers.ModelSerializer):
     subcategories = serializers.SerializerMethodField()
@@ -193,7 +170,7 @@ class NoteSerializer(serializers.ModelSerializer):
         
         if tags_data:
             tags = Tag.objects.filter(id__in=tags_data, user=user)
-            note.tags.set(tags)
+            note.set_tags(tags)
         
         return note
 
@@ -203,7 +180,7 @@ class NoteSerializer(serializers.ModelSerializer):
         
         # Always update tags, using an empty list if tags_data is None
         tags = Tag.objects.filter(id__in=tags_data or [], user=instance.user)
-        note.tags.set(tags)
+        note.set_tags(tags)
         
         return note
 

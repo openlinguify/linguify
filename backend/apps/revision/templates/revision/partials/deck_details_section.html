@@ -1,0 +1,80 @@
+{% load i18n %}
+<!-- Deck Details -->
+<div id="deckDetails" class="deck-details-hidden">
+    <!-- Deck Header -->
+    <div class="sidebar-header-linguify">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button id="backToList" class="btn-linguify-secondary btn-sm hidden md:block">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <div>
+                    <h4 id="deckName" class="text-xl font-semibold text-linguify-primary mb-1">{% trans "Deck Name" %}</h4>
+                    <small id="deckDescription" class="text-gray-500">{% trans "Deck Description" %}</small>
+                    <div id="deckTagsDisplay" class="flex gap-2 mt-2"></div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Progression -->
+                <div class="hidden md:flex items-center gap-3">
+                    <span id="deckProgress" class="badge-linguify">0/0</span>
+                    <div class="progress-bar-container">
+                        <div id="deckProgressBar" class="progress-bar-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex gap-2 flex-wrap">
+                    <button id="addCard" class="btn-linguify-secondary">
+                        <i class="bi bi-plus-lg"></i>
+                        <span class="hidden md:inline ml-1">{% trans "Add Card" %}</span>
+                    </button>
+                    
+                    <button id="practiceWeak" class="btn-linguify-secondary">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <span class="hidden lg:inline ml-1">{% trans "Review Difficult" %}</span>
+                    </button>
+                    
+                    <button id="resetProgress" class="btn-linguify-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <span class="hidden lg:inline ml-1">{% trans "Reset" %}</span>
+                    </button>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn-linguify-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" id="editDeck">
+                            <i class="bi bi-pencil me-2"></i>{% trans "Edit Deck" %}
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" id="importCards">
+                            <i class="bi bi-upload me-2"></i>{% trans "Import Cards" %}
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" id="exportDeck">
+                            <i class="bi bi-download me-2"></i>{% trans "Export" %}
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" id="shareDeck">
+                            <i class="bi bi-globe2 me-2"></i>{% trans "Make Public" %}
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" id="makePrivateDeck" style="display: none;">
+                            <i class="bi bi-lock me-2"></i>{% trans "Make Private" %}
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" id="archiveDeck">
+                            <i class="bi bi-archive me-2"></i>{% trans "Archive" %}
+                        </a></li>
+                        <li><a class="dropdown-item text-danger" href="#" id="deleteDeck">
+                            <i class="bi bi-trash me-2"></i>{% trans "Delete" %}
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Study Modes -->
+    {% include 'revision/partials/study_modes_section.html' %}
+</div>

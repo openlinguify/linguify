@@ -7,11 +7,10 @@ class NotebookTagsManagement {
         this.itemsPerPage = 10;
         this.searchQuery = '';
         this.editingTag = null;
+        this.inlineEditingTag = null;
         this.colors = [
             '#3B82F6', '#EF4444', '#10B981', '#F59E0B', 
-            '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16',
-            '#F97316', '#6366F1', '#14B8A6', '#F43F5E',
-            '#22C55E', '#A855F7', '#3B82F6', '#EF4444'
+            '#8B5CF6'
         ];
     }
 
@@ -36,22 +35,87 @@ class NotebookTagsManagement {
             });
         }
 
-        // Nouveau tag
+        // Nouveau tag - Basculer vers l'onglet formulaire
         const createNewTagBtn = document.getElementById('createNewNotebookTagBtn');
         if (createNewTagBtn) {
-            createNewTagBtn.addEventListener('click', () => this.showCreateTagModal());
+            createNewTagBtn.addEventListener('click', () => this.showCreateTagForm());
+        }
+        
+        // Bouton annuler dans le formulaire
+        const cancelTagForm = document.getElementById('cancelTagForm');
+        if (cancelTagForm) {
+            cancelTagForm.addEventListener('click', () => this.cancelTagForm());
         }
 
         // Sélection de tous les tags
-        const selectAllTags = document.getElementById('selectAllNotebookTags');
+        const selectAllTags = document.getElementById('selectAllTags');
         if (selectAllTags) {
-            selectAllTags.addEventListener('change', (e) => this.toggleSelectAll(e.target.checked));
+            selectAllTags.addEventListener('click', () => this.toggleSelectAll());
+        }
+
+        // Checkbox "Sélectionner tout" dans l'en-tête du tableau
+        const selectAllTagsCheckbox = document.getElementById('selectAllTagsCheckbox');
+        if (selectAllTagsCheckbox) {
+            selectAllTagsCheckbox.addEventListener('change', () => this.toggleSelectAll());
         }
 
         // Suppression des tags sélectionnés
-        const deleteSelectedTagsBtn = document.getElementById('deleteSelectedNotebookTagsBtn');
+        const deleteSelectedTagsBtn = document.getElementById('deleteSelectedTags');
         if (deleteSelectedTagsBtn) {
             deleteSelectedTagsBtn.addEventListener('click', () => this.deleteSelectedTags());
+        }
+
+        // Cancel selection
+        const cancelSelection = document.getElementById('cancelSelection');
+        if (cancelSelection) {
+            cancelSelection.addEventListener('click', () => this.cancelSelection());
+        }
+
+        // Create tag buttons (including empty state)
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('create-tag-btn')) {
+                this.showCreateTagForm();
+            }
+        });
+
+        // Inline edit events
+        const cancelInlineEdit = document.getElementById('cancelInlineEdit');
+        if (cancelInlineEdit) {
+            cancelInlineEdit.addEventListener('click', () => this.cancelInlineEdit());
+        }
+
+        const saveInlineEdit = document.getElementById('saveInlineEdit');
+        if (saveInlineEdit) {
+            saveInlineEdit.addEventListener('click', () => this.saveInlineEdit());
+        }
+
+        // Inline preview update
+        const inlineTagNameInput = document.getElementById('inlineTagNameInput');
+        const inlineTagColorInput = document.getElementById('inlineTagColorInput');
+        if (inlineTagNameInput && inlineTagColorInput) {
+            inlineTagNameInput.addEventListener('input', () => this.updateInlineTagPreview());
+            inlineTagColorInput.addEventListener('input', () => this.updateInlineTagPreview());
+        }
+
+        // Quick create form events
+        const quickCreateForm = document.getElementById('quickCreateTagForm');
+        if (quickCreateForm) {
+            quickCreateForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.createQuickTag();
+            });
+        }
+
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+        if (quickTagName && quickTagColor) {
+            quickTagName.addEventListener('input', () => this.updateQuickTagPreview());
+            quickTagColor.addEventListener('input', () => this.updateQuickTagPreview());
+        }
+
+        const clearQuickForm = document.getElementById('clearQuickForm');
+        if (clearQuickForm) {
+            clearQuickForm.addEventListener('click', () => this.clearQuickForm());
         }
 
         // Sauvegarde du tag (création/édition)
@@ -60,13 +124,26 @@ class NotebookTagsManagement {
             saveTagBtn.addEventListener('click', () => this.saveTag());
         }
 
-        // Aperçu couleur
+        // Aperçu couleur et couleurs prédéfinies
         const tagColorInput = document.getElementById('notebookTagColorInput');
         const tagNameInput = document.getElementById('notebookTagNameInput');
         if (tagColorInput && tagNameInput) {
             tagColorInput.addEventListener('input', () => this.updateTagPreview());
             tagNameInput.addEventListener('input', () => this.updateTagPreview());
         }
+
+        // Couleurs prédéfinies
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('color-preset')) {
+                const color = e.target.dataset.color;
+                const colorInput = document.getElementById('notebookTagColorInput');
+                if (colorInput) {
+                    colorInput.value = color;
+                    this.updateTagPreview();
+                    this.updateColorPresets(color);
+                }
+            }
+        });
 
         // Validation du formulaire
         const tagEditForm = document.getElementById('notebookTagEditForm');
@@ -97,41 +174,76 @@ class NotebookTagsManagement {
         modal.show();
     }
 
-    showCreateTagModal(tagData = null) {
+    showCreateTagForm(tagData = null) {
         this.editingTag = tagData;
         
-        const modal = new bootstrap.Modal(document.getElementById('notebookTagEditModal'));
-        const modalTitle = document.getElementById('notebookTagEditModalLabel');
+        const tagFormTab = document.getElementById('tag-form-tab');
+        const tagFormTabText = document.getElementById('tagFormTabText');
+        const saveTagBtnText = document.getElementById('saveTagBtnText');
         const tagNameInput = document.getElementById('notebookTagNameInput');
         const tagColorInput = document.getElementById('notebookTagColorInput');
 
         if (tagData) {
-            modalTitle.textContent = 'Modifier l\'étiquette';
+            tagFormTabText.textContent = 'Modifier étiquette';
+            saveTagBtnText.textContent = 'Modifier';
             tagNameInput.value = tagData.name;
             tagColorInput.value = tagData.color || this.getRandomColor();
+            this.updateColorPresets(tagData.color || this.getRandomColor());
         } else {
-            modalTitle.textContent = 'Nouvelle étiquette';
+            tagFormTabText.textContent = 'Nouvelle étiquette';
+            saveTagBtnText.textContent = 'Enregistrer';
             tagNameInput.value = '';
-            tagColorInput.value = this.getRandomColor();
+            const defaultColor = this.colors[0]; // Bleu par défaut
+            tagColorInput.value = defaultColor;
+            this.updateColorPresets(defaultColor);
         }
 
         this.updateTagPreview();
-        modal.show();
+        
+        // Basculer vers l'onglet formulaire
+        const tabTrigger = new bootstrap.Tab(tagFormTab);
+        tabTrigger.show();
         
         // Focus sur le nom
         setTimeout(() => tagNameInput.focus(), 300);
+    }
+    
+    cancelTagForm() {
+        // Reset du formulaire
+        this.editingTag = null;
+        const tagNameInput = document.getElementById('notebookTagNameInput');
+        const tagColorInput = document.getElementById('notebookTagColorInput');
+        
+        if (tagNameInput) tagNameInput.value = '';
+        if (tagColorInput) {
+            const defaultColor = this.colors[0];
+            tagColorInput.value = defaultColor;
+            this.updateColorPresets(defaultColor);
+        }
+        
+        this.updateTagPreview();
+        
+        // Retourner à l'onglet liste
+        const tagsListTab = document.getElementById('tags-list-tab');
+        const tabTrigger = new bootstrap.Tab(tagsListTab);
+        tabTrigger.show();
     }
 
     updateTagPreview() {
         const tagNameInput = document.getElementById('notebookTagNameInput');
         const tagColorInput = document.getElementById('notebookTagColorInput');
+        const previewText = document.getElementById('previewText');
         const tagPreview = document.getElementById('notebookTagPreview');
 
-        if (tagNameInput && tagColorInput && tagPreview) {
-            const name = tagNameInput.value || 'Aperçu';
+        if (tagNameInput && tagColorInput && previewText && tagPreview) {
+            const name = tagNameInput.value || 'Apercu';
             const color = tagColorInput.value;
             
-            tagPreview.innerHTML = `<span class="badge" style="background: ${color}; color: white;">${name}</span>`;
+            previewText.textContent = name;
+            const badge = tagPreview.querySelector('.badge');
+            if (badge) {
+                badge.style.background = color;
+            }
         }
     }
 
@@ -141,29 +253,222 @@ class NotebookTagsManagement {
 
     async loadTags() {
         try {
-            // Pour l'instant, on simule la récupération des tags depuis l'API notebook
-            // Plus tard, on connectera à l'API réelle du notebook
-            this.tags = [
-                { id: 1, name: 'Vocabulaire', color: '#3B82F6', usage_count: 15 },
-                { id: 2, name: 'Grammaire', color: '#EF4444', usage_count: 8 },
-                { id: 3, name: 'Expressions', color: '#10B981', usage_count: 12 },
-                { id: 4, name: 'Culture', color: '#F59E0B', usage_count: 5 },
-                { id: 5, name: 'Important', color: '#EC4899', usage_count: 20 },
-                { id: 6, name: 'À réviser', color: '#8B5CF6', usage_count: 7 },
-            ];
+            console.log('🔄 Chargement des tags depuis l\'API globale...');
+            
+            const csrfToken = this.getCSRFToken();
+            console.log('🔐 CSRF Token:', csrfToken ? 'Found' : 'Not found');
+            
+            // Appeler l'API du système de tags global
+            const response = await fetch('/api/v1/core/tags/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'same-origin'  // Inclure les cookies de session
+            });
+            
+            console.log('📡 Response status:', response.status);
+            console.log('📡 Response headers:', response.headers);
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ API Data:', data);
+                console.log('✅ Data type:', typeof data);
+                console.log('✅ Data keys:', Object.keys(data));
+                
+                // Gérer différents formats de réponse API
+                let tagsArray = [];
+                
+                if (data && Array.isArray(data.results)) {
+                    // Format pagination DRF: {results: [...], count: N}
+                    tagsArray = data.results;
+                    console.log('✅ Format DRF pagination détecté');
+                } else if (data && Array.isArray(data)) {
+                    // Format liste directe: [...]
+                    tagsArray = data;
+                    console.log('✅ Format liste directe détecté');
+                } else if (data && typeof data === 'object' && !Array.isArray(data)) {
+                    // Format objet avec propriétés inconnues - chercher une liste
+                    const possibleArrays = Object.values(data).filter(v => Array.isArray(v));
+                    if (possibleArrays.length > 0) {
+                        tagsArray = possibleArrays[0];
+                        console.log('✅ Format objet avec liste trouvé');
+                    }
+                } else {
+                    console.log('❌ Format de données non reconnu, utilisation d\'un tableau vide');
+                    tagsArray = [];
+                }
+                
+                console.log('✅ Tags array:', tagsArray);
+                console.log('✅ Tags array length:', tagsArray.length);
+                
+                // Vérifier que chaque élément a les propriétés nécessaires
+                if (tagsArray.length > 0) {
+                    console.log('✅ Premier tag:', tagsArray[0]);
+                }
+                
+                // Transformer les données de l'API pour correspondre au format attendu
+                this.tags = tagsArray.map(tag => ({
+                    id: tag.id || tag.pk || Math.random().toString(),
+                    name: tag.name || tag.display_name || 'Tag sans nom',
+                    color: tag.color || '#3B82F6',
+                    description: tag.description || '',
+                    usage_count: tag.usage_count_notebook || tag.usage_count || 0,
+                    usage_count_total: tag.usage_count_total || tag.total_usage || 0,
+                    is_favorite: tag.is_favorite || false,
+                    created_at: tag.created_at || new Date().toISOString()
+                }));
+
+                console.log(`✅ Tags chargés: ${this.tags.length} tags trouvés`);
+            } else {
+                console.error('❌ Erreur API:', response.status, response.statusText);
+                const errorText = await response.text();
+                console.error('❌ Réponse détaillée:', errorText);
+                // Fallback avec les tags mockés si l'API échoue
+                this.tags = [
+                    { id: 'fallback-1', name: 'API non accessible', color: '#6B7280', usage_count: 0 }
+                ];
+            }
 
             this.renderTags();
             this.updateTagsCount();
 
         } catch (error) {
-            console.error('Erreur lors du chargement des tags:', error);
-            this.showNotification('Erreur lors du chargement des étiquettes', 'error');
+            console.error('❌ Erreur lors du chargement des tags:', error);
+            
+            // Fallback avec les tags mockés en cas d'erreur
+            this.tags = [
+                { id: 'error-1', name: 'Erreur de connexion', color: '#EF4444', usage_count: 0 }
+            ];
+            
+            this.renderTags();
+            this.updateTagsCount();
+            this.showNotification('Impossible de charger les étiquettes', 'error');
         }
     }
 
+    // === NOUVELLES FONCTIONS POUR L'INTÉGRATION API ===
+    
+    // Obtenir l'ID de la note actuellement sélectionnée
+    getCurrentNoteId() {
+        // Chercher la note active dans le sidebar ou l'éditeur
+        const activeNote = document.querySelector('.notebook-note-item.active');
+        if (activeNote) {
+            return activeNote.dataset.noteId;
+        }
+        
+        // Fallback: chercher dans l'éditeur
+        const editorTitleInput = document.getElementById('note-title');
+        if (editorTitleInput && editorTitleInput.dataset.noteId) {
+            return editorTitleInput.dataset.noteId;
+        }
+        
+        return null;
+    }
+
+    // Récupérer les tags d'une note spécifique
+    async getNoteTags(noteId) {
+        if (!noteId) return [];
+        
+        try {
+            console.log('🔄 Récupération des tags pour la note:', noteId);
+            
+            const response = await fetch(`/api/v1/core/object-tags/get_object_tags/?app_name=notebook&model_name=Note&object_id=${noteId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                credentials: 'same-origin'
+            });
+
+            if (response.ok) {
+                const tags = await response.json();
+                console.log('✅ Tags de la note récupérés:', tags);
+                return tags;
+            } else {
+                console.error('❌ Erreur récupération tags note:', response.status);
+                return [];
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la récupération des tags de la note:', error);
+            return [];
+        }
+    }
+
+    // Appliquer des tags à une note
+    async setNoteTags(noteId, tagIds) {
+        if (!noteId) {
+            console.error('❌ Note ID requis pour appliquer des tags');
+            return false;
+        }
+
+        try {
+            console.log('🔄 Application des tags à la note:', noteId, tagIds);
+            
+            const response = await fetch('/api/v1/core/object-tags/set_object_tags/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    app_name: 'notebook',
+                    model_name: 'Note',
+                    object_id: noteId,
+                    tag_ids: tagIds
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✅ Tags appliqués avec succès:', result);
+                
+                // Recharger les tags pour mettre à jour les compteurs
+                await this.loadTags();
+                this.renderTags();
+                
+                return true;
+            } else {
+                console.error('❌ Erreur application tags:', response.status);
+                const errorText = await response.text();
+                console.error('❌ Détails:', errorText);
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'application des tags:', error);
+            return false;
+        }
+    }
+
+    // Méthode utilitaire pour obtenir le token CSRF - compatible avec le système Linguify
+    getCSRFToken() {
+        // Utiliser la fonction globale définie dans le template base si disponible
+        if (window.NotebookAPI && window.NotebookAPI.getCSRFToken) {
+            return window.NotebookAPI.getCSRFToken();
+        }
+        
+        // Fallback: chercher dans plusieurs sources
+        var tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        var metaElement = document.querySelector('meta[name=csrf-token]');
+        var cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+            
+        return (tokenElement && tokenElement.value) || 
+               (metaElement && metaElement.getAttribute('content')) || 
+               window.csrfToken || 
+               cookieValue || '';
+    }
+
     renderTags() {
-        const tbody = document.getElementById('notebookTagsTableBody');
-        if (!tbody) return;
+        const tagsTableBody = document.getElementById('tagsTableBody');
+        const tagsTable = document.getElementById('tagsTable');
+        const tagsEmptyState = document.getElementById('tagsEmptyState');
+        if (!tagsTableBody) return;
 
         // Filtrer les tags selon la recherche
         let filteredTags = this.tags;
@@ -173,151 +478,461 @@ class NotebookTagsManagement {
             );
         }
 
-        // Pagination
-        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-        const endIndex = startIndex + this.itemsPerPage;
-        const paginatedTags = filteredTags.slice(startIndex, endIndex);
+        // Afficher empty state si aucun tag
+        if (filteredTags.length === 0) {
+            if (tagsTable) tagsTable.style.display = 'none';
+            if (tagsEmptyState) {
+                tagsEmptyState.style.display = 'block';
+            }
+            return;
+        } else {
+            if (tagsTable) tagsTable.style.display = 'table';
+            if (tagsEmptyState) {
+                tagsEmptyState.style.display = 'none';
+            }
+        }
 
-        tbody.innerHTML = paginatedTags.map(tag => `
-            <tr>
+        tagsTableBody.innerHTML = filteredTags.map(tag => `
+            <tr data-tag-id="${tag.id}">
                 <td>
-                    <input type="checkbox" class="form-check-input tag-checkbox" 
-                           data-tag-id="${tag.id}" ${this.selectedTags.has(tag.id) ? 'checked' : ''}>
+                    <div class="tag-dot" style="background: ${tag.color};"></div>
                 </td>
                 <td>
-                    <div class="d-flex align-items-center">
-                        <span class="badge me-2" style="background: ${tag.color}; color: white;">${tag.name}</span>
-                    </div>
+                    <span class="tag-name tag-name-text" data-tag-id="${tag.id}" 
+                          ondblclick="window.notebookTagsManagement.startInlineEdit(${tag.id}, 'name')" 
+                          title="Double-cliquez pour modifier">${tag.name}</span>
                 </td>
-                <td>
-                    <div class="color-display" style="width: 20px; height: 20px; background: ${tag.color}; border-radius: 3px; border: 1px solid #ddd;"></div>
+                <td class="usage-count text-center">
+                    ${tag.usage_count}
                 </td>
-                <td>
-                    <span class="text-muted">${tag.usage_count}</span>
+                <td class="usage-count text-center">
+                    Récemment
                 </td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="window.notebookTagsManagement.editTag(${tag.id})" title="Modifier">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-outline-danger" onclick="window.notebookTagsManagement.deleteTag(${tag.id})" title="Supprimer">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
+                <td class="actions-cell">
+                    <button type="button" class="action-btn edit-tag" data-tag-id="${tag.id}" title="Modifier">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="action-btn delete delete-tag" data-tag-id="${tag.id}" title="Supprimer">
+                        <i class="bi bi-trash2"></i>
+                    </button>
                 </td>
             </tr>
         `).join('');
 
-        // Event listeners pour les checkboxes
-        tbody.querySelectorAll('.tag-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', (e) => {
+        // Event listeners pour les actions
+        this.attachTagTableEventListeners();
+        this.updateSelectionInterface();
+    }
+
+    attachTagTableEventListeners() {
+        const tagsTableBody = document.getElementById('tagsTableBody');
+        if (!tagsTableBody) return;
+
+        // Event listeners pour les actions edit/delete
+        tagsTableBody.querySelectorAll('.edit-tag').forEach(editBtn => {
+            editBtn.addEventListener('click', (e) => {
+                e.preventDefault();
                 const tagId = parseInt(e.target.dataset.tagId);
-                if (e.target.checked) {
-                    this.selectedTags.add(tagId);
-                } else {
-                    this.selectedTags.delete(tagId);
-                }
-                this.updateDeleteButton();
+                this.editTag(tagId);
             });
         });
 
-        this.renderPagination(filteredTags.length);
-    }
-
-    renderPagination(totalItems) {
-        const pagination = document.getElementById('notebookTagsPagination');
-        if (!pagination) return;
-
-        const totalPages = Math.ceil(totalItems / this.itemsPerPage);
-        
-        if (totalPages <= 1) {
-            pagination.innerHTML = '';
-            return;
-        }
-
-        let paginationHTML = '';
-        
-        // Bouton précédent
-        paginationHTML += `
-            <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="window.notebookTagsManagement.goToPage(${this.currentPage - 1})">Précédent</a>
-            </li>
-        `;
-
-        // Numéros de pages
-        for (let i = 1; i <= totalPages; i++) {
-            paginationHTML += `
-                <li class="page-item ${i === this.currentPage ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="window.notebookTagsManagement.goToPage(${i})">${i}</a>
-                </li>
-            `;
-        }
-
-        // Bouton suivant
-        paginationHTML += `
-            <li class="page-item ${this.currentPage === totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="window.notebookTagsManagement.goToPage(${this.currentPage + 1})">Suivant</a>
-            </li>
-        `;
-
-        pagination.innerHTML = paginationHTML;
-    }
-
-    goToPage(page) {
-        const totalPages = Math.ceil(this.tags.length / this.itemsPerPage);
-        if (page >= 1 && page <= totalPages) {
-            this.currentPage = page;
-            this.renderTags();
-        }
+        tagsTableBody.querySelectorAll('.delete-tag').forEach(deleteBtn => {
+            deleteBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tagId = parseInt(e.target.dataset.tagId);
+                this.deleteTag(tagId);
+            });
+        });
     }
 
     updateTagsCount() {
         const tagsCount = document.getElementById('notebookTagsCount');
         if (tagsCount) {
-            tagsCount.textContent = `${this.tags.length} étiquette(s)`;
+            const count = this.tags.length;
+            tagsCount.textContent = count;
+            
+            // Mettre à jour le texte suivant pour le pluriel
+            const parentSpan = tagsCount.parentElement;
+            if (parentSpan && parentSpan.querySelector('.text-muted')) {
+                const textAfterCount = count <= 1 ? 'étiquette' : 'étiquettes';
+                parentSpan.innerHTML = `<span id="notebookTagsCount">${count}</span> ${textAfterCount}`;
+            }
         }
     }
-
-    updateDeleteButton() {
-        const deleteBtn = document.getElementById('deleteSelectedNotebookTagsBtn');
-        if (deleteBtn) {
-            if (this.selectedTags.size > 0) {
-                deleteBtn.style.display = 'inline-block';
-                deleteBtn.innerHTML = `<i class="bi bi-trash me-1"></i>Supprimer (${this.selectedTags.size})`;
+    
+    updateColorPresets(selectedColor) {
+        // Mettre à jour l'état sélectionné des couleurs prédéfinies
+        document.querySelectorAll('.color-preset').forEach(preset => {
+            if (preset.dataset.color === selectedColor) {
+                preset.classList.add('selected');
             } else {
-                deleteBtn.style.display = 'none';
+                preset.classList.remove('selected');
             }
-        }
+        });
+    }
+    
+    hexToRgb(hex) {
+        // Convertir hex en RGB pour les couleurs avec transparence
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? 
+            `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : 
+            '59, 130, 246'; // Fallback bleu Linguify
     }
 
-    toggleSelectAll(checked) {
-        this.selectedTags.clear();
+    updateSelectionInterface() {
+        // Interface simplifiée - plus de mode sélection complexe
+        return;
+    }
+
+    toggleSelectAll() {
+        // Filtrer les tags selon la recherche actuelle
+        let filteredTags = this.tags;
+        if (this.searchQuery) {
+            filteredTags = this.tags.filter(tag => 
+                tag.name.toLowerCase().includes(this.searchQuery)
+            );
+        }
         
-        if (checked) {
-            // Filtrer les tags selon la recherche actuelle
-            let filteredTags = this.tags;
-            if (this.searchQuery) {
-                filteredTags = this.tags.filter(tag => 
-                    tag.name.toLowerCase().includes(this.searchQuery)
-                );
-            }
-            
-            // Pagination
-            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-            const endIndex = startIndex + this.itemsPerPage;
-            const paginatedTags = filteredTags.slice(startIndex, endIndex);
-            
-            paginatedTags.forEach(tag => this.selectedTags.add(tag.id));
+        // Si tous les tags filtrés sont sélectionnés, tout déselectionner
+        const allSelected = filteredTags.every(tag => this.selectedTags.has(tag.id));
+        
+        if (allSelected) {
+            // Désélectionner tous les tags filtrés
+            filteredTags.forEach(tag => this.selectedTags.delete(tag.id));
+        } else {
+            // Sélectionner tous les tags filtrés
+            filteredTags.forEach(tag => this.selectedTags.add(tag.id));
         }
 
         this.renderTags();
-        this.updateDeleteButton();
+    }
+    
+    cancelSelection() {
+        this.selectedTags.clear();
+        this.renderTags();
     }
 
     editTag(tagId) {
         const tag = this.tags.find(t => t.id === tagId);
         if (tag) {
-            this.showCreateTagModal(tag);
+            this.showInlineEditForm(tag);
+        }
+    }
+
+    showInlineEditForm(tag) {
+        this.inlineEditingTag = tag;
+        
+        // Remplir le formulaire
+        const inlineTagNameInput = document.getElementById('inlineTagNameInput');
+        const inlineTagColorInput = document.getElementById('inlineTagColorInput');
+        
+        if (inlineTagNameInput && inlineTagColorInput) {
+            inlineTagNameInput.value = tag.name;
+            inlineTagColorInput.value = tag.color;
+            this.updateInlineTagPreview();
+        }
+        
+        // Afficher le formulaire inline
+        const inlineEditForm = document.getElementById('inlineEditForm');
+        if (inlineEditForm) {
+            inlineEditForm.style.display = 'block';
+            // Scroll vers le formulaire
+            inlineEditForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // Focus sur le nom
+            setTimeout(() => inlineTagNameInput?.focus(), 300);
+        }
+    }
+
+    cancelInlineEdit() {
+        this.inlineEditingTag = null;
+        
+        // Cacher le formulaire
+        const inlineEditForm = document.getElementById('inlineEditForm');
+        if (inlineEditForm) {
+            inlineEditForm.style.display = 'none';
+        }
+        
+        // Reset des champs
+        const inlineTagNameInput = document.getElementById('inlineTagNameInput');
+        const inlineTagColorInput = document.getElementById('inlineTagColorInput');
+        if (inlineTagNameInput) inlineTagNameInput.value = '';
+        if (inlineTagColorInput) inlineTagColorInput.value = '#3B82F6';
+        this.updateInlineTagPreview();
+    }
+
+    async saveInlineEdit() {
+        if (!this.inlineEditingTag) return;
+
+        const inlineTagNameInput = document.getElementById('inlineTagNameInput');
+        const inlineTagColorInput = document.getElementById('inlineTagColorInput');
+
+        if (!inlineTagNameInput || !inlineTagColorInput) return;
+
+        const tagName = inlineTagNameInput.value.trim();
+        const tagColor = inlineTagColorInput.value;
+
+        if (!tagName) {
+            this.showNotification('Le nom de l\'étiquette est requis', 'error');
+            return;
+        }
+
+        try {
+            const csrfToken = this.getCSRFToken();
+            
+            console.log('🔄 Modification inline du tag:', this.inlineEditingTag.id);
+            
+            const response = await fetch(`/api/v1/core/tags/${this.inlineEditingTag.id}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    name: tagName,
+                    color: tagColor
+                })
+            });
+
+            if (response.ok) {
+                const updatedTag = await response.json();
+                console.log('✅ Tag modifié (inline):', updatedTag);
+                
+                // Mettre à jour dans la liste locale
+                const tagIndex = this.tags.findIndex(t => t.id === this.inlineEditingTag.id);
+                if (tagIndex !== -1) {
+                    this.tags[tagIndex] = {
+                        ...this.tags[tagIndex],
+                        name: updatedTag.name || updatedTag.display_name,
+                        color: updatedTag.color
+                    };
+                }
+                
+                // Cacher le formulaire et re-render
+                this.cancelInlineEdit();
+                this.renderTags();
+                this.showNotification('Étiquette modifiée avec succès', 'success');
+            } else {
+                console.error('❌ Erreur modification inline:', response.status);
+                const errorText = await response.text();
+                console.error('❌ Détails:', errorText);
+                this.showNotification('Erreur lors de la modification', 'error');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la modification inline:', error);
+            this.showNotification('Erreur lors de la modification', 'error');
+        }
+    }
+
+    updateInlineTagPreview() {
+        const inlineTagNameInput = document.getElementById('inlineTagNameInput');
+        const inlineTagColorInput = document.getElementById('inlineTagColorInput');
+        const inlinePreviewText = document.getElementById('inlinePreviewText');
+        const inlineTagPreview = document.getElementById('inlineTagPreview');
+
+        if (inlineTagNameInput && inlineTagColorInput && inlinePreviewText && inlineTagPreview) {
+            const name = inlineTagNameInput.value || 'Aperçu';
+            const color = inlineTagColorInput.value;
+            
+            inlinePreviewText.textContent = name;
+            const badge = inlineTagPreview.querySelector('.badge');
+            if (badge) {
+                badge.style.background = color;
+            }
+        }
+    }
+
+    // === NOUVELLES MÉTHODES POUR LE FORMULAIRE RAPIDE ===
+    
+    updateQuickTagPreview() {
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+        const quickPreviewText = document.getElementById('quickPreviewText');
+        const quickTagPreview = document.getElementById('quickTagPreview');
+
+        if (quickTagName && quickTagColor && quickPreviewText && quickTagPreview) {
+            const name = quickTagName.value || 'Aperçu';
+            const color = quickTagColor.value;
+            
+            quickPreviewText.textContent = name;
+            const badge = quickTagPreview.querySelector('.preview-badge');
+            if (badge) {
+                badge.style.background = color;
+            }
+        }
+    }
+
+    async createQuickTag() {
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+
+        if (!quickTagName || !quickTagColor) return;
+
+        const tagName = quickTagName.value.trim();
+        const tagColor = quickTagColor.value;
+
+        if (!tagName) {
+            this.showNotification('Le nom de l\'étiquette est requis', 'error');
+            return;
+        }
+
+        try {
+            const csrfToken = this.getCSRFToken();
+            
+            console.log('🔄 Création rapide du tag:', tagName, tagColor);
+            
+            const response = await fetch('/api/v1/core/tags/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    name: tagName,
+                    color: tagColor
+                })
+            });
+
+            if (response.ok) {
+                const newTag = await response.json();
+                console.log('✅ Nouveau tag créé rapidement:', newTag);
+                
+                // Ajouter à la liste locale
+                this.tags.push({
+                    id: newTag.id,
+                    name: newTag.name || newTag.display_name,
+                    color: newTag.color,
+                    description: newTag.description || '',
+                    usage_count: newTag.usage_count_notebook || 0,
+                    usage_count_total: newTag.usage_count_total || 0,
+                    is_favorite: newTag.is_favorite || false,
+                    created_at: newTag.created_at
+                });
+
+                // Effacer le formulaire
+                this.clearQuickForm();
+                
+                // Recharger la liste
+                this.renderTags();
+                this.updateTagsCount();
+                this.showNotification('Étiquette créée avec succès', 'success');
+                
+                // Focus sur le champ nom pour continuer
+                setTimeout(() => quickTagName.focus(), 100);
+            } else {
+                console.error('❌ Erreur création rapide:', response.status);
+                const errorText = await response.text();
+                console.error('❌ Détails:', errorText);
+                this.showNotification('Erreur lors de la création', 'error');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la création rapide:', error);
+            this.showNotification('Erreur lors de la création', 'error');
+        }
+    }
+
+    clearQuickForm() {
+        const quickTagName = document.getElementById('quickTagName');
+        const quickTagColor = document.getElementById('quickTagColor');
+        
+        if (quickTagName) quickTagName.value = '';
+        if (quickTagColor) quickTagColor.value = '#3B82F6';
+        this.updateQuickTagPreview();
+    }
+
+    // === MÉTHODES POUR L'ÉDITION DIRECTE EN CELLULE ===
+    
+    startInlineEdit(tagId, field) {
+        const tag = this.tags.find(t => t.id === tagId);
+        if (!tag) return;
+
+        if (field === 'name') {
+            const nameElement = document.querySelector(`.tag-name-text[data-tag-id="${tagId}"]`);
+            if (!nameElement) return;
+
+            const originalText = nameElement.textContent;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = originalText;
+            input.className = 'form-control form-control-sm';
+            input.style.cssText = 'width: 100%; font-size: 0.875rem;';
+            
+            // Remplacer le texte par l'input
+            nameElement.style.display = 'none';
+            nameElement.parentNode.appendChild(input);
+            input.focus();
+            input.select();
+
+            // Sauvegarder au blur ou Enter
+            const saveEdit = async () => {
+                const newName = input.value.trim();
+                if (newName && newName !== originalText) {
+                    await this.updateTagField(tagId, 'name', newName);
+                }
+                // Restaurer l'affichage
+                input.remove();
+                nameElement.style.display = '';
+                this.renderTags(); // Re-render pour mettre à jour
+            };
+
+            // Annuler à Escape
+            const cancelEdit = () => {
+                input.remove();
+                nameElement.style.display = '';
+            };
+
+            input.addEventListener('blur', saveEdit);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveEdit();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    cancelEdit();
+                }
+            });
+        }
+    }
+
+    async updateTagField(tagId, field, value) {
+        try {
+            const csrfToken = this.getCSRFToken();
+            
+            console.log(`🔄 Mise à jour ${field} du tag:`, tagId, value);
+            
+            const body = {};
+            body[field] = value;
+            
+            const response = await fetch(`/api/v1/core/tags/${tagId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(body)
+            });
+
+            if (response.ok) {
+                const updatedTag = await response.json();
+                console.log('✅ Tag mis à jour:', updatedTag);
+                
+                // Mettre à jour dans la liste locale
+                const tagIndex = this.tags.findIndex(t => t.id === tagId);
+                if (tagIndex !== -1) {
+                    this.tags[tagIndex][field] = updatedTag[field] || value;
+                }
+                
+                this.showNotification('Étiquette modifiée', 'success');
+            } else {
+                console.error('❌ Erreur mise à jour:', response.status);
+                this.showNotification('Erreur lors de la modification', 'error');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la mise à jour:', error);
+            this.showNotification('Erreur lors de la modification', 'error');
         }
     }
 
@@ -330,18 +945,42 @@ class NotebookTagsManagement {
         }
 
         try {
-            // Pour l'instant, on simule la suppression
-            this.tags = this.tags.filter(t => t.id !== tagId);
-            this.selectedTags.delete(tagId);
+            const csrfToken = this.getCSRFToken();
             
-            this.renderTags();
-            this.updateTagsCount();
-            this.updateDeleteButton();
+            console.log('🔄 Suppression du tag:', tagId);
             
-            this.showNotification(`Étiquette "${tag.name}" supprimée`, 'success');
+            const response = await fetch(`/api/v1/core/tags/${tagId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'same-origin'
+            });
 
+            if (response.ok) {
+                console.log('✅ Tag supprimé:', tagId);
+                
+                // Supprimer de la liste locale
+                this.tags = this.tags.filter(t => t.id !== tagId);
+                this.selectedTags.delete(tagId);
+                
+                // Cacher le formulaire inline si c'était le tag en cours d'édition
+                if (this.inlineEditingTag && this.inlineEditingTag.id === tagId) {
+                    this.cancelInlineEdit();
+                }
+                
+                this.renderTags();
+                this.updateTagsCount();
+                this.showNotification(`Étiquette "${tag.name}" supprimée`, 'success');
+            } else {
+                console.error('❌ Erreur suppression:', response.status);
+                const errorText = await response.text();
+                console.error('❌ Détails:', errorText);
+                this.showNotification('Erreur lors de la suppression', 'error');
+            }
         } catch (error) {
-            console.error('Erreur lors de la suppression du tag:', error);
+            console.error('❌ Erreur lors de la suppression du tag:', error);
             this.showNotification('Erreur lors de la suppression de l\'étiquette', 'error');
         }
     }
@@ -354,19 +993,62 @@ class NotebookTagsManagement {
         }
 
         try {
-            // Pour l'instant, on simule la suppression
+            const csrfToken = this.getCSRFToken();
             const tagsToDelete = Array.from(this.selectedTags);
-            this.tags = this.tags.filter(tag => !this.selectedTags.has(tag.id));
-            this.selectedTags.clear();
+            let deletedCount = 0;
+            let errors = [];
+
+            // Supprimer chaque tag individuellement
+            for (const tagId of tagsToDelete) {
+                try {
+                    console.log('🔄 Suppression du tag (batch):', tagId);
+                    
+                    const response = await fetch(`/api/v1/core/tags/${tagId}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        credentials: 'same-origin'
+                    });
+
+                    if (response.ok) {
+                        deletedCount++;
+                        // Supprimer de la liste locale
+                        this.tags = this.tags.filter(t => t.id !== tagId);
+                        this.selectedTags.delete(tagId);
+                        
+                        // Cacher le formulaire inline si c'était le tag en cours d'édition
+                        if (this.inlineEditingTag && this.inlineEditingTag.id === tagId) {
+                            this.cancelInlineEdit();
+                        }
+                    } else {
+                        const errorText = await response.text();
+                        errors.push(`Tag ${tagId}: ${errorText}`);
+                    }
+                } catch (error) {
+                    errors.push(`Tag ${tagId}: ${error.message}`);
+                }
+            }
             
+            // Mettre à jour l'affichage
+            this.selectedTags.clear();
             this.renderTags();
             this.updateTagsCount();
-            this.updateDeleteButton();
             
-            this.showNotification(`${tagsToDelete.length} étiquette(s) supprimée(s)`, 'success');
+            // Afficher le résultat
+            if (deletedCount === tagsToDelete.length) {
+                this.showNotification(`${deletedCount} étiquette(s) supprimée(s)`, 'success');
+            } else if (deletedCount > 0) {
+                this.showNotification(`${deletedCount} étiquette(s) supprimée(s), ${errors.length} erreur(s)`, 'warning');
+                console.error('Erreurs lors de la suppression batch:', errors);
+            } else {
+                this.showNotification('Erreur lors de la suppression des étiquettes', 'error');
+                console.error('Erreurs lors de la suppression batch:', errors);
+            }
 
         } catch (error) {
-            console.error('Erreur lors de la suppression des tags:', error);
+            console.error('❌ Erreur lors de la suppression batch des tags:', error);
             this.showNotification('Erreur lors de la suppression des étiquettes', 'error');
         }
     }
@@ -386,39 +1068,104 @@ class NotebookTagsManagement {
         }
 
         try {
+            const csrfToken = this.getCSRFToken();
+            
             if (this.editingTag) {
-                // Modification
-                const tagIndex = this.tags.findIndex(t => t.id === this.editingTag.id);
-                if (tagIndex !== -1) {
-                    this.tags[tagIndex] = {
-                        ...this.tags[tagIndex],
+                // Modification - Appel API PUT
+                console.log('🔄 Modification du tag:', this.editingTag.id);
+                
+                const response = await fetch(`/api/v1/core/tags/${this.editingTag.id}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
                         name: tagName,
                         color: tagColor
-                    };
+                    })
+                });
+
+                if (response.ok) {
+                    const updatedTag = await response.json();
+                    console.log('✅ Tag modifié:', updatedTag);
+                    
+                    // Mettre à jour dans la liste locale
+                    const tagIndex = this.tags.findIndex(t => t.id === this.editingTag.id);
+                    if (tagIndex !== -1) {
+                        this.tags[tagIndex] = {
+                            ...this.tags[tagIndex],
+                            name: updatedTag.name || updatedTag.display_name,
+                            color: updatedTag.color
+                        };
+                    }
+                    this.showNotification('Étiquette modifiée avec succès', 'success');
+                } else {
+                    console.error('❌ Erreur modification:', response.status);
+                    const errorText = await response.text();
+                    console.error('❌ Détails:', errorText);
+                    this.showNotification('Erreur lors de la modification', 'error');
+                    return; // Ne pas continuer si erreur
                 }
-                this.showNotification('Étiquette modifiée avec succès', 'success');
             } else {
-                // Création
-                const newTag = {
-                    id: Math.max(...this.tags.map(t => t.id), 0) + 1,
-                    name: tagName,
-                    color: tagColor,
-                    usage_count: 0
-                };
-                this.tags.push(newTag);
-                this.showNotification('Étiquette créée avec succès', 'success');
+                // Création - Appel API POST
+                console.log('🔄 Création nouveau tag:', tagName, tagColor);
+                
+                const response = await fetch('/api/v1/core/tags/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        name: tagName,
+                        color: tagColor
+                    })
+                });
+
+                if (response.ok) {
+                    const newTag = await response.json();
+                    console.log('✅ Nouveau tag créé:', newTag);
+                    
+                    // Ajouter à la liste locale
+                    this.tags.push({
+                        id: newTag.id,
+                        name: newTag.name || newTag.display_name,
+                        color: newTag.color,
+                        description: newTag.description || '',
+                        usage_count: newTag.usage_count_notebook || 0,
+                        usage_count_total: newTag.usage_count_total || 0,
+                        is_favorite: newTag.is_favorite || false,
+                        created_at: newTag.created_at
+                    });
+                    this.showNotification('Étiquette créée avec succès', 'success');
+                } else {
+                    console.error('❌ Erreur création:', response.status);
+                    const errorText = await response.text();
+                    console.error('❌ Détails:', errorText);
+                    this.showNotification('Erreur lors de la création', 'error');
+                    return; // Ne pas continuer si erreur
+                }
             }
 
-            // Fermer la modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('notebookTagEditModal'));
-            modal.hide();
+            // Retourner à l'onglet liste
+            const tagsListTab = document.getElementById('tags-list-tab');
+            if (tagsListTab) {
+                const tabTrigger = new bootstrap.Tab(tagsListTab);
+                tabTrigger.show();
+            }
+            
+            // Reset du formulaire
+            this.cancelTagForm();
 
             // Recharger la liste
             this.renderTags();
             this.updateTagsCount();
 
         } catch (error) {
-            console.error('Erreur lors de la sauvegarde du tag:', error);
+            console.error('❌ Erreur lors de la sauvegarde du tag:', error);
             this.showNotification('Erreur lors de la sauvegarde de l\'étiquette', 'error');
         }
     }
@@ -474,8 +1221,13 @@ class NotebookTagsManagement {
 
     showNotification(message, type = 'info') {
         // Système de notification simple
+        const alertClass = type === 'error' ? 'danger' : 
+                          type === 'success' ? 'success' : 
+                          type === 'warning' ? 'warning' : 
+                          'info';
+        
         const notification = document.createElement('div');
-        notification.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} alert-dismissible fade show position-fixed`;
+        notification.className = `alert alert-${alertClass} alert-dismissible fade show position-fixed`;
         notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
         notification.innerHTML = `
             ${message}
@@ -484,12 +1236,13 @@ class NotebookTagsManagement {
 
         document.body.appendChild(notification);
 
-        // Auto-remove après 5 secondes
+        // Auto-remove après 5 secondes (plus long pour warnings)
+        const timeout = type === 'warning' ? 8000 : 5000;
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.remove();
             }
-        }, 5000);
+        }, timeout);
     }
 }
 

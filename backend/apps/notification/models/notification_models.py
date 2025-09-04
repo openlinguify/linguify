@@ -16,6 +16,14 @@ class NotificationType(models.TextChoices):
     SYSTEM = 'system', 'System'
     PROGRESS = 'progress', 'Progress'
     TERMS = 'terms', 'Terms & Conditions'
+    
+    # Calendar notification types
+    CALENDAR_REMINDER = 'calendar_reminder', 'Event Reminder'
+    CALENDAR_INVITATION = 'calendar_invitation', 'Event Invitation'
+    CALENDAR_UPDATE = 'calendar_update', 'Event Update'
+    CALENDAR_CANCELLATION = 'calendar_cancellation', 'Event Cancellation'
+    CALENDAR_RESPONSE = 'calendar_response', 'Event Response'
+    CALENDAR_SYNC = 'calendar_sync', 'Calendar Sync'
 
 class NotificationPriority(models.TextChoices):
     LOW = 'low', 'Low'
@@ -33,7 +41,7 @@ class Notification(models.Model):
         related_name='notifications'
     )
     type = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=NotificationType.choices,
         default=NotificationType.INFO
     )
@@ -105,6 +113,13 @@ class NotificationSetting(models.Model):
     achievement_notifications = models.BooleanField(default=True, help_text="Notifications for achievements")
     streak_notifications = models.BooleanField(default=True, help_text="Notifications about streaks")
     system_notifications = models.BooleanField(default=True, help_text="System notifications")
+    
+    # Calendar notification types
+    calendar_reminders = models.BooleanField(default=True, help_text="Event reminders")
+    calendar_invitations = models.BooleanField(default=True, help_text="Event invitations")
+    calendar_updates = models.BooleanField(default=True, help_text="Event updates and changes")
+    calendar_responses = models.BooleanField(default=True, help_text="RSVP responses from attendees")
+    calendar_sync_notifications = models.BooleanField(default=False, help_text="Calendar sync status notifications")
     
     # Quiet hours
     quiet_hours_enabled = models.BooleanField(default=False)

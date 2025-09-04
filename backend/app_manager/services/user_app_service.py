@@ -27,9 +27,9 @@ class UserAppService:
         """
         user_settings, created = UserAppSettings.objects.get_or_create(user=user)
         
-        # If user has no apps enabled, enable some default featured apps
+        # If user has no apps enabled, enable some default apps
         if created or user_settings.enabled_apps.count() == 0:
-            default_apps = App.objects.filter(is_published=True, is_featured=True)[:3]
+            default_apps = App.objects.filter(is_enabled=True, installable=True)[:3]
             if default_apps.exists():
                 user_settings.enabled_apps.set(default_apps)
                 logger.info(f"Enabled {default_apps.count()} default apps for user {user.id}")
@@ -48,7 +48,7 @@ class UserAppService:
             list: List of app dictionaries with display data
         """
         user_settings = cls.get_or_create_user_settings(user)
-        enabled_apps = user_settings.enabled_apps.filter(is_enabled=True)
+        enabled_apps = user_settings.get_ordered_enabled_apps()
         
         installed_apps = []
         for app in enabled_apps:
@@ -113,7 +113,7 @@ class UserAppService:
                     
                     for rec_app_code in recommendations:
                         try:
-                            rec_app = App.objects.get(code=rec_app_code, is_published=True)
+                            rec_app = App.objects.get(code=rec_app_code, is_enabled=True)
                             app_recommendations.append({
                                 'display_name': rec_app.display_name,
                                 'description': rec_app.description[:100] + '...' if rec_app.description else '',
@@ -137,7 +137,7 @@ class UserAppService:
     @classmethod
     def _format_app_data(cls, app):
         """
-        Format app data for display using manifest-driven approach.
+        Format app data for display using database data primarily.
         
         Args:
             app: App model instance
@@ -145,13 +145,20 @@ class UserAppService:
         Returns:
             dict: Formatted app data
         """
-        # Obtenir les infos depuis le manifest (comme dans l'app-store)
-        app_info = manifest_loader.get_app_info(app.code)
+        # Use database route_path primarily, fall back to manifest if empty
+        route_path = app.route_path
+        if not route_path:
+            app_info = manifest_loader.get_app_info(app.code)
+            route_path = app_info.get('route_path', f'/{app.code}/')
+        
+        # Ensure route_path ends with slash for consistency
+        if not route_path.endswith('/'):
+            route_path += '/'
         
         return {
             'name': app.code,
-            'display_name': app_info.get('display_name', app.display_name),
-            'url': app_info.get('route_path', app.route_path),
+            'display_name': app.display_name,
+            'url': route_path,
             'icon': app.icon_name,
             'static_icon': AppIconService.get_static_icon_url(app.code),
             'color_gradient': AppIconService.get_color_gradient(app.color),

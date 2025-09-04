@@ -9,6 +9,12 @@ app_name = 'teaching'
 urlpatterns = [
     # Web views
     path('', views.TeachingDashboardView.as_view(), name='dashboard'),
+    path('my-teachers/', views.MyTeachersView.as_view(), name='my_teachers'),
+    path('find-teachers/', views.FindTeachersView.as_view(), name='find_teachers'),
+    path('my-lessons/', views.MyLessonsView.as_view(), name='my_lessons'),
+    
+    # Legacy redirect
+    path('teachers/', views.FindTeachersView.as_view(), name='teachers_list'),
     
     # Teacher discovery
     path('api/teachers/', views.AvailableTeachersAPIView.as_view(), name='api_teachers'),

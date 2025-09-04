@@ -45,7 +45,11 @@
                 {% for tab in category.tabs %}
                 <a href="{{ settings_urls|get_item:tab.id }}" class="nav-item{% if tab.active %} active{% endif %}" data-tab="{{ tab.id }}">
                     <div class="nav-item-text">
-                        <i class="{{ tab.icon }}"></i>
+                        {% if tab.static_icon %}
+                            <img src="{{ tab.static_icon }}" alt="{{ tab.name }}" class="nav-item-icon" style="width: 16px; height: 16px; margin-right: 8px;">
+                        {% else %}
+                            <i class="{{ tab.icon }}"></i>
+                        {% endif %}
                         {{ tab.name }}
                         {% if tab.source == 'debug_forced' %}
                         <small style="color: #e74c3c; font-size: 10px;">[DEBUG]</small>
@@ -120,6 +124,10 @@
                     {% include 'community/community_settings.html' %}
                 {% elif tab.id == 'documents' and tab.active %}
                     {% include 'documents/documents_settings.html' %}
+                {% elif tab.id == 'language_learning' and tab.active %}
+                    {% include 'language_learning/language_learning_settings.html' %}
+                {% elif tab.id == 'todo' and tab.active %}
+                    {% include 'todo/todo_settings.html' %}
                 {% elif tab.id == 'app_manager' and tab.active %}
                     {% include 'app_manager/app_manager_settings.html' %}
                 {% elif tab.active %}
@@ -157,15 +165,15 @@
 <script src="{% static 'saas_web/js/settings-utils.js' %}?v=2025.2"></script>
 <script src="{% static 'saas_web/js/settings-core.js' %}?v=2025.2"></script>
 
-<!-- App-specific settings scripts -->
+<!-- App-specific settings scripts (only load existing files) -->
 <script src="{% static 'authentication/js/settings.js' %}"></script>
-<script src="{% static 'vocal/js/settings.js' %}"></script>
 <script src="{% static 'chat/js/settings.js' %}"></script>
 <script src="{% static 'quizz/js/settings.js' %}"></script>
 <script src="{% static 'notebook/js/settings.js' %}"></script>
 <script src="{% static 'community/js/settings.js' %}"></script>
-<script src="{% static 'course/js/settings.js' %}"></script>
 <script src="{% static 'revision/js/settings.js' %}"></script>
 <script src="{% static 'notification/js/settings.js' %}"></script>
 <script src="{% static 'documents/js/documents_settings.js' %}"></script>
+<script src="{% static 'language_learning/js/settings.js' %}"></script>
+<script src="{% static 'todo/js/settings.js' %}"></script>
 {% endblock %}

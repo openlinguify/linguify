@@ -76,6 +76,88 @@
     </div>
   </div>
 
+  <!-- Dashboard Section -->
+  <div class="content-section">
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="bi bi-image"></i>
+        {% trans "Dashboard" %}
+      </h3>
+      <div class="section-actions">
+        <button class="section-toggle">
+          <i class="bi bi-chevron-up"></i>
+        </button>
+      </div>
+    </div>
+    <div class="section-content">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">{% trans "Background Color" %}</label>
+          <div class="form-help" style="margin-bottom: 16px;">{% trans "Choisissez la couleur d'arrière-plan pour tout le site" %}</div>
+          <div class="dashboard-background-options">
+            <!-- Couleurs neutres -->
+            <div class="background-option active" data-background="default" style="background: #f8fafc;">
+              <span>{% trans "Défaut" %}</span>
+              <small>Slate 50</small>
+            </div>
+            <div class="background-option" data-background="white" style="background: #ffffff;">
+              <span>{% trans "Blanc" %}</span>
+              <small>Pure</small>
+            </div>
+            <div class="background-option" data-background="gray-light" style="background: #f9fafb;">
+              <span>{% trans "Gris Clair" %}</span>
+              <small>Gray 50</small>
+            </div>
+            <div class="background-option" data-background="gray" style="background: #f3f4f6;">
+              <span>{% trans "Gris" %}</span>
+              <small>Gray 100</small>
+            </div>
+            
+            <!-- Couleurs Linguify -->
+            <div class="background-option" data-background="linguify-light" style="background: linear-gradient(135deg, #f0f4ff 0%, #e0f2fe 100%);">
+              <span>{% trans "Linguify Clair" %}</span>
+              <small>Bleu/Cyan</small>
+            </div>
+            <div class="background-option" data-background="linguify-accent" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);">
+              <span>{% trans "Accent Vert" %}</span>
+              <small>Emerald</small>
+            </div>
+            <div class="background-option" data-background="linguify-purple" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);">
+              <span>{% trans "Violet Clair" %}</span>
+              <small>Purple</small>
+            </div>
+            
+            <!-- Couleurs premium -->
+            <div class="background-option" data-background="warm" style="background: linear-gradient(135deg, #fefbf3 0%, #fef7ed 100%);">
+              <span>{% trans "Chaleureux" %}</span>
+              <small>Orange</small>
+            </div>
+            <div class="background-option" data-background="cool" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);">
+              <span>{% trans "Frais" %}</span>
+              <small>Sky Blue</small>
+            </div>
+            <div class="background-option" data-background="nature" style="background: linear-gradient(135deg, #f7fee7 0%, #ecfccb 100%);">
+              <span>{% trans "Nature" %}</span>
+              <small>Lime</small>
+            </div>
+            
+            <!-- Mode sombre -->
+            <div class="background-option" data-background="dark" style="background: #1f2937;">
+              <span style="color: white;">{% trans "Sombre" %}</span>
+              <small style="color: #9ca3af;">Dark Gray</small>
+            </div>
+            <div class="background-option" data-background="dark-blue" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+              <span style="color: white;">{% trans "Nuit Bleue" %}</span>
+              <small style="color: #94a3b8;">Slate</small>
+            </div>
+          </div>
+          <input type="hidden" name="dashboard_background" value="default" id="dashboard-background-input">
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Accessibility Section -->
   <div class="content-section">
     <div class="section-header">

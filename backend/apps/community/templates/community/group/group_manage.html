@@ -1,0 +1,812 @@
+{% extends "saas_web/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Manage" %} {{ group.name }} | Open Linguify{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/group_detail_linguify.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="community-page">
+    <div class="community-container">
+        <!-- Header avec navbar intégrée -->
+        <div class="community-header">
+            <!-- Navigation unifiée -->
+            {% include 'community/components/navbar.html' %}
+        </div>
+
+        <!-- Main scrollable content -->
+        <div class="community-main">
+            
+            <!-- En-tête du groupe - Style Navbar -->
+            <div class="group-navbar-container d-flex align-items-center justify-content-between gap-3">
+                <!-- Gauche: Info groupe compacte -->
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Avatar du groupe -->
+                    <div class="group-avatar-display">
+                        {% if group.avatar %}
+                        <img src="{{ group.avatar.url }}" alt="{{ group.name }}" class="group-avatar-img">
+                        {% else %}
+                        <div class="group-avatar-placeholder-small">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Nom du groupe -->
+                    <div class="group-name-section">
+                        <h2 class="group-name-compact">{{ group.name }} - {% trans "Management" %}</h2>
+                    </div>
+                    
+                    <!-- Badges info compacts -->
+                    <div class="d-flex align-items-center gap-2">
+                        {% if group.language %}
+                        <div class="group-info-badge language">
+                            <i class="bi bi-translate me-1"></i>
+                            {{ group.get_language_display }}
+                        </div>
+                        {% endif %}
+                        
+                        {% if group.level %}
+                        <div class="group-info-badge level">
+                            <i class="bi bi-award me-1"></i>
+                            {{ group.get_level_display }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Droite: Stats + Actions -->
+                <div class="d-flex align-items-center gap-2 flex-nowrap">
+                    <!-- Stats compactes -->
+                    <div class="group-stats-compact d-flex align-items-center gap-3">
+                        <div class="stat-compact">
+                            <span class="stat-number-compact">{{ members.count }}</span>
+                            <span class="stat-label-compact">{% trans "members" %}</span>
+                        </div>
+                        <div class="stat-compact">
+                            <span class="stat-number-compact">{{ group_stats.active_members }}</span>
+                            <span class="stat-label-compact">{% trans "active" %}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <a href="{% url 'community:group_detail' group.id %}" class="btn-outline-custom btn-sm">
+                        <i class="bi bi-arrow-left"></i>
+                        <span class="d-none d-xl-inline ms-1">{% trans "Back to Chat" %}</span>
+                    </a>
+                    
+                    <button class="btn-gradient btn-sm px-2" id="saveSettingsBtn">
+                        <i class="bi bi-check"></i>
+                        <span class="d-none d-xl-inline ms-1">{% trans "Save" %}</span>
+                    </button>
+                    
+                    {% if is_creator %}
+                    <button class="btn-danger btn-sm px-2" id="deleteGroupBtn">
+                        <i class="bi bi-trash"></i>
+                        <span class="d-none d-xl-inline ms-1">{% trans "Delete" %}</span>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Contenu de gestion en colonnes -->
+            <div class="group-chat-main">
+                <!-- Section principale: Paramètres du groupe -->
+                <div class="chat-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-gear me-2"></i>
+                            {% trans "Group Settings" %}
+                        </h3>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="manage-content">
+                            <!-- Informations générales -->
+                            <div class="settings-section">
+                                <h4>{% trans "General Information" %}</h4>
+                                <form id="groupSettingsForm">
+                                    <!-- Avatar du groupe -->
+                                    <div class="mb-3">
+                                        <label for="groupAvatar" class="form-label">{% trans "Group Avatar" %}</label>
+                                        <div class="avatar-upload-section">
+                                            <div class="current-avatar">
+                                                {% if group.avatar %}
+                                                <img src="{{ group.avatar.url }}" alt="Group Avatar" class="group-avatar-preview">
+                                                {% else %}
+                                                <div class="group-avatar-placeholder">
+                                                    <i class="bi bi-people-fill"></i>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <input type="file" class="form-control" id="groupAvatar" accept="image/*">
+                                            <small class="form-text text-muted">{% trans "Recommended size: 200x200 pixels" %}</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="groupName" class="form-label">{% trans "Group Name" %}</label>
+                                        <input type="text" class="form-control" id="groupName" value="{{ group.name }}">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="groupDescription" class="form-label">{% trans "Description" %}</label>
+                                        <textarea class="form-control" id="groupDescription" rows="3">{{ group.description }}</textarea>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="groupLanguage" class="form-label">{% trans "Language" %}</label>
+                                                <select class="form-select" id="groupLanguage">
+                                                    <option value="EN" {% if group.language == 'EN' %}selected{% endif %}>🇬🇧 English</option>
+                                                    <option value="FR" {% if group.language == 'FR' %}selected{% endif %}>🇫🇷 Français</option>
+                                                    <option value="ES" {% if group.language == 'ES' %}selected{% endif %}>🇪🇸 Español</option>
+                                                    <option value="DE" {% if group.language == 'DE' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="groupLevel" class="form-label">{% trans "Level" %}</label>
+                                                <select class="form-select" id="groupLevel">
+                                                    <option value="beginner" {% if group.level == 'beginner' %}selected{% endif %}>{% trans "Beginner" %}</option>
+                                                    <option value="intermediate" {% if group.level == 'intermediate' %}selected{% endif %}>{% trans "Intermediate" %}</option>
+                                                    <option value="advanced" {% if group.level == 'advanced' %}selected{% endif %}>{% trans "Advanced" %}</option>
+                                                    <option value="mixed" {% if group.level == 'mixed' %}selected{% endif %}>{% trans "Mixed" %}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Statistiques -->
+                            <div class="settings-section">
+                                <h4>{% trans "Group Statistics" %}</h4>
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-icon">👥</div>
+                                        <div class="stat-info">
+                                            <div class="stat-number">{{ group_stats.total_members }}</div>
+                                            <div class="stat-label">{% trans "Total Members" %}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="stat-card">
+                                        <div class="stat-icon">💬</div>
+                                        <div class="stat-info">
+                                            <div class="stat-number">{{ group_stats.total_messages }}</div>
+                                            <div class="stat-label">{% trans "Messages" %}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="stat-card">
+                                        <div class="stat-icon">🟢</div>
+                                        <div class="stat-info">
+                                            <div class="stat-number">{{ group_stats.active_members }}</div>
+                                            <div class="stat-label">{% trans "Active Today" %}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sidebar: Gestion des membres -->
+                <div class="members-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-people me-2"></i>
+                            {% trans "Members" %} ({{ members.count }})
+                        </h3>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="members-list">
+                            {% for member in members %}
+                            <div class="member-item member-manage">
+                                <div class="member-avatar">
+                                    {% if member.user.get_profile_picture_url %}
+                                    <img src="{{ member.user.get_profile_picture_url }}" alt="{{ member.user.username }}" class="user-avatar-img">
+                                    {% elif member.avatar %}
+                                    <img src="{{ member.avatar.url }}" alt="{{ member.user.username }}" class="user-avatar-img">
+                                    {% else %}
+                                    {{ member.user.first_name.0|upper|default:member.user.username.0|upper }}
+                                    {% endif %}
+                                </div>
+                                <div class="member-info">
+                                    <div class="member-name">
+                                        {{ member.user.get_full_name|default:member.user.username }}
+                                        {% if member == group.created_by %}
+                                        <span class="badge bg-primary">{% trans "Creator" %}</span>
+                                        {% elif member in group.moderators.all %}
+                                        <span class="badge bg-success">{% trans "Moderator" %}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="member-status {% if member.is_online %}online{% else %}offline{% endif %}">
+                                        <span class="status-dot"></span>
+                                        {% if member.is_online %}{% trans "Online" %}{% else %}{% trans "Offline" %}{% endif %}
+                                    </div>
+                                </div>
+                                {% if member != group.created_by and is_creator %}
+                                <div class="member-actions">
+                                    {% if member in group.moderators.all %}
+                                    <button class="btn-icon btn-warning btn-sm" onclick="demoteModerator({{ member.id }})" title="{% trans 'Remove Moderator' %}">
+                                        <i class="bi bi-arrow-down"></i>
+                                    </button>
+                                    {% else %}
+                                    <button class="btn-icon btn-success btn-sm" onclick="promoteModerator({{ member.id }})" title="{% trans 'Make Moderator' %}">
+                                        <i class="bi bi-arrow-up"></i>
+                                    </button>
+                                    {% endif %}
+                                    <button class="btn-icon btn-danger btn-sm" onclick="removeMember({{ member.id }})" title="{% trans 'Remove Member' %}">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% empty %}
+                            <div class="empty-state">
+                                <i class="bi bi-people large-icon"></i>
+                                <p>{% trans "No members" %}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation personnalisé -->
+<div id="confirmModal" class="custom-modal" style="display: none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4><i class="bi bi-exclamation-triangle text-warning me-2"></i>Confirm Action</h4>
+        </div>
+        <div class="modal-body">
+            <p id="confirmMessage">Are you sure you want to delete this group? This action cannot be undone!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="confirmCancel">Cancel</button>
+            <button class="btn-danger" id="confirmOk">Delete Group</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de succès personnalisé -->
+<div id="successModal" class="custom-modal" style="display: none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4><i class="bi bi-check-circle text-success me-2"></i>Success</h4>
+        </div>
+        <div class="modal-body">
+            <p id="successMessage">Action completed successfully!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-gradient" id="successOk">OK</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.manage-content {
+    padding: 1.5rem;
+}
+
+.settings-section {
+    background: #f8f9ff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+.settings-section h4 {
+    color: #2D5BBA;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(45, 91, 186, 0.1);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    text-align: center;
+}
+
+.stat-info .stat-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2D5BBA;
+    line-height: 1;
+}
+
+.stat-info .stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.member-manage {
+    position: relative;
+}
+
+.member-actions {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.btn-warning {
+    background: #ffc107;
+    color: black;
+    border: none;
+}
+
+.btn-warning:hover {
+    background: #e0a800;
+}
+
+.member-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.avatar-upload-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.current-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(45, 91, 186, 0.1);
+}
+
+.group-avatar-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.group-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2D5BBA, #1e40af);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+}
+
+/* 🎨 Custom Modals */
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(45, 91, 186, 0.15); /* Shadow Linguify */
+    border: 1px solid rgba(45, 91, 186, 0.1); /* Border Linguify */
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    z-index: 1;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1); /* Border Linguify */
+}
+
+.modal-header h4 {
+    margin: 0;
+    color: #2D5BBA; /* Couleur Linguify */
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 1rem 1.5rem;
+}
+
+.modal-body p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+/* 🎨 Boutons Modal - Style Linguify */
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 12px; /* Arrondi Linguify */
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.15);
+}
+
+/* Bouton Delete dans le modal - Style Linguify */
+.modal-footer .btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 12px; /* Arrondi Linguify */
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+}
+
+.modal-footer .btn-danger:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+}
+
+/* Bouton Success dans le modal - Style Linguify */
+.modal-footer .btn-gradient {
+    background: linear-gradient(135deg, #2D5BBA, #1e40af);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 12px; /* Arrondi Linguify */
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.15);
+}
+
+.modal-footer .btn-gradient:hover {
+    background: linear-gradient(135deg, #1e40af, #1d4ed8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.25);
+}
+
+.text-warning {
+    color: #f59e0b !important;
+}
+
+.text-success {
+    color: #10b981 !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion de l'upload d'avatar
+    document.getElementById('groupAvatar').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const formData = new FormData();
+            formData.append('avatar', file);
+            
+            fetch('{% url "community:update_group_settings" group.id %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    // Mettre à jour l'aperçu de l'avatar
+                    if (data.avatar_url) {
+                        const currentAvatar = document.querySelector('.current-avatar');
+                        currentAvatar.innerHTML = `<img src="${data.avatar_url}" alt="Group Avatar" class="group-avatar-preview">`;
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while uploading avatar');
+            });
+        }
+    });
+
+    // Sauvegarder les paramètres
+    document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+        const formData = {
+            name: document.getElementById('groupName').value,
+            description: document.getElementById('groupDescription').value,
+            language: document.getElementById('groupLanguage').value,
+            level: document.getElementById('groupLevel').value,
+        };
+        
+        // Appel AJAX pour sauvegarder
+        fetch('{% url "community:update_group_settings" group.id %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload(); // Reload pour voir les changements
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving');
+        });
+    });
+    
+    // Supprimer le groupe
+    {% if is_creator %}
+    document.getElementById('deleteGroupBtn').addEventListener('click', function() {
+        showConfirmModal('Are you sure you want to delete this group? This action cannot be undone!', function() {
+            fetch('{% url "community:delete_group" group.id %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessModal(data.message, function() {
+                        window.location.href = data.redirect_url; // Rediriger vers la liste des groupes
+                    });
+                } else {
+                    showSuccessModal('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showSuccessModal('An error occurred while deleting the group');
+            });
+        });
+    });
+    {% endif %}
+});
+
+// Fonction pour retirer un membre
+function removeMember(memberId) {
+    if (confirm('{% trans "Are you sure you want to remove this member?" %}')) {
+        fetch(`{% url 'community:remove_group_member' group.id 0 %}`.replace('0', memberId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload(); // Reload pour voir les changements
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+}
+
+// Fonction pour promouvoir un membre comme modérateur
+function promoteModerator(memberId) {
+    if (confirm('{% trans "Make this member a moderator?" %}')) {
+        fetch(`{% url 'community:promote_to_moderator' group.id 0 %}`.replace('0', memberId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload(); // Reload pour voir les changements
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+}
+
+// Fonction pour retirer les droits de modérateur
+function demoteModerator(memberId) {
+    if (confirm('{% trans "Remove moderator rights from this member?" %}')) {
+        fetch(`{% url 'community:remove_moderator' group.id 0 %}`.replace('0', memberId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload(); // Reload pour voir les changements
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+}
+
+// Fonction pour récupérer le cookie CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// 🎨 Fonctions pour les modals personnalisés
+function showConfirmModal(message, onConfirm) {
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmModal').style.display = 'flex';
+    
+    document.getElementById('confirmOk').onclick = function() {
+        document.getElementById('confirmModal').style.display = 'none';
+        if (onConfirm) onConfirm();
+    };
+    
+    document.getElementById('confirmCancel').onclick = function() {
+        document.getElementById('confirmModal').style.display = 'none';
+    };
+    
+    // Fermer en cliquant sur l'overlay
+    document.querySelector('#confirmModal .modal-overlay').onclick = function() {
+        document.getElementById('confirmModal').style.display = 'none';
+    };
+}
+
+function showSuccessModal(message, onOk) {
+    document.getElementById('successMessage').textContent = message;
+    document.getElementById('successModal').style.display = 'flex';
+    
+    document.getElementById('successOk').onclick = function() {
+        document.getElementById('successModal').style.display = 'none';
+        if (onOk) onOk();
+    };
+    
+    // Fermer en cliquant sur l'overlay
+    document.querySelector('#successModal .modal-overlay').onclick = function() {
+        document.getElementById('successModal').style.display = 'none';
+        if (onOk) onOk();
+    };
+}
+</script>
+{% endblock %}

@@ -18,11 +18,19 @@ class AllAppsTestRunner(BaseTestRunner):
     
     def force_sqlite_for_testing(self):
         """Force SQLite for testing to avoid PostgreSQL dependency"""
+        # Remove old DB_* variables (deprecated)
         os.environ.pop('DB_NAME', None)
         os.environ.pop('DB_USER', None) 
         os.environ.pop('DB_PASSWORD', None)
         os.environ.pop('DB_HOST', None)
         os.environ.pop('DB_PORT', None)
+        
+        # Remove new TEST_DB_* variables to force SQLite
+        os.environ.pop('TEST_DB_NAME', None)
+        os.environ.pop('TEST_DB_USER', None) 
+        os.environ.pop('TEST_DB_PASSWORD', None)
+        os.environ.pop('TEST_DB_HOST', None)
+        os.environ.pop('TEST_DB_PORT', None)
     
     def get_test_modules(self) -> List[str]:
         """Return all application test modules"""

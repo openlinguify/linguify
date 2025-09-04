@@ -1,0 +1,123 @@
+{% load static %}
+{% load i18n %}
+<!-- Todo App Navbar - Linguify Style -->
+<div class="navbar-linguify">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="navbar-section">    
+                <!-- New Task Button - Left side -->
+        <button id="createTask" class="btn-navbar btn-navbar-primary" onclick="createNewTask()">
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-xl-inline">{% trans "New Task" %}</span>
+        </button>    
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <a href="{% url 'todo_web:kanban' %}" 
+               class="nav-tab {% if active_view == 'kanban' %}active{% endif %}">
+                <i class="bi bi-kanban"></i>
+                {% trans "Kanban" %}
+            </a>
+            <a href="{% url 'todo_web:list' %}" 
+               class="nav-tab {% if active_view == 'list' %}active{% endif %}">
+                <i class="bi bi-list-ul"></i>
+                {% trans "List" %}
+            </a>
+            <a href="{% url 'todo_web:activity' %}" 
+               class="nav-tab {% if active_view == 'activity' %}active{% endif %}">
+                <i class="bi bi-clock-history"></i>
+                {% trans "Activity" %}
+            </a>
+        </div>
+        
+
+        
+        <!-- Refresh -->
+        <button id="refreshTasks" class="btn-navbar btn-navbar-outline" title="{% trans 'Refresh tasks' %}">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-xl-inline">{% trans "Refresh" %}</span>
+        </button>
+    </div>
+            
+    
+    <!-- Droite: Actions et filtres contextuels -->
+    <div class="navbar-section-right">
+        <!-- Select All (List view only) -->
+        {% if active_view == 'list' %}
+        <div class="navbar-checkbox-group">
+            <input type="checkbox" class="form-check-input" id="selectAll">
+            <label class="navbar-label">{% trans "Select All" %}</label>
+        </div>
+        {% endif %}
+        
+        <!-- Filtres -->
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Search tasks...' %}" style="width: 140px; min-width: 100px;">
+        
+        <!-- Project Filter (List view) -->
+        {% if active_view == 'list' %}
+        <div class="dropdown">
+            <button id="projectFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="projectFilterText">{% trans "All Projects" %}</span>
+            </button>
+            <ul id="projectFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectProjectFilter('', '{% trans "All Projects" %}')">{% trans "All Projects" %}</a></li>
+                {% for project in projects %}
+                <li><a class="dropdown-item" href="#" onclick="selectProjectFilter('{{ project.id }}', '{{ project.name }}')">{{ project.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <!-- Stage Filter (List view) -->
+        {% if active_view == 'list' %}
+        <div class="dropdown">
+            <button id="stageFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="stageFilterText">{% trans "All Stages" %}</span>
+            </button>
+            <ul id="stageFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectStageFilter('', '{% trans "All Stages" %}')">{% trans "All Stages" %}</a></li>
+                {% for stage in stages %}
+                <li><a class="dropdown-item" href="#" onclick="selectStageFilter('{{ stage.id }}', '{{ stage.name }}')">{{ stage.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <!-- Sort Filter Dropdown -->
+        <div class="dropdown">
+            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="sortFilterText">{% trans "Recent" %}</span>
+            </button>
+            <ul id="sortFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', '{% trans "Recent" %}')">{% trans "Recent" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('title_asc', '{% trans "A-Z" %}')">{% trans "A-Z" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('priority_desc', '{% trans "Priority" %}')">{% trans "Priority" %}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('due_date_asc', '{% trans "Due Date" %}')">{% trans "Due Date" %}</a></li>
+            </ul>
+        </div>
+        
+        <!-- Actions -->
+        <div class="navbar-actions-group">
+            <!-- Bulk Actions (List view only) -->
+            {% if active_view == 'list' %}
+            <button id="bulkActionsBtn" class="btn-navbar btn-navbar-outline" onclick="showBulkActionsMenu()" disabled title="{% trans 'Bulk Actions' %}">
+                <i class="bi bi-check-all"></i>
+                <span class="d-none d-xl-inline">{% trans "Bulk Actions" %}</span>
+            </button>
+            {% endif %}
+            
+            <button id="configureTasks" class="btn-navbar btn-navbar-outline" onclick="configureStages()" title="{% trans 'Configure Stages' %}">
+                <i class="bi bi-gear"></i>
+                <span class="d-none d-xxl-inline">{% trans "Configure" %}</span>
+            </button>
+            
+            <button id="exportTasks" class="btn-navbar btn-navbar-outline" onclick="exportTasks()" title="{% trans 'Export Tasks' %}">
+                <i class="bi bi-download"></i>
+                <span class="d-none d-xxl-inline">{% trans "Export" %}</span>
+            </button>
+            
+            <button id="importTasks" class="btn-navbar btn-navbar-outline" onclick="importTasks()">
+                <i class="bi bi-upload"></i>
+                <span class="d-none d-xxl-inline">{% trans "Import" %}</span>
+            </button>
+        </div>
+    </div>
+</div>

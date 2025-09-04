@@ -1,0 +1,61 @@
+{% load i18n %}
+<!-- Edit Card Form -->
+<div id="editCardForm" class="edit-card-form-hidden">
+    <div class="study-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">{% trans "Edit Card" %}</h5>
+            <button id="cancelCardEdit" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-x-lg"></i>
+                {% trans "Cancel" %}
+            </button>
+        </div>
+    </div>
+    
+    <div class="study-content p-4">
+        <input type="hidden" id="editCardId" value="">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">{% trans "Front (Question)" %} <span class="text-danger">*</span></label>
+                <div class="d-flex align-items-center mb-2">
+                    <select id="editCardFrontLang" class="form-select form-select-sm rounded me-2" style="max-width: 120px;">
+                        <option value="">{% trans "Auto" %}</option>
+                        <option value="fr">🇫🇷 {% trans "French" %}</option>
+                        <option value="en">🇺🇸 {% trans "English" %}</option>
+                        <option value="es">🇪🇸 {% trans "Spanish" %}</option>
+                        <option value="it">🇮🇹 {% trans "Italian" %}</option>
+                        <option value="de">🇩🇪 {% trans "German" %}</option>
+                        <option value="pt">🇵🇹 {% trans "Portuguese" %}</option>
+                    </select>
+                    <small class="text-muted">{% trans "Front language" %}</small>
+                </div>
+                <textarea id="editCardFront" class="form-control rounded" rows="4" required></textarea>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">{% trans "Back (Answer)" %} <span class="text-danger">*</span></label>
+                <div class="d-flex align-items-center mb-2">
+                    <select id="editCardBackLang" class="form-select form-select-sm rounded me-2" style="max-width: 120px;">
+                        <option value="">{% trans "Auto" %}</option>
+                        <option value="fr">🇫🇷 {% trans "French" %}</option>
+                        <option value="en">🇺🇸 {% trans "English" %}</option>
+                        <option value="es">🇪🇸 {% trans "Spanish" %}</option>
+                        <option value="it">🇮🇹 {% trans "Italian" %}</option>
+                        <option value="de">🇩🇪 {% trans "German" %}</option>
+                        <option value="pt">🇵🇹 {% trans "Portuguese" %}</option>
+                    </select>
+                    <small class="text-muted">{% trans "Back language" %}</small>
+                </div>
+                <textarea id="editCardBack" class="form-control rounded" rows="4" required></textarea>
+            </div>
+        </div>
+        
+        <div class="mt-4 d-flex justify-content-end gap-2">
+            <button id="cancelCardEditAlt" class="btn-linguify">
+                {% trans "Cancel" %}
+            </button>
+            <button id="submitCardEdit" class="btn-linguify-secondary">
+                <i class="bi bi-check-lg me-1"></i>
+                {% trans "Save" %}
+            </button>
+        </div>
+    </div>
+</div>

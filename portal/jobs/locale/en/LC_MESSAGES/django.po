@@ -1,0 +1,518 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-30 23:10+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: jobs/forms.py:23
+msgid "Votre prénom"
+msgstr ""
+
+#: jobs/forms.py:28
+msgid "Votre nom de famille"
+msgstr ""
+
+#: jobs/forms.py:33
+msgid "votre.email@exemple.com"
+msgstr ""
+
+#: jobs/forms.py:38
+msgid "Votre numéro de téléphone"
+msgstr ""
+
+#: jobs/forms.py:42
+msgid "Expliquez pourquoi vous êtes le candidat idéal pour ce poste..."
+msgstr ""
+
+#: jobs/forms.py:51
+msgid "Lien vers votre CV en ligne (optionnel)"
+msgstr ""
+
+#: jobs/forms.py:55
+msgid "Lien vers votre portfolio (optionnel)"
+msgstr ""
+
+#: jobs/forms.py:59
+msgid "Votre profil LinkedIn (optionnel)"
+msgstr ""
+
+#: jobs/forms.py:63
+msgid "Prénom"
+msgstr ""
+
+#: jobs/forms.py:64
+msgid "Nom de famille"
+msgstr ""
+
+#: jobs/forms.py:65
+msgid "Adresse email"
+msgstr ""
+
+#: jobs/forms.py:66
+msgid "Téléphone"
+msgstr ""
+
+#: jobs/forms.py:67
+msgid "Lettre de motivation"
+msgstr ""
+
+#: jobs/forms.py:68
+msgid "CV (PDF, DOC, DOCX)"
+msgstr ""
+
+#: jobs/forms.py:69
+msgid "CV en ligne"
+msgstr ""
+
+#: jobs/forms.py:70
+msgid "Portfolio"
+msgstr ""
+
+#: jobs/forms.py:71
+msgid "LinkedIn"
+msgstr ""
+
+#: jobs/forms.py:74
+msgid "Présentez votre motivation et vos qualifications pour ce poste."
+msgstr ""
+
+#: jobs/forms.py:75
+msgid "Téléchargez votre CV (formats acceptés: PDF, DOC, DOCX, max 5MB)"
+msgstr ""
+
+#: jobs/forms.py:76
+msgid "Si vous préférez partager un lien vers votre CV"
+msgstr ""
+
+#: jobs/forms.py:77
+msgid "Lien vers vos réalisations, projets ou travaux"
+msgstr ""
+
+#: jobs/forms.py:78
+msgid "Votre profil LinkedIn professionnel"
+msgstr ""
+
+#: jobs/forms.py:90
+msgid "Veuillez saisir une adresse email valide."
+msgstr ""
+
+#: jobs/forms.py:91
+msgid "L'adresse email est obligatoire."
+msgstr ""
+
+#: jobs/forms.py:99
+msgid "Le fichier CV ne peut pas dépasser 5MB."
+msgstr ""
+
+#: jobs/forms.py:105
+msgid "Format de fichier non supporté. Veuillez utiliser PDF, DOC ou DOCX."
+msgstr ""
+
+#: jobs/forms.py:116
+msgid ""
+"Veuillez fournir votre CV soit en téléchargeant un fichier, soit en "
+"partageant un lien."
+msgstr ""
+
+#: jobs/middleware.py:29
+msgid "Ressource non trouvée"
+msgstr ""
+
+#: jobs/templates/jobs/application_form.html:14
+msgid "Informations personnelles"
+msgstr ""
+
+#: jobs/templates/jobs/application_form.html:44
+msgid "Documents de candidature"
+msgstr ""
+
+#: jobs/templates/jobs/application_form.html:61
+msgid "Glisser votre CV ici ou cliquer pour parcourir"
+msgstr ""
+
+#: jobs/templates/jobs/application_form.html:78
+msgid "Liens additionnels (optionnel)"
+msgstr ""
+
+#: jobs/templates/jobs/application_form.html:98
+msgid "Annuler"
+msgstr ""
+
+#: jobs/templates/jobs/application_form.html:101
+#: jobs/templates/jobs/careers.html:254
+#: jobs/templates/jobs/careers_position_detail.html:149
+msgid "Envoyer ma candidature"
+msgstr ""
+
+#: jobs/templates/jobs/application_form.html:108
+msgid "Envoi en cours..."
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:4
+msgid "Carrières - Open Linguify"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:7
+msgid "Rejoignez l\\"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:8
+msgid "emploi, carrières, linguify, développeur, marketing, startup, langues"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:59
+msgid "Rejoignez l'équipe Linguify"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:60
+msgid "Construisons ensemble l'avenir de l'apprentissage des langues"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:63
+msgid "Voir les postes ouverts"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:69 jobs/views_web.py:141
+#: jobs/views_web.py:179
+msgid "Candidature spontanée"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:79
+msgid "Pourquoi travailler chez Linguify ?"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:80
+msgid "Rejoignez une équipe passionnée par l'innovation éducative"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:90
+msgid "Innovation"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:91
+msgid "Travaillez sur des technologies de pointe dans l'éducation"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:100
+msgid "Équipe internationale"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:101
+msgid "Collaborez avec des talents du monde entier"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:110
+msgid "Flexibilité"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:111
+msgid "Télétravail et horaires flexibles"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:123
+#, python-format
+msgid ""
+"\n"
+"                        %(counter)s poste ouvert\n"
+"                    "
+msgid_plural ""
+"\n"
+"                        %(counter)s postes ouverts\n"
+"                    "
+msgstr[0] ""
+msgstr[1] ""
+
+#: jobs/templates/jobs/careers.html:134
+msgid "Tous"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:149
+msgid "Nous recrutons activement !"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:150
+msgid ""
+"Nous développons actuellement notre équipe. Pour découvrir nos opportunités "
+"ou envoyer une candidature spontanée, contactez-nous à"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:161
+#: jobs/templates/jobs/careers_position_detail.html:45
+msgid "En vedette"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:185
+#: jobs/templates/jobs/careers_position_detail.html:68
+msgid "Publié le"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:217 jobs/templates/jobs/careers.html:267
+#: jobs/templates/jobs/careers_position_detail.html:143
+msgid "Postuler"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:233
+msgid "Aucun poste disponible pour le moment"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:234
+msgid "Revenez bientôt pour découvrir de nouvelles opportunités !"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:236
+#: jobs/templates/jobs/careers_position_closed.html:57
+msgid "Envoyer une candidature spontanée"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:248
+msgid "Prêt à nous rejoindre ?"
+msgstr ""
+
+#: jobs/templates/jobs/careers.html:251
+msgid ""
+"Même si aucun poste ne correspond exactement à votre profil, n'hésitez pas à "
+"nous envoyer votre candidature spontanée."
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_closed.html:4
+msgid "Poste fermé"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_closed.html:27
+msgid "Ce poste n'est plus ouvert aux candidatures."
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_closed.html:31
+msgid "La date limite de candidature était le"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_closed.html:33
+msgid "Le recrutement pour ce poste est terminé."
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_closed.html:43
+msgid "Que pouvez-vous faire ?"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_closed.html:48
+msgid "Voir les autres postes ouverts"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_closed.html:68
+msgid "Restez informé"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_closed.html:71
+msgid ""
+"Suivez nos réseaux sociaux ou consultez régulièrement notre page carrières "
+"pour ne manquer aucune nouvelle opportunité."
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:4
+#: jobs/templates/jobs/careers_position_detail.html:30
+#: jobs/templates/jobs/careers_position_not_found.html:4
+msgid "Carrières"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:8
+msgid "emploi"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:28
+msgid "Accueil"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:89
+msgid "Prêt à rejoindre notre équipe ?"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:90
+msgid "Postulez maintenant"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:91
+msgid "ou"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:92
+msgid "contactez-nous directement"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:109
+msgid "Description du poste"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:116
+msgid "Responsabilités"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:123
+msgid "Exigences"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:131
+msgid "Avantages"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:145
+msgid "Intéressé par ce poste ? Envoyez-nous votre candidature !"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:155
+msgid "N'oubliez pas d'inclure votre CV et une lettre de motivation."
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:161
+msgid "Informations"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:164
+msgid "Département"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:168
+msgid "Localisation"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:172
+msgid "Type d'emploi"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:176
+msgid "Niveau d'expérience"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:181
+msgid "Salaire"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:187
+msgid "Date limite"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:196
+msgid "Partager"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:225
+msgid "Autres postes dans ce département"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:238
+msgid "Voir détails"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_detail.html:257
+msgid "Retour aux offres d'emploi"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_not_found.html:4
+#: jobs/templates/jobs/careers_position_not_found.html:15
+msgid "Poste non trouvé"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_not_found.html:19
+msgid "Le poste que vous recherchez n'existe pas ou n'est plus disponible."
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_not_found.html:25
+msgid "Voir tous les postes"
+msgstr ""
+
+#: jobs/templates/jobs/careers_position_not_found.html:30
+msgid "Retour à l'accueil"
+msgstr ""
+
+#: jobs/views_web.py:73 jobs/views_web.py:85
+msgid "Careers - Open Linguify"
+msgstr ""
+
+#: jobs/views_web.py:74 jobs/views_web.py:86
+msgid ""
+"Join our team at Open Linguify. Discover our open positions and help us "
+"revolutionize language learning."
+msgstr ""
+
+#: jobs/views_web.py:90
+msgid ""
+"We are currently updating our career opportunities. Please check back soon."
+msgstr ""
+
+#: jobs/views_web.py:104
+msgid "Position Closed - Open Linguify"
+msgstr ""
+
+#: jobs/views_web.py:125
+msgid "Position Not Found - Open Linguify"
+msgstr ""
+
+#: jobs/views_web.py:142 jobs/views_web.py:180
+msgid "Général"
+msgstr ""
+
+#: jobs/views_web.py:143 jobs/views_web.py:181
+msgid "À déterminer"
+msgstr ""
+
+#: jobs/views_web.py:169 jobs/views_web.py:230 jobs/views_web.py:367
+msgid "Une erreur inattendue s'est produite."
+msgstr ""
+
+#: jobs/views_web.py:196
+msgid ""
+"Votre candidature spontanée a été envoyée avec succès! Un email de "
+"confirmation a été envoyé à votre adresse."
+msgstr ""
+
+#: jobs/views_web.py:198
+msgid ""
+"Votre candidature spontanée a été envoyée avec succès! Nous vous "
+"contacterons bientôt."
+msgstr ""
+
+#: jobs/views_web.py:212 jobs/views_web.py:278
+msgid ""
+"Une erreur s'est produite lors de l'envoi de votre candidature. Veuillez "
+"réessayer."
+msgstr ""
+
+#: jobs/views_web.py:223 jobs/views_web.py:289
+msgid "Veuillez corriger les erreurs dans le formulaire."
+msgstr ""
+
+#: jobs/views_web.py:245 jobs/views_web.py:311
+msgid "Le poste demandé n'existe pas ou n'est plus disponible."
+msgstr ""
+
+#: jobs/views_web.py:259
+msgid ""
+"Votre candidature a été envoyée avec succès! Un email de confirmation a été "
+"envoyé à votre adresse."
+msgstr ""
+
+#: jobs/views_web.py:261
+msgid ""
+"Votre candidature a été envoyée avec succès! Nous vous contacterons bientôt."
+msgstr ""
+
+#: jobs/views_web.py:273
+msgid "Vous avez déjà postulé pour ce poste avec cette adresse email."
+msgstr ""
+
+#: jobs/views_web.py:343
+msgid "Erreur lors du rendu du formulaire."
+msgstr ""

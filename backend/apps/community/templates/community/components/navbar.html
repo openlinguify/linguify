@@ -1,0 +1,161 @@
+{% load i18n %}
+<!-- Community Navigation Bar - Structure identique à revision -->
+<div class="community-navbar-container d-flex align-items-center justify-content-between gap-2">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="d-flex align-items-center gap-3">
+        <!-- Navigation tabs -->
+        <div class="d-flex align-items-center gap-1">
+            <a href="{% url 'community:main' %}" 
+               class="nav-tab {% if request.resolver_match.url_name == 'main' %}active{% endif %}">
+                <i class="bi bi-house me-1"></i>
+                {% trans "Overview" %}
+            </a>
+            <a href="{% url 'community:discover' %}" 
+               class="nav-tab {% if request.resolver_match.url_name == 'discover' %}active{% endif %}">
+                <i class="bi bi-search me-1"></i>
+                {% trans "Discover" %}
+            </a>
+            <a href="{% url 'community:friends' %}" 
+               class="nav-tab {% if request.resolver_match.url_name == 'friends' %}active{% endif %}">
+                <i class="bi bi-person-heart me-1"></i>
+                {% trans "Friends" %}
+            </a>
+            <a href="{% url 'community:groups' %}" 
+               class="nav-tab {% if request.resolver_match.url_name == 'groups' %}active{% endif %}">
+                <i class="bi bi-people me-1"></i>
+                {% trans "Groups" %}
+            </a>
+        </div>
+        
+        <!-- Refresh -->
+        <button id="refreshCommunity" class="btn-outline-custom btn-sm">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span class="d-none d-xl-inline ms-1">{% trans "Refresh" %}</span>
+        </button>
+    </div>
+    
+    <!-- Droite: Actions et filtres contextuels -->
+    <div class="d-flex align-items-center gap-1 flex-nowrap">
+        {% if request.resolver_match.url_name == 'discover' %}
+        <!-- Filtres pour la page Discover -->
+        <input type="text" id="searchInput" class="form-control form-control-sm search-input" 
+               placeholder="{% trans 'Search users...' %}" style="width: 180px; min-width: 120px;">
+        
+        <select id="languageFilter" class="form-select form-select-sm" style="width: 120px; min-width: 100px;">
+            <option value="">{% trans "All Languages" %}</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+        </select>
+        
+        <select id="levelFilter" class="form-select form-select-sm" style="width: 120px; min-width: 100px;">
+            <option value="">{% trans "All Levels" %}</option>
+            <option value="beginner">{% trans "Beginner" %}</option>
+            <option value="intermediate">{% trans "Intermediate" %}</option>
+            <option value="advanced">{% trans "Advanced" %}</option>
+        </select>
+        
+        {% elif request.resolver_match.url_name == 'groups' %}
+        <!-- Filtres pour la page Groups -->
+        <input type="text" id="searchInput" class="form-control form-control-sm search-input" 
+               placeholder="{% trans 'Search groups...' %}" style="width: 180px; min-width: 120px;">
+        
+        <select id="groupLanguageFilter" class="form-select form-select-sm" style="width: 120px; min-width: 100px;">
+            <option value="">{% trans "All Languages" %}</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+        </select>
+        
+        <select id="groupTypeFilter" class="form-select form-select-sm" style="width: 120px; min-width: 100px;">
+            <option value="">{% trans "All Types" %}</option>
+            <option value="conversation">{% trans "Conversation" %}</option>
+            <option value="grammar">{% trans "Grammar" %}</option>
+            <option value="vocabulary">{% trans "Vocabulary" %}</option>
+            <option value="culture">{% trans "Culture" %}</option>
+        </select>
+        
+        <!-- Bouton créer groupe -->
+        <button class="btn-gradient btn-sm px-2" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-xxl-inline ms-1">{% trans "New Group" %}</span>
+        </button>
+        
+        {% elif request.resolver_match.url_name == 'friends' %}
+        <!-- Filtres pour la page Friends -->
+        <input type="text" id="searchInput" class="form-control form-control-sm search-input" 
+               placeholder="{% trans 'Search friends...' %}" style="width: 140px; min-width: 100px;">
+        
+        <select id="statusFilter" class="form-select form-select-sm" style="width: 110px; min-width: 90px;">
+            <option value="">{% trans "All Friends" %}</option>
+            <option value="online">{% trans "Online" %}</option>
+            <option value="offline">{% trans "Offline" %}</option>
+            <option value="recent">{% trans "Recent" %}</option>
+        </select>
+        
+        <!-- Lien vers discover -->
+        <a href="{% url 'community:discover' %}" class="btn-outline-custom btn-sm px-2">
+            <i class="bi bi-person-plus"></i>
+            <span class="d-none d-xxl-inline ms-1">{% trans "Find Friends" %}</span>
+        </a>
+        
+        {% else %}
+        <!-- Filtres pour la page Overview/Main -->
+        <select id="activityFilter" class="form-select form-select-sm" style="width: 130px; min-width: 110px;">
+            <option value="">{% trans "All Activity" %}</option>
+            <option value="posts">{% trans "Posts" %}</option>
+            <option value="friends">{% trans "Friends" %}</option>
+            <option value="groups">{% trans "Groups" %}</option>
+        </select>
+        
+        <!-- Actions générales -->
+        <a href="{% url 'community:discover' %}" class="btn-outline-custom btn-sm px-2">
+            <i class="bi bi-person-plus"></i>
+            <span class="d-none d-xxl-inline ms-1">{% trans "Find Partners" %}</span>
+        </a>
+        
+        <button class="btn-gradient btn-sm px-2" data-bs-toggle="modal" data-bs-target="#createPostModal">
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-xxl-inline ms-1">{% trans "New Post" %}</span>
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Les styles sont maintenant définis dans navbar_community.css -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Refresh functionality
+    const refreshBtn = document.getElementById('refreshCommunity');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+            location.reload();
+        });
+    }
+    
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            // Implement search logic based on current page
+            const searchTerm = this.value.toLowerCase();
+            // This would be implemented based on the specific page needs
+        });
+    }
+    
+    // Filter functionality
+    const filters = document.querySelectorAll('.filter-select');
+    filters.forEach(filter => {
+        filter.addEventListener('change', function() {
+            // Implement filter logic based on current page
+            const filterValue = this.value;
+            // This would be implemented based on the specific page needs
+        });
+    });
+});
+</script>

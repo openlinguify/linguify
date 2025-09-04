@@ -5,6 +5,7 @@ from .views import (
     UserStatsAPI, NotificationAPI, AdminFixAppsView,
     check_username_availability, save_draft_settings, load_draft_settings
 )
+from .views.dashboard import save_app_order, test_drag_drop
 from app_manager.views import AppStoreView
 from app_manager.views.app_manager_settings_views import AppManagerSettingsView
 from apps.authentication.views.settings_views import UserSettingsView
@@ -18,7 +19,9 @@ from apps.notebook.views.notebook_settings_views import NotebookSettingsView
 from apps.quizz.views.quizz_settings_views import QuizSettingsView
 from apps.revision.views.revision_settings_views import RevisionSettingsView
 from apps.language_ai.views.language_ai_settings_views import LanguageAISettingsView
+from apps.language_learning.views.settings_views import LanguageLearningSettingsView
 from apps.documents.views.documents_settings_views import documents_settings_view
+from apps.todo.views.todo_settings_views import TodoSettingsView
 
 app_name = 'saas_web'
 
@@ -38,8 +41,10 @@ urlpatterns = [
     path('settings/quiz/', QuizSettingsView.as_view(), name='quiz_settings'),
     path('settings/revision/', RevisionSettingsView.as_view(), name='revision_settings'),
     path('settings/language-ai/', LanguageAISettingsView.as_view(), name='language_ai_settings'),
+    path('settings/language-learning/', LanguageLearningSettingsView.as_view(), name='language_learning_settings'),
     path('settings/notifications/', NotificationSettingsView.as_view(), name='notification_settings'),
     path('settings/documents/', documents_settings_view, name='documents_settings'),
+    path('settings/todo/', TodoSettingsView.as_view(), name='todo_settings'),
     path('settings/app-manager/', AppManagerSettingsView.as_view(), name='app_manager_settings'),
     
     # API endpoints
@@ -48,6 +53,8 @@ urlpatterns = [
     path('api/check-username/', check_username_availability, name='api_check_username'),
     path('api/save-draft/', save_draft_settings, name='api_save_draft'),
     path('api/load-draft/', load_draft_settings, name='api_load_draft'),
+    path('dashboard/save-app-order/', save_app_order, name='save_app_order'),
+    path('test-drag-drop/', test_drag_drop, name='test_drag_drop'),
     
     # Admin tools
     path('admin-tools/fix-apps/', AdminFixAppsView.as_view(), name='admin_fix_apps'),

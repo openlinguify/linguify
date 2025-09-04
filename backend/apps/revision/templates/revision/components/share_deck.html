@@ -2,64 +2,149 @@
 <!-- DEBUG: share_deck.html component is being included -->
 <div id="share-component-debug-marker" style="display: none;">share_deck.html included</div>
 <!-- Modal de partage - Jeu de cartes privé -->
-<div class="modal fade" id="makePublicModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<div class="modal-overlay" id="makePublicModal" aria-hidden="true">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" aria-hidden="true"></div>
         <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-circle p-2 me-3 share-modal-icon-bg">
-                        <i class="bi bi-share share-modal-icon"></i>
+            <!-- Header -->
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-primary">
+                        <i class="bi bi-globe2 text-linguify-primary text-xl"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0 share-modal-title">Partager votre jeu de cartes</h5>
-                        <p class="text-muted mb-0 small">Rendez votre jeu de cartes visible à tous</p>
+                        <h3 class="modal-title">Rendre votre deck public</h3>
+                        <p class="modal-subtitle">Permettez à d'autres utilisateurs de le découvrir et l'utiliser</p>
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
-            <div class="modal-body pt-2">
-                <div class="alert border-0 share-modal-alert">
-                    <div class="d-flex align-items-start">
-                        <i class="bi bi-info-circle-fill me-2 mt-1 share-modal-alert-icon"></i>
+            
+            <!-- Body -->
+            <div class="modal-body">
+                <div class="alert-box alert-primary">
+                    <div class="alert-content">
+                        <div class="alert-icon">
+                            <i class="bi bi-info-circle-fill text-linguify-primary text-lg"></i>
+                        </div>
                         <div>
-                            <strong class="share-modal-alert-title">Jeu de cartes privé</strong><br>
-                            <span class="share-modal-alert-text">Ce jeu de cartes est actuellement privé. Pour le partager, vous devez le rendre public.</span>
+                            <h4 class="text-sm font-medium text-linguify-primary-dark">Deck actuellement privé</h4>
+                            <p class="mt-1 text-sm text-linguify-primary">Ce deck n'est visible que par vous. Rendez-le public pour le partager avec d'autres personnes.</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="mb-3">
-                    <h6 class="fw-semibold mb-2 share-modal-section-title">
-                        <i class="bi bi-eye me-1 share-modal-accent-icon"></i>
-                        En rendant ce jeu de cartes public :
-                    </h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
-                            Autres utilisateurs pourront le découvrir
+                <div class="mb-4">
+                    <h4 class="section-title">
+                        <i class="bi bi-eye text-linguify-primary"></i>
+                        Ce qui se passera en rendant ce deck public :
+                    </h4>
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
+                            <span class="feature-text">Il apparaîtra dans la section "Explorer" pour tous</span>
                         </li>
-                        <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
-                            Vous pourrez partager le lien
+                        <li class="feature-item">
+                            <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
+                            <span class="feature-text">Vous obtiendrez un lien partageable</span>
                         </li>
-                        <li class="mb-1 share-modal-list-item">
-                            <i class="bi bi-check-circle me-2 share-modal-accent-icon"></i>
-                            Vous restez propriétaire et pouvez le modifier
+                        <li class="feature-item">
+                            <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
+                            <span class="feature-text">Vous restez propriétaire et gardez tous vos droits</span>
                         </li>
                     </ul>
                 </div>
                 
-                <div class="small share-modal-info-text">
-                    <i class="bi bi-shield-check me-1 share-modal-accent-icon"></i>
-                    Vous pourrez toujours rendre le jeu de cartes privé plus tard si nécessaire.
+                <div class="info-text">
+                    <i class="bi bi-shield-check text-linguify-success"></i>
+                    <span>Vous pourrez toujours rendre votre deck privé plus tard en un clic.</span>
                 </div>
             </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary share-modal-cancel-btn" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i>Annuler
+            
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Annuler
                 </button>
-                <button type="button" class="btn share-modal-primary-btn" id="makeDeckPublicBtn">
-                    <i class="bi bi-share me-1"></i>Rendre public et partager
+                <button type="button" class="btn-linguify" id="makeDeckPublicBtn">
+                    <i class="bi bi-globe2"></i>Rendre public
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation - Rendre privé -->
+<div class="modal-overlay" id="makePrivateModal" aria-hidden="true">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" aria-hidden="true"></div>
+        <div class="modal-content">
+            <!-- Header -->
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-gray">
+                        <i class="bi bi-lock text-gray-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title">Rendre votre deck privé</h3>
+                        <p class="modal-subtitle">Retirer ce deck de la section publique</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Body -->
+            <div class="modal-body">
+                <div class="alert-box alert-warning">
+                    <div class="alert-content">
+                        <div class="alert-icon">
+                            <i class="bi bi-exclamation-triangle-fill text-linguify-warning text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-linguify-warning">Attention</h4>
+                            <p class="mt-1 text-sm text-linguify-warning">Cette action rendra votre deck privé. Il ne sera plus accessible publiquement.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="section-title">
+                        <i class="bi bi-eye-slash text-linguify-warning"></i>
+                        Ce qui va changer :
+                    </h4>
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <i class="bi bi-x-circle text-linguify-error feature-icon"></i>
+                            <span class="feature-text">Il ne sera plus visible dans la section "Explorer"</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="bi bi-x-circle text-linguify-error feature-icon"></i>
+                            <span class="feature-text">Les liens de partage existants ne fonctionneront plus</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
+                            <span class="feature-text">Vous restez propriétaire et gardez tous vos droits</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="info-text">
+                    <i class="bi bi-shield-check text-linguify-success"></i>
+                    <span>Vous pourrez rendre ce deck public à nouveau plus tard si vous le souhaitez.</span>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Annuler
+                </button>
+                <button type="button" class="btn-linguify" id="makeDeckPrivateBtn">
+                    <i class="bi bi-lock"></i>Rendre privé
                 </button>
             </div>
         </div>
@@ -67,51 +152,92 @@
 </div>
 
 <!-- Modal de partage - Jeu de cartes public -->
-<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<div class="modal-overlay" id="shareModal" aria-hidden="true">
+    <div class="modal-backdrop">
+        <div class="modal-overlay-bg" aria-hidden="true"></div>
         <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-circle p-2 me-3 share-modal-public-icon-bg">
-                        <i class="bi bi-share share-modal-public-icon"></i>
+            <!-- Header -->
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <div class="modal-icon modal-icon-accent">
+                        <i class="bi bi-globe2 text-linguify-accent text-xl"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0 share-modal-public-title">Partager votre jeu de cartes</h5>
-                        <p class="text-muted mb-0 small" id="shareModalDeckName">"Nom du jeu de cartes"</p>
+                        <h3 class="modal-title">Partager ce deck</h3>
+                        <p class="modal-subtitle" id="shareModalDeckName">"Nom du jeu de cartes"</p>
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg text-xl"></i>
+                </button>
             </div>
-            <div class="modal-body pt-2">
-                <p class="mb-3 share-modal-info-text">Partagez ce lien avec vos amis ou sur les réseaux sociaux :</p>
+            
+            <!-- Body -->
+            <div class="modal-body">
+                <p class="mb-4 text-sm text-gray-600">Votre deck est public ! Partagez ce lien avec qui vous voulez :</p>
                 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold share-modal-section-title">
-                        <i class="bi bi-link-45deg me-1 share-modal-icon"></i>Lien de partage
+                <div class="mb-4">
+                    <label class="input-label">
+                        <i class="bi bi-link-45deg mr-2 text-linguify-accent"></i>Lien de partage
                     </label>
                     <div class="input-group">
-                        <input type="text" class="form-control share-modal-url-input" readonly id="shareUrl">
-                        <button class="btn share-modal-primary-btn" id="copyShareUrlBtn" type="button">
-                            <i class="bi bi-clipboard me-1"></i>Copier
+                        <input type="text" class="share-url-input" readonly id="shareUrl">
+                        <button class="share-copy-btn" id="copyShareUrlBtn" type="button">
+                            <i class="bi bi-clipboard mr-1"></i>Copier
+                        </button>
+                    </div>
+                    <div class="success-message" id="copySuccessMessage">
+                        <i class="bi bi-check-circle mr-1"></i>Le lien a été copié !
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="section-title">
+                        <i class="bi bi-send text-linguify-primary"></i>
+                        Partager rapidement
+                    </h4>
+                    <div class="share-buttons-grid">
+                        <button class="share-btn share-btn-success" id="shareByEmailBtn" type="button">
+                            <i class="bi bi-envelope"></i>Email
+                        </button>
+                        <button class="share-btn share-btn-success" id="shareByWhatsAppBtn" type="button">
+                            <i class="bi bi-whatsapp"></i>WhatsApp
+                        </button>
+                        <button class="share-btn share-btn-primary" id="shareByMessengerBtn" type="button">
+                            <i class="bi bi-messenger"></i>Messenger
+                        </button>
+                        <button class="share-btn share-btn-gray" id="shareBySMSBtn" type="button">
+                            <i class="bi bi-chat-text"></i>SMS
                         </button>
                     </div>
                 </div>
                 
-                <div class="d-flex gap-2 flex-wrap">
-                    <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="twitter" type="button">
-                        <i class="bi bi-twitter me-1"></i>Twitter
-                    </button>
-                    <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="facebook" type="button">
-                        <i class="bi bi-facebook me-1"></i>Facebook
-                    </button>
-                    <button class="btn btn-sm social-share-btn share-modal-social-btn" data-platform="linkedin" type="button">
-                        <i class="bi bi-linkedin me-1"></i>LinkedIn
-                    </button>
+                <div class="mb-4">
+                    <h4 class="section-title">
+                        <i class="bi bi-share text-linguify-accent"></i>
+                        Réseaux sociaux
+                    </h4>
+                    <div class="share-buttons-grid">
+                        <button class="share-btn share-btn-primary social-share-btn" data-platform="twitter" type="button">
+                            <i class="bi bi-twitter"></i>Twitter
+                        </button>
+                        <button class="share-btn share-btn-primary social-share-btn" data-platform="facebook" type="button">
+                            <i class="bi bi-facebook"></i>Facebook
+                        </button>
+                        <button class="share-btn share-btn-primary social-share-btn" data-platform="linkedin" type="button">
+                            <i class="bi bi-linkedin"></i>LinkedIn
+                        </button>
+                        <button class="share-btn share-btn-accent social-share-btn" data-platform="reddit" type="button">
+                            <i class="bi bi-reddit"></i>Reddit
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary share-modal-cancel-btn" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i>Fermer
+            
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>Fermer
                 </button>
             </div>
         </div>

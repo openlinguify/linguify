@@ -1,0 +1,279 @@
+<!-- Sidebar pour les filtres avancés -->
+<div class="sidebar-content">
+    <!-- Header avec toggle moderne -->
+    <div class="sidebar-modern-header">
+        <div class="header-title-group">
+            <div class="sidebar-icon-primary">
+                <i class="bi bi-funnel-fill"></i>
+            </div>
+            <div>
+                <h6 class="sidebar-title">Filtres intelligents</h6>
+                <small class="sidebar-subtitle">Affinez votre recherche</small>
+            </div>
+        </div>
+        <button class="sidebar-collapse-btn" id="collapseSidebar" title="Réduire">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+    </div>
+    
+    <!-- Filtres rapides en chips -->
+    <div class="quick-filters-section">
+        <div class="quick-filters-grid">
+            <button class="filter-chip active" 
+                    hx-get="{% url 'revision_web:explore_search' %}"
+                    hx-vals='{"category": ""}'
+                    hx-include="[name='q']"
+                    hx-target="#searchResultsContent"
+                    data-category="all">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+                <span>Tout</span>
+            </button>
+            <button class="filter-chip" 
+                    hx-get="{% url 'revision_web:explore_search' %}"
+                    hx-vals='{"category": "languages"}'
+                    hx-include="[name='q']"
+                    hx-target="#searchResultsContent"
+                    data-category="languages">
+                <i class="bi bi-globe2"></i>
+                <span>Langues</span>
+            </button>
+            <button class="filter-chip" 
+                    hx-get="{% url 'revision_web:explore_search' %}"
+                    hx-vals='{"category": "science"}'
+                    hx-include="[name='q']"
+                    hx-target="#searchResultsContent"
+                    data-category="science">
+                <i class="bi bi-microscope"></i>
+                <span>Sciences</span>
+            </button>
+            <button class="filter-chip"
+                    hx-get="{% url 'revision_web:explore_search' %}"
+                    hx-vals='{"category": "technology"}'
+                    hx-include="[name='q']"
+                    hx-target="#searchResultsContent"
+                    data-category="technology">
+                <i class="bi bi-cpu"></i>
+                <span>Tech</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Section Filtres avancés -->
+    <div class="filter-section" data-section="advanced">
+        <div class="section-header" data-toggle="advanced">
+            <div class="section-title">
+                <i class="bi bi-sliders"></i>
+                <span>Filtres avancés</span>
+            </div>
+            <i class="bi bi-chevron-down toggle-icon"></i>
+        </div>
+        <div class="section-content" id="advancedFilters">
+            <!-- Filtre par catégorie -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="bi bi-folder2"></i>
+                    Domaine d'études
+                </label>
+                <div class="custom-select-wrapper">
+                    <select name="category" 
+                            class="modern-select"
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-trigger="change"
+                            hx-target="#searchResultsContent"
+                            hx-include="[name='q'], [name='language'], [name='level']">
+                        <option value="">Tous les domaines</option>
+                        <option value="languages">🌍 Langues étrangères</option>
+                        <option value="science">🧬 Sciences & Recherche</option>
+                        <option value="history">📜 Histoire & Géographie</option>
+                        <option value="math">📐 Mathématiques</option>
+                        <option value="literature">📚 Littérature & Arts</option>
+                        <option value="medicine">⚕️ Médecine & Santé</option>
+                        <option value="technology">💻 Informatique & Tech</option>
+                        <option value="business">💼 Économie & Business</option>
+                        <option value="other">📋 Autre</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Filtre par langue -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="bi bi-translate"></i>
+                    Langue du contenu
+                </label>
+                <div class="language-filter-grid">
+                    <button class="language-option active" 
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"language": ""}'
+                            hx-include="[name='q'], [name='category']"
+                            hx-target="#searchResultsContent"
+                            data-lang="all">
+                        <span class="lang-flag">🌐</span>
+                        <span class="lang-name">Toutes</span>
+                    </button>
+                    <button class="language-option" 
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"language": "fr"}'
+                            hx-include="[name='q'], [name='category']"
+                            hx-target="#searchResultsContent"
+                            data-lang="fr">
+                        <span class="lang-flag">🇫🇷</span>
+                        <span class="lang-name">FR</span>
+                    </button>
+                    <button class="language-option"
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"language": "en"}'
+                            hx-include="[name='q'], [name='category']"
+                            hx-target="#searchResultsContent"
+                            data-lang="en">
+                        <span class="lang-flag">🇺🇸</span>
+                        <span class="lang-name">EN</span>
+                    </button>
+                    <button class="language-option"
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"language": "es"}'
+                            hx-include="[name='q'], [name='category']"
+                            hx-target="#searchResultsContent"
+                            data-lang="es">
+                        <span class="lang-flag">🇪🇸</span>
+                        <span class="lang-name">ES</span>
+                    </button>
+                    <button class="language-option"
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"language": "de"}'
+                            hx-include="[name='q'], [name='category']"
+                            hx-target="#searchResultsContent"
+                            data-lang="de">
+                        <span class="lang-flag">🇩🇪</span>
+                        <span class="lang-name">DE</span>
+                    </button>
+                    <button class="language-option"
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"language": "it"}'
+                            hx-include="[name='q'], [name='category']"
+                            hx-target="#searchResultsContent"
+                            data-lang="it">
+                        <span class="lang-flag">🇮🇹</span>
+                        <span class="lang-name">IT</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtre par niveau -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="bi bi-speedometer2"></i>
+                    Niveau de difficulté
+                </label>
+                <div class="level-selector">
+                    <button class="level-btn active" 
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"level": ""}'
+                            hx-include="[name='q'], [name='category'], [name='language']"
+                            hx-target="#searchResultsContent"
+                            data-level="all">
+                        <div class="level-icon all-levels">📚</div>
+                        <span>Tous</span>
+                    </button>
+                    <button class="level-btn"
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"level": "beginner"}'
+                            hx-include="[name='q'], [name='category'], [name='language']"
+                            hx-target="#searchResultsContent"
+                            data-level="beginner">
+                        <div class="level-icon beginner"></div>
+                        <span>Débutant</span>
+                    </button>
+                    <button class="level-btn"
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"level": "intermediate"}'
+                            hx-include="[name='q'], [name='category'], [name='language']"
+                            hx-target="#searchResultsContent"
+                            data-level="intermediate">
+                        <div class="level-icon intermediate"></div>
+                        <span>Intermédiaire</span>
+                    </button>
+                    <button class="level-btn"
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"level": "advanced"}'
+                            hx-include="[name='q'], [name='category'], [name='language']"
+                            hx-target="#searchResultsContent"
+                            data-level="advanced">
+                        <div class="level-icon advanced"></div>
+                        <span>Avancé</span>
+                    </button>
+                    <button class="level-btn"
+                            hx-get="{% url 'revision_web:explore_search' %}"
+                            hx-vals='{"level": "expert"}'
+                            hx-include="[name='q'], [name='category'], [name='language']"
+                            hx-target="#searchResultsContent"
+                            data-level="expert">
+                        <div class="level-icon expert"></div>
+                        <span>Expert</span>
+                    </button>
+                </div>
+            </div>
+        
+            <!-- Filtre par créateur -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="bi bi-person-circle"></i>
+                    Créateur
+                </label>
+                <div class="search-input-enhanced">
+                    <i class="bi bi-search search-icon-small"></i>
+                    <input type="text" 
+                           name="author" 
+                           class="modern-input" 
+                           placeholder="Rechercher un créateur..."
+                           hx-get="{% url 'revision_web:explore_search' %}"
+                           hx-trigger="input changed delay:500ms"
+                           hx-target="#searchResultsContent"
+                           hx-include="[name='q'], [name='category'], [name='language'], [name='level']">
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="filter-actions">
+                <div class="action-buttons">
+                    <button 
+                        hx-get="{% url 'revision_web:explore_search' %}"
+                        hx-target="#searchResultsContent"
+                        class="clear-btn">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        Réinitialiser
+                    </button>
+                    <button 
+                        hx-get="{% url 'revision_web:explore_search' %}"
+                        hx-include="[name='q'], [name='category'], [name='language'], [name='level'], [name='author']"
+                        hx-target="#searchResultsContent"
+                        class="apply-btn">
+                        <i class="bi bi-search"></i>
+                        Rechercher
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistiques communautaires -->
+    <div class="community-stats-section"
+         hx-get="{% url 'revision_web:explore_stats' %}"
+         hx-trigger="load"
+         hx-swap="innerHTML">
+        <div class="stats-header">
+            <div class="stats-title">
+                <i class="bi bi-graph-up-arrow"></i>
+                <span>Statistiques globales</span>
+            </div>
+        </div>
+        <div class="stats-grid-modern">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-number">---</div>
+                    <div class="stat-label">Chargement...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

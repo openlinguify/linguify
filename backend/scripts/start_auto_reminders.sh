@@ -2,7 +2,7 @@
 # Script pour démarrer les rappels automatiques
 # Lance une boucle qui vérifie toutes les minutes
 
-PROJECT_DIR="/mnt/c/Users/louis/WebstormProjects/linguify/backend"
+
 cd "$PROJECT_DIR"
 
 echo "🚀 Démarrage des rappels automatiques de révision..."

@@ -3,6 +3,7 @@
 from django.db import models
 from apps.authentication.models import User
 from django.conf import settings
+from core.models.tags import Tag, get_tags_for_object, add_tag_to_object, remove_tag_from_object
 
 
 def default_list():
@@ -23,17 +24,7 @@ class NoteCategory(models.Model):
     def __str__(self):
         return self.name
     
-# Modèle pour les étiquettes (tags) des notes  
-class Tag(models.Model):
-    name = models.CharField(max_length=50)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    color = models.CharField(max_length=7, default="#3B82F6")  # Couleur en format hexadécimal
-
-    class Meta:
-        unique_together = ['name', 'user']
-
-    def __str__(self):
-        return self.name
+# Les tags sont maintenant gérés par le système global dans core.models.tags
 
 class Note(models.Model):
     PRIORITY_CHOICES = [
@@ -67,7 +58,7 @@ class Note(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True, default="") # Make content optional with default empty string
     category = models.ForeignKey(NoteCategory, on_delete=models.SET_NULL, blank=True, null=True)
-    tags = models.ManyToManyField(Tag, blank=True)
+    # tags are now managed through the global tag system via TagRelation
     note_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='NOTE')
     
     # Language learning specific fields
@@ -131,6 +122,29 @@ class Note(models.Model):
         review_level = min(self.review_count, 5)
         return from_date + intervals[review_level]
     
+    @property
+    def tags(self):
+        """Get tags for this note using the global tag system"""
+        return get_tags_for_object('notebook', 'Note', self.id, self.user)
+    
+    def add_tag(self, tag):
+        """Add a tag to this note using the global tag system"""
+        return add_tag_to_object(tag, 'notebook', 'Note', self.id, self.user)
+    
+    def remove_tag(self, tag):
+        """Remove a tag from this note using the global tag system"""
+        return remove_tag_from_object(tag, 'notebook', 'Note', self.id)
+    
+    def set_tags(self, tags):
+        """Set tags for this note using the global tag system"""
+        # First remove all existing tags
+        current_tags = self.tags
+        for tag in current_tags:
+            self.remove_tag(tag)
+        # Then add new tags
+        for tag in tags:
+            self.add_tag(tag)
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 

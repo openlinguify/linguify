@@ -1,0 +1,301 @@
+<!-- Decks populaires -->
+<div class="popular-decks-section">
+    <div class="section-header">
+        <h5 class="section-title">
+            <i class="bi bi-fire text-warning me-2"></i>
+            Decks populaires
+        </h5>
+        {% if category and category != 'all' %}
+        <span class="category-badge">{{ category|title }}</span>
+        {% endif %}
+    </div>
+    
+    {% if decks %}
+    <div class="popular-decks-grid">
+        {% for deck in decks %}
+        <div class="popular-deck-card"
+             hx-get="{% url 'revision_web:explore_deck_details' deck.id %}"
+             hx-target="#deckDetailsModal .modal-body"
+             hx-trigger="click"
+             data-bs-toggle="modal" 
+             data-bs-target="#deckDetailsModal">
+            
+            <div class="deck-ranking">
+                <span class="rank-number">#{{ forloop.counter }}</span>
+                <div class="popularity-indicator">
+                    {% if deck.sessions_count > 10 %}
+                    <i class="bi bi-fire text-warning"></i>
+                    {% elif deck.sessions_count > 5 %}
+                    <i class="bi bi-star text-warning"></i>
+                    {% else %}
+                    <i class="bi bi-arrow-up text-success"></i>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="deck-content">
+                <h6 class="deck-title">{{ deck.name }}</h6>
+                <p class="deck-author">Par {{ deck.user.username }}</p>
+                <p class="deck-description">{{ deck.description|truncatechars:80 }}</p>
+                
+                <div class="deck-metrics">
+                    <div class="metric">
+                        <i class="bi bi-stack"></i>
+                        <span>{{ deck.cards_count }}</span>
+                    </div>
+                    <div class="metric">
+                        <i class="bi bi-people"></i>
+                        <span>{{ deck.sessions_count }}</span>
+                    </div>
+                    <div class="metric popularity-score">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span>{{ deck.popularity_score }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            {% if user_data.is_authenticated %}
+            <div class="deck-actions">
+                <button class="action-btn import-btn"
+                        hx-post="{% url 'revision_web:explore_import_deck' deck.id %}"
+                        hx-trigger="click consume"
+                        hx-swap="none"
+                        title="Importer ce deck">
+                    <i class="bi bi-download"></i>
+                </button>
+                <button class="action-btn favorite-btn" 
+                        hx-post="{% url 'revision_web:explore_toggle_favorite' deck.id %}"
+                        hx-trigger="click consume"
+                        title="Ajouter aux favoris">
+                    <i class="bi bi-heart"></i>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if decks|length == limit %}
+    <div class="load-more-section">
+        <button class="btn btn-outline-primary"
+                hx-get="{% url 'revision_web:explore_popular' %}"
+                hx-vals='{"limit": "{{ limit|add:10 }}", "category": "{{ category }}"}'
+                hx-target="closest .popular-decks-section"
+                hx-swap="outerHTML">
+            <i class="bi bi-plus-circle me-2"></i>
+            Voir plus de decks populaires
+        </button>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-popular">
+        <div class="empty-icon">
+            <i class="bi bi-graph-down text-muted"></i>
+        </div>
+        <p class="empty-text">Aucun deck populaire disponible{% if category %} pour cette catégorie{% endif %}.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.popular-decks-section {
+    margin: 1.5rem 0;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.section-title {
+    color: #2c3e50;
+    margin: 0;
+    font-weight: 600;
+}
+
+.category-badge {
+    background: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.popular-decks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.popular-deck-card {
+    position: relative;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.popular-deck-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #007bff;
+}
+
+.deck-ranking {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rank-number {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    min-width: 2rem;
+    text-align: center;
+}
+
+.popularity-indicator {
+    font-size: 1.125rem;
+}
+
+.deck-content {
+    padding-right: 3rem; /* Space for ranking */
+}
+
+.deck-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+}
+
+.deck-author {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.deck-description {
+    color: #495057;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+}
+
+.deck-metrics {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+}
+
+.metric {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.metric.popularity-score {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.deck-actions {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    display: flex;
+    gap: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.popular-deck-card:hover .deck-actions {
+    opacity: 1;
+}
+
+.action-btn {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.import-btn {
+    background: #28a745;
+    color: white;
+}
+
+.import-btn:hover {
+    background: #218838;
+}
+
+.favorite-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.favorite-btn:hover {
+    background: #c82333;
+}
+
+.load-more-section {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.empty-popular {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.empty-text {
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+@media (max-width: 768px) {
+    .popular-decks-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .deck-content {
+        padding-right: 2rem;
+    }
+    
+    .deck-metrics {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+}
+</style>

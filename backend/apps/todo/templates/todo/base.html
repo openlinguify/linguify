@@ -1,0 +1,203 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Todo{% endblock %} - Open Linguify</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="Application de gestion de tâches et productivité avec Linguify">
+    <meta name="author" content="Linguify">
+    {% csrf_token %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'saas_web/css/main.css' %}">
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="{% static 'css/tailwind-global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tailwind-modals.css' %}">
+    
+    <!-- CSS du header (en dernier pour avoir la priorité) -->
+    <link rel="stylesheet" href="{% static 'saas_web/css/app_header.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+        /* Header app global fixe en haut */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body class="app-body-layout">
+    <!-- Include the unified app header -->
+    {% include 'components/header/app_header.html' %}
+    
+    <div class="app-container-layout">
+        <!-- App-specific header section (below main header) -->
+        <div class="app-header-layout">
+            <div class="header-content">
+                {% block header_content %}{% endblock %}
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="app-main-layout">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Configuration globale -->
+    <script id="django-data" type="application/json">
+    {
+        "DEBUG": {{ debug|yesno:"true,false" }},
+        "API_BASE_URL": "{{ request.scheme }}://{{ request.get_host }}",
+        "USER_DATA": {
+            "id": {{ request.user.id|default:"null"|escapejs }},
+            "username": "{{ request.user.username|default:''|escapejs }}",
+            "email": "{{ request.user.email|default:''|escapejs }}",
+            "is_authenticated": {{ user.is_authenticated|yesno:"true,false" }}
+        },
+        "TODO_CONFIG": {
+            "apiBaseUrl": "/api/v1/todo"
+        }
+    }
+    </script>
+    <script>
+        // Parse configuration from JSON
+        const djangoData = JSON.parse(document.getElementById('django-data').textContent);
+        window.DEBUG = djangoData.DEBUG;
+        window.API_BASE_URL = djangoData.API_BASE_URL;
+        window.USER_DATA = djangoData.USER_DATA;
+        window.TODO_CONFIG = djangoData.TODO_CONFIG;
+        
+        // Service de notifications global
+        window.notificationService = {
+            success: function(message) {
+                this.show(message, 'success');
+            },
+            
+            error: function(message) {
+                this.show(message, 'error');
+            },
+            
+            info: function(message) {
+                this.show(message, 'info');
+            },
+            
+            warning: function(message) {
+                this.show(message, 'warning');
+            },
+            
+            show: function(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">${message}</div>
+                        <button type="button" class="btn-close ms-2" onclick="this.parentElement.parentElement.remove()"></button>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+        };
+        
+        // Service API simplifié
+        window.apiService = {
+            async request(url, options = {}) {
+                const defaultOptions = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCSRFToken(),
+                    },
+                };
+                
+                const response = await fetch(url, { ...defaultOptions, ...options });
+                
+                if (!response.ok) {
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    let errorData = null;
+                    
+                    try {
+                        const contentType = response.headers.get('content-type');
+                        if (contentType && contentType.includes('application/json')) {
+                            errorData = await response.json();
+                            if (errorData.detail) {
+                                errorMessage = errorData.detail;
+                            } else if (errorData.message) {
+                                errorMessage = errorData.message;
+                            } else if (errorData.error) {
+                                errorMessage = errorData.error;
+                            }
+                        }
+                    } catch (e) {
+                        // Keep default error message
+                    }
+                    
+                    const error = new Error(errorMessage);
+                    error.status = response.status;
+                    error.response = response;
+                    error.data = errorData;
+                    throw error;
+                }
+                
+                if (response.status === 204) {
+                    return null;
+                }
+                
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                } else {
+                    return response.text();
+                }
+            },
+            
+            getCSRFToken() {
+                const token = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                             document.querySelector('meta[name="csrf-token"]')?.content || 
+                             this.getCookieValue('csrftoken') || '';
+                return token;
+            },
+            
+            getCookieValue(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+                return null;
+            }
+        };
+    </script>
+    
+    <!-- Todo-specific JavaScript -->
+    <script src="{% static 'todo/js/navbar.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

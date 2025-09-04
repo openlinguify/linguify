@@ -1,0 +1,287 @@
+# English translations for Todo app
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Todo App\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-30 23:45+0200\n"
+"PO-Revision-Date: 2025-08-30 23:45+0200\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Interface elements
+msgid "Todo"
+msgstr "Todo"
+
+msgid "Kanban"
+msgstr "Kanban"
+
+msgid "List"
+msgstr "List"
+
+msgid "Activity"
+msgstr "Activity"
+
+msgid "To Do"
+msgstr "To Do"
+
+msgid "In Progress"
+msgstr "In Progress"
+
+msgid "Done"
+msgstr "Done"
+
+# Task management
+msgid "Review course materials"
+msgstr "Review course materials"
+
+msgid "Complete assignment"
+msgstr "Complete assignment"
+
+msgid "Plan project timeline"
+msgstr "Plan project timeline"
+
+msgid "Research presentation"
+msgstr "Research presentation"
+
+msgid "Write documentation"
+msgstr "Write documentation"
+
+msgid "Setup development environment"
+msgstr "Setup development environment"
+
+msgid "Review team feedback"
+msgstr "Review team feedback"
+
+# Time and status
+msgid "Today"
+msgstr "Today"
+
+msgid "Priority"
+msgstr "Priority"
+
+msgid "Urgent"
+msgstr "Urgent"
+
+msgid "Work"
+msgstr "Work"
+
+msgid "Study"
+msgstr "Study"
+
+msgid "Research"
+msgstr "Research"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Completed"
+msgstr "Completed"
+
+# Features section
+msgid "Everything You Need for Productivity"
+msgstr "Everything You Need for Productivity"
+
+msgid "A complete workspace to organize your tasks, projects, and ideas"
+msgstr "A complete workspace to organize your tasks, projects, and ideas"
+
+msgid "Smart Task Management"
+msgstr "Smart Task Management"
+
+msgid "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive."
+msgstr "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive."
+
+msgid "Kanban Boards"
+msgstr "Kanban Boards"
+
+msgid "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress."
+msgstr "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress."
+
+msgid "Project Organization"
+msgstr "Project Organization"
+
+msgid "Group related tasks into projects with progress tracking, deadlines, and team collaboration features."
+msgstr "Group related tasks into projects with progress tracking, deadlines, and team collaboration features."
+
+msgid "Rich Note-Taking"
+msgstr "Rich Note-Taking"
+
+msgid "Take notes with markdown support, attach them to tasks or projects, and organize with tags and categories."
+msgstr "Take notes with markdown support, attach them to tasks or projects, and organize with tags and categories."
+
+msgid "Smart Reminders"
+msgstr "Smart Reminders"
+
+msgid "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track."
+msgstr "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track."
+
+msgid "Tags & Categories"
+msgstr "Tags & Categories"
+
+msgid "Organize tasks and notes with flexible tagging system and categories for better organization and filtering."
+msgstr "Organize tasks and notes with flexible tagging system and categories for better organization and filtering."
+
+msgid "Activity Tracking"
+msgstr "Activity Tracking"
+
+msgid "Monitor your task activity and progress with a detailed activity feed showing all your recent actions."
+msgstr "Monitor your task activity and progress with a detailed activity feed showing all your recent actions."
+
+msgid "Multiple Views"
+msgstr "Multiple Views"
+
+msgid "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer."
+msgstr "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer."
+
+# Coming soon features
+msgid "Exciting features in active development"
+msgstr "Exciting features in active development"
+
+msgid "Calendar Integration"
+msgstr "Calendar Integration"
+
+msgid "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines."
+msgstr "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines."
+
+msgid "In Development"
+msgstr "In Development"
+
+msgid "Analytics Dashboard"
+msgstr "Analytics Dashboard"
+
+msgid "Track your productivity with detailed analytics, completion rates, and progress insights."
+msgstr "Track your productivity with detailed analytics, completion rates, and progress insights."
+
+msgid "Advanced Team Collaboration"
+msgstr "Advanced Team Collaboration"
+
+msgid "Enhanced team features with real-time collaboration, task assignment, and team analytics."
+msgstr "Enhanced team features with real-time collaboration, task assignment, and team analytics."
+
+msgid "Time Tracking"
+msgstr "Time Tracking"
+
+msgid "Track time spent on tasks with built-in timer and detailed time analytics."
+msgstr "Track time spent on tasks with built-in timer and detailed time analytics."
+
+msgid "File Attachments"
+msgstr "File Attachments"
+
+msgid "Attach files and documents to your tasks and projects for better organization."
+msgstr "Attach files and documents to your tasks and projects for better organization."
+
+msgid "Recurring Tasks"
+msgstr "Recurring Tasks"
+
+msgid "Set up tasks that repeat automatically on a schedule you define."
+msgstr "Set up tasks that repeat automatically on a schedule you define."
+
+msgid "These features will be available soon. Stay tuned for the latest updates!"
+msgstr "These features will be available soon. Stay tuned for the latest updates!"
+
+# Use cases
+msgid "Perfect For Every Use Case"
+msgstr "Perfect For Every Use Case"
+
+msgid "Whether you're a student, professional, or team leader"
+msgstr "Whether you're a student, professional, or team leader"
+
+msgid "Students"
+msgstr "Students"
+
+msgid "Organize assignments, track study progress, manage course projects, and plan your academic schedule."
+msgstr "Organize assignments, track study progress, manage course projects, and plan your academic schedule."
+
+msgid "Assignment tracking"
+msgstr "Assignment tracking"
+
+msgid "Study planning"
+msgstr "Study planning"
+
+msgid "Course organization"
+msgstr "Course organization"
+
+msgid "Research notes"
+msgstr "Research notes"
+
+msgid "Professionals"
+msgstr "Professionals"
+
+msgid "Manage work projects, track deadlines, organize meeting notes, and boost your productivity."
+msgstr "Manage work projects, track deadlines, organize meeting notes, and boost your productivity."
+
+msgid "Project management"
+msgstr "Project management"
+
+msgid "Deadline tracking"
+msgstr "Deadline tracking"
+
+msgid "Meeting notes"
+msgstr "Meeting notes"
+
+msgid "Goal setting"
+msgstr "Goal setting"
+
+msgid "Teams"
+msgstr "Teams"
+
+msgid "Collaborate on shared projects, assign tasks to team members, and track collective progress."
+msgstr "Collaborate on shared projects, assign tasks to team members, and track collective progress."
+
+msgid "Shared workspaces"
+msgstr "Shared workspaces"
+
+msgid "Task assignment"
+msgstr "Task assignment"
+
+msgid "Team analytics"
+msgstr "Team analytics"
+
+# Getting started
+msgid "Get Started in Minutes"
+msgstr "Get Started in Minutes"
+
+msgid "Simple setup process to get you organized right away"
+msgstr "Simple setup process to get you organized right away"
+
+msgid "Create Account"
+msgstr "Create Account"
+
+msgid "Sign up for free and access the todo app from your dashboard."
+msgstr "Sign up for free and access the todo app from your dashboard."
+
+msgid "Set Up Projects"
+msgstr "Set Up Projects"
+
+msgid "Create your first project and organize tasks by categories and priorities."
+msgstr "Create your first project and organize tasks by categories and priorities."
+
+msgid "Add tasks, set deadlines, take notes, and watch your productivity soar."
+msgstr "Add tasks, set deadlines, take notes, and watch your productivity soar."
+
+# Integration
+msgid "Seamless Integration"
+msgstr "Seamless Integration"
+
+msgid "Works perfectly with other Open Linguify apps"
+msgstr "Works perfectly with other Open Linguify apps"
+
+msgid "Create study tasks for flashcard reviews"
+msgstr "Create study tasks for flashcard reviews"
+
+msgid "Link notes to tasks and projects"
+msgstr "Link notes to tasks and projects"
+
+# CTA
+msgid "Ready to Get Organized?"
+msgstr "Ready to Get Organized?"
+
+msgid "Join thousands of users who have transformed their productivity with our todo app."
+msgstr "Join thousands of users who have transformed their productivity with our todo app."

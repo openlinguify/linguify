@@ -13,6 +13,8 @@
 <link rel="preload" href="/app-icons/notebook/icon.png" as="image">
 <link rel="preload" href="/app-icons/quizz/icon.png" as="image">
 <link rel="preload" href="/app-icons/revision/icon.png" as="image">
+<link rel="preload" href="/app-icons/todo/icon.png" as="image">
+<link rel="preload" href="/app-icons/teaching/icon.png" as="image">
 
 <link rel="stylesheet" href="{% static 'app_manager/css/app_store.css' %}">
 <style>
@@ -80,8 +82,8 @@
                 <!-- App Header -->
                 <div class="app-header">
                     <div class="app-icon" style="background: transparent; border: 1px solid #e2e8f0; border-radius: 12px;">
-                        {% if app.name in 'community,chat,course,documents,language_ai,notebook,quizz,revision' %}
-                            <img src="/app-icons/{{ app.name }}/icon.png" alt="{{ app.display_name }} icon" style="width: 40px; height: 40px; object-fit: contain;">
+                        {% if app.static_icon %}
+                            <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon" style="width: 40px; height: 40px; object-fit: contain;">
                         {% endif %}
                     </div>
                     <div class="app-info">

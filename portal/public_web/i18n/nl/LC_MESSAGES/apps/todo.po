@@ -1,0 +1,346 @@
+# Dutch translations for Todo app
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Todo App\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-30 23:45+0200\n"
+"PO-Revision-Date: 2025-08-30 23:45+0200\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Interface elements
+msgid "Todo"
+msgstr "Taken"
+
+msgid "Kanban"
+msgstr "Kanban"
+
+msgid "List"
+msgstr "Lijst"
+
+msgid "Activity"
+msgstr "Activiteit"
+
+msgid "To Do"
+msgstr "Te Doen"
+
+msgid "In Progress"
+msgstr "Bezig"
+
+msgid "Done"
+msgstr "Klaar"
+
+# Task management
+msgid "Review course materials"
+msgstr "Cursusmateriaal doornemen"
+
+msgid "Complete assignment"
+msgstr "Opdracht voltooien"
+
+msgid "Plan project timeline"
+msgstr "Projecttijdlijn plannen"
+
+msgid "Research presentation"
+msgstr "Onderzoek voor presentatie"
+
+msgid "Write documentation"
+msgstr "Documentatie schrijven"
+
+msgid "Setup development environment"
+msgstr "Ontwikkelomgeving instellen"
+
+msgid "Review team feedback"
+msgstr "Team feedback bekijken"
+
+# Time and status
+msgid "Today"
+msgstr "Vandaag"
+
+msgid "Priority"
+msgstr "Prioriteit"
+
+msgid "Urgent"
+msgstr "Dringend"
+
+msgid "Work"
+msgstr "Werk"
+
+msgid "Study"
+msgstr "Studie"
+
+msgid "Research"
+msgstr "Onderzoek"
+
+msgid "Notes"
+msgstr "Notities"
+
+msgid "Completed"
+msgstr "Voltooid"
+
+# Features section
+msgid "Everything You Need for Productivity"
+msgstr "Alles wat je Nodig hebt voor Productiviteit"
+
+msgid "A complete workspace to organize your tasks, projects, and ideas"
+msgstr "Een complete werkruimte om je taken, projecten en ideeën te organiseren"
+
+msgid "Smart Task Management"
+msgstr "Slimme Taakbeheer"
+
+msgid "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive."
+msgstr "Maak, organiseer en volg taken met prioriteiten, vervaldatums, tags en voortgangsregistratie. Alles wat je nodig hebt om productief te blijven."
+
+msgid "Kanban Boards"
+msgstr "Kanban Borden"
+
+msgid "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress."
+msgstr "Visualiseer je workflow met aanpasbare kanban borden. Sleep taken tussen kolommen om voortgang bij te houden."
+
+msgid "Project Organization"
+msgstr "Project Organisatie"
+
+msgid "Group related tasks into projects with progress tracking, deadlines, and team collaboration features."
+msgstr "Groepeer gerelateerde taken in projecten met voortgangsregistratie, deadlines en teamsamenwerkingsfuncties."
+
+msgid "Rich Note-Taking"
+msgstr "Uitgebreide Notitiemaking"
+
+msgid "Take notes with markdown support, attach them to tasks or projects, and organize with tags and categories."
+msgstr "Maak notities met markdown ondersteuning, koppel ze aan taken of projecten, en organiseer met tags en categorieën."
+
+msgid "Smart Reminders"
+msgstr "Slimme Herinneringen"
+
+msgid "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track."
+msgstr "Stel aangepaste herinneringen in voor taken en deadlines. Ontvang meldingen op het juiste moment om op koers te blijven."
+
+msgid "Tags & Categories"
+msgstr "Tags en Categorieën"
+
+msgid "Organize tasks and notes with flexible tagging system and categories for better organization and filtering."
+msgstr "Organiseer taken en notities met flexibel tagsysteem en categorieën voor betere organisatie en filtering."
+
+msgid "Activity Tracking"
+msgstr "Activiteit Bijhouden"
+
+msgid "Monitor your task activity and progress with a detailed activity feed showing all your recent actions."
+msgstr "Houd je taakactiviteit en voortgang in de gaten met een gedetailleerde activiteitenfeed die al je recente acties toont."
+
+msgid "Multiple Views"
+msgstr "Meerdere Weergaven"
+
+msgid "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer."
+msgstr "Wissel tussen lijstweergave, Kanban bord en activiteitenfeed om je taken te visualiseren zoals je dat wilt."
+
+# Coming soon features
+msgid "Exciting features in active development"
+msgstr "Spannende functies in actieve ontwikkeling"
+
+msgid "Calendar Integration"
+msgstr "Agenda Integratie"
+
+msgid "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines."
+msgstr "Bekijk taken en deadlines in agendaformaat. Plan je schema en mis nooit belangrijke deadlines."
+
+msgid "In Development"
+msgstr "In Ontwikkeling"
+
+msgid "Analytics Dashboard"
+msgstr "Analyse Dashboard"
+
+msgid "Track your productivity with detailed analytics, completion rates, and progress insights."
+msgstr "Volg je productiviteit met gedetailleerde analyses, voltooiingspercentages en voortgangsinzichten."
+
+msgid "Advanced Team Collaboration"
+msgstr "Geavanceerde Teamsamenwerking"
+
+msgid "Enhanced team features with real-time collaboration, task assignment, and team analytics."
+msgstr "Verbeterde teamfuncties met real-time samenwerking, taaktoewijzing en teamanalyses."
+
+msgid "Time Tracking"
+msgstr "Tijdsregistratie"
+
+msgid "Track time spent on tasks with built-in timer and detailed time analytics."
+msgstr "Houd tijd bij die besteed wordt aan taken met ingebouwde timer en gedetailleerde tijdsanalyses."
+
+msgid "File Attachments"
+msgstr "Bestandsbijlagen"
+
+msgid "Attach files and documents to your tasks and projects for better organization."
+msgstr "Voeg bestanden en documenten toe aan je taken en projecten voor betere organisatie."
+
+msgid "Recurring Tasks"
+msgstr "Terugkerende Taken"
+
+msgid "Set up tasks that repeat automatically on a schedule you define."
+msgstr "Stel taken in die automatisch herhalen volgens een schema dat je definieert."
+
+msgid "These features will be available soon. Stay tuned for the latest updates!"
+msgstr "Deze functies zijn binnenkort beschikbaar. Blijf op de hoogte van de laatste updates!"
+
+# Use cases
+msgid "Perfect For Every Use Case"
+msgstr "Perfect voor Elke Toepassing"
+
+msgid "Whether you're a student, professional, or team leader"
+msgstr "Of je nu student, professional of teamleider bent"
+
+msgid "Students"
+msgstr "Studenten"
+
+msgid "Organize assignments, track study progress, manage course projects, and plan your academic schedule."
+msgstr "Organiseer opdrachten, volg studievoortgang, beheer cursusprojecten en plan je academische schema."
+
+msgid "Assignment tracking"
+msgstr "Opdracht bijhouden"
+
+msgid "Study planning"
+msgstr "Studie planning"
+
+msgid "Course organization"
+msgstr "Cursus organisatie"
+
+msgid "Research notes"
+msgstr "Onderzoeksnotities"
+
+msgid "Professionals"
+msgstr "Professionals"
+
+msgid "Manage work projects, track deadlines, organize meeting notes, and boost your productivity."
+msgstr "Beheer werkprojecten, volg deadlines, organiseer vergadernotities en verhoog je productiviteit."
+
+msgid "Project management"
+msgstr "Projectbeheer"
+
+msgid "Deadline tracking"
+msgstr "Deadline bijhouden"
+
+msgid "Meeting notes"
+msgstr "Vergadernotities"
+
+msgid "Goal setting"
+msgstr "Doelen stellen"
+
+msgid "Teams"
+msgstr "Teams"
+
+msgid "Collaborate on shared projects, assign tasks to team members, and track collective progress."
+msgstr "Werk samen aan gedeelde projecten, wijs taken toe aan teamleden en volg collectieve voortgang."
+
+msgid "Shared workspaces"
+msgstr "Gedeelde werkruimtes"
+
+msgid "Task assignment"
+msgstr "Taaktoewijzing"
+
+msgid "Team analytics"
+msgstr "Team analyses"
+
+# Getting started
+msgid "Get Started in Minutes"
+msgstr "Begin binnen Minuten"
+
+msgid "Simple setup process to get you organized right away"
+msgstr "Eenvoudig installatieproces om je meteen georganiseerd te krijgen"
+
+msgid "Create Account"
+msgstr "Account Aanmaken"
+
+msgid "Sign up for free and access the todo app from your dashboard."
+msgstr "Meld je gratis aan en krijg toegang tot de taken-app vanaf je dashboard."
+
+msgid "Set Up Projects"
+msgstr "Projecten Instellen"
+
+msgid "Create your first project and organize tasks by categories and priorities."
+msgstr "Maak je eerste project aan en organiseer taken op categorieën en prioriteiten."
+
+msgid "Add tasks, set deadlines, take notes, and watch your productivity soar."
+msgstr "Voeg taken toe, stel deadlines in, maak notities en zie je productiviteit stijgen."
+
+# Integration
+msgid "Seamless Integration"
+msgstr "Naadloze Integratie"
+
+msgid "Works perfectly with other Open Linguify apps"
+msgstr "Werkt perfect met andere Open Linguify apps"
+
+msgid "Create study tasks for flashcard reviews"
+msgstr "Maak studietaken voor flashcard beoordelingen"
+
+msgid "Link notes to tasks and projects"
+msgstr "Koppel notities aan taken en projecten"
+
+# CTA
+msgid "Ready to Get Organized?"
+msgstr "Klaar om Georganiseerd te Raken?"
+
+msgid "Join thousands of users who have transformed their productivity with our todo app."
+msgstr "Sluit je aan bij duizenden gebruikers die hun productiviteit hebben getransformeerd met onze taken-app."
+
+# Additional Hero Section
+msgid "Todo & Productivity"
+msgstr "Taken en Productiviteit"
+
+msgid "Advanced productivity workspace"
+msgstr "Geavanceerde productiviteitsruimte"
+
+msgid "Start for free"
+msgstr "Gratis beginnen"
+
+msgid "Start organizing"
+msgstr "Beginnen met organiseren"
+
+# Additional CTA
+msgid "Launch Todo App"
+msgstr "Taken App Starten"
+
+msgid "Start Now - It's Free"
+msgstr "Begin Nu - Het is Gratis"
+
+msgid "No credit card • No hidden fees • Always free"
+msgstr "Geen creditcard • Geen verborgen kosten • Altijd gratis"
+
+msgid "Explore All Apps"
+msgstr "Alle Apps Verkennen"
+
+msgid "Coming Soon"
+msgstr "Binnenkort"
+
+msgid "Start Organizing"
+msgstr "Beginnen met Organiseren"
+
+msgid "Begin adding tasks, setting deadlines, and tracking your progress immediately."
+msgstr "Begin direct met het toevoegen van taken, het instellen van deadlines en het bijhouden van je voortgang."
+
+msgid "Progress tracking"
+msgstr "Voortgang bijhouden"
+
+msgid "Ready"
+msgstr "Klaar"
+
+msgid "Revision"
+msgstr "Herhaling"
+
+msgid "Notebook"
+msgstr "Notitieboek"
+
+msgid "Tip"
+msgstr "Tip"
+
+msgid "Create my notes"
+msgstr "Mijn notities maken"
+
+msgid "Offline mode"
+msgstr "Offline modus"
+
+msgid "This application is part of the Open Linguify educational suite."
+msgstr "Deze applicatie is onderdeel van de Open Linguify educatieve suite."

@@ -1,0 +1,336 @@
+<!-- Advanced Search Bar - Interface modernisée -->
+<div class="modern-search-container">
+    <div class="search-header-enhanced">
+        <div class="search-title-group">
+            <h4 class="search-title">Découvrez des milliers de decks</h4>
+            <p class="search-subtitle">Plus de <span class="highlight-number">{{ total_results }}</span> decks créés par la communauté</p>
+        </div>
+        <div class="view-mode-selector">
+            <button class="view-mode-btn active" data-view="grid" title="Vue grille">
+                <i class="bi bi-grid-3x3-gap"></i>
+            </button>
+            <button class="view-mode-btn" data-view="list" title="Vue liste">
+                <i class="bi bi-list-ul"></i>
+            </button>
+            <button class="view-mode-btn" data-view="compact" title="Vue compacte">
+                <i class="bi bi-layout-three-columns"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="search-input-wrapper-enhanced">
+        <div class="search-main-container">
+            <div class="search-input-group-modern">
+                <div class="search-icon-container">
+                    <i class="bi bi-search search-icon-main"></i>
+                </div>
+                <input type="text" 
+                       id="exploreSearchInput" 
+                       name="q"
+                       value="{{ query }}"
+                       class="search-input-modern" 
+                       placeholder="Rechercher par titre, sujet, créateur..." 
+                       autocomplete="off"
+                       hx-get="{% url 'revision_web:explore_search' %}"
+                       hx-trigger="input changed delay:300ms, search"
+                       hx-target="#searchResultsContent"
+                       hx-include="[name='category'], [name='language'], [name='level'], [name='author'], [name='min_cards'], [name='max_cards'], [name='rating'], [name='sort'], [name='order']"
+                       hx-indicator="#searchLoading"
+                       hx-push-url="true">
+                
+                <div class="search-actions-modern">
+                    <button 
+                        hx-get="{% url 'revision_web:explore_suggestions' %}"
+                        hx-trigger="focus"
+                        hx-target="#searchSuggestions"
+                        class="search-action-btn ai-search" 
+                        title="Recherche intelligente">
+                        <i class="bi bi-stars"></i>
+                        <span class="action-text">IA</span>
+                    </button>
+                    <button id="advancedSearchToggle" class="search-action-btn advanced-toggle" title="Options avancées">
+                        <i class="bi bi-sliders"></i>
+                        <span class="action-text">Filtres</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Auto-completion intelligente -->
+        <div id="searchSuggestions" class="search-suggestions-modern" style="display: none;">
+            <!-- Sera rempli par HTMX -->
+        </div>
+    </div>
+    
+    <!-- Filtres actifs -->
+    {% if filters.category or filters.language or filters.level or filters.author %}
+    <div class="active-filters-display">
+        <div class="filters-header">
+            <span class="filters-label">
+                <i class="bi bi-funnel"></i>
+                Filtres actifs
+            </span>
+            <button 
+                hx-get="/revision/explore/search/"
+                hx-target="#searchResultsContent"
+                class="clear-all-filters">
+                <i class="bi bi-x-circle"></i>
+                Tout effacer
+            </button>
+        </div>
+        <div class="active-filters-list">
+            {% if filters.category %}
+            <span class="filter-tag">
+                Catégorie: {{ filters.category }}
+                <button hx-get="/revision/explore/search/" 
+                        hx-vals='{"category": ""}'
+                        hx-include="[name='q'], [name='language'], [name='level'], [name='author']"
+                        hx-target="#searchResultsContent">
+                    <i class="bi bi-x"></i>
+                </button>
+            </span>
+            {% endif %}
+            {% if filters.language %}
+            <span class="filter-tag">
+                Langue: {{ filters.language|upper }}
+                <button hx-get="/revision/explore/search/" 
+                        hx-vals='{"language": ""}'
+                        hx-include="[name='q'], [name='category'], [name='level'], [name='author']"
+                        hx-target="#searchResultsContent">
+                    <i class="bi bi-x"></i>
+                </button>
+            </span>
+            {% endif %}
+            <!-- Autres filtres... -->
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Header des résultats -->
+<div class="results-header-modern">
+    <div class="results-info-section">
+        <div class="results-title-group">
+            <h3 class="results-title">Résultats de recherche</h3>
+            <div class="results-count-display">
+                <span class="count-number">{{ total_results }}</span>
+                <span class="count-text">deck(s) trouvé(s)</span>
+            </div>
+        </div>
+        {% if query %}
+        <div class="search-query-display">
+            Recherche pour : <strong>{{ query }}</strong>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="results-controls-section">
+        <!-- Contrôles de tri -->
+        <div class="sort-controls">
+            <label class="sort-label">
+                <i class="bi bi-sort-down"></i>
+                Trier par :
+            </label>
+            <div class="sort-dropdown">
+                <select name="sort" 
+                        class="modern-sort-select"
+                        hx-get="{% url 'revision_web:explore_search' %}"
+                        hx-trigger="change"
+                        hx-target="#searchResultsContent"
+                        hx-include="[name='q'], [name='category'], [name='language'], [name='level']">
+                    <option value="relevance" {% if filters.sort_by == 'relevance' %}selected{% endif %}>🎯 Pertinence</option>
+                    <option value="popularity" {% if filters.sort_by == 'popularity' %}selected{% endif %}>🔥 Popularité</option>
+                    <option value="rating" {% if filters.sort_by == 'rating' %}selected{% endif %}>⭐ Mieux notés</option>
+                    <option value="created_at" {% if filters.sort_by == 'created_at' %}selected{% endif %}>🆕 Plus récents</option>
+                    <option value="name" {% if filters.sort_by == 'name' %}selected{% endif %}>📝 Alphabétique</option>
+                    <option value="cards_count" {% if filters.sort_by == 'cards_count' %}selected{% endif %}>📚 Nb. de cartes</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading indicator -->
+<div id="searchLoading" class="text-center p-3" style="display: none;">
+    <div class="spinner-linguify text-linguify-primary" role="status">
+        <span class="visually-hidden">Recherche en cours...</span>
+    </div>
+</div>
+
+<!-- Contenu des résultats -->
+<div id="searchResultsContent" class="study-content">
+    {% if decks %}
+    <!-- Grille des decks -->
+    <div class="decks-grid-modern" data-view="grid">
+        {% for deck in decks %}
+        <div class="deck-card-modern" 
+             hx-get="{% url 'revision_web:explore_deck_details' deck.id %}"
+             hx-target="#deckDetailsModal .modal-body"
+             hx-trigger="click"
+             data-bs-toggle="modal" 
+             data-bs-target="#deckDetailsModal">
+            
+            <div class="deck-card-header">
+                <div class="deck-category">
+                    <span class="category-badge">{{ deck.category|default:"Général" }}</span>
+                    <span class="language-flag">{{ deck.language|default:"FR"|upper }}</span>
+                </div>
+                <div class="deck-actions">
+                    {% if user_data.is_authenticated %}
+                    <button class="action-btn favorite-btn" 
+                            hx-post="{% url 'revision_web:explore_toggle_favorite' deck.id %}"
+                            hx-trigger="click consume"
+                            title="Ajouter aux favoris">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="deck-card-body">
+                <h5 class="deck-title">{{ deck.name }}</h5>
+                <p class="deck-description">{{ deck.description|truncatechars:100 }}</p>
+                
+                <div class="deck-stats">
+                    <span class="stat-item">
+                        <i class="bi bi-stack"></i>
+                        {{ deck.cards_count }} cartes
+                    </span>
+                    <span class="stat-item">
+                        <i class="bi bi-person"></i>
+                        {{ deck.user.username }}
+                    </span>
+                    {% if deck.avg_rating %}
+                    <span class="stat-item">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        {{ deck.avg_rating|floatformat:1 }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="deck-card-footer">
+                <span class="deck-date">{{ deck.created_at|date:"d/m/Y" }}</span>
+                {% if user_data.is_authenticated %}
+                <button class="btn-linguify btn-sm import-btn"
+                        hx-post="{% url 'revision_web:explore_import_deck' deck.id %}"
+                        hx-trigger="click consume"
+                        hx-swap="none">
+                    <i class="bi bi-download"></i>
+                    Importer
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if decks.has_other_pages %}
+    <div class="pagination-container-modern">
+        <div class="pagination-info">
+            <span class="showing-text">Affichage de</span>
+            <span class="range-start">{{ decks.start_index }}</span>-<span class="range-end">{{ decks.end_index }}</span>
+            <span class="total-text">sur</span>
+            <span class="total-results">{{ total_results }}</span>
+            <span class="results-text">résultats</span>
+        </div>
+        
+        <div class="pagination-controls">
+            <nav class="pagination-nav">
+                {% if decks.has_previous %}
+                <button class="page-btn prev"
+                        hx-get="{% url 'revision_web:explore_search' %}"
+                        hx-vals='{"page": "{{ decks.previous_page_number }}"}'
+                        hx-include="[name='q'], [name='category'], [name='language'], [name='sort']"
+                        hx-target="#searchResultsContent">
+                    <i class="bi bi-chevron-left"></i>
+                    <span>Précédent</span>
+                </button>
+                {% endif %}
+                
+                <div class="page-numbers">
+                    {% for num in decks.paginator.page_range %}
+                        {% if num == decks.number %}
+                            <button class="page-number active">{{ num }}</button>
+                        {% else %}
+                            <button class="page-number"
+                                    hx-get="{% url 'revision_web:explore_search' %}"
+                                    hx-vals='{"page": "{{ num }}"}'
+                                    hx-include="[name='q'], [name='category'], [name='language'], [name='sort']"
+                                    hx-target="#searchResultsContent">
+                                {{ num }}
+                            </button>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                {% if decks.has_next %}
+                <button class="page-btn next"
+                        hx-get="{% url 'revision_web:explore_search' %}"
+                        hx-vals='{"page": "{{ decks.next_page_number }}"}'
+                        hx-include="[name='q'], [name='category'], [name='language'], [name='sort']"
+                        hx-target="#searchResultsContent">
+                    <span>Suivant</span>
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <!-- État vide -->
+    <div class="no-results-modern">
+        <div class="no-results-content">
+            <div class="no-results-icon">
+                <i class="bi bi-search"></i>
+            </div>
+            <h3 class="no-results-title">Aucun deck trouvé</h3>
+            <p class="no-results-description">
+                Nous n'avons trouvé aucun deck correspondant à vos critères.
+            </p>
+            
+            <div class="no-results-suggestions">
+                <div class="suggestions-title">Suggestions :</div>
+                <ul class="suggestions-list">
+                    <li>Vérifiez l'orthographe de vos mots-clés</li>
+                    <li>Utilisez des termes plus généraux</li>
+                    <li>Réduisez le nombre de filtres actifs</li>
+                </ul>
+            </div>
+            
+            <div class="no-results-actions">
+                <button 
+                    hx-get="/revision/explore/search/"
+                    hx-target="#searchResultsContent"
+                    class="clear-search-btn">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    <span>Effacer la recherche</span>
+                </button>
+                <button 
+                    hx-get="/revision/explore/search/"
+                    hx-vals='{"sort": "popularity"}'
+                    hx-target="#searchResultsContent"
+                    class="browse-popular-btn">
+                    <i class="bi bi-fire"></i>
+                    <span>Parcourir les populaires</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Formulaires cachés pour les filtres -->
+<form style="display: none;">
+    <input type="hidden" name="category" value="{{ filters.category }}">
+    <input type="hidden" name="language" value="{{ filters.language }}">
+    <input type="hidden" name="level" value="{{ filters.level }}">
+    <input type="hidden" name="author" value="{{ filters.author }}">
+    <input type="hidden" name="min_cards" value="{{ filters.min_cards }}">
+    <input type="hidden" name="max_cards" value="{{ filters.max_cards }}">
+    <input type="hidden" name="rating" value="{{ filters.min_rating }}">
+    <input type="hidden" name="order" value="{{ filters.sort_order }}">
+</form>

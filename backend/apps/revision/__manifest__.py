@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __manifest__ = {
     'name': 'Révision',
-    'version': '2.0.0',
+    'version': '1.0.0',
     'category': 'Productivity',
     'summary': 'Mémorisez durablement avec des flashcards intelligentes et la répétition espacée.',
     'description': '''
@@ -17,7 +17,7 @@ Fonctionnalités:
 - Suivi des progrès et statistiques
 - Multiples modes de révision (flashcards, apprentissage, association, révision rapide)
 - Intégration avec le vocabulaire des modules d'apprentissage
-- Interface OWL moderne et réactive
+ 
 
 Usage:
 - API: /api/v1/revision/

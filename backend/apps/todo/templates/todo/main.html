@@ -1,0 +1,315 @@
+{% extends "todo/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block page_title %}Todo{% endblock %}
+
+{% block header_content %}
+{% include 'components/todo_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="app-flex-container">
+    <!-- Sidebar -->
+    <div id="todoSidebar" class="app-sidebar-layout">
+        <div class="p-6">
+            <!-- Tasks list -->
+            <ul id="tasksList" class="space-y-2"></ul>
+            
+            <!-- Empty state -->
+            <div id="tasksEmpty" class="hidden text-center py-16 px-8">
+                <i class="bi bi-check-square text-6xl text-linguify-gray mb-4 block"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{% trans "No tasks yet" %}</h3>
+                <p class="text-linguify-gray mb-6">{% trans "Create your first task to start organizing your work" %}</p>
+                <button class="btn-linguify" onclick="createNewTask()">
+                    <i class="bi bi-plus-lg mr-2"></i>
+                    {% trans "Create task" %}
+                </button>
+            </div>
+            
+            <!-- Load more -->
+            <div id="loadMoreContainer" class="text-center mt-4">
+                <button id="loadMoreBtn" class="btn-linguify-outline">
+                    <i class="bi bi-arrow-down-circle mr-2"></i>
+                    {% trans "Load more" %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Work Area -->
+    <div class="app-content-layout">
+        <!-- Enhanced Welcome state -->
+        <div id="welcomeState" class="flex items-center justify-center min-h-full">
+            <div class="text-center max-w-2xl px-8">
+                <div class="relative mb-8">
+                    <i class="bi bi-rocket-takeoff text-8xl text-linguify-primary block mb-4"></i>
+                    <div class="absolute -top-2 -right-8">
+                        <i class="bi bi-stars text-2xl text-linguify-accent opacity-70"></i>
+                    </div>
+                    <div class="absolute -bottom-4 -left-6">
+                        <i class="bi bi-star text-lg text-linguify-secondary opacity-80"></i>
+                    </div>
+                </div>
+                
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">{% trans "Your productivity hub awaits" %}</h2>
+                <p class="text-lg text-linguify-gray mb-8">
+                    {% trans "Organize your tasks, track your progress, and achieve your goals with our intuitive todo system" %}
+                </p>
+                
+                <div class="flex flex-wrap gap-4 justify-center mb-12">
+                    <button class="btn-linguify text-lg py-4 px-8" onclick="createNewTask()">
+                        <i class="bi bi-plus-circle mr-2"></i>
+                        {% trans "Create your first task" %}
+                    </button>
+                    <button class="btn-linguify-outline text-lg py-4 px-8" onclick="setView('kanban')">
+                        <i class="bi bi-kanban mr-2"></i>
+                        {% trans "Try Kanban view" %}
+                    </button>
+                </div>
+                
+                <!-- Feature highlights -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="card-linguify text-center">
+                        <i class="bi bi-list-check text-4xl text-linguify-primary mb-4 block"></i>
+                        <h5 class="font-bold text-lg mb-2 text-gray-900">{% trans "Smart Lists" %}</h5>
+                        <p class="text-linguify-gray text-sm">{% trans "Organize tasks by projects, priorities, and custom stages" %}</p>
+                    </div>
+                    <div class="card-linguify text-center">
+                        <i class="bi bi-kanban text-4xl text-linguify-accent mb-4 block"></i>
+                        <h5 class="font-bold text-lg mb-2 text-gray-900">{% trans "Kanban Board" %}</h5>
+                        <p class="text-linguify-gray text-sm">{% trans "Visualize your workflow with customizable boards" %}</p>
+                    </div>
+                    <div class="card-linguify text-center">
+                        <i class="bi bi-graph-up text-4xl text-linguify-secondary mb-4 block"></i>
+                        <h5 class="font-bold text-lg mb-2 text-gray-900">{% trans "Progress Tracking" %}</h5>
+                        <p class="text-linguify-gray text-sm">{% trans "Monitor your productivity with detailed analytics" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Task Details -->
+        <div id="taskDetails" class="hidden p-8">
+            <!-- Task Header -->
+            <div class="card-linguify">
+                <div class="flex items-center justify-between pb-6 mb-6 border-b border-gray-200">
+                    <div class="d-flex align-items-center gap-2">
+                        <button id="backToList" class="btn btn-outline-secondary btn-sm d-md-none">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <div>
+                            <h4 id="taskName" class="mb-0">{% trans "Task name" %}</h4>
+                            <small id="taskProject" class="text-muted">{% trans "Project" %}</small>
+                            <div id="taskTagsDisplay" class="task-tags mt-1"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Progress -->
+                        <div class="d-flex align-items-center gap-2 me-3">
+                            <span id="taskProgress" class="badge bg-primary">{% trans "To Do" %}</span>
+                            <div class="text-warning" id="taskPriority" style="display: none;">
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-secondary" onclick="editTask()" title="{% trans 'Edit task' %}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-outline-success" onclick="toggleTaskComplete()" id="toggleCompleteBtn" title="{% trans 'Mark as done' %}">
+                                <i class="bi bi-check2"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteTask()" title="{% trans 'Delete task' %}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Task Content -->
+            <div id="taskContent" class="task-content">
+                <!-- Task description will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Kanban View -->
+        <div id="kanbanView" class="kanban-view" style="display: none;">
+            <div class="kanban-board row g-3" id="kanbanBoard">
+                <!-- Kanban columns will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notifications Container -->
+<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;"></div>
+
+<!-- CSRF Token -->
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'todo/css/todo-linguify.css' %}">
+<style>
+/* Todo App Custom Styles */
+.todo-workspace {
+    min-height: calc(100vh - 120px);
+    background-color: #f8fafc;
+}
+
+.todo-sidebar {
+    width: 350px;
+    background: white;
+    border-right: 1px solid #e2e8f0;
+    padding: 1.5rem;
+    min-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+.todo-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: #f8fafc;
+    overflow-y: auto;
+}
+
+.task-item {
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0 !important;
+    background: white;
+}
+
+.task-item:hover {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.task-item.active {
+    border-color: #3b82f6 !important;
+    background-color: #eff6ff;
+}
+
+.kanban-view .card {
+    border: 1px solid #e2e8f0;
+}
+
+.kanban-view .card-header {
+    background-color: #3b82f6;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.task-details {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.empty-state {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin: 2rem;
+}
+
+/* Dynamic header brand styling */
+.app-brand-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.app-brand-main {
+    color: var(--linguify-primary, #2D5BBA);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    position: relative;
+}
+
+.app-brand-main:hover {
+    background-color: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary, #2D5BBA);
+}
+
+.app-brand-breadcrumb {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+.app-brand-container:hover .app-brand-breadcrumb {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.breadcrumb-link {
+    color: var(--linguify-text-secondary, #64748b);
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+    color: var(--linguify-primary, #2D5BBA);
+}
+
+.breadcrumb-arrow {
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+}
+
+.breadcrumb-link:hover .breadcrumb-arrow {
+    transform: translateX(-2px);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'todo/js/todo-linguify.js' %}"></script>
+<script>
+// Dynamic header brand transformation for Todo app
+document.addEventListener('DOMContentLoaded', function() {
+    const navbarBrand = document.querySelector('.navbar-brand');
+    if (navbarBrand) {
+        // Replace the brand content with our custom structure
+        navbarBrand.innerHTML = `
+            <div class="app-brand-container">
+                <span class="app-brand-main">Todo</span>
+                <div class="app-brand-breadcrumb">
+                    <a href="{% url 'saas_web:dashboard' %}" class="breadcrumb-link">
+                        <span class="breadcrumb-arrow">←</span>
+                        {% trans "Back to Dashboard" %}
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        // Keep the original href for accessibility
+        navbarBrand.setAttribute('href', '{% url "saas_web:dashboard" %}');
+    }
+});
+</script>
+{% endblock %}

@@ -16,6 +16,14 @@ from apps.authentication.views.terms_views import accept_terms, terms_status
 from tests.test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
 from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
+from rest_framework.routers import DefaultRouter
+from .views.tag_views import TagViewSet, TagRelationViewSet, ObjectTagsViewSet
+
+# Router pour l'API des tags globaux
+tags_router = DefaultRouter()
+tags_router.register(r'tags', TagViewSet, basename='tags')
+tags_router.register(r'tag-relations', TagRelationViewSet, basename='tag-relations') 
+tags_router.register(r'object-tags', ObjectTagsViewSet, basename='object-tags')
 # Blog moved to portal - commented out
 # from core.blog.views import comment_like_toggle, comment_report, reply_to_comment as comment_reply
 from django.views.generic import RedirectView
@@ -53,8 +61,8 @@ urlpatterns = [
     path('app-icons/<str:app_name>/<str:filename>', AppIconView.as_view(), name='app_icon'),
     
     # Redirects for app pages without language prefix to user's preferred language
-    path('apps/', views.language_redirect_view, {'path': 'apps/'}, name='apps_no_lang_redirect'),
-    path('apps/<slug:app_slug>/', views.app_language_redirect_view, name='app_detail_no_lang_redirect'),
+    # path('apps/', views.language_redirect_view, {'path': 'apps/'}, name='apps_no_lang_redirect'),
+    # path('apps/<slug:app_slug>/', views.app_language_redirect_view, name='app_detail_no_lang_redirect'),
     
     # User profile routes (must be before saas_web.urls to avoid conflicts)
     path('profile/', include('apps.authentication.urls.profile')),
@@ -84,8 +92,10 @@ urlpatterns = [
     path('revision/', include('apps.revision.urls_web', namespace='revision_web')),
     path('learning/', include('apps.course.urls', namespace='course')),
     path('quizz/', include('apps.quizz.urls_web', namespace='quizz_web')),
+    path('todo/', include('apps.todo.urls_web', namespace='todo_web')),
+    path('calendar/', include('apps.calendar_app.urls', namespace='calendar')),
     path('language_ai/', include('apps.language_ai.urls_web', namespace='language_ai_web')),
-    path('api/contact/', views.contact_view, name='contact'),
+    # path('api/contact/', views.contact_view, name='contact'),
     path('api/v1/notifications/', include('apps.notification.urls', namespace='notification')),
     path('api/v1/language_ai/', include('apps.language_ai.urls', namespace='language_ai')),
     # Jobs API moved to portal
@@ -97,6 +107,10 @@ urlpatterns = [
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     # path('api/v1/course/', include('apps.course.api.urls', namespace='course_api')),  # TODO: Create course API URLs
     path('api/v1/quizz/', include('apps.quizz.urls', namespace='quizz')),
+    path('api/v1/todo/', include('apps.todo.urls', namespace='todo')),
+    
+    # API Tags globaux (système cross-apps)
+    path('api/v1/core/', include(tags_router.urls)),
     
     # Compatibility redirect for old /course/ URL
     path('course/', RedirectView.as_view(url='/learning/', permanent=True)),
@@ -104,10 +118,9 @@ urlpatterns = [
     # Marketplace apps
     path('chat/', include('apps.chat.urls', namespace='chat')),
     path('community/', include('apps.community.urls', namespace='community')),
-    # path('student-dashboard/', include('apps.learning.urls', namespace='learning')),  # Fusionné dans course app
-    # path('teaching/', include('apps.teaching.urls', namespace='teaching')),  # Temporairement désactivé pour résoudre conflit
+    path('teaching/', include('apps.teaching.urls', namespace='teaching')),  # App Teaching activée
     path('api/cms-sync/', include('apps.cms_sync.urls', namespace='cms_sync')),
-    
+    path('language_learning/', include('apps.language_learning.urls', namespace='language_learning')),
     # SEO URLs - Organized sitemap serving
     path('robots.txt', serve_robots_txt, name='robots_txt'),
     path('sitemap.xml', serve_sitemap, {'sitemap_name': 'sitemap'}, name='sitemap_main'),
@@ -126,8 +139,8 @@ urlpatterns = [
     # SEO Status and Management
     path('seo/status/', sitemap_status, name='seo_status'),
     
-    # LMS info page
-    path('lms/', views.lms_info, name='lms_info'),
+    # LMS info page  
+    # path('lms/', views.lms_info, name='lms_info'),
 ]
 
 # URLs with language prefix (for public website and authentication)

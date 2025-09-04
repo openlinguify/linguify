@@ -25,6 +25,3 @@ poetry run python manage.py test tests.test_settings --settings=core.settings_te
 poetry run python manage.py test tests.test_seo_imports --settings=core.settings_test
 ```
 
-## Test Environment
-
-For `public_web` tests, see the `portal` project at `/mnt/c/Users/louis/WebstormProjects/linguify/portal/tests/`.

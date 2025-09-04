@@ -532,6 +532,18 @@ class NotificationDeliveryService:
             return settings.streak_notifications
         elif notification_type == NotificationType.SYSTEM:
             return settings.system_notifications
+        elif notification_type == NotificationType.CALENDAR_REMINDER:
+            return settings.calendar_reminders
+        elif notification_type == NotificationType.CALENDAR_INVITATION:
+            return settings.calendar_invitations
+        elif notification_type == NotificationType.CALENDAR_UPDATE:
+            return settings.calendar_updates
+        elif notification_type == NotificationType.CALENDAR_CANCELLATION:
+            return settings.calendar_updates  # Use same setting as updates
+        elif notification_type == NotificationType.CALENDAR_RESPONSE:
+            return settings.calendar_responses
+        elif notification_type == NotificationType.CALENDAR_SYNC:
+            return settings.calendar_sync_notifications
         else:
             # For other types, default to enabled
             return True

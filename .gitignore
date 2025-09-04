@@ -245,4 +245,5 @@ dmypy.json
 
 
 todo.txt
-a_screenshot
+a_screenshotnode_modules/
+node_modules

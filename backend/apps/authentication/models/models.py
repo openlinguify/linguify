@@ -289,18 +289,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
         validators=[validate_profile_picture]
     )
-    # Supabase storage fields
-    profile_picture_url = models.URLField(
-        null=True,
-        blank=True,
-        help_text="URL de la photo de profil stockée dans Supabase"
-    )
-    profile_picture_filename = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        help_text="Nom du fichier dans Supabase Storage"
-    )
     bio = models.TextField(max_length=500, null=True, blank=True)
     native_language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default=LANGUAGE_CHOICES[0][0],
                                        help_text="Your native language")
@@ -378,18 +366,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def get_profile_picture_url(self):
         """
-        Retourne l'URL de la photo de profil en priorisant Supabase sur le stockage local
+        Retourne l'URL de la photo de profil
         """
-        # Prioriser Supabase Storage
-        if self.profile_picture_url:
-            return self.profile_picture_url
-        
-        # Fallback vers le stockage local Django
         if self.profile_picture:
+            # Si c'est une URL complète (Supabase), la retourner directement
+            profile_str = str(self.profile_picture)
+            if profile_str.startswith(('http://', 'https://')):
+                return profile_str
+            
+            # Sinon, générer l'URL locale Django
             try:
                 return self.profile_picture.url
             except Exception:
-                return None
+                pass
         
         return None
     
@@ -397,12 +386,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         Retourne l'URL absolue de la photo de profil pour les API
         """
-        # Prioriser Supabase Storage (déjà absolu)
-        if self.profile_picture_url:
-            return self.profile_picture_url
-        
-        # Fallback vers le stockage local Django avec URL absolue
         if self.profile_picture:
+            profile_str = str(self.profile_picture)
+            
+            # Si c'est déjà une URL complète (Supabase), la retourner directement
+            if profile_str.startswith(('http://', 'https://')):
+                return profile_str
+            
+            # Sinon, construire l'URL absolue locale
             try:
                 return request.build_absolute_uri(self.profile_picture.url)
             except Exception:
@@ -626,6 +617,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
+    
+    def get_full_name(self):
+        """Return the user's full name"""
+        full_name = f"{self.first_name} {self.last_name}".strip()
+        return full_name if full_name else self.username
     
     @property
     def age(self):

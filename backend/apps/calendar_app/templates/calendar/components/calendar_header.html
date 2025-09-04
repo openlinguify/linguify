@@ -1,0 +1,217 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block extra_css %}
+    <!-- CSS spécifique au calendrier -->
+    <link rel="stylesheet" href="{% static 'calendar/css/calendar.css' %}">
+    
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    
+    <!-- Override for Linguify design system variables -->
+    <style>
+        :root {
+            --linguify-primary: #2D5BBA;
+            --linguify-secondary: #8B5CF6;
+            --linguify-accent: #00D4AA;
+            --linguify-gray: #6B7280;
+            --linguify-primary-light: #4F7BD9;
+            --linguify-primary-dark: #1E4A8C;
+            --linguify-secondary-light: #A78BFA;
+            --linguify-secondary-dark: #7C3AED;
+            --linguify-accent-light: #26E4B8;
+            --linguify-accent-dark: #00B894;
+            --linguify-success: #10B981;
+            --linguify-warning: #F59E0B;
+            --linguify-error: #EF4444;
+            --linguify-white: #FFFFFF;
+            --linguify-gray-50: #F9FAFB;
+            --linguify-gray-100: #F3F4F6;
+            --linguify-gray-200: #E5E7EB;
+            --linguify-gray-300: #D1D5DB;
+            --linguify-gray-700: #374151;
+            --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+            --header-height: 64px;
+            --calendar-secondary-navbar-height: 64px;
+        }
+        
+        /* Add calendar-body class to body */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        body.calendar-body {
+            background-color: var(--calendar-bg, #F9FAFB);
+        }
+    </style>
+    
+    {% block extra_calendar_css %}{% endblock %}
+{% endblock %}
+
+
+{% block content %}
+    <!-- Add calendar-body class to body element -->
+    <script>document.body.classList.add('calendar-body');</script>
+    
+    <!-- Calendar Secondary Navigation Bar (Revision-style) -->
+    <div class="calendar-navbar-container">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between gap-2" style="min-height: 40px; overflow-x: auto; position: relative; z-index: 1000;">
+                <!-- Gauche: Navigation + Actions principales -->
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Navigation tabs -->
+                    <div class="d-flex align-items-center gap-1">
+                        <a href="{% url 'calendar:main' %}" 
+                           class="nav-tab {% if request.resolver_match.url_name == 'main' %}active{% endif %}">
+                            <i class="bi bi-calendar-month me-1"></i>
+                            {% trans "Calendar" %}
+                        </a>
+                        <a href="{% url 'calendar:agenda' %}" 
+                           class="nav-tab {% if request.resolver_match.url_name == 'agenda' %}active{% endif %}">
+                            <i class="bi bi-list-ul me-1"></i>
+                            {% trans "Agenda" %}
+                        </a>
+                        <a href="{% url 'calendar:providers' %}" 
+                           class="nav-tab {% if request.resolver_match.url_name == 'providers' %}active{% endif %}">
+                            <i class="bi bi-cloud me-1"></i>
+                            {% trans "Providers" %}
+                        </a>
+                        <a href="{% url 'calendar:settings' %}" 
+                           class="nav-tab {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+                            <i class="bi bi-gear me-1"></i>
+                            {% trans "Settings" %}
+                        </a>
+                    </div>
+                    
+                    <!-- Refresh -->
+                    <button id="refreshCalendar" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <span class="d-none d-xl-inline ms-1">{% trans "Actualiser" %}</span>
+                    </button>
+                </div>
+                
+                <!-- Droite: Actions et filtres contextuels -->
+                <div class="d-flex align-items-center gap-1 flex-nowrap">
+                    <input type="text" id="calendarSearchInput" class="form-control form-control-sm search-input" placeholder="{% trans 'Rechercher événements...' %}" style="width: 160px; min-width: 120px;">
+                    
+                    <select id="calendarTypeFilter" class="form-select form-select-sm filter-select" style="width: 120px; min-width: 100px;">
+                        <option value="">{% trans "Tous les calendriers" %}</option>
+                        <option value="personal">{% trans "Personnel" %}</option>
+                        <option value="work">{% trans "Travail" %}</option>
+                        <option value="shared">{% trans "Partagé" %}</option>
+                    </select>
+                    
+                    <select id="calendarViewFilter" class="form-select form-select-sm filter-select" style="width: 100px; min-width: 90px;">
+                        <option value="month" data-view="month">{% trans "Mois" %}</option>
+                        <option value="week" data-view="week">{% trans "Semaine" %}</option>
+                        <option value="day" data-view="day">{% trans "Jour" %}</option>
+                        <option value="agenda" data-view="agenda">{% trans "Agenda" %}</option>
+                    </select>
+                    
+                    <!-- Actions -->
+                    <a href="{% url 'calendar:event_create' %}" class="btn btn-gradient btn-sm px-2">
+                        <i class="bi bi-plus-lg"></i>
+                        <span class="d-none d-xxl-inline ms-1">{% trans "Nouveau" %}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% block calendar_main_content %}{% endblock %}
+    
+    <!-- Calendar navbar keyboard shortcuts -->
+    <script>
+        // Keyboard shortcuts for calendar navbar
+        document.addEventListener('keydown', function(e) {
+            // Only if no input is focused
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') {
+                return;
+            }
+            
+            switch(e.key) {
+                case 'r':
+                case 'R':
+                    if (e.ctrlKey || e.metaKey) return; // Don't interfere with browser refresh
+                    e.preventDefault();
+                    document.getElementById('refreshCalendar')?.click();
+                    break;
+                case '/':
+                    e.preventDefault();
+                    document.getElementById('calendarSearchInput')?.focus();
+                    break;
+                case 'n':
+                case 'N':
+                    if (e.ctrlKey || e.metaKey) return;
+                    e.preventDefault();
+                    window.location.href = '{% url "calendar:event_create" %}';
+                    break;
+                case '1':
+                    e.preventDefault();
+                    document.querySelector('a[href="{% url "calendar:main" %}"]')?.click();
+                    break;
+                case '2':
+                    e.preventDefault();
+                    document.querySelector('a[href="{% url "calendar:agenda" %}"]')?.click();
+                    break;
+                case '3':
+                    e.preventDefault();
+                    document.querySelector('a[href="{% url "calendar:providers" %}"]')?.click();
+                    break;
+                case '4':
+                    e.preventDefault();
+                    document.querySelector('a[href="{% url "calendar:settings" %}"]')?.click();
+                    break;
+            }
+        });
+        
+        // Show keyboard shortcuts help
+        function showKeyboardShortcuts() {
+            if (window.notificationService) {
+                window.notificationService.info(`
+                    ⌨️ Raccourcis clavier:<br>
+                    R = Actualiser<br>
+                    / = Rechercher<br>
+                    N = Nouvel événement<br>
+                    1-4 = Navigation tabs
+                `);
+            }
+        }
+        
+        // Add help button to navbar
+        document.addEventListener('DOMContentLoaded', function() {
+            const refreshBtn = document.getElementById('refreshCalendar');
+            if (refreshBtn && refreshBtn.parentNode) {
+                const helpBtn = document.createElement('button');
+                helpBtn.className = 'btn btn-outline-custom btn-sm';
+                helpBtn.innerHTML = '<i class="bi bi-question-circle"></i>';
+                helpBtn.title = 'Raccourcis clavier (?)';
+                helpBtn.onclick = showKeyboardShortcuts;
+                refreshBtn.parentNode.insertBefore(helpBtn, refreshBtn);
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block app_navigation %}
+<div class="d-none d-lg-flex align-items-center gap-2">
+    <!-- Standard navigation -->
+    {% if request.resolver_match.url_name != 'dashboard' %}
+    <a href="{% url 'saas_web:dashboard' %}" 
+       class="btn btn-outline-secondary btn-sm header-btn"
+       aria-label="{% trans 'Go to dashboard' %}">
+        <i class="bi bi-house me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Dashboard" %}</span>
+    </a>
+    {% endif %}
+    
+    <!-- Calendar main link in header -->
+    <a href="{% url 'calendar:main' %}" 
+       class="btn btn-outline-primary btn-sm header-btn active"
+       aria-label="{% trans 'Calendar app' %}">
+        <i class="bi bi-calendar me-1" aria-hidden="true"></i>
+        <span class="d-none d-xl-inline">{% trans "Calendar" %}</span>
+    </a>
+</div>
+{% endblock %}

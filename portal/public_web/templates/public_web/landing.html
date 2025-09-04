@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load app_tags %}
 
-{% block title %}{% trans "OpenLinguify - Open source educational apps platform" %}{% endblock %}
+{% block title %}{% trans "Open Linguify | Open Source Education Apps" %}{% endblock %}
 
 {% block meta_description %}{% trans "OpenLinguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning." %}{% endblock %}
 
@@ -128,8 +128,7 @@
 
 {% block content %}
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="landing-hero">
         <div class="hero-floating-elements">
             <div class="floating-element"></div>
             <div class="floating-element"></div>
@@ -137,58 +136,40 @@
         </div>
         
         <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-10 col-lg-8 hero-content text-center">
+            <div class="hero-content-grid">
+                <div class="hero-text-content">
                     <h1 class="hero-title animate-on-scroll">
                         {% trans "Open Source Education Apps" %}
                     </h1>
                     <p class="hero-subtitle animate-on-scroll delay-1">
-                        {% trans "A complete suite of open source educational apps: memorization, flashcards, note-taking, quizzes, collaborative chat and much more." %}
+                        {% trans "A complete suite of open source educational apps: memorization, flashcards, note-taking, to-do and much more." %}
                     </p>
                     
-                    <!-- Free and Open Source Badge -->
-                    <div class="free-badge animate-on-scroll delay-1" style="background: linear-gradient(135deg, #017e84, #015a5e); color: white; padding: 1rem 2rem; border-radius: 50px; margin: 1.5rem auto; display: inline-block; box-shadow: 0 8px 25px rgba(1, 126, 132, 0.3);">
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                            <i class="fas fa-gift" style="font-size: 1.5rem;"></i>
-                            <div>
-                                <div style="font-size: 1.4rem; font-weight: bold; margin-bottom: 2px;">
-                                    {% trans "100% FREE FOREVER" %}
-                                </div>
-                                <div style="font-size: 0.95rem; opacity: 0.95;">
-                                    {% trans "No credit card • No hidden fees • Always free" %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- User Type Selection -->
-                    <div id="user-products" class="user-type-selection mb-4 animate-on-scroll delay-2 user-type-enhanced text-center">
-                        <h3 class="mb-3" style="color: #e0e7ff; font-size: 1.1rem;">
+                    <div id="user-products" class="product-selector animate-on-scroll delay-2">
+                        <h3 class="selector-title">
                             {% trans "Choose your Linguify product:" %}
                         </h3>
-                        <div class="row g-3 justify-content-center">
+                        <div class="product-grid">
                             {% for product in products %}
-                                {% if product.key != 'lms' and product.key != 'cms' %}  <!-- Hide LMS and CMS products as they're not ready -->
-                                <div class="col-md-8 col-lg-6">
-                                    <div class="user-type-card" style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 1.5rem; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-                                        <i class="{{ product.icon }} fa-2x mb-2" style="color: #e0e7ff;"></i>
-                                        <h5 style="color: white; margin-bottom: 0.5rem;">{{ product.name }}</h5>
-                                        <p style="color: #e0e7ff; font-size: 0.9rem; margin-bottom: 1rem;">{{ product.description }}</p>
-                                        <a href="{{ product.url }}" class="btn {% if product.key == 'backend' %}btn-light{% else %}btn-outline-light{% endif %} btn-sm" {% if product.key != 'backend' %}target="_blank"{% endif %}>
-                                            {% if product.key == 'backend' %}
-                                                {% trans "Start Learning" %}
-                                            {% else %}
-                                                {% trans "Learn More" %}
-                                            {% endif %}
-                                        </a>
-                                    </div>
+                                {% if product.key != 'lms' and product.key != 'cms' %}
+                                <div class="product-card">
+                                    <i class="{{ product.icon }} product-icon"></i>
+                                    <h4 class="product-name">{{ product.name }}</h4>
+                                    <p class="product-description">{{ product.description }}</p>
+                                    <a href="{{ product.url }}" class="btn-product {% if product.key == 'backend' %}primary{% else %}secondary{% endif %}" {% if product.key != 'backend' %}target="_blank"{% endif %}>
+                                        {% if product.key == 'backend' %}
+                                            {% trans "Start Learning" %}
+                                        {% else %}
+                                            {% trans "Learn More" %}
+                                        {% endif %}
+                                    </a>
                                 </div>
                                 {% endif %}
                             {% endfor %}
                         </div>
                     </div>
                     
-                    <div class="d-flex gap-3 flex-wrap animate-on-scroll delay-3 hero-cta-enhanced justify-content-center">
+                    <div class="hero-actions animate-on-scroll delay-3">
                         <a href="#features" class="btn-hero secondary">
                             <i class="fas fa-globe"></i>
                             {% trans "Discover our apps" %}
@@ -199,34 +180,126 @@
                         </a>
                     </div>
                 </div>
+                
+                <div class="hero-dashboard-showcase">
+                    <div class="dashboard-preview animate-on-scroll delay-1">
+                        <div class="browser-mockup">
+                            <div class="browser-header">
+                                <div class="browser-dots">
+                                    <span class="dot red"></span>
+                                    <span class="dot yellow"></span>
+                                    <span class="dot green"></span>
+                                </div>
+                                <div class="browser-title">Dashboard - Open Linguify</div>
+                                <div class="browser-controls">
+                                    <i class="bi bi-dash-lg"></i>
+                                    <i class="bi bi-square"></i>
+                                    <i class="bi bi-x-lg"></i>
+                                </div>
+                            </div>
+                            <div class="browser-content">
+                                <div class="dashboard-apps-grid">
+                                    <div class="dashboard-app-card operational">
+                                        <div class="app-icon-wrapper">
+                                            <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo" class="app-icon">
+                                            <div class="app-status operational">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </div>
+                                        <div class="app-info">
+                                            <span class="app-name">{% trans "Todo" %}</span>
+                                            <span class="app-category">{% trans "Productivity" %}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="dashboard-app-card operational">
+                                        <div class="app-icon-wrapper">
+                                            <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision" class="app-icon">
+                                            <div class="app-status operational">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </div>
+                                        <div class="app-info">
+                                            <span class="app-name">{% trans "Revision" %}</span>
+                                            <span class="app-category">{% trans "Spaced Learning" %}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="dashboard-app-card operational">
+                                        <div class="app-icon-wrapper">
+                                            <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" class="app-icon">
+                                            <div class="app-status operational">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </div>
+                                        <div class="app-info">
+                                            <span class="app-name">{% trans "Notebook" %}</span>
+                                            <span class="app-category">{% trans "Note Taking" %}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="dashboard-app-card coming-soon">
+                                        <div class="app-icon-wrapper">
+                                            <img src="{% static 'img/app_icon/langue.png' %}" alt="Courses" class="app-icon">
+                                            <div class="app-status coming-soon">
+                                                <i class="bi bi-clock"></i>
+                                            </div>
+                                        </div>
+                                        <div class="app-info">
+                                            <span class="app-name">{% trans "Courses" %}</span>
+                                            <span class="app-category">{% trans "Structured Learning" %}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="dashboard-app-card coming-soon">
+                                        <div class="app-icon-wrapper">
+                                            <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quiz" class="app-icon">
+                                            <div class="app-status coming-soon">
+                                                <i class="bi bi-clock"></i>
+                                            </div>
+                                        </div>
+                                        <div class="app-info">
+                                            <span class="app-name">{% trans "Quiz" %}</span>
+                                            <span class="app-category">{% trans "Assessment" %}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="dashboard-app-card coming-soon">
+                                        <div class="app-icon-wrapper">
+                                            <img src="{% static 'img/app_icon/chat.png' %}" alt="Chat" class="app-icon">
+                                            <div class="app-status coming-soon">
+                                                <i class="bi bi-clock"></i>
+                                            </div>
+                                        </div>
+                                        <div class="app-info">
+                                            <span class="app-name">{% trans "Chat" %}</span>
+                                            <span class="app-category">{% trans "Collaboration" %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="dashboard-caption">
+                            {% trans "Access all your apps from a unified dashboard" %}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
 
-    <!-- Stats Section -->
-    <section class="stats-section">
+    <section class="landing-stats">
         <div class="container">
-            <div class="row g-4">
-                <div class="col-6 col-md-3 animate-on-scroll">
+            <div class="stats-grid">
+                <div class="stat-item animate-on-scroll">
                     <div class="stat-card">
-                        <span class="stat-number" data-count="7">0</span>
-                        <div class="stat-label">{% trans "Educational Apps" %}</div>
+                        <span class="stat-number" data-count="3">0</span>
+                        <div class="stat-label">{% trans "Educational Useful Apps for the students" %}</div>
                     </div>
                 </div>
-                <div class="col-6 col-md-3 animate-on-scroll delay-1">
-                    <div class="stat-card">
-                        <span class="stat-number" data-count="1000">0</span><span class="stat-number">+</span>
-                        <div class="stat-label">{% trans "Flashcards Created" %}</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3 animate-on-scroll delay-2">
-                    <div class="stat-card">
-                        <span class="stat-number" data-count="500">0</span><span class="stat-number">+</span>
-                        <div class="stat-label">{% trans "Quizzes Generated" %}</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3 animate-on-scroll delay-3">
+                <div class="stat-item animate-on-scroll delay-3">
                     <div class="stat-card">
                         <span class="stat-number" data-count="100">0</span><span class="stat-number">%</span>
                         <div class="stat-label">{% trans "Open Source" %}</div>
@@ -238,160 +311,176 @@
 
 
 
-    <!-- Features Section -->
-    <section id="features" class="features-section">
+    <section id="features" class="landing-features">
         <div class="container">
-            <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">{% trans "Our Educational Apps" %}</h2>
-                <p class="lead text-muted">
+            <div class="section-text animate-on-scroll">
+                <h2 class="section-heading">{% trans "Our Educational Apps" %}</h2>
+                <p class="section-description">
                     {% trans "Discover our complete suite of educational apps designed to transform your learning experience. Currently all apps are completely free to use." %}
                 </p>
-                <div class="alert alert-info d-inline-flex align-items-center mb-4" style="background: rgba(45, 91, 186, 0.1); border: 1px solid rgba(45, 91, 186, 0.2); border-radius: 12px; padding: 0.75rem 1.25rem;">
-                    <i class="bi bi-info-circle me-2" style="color: var(--linguify-primary);"></i>
-                    <small style="color: var(--linguify-primary); margin: 0;">
-                        {% trans "🎉 All features are currently free • We're exploring sustainable business models for long-term platform development" %}
-                    </small>
+                <div class="free-notice">
+                    <i class="bi bi-info-circle"></i>
+                    <span>{% trans "🎉 All features are currently free • We're exploring sustainable business models for long-term platform development" %}</span>
                 </div>
             </div>
             
-            <!-- Available Apps -->
-            <div class="text-center mb-4">
-                <h3 class="h4 mb-3" style="color: #017e84;">
-                    <i class="bi bi-check-circle-fill me-2"></i>{% trans "Available Now" %}
-                </h3>
-            </div>
-            
-            <div class="row g-4 justify-content-center mb-5">
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-1">
-                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='revision' %}" class="text-decoration-none">
-                        <div class="feature-card" style="border: 2px solid #017e84; position: relative;">
-                            <div class="feature-icon">
-                                <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision">
-                            </div>
-                            <h3 class="feature-title">{% trans "Revision" %}</h3>
-                            <p class="feature-description">
-                                {% trans "Spaced repetition system with smart flashcards for optimal memorization." %}
-                            </p>
-                            <div class="badge position-absolute top-0 end-0 m-2" style="background-color: #017e84; color: white;">
-                                <i class="bi bi-check-lg me-1"></i>{% trans "Ready" %}
-                            </div>
-                        </div>
-                    </a>
+            <div class="available-apps-section">
+                <div class="apps-section-header">
+                    <h3 class="apps-section-title available">
+                        <i class="bi bi-check-circle-fill"></i>{% trans "Available Now" %}
+                    </h3>
                 </div>
                 
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-2">
-                    <a href="{% url 'public_web:dynamic_app_detail' app_slug='notebook' %}" class="text-decoration-none">
-                        <div class="feature-card" style="border: 2px solid #017e84; position: relative;">
-                            <div class="feature-icon">
-                                <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook">
+                <div class="apps-grid available-grid">
+                    <div class="app-card-wrapper animate-on-scroll delay-1">
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='todo' %}" class="app-link">
+                            <div class="app-card available">
+                                <div class="app-icon-container">
+                                    <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo" class="app-icon">
+                                </div>
+                                <h3 class="app-title">{% trans "Todo" %}</h3>
+                                <p class="app-description">
+                                    {% trans "Organize your tasks and boost your productivity with intelligent task management." %}
+                                </p>
+                                <div class="app-badge available">
+                                    <i class="bi bi-check-lg"></i>{% trans "Ready" %}
+                                </div>
                             </div>
-                            <h3 class="feature-title">{% trans "Notebook" %}</h3>
-                            <p class="feature-description">
-                                {% trans "Centralized note-taking with intelligent organization and advanced search." %}
-                            </p>
-                            <div class="badge position-absolute top-0 end-0 m-2" style="background-color: #017e84; color: white;">
-                                <i class="bi bi-check-lg me-1"></i>{% trans "Ready" %}
+                        </a>
+                    </div>
+                    
+                    <div class="app-card-wrapper animate-on-scroll delay-2">
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='revision' %}" class="app-link">
+                            <div class="app-card available">
+                                <div class="app-icon-container">
+                                    <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision" class="app-icon">
+                                </div>
+                                <h3 class="app-title">{% trans "Revision" %}</h3>
+                                <p class="app-description">
+                                    {% trans "Spaced repetition system with smart flashcards for optimal memorization." %}
+                                </p>
+                                <div class="app-badge available">
+                                    <i class="bi bi-check-lg"></i>{% trans "Ready" %}
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
+                    
+                    <div class="app-card-wrapper animate-on-scroll delay-3">
+                        <a href="{% url 'public_web:dynamic_app_detail' app_slug='notebook' %}" class="app-link">
+                            <div class="app-card available">
+                                <div class="app-icon-container">
+                                    <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" class="app-icon">
+                                </div>
+                                <h3 class="app-title">{% trans "Notebook" %}</h3>
+                                <p class="app-description">
+                                    {% trans "Centralized note-taking with intelligent organization and advanced search." %}
+                                </p>
+                                <div class="app-badge available">
+                                    <i class="bi bi-check-lg"></i>{% trans "Ready" %}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <!-- Coming Soon Apps -->
-            <div class="text-center mb-4 mt-5">
-                <h3 class="h4 mb-3" style="color: var(--warning-color);">
-                    <i class="bi bi-clock-fill me-2"></i>{% trans "Coming Soon" %}
-                </h3>
-                <p class="text-muted">{% trans "These exciting apps are in active development" %}</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-3">
-                    <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/langue.png' %}" alt="Courses" style="filter: grayscale(50%);">
-                        </div>
-                        <h3 class="feature-title">{% trans "Courses" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Structured courses with progressive lessons, interactive exercises and personalized assessments." %}
-                        </p>
-                        <div class="badge bg-warning position-absolute top-0 end-0 m-2">
-                            <i class="bi bi-clock me-1"></i>{% trans "Soon" %}
-                        </div>
-                    </div>
+            <div class="coming-soon-apps-section">
+                <div class="apps-section-header">
+                    <h3 class="apps-section-title coming-soon">
+                        <i class="bi bi-clock-fill"></i>{% trans "Coming Soon" %}
+                    </h3>
+                    <p class="apps-section-subtitle">{% trans "These exciting apps are in active development" %}</p>
                 </div>
                 
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-4">
-                    <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quiz" style="filter: grayscale(50%);">
-                        </div>
-                        <h3 class="feature-title">{% trans "Quiz" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Adaptive quiz system to test your knowledge and identify weak points." %}
-                        </p>
-                        <div class="badge bg-warning position-absolute top-0 end-0 m-2">
-                            <i class="bi bi-clock me-1"></i>{% trans "Soon" %}
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-5">
-                    <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/community.png' %}" alt="Community" style="filter: grayscale(50%);">
-                        </div>
-                        <h3 class="feature-title">{% trans "Community" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Connect with other learners, share progress and discover content created by the community." %}
-                        </p>
-                        <div class="badge bg-warning position-absolute top-0 end-0 m-2">
-                            <i class="bi bi-clock me-1"></i>{% trans "Soon" %}
+                <div class="apps-grid coming-soon-grid">
+                    <div class="app-card-wrapper animate-on-scroll delay-4">
+                        <div class="app-card coming-soon">
+                            <div class="app-icon-container">
+                                <img src="{% static 'img/app_icon/langue.png' %}" alt="Courses" class="app-icon">
+                            </div>
+                            <h3 class="app-title">{% trans "Courses" %}</h3>
+                            <p class="app-description">
+                                {% trans "Structured courses with progressive lessons, interactive exercises and personalized assessments." %}
+                            </p>
+                            <div class="app-badge coming-soon">
+                                <i class="bi bi-clock"></i>{% trans "Soon" %}
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-6">
-                    <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/Chat.png' %}" alt="Chat" style="filter: grayscale(50%);">
-                        </div>
-                        <h3 class="feature-title">{% trans "Chat" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Real-time collaborative chat for study groups and language exchange with other learners." %}
-                        </p>
-                        <div class="badge bg-warning position-absolute top-0 end-0 m-2">
-                            <i class="bi bi-clock me-1"></i>{% trans "Soon" %}
+                    
+                    <div class="app-card-wrapper animate-on-scroll delay-5">
+                        <div class="app-card coming-soon">
+                            <div class="app-icon-container">
+                                <img src="{% static 'img/app_icon/quizz.png' %}" alt="Quiz" class="app-icon">
+                            </div>
+                            <h3 class="app-title">{% trans "Quiz" %}</h3>
+                            <p class="app-description">
+                                {% trans "Adaptive quiz system to test your knowledge and identify weak points." %}
+                            </p>
+                            <div class="app-badge coming-soon">
+                                <i class="bi bi-clock"></i>{% trans "Soon" %}
+                            </div>
                         </div>
                     </div>
-                </div>
+                    
+                    <div class="app-card-wrapper animate-on-scroll delay-6">
+                        <div class="app-card coming-soon">
+                            <div class="app-icon-container">
+                                <img src="{% static 'img/app_icon/community.png' %}" alt="Community" class="app-icon">
+                            </div>
+                            <h3 class="app-title">{% trans "Community" %}</h3>
+                            <p class="app-description">
+                                {% trans "Connect with other learners, share progress and discover content created by the community." %}
+                            </p>
+                            <div class="app-badge coming-soon">
+                                <i class="bi bi-clock"></i>{% trans "Soon" %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="app-card-wrapper animate-on-scroll delay-7">
+                        <div class="app-card coming-soon">
+                            <div class="app-icon-container">
+                                <img src="{% static 'img/app_icon/Chat.png' %}" alt="Chat" class="app-icon">
+                            </div>
+                            <h3 class="app-title">{% trans "Chat" %}</h3>
+                            <p class="app-description">
+                                {% trans "Real-time collaborative chat for study groups and language exchange with other learners." %}
+                            </p>
+                            <div class="app-badge coming-soon">
+                                <i class="bi bi-clock"></i>{% trans "Soon" %}
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-7">
-                    <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents" style="filter: grayscale(50%);">
-                        </div>
-                        <h3 class="feature-title">{% trans "Documents" %}</h3>
-                        <p class="feature-description">
-                            {% trans "Real-time collaborative documents with rich text editing, version control, and sharing capabilities for educational content." %}
-                        </p>
-                        <div class="badge bg-warning position-absolute top-0 end-0 m-2">
-                            <i class="bi bi-clock me-1"></i>{% trans "Soon" %}
+                    <div class="app-card-wrapper animate-on-scroll delay-8">
+                        <div class="app-card coming-soon">
+                            <div class="app-icon-container">
+                                <img src="{% static 'img/app_icon/documents.png' %}" alt="Documents" class="app-icon">
+                            </div>
+                            <h3 class="app-title">{% trans "Documents" %}</h3>
+                            <p class="app-description">
+                                {% trans "Real-time collaborative documents with rich text editing, version control, and sharing capabilities for educational content." %}
+                            </p>
+                            <div class="app-badge coming-soon">
+                                <i class="bi bi-clock"></i>{% trans "Soon" %}
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6 animate-on-scroll delay-8">
-                    <div class="feature-card coming-soon" style="opacity: 0.7; position: relative;">
-                        <div class="feature-icon">
-                            <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" style="filter: grayscale(50%);">
-                        </div>
-                        <h3 class="feature-title">{% trans "Language AI" %}</h3>
-                        <p class="feature-description">
-                            {% trans "AI assistant for natural conversations and intelligent real-time corrections." %}
-                        </p>
-                        <div class="badge bg-warning position-absolute top-0 end-0 m-2">
-                            <i class="bi bi-clock me-1"></i>{% trans "Soon" %}
+                    
+                    <div class="app-card-wrapper animate-on-scroll delay-9">
+                        <div class="app-card coming-soon">
+                            <div class="app-icon-container">
+                                <img src="{% static 'img/app_icon/language_ai.png' %}" alt="Language AI" class="app-icon">
+                            </div>
+                            <h3 class="app-title">{% trans "Language AI" %}</h3>
+                            <p class="app-description">
+                                {% trans "AI assistant for natural conversations and intelligent real-time corrections." %}
+                            </p>
+                            <div class="app-badge coming-soon">
+                                <i class="bi bi-clock"></i>{% trans "Soon" %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -401,90 +490,79 @@
 
 
 
-    <!-- Contribute Section -->
-    <section class="contribute-section py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+    <section class="landing-contribute">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 animate-on-scroll">
+            <div class="contribute-content-grid">
+                <div class="contribute-text animate-on-scroll">
                     <div class="contribute-content">
-                        <h2 class="display-5 fw-bold mb-4" style="color: var(--gray-900);">
+                        <h2 class="section-heading">
                             {% trans "Join the Open Source Revolution" %}
                         </h2>
-                        <p class="lead mb-4" style="color: var(--gray-600);">
+                        <p class="section-description">
                             {% trans "Open Linguify is built by the community, for the community. Help us create the future of education by contributing to our open source project." %}
                         </p>
                         
-                        <div class="contribute-benefits mb-4">
-                            <div class="benefit-item d-flex align-items-center mb-3">
-                                <div class="benefit-icon me-3" style="background: rgba(99, 102, 241, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-code-slash" style="color: var(--primary-color);"></i>
+                        <div class="contribute-benefits">
+                            <div class="benefit-item">
+                                <div class="benefit-icon primary">
+                                    <i class="bi bi-code-slash"></i>
                                 </div>
-                                <span style="color: var(--gray-700);">{% trans "Contribute code and new features" %}</span>
+                                <span class="benefit-text">{% trans "Contribute code and new features" %}</span>
                             </div>
-                            <div class="benefit-item d-flex align-items-center mb-3">
-                                <div class="benefit-icon me-3" style="background: rgba(139, 92, 246, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-bug" style="color: var(--secondary-color);"></i>
+                            <div class="benefit-item">
+                                <div class="benefit-icon secondary">
+                                    <i class="bi bi-bug"></i>
                                 </div>
-                                <span style="color: var(--gray-700);">{% trans "Report bugs and suggest improvements" %}</span>
+                                <span class="benefit-text">{% trans "Report bugs and suggest improvements" %}</span>
                             </div>
-                            <div class="benefit-item d-flex align-items-center mb-3">
-                                <div class="benefit-icon me-3" style="background: rgba(16, 185, 129, 0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-translate" style="color: var(--success-color);"></i>
+                            <div class="benefit-item">
+                                <div class="benefit-icon accent">
+                                    <i class="bi bi-translate"></i>
                                 </div>
-                                <span style="color: var(--gray-700);">{% trans "Help with translations and documentation" %}</span>
+                                <span class="benefit-text">{% trans "Help with translations and documentation" %}</span>
                             </div>
                         </div>
                         
                         <div class="contribute-actions">
-                            <a href="{% url 'docs:home' %}" class="btn btn-primary btn-lg me-3 mb-2" style="border-radius: 25px; padding: 12px 24px;">
-                                <i class="bi bi-code-slash me-2"></i>{% trans "Start Contributing" %}
+                            <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-contribute primary">
+                                <i class="bi bi-code-slash"></i>{% trans "Start Contributing" %}
                             </a>
-                            <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn btn-outline-primary btn-lg me-3 mb-2" style="border-radius: 25px; padding: 12px 24px;">
-                                <i class="bi bi-github me-2"></i>{% trans "View on GitHub" %}
+                            <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-contribute secondary">
+                                <i class="bi bi-github"></i>{% trans "View on GitHub" %}
                             </a>
-                            <a href="https://github.com/openlinguify/linguify/issues" target="_blank" class="btn btn-outline-primary btn-lg mb-2" style="border-radius: 25px; padding: 12px 24px;">
-                                <i class="bi bi-exclamation-circle me-2"></i>{% trans "Report Issues" %}
+                            <a href="https://github.com/openlinguify/linguify/issues" target="_blank" class="btn-contribute secondary">
+                                <i class="bi bi-exclamation-circle"></i>{% trans "Report Issues" %}
                             </a>
                         </div>
                     </div>
                 </div>
                 
-                <div class="col-lg-6 animate-on-scroll delay-1">
-                    <div class="contribute-visual">
-                        <div class="github-stats-card" style="background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);">
-                            <div class="text-center mb-4">
-                                <i class="bi bi-github" style="font-size: 3rem; color: var(--gray-900);"></i>
-                                <h3 class="mt-3 mb-1" style="color: var(--gray-900);">{% trans "Open Source Stats" %}</h3>
-                                <p class="text-muted">{% trans "Growing community of contributors" %}</p>
+                <div class="contribute-visual animate-on-scroll delay-1">
+                    <div class="github-stats-card">
+                        <div class="stats-header">
+                            <i class="bi bi-github stats-icon"></i>
+                            <h3 class="stats-title">{% trans "Open Source Stats" %}</h3>
+                            <p class="stats-subtitle">{% trans "Growing community of contributors" %}</p>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number primary">5+</div>
+                                <div class="stat-label">{% trans "Contributors" %}</div>
                             </div>
-                            
-                            <div class="row text-center">
-                                <div class="col-4">
-                                    <div class="stat-item">
-                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">5+</div>
-                                        <div class="stat-label text-muted">{% trans "Contributors" %}</div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="stat-item">
-                                        <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);">50+</div>
-                                        <div class="stat-label text-muted">{% trans "Commits" %}</div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="stat-item">
-                                        <div class="stat-number" style="font-size: 1.5rem; font-weight: 700; color: var(--success-color);">LGPL-3</div>
-                                        <div class="stat-label text-muted">{% trans "License" %}</div>
-                                    </div>
-                                </div>
+                            <div class="stat-item">
+                                <div class="stat-number secondary">50+</div>
+                                <div class="stat-label">{% trans "Commits" %}</div>
                             </div>
-                            
-                            <div class="mt-4 pt-3" style="border-top: 1px solid var(--gray-100);">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="text-muted">{% trans "Latest Release" %}</span>
-                                    <span class="badge bg-primary">v1.0.0</span>
-                                </div>
+                            <div class="stat-item">
+                                <div class="stat-number accent">LGPL-3</div>
+                                <div class="stat-label">{% trans "License" %}</div>
                             </div>
+                        </div>
+                        
+                        <div class="release-info">
+                            <span class="release-label">{% trans "Latest Release" %}</span>
+                            <span class="release-badge">v1.0.0</span>
                         </div>
                     </div>
                 </div>
@@ -492,100 +570,93 @@
         </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="faq-section py-5" style="background: white;">
+    <section class="landing-faq">
         <div class="container">
-            <div class="text-center mb-5 animate-on-scroll">
-                <h2 class="display-5 fw-bold mb-4">{% trans "Frequently Asked Questions" %}</h2>
-                <p class="lead text-muted">
+            <div class="section-text animate-on-scroll">
+                <h2 class="section-heading">{% trans "Frequently Asked Questions" %}</h2>
+                <p class="section-description">
                     {% trans "Everything you need to know about OpenLinguify and our educational platform." %}
                 </p>
             </div>
             
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="accordion" id="faqAccordion">
-                        <div class="accordion-item mb-3 animate-on-scroll delay-1" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" style="background: var(--gray-50); border: none; padding: 1.5rem; font-weight: 600;">
-                                    {% trans "What makes OpenLinguify different from other language learning platforms?" %}
-                                </button>
-                            </h2>
-                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body" style="padding: 1.5rem; color: var(--gray-600);">
-                                    {% trans "OpenLinguify is completely open source, meaning our code is transparent and constantly improved by the community. We offer a complete suite of educational apps including spaced repetition, AI conversations, collaborative tools, and more - all designed to work together seamlessly." %}
+            <div class="faq-container">
+                <div class="faq-accordion" id="faqAccordion">
+                    <div class="faq-item animate-on-scroll delay-1">
+                        <h3 class="faq-header">
+                            <button class="faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                {% trans "What makes OpenLinguify different from other language learning platforms?" %}
+                            </button>
+                        </h3>
+                        <div id="faq1" class="faq-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="faq-body">
+                                {% trans "OpenLinguify is completely open source, meaning our code is transparent and constantly improved by the community. We offer a complete suite of educational apps including spaced repetition, AI conversations, collaborative tools, and more - all designed to work together seamlessly." %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item animate-on-scroll delay-2">
+                        <h3 class="faq-header">
+                            <button class="faq-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                {% trans "Is OpenLinguify really free to use?" %}
+                            </button>
+                        </h3>
+                        <div id="faq2" class="faq-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="faq-body">
+                                {% trans "Yes! OpenLinguify is currently completely free to use. All educational apps are available at no cost. As an open source project, you can also self-host the entire platform. While we're committed to keeping our core features free, our business model may evolve in the future to ensure the sustainability and continued development of the platform." %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item animate-on-scroll delay-4">
+                        <h3 class="faq-header">
+                            <button class="faq-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                {% trans "Can I contribute to the OpenLinguify project?" %}
+                            </button>
+                        </h3>
+                        <div id="faq4" class="faq-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="faq-body">
+                                {% trans "Absolutely! As an open source project, we welcome contributions from developers, translators, educators, and users. You can contribute code, report bugs, suggest features, help with translations, or create educational content." %}
+                                
+                                <div class="faq-actions">
+                                    <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-faq primary">
+                                        <i class="bi bi-code-slash"></i>
+                                        {% trans "Open Source Guide" %}
+                                    </a>
+                                    <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-faq secondary">
+                                        <i class="bi bi-github"></i>
+                                        {% trans "GitHub Repository" %}
+                                    </a>
+                                    <a href="https://github.com/openlinguify/linguify/issues" target="_blank" class="btn-faq secondary">
+                                        <i class="bi bi-bug"></i>
+                                        {% trans "Report Issues" %}
+                                    </a>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="accordion-item mb-3 animate-on-scroll delay-2" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" style="background: var(--gray-50); border: none; padding: 1.5rem; font-weight: 600;">
-                                    {% trans "Is OpenLinguify really free to use?" %}
-                                </button>
-                            </h2>
-                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body" style="padding: 1.5rem; color: var(--gray-600);">
-                                    {% trans "Yes! OpenLinguify is currently completely free to use. All educational apps are available at no cost. As an open source project, you can also self-host the entire platform. While we're committed to keeping our core features free, our business model may evolve in the future to ensure the sustainability and continued development of the platform." %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="accordion-item mb-3 animate-on-scroll delay-4" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" style="background: var(--gray-50); border: none; padding: 1.5rem; font-weight: 600;">
-                                    {% trans "Can I contribute to the OpenLinguify project?" %}
-                                </button>
-                            </h2>
-                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body" style="padding: 1.5rem; color: var(--gray-600);">
-                                    {% trans "Absolutely! As an open source project, we welcome contributions from developers, translators, educators, and users. You can contribute code, report bugs, suggest features, help with translations, or create educational content." %}
-                                    
-                                    <div class="mt-3 d-flex flex-wrap gap-2">
-                                        <a href="{% url 'docs:home' %}" class="btn btn-outline-primary btn-sm">
-                                            <i class="bi bi-code-slash me-1"></i>
-                                            {% trans "Open Source Guide" %}
-                                        </a>
-                                        <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn btn-outline-secondary btn-sm">
-                                            <i class="bi bi-github me-1"></i>
-                                            {% trans "GitHub Repository" %}
-                                        </a>
-                                        <a href="https://github.com/openlinguify/linguify/issues" target="_blank" class="btn btn-outline-info btn-sm">
-                                            <i class="bi bi-bug me-1"></i>
-                                            {% trans "Report Issues" %}
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="cta-content">
-            <div class="container text-center">
-                <h2 class="display-5 fw-bold mb-4 animate-on-scroll">
+    <section class="landing-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-heading animate-on-scroll">
                     {% trans "Ready to revolutionize your learning?" %}
                 </h2>
-                <p class="lead mb-5 animate-on-scroll delay-1" style="color: #e0e7ff;">
+                <p class="cta-subtitle animate-on-scroll delay-1">
                     {% trans "Join our community and access a complete suite of open source educational apps." %}
                 </p>
-                <p class="small mb-4 animate-on-scroll delay-1" style="color: rgba(224, 231, 255, 0.8); font-size: 0.9rem;">
+                <p class="cta-notice animate-on-scroll delay-1">
                     {% trans "✨ Currently 100% free • Open Source • Future business model under development for platform sustainability" %}
                 </p>
-                <div class="animate-on-scroll delay-2">
-                    <!-- Dans le portal, on redirige vers le choix de produits -->
-                    <a href="#user-products" class="btn-hero primary pulse">
+                <div class="cta-actions animate-on-scroll delay-2">
+                    <a href="#user-products" class="btn-cta primary pulse">
                         <i class="fas fa-rocket"></i>
                         {% trans "Start Your Learning Journey" %}
                     </a>
-                    <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-hero secondary ms-3">
+                    <a href="https://github.com/openlinguify/linguify" target="_blank" class="btn-cta secondary">
                         <i class="fab fa-github"></i>
                         {% trans "Open Source" %}
                     </a>
@@ -596,16 +667,15 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- PWA Install Prompt -->
 <div id="pwaInstallPrompt" class="pwa-install-prompt">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
+    <div class="pwa-content">
+        <div class="pwa-text">
             <strong>📱 Installer Open Linguify</strong>
-            <div class="small">Accédez rapidement à OpenLinguify depuis votre écran d'accueil</div>
+            <div class="pwa-description">Accédez rapidement à OpenLinguify depuis votre écran d'accueil</div>
         </div>
-        <div>
-            <button class="btn btn-light btn-sm me-2" onclick="installPWA()">Installer</button>
-            <button class="btn btn-outline-light btn-sm" onclick="dismissPWA()">×</button>
+        <div class="pwa-actions">
+            <button class="btn-pwa primary" onclick="installPWA()">Installer</button>
+            <button class="btn-pwa secondary" onclick="dismissPWA()">×</button>
         </div>
     </div>
 </div>
@@ -614,10 +684,12 @@
         // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
+            if (navbar) {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
             }
         });
 
@@ -625,12 +697,15 @@
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
                 }
             });
         });
@@ -651,7 +726,7 @@
             });
         });
 
-        // Animation on scroll
+        // Lazy load animations on scroll
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -661,38 +736,48 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
-        // Observe all elements with animate-on-scroll class
-        document.querySelectorAll('.animate-on-scroll').forEach(el => {
-            observer.observe(el);
+        // Lazy observe all elements with animate-on-scroll class
+        requestIdleCallback(() => {
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
         });
 
-        // Animated counters for stats
+        // Lazy load animated counters for stats
         function animateCounters() {
             const counters = document.querySelectorAll('.stat-number[data-count]');
             
-            counters.forEach(counter => {
-                const target = parseInt(counter.getAttribute('data-count'));
-                const duration = 2000; // 2 seconds
-                const step = target / (duration / 16); // 60fps
-                let current = 0;
-                
-                const timer = setInterval(() => {
-                    current += step;
-                    if (current >= target) {
-                        counter.textContent = target;
-                        clearInterval(timer);
-                    } else {
-                        counter.textContent = Math.floor(current);
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counter = entry.target;
+                        const target = parseInt(counter.getAttribute('data-count'));
+                        const duration = 2000;
+                        const step = target / (duration / 16);
+                        let current = 0;
+                        
+                        const timer = setInterval(() => {
+                            current += step;
+                            if (current >= target) {
+                                counter.textContent = target;
+                                clearInterval(timer);
+                            } else {
+                                counter.textContent = Math.floor(current);
+                            }
+                        }, 16);
+                        
+                        counter.classList.add('counting');
+                        counterObserver.unobserve(counter);
                     }
-                }, 16);
-                
-                // Add counting animation class
-                counter.classList.add('counting');
-            });
+                });
+            }, { threshold: 0.5 });
+            
+            counters.forEach(counter => counterObserver.observe(counter));
         }
 
         // Stats section observer
@@ -767,7 +852,10 @@
             // Afficher notre prompt personnalisé après 5 secondes si pas installé
             if (!pwaInstalled) {
                 setTimeout(() => {
-                    document.getElementById('pwaInstallPrompt').classList.add('show');
+                    const prompt = document.getElementById('pwaInstallPrompt');
+                    if (prompt) {
+                        prompt.classList.add('show');
+                    }
                 }, 5000);
             }
         });
@@ -787,7 +875,10 @@
         }
 
         function dismissPWA() {
-            document.getElementById('pwaInstallPrompt').classList.remove('show');
+            const prompt = document.getElementById('pwaInstallPrompt');
+            if (prompt) {
+                prompt.classList.remove('show');
+            }
             localStorage.setItem('pwaDismissed', 'true');
         }
 
@@ -849,16 +940,20 @@
 
         // Initialize everything
         document.addEventListener('DOMContentLoaded', function() {
-            preloadCriticalResources();
-            
-            // Add fade-in to body
+            // Critical path optimizations
             document.body.classList.add('fade-in');
             
-            // Check if PWA was dismissed
-            if (localStorage.getItem('pwaDismissed') === 'true') {
-                const prompt = document.getElementById('pwaInstallPrompt');
-                if (prompt) prompt.style.display = 'none';
-            }
+            // Defer non-critical resources
+            requestIdleCallback(() => {
+                preloadCriticalResources();
+                animateCounters();
+                
+                // Check if PWA was dismissed
+                if (localStorage.getItem('pwaDismissed') === 'true') {
+                    const prompt = document.getElementById('pwaInstallPrompt');
+                    if (prompt) prompt.style.display = 'none';
+                }
+            });
         });
 
         // Console welcome message
@@ -867,43 +962,4 @@
         console.log('%c📱 Support PWA activé', 'color: #8b5cf6; font-size: 12px;');
 </script>
 
-<style>
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-20px);
-    }
-}
-
-.teachers-section .floating-shapes .shape {
-    animation: float 6s ease-in-out infinite;
-}
-
-.teachers-section .floating-shapes .shape:nth-child(2) {
-    animation-delay: -2s;
-}
-
-.teachers-section .floating-shapes .shape:nth-child(3) {
-    animation-delay: -4s;
-}
-
-.benefit-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.benefit-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
-}
-
-.teacher-stats-card {
-    transition: transform 0.3s ease;
-}
-
-.teacher-stats-card:hover {
-    transform: scale(1.05);
-}
-</style>
 {% endblock %}

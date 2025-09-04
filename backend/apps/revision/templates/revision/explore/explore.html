@@ -1,0 +1,153 @@
+{% extends "revision/base_new.html" %}
+{% load static %}
+
+{% block page_title %}Explorer{% endblock %}
+
+{% block header_content %}
+{% include 'revision/components/navbar.html' %}
+<!-- HTMX CDN -->
+<script src="https://unpkg.com/htmx.org@1.9.8"></script>
+{% endblock %}
+
+{% block content %}
+<div class="flex" style="height: 100%; min-height: 100%;">
+    <!-- Sidebar pour les filtres avancés - Interface améliorée avec layout Liste de cartes -->
+    <div id="exploreSidebar" class="sidebar-linguify show">
+        {% include 'revision/explore/partials/sidebar_filters.html' %}
+    </div>
+
+    <!-- Zone principale avec la même structure que Liste de cartes -->
+    <div class="flex-1 revision-study main-content-area" style="overflow-y: auto; height: 100%;">
+        <div id="exploreContent">
+            {% include 'revision/explore/partials/explore_welcome.html' %}
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay -->
+<div id="sidebarOverlay" class="sidebar-overlay" style="display: none;"></div>
+
+<!-- Modal pour les détails de deck -->
+<div class="modal fade" id="deckDetailsModal" tabindex="-1" aria-labelledby="deckDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deckDetailsModalLabel">Détails du deck</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Contenu chargé par HTMX -->
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- HTMX Extensions -->
+<script>
+    // Configuration HTMX
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gestion des indicateurs de chargement
+        document.body.addEventListener('htmx:beforeRequest', function(e) {
+            const indicator = document.getElementById(e.detail.requestConfig.headers['HX-Indicator']);
+            if (indicator) indicator.style.display = 'block';
+        });
+        
+        document.body.addEventListener('htmx:afterRequest', function(e) {
+            const indicator = document.getElementById(e.detail.requestConfig.headers['HX-Indicator']);
+            if (indicator) indicator.style.display = 'none';
+        });
+        
+        // Gestion des toasts/notifications
+        document.body.addEventListener('htmx:responseError', function(e) {
+            console.error('HTMX Error:', e.detail);
+            // Affichage d'un toast d'erreur
+            showToast('error', 'Une erreur est survenue lors de la requête');
+        });
+        
+        // Gestion des événements personnalisés
+        document.body.addEventListener('deckImported', function(e) {
+            showToast('success', `Deck "${e.detail.deck_name}" importé avec succès!`);
+        });
+        
+        document.body.addEventListener('showToast', function(e) {
+            showToast(e.detail.type, e.detail.message);
+        });
+    });
+    
+    // Fonction utilitaire pour les toasts
+    function showToast(type, message) {
+        // Implementation dépend de votre système de toast
+        console.log(`[${type.toUpperCase()}] ${message}`);
+        
+        // Exemple avec Bootstrap Toast si disponible
+        if (typeof bootstrap !== 'undefined') {
+            const toastHtml = `
+                <div class="toast align-items-center text-bg-${type === 'error' ? 'danger' : 'success'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            const toastElement = toastContainer.lastElementChild;
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            
+            // Nettoyage après disparition
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastElement.remove();
+            });
+        }
+    }
+    
+    // Gestion du sidebar toggle
+    document.getElementById('collapseSidebar')?.addEventListener('click', function() {
+        const sidebar = document.getElementById('exploreSidebar');
+        sidebar.classList.toggle('collapsed');
+    });
+    
+    // Gestion des filtres actifs dans la sidebar
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('.filter-chip')) {
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            e.target.classList.add('active');
+        }
+        
+        if (e.target.matches('.language-option')) {
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            e.target.classList.add('active');
+        }
+        
+        if (e.target.matches('.level-btn')) {
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            e.target.classList.add('active');
+        }
+    });
+</script>
+{% endblock %}

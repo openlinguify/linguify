@@ -1,0 +1,179 @@
+<!-- Edit Deck Form -->
+<div id="editDeckForm" class="display-none">
+    <div class="study-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-pencil text-linguify-primary me-2"></i>
+                <h5 class="mb-0 text-linguify-primary">Modifier le deck</h5>
+            </div>
+            <button id="cancelEditDeck" class="btn-linguify-secondary btn-sm">
+                <i class="bi bi-x-lg"></i>
+                Annuler
+            </button>
+        </div>
+    </div>
+    
+    <div class="study-content">
+        <!-- Main content area -->
+        <div style="padding: 0.75rem;">
+            <!-- Nom du deck -->
+            <div class="mb-4">
+                <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
+                    <i class="bi bi-tag me-2"></i>
+                    Nom du deck
+                </label>
+                <div class="position-relative">
+                    <input type="text" id="editDeckName" 
+                           class="form-control rounded" 
+                           placeholder="Ex: Vocabulaire anglais niveau B2" 
+                           maxlength="100"
+                           style="padding-right: 3rem;">
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-2" style="pointer-events: none; z-index: 10;">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-pencil-square text-muted me-1" style="font-size: 1rem;"></i>
+                            <div id="nameAutoSaveIndicator" class="d-none">
+                                <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center mt-1">
+                    <i class="bi bi-info-circle text-linguify-accent me-1" style="font-size: 0.75rem;"></i>
+                    <span class="text-muted" style="font-size: 0.75rem;">Le nom doit être unique parmi vos decks</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
+                    <i class="bi bi-card-text me-2"></i>
+                    Description
+                </label>
+                <div class="position-relative">
+                    <textarea id="editDeckDescription" 
+                              class="form-control rounded" 
+                              rows="4"
+                              placeholder="Décrivez le contenu de votre deck..." 
+                              maxlength="500"
+                              style="padding-right: 3rem; resize: vertical;"></textarea>
+                    <div class="position-absolute top-0 end-0 mt-2 me-2" style="pointer-events: none; z-index: 10;">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-chat-left-text text-muted me-1" style="font-size: 1rem;"></i>
+                            <div id="descriptionAutoSaveIndicator" class="d-none">
+                                <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="mb-4">
+                <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
+                    <i class="bi bi-tags me-2"></i>
+                    Tags
+                    <span class="badge bg-light text-muted ms-2" style="font-size: 0.7rem;">Cliquez pour taper</span>
+                </label>
+                
+                <!-- Zone d'affichage des tags avec input intégré -->
+                <div class="tags-container position-relative">
+                    <div id="tagsDisplayArea" 
+                         class="tags-display-area bg-white border border-primary border-opacity-25 rounded-3 p-3 d-flex flex-wrap gap-2 align-items-center" 
+                         style="min-height: 60px; cursor: text;"
+                         onclick="document.getElementById('editDeckTagsInput').focus()">
+                        
+                        <!-- Les tags seront ajoutés ici par JavaScript -->
+                        <div class="tags-display d-flex flex-wrap gap-2 align-items-center" id="editDeckTagsDisplay"></div>
+                        
+                        <!-- Input inline pour saisie -->
+                        <input type="text" 
+                               id="editDeckTagsInput" 
+                               class="tags-inline-input flex-grow-1" 
+                               placeholder="Tapez pour ajouter des tags..."
+                               style="border: none; outline: none; background: transparent; min-width: 200px; padding: 4px 0;">
+                        
+                        <!-- Message quand aucun tag -->
+                        <div id="noTagsMessage" class="text-muted d-flex align-items-center w-100" style="font-size: 0.85rem; display: none;">
+                            <i class="bi bi-tag me-2 text-linguify-accent" style="opacity: 0.6;"></i>
+                            Cliquez ici pour commencer à ajouter des tags...
+                        </div>
+                    </div>
+                    
+                    <!-- Suggestions dropdown -->
+                    <div class="tags-suggestions position-absolute w-100 mt-1 bg-white border border-light rounded-3 shadow-sm d-none" 
+                         style="z-index: 1050; max-height: 200px; overflow-y: auto;">
+                        <!-- Suggestions seront ajoutées par JavaScript -->
+                    </div>
+                    
+                    <!-- Indicateurs -->
+                    <div class="mt-2">
+                        <!-- Aide principale -->
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <small class="text-muted d-flex align-items-center">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Max 10 tags, appuyez sur Entrée pour ajouter
+                            </small>
+                            <div id="tagsAutoSaveIndicator" class="d-none">
+                                <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
+                                <small class="text-success ms-1">Sauvegardé</small>
+                            </div>
+                        </div>
+                        <!-- Compteur -->
+                        <div class="d-flex align-items-center">
+                            <small class="text-muted d-flex align-items-center">
+                                <i class="bi bi-tag me-1" style="color: #6c757d; font-size: 0.7rem;"></i>
+                                <span id="tagsCount">0/10 tags</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visibilité -->
+            <div class="mb-6">
+                <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
+                    <i class="bi bi-eye me-2"></i>
+                    Visibilité
+                </label>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card-linguify p-3 border border-primary border-opacity-25 position-relative" style="cursor: pointer;" onclick="document.getElementById('editDeckVisibility').value='private';">
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center justify-content-center bg-secondary rounded me-3" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-lock text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="small fw-semibold text-linguify-primary mb-1">Privé</p>
+                                    <p class="text-muted mb-0" style="font-size: 0.75rem;">Visible par vous seul</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-linguify p-3 border border-primary border-opacity-25 position-relative" style="cursor: pointer;" onclick="document.getElementById('editDeckVisibility').value='public';">
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center justify-content-center bg-linguify-accent rounded me-3" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-globe text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="small fw-semibold text-linguify-primary mb-1">Public</p>
+                                    <p class="text-muted mb-0" style="font-size: 0.75rem;">Visible par tous</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <select id="editDeckVisibility" class="form-select d-none">
+                    <option value="private">🔒 Privé - Visible par vous seul</option>
+                    <option value="public">🌍 Public - Visible par tous les utilisateurs</option>
+                </select>
+                <div class="d-flex align-items-center justify-content-between mt-1">
+                    <div id="visibilityAutoSaveIndicator" class="d-none">
+                        <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

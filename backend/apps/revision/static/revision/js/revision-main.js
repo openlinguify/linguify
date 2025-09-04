@@ -4,6 +4,7 @@ let appState = {
     decks: [],
     selectedDeck: null,
     isLoading: false,
+    isRefreshing: false, // New state for refresh operations
     currentPage: 1,
     hasMore: true,
     stats: {
@@ -28,11 +29,25 @@ const revisionAPI = {
             ...filters
         });
         
-        return await window.apiService.request(`/api/v1/revision/decks/?${params}`);
+        const url = `/api/v1/revision/decks/?${params}`;
+        console.log('🌐 API request URL:', url);
+        console.log('🌐 Filters being sent:', filters);
+        
+        return await window.apiService.request(url);
     },
     
     async getDeck(id) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`);
+        console.log(`🔍 Requesting deck with ID: ${id}`);
+        const url = `/api/v1/revision/decks/${id}/`;
+        console.log(`🔍 Full URL: ${url}`);
+        try {
+            const result = await window.apiService.request(url);
+            console.log(`✅ Deck loaded successfully:`, result);
+            return result;
+        } catch (error) {
+            console.error(`❌ Failed to load deck ${id}:`, error);
+            throw error;
+        }
     },
     
     async createDeck(data) {
@@ -118,10 +133,33 @@ const revisionAPI = {
         });
     },
     
-    async getCards(deckId) {
+    async getCards(deckId, options = {}) {
         // Add timestamp to prevent caching issues
         const timestamp = Date.now();
-        return await window.apiService.request(`/api/v1/revision/flashcards/?deck=${deckId}&_t=${timestamp}`);
+        
+        // Build query parameters
+        const params = new URLSearchParams({
+            _t: timestamp
+        });
+        
+        // Add study mode if specified
+        if (options.studyMode === 'smart') {
+            params.append('study_mode', 'smart');
+            
+            // Add other spaced repetition parameters
+            if (options.maxCards) params.append('max_cards', options.maxCards);
+            if (options.newCards) params.append('new_cards', options.newCards);
+            if (options.aheadDays) params.append('ahead_days', options.aheadDays);
+            if (options.prioritizeOverdue !== undefined) params.append('prioritize_overdue', options.prioritizeOverdue);
+            if (options.mixedOrder !== undefined) params.append('mixed_order', options.mixedOrder);
+            
+            // Use the deck cards endpoint for smart mode
+            return await window.apiService.request(`/api/v1/revision/decks/${deckId}/cards/?${params}`);
+        } else {
+            // Normal mode - use flashcards endpoint
+            params.append('deck', deckId);
+            return await window.apiService.request(`/api/v1/revision/flashcards/?${params}`);
+        }
     },
     
     async updateCard(cardId, cardData) {
@@ -190,6 +228,44 @@ function calculateProgress(deck) {
     return Math.round((deck.learned_count || 0) / deck.cards_count * 100);
 }
 
+// Update the share/privacy buttons based on the selected deck's visibility
+function updateShareButtonText() {
+    const shareButton = document.getElementById('shareDeck');
+    const makePrivateButton = document.getElementById('makePrivateDeck');
+    if (!shareButton || !appState.selectedDeck) return;
+    
+    const shareIcon = shareButton.querySelector('i');
+    const shareTextNode = shareButton.childNodes[shareButton.childNodes.length - 1];
+    
+    if (appState.selectedDeck.is_public) {
+        // Deck is already public - show share option and make private option
+        if (shareIcon) {
+            shareIcon.className = 'bi bi-share me-2';
+        }
+        if (shareTextNode) {
+            shareTextNode.textContent = 'Partager';
+        }
+        
+        // Show "Rendre privé" option
+        if (makePrivateButton) {
+            makePrivateButton.style.display = 'block';
+        }
+    } else {
+        // Deck is private - show make public option and hide make private option
+        if (shareIcon) {
+            shareIcon.className = 'bi bi-globe2 me-2';
+        }
+        if (shareTextNode) {
+            shareTextNode.textContent = 'Rendre public';
+        }
+        
+        // Hide "Rendre privé" option
+        if (makePrivateButton) {
+            makePrivateButton.style.display = 'none';
+        }
+    }
+}
+
 // Core functions
 async function loadDecks(reset = true) {
     try {
@@ -222,10 +298,134 @@ async function loadDecks(reset = true) {
         
     } catch (error) {
         console.error('Error loading decks:', error);
-        window.notificationService.error('Erreur lors du chargement des decks');
+        
+        // Use enhanced error handling with retry
+        window.notificationService.handleApiError(
+            error, 
+            'Chargement des decks',
+            () => loadDecks(reset) // Retry with same parameters
+        );
     } finally {
         appState.isLoading = false;
     }
+}
+
+// Improved refresh function with visual feedback and error handling
+async function handleRefreshDecks() {
+    const refreshBtn = document.getElementById('refreshDecks') || document.getElementById('refreshStats');
+    const refreshIcon = refreshBtn?.querySelector('i');
+    
+    if (!refreshBtn || appState.isRefreshing) {
+        return; // Prevent multiple simultaneous refreshes
+    }
+    
+    try {
+        // Set refreshing state
+        appState.isRefreshing = true;
+        refreshBtn.disabled = true;
+        
+        // Add spinning animation to icon
+        if (refreshIcon) {
+            refreshIcon.style.animation = 'spin 1s linear infinite';
+        }
+        
+        // Show loading notification
+        console.log('🔄 Actualisation en cours...');
+        
+        // Reset filters if they might be causing issues
+        const isFiltered = appState.filters.search || appState.filters.status || 
+                          appState.filters.sort !== 'updated_desc' || 
+                          (appState.filters.tags && appState.filters.tags.length > 0);
+        
+        // Perform appropriate refresh based on current page
+        if (refreshBtn.id === 'refreshStats') {
+            // We're on the stats page - just reload the page for now
+            console.log('🔄 Actualisation des statistiques...');
+            window.location.reload();
+        } else {
+            // We're on a deck-related page
+            await Promise.all([
+                loadDecks(true), // Full reload of decks
+                // If we have a selected deck, refresh its data too
+                appState.selectedDeck ? refreshSelectedDeck() : Promise.resolve()
+            ]);
+        }
+        
+        // Success feedback (only for non-stats pages, stats page reloads)
+        if (refreshBtn.id !== 'refreshStats') {
+            window.notificationService.success(
+                isFiltered ? 
+                'Liste actualisée (filtres conservés)' : 
+                'Liste actualisée avec succès'
+            );
+        }
+        
+        console.log('✅ Actualisation terminée avec succès');
+        
+    } catch (error) {
+        console.error('❌ Erreur lors de l\'actualisation:', error);
+        
+        // Use the enhanced error handling with retry functionality
+        window.notificationService.handleApiError(
+            error, 
+            'Actualisation', 
+            () => handleRefreshDecks() // Retry function
+        );
+    } finally {
+        // Reset refreshing state
+        appState.isRefreshing = false;
+        refreshBtn.disabled = false;
+        
+        // Remove spinning animation
+        if (refreshIcon) {
+            refreshIcon.style.animation = '';
+        }
+    }
+}
+
+// Helper function to refresh the currently selected deck
+async function refreshSelectedDeck() {
+    if (!appState.selectedDeck) return;
+    
+    try {
+        console.log(`🔄 Actualisation du deck sélectionné: ${appState.selectedDeck.name}`);
+        const freshDeck = await revisionAPI.getDeck(appState.selectedDeck.id);
+        appState.selectedDeck = freshDeck;
+        
+        // Refresh the deck view if we're currently viewing it
+        const deckDetails = document.getElementById('deckDetails');
+        if (deckDetails && deckDetails.style.display !== 'none') {
+            // Update deck details display
+            updateDeckDetailsDisplay(freshDeck);
+            // Reload cards if cards are currently displayed
+            await loadDeckCards();
+        }
+        
+        console.log('✅ Deck sélectionné actualisé');
+    } catch (error) {
+        console.error('❌ Erreur lors de l\'actualisation du deck sélectionné:', error);
+        // Don't show error for this, as the main refresh might still succeed
+    }
+}
+
+// Helper function to update deck details display
+function updateDeckDetailsDisplay(deck) {
+    const elements = getElements();
+    if (!elements.deckDetails || elements.deckDetails.style.display === 'none') return;
+    
+    // Update basic deck info
+    if (elements.deckName) elements.deckName.textContent = deck.name || 'Sans nom';
+    if (elements.deckDescription) elements.deckDescription.textContent = deck.description || 'Aucune description';
+    
+    // Update progress
+    const progress = calculateProgress(deck);
+    if (elements.deckProgress) elements.deckProgress.textContent = `${deck.learned_count || 0}/${deck.cards_count || 0}`;
+    if (elements.deckProgressBar) elements.deckProgressBar.style.width = `${progress}%`;
+    
+    // Update cards count
+    updateCardsCount();
+    
+    console.log('✅ Affichage du deck mis à jour');
 }
 
 function updateStats() {
@@ -273,33 +473,31 @@ function renderDecksList() {
     decksList.innerHTML = filteredDecks.map(deck => {
         const progress = calculateProgress(deck);
         return `
-        <li class="deck-item ${appState.selectedDeck?.id === deck.id ? 'active' : ''}" 
+        <li class="deck-card ${appState.selectedDeck?.id === deck.id ? 'active' : ''}" 
             onclick="selectDeck(${deck.id})">
-            <div class="deck-header">
-                <div class="deck-name">${deck.name || 'Sans nom'}</div>
-                <div class="deck-stats">
-                    <span class="deck-badge">${deck.cards_count || 0}</span>
-                    ${deck.is_public ? '<i class="bi bi-globe2" title="Public"></i>' : ''}
-                    ${deck.is_archived ? '<i class="bi bi-archive" title="Archivé"></i>' : ''}
+            <div class="deck-card-header">
+                <span class="deck-card-count">${deck.cards_count || 0}</span>
+                <div class="deck-card-icons">
+                    ${deck.is_public ? '<i class="bi bi-globe2 text-linguify-accent" title="Public"></i>' : ''}
+                    ${deck.is_archived ? '<i class="bi bi-archive text-gray-400" title="Archivé"></i>' : ''}
                 </div>
+                <h4 class="deck-card-title">${deck.name || 'Sans nom'}</h4>
             </div>
-            <div class="deck-description">${deck.description || 'Aucune description'}</div>
-            <div class="deck-tags-container">
-                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ''}</div>
-                <button class="btn-add-tag" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="Ajouter des tags">
+            <div class="deck-card-description">${deck.description || 'Aucune description'}</div>
+            <div class="deck-card-tags">
+                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ((!deck.tags || deck.tags.length === 0) ? `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deck.id})" style="cursor: pointer; color: #2d5bba; font-size: 0.875rem;"></i> pour en ajouter</span>` : deck.tags.map(tag => `<span class="tag-linguify tag-linguify-blue">${tag}</span>`).join(''))}</div>
+                <button class="btn-link-linguify text-sm" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="Ajouter des tags">
                     <i class="bi bi-tag"></i>
                 </button>
             </div>
-            <div class="deck-meta">
-                <div class="deck-progress">
-                    <span>${deck.learned_count || 0}/${deck.cards_count || 0}</span>
-                    <div class="progress-bar-custom">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
-                    </div>
-                    <span>${progress}%</span>
+            <div class="deck-progress">
+                <div class="progress-text">${deck.learned_count || 0}/${deck.cards_count || 0}</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: ${progress}%"></div>
                 </div>
-                <span>${formatDate(deck.updated_at)}</span>
+                <div class="progress-text">${progress}%</div>
             </div>
+            <div class="deck-date">${formatDate(deck.updated_at)}</div>
         </li>
     `;
     }).join('');
@@ -331,11 +529,42 @@ function hideAllSections() {
     if (elements.spacedStudyMode) elements.spacedStudyMode.style.display = 'none';
 }
 
+// Function to manage contextual navbar actions
+function updateNavbarActions(showGeneralActions = true) {
+    const generalActions = document.getElementById('generalActions');
+    
+    if (generalActions) {
+        if (showGeneralActions) {
+            generalActions.style.display = 'flex';
+        } else {
+            generalActions.style.display = 'none';
+        }
+    }
+}
+
 // UI Management Functions
 async function selectDeck(deckId) {
     try {
+        // Check authentication first
+        const authCheck = await window.apiService.request('/api/v1/revision/debug/auth/');
+        console.log('🔐 Auth check:', authCheck);
+        
+        if (!authCheck.authenticated) {
+            console.error('❌ User not authenticated');
+            window.notificationService.error(
+                'Vous devez être connecté pour accéder à vos decks. ' +
+                '<a href="/login/" style="color: white; text-decoration: underline;">Se connecter</a>'
+            );
+            return;
+        }
+        
+        console.log(`✅ User authenticated as: ${authCheck.user} (ID: ${authCheck.user_id})`);
+        
         const deck = await revisionAPI.getDeck(deckId);
         appState.selectedDeck = deck;
+        
+        // Update share button text based on deck visibility
+        updateShareButtonText();
         
         // Hide all sections first
         hideAllSections();
@@ -387,9 +616,28 @@ async function selectDeck(deckId) {
             elements.sidebar.classList.remove('show');
         }
         
+        // Keep general actions visible when deck is selected
+        updateNavbarActions(true);
+        
     } catch (error) {
         console.error('Error loading deck:', error);
-        window.notificationService.error('Erreur lors du chargement du deck');
+        
+        if (error.status === 404) {
+            window.notificationService.error(
+                `Deck non trouvé ou accès refusé (ID: ${deckId}). Vérifiez que vous êtes connecté et que vous avez accès à ce deck.`
+            );
+        } else if (error.status === 403) {
+            window.notificationService.error(
+                `Accès refusé à ce deck. Vérifiez vos permissions.`
+            );
+        } else if (error.status === 401) {
+            window.notificationService.error(
+                'Session expirée. Veuillez vous reconnecter. ' +
+                '<a href="/login/" style="color: white; text-decoration: underline;">Se connecter</a>'
+            );
+        } else {
+            window.notificationService.error(`Erreur lors du chargement du deck: ${error.message}`);
+        }
     }
 }
 
@@ -422,8 +670,12 @@ function hideCreateForm() {
     
     if (appState.selectedDeck) {
         elements.deckDetails.style.display = 'block';
+        // Keep general actions visible when deck is selected
+        updateNavbarActions(true);
     } else {
         elements.welcomeState.style.display = 'block';
+        // Show general actions in welcome state
+        updateNavbarActions(true);
     }
 }
 
@@ -436,6 +688,24 @@ function showImportForm() {
     // Clear form
     elements.importFile.value = '';
     elements.importDeckName.value = '';
+    
+    // Reset validation state - FORCE BRUTAL
+    elements.importDeckName.classList.remove('is-valid', 'is-invalid');
+    elements.importDeckName.removeAttribute('data-user-interacted');
+    elements.importDeckName.style.borderColor = '#dee2e6'; // Force bordure grise
+    elements.importDeckName.style.boxShadow = 'none'; // Supprime l'ombre
+    const errorElement = document.getElementById('deckNameError');
+    if (errorElement) {
+        errorElement.textContent = '';
+        errorElement.style.display = 'none';
+    }
+    
+    // Double vérification après un délai
+    setTimeout(() => {
+        elements.importDeckName.classList.remove('is-valid', 'is-invalid');
+        elements.importDeckName.style.borderColor = '#dee2e6';
+        console.log('Force reset classes:', elements.importDeckName.className);
+    }, 100);
     
     // Reset form state
     clearSelectedFile();
@@ -451,6 +721,23 @@ function showImportForm() {
 function hideImportForm() {
     const elements = getElements();
     elements.importDeckForm.style.display = 'none';
+    
+    // Remettre les éléments du formulaire à leur état normal
+    if (elements.importDeckName) {
+        elements.importDeckName.readOnly = false;
+        elements.importDeckName.style.backgroundColor = '';
+        const formTitle = elements.importDeckForm.querySelector('h5');
+        if (formTitle) {
+            formTitle.textContent = 'Importer une liste de cartes';
+        }
+        if (elements.submitImport) {
+            elements.submitImport.textContent = 'Prévisualiser';
+        }
+    }
+    
+    // Réinitialiser les flags d'import dans deck existant
+    window.importToExistingDeck = false;
+    window.targetDeckId = null;
     
     if (appState.selectedDeck) {
         elements.deckDetails.style.display = 'block';
@@ -731,14 +1018,20 @@ function backToDeckView() {
 
 // Study mode functions
 function startFlashcardsMode() {
+    console.log('🔄 Starting flashcards mode...');
+    console.log('📦 Selected deck:', appState.selectedDeck);
+    console.log('🔧 window.flashcardMode exists:', !!window.flashcardMode);
+    
     if (!appState.selectedDeck) {
         window.notificationService.error('Veuillez sélectionner un deck d\'abord');
         return;
     }
     
     if (window.flashcardMode) {
+        console.log('✅ Starting flashcard study...');
         window.flashcardMode.startStudy(appState.selectedDeck);
     } else {
+        console.error('❌ window.flashcardMode is not available');
         window.notificationService.error('Mode Flashcards non disponible');
     }
 }
@@ -999,16 +1292,25 @@ let importState = {
 
 async function importNewDeck() {
     const elements = getElements();
-    const file = elements.importFile.files[0];
+    const file = elements.importFile.files[0] || window.selectedImportFile;
     const name = elements.importDeckName.value.trim();
     
+    console.log('🚀 Import deck - file from input:', elements.importFile.files[0]);
+    console.log('🚀 Import deck - file from global:', window.selectedImportFile);
+    console.log('🚀 Import deck - using file:', file);
+    
     if (!file) {
-        window.notificationService.error('Veuillez sélectionner un fichier');
+        window.notificationService.error('Fichier requis !', 'Veuillez sélectionner un fichier Excel ou CSV avant de continuer.');
         return;
     }
     
-    if (!name) {
-        window.notificationService.error('Le nom du deck est requis');
+    // Vérifier si c'est un import dans un deck existant ou création d'un nouveau deck
+    const isImportToExisting = window.importToExistingDeck && window.targetDeckId;
+    
+    if (!isImportToExisting && !name) {
+        window.notificationService.error('Nom d\'une liste requis !', 'Veuillez saisir un nom pour votre liste avant de continuer.');
+        // Focus sur le champ nom pour aider l'utilisateur
+        elements.importDeckName.focus();
         return;
     }
     
@@ -1017,15 +1319,25 @@ async function importNewDeck() {
         importState.file = file;
         importState.deckName = name;
         
-        // First, create the deck
-        const deckData = {
-            name: name,
-            description: `Deck importé depuis ${file.name}`,
-            is_public: false
-        };
+        let targetDeck;
         
-        const newDeck = await revisionAPI.createDeck(deckData);
-        importState.tempDeck = newDeck;
+        if (isImportToExisting) {
+            // Import dans un deck existant
+            targetDeck = appState.selectedDeck;
+            importState.tempDeck = targetDeck;
+            console.log('🔄 Import de cartes dans le deck existant:', targetDeck.name);
+        } else {
+            // Création d'un nouveau deck
+            const deckData = {
+                name: name,
+                description: `Deck importé depuis ${file.name}`,
+                is_public: false
+            };
+            
+            targetDeck = await revisionAPI.createDeck(deckData);
+            importState.tempDeck = targetDeck;
+            console.log('✨ Nouveau deck créé pour l\'import:', targetDeck.name);
+        }
         
         // Then, get preview of the file
         const formData = new FormData();
@@ -1035,7 +1347,7 @@ async function importNewDeck() {
         formData.append('front_column', '0');
         formData.append('back_column', '1');
         
-        const previewResult = await revisionAPI.previewImport(newDeck.id, formData);
+        const previewResult = await revisionAPI.previewImport(targetDeck.id, formData);
         importState.previewData = previewResult.preview || [];
         importState.columns = previewResult.columns || [];
         
@@ -1062,6 +1374,14 @@ function initializeDragAndDrop() {
     
     if (!dropZone || !fileInput) return;
     
+    // Marquer comme initialisé pour éviter la duplication
+    if (dropZone.dataset.initialized === 'true') {
+        console.log('🔄 DragAndDrop déjà initialisé, on passe...');
+        return;
+    }
+    dropZone.dataset.initialized = 'true';
+    console.log('🚀 Initialisation DragAndDrop...');
+    
     // Prévenir les comportements par défaut
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
@@ -1080,8 +1400,13 @@ function initializeDragAndDrop() {
     // Handle dropped files
     dropZone.addEventListener('drop', handleDrop, false);
     
-    // Handle click on drop zone
-    dropZone.addEventListener('click', () => fileInput.click());
+    // Handle click on drop zone 
+    dropZone.addEventListener('click', () => {
+        console.log('🖱️ Clic sur la zone de drop');
+        // Reset juste avant le clic pour permettre la re-sélection
+        fileInput.value = '';
+        fileInput.click();
+    });
     
     // Handle file input change
     fileInput.addEventListener('change', handleFileSelect, false);
@@ -1111,22 +1436,37 @@ function initializeDragAndDrop() {
 }
 
 function handleFileSelect(e) {
+    console.log('handleFileSelect appelé', e);
+    console.log('Fichiers sélectionnés:', e.target.files);
+    
     const file = e.target.files[0];
     
     if (!file) {
+        console.log('Aucun fichier sélectionné');
         clearSelectedFile();
         return;
     }
     
+    console.log('✅ Fichier trouvé:', file.name);
+    
     // Validation du fichier
     if (!validateFile(file)) {
+        console.log('Fichier invalide');
         clearSelectedFile();
         return;
     }
+    
+    console.log('✅ Fichier valide, affichage des infos');
+    
+    // Sauvegarder le fichier dans une variable globale temporaire
+    window.selectedImportFile = file;
     
     // Afficher les informations du fichier
     showSelectedFileInfo(file);
     updateImportButton();
+    
+    // On ne reset plus automatiquement - on laisse le fichier dans l'input
+    // Le reset se fera seulement quand on efface volontairement le fichier
 }
 
 function validateFile(file) {
@@ -1173,7 +1513,10 @@ function showSelectedFileInfo(file) {
     if (selectedFileInfo && selectedFileName && selectedFileSize) {
         selectedFileName.textContent = file.name;
         selectedFileSize.textContent = formatFileSize(file.size);
-        selectedFileInfo.style.display = 'block';
+        
+        // Remplacer d-none par d-block pour Bootstrap
+        selectedFileInfo.classList.remove('d-none');
+        selectedFileInfo.classList.add('d-block');
         
         // Animer l'apparition
         selectedFileInfo.style.opacity = '0';
@@ -1191,8 +1534,14 @@ function clearSelectedFile() {
     const selectedFileInfo = document.getElementById('selectedFileInfo');
     const fileInput = document.getElementById('importFile');
     
-    if (selectedFileInfo) selectedFileInfo.style.display = 'none';
+    if (selectedFileInfo) {
+        selectedFileInfo.classList.remove('d-block');
+        selectedFileInfo.classList.add('d-none');
+    }
     if (fileInput) fileInput.value = '';
+    
+    // Nettoyer aussi la variable globale
+    window.selectedImportFile = null;
     
     updateImportButton();
 }
@@ -1219,7 +1568,13 @@ function initializeRealTimeValidation() {
         clearTimeout(validationTimeout);
         
         validationTimeout = setTimeout(() => {
-            validateDeckName(this.value.trim());
+            const value = this.value.trim();
+            // Ne pas montrer d'erreur si le champ est vide et que l'utilisateur n'a pas encore tapé
+            const skipEmpty = value === '' && !this.hasAttribute('data-user-interacted');
+            if (value !== '' || this.hasAttribute('data-user-interacted')) {
+                this.setAttribute('data-user-interacted', 'true');
+            }
+            validateDeckName(value, skipEmpty);
             updateImportButton();
         }, 300);
     });
@@ -1230,7 +1585,7 @@ function initializeRealTimeValidation() {
     });
 }
 
-function validateDeckName(name) {
+function validateDeckName(name, skipEmptyValidation = false) {
     const deckNameInput = document.getElementById('importDeckName');
     const errorElement = document.getElementById('deckNameError');
     
@@ -1241,8 +1596,10 @@ function validateDeckName(name) {
     errorElement.textContent = '';
     
     if (!name) {
-        deckNameInput.classList.add('is-invalid');
-        errorElement.textContent = 'Le nom du deck est requis';
+        if (!skipEmptyValidation) {
+            deckNameInput.classList.add('is-invalid');
+            errorElement.textContent = 'Le nom du deck est requis';
+        }
         return false;
     }
     
@@ -1288,10 +1645,13 @@ function updateImportButton() {
     
     if (!submitButton || !fileInput || !deckNameInput) return;
     
-    const hasFile = fileInput.files && fileInput.files.length > 0;
-    const hasValidName = validateDeckName(deckNameInput.value.trim());
+    const hasFile = (fileInput.files && fileInput.files.length > 0) || window.selectedImportFile;
+    const deckName = deckNameInput.value.trim();
     
-    const isValid = hasFile && hasValidName;
+    // Pour updateImportButton, on active TOUJOURS le bouton
+    // La validation complète (fichier + nom) se fera au moment du clic
+    const isValid = true;
+    
     
     submitButton.disabled = !isValid;
     
@@ -1580,7 +1940,13 @@ async function confirmImport() {
         
         const importResult = await revisionAPI.importDeck(importState.tempDeck.id, formData);
         
-        window.notificationService.success(`Import réussi ! ${importResult.cards_created} cartes créées`);
+        // Adapter le message selon le contexte
+        const isImportToExisting = window.importToExistingDeck && window.targetDeckId;
+        const message = isImportToExisting 
+            ? `${importResult.cards_created} cartes ajoutées au deck "${importState.tempDeck.name}" !`
+            : `Import réussi ! ${importResult.cards_created} cartes créées`;
+            
+        window.notificationService.success(message);
         
         // Reload decks and select the new one
         await loadDecks();
@@ -1594,6 +1960,10 @@ async function confirmImport() {
             columns: null,
             tempDeck: null
         };
+        
+        // Réinitialiser les flags d'import dans deck existant
+        window.importToExistingDeck = false;
+        window.targetDeckId = null;
         
     } catch (error) {
         console.error('Erreur lors de l\'import final:', error);
@@ -1690,9 +2060,21 @@ async function saveEditDeck() {
         // Mettre à jour l'état local
         appState.selectedDeck = updatedDeck;
         
-        // Recharger la liste des decks et sélectionner le deck modifié
-        await loadDecks();
-        await selectDeck(updatedDeck.id);
+        // Update the deck in the decks list to reflect the changes
+        const deckIndex = appState.decks.findIndex(d => d.id === updatedDeck.id);
+        if (deckIndex !== -1) {
+            appState.decks[deckIndex] = { ...appState.decks[deckIndex], ...updatedDeck };
+        }
+        
+        // Update share button in case visibility changed
+        updateShareButtonText();
+        
+        // Re-render the decks list to show any changes (public icon, name, etc.)
+        renderDecksList();
+        
+        // No need to reload everything, just update the view
+        // await loadDecks();
+        // await selectDeck(updatedDeck.id);
         
         hideEditDeckForm();
         
@@ -1700,6 +2082,317 @@ async function saveEditDeck() {
         console.error('Error updating deck:', error);
         window.notificationService.error('Erreur lors de la modification du deck');
     }
+}
+
+// Version de sauvegarde pour auto-save (sans fermer le formulaire)
+async function autoSaveEditDeck() {
+    if (!appState.selectedDeck) {
+        console.error('Aucun deck sélectionné pour auto-save');
+        return;
+    }
+    
+    const elements = getElements();
+    const name = elements.editDeckName.value.trim();
+    const description = elements.editDeckDescription.value.trim();
+    const isPublic = elements.editDeckVisibility.value === 'public';
+    
+    if (!name) {
+        console.warn('Nom vide, auto-save annulé');
+        return;
+    }
+    
+    try {
+        const deckData = {
+            name: name,
+            description: description,
+            is_public: isPublic,
+            tags: window.tagsManager ? window.tagsManager.getTags() : []
+        };
+        
+        const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, deckData);
+        
+        console.log('✅ Auto-save successful');
+        
+        // Mettre à jour l'état local
+        appState.selectedDeck = updatedDeck;
+        
+        // Update the deck in the decks list to reflect the changes
+        const deckIndex = appState.decks.findIndex(d => d.id === updatedDeck.id);
+        if (deckIndex !== -1) {
+            appState.decks[deckIndex] = { ...appState.decks[deckIndex], ...updatedDeck };
+        }
+        
+        // Update share button in case visibility changed
+        updateShareButtonText();
+        
+        // Re-render the decks list to show any changes (public icon, name, etc.)
+        renderDecksList();
+        
+        // Update deck header to show new name
+        const deckNameElement = document.getElementById('deckName');
+        if (deckNameElement && updatedDeck.name) {
+            deckNameElement.textContent = updatedDeck.name;
+        }
+        const deckDescElement = document.getElementById('deckDescription');
+        if (deckDescElement && updatedDeck.description !== undefined) {
+            deckDescElement.textContent = updatedDeck.description || 'Aucune description';
+        }
+        
+    } catch (error) {
+        console.error('Auto-save error:', error);
+        // Ne pas afficher d'erreur pour l'auto-save pour ne pas gêner l'utilisateur
+    }
+}
+
+// ===== ÉDITION EN PLACE DU NOM ET DESCRIPTION =====
+
+function enableInlineEditDeckName() {
+    const deckNameElement = document.getElementById('deckName');
+    if (!deckNameElement || !appState.selectedDeck) return;
+    
+    // Vérifier s'il y a déjà un input en cours d'édition
+    if (deckNameElement.parentNode.querySelector('.inline-edit-input')) return;
+    
+    const currentText = deckNameElement.textContent.trim();
+    const originalText = currentText;
+    
+    // Créer un input temporaire
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentText;
+    input.className = 'form-control text-xl font-semibold text-linguify-primary mb-1 inline-edit-input';
+    input.style.border = '2px solid #007bff';
+    input.style.borderRadius = '4px';
+    input.style.padding = '4px 8px';
+    input.style.background = '#fff';
+    input.style.width = '100%';
+    input.style.maxWidth = '400px';
+    
+    // Fonction de nettoyage et restauration
+    const cleanup = () => {
+        if (input.parentNode) {
+            input.remove();
+        }
+        deckNameElement.style.display = '';
+    };
+    
+    // Fonction de sauvegarde
+    const saveName = async () => {
+        const newName = input.value.trim();
+        if (newName && newName !== originalText) {
+            try {
+                const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
+                    name: newName,
+                    description: appState.selectedDeck.description
+                });
+                appState.selectedDeck.name = newName;
+                deckNameElement.textContent = newName;
+                
+                // Mettre à jour le deck dans la liste des decks
+                const deckIndex = appState.decks.findIndex(deck => deck.id === appState.selectedDeck.id);
+                if (deckIndex !== -1) {
+                    appState.decks[deckIndex].name = newName;
+                }
+                
+                // Rafraîchir la sidebar
+                renderDecksList();
+                
+                window.notificationService.success('Nom du deck modifié avec succès');
+            } catch (error) {
+                console.error('Error updating deck name:', error);
+                window.notificationService.error('Erreur lors de la modification du nom');
+                deckNameElement.textContent = originalText;
+            }
+        } else {
+            deckNameElement.textContent = originalText;
+        }
+        cleanup();
+    };
+    
+    // Fonction d'annulation
+    const cancel = () => {
+        deckNameElement.textContent = originalText;
+        cleanup();
+    };
+    
+    // Event listeners
+    input.addEventListener('blur', saveName);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveName();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancel();
+        }
+    });
+    
+    // Remplacer l'élément
+    deckNameElement.style.display = 'none';
+    deckNameElement.parentNode.insertBefore(input, deckNameElement);
+    input.focus();
+    input.select();
+}
+
+function enableInlineEditDeckDescription() {
+    const deckDescElement = document.getElementById('deckDescription');
+    if (!deckDescElement || !appState.selectedDeck) return;
+    
+    // Vérifier s'il y a déjà un input en cours d'édition
+    if (deckDescElement.parentNode.querySelector('.inline-edit-input')) return;
+    
+    const currentText = deckDescElement.textContent.trim();
+    const originalText = currentText;
+    
+    // Créer un input temporaire
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentText;
+    input.className = 'form-control text-gray-500 inline-edit-input';
+    input.style.border = '2px solid #007bff';
+    input.style.borderRadius = '4px';
+    input.style.padding = '4px 8px';
+    input.style.background = '#fff';
+    input.style.fontSize = '0.875rem';
+    input.style.width = '100%';
+    input.style.maxWidth = '600px';
+    
+    // Fonction de nettoyage et restauration
+    const cleanup = () => {
+        if (input.parentNode) {
+            input.remove();
+        }
+        deckDescElement.style.display = '';
+    };
+    
+    // Fonction de sauvegarde
+    const saveDescription = async () => {
+        const newDescription = input.value.trim();
+        if (newDescription !== originalText) {
+            try {
+                const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
+                    name: appState.selectedDeck.name,
+                    description: newDescription
+                });
+                appState.selectedDeck.description = newDescription;
+                deckDescElement.textContent = newDescription;
+                
+                // Mettre à jour le deck dans la liste des decks
+                const deckIndex = appState.decks.findIndex(deck => deck.id === appState.selectedDeck.id);
+                if (deckIndex !== -1) {
+                    appState.decks[deckIndex].description = newDescription;
+                }
+                
+                // Rafraîchir la sidebar
+                renderDecksList();
+                
+                window.notificationService.success('Description du deck modifiée avec succès');
+            } catch (error) {
+                console.error('Error updating deck description:', error);
+                window.notificationService.error('Erreur lors de la modification de la description');
+                deckDescElement.textContent = originalText;
+            }
+        } else {
+            deckDescElement.textContent = originalText;
+        }
+        cleanup();
+    };
+    
+    // Fonction d'annulation
+    const cancel = () => {
+        deckDescElement.textContent = originalText;
+        cleanup();
+    };
+    
+    // Event listeners
+    input.addEventListener('blur', saveDescription);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveDescription();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancel();
+        }
+    });
+    
+    // Remplacer l'élément
+    deckDescElement.style.display = 'none';
+    deckDescElement.parentNode.insertBefore(input, deckDescElement);
+    input.focus();
+    input.select();
+}
+
+function showTagsEditor() {
+    if (!appState.selectedDeck) return;
+    
+    // Ouvrir le formulaire d'édition existant du deck
+    // qui contient déjà une interface pour gérer les tags
+    showEditDeckForm();
+    
+    // Focus automatiquement sur l'input des tags après un délai
+    setTimeout(() => {
+        const tagsInput = document.getElementById('editDeckTagsInput');
+        if (tagsInput) {
+            tagsInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            tagsInput.focus();
+        }
+    }, 500);
+}
+
+
+function showImportCardsForm() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    // Réutiliser le formulaire d'import existant mais pour import de cartes dans le deck actuel
+    hideAllSections();
+    
+    const elements = getElements();
+    elements.importDeckForm.style.display = 'block';
+    
+    // Clear form
+    elements.importFile.value = '';
+    // Pré-remplir le nom avec le deck actuel (en lecture seule)
+    elements.importDeckName.value = `${appState.selectedDeck.name} (ajout de cartes)`;
+    elements.importDeckName.readOnly = true;
+    elements.importDeckName.style.backgroundColor = '#f8f9fa';
+    
+    // Reset validation state
+    elements.importDeckName.classList.remove('is-valid', 'is-invalid');
+    elements.importDeckName.removeAttribute('data-user-interacted');
+    elements.importDeckName.style.borderColor = '#dee2e6';
+    elements.importDeckName.style.boxShadow = 'none';
+    
+    const errorElement = document.getElementById('deckNameError');
+    if (errorElement) {
+        errorElement.textContent = '';
+        errorElement.style.display = 'none';
+    }
+    
+    // Changer le titre du formulaire pour indiquer qu'on importe dans un deck existant
+    const formTitle = elements.importDeckForm.querySelector('h5');
+    if (formTitle) {
+        formTitle.textContent = `Importer des cartes dans "${appState.selectedDeck.name}"`;
+    }
+    
+    // Modifier le texte du bouton de soumission
+    if (elements.submitImport) {
+        elements.submitImport.textContent = 'Importer les cartes';
+    }
+    
+    // Stocker l'information que c'est un import de cartes dans un deck existant
+    window.importToExistingDeck = true;
+    window.targetDeckId = appState.selectedDeck.id;
+    
+    // Réinitialiser le drag & drop maintenant que le DOM est visible
+    setTimeout(() => {
+        console.log('🔧 Réinitialisation du drag & drop pour l\'import de cartes');
+        initializeDragAndDrop();
+        initializeRealTimeValidation();
+    }, 100);
 }
 
 async function exportDeck() {
@@ -1755,6 +2448,86 @@ async function exportDeck() {
     }
 }
 
+async function makePrivate() {
+    console.log('makePrivate called, selectedDeck:', appState.selectedDeck);
+    
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    if (!appState.selectedDeck.is_public) {
+        window.notificationService.info('Ce deck est déjà privé');
+        return;
+    }
+    
+    // Afficher le modal de confirmation personnalisé
+    let modalElement = document.getElementById('makePrivateModal');
+    
+    if (!modalElement) {
+        console.log('makePrivateModal not found, creating it dynamically...');
+        // Create the modal dynamically
+        ensureModalsExist();
+        
+        // Give a brief moment for DOM to update
+        await new Promise(resolve => setTimeout(resolve, 100));
+        modalElement = document.getElementById('makePrivateModal');
+        
+        if (!modalElement) {
+            window.notificationService.error('Erreur: Impossible de créer le modal de confirmation');
+            return;
+        }
+    }
+    
+    console.log('Opening makePrivateModal:', modalElement);
+    
+    try {
+        showTailwindModal(modalElement);
+    } catch (error) {
+        console.error('Error opening makePrivateModal:', error);
+        window.notificationService.error('Erreur lors de l\'ouverture du modal');
+    }
+}
+
+async function executeMakePrivate() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    try {
+        const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, {
+            is_public: false
+        });
+        
+        appState.selectedDeck = updatedDeck;
+        
+        // Update the deck in the decks list to reflect the change
+        const deckIndex = appState.decks.findIndex(d => d.id === updatedDeck.id);
+        if (deckIndex !== -1) {
+            appState.decks[deckIndex] = { ...appState.decks[deckIndex], ...updatedDeck };
+        }
+        
+        // Update the share button text since the deck is now private
+        updateShareButtonText();
+        
+        // Re-render the decks list to hide the public icon
+        renderDecksList();
+        
+        // Fermer le modal
+        const makePrivateModalElement = document.getElementById('makePrivateModal');
+        if (makePrivateModalElement) {
+            hideTailwindModal(makePrivateModalElement);
+        }
+        
+        window.notificationService.success('Deck rendu privé avec succès');
+        
+    } catch (error) {
+        console.error('Error making deck private:', error);
+        window.notificationService.error('Erreur lors de la mise en privé du deck');
+    }
+}
+
 async function shareDeck() {
     console.log('shareDeck called, selectedDeck:', appState.selectedDeck);
     
@@ -1806,26 +2579,7 @@ async function shareDeck() {
         console.log('Opening makePublicModal:', modalElement);
         
         try {
-            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                const modal = new bootstrap.Modal(modalElement);
-                modal.show();
-            } else {
-                // Fallback manuel
-                modalElement.style.display = 'block';
-                modalElement.classList.add('show');
-                document.body.classList.add('modal-open');
-                
-                // Ajouter un backdrop
-                const backdrop = document.createElement('div');
-                backdrop.className = 'modal-backdrop fade show';
-                backdrop.onclick = () => {
-                    modalElement.style.display = 'none';
-                    modalElement.classList.remove('show');
-                    document.body.classList.remove('modal-open');
-                    backdrop.remove();
-                };
-                document.body.appendChild(backdrop);
-            }
+            showTailwindModal(modalElement);
         } catch (error) {
             console.error('Error with modal:', error);
             window.notificationService.error('Erreur lors de l\'ouverture de la modal');
@@ -1867,30 +2621,7 @@ async function showShareModal() {
         shareModalDeckName.textContent = `"${appState.selectedDeck.name || 'Jeu de cartes sans nom'}"`;
         
         // Afficher la modal
-        if (typeof bootstrap !== 'undefined') {
-            const modal = new bootstrap.Modal(shareModalElement);
-            modal.show();
-        } else if (typeof $ !== 'undefined' && $.fn.modal) {
-            console.log('Using jQuery modal for share');
-            $(shareModalElement).modal('show');
-        } else {
-            // Fallback ultime: afficher la modal manuellement
-            console.log('Using manual modal display for share');
-            shareModalElement.style.display = 'block';
-            shareModalElement.classList.add('show');
-            document.body.classList.add('modal-open');
-            
-            // Ajouter un backdrop
-            const backdrop = document.createElement('div');
-            backdrop.className = 'modal-backdrop fade show';
-            backdrop.onclick = () => {
-                shareModalElement.style.display = 'none';
-                shareModalElement.classList.remove('show');
-                document.body.classList.remove('modal-open');
-                backdrop.remove();
-            };
-            document.body.appendChild(backdrop);
-        }
+        showTailwindModal(shareModalElement);
     } catch (error) {
         console.error('Error with share modal:', error);
         window.notificationService.error('Erreur lors de l\'ouverture de la modal de partage');
@@ -1922,18 +2653,50 @@ function setupShareModalEventHandlers() {
                 });
                 
                 appState.selectedDeck = updatedDeck;
+                
+                // Update the deck in the decks list to reflect the change
+                const deckIndex = appState.decks.findIndex(d => d.id === updatedDeck.id);
+                if (deckIndex !== -1) {
+                    appState.decks[deckIndex] = { ...appState.decks[deckIndex], ...updatedDeck };
+                }
+                
+                // Update the share button text since the deck is now public
+                updateShareButtonText();
+                
+                // Re-render the decks list to show the public icon
+                renderDecksList();
+                
                 window.notificationService.success('Jeu de cartes rendu public avec succès !');
                 
                 // Fermer la modal actuelle et afficher la modal de partage
-                const makePublicModal = bootstrap.Modal.getInstance(document.getElementById('makePublicModal'));
-                if (makePublicModal) {
-                    makePublicModal.hide();
+                const makePublicModalElement = document.getElementById('makePublicModal');
+                if (makePublicModalElement) {
+                    hideTailwindModal(makePublicModalElement);
                 }
                 showShareModal();
                 
             } catch (error) {
                 console.error('Error making deck public:', error);
                 window.notificationService.error('Erreur lors de la publication du jeu de cartes');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+        
+        // Handler pour le bouton "Rendre privé"
+        if (e.target.id === 'makeDeckPrivateBtn' || e.target.closest('#makeDeckPrivateBtn')) {
+            e.preventDefault();
+            const button = e.target.closest('#makeDeckPrivateBtn') || e.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Mise à jour...';
+            button.disabled = true;
+            
+            try {
+                await executeMakePrivate();
+            } catch (error) {
+                console.error('Error making deck private:', error);
+                window.notificationService.error('Erreur lors de la mise en privé du deck');
+            } finally {
                 button.innerHTML = originalText;
                 button.disabled = false;
             }
@@ -1956,6 +2719,15 @@ function setupShareModalEventHandlers() {
                 button.style.backgroundColor = 'var(--linguify-accent, #017e84)';
                 button.style.borderColor = 'var(--linguify-accent, #017e84)';
                 
+                // Show success message
+                const successMessage = document.getElementById('copySuccessMessage');
+                if (successMessage) {
+                    successMessage.classList.remove('hidden');
+                    setTimeout(() => {
+                        successMessage.classList.add('hidden');
+                    }, 3000);
+                }
+                
                 setTimeout(() => {
                     button.innerHTML = originalText;
                     button.style.backgroundColor = 'var(--linguify-primary, #2D5BBA)';
@@ -1969,6 +2741,35 @@ function setupShareModalEventHandlers() {
             }
         }
         
+        // Handlers pour les nouveaux boutons de partage rapide
+        if (e.target.id === 'shareByEmailBtn' || e.target.closest('#shareByEmailBtn')) {
+            e.preventDefault();
+            const shareUrlInput = document.getElementById('shareUrl');
+            if (!shareUrlInput) return;
+            shareByEmail(shareUrlInput.value);
+        }
+        
+        if (e.target.id === 'shareByWhatsAppBtn' || e.target.closest('#shareByWhatsAppBtn')) {
+            e.preventDefault();
+            const shareUrlInput = document.getElementById('shareUrl');
+            if (!shareUrlInput) return;
+            shareByWhatsApp(shareUrlInput.value);
+        }
+        
+        if (e.target.id === 'shareByMessengerBtn' || e.target.closest('#shareByMessengerBtn')) {
+            e.preventDefault();
+            const shareUrlInput = document.getElementById('shareUrl');
+            if (!shareUrlInput) return;
+            shareByMessenger(shareUrlInput.value);
+        }
+        
+        if (e.target.id === 'shareBySMSBtn' || e.target.closest('#shareBySMSBtn')) {
+            e.preventDefault();
+            const shareUrlInput = document.getElementById('shareUrl');
+            if (!shareUrlInput) return;
+            shareBySMS(shareUrlInput.value);
+        }
+
         // Handlers pour les boutons de partage social
         if (e.target.classList.contains('social-share-btn') || e.target.closest('.social-share-btn')) {
             e.preventDefault();
@@ -2002,11 +2803,65 @@ function shareOnSocial(platform, url) {
         case 'linkedin':
             shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
             break;
+        case 'reddit':
+            shareUrl = `https://reddit.com/submit?title=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+            break;
         default:
             return;
     }
     
     window.open(shareUrl, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
+}
+
+// Nouvelles fonctions de partage rapide
+function shareByEmail(url) {
+    const deckName = appState.selectedDeck.name || 'Jeu de cartes de révision';
+    const subject = encodeURIComponent(`Découvrez mon deck de révision: ${deckName}`);
+    const body = encodeURIComponent(
+        `Salut !\n\n` +
+        `Je voulais partager avec toi mon deck de révision "${deckName}" sur OpenLinguify.\n\n` +
+        `Tu peux le consulter ici: ${url}\n\n` +
+        `Bonne révision ! 📚`
+    );
+    
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+
+function shareByWhatsApp(url) {
+    const deckName = appState.selectedDeck.name || 'Jeu de cartes de révision';
+    const text = encodeURIComponent(
+        `Salut ! 👋\n\n` +
+        `Découvre mon deck de révision "${deckName}" sur OpenLinguify :\n\n` +
+        `${url}\n\n` +
+        `Parfait pour réviser ! 📚✨`
+    );
+    
+    // Détecter si on est sur mobile ou desktop
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const whatsappUrl = isMobile 
+        ? `whatsapp://send?text=${text}`
+        : `https://web.whatsapp.com/send?text=${text}`;
+        
+    window.open(whatsappUrl, '_blank');
+}
+
+function shareByMessenger(url) {
+    const deckName = appState.selectedDeck.name || 'Jeu de cartes de révision';
+    const text = encodeURIComponent(`Découvre mon deck "${deckName}" : ${url}`);
+    
+    // Facebook Messenger partage
+    const messengerUrl = `https://www.messenger.com/new/?text=${text}`;
+    window.open(messengerUrl, '_blank');
+}
+
+function shareBySMS(url) {
+    const deckName = appState.selectedDeck.name || 'Jeu de cartes de révision';
+    const text = encodeURIComponent(
+        `Salut ! Découvre mon deck de révision "${deckName}" : ${url}`
+    );
+    
+    // Lien SMS universel
+    window.location.href = `sms:?body=${text}`;
 }
 
 function updateArchiveButton() {
@@ -2254,6 +3109,124 @@ async function saveDeckLanguagePreferences() {
     }
 }
 
+// Reset Progress functionality
+async function resetDeckProgress() {
+    if (!appState.selectedDeck) {
+        window.notificationService.error('Aucun deck sélectionné');
+        return;
+    }
+    
+    const deckName = appState.selectedDeck.name;
+    const cardsCount = appState.selectedDeck.total_cards || 0;
+    
+    showResetProgressConfirmationModal(deckName, cardsCount);
+}
+
+function showResetProgressConfirmationModal(deckName, cardsCount) {
+    // Remove any existing modal
+    const existingModal = document.querySelector('.reset-progress-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'reset-progress-modal';
+    modal.innerHTML = `
+        <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 me-3" style="background-color: #fff3cd;">
+                                <i class="bi bi-arrow-clockwise" style="font-size: 1.5rem; color: #856404;"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title mb-0" style="color: #856404;">Réinitialiser la progression</h5>
+                                <p class="text-muted mb-0 small">Cette action remettra toutes les cartes à zéro</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" onclick="document.querySelector('.reset-progress-modal').remove()"></button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <div class="alert alert-warning border-warning">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Attention !</strong> Cette action va réinitialiser la progression de toutes les cartes du deck.
+                        </div>
+                        <p class="mb-3">
+                            <strong>Deck :</strong> "${deckName}"<br>
+                            <strong>Cartes concernées :</strong> ${cardsCount} carte(s)
+                        </p>
+                        <p class="mb-0">Après réinitialisation :</p>
+                        <ul class="mb-3">
+                            <li>Toutes les cartes seront marquées comme "non apprises"</li>
+                            <li>Le compteur de révisions sera remis à zéro</li>
+                            <li>L'historique d'apprentissage sera effacé</li>
+                        </ul>
+                        <p class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Cette action est irréversible.
+                        </p>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary" onclick="document.querySelector('.reset-progress-modal').remove()">
+                            <i class="bi bi-x-lg me-1"></i>Annuler
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="window.confirmResetProgress()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Réinitialiser
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+async function confirmResetProgress() {
+    if (!appState.selectedDeck) return;
+    
+    try {
+        // Fermer la modal
+        const modal = document.querySelector('.reset-progress-modal');
+        if (modal) modal.remove();
+        
+        // Notification de chargement
+        window.notificationService.info('Réinitialisation en cours...', 2000);
+        
+        // Obtenir le CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                         document.querySelector('meta[name="csrf-token"]')?.content;
+        
+        // Appeler l'API
+        const response = await fetch(`/api/v1/revision/decks/${appState.selectedDeck.id}/reset_progress/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            window.notificationService.success(data.message || 'Progression réinitialisée avec succès');
+            
+            // Recharger les détails du deck pour rafraîchir l'affichage
+            await selectDeck(appState.selectedDeck.id);
+            
+            // Recharger la liste des decks pour mettre à jour les stats
+            await loadDecks(true);
+            
+        } else {
+            window.notificationService.error('Erreur lors de la réinitialisation');
+        }
+    } catch (error) {
+        console.error('Erreur lors de la réinitialisation:', error);
+        window.notificationService.error('Erreur lors de la réinitialisation : ' + error.message);
+    }
+}
+
 async function archiveDeck() {
     if (!appState.selectedDeck) {
         window.notificationService.error('Aucun deck sélectionné');
@@ -2354,11 +3327,20 @@ async function executeArchiveDeck(shouldArchive) {
         
         appState.selectedDeck = updatedDeck;
         
+        // Update the deck in the decks list to reflect the change
+        const deckIndex = appState.decks.findIndex(d => d.id === updatedDeck.id);
+        if (deckIndex !== -1) {
+            appState.decks[deckIndex] = { ...appState.decks[deckIndex], ...updatedDeck };
+        }
+        
+        // Update archive button text
+        updateArchiveButton();
+        
+        // Re-render the decks list to show/hide the archive icon
+        renderDecksList();
+        
         const message = updatedDeck.is_archived ? 'Deck archivé' : 'Deck désarchivé';
         window.notificationService.success(message);
-        
-        // Recharger la liste des decks
-        await loadDecks();
         
         // Si le deck est archivé, revenir à la vue d'accueil
         if (updatedDeck.is_archived) {
@@ -2515,7 +3497,10 @@ function handleSearch() {
 
 function handleStatusFilter() {
     const elements = getElements();
-    appState.filters.status = elements.statusFilter.value;
+    const statusValue = elements.statusFilter.value;
+    console.log('🔍 Status filter changed to:', statusValue);
+    appState.filters.status = statusValue;
+    console.log('🔍 Full filters object:', appState.filters);
     loadDecks();
 }
 
@@ -2525,47 +3510,54 @@ function handleSortFilter() {
     loadDecks();
 }
 
-// Tags filter functions
-function toggleTagsFilter() {
-    const dropdown = document.getElementById('tagsFilterDropdown');
-    const toggle = document.getElementById('tagsFilterToggle');
-    
-    // Check if dropdown is visible using computed style, not inline style
-    const isVisible = dropdown.classList.contains('show') || 
-                     (window.getComputedStyle(dropdown).display !== 'none' && dropdown.style.display !== 'none');
-    
-    if (!isVisible) {
-        loadTagsFilter();
+// Tags filter functions - now handled entirely by Bootstrap events in setupFilterDropdowns()
+
+// Stats page specific functions
+function handleExportStats() {
+    try {
+        console.log('📊 Exporting statistics...');
         
-        // Position the dropdown using fixed positioning
-        const rect = toggle.getBoundingClientRect();
-        dropdown.style.top = (rect.bottom + 4) + 'px';  // 4px gap below button
-        dropdown.style.left = (rect.right - 200) + 'px'; // Align right edge with dropdown width
+        // Get current time range
+        const timeRange = document.getElementById('statsTimeRange')?.value || '30';
         
-        // S'assurer que le dropdown ne dépasse pas de l'écran
-        const dropdownWidth = 200;
-        if (rect.right - dropdownWidth < 0) {
-            dropdown.style.left = '10px'; // Marge minimale du bord gauche
+        // For now, show a notification that this feature is coming
+        if (window.notificationService) {
+            window.notificationService.info('Export des statistiques en cours de développement');
         }
         
-        dropdown.classList.add('show');
-        dropdown.style.display = 'block';
-        toggle.classList.add('active');
-    } else {
-        dropdown.classList.remove('show');
-        dropdown.style.display = 'none';
-        toggle.classList.remove('active');
+        // TODO: Implement actual stats export functionality
+        // This would typically make an API call to get stats data and download as CSV/JSON
+        
+    } catch (error) {
+        console.error('❌ Error exporting stats:', error);
+        if (window.notificationService) {
+            window.notificationService.error('Erreur lors de l\'export des statistiques');
+        }
     }
 }
 
-function handleTagsFilterOutsideClick(event) {
-    const dropdown = document.getElementById('tagsFilterDropdown');
-    const toggle = document.getElementById('tagsFilterToggle');
-    
-    if (!dropdown.contains(event.target) && !toggle.contains(event.target)) {
-        dropdown.classList.remove('show');
-        dropdown.style.display = 'none';
-        toggle.classList.remove('active');
+function handleStatsTimeRangeChange(event) {
+    try {
+        const selectedRange = event.target.value;
+        console.log(`📅 Stats time range changed to: ${selectedRange} days`);
+        
+        // TODO: Implement stats refresh with new time range
+        // This would typically trigger a refresh of the stats dashboard
+        
+        if (window.notificationService) {
+            const rangeText = {
+                '7': '7 derniers jours',
+                '30': '30 derniers jours', 
+                '90': '3 derniers mois',
+                '365': 'cette année',
+                'all': 'toute la période'
+            }[selectedRange] || selectedRange;
+            
+            window.notificationService.info(`Période mise à jour : ${rangeText}`);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error changing stats time range:', error);
     }
 }
 
@@ -2573,24 +3565,46 @@ async function loadTagsFilter() {
     const dropdown = document.getElementById('tagsFilterDropdown');
     
     try {
-        const response = await window.apiService.request('/api/v1/revision/tags/');
-        const tags = response.tags || [];
+        // Get tags from loaded decks instead of API call
+        const tags = new Set();
+        if (appState.decks) {
+            appState.decks.forEach(deck => {
+                if (deck.tags && Array.isArray(deck.tags)) {
+                    deck.tags.forEach(tag => tags.add(tag));
+                }
+            });
+        }
+        
+        const tagsArray = Array.from(tags).sort();
+        
+        if (tagsArray.length === 0) {
+            dropdown.innerHTML = `
+                <div class="tags-filter-empty" style="
+                    padding: 24px 16px;
+                    text-align: center;
+                    color: #9ca3af;
+                    font-size: 14px;
+                ">
+                    <i class="bi bi-tags" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+                    <div>Aucun tag disponible</div>
+                </div>
+            `;
+            return;
+        }
         
         dropdown.innerHTML = `
-            <div class="tags-filter-header">
-                <span>Filtrer par tags</span>
-                <button class="btn btn-link btn-sm p-0" onclick="clearTagsFilter()">
+            <li><h6 class="dropdown-header">Filtrer par tags 
+                <button onclick="clearTagsFilter()" class="btn btn-sm btn-link p-0 float-end">
                     <i class="bi bi-x-circle"></i>
                 </button>
-            </div>
-            <div class="tags-filter-list">
-                ${tags.map(tag => `
-                    <div class="tags-filter-item ${appState.filters.tags.includes(tag) ? 'active' : ''}" 
-                         onclick="toggleTagFilter('${tag}')">
-                        ${tag}
-                    </div>
-                `).join('')}
-            </div>
+            </h6></li>
+            ${tagsArray.map(tag => `
+                <li><a class="dropdown-item ${appState.filters.tags.includes(tag) ? 'active' : ''}" 
+                       href="#" onclick="toggleTagFilter('${tag}')">
+                    <i class="bi ${appState.filters.tags.includes(tag) ? 'bi-check-square' : 'bi-square'} me-2"></i>
+                    ${tag}
+                </a></li>
+            `).join('')}
         `;
     } catch (error) {
         console.error('Erreur lors du chargement des tags:', error);
@@ -2607,30 +3621,28 @@ function toggleTagFilter(tag) {
         appState.filters.tags.splice(index, 1);
     }
     
-    updateTagsFilterCounter();
+    updateTagsFilterText();
     loadDecks();
     loadTagsFilter(); // Refresh the filter display
 }
 
 function clearTagsFilter() {
     appState.filters.tags = [];
-    updateTagsFilterCounter();
+    updateTagsFilterText();
     loadDecks();
     loadTagsFilter(); // Refresh the filter display
 }
 
-function updateTagsFilterCounter() {
-    const countElement = document.getElementById('tagsFilterCount');
-    const toggleButton = document.getElementById('tagsFilterToggle');
+function updateTagsFilterText() {
+    const textElement = document.getElementById('tagsFilterText');
     const count = appState.filters.tags.length;
     
-    if (count > 0) {
-        countElement.textContent = count;
-        countElement.style.display = 'inline-block';
-        toggleButton.classList.add('active');
+    if (count === 0) {
+        textElement.textContent = 'Tous les tags';
+    } else if (count === 1) {
+        textElement.textContent = appState.filters.tags[0];
     } else {
-        countElement.style.display = 'none';
-        toggleButton.classList.remove('active');
+        textElement.textContent = `${count} tags`;
     }
 }
 
@@ -2646,13 +3658,46 @@ function quickEditTags(deckId) {
     
     console.log('✅ Deck trouvé:', deck.name, 'Tags actuels:', deck.tags);
     
+    // Debug pour vérifier la présence de la modal
+    const modal = document.getElementById('tagsManagementModal');
+    console.log('🔍 Modal tagsManagementModal existe dans le DOM:', !!modal);
+    
     // Store the deck ID for the tags management
-    if (window.tagsManagement) {
-        console.log('✅ tagsManagement trouvé, initialisation...');
-        window.tagsManagement.setCurrentDeck(deckId);
-        window.tagsManagement.showTagsManagement();
-    } else {
-        console.error('❌ window.tagsManagement non trouvé !');
+    // Essayer de charger le gestionnaire de tags de manière robuste
+    const loadTagsManager = () => {
+        if (window.tagsManagement) {
+            console.log('✅ window.tagsManagement trouvé');
+            window.tagsManagement.setCurrentDeck(deckId);
+            window.tagsManagement.showTagsManagement();
+            return true;
+        }
+        
+        // Fallback: Si tagsManagement n'existe pas, essayer de l'initialiser
+        if (window.TagsManagement && typeof window.TagsManagement === 'function') {
+            console.log('⚡ Initialisation de TagsManagement à la volée');
+            window.tagsManagement = new window.TagsManagement();
+            window.tagsManagement.init();
+            window.tagsManagement.setCurrentDeck(deckId);
+            window.tagsManagement.showTagsManagement();
+            return true;
+        }
+        
+        // Dernier fallback: Ouvrir la modal directement
+        console.warn('⚠️ Fallback: ouverture directe de la modal');
+        const modal = document.getElementById('tagsManagementModal');
+        if (modal) {
+            modal.style.display = 'block';
+            document.body.classList.add('modal-open');
+            console.log('✅ Modal ouverte directement');
+            return true;
+        }
+        
+        return false;
+    };
+    
+    if (!loadTagsManager()) {
+        console.error('❌ Impossible d\'ouvrir la gestion des tags');
+        console.log('🔍 Objets disponibles:', Object.keys(window).filter(k => k.includes('tags') || k.includes('Tags')));
     }
 }
 
@@ -2766,15 +3811,407 @@ function loadMoreDecks() {
     }
 }
 
+// Advanced Navbar Error Management System
+function showNavbarError(message, severity = 'warning', duration = 5000) {
+    try {
+        const errorId = `navbar-error-${Date.now()}`;
+        const severityClasses = {
+            info: 'alert-info',
+            warning: 'alert-warning', 
+            error: 'alert-danger',
+            critical: 'alert-danger border-danger'
+        };
+        
+        const severityIcons = {
+            info: 'bi-info-circle',
+            warning: 'bi-exclamation-triangle',
+            error: 'bi-x-circle', 
+            critical: 'bi-shield-exclamation'
+        };
+        
+        // Create error notification
+        const errorHtml = `
+            <div id="${errorId}" class="alert ${severityClasses[severity]} alert-dismissible fade show position-fixed" 
+                 style="top: 80px; right: 20px; z-index: 9999; min-width: 300px; max-width: 500px;">
+                <i class="bi ${severityIcons[severity]} me-2"></i>
+                <strong>${severity.toUpperCase()}:</strong> ${message}
+                <button type="button" class="btn-close" onclick="dismissNavbarError('${errorId}')"></button>
+            </div>
+        `;
+        
+        // Inject into DOM
+        const existingError = document.getElementById(errorId);
+        if (!existingError) {
+            document.body.insertAdjacentHTML('beforeend', errorHtml);
+            
+            // Auto-dismiss after duration
+            if (duration > 0) {
+                setTimeout(() => dismissNavbarError(errorId), duration);
+            }
+            
+            console.log(`📢 Navbar error shown: [${severity.toUpperCase()}] ${message}`);
+        }
+        
+        // Additional critical error handling
+        if (severity === 'critical') {
+            // Log to external service (if available)
+            if (window.analytics && window.analytics.track) {
+                window.analytics.track('Navbar Critical Error', {
+                    message, 
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent
+                });
+            }
+            
+            // Disable navbar temporarily to prevent cascading errors
+            const navbar = document.querySelector('.navbar-linguify');
+            if (navbar) {
+                navbar.style.pointerEvents = 'none';
+                navbar.style.opacity = '0.7';
+                
+                // Re-enable after 3 seconds
+                setTimeout(() => {
+                    navbar.style.pointerEvents = '';
+                    navbar.style.opacity = '';
+                }, 3000);
+            }
+        }
+        
+    } catch (errorHandlingError) {
+        console.error('❌ Error in error handling system:', errorHandlingError.message);
+        // Fallback to basic alert
+        alert(`NAVBAR ERROR [${severity}]: ${message}`);
+    }
+}
+
+function dismissNavbarError(errorId) {
+    try {
+        const errorElement = document.getElementById(errorId);
+        if (errorElement) {
+            errorElement.classList.remove('show');
+            setTimeout(() => errorElement.remove(), 300);
+            console.log(`✅ Error dismissed: ${errorId}`);
+        }
+    } catch (error) {
+        console.error('❌ Error dismissing error notification:', error.message);
+    }
+}
+
+// Advanced Navbar Health Check System
+function performNavbarHealthCheck() {
+    const healthReport = {
+        timestamp: new Date().toISOString(),
+        status: 'healthy',
+        issues: [],
+        warnings: []
+    };
+    
+    try {
+        // Check critical elements
+        const criticalElements = [
+            'statusFilterToggle',
+            'sortFilterToggle', 
+            'tagsFilterToggle',
+            'searchInput'
+        ];
+        
+        criticalElements.forEach(elementId => {
+            const element = document.getElementById(elementId);
+            if (!element) {
+                healthReport.issues.push(`Missing critical element: ${elementId}`);
+                healthReport.status = 'degraded';
+            }
+        });
+        
+        // Check appState integrity
+        if (!appState) {
+            healthReport.issues.push('appState is undefined');
+            healthReport.status = 'critical';
+        } else {
+            if (!appState.filters) {
+                healthReport.issues.push('appState.filters is undefined');
+                healthReport.status = 'degraded';
+            }
+            if (!Array.isArray(appState.decks)) {
+                healthReport.warnings.push('appState.decks is not an array');
+            }
+        }
+        
+        // Check Bootstrap dependencies
+        if (typeof bootstrap === 'undefined') {
+            healthReport.warnings.push('Bootstrap JavaScript not loaded');
+        }
+        
+        console.log('🔍 Navbar Health Check:', healthReport);
+        
+        if (healthReport.issues.length > 0) {
+            showNavbarError(
+                `Issues détectés: ${healthReport.issues.join(', ')}`, 
+                healthReport.status === 'critical' ? 'critical' : 'error'
+            );
+        }
+        
+        return healthReport;
+        
+    } catch (error) {
+        console.error('❌ Health check failed:', error.message);
+        return { status: 'unknown', error: error.message };
+    }
+}
+
+// Enhanced Bootstrap Dropdowns with Advanced Error Handling
+function setupFilterDropdowns() {
+    // Prevent multiple initializations
+    if (window.dropdownsInitialized) {
+        console.log('🔄 Dropdowns already initialized - skipping setup');
+        return;
+    }
+
+    try {
+        console.log('🔧 Setting up Bootstrap dropdowns with error handling...');
+        
+        // Perform health check first
+        const healthReport = performNavbarHealthCheck();
+        
+        if (healthReport.status === 'critical') {
+            throw new Error('Critical navbar health issues detected');
+        }
+        
+        // Set up Bootstrap dropdown events for tags filter (fixes the re-click issue)
+        const tagsToggle = document.getElementById('tagsFilterToggle');
+        if (tagsToggle) {
+            // Bootstrap event: dropdown is about to be shown
+            tagsToggle.addEventListener('show.bs.dropdown', function (event) {
+                try {
+                    console.log('🏷️ Tags dropdown about to open - loading tags...');
+                    loadTagsFilter().catch(error => {
+                        console.error('❌ Error loading tags on dropdown open:', error);
+                        showNavbarError('Erreur lors du chargement des tags', 'error');
+                    });
+                } catch (error) {
+                    console.error('❌ Error in show.bs.dropdown handler:', error.message);
+                    showNavbarError('Erreur lors de l\'ouverture du menu tags', 'error');
+                }
+            });
+            
+            // Bootstrap event: dropdown was hidden
+            tagsToggle.addEventListener('hidden.bs.dropdown', function (event) {
+                console.log('🏷️ Tags dropdown closed');
+            });
+            
+            console.log('✅ Tags dropdown events configured');
+        } else {
+            console.warn('Tags toggle button not found');
+        }
+        
+        // Set up error resilience for other dropdowns
+        ['statusFilterToggle', 'sortFilterToggle'].forEach(toggleId => {
+            const toggle = document.getElementById(toggleId);
+            if (toggle) {
+                toggle.addEventListener('show.bs.dropdown', function (event) {
+                    console.log(`📊 ${toggleId} dropdown opening`);
+                });
+                
+                toggle.addEventListener('hidden.bs.dropdown', function (event) {
+                    console.log(`📊 ${toggleId} dropdown closed`);
+                });
+            } else {
+                console.warn(`${toggleId} not found`);
+            }
+        });
+        
+        // Set up global error catching for dropdown interactions
+        document.addEventListener('click', function(event) {
+            try {
+                const target = event.target;
+                if (target.classList.contains('dropdown-item')) {
+                    const itemText = target.textContent.trim();
+                    console.log('📊 Dropdown item clicked:', itemText);
+                    
+                    // Gérer les actions spécifiques
+                    if (target.id === 'importCards' || itemText === 'Import Cards') {
+                        event.preventDefault();
+                        console.log('🔧 Calling showImportCardsForm()');
+                        if (typeof showImportCardsForm === 'function') {
+                            showImportCardsForm();
+                        } else {
+                            console.error('❌ showImportCardsForm function not found');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ Minor error in dropdown click handler:', error.message);
+            }
+        });
+        
+        // Mark as initialized
+        window.dropdownsInitialized = true;
+        console.log('✅ Bootstrap dropdowns initialized with advanced error handling');
+        
+    } catch (error) {
+        console.error('❌ CRITICAL ERROR in setupFilterDropdowns:', error.message);
+        showNavbarError('Erreur critique lors de l\'initialisation des filtres', 'critical');
+        
+        // Fallback: basic functionality
+        console.log('🔄 Attempting basic dropdown fallback...');
+        try {
+            const tagsToggle = document.querySelector('#tagsFilterToggle');
+            if (tagsToggle) {
+                tagsToggle.onclick = function() {
+                    console.log('🔄 Fallback tags toggle clicked');
+                    loadTagsFilter().catch(err => console.error('Fallback error:', err));
+                };
+            }
+        } catch (fallbackError) {
+            console.error('❌ Even fallback failed:', fallbackError.message);
+        }
+    }
+}
+
+function selectStatusFilter(value, text) {
+    try {
+        console.log(`📊 Status filter selected: ${value} (${text})`);
+        
+        const textElement = document.getElementById('statusFilterText');
+        const items = document.querySelectorAll('#statusFilterDropdown .dropdown-item');
+        
+        if (!textElement) {
+            throw new Error('Status filter text element not found');
+        }
+        
+        textElement.textContent = text;
+        
+        // Update selected state with error handling
+        items.forEach(item => {
+            try {
+                item.classList.remove('active');
+            } catch (itemError) {
+                console.warn('Error updating item state:', itemError.message);
+            }
+        });
+        
+        // Find and mark the selected item
+        const selectedItem = Array.from(items).find(item => 
+            item.onclick && item.onclick.toString().includes(`'${value}'`)
+        );
+        if (selectedItem) {
+            selectedItem.classList.add('active');
+        }
+        
+        // Update app state and reload decks with validation
+        if (!appState.filters) {
+            console.warn('appState.filters not initialized, creating...');
+            appState.filters = {};
+        }
+        
+        appState.filters.status = value;
+        loadDecks().catch(error => {
+            console.error('❌ Error reloading decks after status filter:', error);
+            showNavbarError('Erreur lors de l\'application du filtre', 'error');
+        });
+        
+        console.log('✅ Status filter applied successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in selectStatusFilter:', error.message);
+        showNavbarError('Erreur lors de la sélection du filtre status', 'error');
+    }
+}
+
+function selectSortFilter(value, text) {
+    try {
+        console.log(`📊 Sort filter selected: ${value} (${text})`);
+        
+        const textElement = document.getElementById('sortFilterText');
+        const items = document.querySelectorAll('#sortFilterDropdown .dropdown-item');
+        
+        if (!textElement) {
+            throw new Error('Sort filter text element not found');
+        }
+        
+        textElement.textContent = text;
+        
+        // Update selected state with error handling
+        items.forEach(item => {
+            try {
+                item.classList.remove('active');
+            } catch (itemError) {
+                console.warn('Error updating sort item state:', itemError.message);
+            }
+        });
+        
+        // Find and mark the selected item
+        const selectedItem = Array.from(items).find(item => 
+            item.onclick && item.onclick.toString().includes(`'${value}'`)
+        );
+        if (selectedItem) {
+            selectedItem.classList.add('active');
+        }
+        
+        // Update app state and reload decks with validation
+        if (!appState.filters) {
+            console.warn('appState.filters not initialized, creating...');
+            appState.filters = {};
+        }
+        
+        appState.filters.sort = value;
+        loadDecks().catch(error => {
+            console.error('❌ Error reloading decks after sort filter:', error);
+            showNavbarError('Erreur lors de l\'application du tri', 'error');
+        });
+        
+        console.log('✅ Sort filter applied successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in selectSortFilter:', error.message);
+        showNavbarError('Erreur lors de la sélection du tri', 'error');
+    }
+}
+
 // UI functions
 function toggleSidebar() {
     const elements = getElements();
+    const isVisible = elements.sidebar.classList.contains('show');
+    
+    // Toggle sidebar visibility
     elements.sidebar.classList.toggle('show');
+    
+    // Update button icon and accessibility attributes based on new state
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const icon = toggleBtn?.querySelector('i');
+    if (icon && toggleBtn) {
+        if (isVisible) {
+            // Sidebar will be hidden - show "expand" icon
+            icon.className = 'bi bi-layout-sidebar-inset-reverse';
+            toggleBtn.title = 'Afficher la barre latérale';
+            toggleBtn.setAttribute('aria-expanded', 'false');
+        } else {
+            // Sidebar will be shown - show "collapse" icon
+            icon.className = 'bi bi-layout-sidebar-inset';
+            toggleBtn.title = 'Masquer la barre latérale';
+            toggleBtn.setAttribute('aria-expanded', 'true');
+        }
+    }
 }
 
 function backToList() {
     const elements = getElements();
     elements.sidebar.classList.add('show');
+    
+    // Hide deck details when returning to list
+    hideAllSections();
+    
+    // Show welcome state
+    const welcomeState = document.getElementById('welcomeState');
+    if (welcomeState) {
+        welcomeState.style.display = 'block';
+    }
+    
+    // Clear selected deck from state
+    appState.selectedDeck = null;
+    
+    // Show general actions (create/import buttons)
+    updateNavbarActions(true);
 }
 
 // Helper function to get DOM elements
@@ -2842,7 +4279,7 @@ function getElements() {
         // Buttons
         createDeck: document.getElementById('createDeck'),
         importDeck: document.getElementById('importDeck'),
-        refreshDecks: document.getElementById('refreshDecks'),
+        refreshDecks: document.getElementById('refreshDecks') || document.getElementById('refreshStats'),
         backToList: document.getElementById('backToList'),
         addCard: document.getElementById('addCard'),
         submitCreate: document.getElementById('submitCreate'),
@@ -2895,14 +4332,48 @@ function setupEventListeners() {
     elements.statusFilter?.addEventListener('change', handleStatusFilter);
     elements.sortFilter?.addEventListener('change', handleSortFilter);
     
-    // Tags filter
-    document.getElementById('tagsFilterToggle')?.addEventListener('click', toggleTagsFilter);
-    document.addEventListener('click', handleTagsFilterOutsideClick);
+    // Keyboard shortcut for refresh (F5 or Ctrl+R)
+    document.addEventListener('keydown', (event) => {
+        // Check if user pressed F5 or Ctrl+R (but not Ctrl+Shift+R which is hard refresh)
+        if (event.key === 'F5' || 
+            ((event.ctrlKey || event.metaKey) && event.key === 'r' && !event.shiftKey)) {
+            
+            // Only intercept if we're focused on the revision app (not in input fields)
+            const activeElement = document.activeElement;
+            const isInInputField = activeElement && (
+                activeElement.tagName === 'INPUT' || 
+                activeElement.tagName === 'TEXTAREA' || 
+                activeElement.contentEditable === 'true'
+            );
+            
+            if (!isInInputField) {
+                event.preventDefault(); // Prevent page reload
+                console.log('🔄 Raccourci clavier détecté - actualisation...');
+                handleRefreshDecks(); // Call our custom refresh
+            }
+        }
+    });
+    
+    // Tags filter - now handled entirely by Bootstrap events in setupFilterDropdowns()
+    console.log('Tags filter configured via Bootstrap events in setupFilterDropdowns()');
     
     // Buttons
     elements.createDeck?.addEventListener('click', showCreateForm);
     elements.importDeck?.addEventListener('click', showImportForm);
-    elements.refreshDecks?.addEventListener('click', loadDecks);
+    elements.refreshDecks?.addEventListener('click', handleRefreshDecks);
+    
+    // Handle export stats button
+    const exportStatsBtn = document.getElementById('exportStats');
+    if (exportStatsBtn) {
+        exportStatsBtn.addEventListener('click', handleExportStats);
+    }
+    
+    // Handle stats time range selector
+    const statsTimeRange = document.getElementById('statsTimeRange');
+    if (statsTimeRange) {
+        statsTimeRange.addEventListener('change', handleStatsTimeRangeChange);
+    }
+    
     elements.backToList?.addEventListener('click', backToList);
     elements.addCard?.addEventListener('click', showCreateCardForm);
     
@@ -2922,6 +4393,26 @@ function setupEventListeners() {
     elements.saveEditDeck?.addEventListener('click', saveEditDeck);
     elements.cancelEditDeck?.addEventListener('click', hideEditDeckForm);
     elements.cancelEditDeckAlt?.addEventListener('click', hideEditDeckForm);
+    
+    // Auto-save for edit deck form
+    if (elements.editDeckName) {
+        elements.editDeckName.addEventListener('input', debounce(async () => {
+            console.log('🔄 Auto-saving deck name...');
+            await autoSaveEditDeck();
+        }, 1000));
+    }
+    if (elements.editDeckDescription) {
+        elements.editDeckDescription.addEventListener('input', debounce(async () => {
+            console.log('🔄 Auto-saving deck description...');
+            await autoSaveEditDeck();
+        }, 1000));
+    }
+    if (elements.editDeckVisibility) {
+        elements.editDeckVisibility.addEventListener('change', async () => {
+            console.log('🔄 Auto-saving deck visibility...');
+            await autoSaveEditDeck();
+        });
+    }
     
     // Import form
     elements.submitImport?.addEventListener('click', importNewDeck);
@@ -2950,6 +4441,8 @@ function setupEventListeners() {
     // Deck Management buttons
     document.getElementById('editDeck')?.addEventListener('click', showEditDeckForm);
     document.getElementById('exportDeck')?.addEventListener('click', exportDeck);
+    
+    // Import cards button - géré par le gestionnaire global des dropdown-item
     const shareButton = document.getElementById('shareDeck');
     if (shareButton) {
         shareButton.addEventListener('click', (e) => {
@@ -2961,8 +4454,30 @@ function setupEventListeners() {
     } else {
         console.log('Share button not found in DOM');
     }
+    
+    // Make private button
+    const makePrivateButton = document.getElementById('makePrivateDeck');
+    if (makePrivateButton) {
+        makePrivateButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Make private button clicked');
+            makePrivate();
+        });
+        console.log('Make private button event listener attached');
+    } else {
+        console.log('Make private button not found in DOM');
+    }
+    
+    document.getElementById('resetProgress')?.addEventListener('click', resetDeckProgress);
     document.getElementById('archiveDeck')?.addEventListener('click', archiveDeck);
     document.getElementById('deleteDeck')?.addEventListener('click', deleteDeckConfirm);
+    
+    // Double-click editing for deck name and description
+    document.getElementById('deckName')?.addEventListener('dblclick', enableInlineEditDeckName);
+    document.getElementById('deckDescription')?.addEventListener('dblclick', enableInlineEditDeckDescription);
+    
+    // Click on tags to edit
+    document.getElementById('deckTagsDisplay')?.addEventListener('click', showTagsEditor);
     
     // Create deck buttons
     document.querySelectorAll('.create-deck-btn').forEach(btn => {
@@ -2978,79 +4493,91 @@ function ensureModalsExist() {
     // Check if modals already exist
     const makePublicModal = document.getElementById('makePublicModal');
     const shareModal = document.getElementById('shareModal');
+    const makePrivateModal = document.getElementById('makePrivateModal');
     
     console.log('Checking modals existence:', {
         makePublicModal: !!makePublicModal,
-        shareModal: !!shareModal
+        shareModal: !!shareModal,
+        makePrivateModal: !!makePrivateModal
     });
     
-    if (makePublicModal && shareModal) {
-        console.log('Modals already exist in DOM');
+    if (makePublicModal && shareModal && makePrivateModal) {
+        console.log('All modals already exist in DOM');
         return;
     }
     
     console.log('Creating modals dynamically...');
     
-    // Create makePublicModal
+    // Create makePublicModal with Tailwind
     const makePublicModalHTML = `
-        <div class="modal fade" id="makePublicModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header border-0 pb-0">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle p-2 me-3 share-modal-icon-bg">
-                                <i class="bi bi-share share-modal-icon"></i>
+        <div class="fixed inset-0 z-50 hidden" id="makePublicModal" aria-hidden="true">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                <div class="relative bg-white rounded-lg max-w-lg w-full mx-auto shadow-xl">
+                    <!-- Header -->
+                    <div class="flex items-start justify-between p-6 pb-3">
+                        <div class="flex items-center">
+                            <div class="flex items-center justify-center w-12 h-12 bg-primary-100 rounded-full mr-4">
+                                <i class="bi bi-globe2 text-linguify-primary text-xl"></i>
                             </div>
                             <div>
-                                <h5 class="modal-title mb-0 share-modal-title">Partager votre jeu de cartes</h5>
-                                <p class="text-muted mb-0 small">Rendez votre jeu de cartes visible à tous</p>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1">Rendre votre deck public</h3>
+                                <p class="text-sm text-gray-500">Permettez à d'autres utilisateurs de le découvrir et l'utiliser</p>
                             </div>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="text-gray-400 hover:text-gray-600" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="bi bi-x-lg text-xl"></i>
+                        </button>
                     </div>
-                    <div class="modal-body pt-2">
-                        <div class="alert border-0" style="background-color: rgba(45, 91, 186, 0.08); border-left: 4px solid #2D5BBA !important;">
-                            <div class="d-flex align-items-start">
-                                <i class="bi bi-info-circle-fill me-2 mt-1" style="color: #2D5BBA;"></i>
-                                <div>
-                                    <strong style="color: #2D5BBA;">Jeu de cartes privé</strong><br>
-                                    <span style="color: #6B7280;">Ce jeu de cartes est actuellement privé. Pour le partager, vous devez le rendre public.</span>
+                    
+                    <!-- Body -->
+                    <div class="px-6 pb-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-info-circle-fill text-blue-400 text-lg"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-medium text-blue-800">Deck actuellement privé</h4>
+                                    <p class="mt-1 text-sm text-blue-700">Ce deck n'est visible que par vous. Rendez-le public pour le partager avec d'autres personnes.</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <h6 class="fw-semibold mb-2" style="color: #6B7280;">
-                                <i class="bi bi-eye me-1" style="color: #017e84;"></i>
-                                En rendant ce jeu de cartes public :
-                            </h6>
-                            <ul class="list-unstyled ms-3">
-                                <li class="mb-1" style="color: #6B7280;">
-                                    <i class="bi bi-check-circle me-2" style="color: #017e84;"></i>
-                                    Autres utilisateurs pourront le découvrir
+                        <div class="mb-4">
+                            <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
+                                <i class="bi bi-eye text-blue-600 mr-2"></i>
+                                Ce qui se passera en rendant ce deck public :
+                            </h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <i class="bi bi-check-circle text-green-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-gray-700">Il apparaîtra dans la section "Explorer" pour tous</span>
                                 </li>
-                                <li class="mb-1" style="color: #6B7280;">
-                                    <i class="bi bi-check-circle me-2" style="color: #017e84;"></i>
-                                    Vous pourrez partager le lien
+                                <li class="flex items-start">
+                                    <i class="bi bi-check-circle text-green-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-gray-700">Vous obtiendrez un lien partageable</span>
                                 </li>
-                                <li class="mb-1" style="color: #6B7280;">
-                                    <i class="bi bi-check-circle me-2" style="color: #017e84;"></i>
-                                    Vous restez propriétaire et pouvez le modifier
+                                <li class="flex items-start">
+                                    <i class="bi bi-check-circle text-green-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-gray-700">Vous restez propriétaire et gardez tous vos droits</span>
                                 </li>
                             </ul>
                         </div>
                         
-                        <div class="small" style="color: #6B7280;">
-                            <i class="bi bi-shield-check me-1" style="color: #017e84;"></i>
-                            Vous pourrez toujours rendre le jeu de cartes privé plus tard si nécessaire.
+                        <div class="flex items-start text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+                            <i class="bi bi-shield-check text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                            <span>Vous pourrez toujours rendre votre deck privé plus tard en un clic.</span>
                         </div>
                     </div>
-                    <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-color: #6B7280; color: #6B7280;">
-                            <i class="bi bi-x-circle me-1"></i>Annuler
+                    
+                    <!-- Footer -->
+                    <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 rounded-b-lg">
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle mr-2"></i>Annuler
                         </button>
-                        <button type="button" class="btn" id="makeDeckPublicBtn" style="background-color: #2D5BBA; border-color: #2D5BBA; color: white;">
-                            <i class="bi bi-share me-1"></i>Rendre public et partager
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" id="makeDeckPublicBtn">
+                            <i class="bi bi-globe2 mr-2"></i>Rendre public
                         </button>
                     </div>
                 </div>
@@ -3058,53 +4585,94 @@ function ensureModalsExist() {
         </div>
     `;
     
-    // Create shareModal
+    // Create shareModal with Tailwind
     const shareModalHTML = `
-        <div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header border-0 pb-0">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle p-2 me-3" style="background-color: rgba(0, 212, 170, 0.1);">
-                                <i class="bi bi-share" style="font-size: 1.5rem; color: #017e84;"></i>
+        <div class="fixed inset-0 z-50 hidden" id="shareModal" aria-hidden="true">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                <div class="relative bg-white rounded-lg max-w-lg w-full mx-auto shadow-xl">
+                    <!-- Header -->
+                    <div class="flex items-start justify-between p-6 pb-3">
+                        <div class="flex items-center">
+                            <div class="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mr-4">
+                                <i class="bi bi-globe2 text-green-600 text-xl"></i>
                             </div>
                             <div>
-                                <h5 class="modal-title mb-0" style="color: #017e84;">Partager votre jeu de cartes</h5>
-                                <p class="text-muted mb-0 small" id="shareModalDeckName">"Nom du jeu de cartes"</p>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1">Partager ce deck</h3>
+                                <p class="text-sm text-gray-500" id="shareModalDeckName">"Nom du jeu de cartes"</p>
                             </div>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="text-gray-400 hover:text-gray-600" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="bi bi-x-lg text-xl"></i>
+                        </button>
                     </div>
-                    <div class="modal-body pt-2">
-                        <p class="mb-3" style="color: #6B7280;">Partagez ce lien avec vos amis ou sur les réseaux sociaux :</p>
+                    
+                    <!-- Body -->
+                    <div class="px-6 pb-4">
+                        <p class="mb-4 text-sm text-gray-600">Votre deck est public ! Partagez ce lien avec qui vous voulez :</p>
                         
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold" style="color: #6B7280;">
-                                <i class="bi bi-link-45deg me-1" style="color: #2D5BBA;"></i>Lien de partage
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-900 mb-2">
+                                <i class="bi bi-link-45deg mr-2 text-blue-600"></i>Lien de partage
                             </label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" readonly id="shareUrl" style="background-color: #f8f9fa; border-color: #2D5BBA;">
-                                <button class="btn" id="copyShareUrlBtn" type="button" style="background-color: #2D5BBA; border-color: #2D5BBA; color: white;">
-                                    <i class="bi bi-clipboard me-1"></i>Copier
+                            <div class="flex">
+                                <input type="text" class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-l-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" readonly id="shareUrl">
+                                <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" id="copyShareUrlBtn" type="button">
+                                    <i class="bi bi-clipboard mr-1"></i>Copier
+                                </button>
+                            </div>
+                            <div class="mt-1 text-sm text-green-600 hidden" id="copySuccessMessage">
+                                <i class="bi bi-check-circle mr-1"></i>Le lien a été copié !
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
+                                <i class="bi bi-send text-blue-600 mr-2"></i>
+                                Partager rapidement
+                            </h4>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="px-3 py-2 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" id="shareByEmailBtn" type="button">
+                                    <i class="bi bi-envelope mr-1"></i>Email
+                                </button>
+                                <button class="px-3 py-2 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" id="shareByWhatsAppBtn" type="button">
+                                    <i class="bi bi-whatsapp mr-1"></i>WhatsApp
+                                </button>
+                                <button class="px-3 py-2 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" id="shareByMessengerBtn" type="button">
+                                    <i class="bi bi-messenger mr-1"></i>Messenger
+                                </button>
+                                <button class="px-3 py-2 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" id="shareBySMSBtn" type="button">
+                                    <i class="bi bi-chat-text mr-1"></i>SMS
                                 </button>
                             </div>
                         </div>
                         
-                        <div class="d-flex gap-2 flex-wrap">
-                            <button class="btn btn-sm social-share-btn" data-platform="twitter" type="button" style="border: 1px solid #8B5CF6; color: #8B5CF6; background-color: rgba(139, 92, 246, 0.05);">
-                                <i class="bi bi-twitter me-1"></i>Twitter
-                            </button>
-                            <button class="btn btn-sm social-share-btn" data-platform="facebook" type="button" style="border: 1px solid #8B5CF6; color: #8B5CF6; background-color: rgba(139, 92, 246, 0.05);">
-                                <i class="bi bi-facebook me-1"></i>Facebook
-                            </button>
-                            <button class="btn btn-sm social-share-btn" data-platform="linkedin" type="button" style="border: 1px solid #8B5CF6; color: #8B5CF6; background-color: rgba(139, 92, 246, 0.05);">
-                                <i class="bi bi-linkedin me-1"></i>LinkedIn
-                            </button>
+                        <div class="mb-4">
+                            <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
+                                <i class="bi bi-share text-blue-600 mr-2"></i>
+                                Réseaux sociaux
+                            </h4>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 social-share-btn" data-platform="twitter" type="button">
+                                    <i class="bi bi-twitter mr-1"></i>Twitter
+                                </button>
+                                <button class="px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 social-share-btn" data-platform="facebook" type="button">
+                                    <i class="bi bi-facebook mr-1"></i>Facebook
+                                </button>
+                                <button class="px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 social-share-btn" data-platform="linkedin" type="button">
+                                    <i class="bi bi-linkedin mr-1"></i>LinkedIn
+                                </button>
+                                <button class="px-3 py-2 text-xs font-medium text-orange-600 bg-orange-50 border border-orange-200 rounded-md hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 social-share-btn" data-platform="reddit" type="button">
+                                    <i class="bi bi-reddit mr-1"></i>Reddit
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-color: #6B7280; color: #6B7280;">
-                            <i class="bi bi-x-circle me-1"></i>Fermer
+                    
+                    <!-- Footer -->
+                    <div class="flex justify-end px-6 py-4 bg-gray-50 rounded-b-lg">
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle mr-2"></i>Fermer
                         </button>
                     </div>
                 </div>
@@ -3112,11 +4680,89 @@ function ensureModalsExist() {
         </div>
     `;
     
+    // Create makePrivateModal with Tailwind
+    const makePrivateModalHTML = `
+        <div class="fixed inset-0 z-50 hidden" id="makePrivateModal" aria-hidden="true">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                <div class="relative bg-white rounded-lg max-w-lg w-full mx-auto shadow-xl">
+                    <!-- Header -->
+                    <div class="flex items-start justify-between p-6 pb-3">
+                        <div class="flex items-center">
+                            <div class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mr-4">
+                                <i class="bi bi-lock text-gray-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1">Rendre votre deck privé</h3>
+                                <p class="text-sm text-gray-500">Retirer ce deck de la section publique</p>
+                            </div>
+                        </div>
+                        <button type="button" class="text-gray-400 hover:text-gray-600" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="bi bi-x-lg text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Body -->
+                    <div class="px-6 pb-4">
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-exclamation-triangle-fill text-amber-400 text-lg"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-medium text-amber-800">Attention</h4>
+                                    <p class="mt-1 text-sm text-amber-700">Cette action rendra votre deck privé. Il ne sera plus accessible publiquement.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
+                                <i class="bi bi-eye-slash text-amber-500 mr-2"></i>
+                                Ce qui va changer :
+                            </h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <i class="bi bi-x-circle text-red-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-gray-700">Il ne sera plus visible dans la section "Explorer"</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="bi bi-x-circle text-red-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-gray-700">Les liens de partage existants ne fonctionneront plus</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="bi bi-check-circle text-green-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm text-gray-700">Vous restez propriétaire et gardez tous vos droits</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="flex items-start text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+                            <i class="bi bi-shield-check text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                            <span>Vous pourrez rendre ce deck public à nouveau plus tard si vous le souhaitez.</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 rounded-b-lg">
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle mr-2"></i>Annuler
+                        </button>
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-br from-gray-400 to-gray-600 border border-transparent rounded-md shadow-sm hover:from-gray-500 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" id="makeDeckPrivateBtn">
+                            <i class="bi bi-lock mr-2"></i>Rendre privé
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
     // Add modals to DOM
     document.body.insertAdjacentHTML('beforeend', makePublicModalHTML);
     document.body.insertAdjacentHTML('beforeend', shareModalHTML);
+    document.body.insertAdjacentHTML('beforeend', makePrivateModalHTML);
     
-    console.log('Modals created successfully');
+    console.log('All modals created successfully (including makePrivateModal)');
 }
 
 // Debug function to check DOM state
@@ -3147,6 +4793,12 @@ function initializeApp() {
     // Setup share modal event handlers
     setupShareModalEventHandlers();
     
+    // Setup custom filter dropdowns
+    setupFilterDropdowns();
+    
+    // Show general actions on app init (no deck selected)
+    updateNavbarActions(true);
+    
     loadDecks();
     
     // Debug après un délai pour laisser le DOM se charger complètement
@@ -3173,6 +4825,7 @@ window.revisionMain = {
     showCreateForm,
     hideCreateForm,
     showImportForm,
+    showImportCardsForm,
     hideImportForm,
     showCreateCardForm,
     hideCreateCardForm,
@@ -3203,8 +4856,14 @@ window.revisionMain = {
     toggleSidebar,
     backToList,
     setupEventListeners,
+    setupFilterDropdowns,
     initializeApp,
     getElements,
+    
+    // Advanced Error Management
+    showNavbarError,
+    dismissNavbarError,
+    performNavbarHealthCheck,
     
     
     // Import Preview
@@ -3233,8 +4892,14 @@ window.revisionMain = {
     showEditDeckForm,
     hideEditDeckForm,
     saveEditDeck,
+    autoSaveEditDeck,
     exportDeck,
     shareDeck,
+    enableInlineEditDeckName,
+    enableInlineEditDeckDescription,
+    showTagsEditor,
+    makePrivate,
+    executeMakePrivate,
     archiveDeck,
     showArchiveConfirmationModal,
     executeArchiveDeck,
@@ -3245,8 +4910,75 @@ window.revisionMain = {
     // Share functions
     showShareModal,
     setupShareModalEventHandlers,
-    shareOnSocial
+    shareOnSocial,
+    shareByEmail,
+    shareByWhatsApp,
+    shareByMessenger,
+    shareBySMS
 };
+
+// ===== FONCTIONS UTILITAIRES TAILWIND MODALS =====
+
+function showTailwindModal(modalElement) {
+    if (!modalElement) return;
+    
+    // Remove hidden class and show modal
+    modalElement.classList.remove('hidden');
+    modalElement.setAttribute('aria-hidden', 'false');
+    
+    // Add modal-open class to body to prevent scrolling
+    document.body.classList.add('overflow-hidden');
+    
+    // Focus management
+    const focusableElement = modalElement.querySelector('button, input, textarea, select, [tabindex]:not([tabindex="-1"])');
+    if (focusableElement) {
+        setTimeout(() => focusableElement.focus(), 100);
+    }
+    
+    // Handle escape key
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            hideTailwindModal(modalElement);
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
+    
+    // Handle backdrop clicks (the overlay behind the modal)
+    const backdrop = modalElement.querySelector('.fixed.inset-0.bg-gray-500');
+    if (backdrop) {
+        backdrop.addEventListener('click', () => hideTailwindModal(modalElement));
+    }
+    
+    // Handle close buttons
+    const closeButtons = modalElement.querySelectorAll('[data-bs-dismiss="modal"]');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => hideTailwindModal(modalElement));
+    });
+}
+
+function hideTailwindModal(modalElement) {
+    if (!modalElement) return;
+    
+    // Add hidden class and hide modal
+    modalElement.classList.add('hidden');
+    modalElement.setAttribute('aria-hidden', 'true');
+    
+    // Remove modal-open class from body
+    document.body.classList.remove('overflow-hidden');
+    
+    // Clean up event listeners is handled automatically by removing the modal from DOM or using modern event handling
+}
+
+// Export global functions for modal onclick handlers and filter dropdowns
+window.confirmResetProgress = confirmResetProgress;
+window.selectStatusFilter = selectStatusFilter;
+window.selectSortFilter = selectSortFilter;
+window.toggleTagFilter = toggleTagFilter;
+window.clearTagsFilter = clearTagsFilter;
+window.showNavbarError = showNavbarError;
+window.dismissNavbarError = dismissNavbarError;
+window.selectDeck = selectDeck;
 
 // Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeApp);

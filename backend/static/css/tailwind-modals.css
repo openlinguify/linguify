@@ -1,0 +1,7182 @@
+/* Tailwind CSS with Linguify Design System */
+/* Linguify Color Variables */
+:root {
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #017E84;
+    --linguify-gray: #6B7280;
+    --linguify-primary-light: #4F7BD9;
+    --linguify-primary-dark: #1E4A8C;
+    --linguify-secondary-light: #A78BFA;
+    --linguify-secondary-dark: #7C3AED;
+    --linguify-accent-light: #26E4B8;
+    --linguify-accent-dark: #00B894;
+    --linguify-success: #10B981;
+    --linguify-warning: #F59E0B;
+    --linguify-error: #EF4444;
+    --linguify-danger: #DC2626;
+    
+    /* Additional colors for consistency */
+    --linguify-white: #ffffff;
+    --linguify-gray-50: #f9fafb;
+    --linguify-gray-100: #f3f4f6;
+    --linguify-gray-200: #e5e7eb;
+    --linguify-gray-300: #d1d5db;
+    --linguify-gray-400: #9ca3af;
+    --linguify-gray-500: #6b7280;
+    --linguify-gray-600: #4b5563;
+    --linguify-gray-700: #374151;
+    --linguify-gray-800: #1f2937;
+    --linguify-gray-900: #111827;
+    
+    /* Gray aliases for convenience */
+    --linguify-gray-light: var(--linguify-gray-200);
+    --linguify-gray-dark: var(--linguify-gray-700);
+    
+    /* Gradient officiel */
+    --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+}
+
+/* ===== EXPLORER REVISION MODERNE - INTERFACE PARFAITE ===== */
+
+/* ===== LAYOUT PRINCIPAL EXPLORER ===== */
+.app-main-layout {
+    display: flex !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* ===== SIDEBAR MODERNE EXPLORER ===== */
+.modern-sidebar,
+#exploreSidebar.sidebar-linguify {
+    width: 350px !important;
+    background: var(--linguify-white) !important;
+    border-right: 1px solid var(--linguify-gray-200) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 2px 0 20px rgba(45, 91, 186, 0.04) !important;
+    position: relative !important;
+    z-index: 100 !important;
+    flex-shrink: 0 !important;
+}
+
+.sidebar-content-enhanced,
+#exploreSidebar .sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+}
+
+/* Header moderne de la sidebar */
+.sidebar-modern-header {
+    background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #f1f5f9 100%);
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--linguify-gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+.sidebar-icon-primary {
+    width: 36px;
+    height: 36px;
+    background: var(--linguify-gradient);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.sidebar-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--linguify-gray-800);
+    margin: 0;
+}
+
+.sidebar-subtitle {
+    font-size: 0.8125rem;
+    color: var(--linguify-gray-500);
+    margin: 0;
+}
+
+.sidebar-collapse-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--linguify-gray-500);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.sidebar-collapse-btn:hover {
+    background: var(--linguify-gray-200);
+    color: var(--linguify-gray-600);
+    transform: scale(1.05);
+}
+
+/* Section des filtres rapides */
+.quick-filters-section {
+    padding: 1rem 1.25rem;
+    background: var(--linguify-white);
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.quick-filters-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.filter-chip {
+    background: var(--linguify-gray-50);
+    border: 1.5px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    padding: 0.625rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--linguify-gray-600);
+    text-align: center;
+    justify-content: center;
+}
+
+.filter-chip:hover {
+    border-color: var(--linguify-primary);
+    background: rgba(45, 91, 186, 0.04);
+    transform: translateY(-1px);
+}
+
+.filter-chip.active {
+    background: var(--linguify-gradient);
+    border-color: var(--linguify-primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.25);
+}
+
+.filter-chip i {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Sections collapsibles */
+.filter-section {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.section-header {
+    background: var(--linguify-gray-50);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.section-header:hover {
+    background: #f1f5f9;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--linguify-gray-700);
+}
+
+.section-title i {
+    font-size: 1rem;
+    color: var(--linguify-primary);
+    width: 1.125rem;
+    text-align: center;
+}
+
+.toggle-icon {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-500);
+    transition: transform 0.2s ease;
+}
+
+.section-header.expanded .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.section-content {
+    padding: 1.25rem;
+    background: var(--linguify-white);
+    border-bottom: 1px solid #f1f5f9;
+    display: block;
+}
+
+.section-content.collapsed {
+    display: none;
+}
+
+/* Groupes de filtres */
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-group:last-child {
+    margin-bottom: 0;
+}
+
+.filter-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--linguify-primary);
+    margin-bottom: 0.75rem;
+}
+
+.filter-label i {
+    font-size: 0.9375rem;
+    width: 1rem;
+    text-align: center;
+}
+
+/* Custom Select moderne */
+.custom-select-wrapper {
+    position: relative;
+}
+
+.modern-select {
+    width: 100%;
+    padding: 0.625rem 2.5rem 0.625rem 0.875rem;
+    border: 1.5px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    background: var(--linguify-white);
+    font-size: 0.8125rem;
+    color: var(--linguify-gray-700);
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modern-select:focus {
+    outline: none;
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+.select-icon {
+    position: absolute;
+    right: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.875rem;
+    color: var(--linguify-gray-500);
+    pointer-events: none;
+}
+
+/* Filtre par langue avec drapeaux */
+.language-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.language-option {
+    background: var(--linguify-gray-50);
+    border: 1.5px solid var(--linguify-gray-200);
+    border-radius: 6px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.75rem;
+}
+
+.language-option:hover {
+    border-color: var(--linguify-primary);
+    background: rgba(45, 91, 186, 0.04);
+}
+
+.language-option.active {
+    background: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.3);
+}
+
+.lang-flag {
+    font-size: 1.125rem;
+    line-height: 1;
+}
+
+.lang-name {
+    font-weight: 500;
+    font-size: 0.6875rem;
+}
+
+/* Sélecteur de niveau */
+.level-selector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.level-btn {
+    background: var(--linguify-gray-50);
+    border: 1.5px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    padding: 0.5rem 0.625rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-width: 60px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+}
+
+.level-btn:hover {
+    border-color: var(--linguify-primary);
+    background: rgba(45, 91, 186, 0.04);
+    transform: translateY(-1px);
+}
+
+.level-btn.active {
+    background: var(--linguify-gradient);
+    border-color: var(--linguify-primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.3);
+}
+
+.level-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.level-icon.all-levels {
+    background: linear-gradient(135deg, var(--linguify-gray-500), var(--linguify-gray-400));
+}
+
+.level-icon.beginner {
+    background: linear-gradient(135deg, var(--linguify-success), #34d399);
+}
+
+.level-icon.intermediate {
+    background: linear-gradient(135deg, var(--linguify-warning), #fbbf24);
+}
+
+.level-icon.advanced {
+    background: linear-gradient(135deg, var(--linguify-error), #f87171);
+}
+
+.level-icon.expert {
+    background: linear-gradient(135deg, var(--linguify-secondary), var(--linguify-secondary-light));
+}
+
+/* Input de recherche amélioré */
+.search-input-enhanced {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon-small {
+    position: absolute;
+    left: 0.875rem;
+    font-size: 0.875rem;
+    color: var(--linguify-gray-400);
+    z-index: 2;
+}
+
+.modern-input {
+    width: 100%;
+    padding: 0.625rem 2.5rem 0.625rem 2.25rem;
+    border: 1.5px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    background: var(--linguify-white);
+    font-size: 0.8125rem;
+    color: var(--linguify-gray-700);
+    transition: all 0.2s ease;
+}
+
+.modern-input:focus {
+    outline: none;
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+.clear-input {
+    position: absolute;
+    right: 0.625rem;
+    background: none;
+    border: none;
+    color: var(--linguify-gray-400);
+    font-size: 0.875rem;
+    cursor: pointer;
+    z-index: 2;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.clear-input:hover {
+    color: var(--linguify-gray-500);
+    background: var(--linguify-gray-100);
+}
+
+/* Range selector */
+.range-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.range-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.range-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid var(--linguify-gray-200);
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.range-input:focus {
+    outline: none;
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+}
+
+.range-separator {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-500);
+    font-weight: 500;
+}
+
+.range-presets {
+    display: flex;
+    gap: 0.375rem;
+}
+
+.preset-btn {
+    background: #f1f5f9;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 5px;
+    padding: 0.375rem 0.625rem;
+    font-size: 0.6875rem;
+    color: var(--linguify-gray-600);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    text-align: center;
+}
+
+.preset-btn:hover {
+    background: var(--linguify-gray-200);
+    color: var(--linguify-gray-700);
+}
+
+.preset-btn.active {
+    background: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+}
+
+/* Rating selector avec étoiles */
+.rating-selector {
+    margin-top: 0.25rem;
+}
+
+.star-rating-filter {
+    display: flex;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+}
+
+.star-btn {
+    background: var(--linguify-gray-50);
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 6px;
+    padding: 0.375rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    font-size: 0.6875rem;
+    min-height: 28px;
+}
+
+.star-btn:hover {
+    background: #f1f5f9;
+    border-color: var(--linguify-gray-300);
+}
+
+.star-btn.active {
+    background: linear-gradient(135deg, var(--linguify-warning), #fbbf24);
+    border-color: var(--linguify-warning);
+    color: white;
+}
+
+.star-btn i {
+    font-size: 0.75rem;
+    color: var(--linguify-warning);
+}
+
+.star-btn.active i {
+    color: white;
+}
+
+.star-text {
+    font-weight: 500;
+    font-size: 0.6875rem;
+}
+
+/* Actions des filtres */
+.filter-actions {
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.active-filters-count {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--linguify-gray-500);
+}
+
+.count-badge {
+    background: var(--linguify-primary);
+    color: white;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.125rem 0.375rem;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.clear-btn {
+    flex: 1;
+    background: var(--linguify-gray-50);
+    border: 1px solid var(--linguify-gray-200);
+    color: var(--linguify-gray-500);
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+}
+
+.clear-btn:hover {
+    background: #f1f5f9;
+    border-color: var(--linguify-gray-300);
+    color: var(--linguify-gray-600);
+}
+
+.apply-btn {
+    flex: 2;
+    background: var(--linguify-gradient);
+    border: none;
+    color: white;
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.apply-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);
+}
+
+.btn-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: inherit;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===== BADGES ET COMPTEURS MODERNES ===== */
+.collection-count-badge,
+.favorites-count-badge {
+    background: var(--linguify-gradient);
+    color: white;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.125rem 0.375rem;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.trending-badge {
+    background: linear-gradient(135deg, var(--linguify-warning), #fbbf24);
+    color: white;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    border-radius: 8px;
+}
+
+/* ===== ÉTATS VIDES AMÉLIORÉS ===== */
+.empty-collections,
+.empty-favorites {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    color: var(--linguify-gray-400);
+}
+
+.empty-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.6;
+}
+
+.empty-collections p,
+.empty-favorites p {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: var(--linguify-gray-500);
+}
+
+.empty-collections small,
+.empty-favorites small {
+    font-size: 0.75rem;
+    color: var(--linguify-gray-400);
+}
+
+/* ===== ZONE PRINCIPALE CONTENU ===== */
+.revision-study {
+    flex: 1 !important;
+    background: var(--linguify-gray-50) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    position: relative !important;
+}
+
+/* ===== INTERFACE DE RECHERCHE MODERNE ===== */
+.modern-search-container {
+    background: linear-gradient(135deg, var(--linguify-white) 0%, var(--linguify-gray-50) 100%);
+    border-bottom: 1px solid var(--linguify-gray-200);
+    padding: 1.5rem 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.search-header-enhanced {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.search-title-group h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--linguify-gray-800);
+    margin-bottom: 0.25rem;
+}
+
+.search-subtitle {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-600);
+    margin: 0;
+}
+
+.highlight-number {
+    font-weight: 700;
+    color: var(--linguify-primary);
+}
+
+.view-mode-selector {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 0.25rem;
+    gap: 0.25rem;
+}
+
+.view-mode-btn {
+    background: none;
+    border: none;
+    color: var(--linguify-gray-600);
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.view-mode-btn:hover {
+    color: var(--linguify-gray-700);
+    background: rgba(100, 116, 139, 0.1);
+}
+
+.view-mode-btn.active {
+    background: white;
+    color: var(--linguify-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+    .modern-sidebar,
+    #exploreSidebar.sidebar-linguify {
+        width: 320px;
+    }
+    
+    .search-header-enhanced {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .quick-filters-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .modern-sidebar,
+    #exploreSidebar.sidebar-linguify {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        width: 100%;
+        max-width: 350px;
+        height: calc(100vh - 64px);
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .modern-sidebar.show,
+    #exploreSidebar.sidebar-linguify.show {
+        transform: translateX(0);
+    }
+    
+    .modern-search-container {
+        padding: 1rem;
+    }
+    
+    .quick-filters-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .level-selector {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ===== KANBAN LINGUIFY COMPONENTS ===== */
+
+/* Kanban Layout */
+.kanban-layout {
+    height: 100vh;
+    min-height: 100vh;
+}
+
+.kanban-container {
+    flex: 1;
+    overflow-y: auto;
+    height: 100%;
+    padding: 0px;
+}
+
+.kanban-board {
+    overflow-x: auto;
+    height: 100%;
+    padding: 0px;
+    padding-bottom: 24px;
+}
+
+.kanban-columns {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    height: calc(100vh - 64px - 48px);
+    min-width: 100%;
+}
+
+/* Kanban Column */
+.kanban-column {
+    flex: 1;
+    min-width: 280px;
+    max-width: none;
+    height: 100%;
+}
+
+/* Add Stage Column */
+.add-stage-column {
+    flex: 0 0 auto;
+    width: 200px;
+    min-width: 200px;
+}
+
+.kanban-column-card {
+    background: white;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    height: 100%;
+}
+
+/* Column Header - Definition consolidée */
+
+.column-title-linguify {
+    font-weight: 600;
+    color: var(--linguify-primary-dark);
+    margin-bottom: 0;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    /* Prevent title from growing too much */
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    padding: 2px 6px;
+    position: relative;
+    display: inline-block;
+}
+
+.badge-linguify {
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-light) 100%);
+    color: white;
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-weight: 600;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(45, 91, 186, 0.2);
+    min-width: 24px;
+    text-align: center;
+}
+
+.btn-linguify-secondary {
+    background-color: white;
+    border: 1px solid var(--linguify-gray-300);
+    color: var(--linguify-gray-600);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-linguify-secondary:hover {
+    background-color: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(45, 91, 186, 0.2);
+}
+
+/* Tasks Container */
+.kanban-tasks-container {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    height: calc(100% - 90px);
+    background: linear-gradient(to bottom, #ffffff 0%, var(--linguify-gray-50) 100%);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Task Cards */
+.task-card-linguify {
+    background: white;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}
+
+.task-card-linguify:hover {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+}
+
+.task-title-linguify {
+    font-weight: 500;
+    color: var(--linguify-primary);
+    margin-bottom: 0;
+    font-size: 14px;
+    flex: 1;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    width: 100%;
+    height: 4px;
+    background-color: var(--linguify-gray-200);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
+    transition: width 0.3s ease;
+}
+
+/* Tasks List Container */
+.tasks-list {
+    flex: 1;
+}
+
+/* Add Stage Button */
+.add-stage-btn-linguify {
+    width: 160px;
+    height: 240px;
+    border: 2px dashed var(--linguify-primary);
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.02) 0%, rgba(1, 126, 132, 0.02) 100%);
+    color: var(--linguify-primary);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.add-stage-btn-linguify:hover {
+    border-color: var(--linguify-primary);
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.08) 0%, rgba(1, 126, 132, 0.08) 100%);
+    color: var(--linguify-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(45, 91, 186, 0.15);
+}
+
+/* Drag and Drop Effects */
+.kanban-card.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+.kanban-column.drag-over {
+    background-color: rgba(45, 91, 186, 0.05);
+}
+
+/* Custom Scrollbar */
+.kanban-tasks-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.kanban-tasks-container::-webkit-scrollbar-track {
+    background: var(--linguify-gray-100);
+}
+
+.kanban-tasks-container::-webkit-scrollbar-thumb {
+    background: var(--linguify-gray-300);
+    border-radius: 2px;
+}
+
+.kanban-tasks-container::-webkit-scrollbar-thumb:hover {
+    background: var(--linguify-gray-400);
+}
+
+/* ===== LIST VIEW LINGUIFY COMPONENTS ===== */
+
+/* List Layout - See main definition below */
+
+/* List Header */
+.list-header-linguify {
+    background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #ffffff 100%);
+    border-bottom: 1px solid var(--linguify-gray-200);
+    padding: 20px 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.list-header-linguify::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--linguify-gradient);
+}
+
+.list-title-linguify {
+    font-weight: 600;
+    color: var(--linguify-primary-dark);
+    margin-bottom: 0;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+}
+
+/* Filters Section */
+.list-filters-linguify {
+    background: white;
+    border-bottom: 1px solid var(--linguify-gray-200);
+    padding: 16px 24px;
+    flex-shrink: 0;
+}
+
+.filter-card {
+    background: var(--linguify-gray-50);
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 0;
+}
+
+.filter-group-linguify {
+    margin-bottom: 0;
+}
+
+.filter-label-linguify {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--linguify-gray-700);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.filter-input-linguify {
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.filter-input-linguify:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+    outline: none;
+}
+
+/* Tasks Container */
+.list-content-linguify {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    background: linear-gradient(to bottom, #ffffff 0%, var(--linguify-gray-50) 100%);
+}
+
+/* Task List Items */
+.task-item-linguify {
+    background: white;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}
+
+.task-item-linguify:hover {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.1);
+    transform: translateY(-2px);
+}
+
+.task-item-completed {
+    opacity: 0.6;
+    background: var(--linguify-gray-50);
+}
+
+.task-item-header {
+    display: flex;
+    align-items: start;
+    justify-content: between;
+    margin-bottom: 12px;
+}
+
+.task-checkbox-linguify {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.task-checkbox-linguify:checked {
+    background: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+}
+
+.task-title-list-linguify {
+    font-weight: 600;
+    color: var(--linguify-primary-dark);
+    font-size: 16px;
+    margin-bottom: 4px;
+    flex: 1;
+}
+
+.task-description-linguify {
+    color: var(--linguify-gray-600);
+    font-size: 14px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.task-meta-linguify {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--linguify-gray-500);
+}
+
+.task-stage-badge {
+    background: var(--linguify-primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.task-project-badge {
+    background: var(--linguify-accent);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.task-priority-star {
+    color: var(--linguify-warning);
+    font-size: 14px;
+}
+
+.task-actions-linguify {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--linguify-gray-200);
+}
+
+.task-action-btn {
+    background: var(--linguify-gray-100);
+    border: 1px solid var(--linguify-gray-300);
+    color: var(--linguify-gray-600);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.task-action-btn:hover {
+    background: var(--linguify-primary);
+    border-color: var(--linguify-primary);
+    color: white;
+}
+
+/* Empty State */
+.list-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--linguify-gray-500);
+}
+
+.empty-state-icon {
+    font-size: 48px;
+    color: var(--linguify-gray-300);
+    margin-bottom: 16px;
+}
+
+.empty-state-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--linguify-gray-600);
+    margin-bottom: 8px;
+}
+
+.empty-state-description {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .kanban-column {
+        width: 250px !important;
+        min-width: 250px !important;
+    }
+    
+    .kanban-container {
+        padding: 12px;
+    }
+    
+    .list-header-linguify,
+    .list-filters-linguify,
+    .list-content-linguify {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    .task-meta-linguify {
+        flex-direction: column;
+        align-items: start;
+        gap: 8px;
+    }
+}
+
+/* Layout & Positioning */
+.fixed { position: fixed; }
+.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+.z-50 { z-index: 50; }
+.hidden { display: none; }
+.relative { position: relative; }
+
+/* Flexbox & Grid */
+.flex { display: flex; }
+.grid { display: grid; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+.flex-1 { flex: 1 1 0%; }
+.flex-shrink-0 { flex-shrink: 0; }
+.flex-wrap { flex-wrap: wrap; }
+
+/* Grid */
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+.gap-8 { gap: 2rem; }
+
+/* Responsive Grid */
+@media (min-width: 768px) {
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Spacing */
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.pb-3 { padding-bottom: 0.75rem; }
+.pb-4 { padding-bottom: 1rem; }
+.mr-1 { margin-right: 0.25rem; }
+.mr-2 { margin-right: 0.5rem; }
+.mr-3 { margin-right: 0.75rem; }
+.mr-4 { margin-right: 1rem; }
+.ml-3 { margin-left: 0.75rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-0\.5 { margin-top: 0.125rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* Sizing */
+.w-12 { width: 3rem; }
+.h-12 { height: 3rem; }
+.w-full { width: 100%; }
+.max-w-lg { max-width: 32rem; }
+.min-h-screen { min-height: 100vh; }
+
+/* Colors - Backgrounds (Linguify Design System) */
+.bg-white { background-color: var(--linguify-white); }
+.bg-gray-50 { background-color: var(--linguify-gray-50); }
+.bg-gray-100 { background-color: var(--linguify-gray-100); }
+.bg-gray-500 { background-color: var(--linguify-gray-500); }
+.bg-linguify-primary { background-color: var(--linguify-primary); }
+.bg-linguify-primary-light { background-color: var(--linguify-primary-light); }
+.bg-linguify-accent { background-color: var(--linguify-accent); }
+.bg-linguify-accent-light { background-color: var(--linguify-accent-light); }
+.bg-linguify-success { background-color: var(--linguify-success); }
+.bg-linguify-warning { background-color: var(--linguify-warning); }
+.bg-linguify-error { background-color: var(--linguify-error); }
+.bg-opacity-75 { background-color: rgba(107, 114, 128, 0.75); }
+
+/* Linguify Primary Variants */
+.bg-primary-50 { background-color: rgba(45, 91, 186, 0.05); }
+.bg-primary-100 { background-color: rgba(45, 91, 186, 0.1); }
+.bg-primary-200 { background-color: rgba(45, 91, 186, 0.2); }
+
+/* Linguify Accent Variants */
+.bg-accent-50 { background-color: rgba(0, 212, 170, 0.05); }
+.bg-accent-100 { background-color: rgba(0, 212, 170, 0.1); }
+.bg-accent-200 { background-color: rgba(0, 212, 170, 0.2); }
+
+/* Success/Warning/Error Variants */
+.bg-success-50 { background-color: rgba(16, 185, 129, 0.05); }
+.bg-success-100 { background-color: rgba(16, 185, 129, 0.1); }
+.bg-warning-50 { background-color: rgba(245, 158, 11, 0.05); }
+.bg-warning-100 { background-color: rgba(245, 158, 11, 0.1); }
+.bg-error-50 { background-color: rgba(239, 68, 68, 0.05); }
+.bg-error-100 { background-color: rgba(239, 68, 68, 0.1); }
+
+/* Hardcoded Colors as Fallback */
+.bg-linguify-primary { background-color: #2D5BBA !important; }
+.bg-linguify-accent { background-color: #017E84 !important; }
+.bg-linguify-success { background-color: #10B981 !important; }
+.bg-linguify-warning { background-color: #F59E0B !important; }
+.bg-linguify-error { background-color: #EF4444 !important; }
+.bg-linguify-gradient { background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%) !important; }
+
+/* Colors - Text (Linguify Design System) */
+.text-white { color: var(--linguify-white); }
+.text-gray-400 { color: var(--linguify-gray-400); }
+.text-gray-500 { color: var(--linguify-gray-500); }
+.text-gray-600 { color: var(--linguify-gray-600); }
+.text-gray-700 { color: var(--linguify-gray-700); }
+.text-gray-900 { color: var(--linguify-gray-900); }
+.text-linguify-primary { color: var(--linguify-primary); }
+.text-linguify-primary-light { color: var(--linguify-primary-light); }
+.text-linguify-primary-dark { color: var(--linguify-primary-dark); }
+.text-linguify-secondary { color: var(--linguify-secondary); }
+.text-linguify-accent { color: var(--linguify-accent); }
+.text-linguify-accent-light { color: var(--linguify-accent-light); }
+.text-linguify-accent-dark { color: var(--linguify-accent-dark); }
+.text-linguify-success { color: var(--linguify-success); }
+.text-linguify-warning { color: var(--linguify-warning); }
+.text-linguify-error { color: var(--linguify-error); }
+
+/* Text Colors Hardcoded Fallback */
+.text-linguify-primary { color: #2D5BBA !important; }
+.text-linguify-primary-dark { color: #1E4A8C !important; }
+.text-linguify-secondary { color: #8B5CF6 !important; }
+.text-linguify-accent { color: #017E84 !important; }
+.text-linguify-success { color: #10B981 !important; }
+.text-linguify-warning { color: #F59E0B !important; }
+.text-linguify-error { color: #EF4444 !important; }
+
+/* Typography */
+.text-xs { font-size: 0.75rem; line-height: 1rem; }
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+
+/* Borders (Linguify Design System) */
+.border { border-width: 1px; }
+.border-transparent { border-color: transparent; }
+.border-gray-300 { border-color: var(--linguify-gray-300); }
+.border-linguify-primary { border-color: var(--linguify-primary); }
+.border-linguify-accent { border-color: var(--linguify-accent); }
+.border-linguify-success { border-color: var(--linguify-success); }
+.border-linguify-warning { border-color: var(--linguify-warning); }
+.border-linguify-error { border-color: var(--linguify-error); }
+.border-primary-200 { border-color: rgba(45, 91, 186, 0.2); }
+.border-accent-200 { border-color: rgba(0, 212, 170, 0.2); }
+.border-success-200 { border-color: rgba(16, 185, 129, 0.2); }
+.border-warning-200 { border-color: rgba(245, 158, 11, 0.2); }
+.border-error-200 { border-color: rgba(239, 68, 68, 0.2); }
+
+/* Border Colors Hardcoded Fallback */
+.border-linguify-primary { border-color: #2D5BBA !important; }
+.border-linguify-accent { border-color: #017E84 !important; }
+.border-linguify-success { border-color: #10B981 !important; }
+.border-linguify-warning { border-color: #F59E0B !important; }
+.border-linguify-error { border-color: #EF4444 !important; }
+.rounded-md { border-radius: 0.375rem; }
+.rounded-lg { border-radius: 0.5rem; }
+.rounded-full { border-radius: 9999px; }
+.rounded-l-md { border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem; }
+.rounded-r-md { border-top-right-radius: 0.375rem; border-bottom-right-radius: 0.375rem; }
+.rounded-b-lg { border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem; }
+
+/* Effects */
+.shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+.shadow-xl { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+.transition-opacity { 
+  transition-property: opacity; 
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); 
+  transition-duration: 150ms; 
+}
+
+/* Layout */
+.block { display: block; }
+.hidden { display: none !important; }
+.overflow-hidden { overflow: hidden; }
+.overflow-y-auto { overflow-y: auto; }
+.overflow-y-scroll { overflow-y: scroll; }
+.overflow-x-hidden { overflow-x: hidden; }
+
+/* REMOVE AGGRESSIVE DISPLAY OVERRIDES - Let original CSS handle display states */
+
+/* Consistent smooth scrolling for all containers */
+.study-content {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--linguify-gray-300, #d1d5db) var(--linguify-gray-50, #f9fafb);
+}
+
+#publicDecksGrid {
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--linguify-gray-300, #d1d5db) var(--linguify-gray-50, #f9fafb);
+}
+
+/* Spacing Utilities */
+.space-y-2 > * + * { margin-top: 0.5rem; }
+.space-x-3 > * + * { margin-left: 0.75rem; }
+.gap-2 { gap: 0.5rem; }
+
+/* Gradients - Linguify Design System */
+.bg-linguify-gradient { background: var(--linguify-gradient); }
+.bg-gradient-to-br { 
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); 
+}
+.from-linguify-primary { 
+  --tw-gradient-from: var(--linguify-primary); 
+  --tw-gradient-to: rgba(45, 91, 186, 0); 
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); 
+}
+.to-linguify-accent { --tw-gradient-to: var(--linguify-accent); }
+.from-gray-400 { 
+  --tw-gradient-from: var(--linguify-gray-400); 
+  --tw-gradient-to: rgba(156, 163, 175, 0); 
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); 
+}
+.to-gray-600 { --tw-gradient-to: var(--linguify-gray-600); }
+
+/* Interactive States - Linguify Design System */
+.hover\:text-gray-600:hover { color: var(--linguify-gray-600); }
+.hover\:bg-gray-50:hover { background-color: var(--linguify-gray-50); }
+.hover\:bg-primary-light:hover { background-color: var(--linguify-primary-light); }
+.hover\:bg-primary-dark:hover { background-color: var(--linguify-primary-dark); }
+.hover\:bg-accent-light:hover { background-color: var(--linguify-accent-light); }
+.hover\:bg-success-100:hover { background-color: rgba(16, 185, 129, 0.1); }
+.hover\:bg-warning-100:hover { background-color: rgba(245, 158, 11, 0.1); }
+.hover\:bg-error-100:hover { background-color: rgba(239, 68, 68, 0.1); }
+.hover\:from-gray-500:hover { 
+  --tw-gradient-from: var(--linguify-gray-500); 
+  --tw-gradient-to: rgba(107, 114, 128, 0); 
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); 
+}
+.hover\:to-gray-700:hover { --tw-gradient-to: var(--linguify-gray-700); }
+
+/* Hover States Hardcoded Fallback */
+.hover\:bg-primary-light:hover { background-color: #4F7BD9 !important; }
+.hover\:bg-primary-dark:hover { background-color: #1E4A8C !important; }
+.hover\:bg-accent-light:hover { background-color: #26E4B8 !important; }
+
+/* Focus States - Linguify Design System */
+.focus\:outline-none:focus { outline: 2px solid transparent; outline-offset: 2px; }
+.focus\:ring-2:focus { 
+  box-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color); 
+}
+.focus\:ring-linguify-primary:focus { --tw-ring-color: var(--linguify-primary); }
+.focus\:ring-linguify-accent:focus { --tw-ring-color: var(--linguify-accent); }
+.focus\:ring-linguify-success:focus { --tw-ring-color: var(--linguify-success); }
+.focus\:ring-linguify-warning:focus { --tw-ring-color: var(--linguify-warning); }
+.focus\:ring-linguify-error:focus { --tw-ring-color: var(--linguify-error); }
+.focus\:ring-gray-500:focus { --tw-ring-color: var(--linguify-gray-500); }
+.focus\:ring-offset-2:focus { --tw-ring-offset-width: 2px; }
+.focus\:border-transparent:focus { border-color: transparent; }
+
+/* Focus States Hardcoded Fallback */
+.focus\:ring-linguify-primary:focus { 
+  --tw-ring-color: #2D5BBA !important; 
+  box-shadow: 0 0 0 2px #2D5BBA !important;
+}
+.focus\:ring-linguify-accent:focus { 
+  --tw-ring-color: #017E84 !important; 
+  box-shadow: 0 0 0 2px #017E84 !important;
+}
+.focus\:ring-linguify-success:focus { 
+  --tw-ring-color: #10B981 !important; 
+  box-shadow: 0 0 0 2px #10B981 !important;
+}
+.focus\:ring-linguify-warning:focus { 
+  --tw-ring-color: #F59E0B !important; 
+  box-shadow: 0 0 0 2px #F59E0B !important;
+}
+.focus\:ring-linguify-error:focus { 
+  --tw-ring-color: #EF4444 !important; 
+  box-shadow: 0 0 0 2px #EF4444 !important;
+}
+.focus\:ring-gray-500:focus { 
+  --tw-ring-color: #6B7280 !important; 
+  box-shadow: 0 0 0 2px #6B7280 !important;
+}
+
+/* Additional hardcoded color overrides for specific elements */
+.bg-linguify-gradient,
+.bg-linguify-gradient button,
+button.bg-linguify-gradient,
+.btn-linguify-gradient {
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.bg-linguify-gradient:hover,
+.bg-linguify-gradient button:hover,
+button.bg-linguify-gradient:hover,
+.btn-linguify-gradient:hover,
+.hover\:bg-accent-light:hover {
+  background: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%) !important;
+}
+
+/* Specific styling for modal action buttons to use Linguify gradient */
+#makeDeckPrivateBtn,
+#makeDeckPublicBtn {
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%) !important;
+  border: none !important;
+  color: white !important;
+}
+
+#makeDeckPrivateBtn:hover,
+#makeDeckPublicBtn:hover {
+  background: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%) !important;
+}
+
+/* Linguify Button Components */
+.btn-linguify {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+  border: none;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-linguify.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+}
+
+.btn-linguify:hover {
+  background: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+}
+
+.btn-linguify:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #017E84;
+}
+
+.btn-linguify:active {
+  transform: translateY(0);
+}
+
+.btn-linguify i {
+  margin-right: 0.5rem;
+}
+
+/* Variant for secondary/cancel buttons */
+.btn-linguify-secondary {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #374151;
+  background-color: white;
+  border: 1px solid #D1D5DB;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-linguify-secondary.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+}
+
+.btn-linguify-secondary:hover {
+  background-color: #F9FAFB;
+}
+
+.btn-linguify-secondary:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #6B7280;
+}
+
+.btn-linguify-secondary i {
+  margin-right: 0.5rem;
+}
+
+/* Danger button */
+.btn-linguify-danger {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  border: 2px solid transparent;
+  background-color: var(--linguify-danger, #DC2626) !important;
+  color: white !important;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.btn-linguify-danger:hover {
+  background-color: #B91C1C !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+.btn-linguify-danger:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #FCA5A5;
+}
+.btn-linguify-danger:active {
+  transform: translateY(0);
+}
+.btn-linguify-danger i {
+  margin-right: 0.5rem;
+}
+
+/* Link button */
+.btn-link-linguify {
+  background: none;
+  border: none;
+  color: var(--linguify-primary, #2D5BBA) !important;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+}
+.btn-link-linguify:hover {
+  color: var(--linguify-primary-dark, #1E4A8C) !important;
+  background-color: rgba(45, 91, 186, 0.1);
+  text-decoration: none;
+}
+.btn-link-linguify:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.3);
+}
+.btn-link-linguify i {
+  margin-right: 0.25rem;
+}
+
+/* Badge Component */
+.badge-linguify {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #017E84 100%)) !important;
+  color: white !important;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* Notification Badge */
+.notification-badge-linguify {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--linguify-error, #EF4444) !important;
+  color: white !important;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Spinner Component */
+.spinner-linguify {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid rgba(45, 91, 186, 0.2);
+  border-top: 3px solid var(--linguify-primary, #2D5BBA);
+  border-radius: 50%;
+  animation: spin-linguify 1s linear infinite;
+}
+@keyframes spin-linguify {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Form Components */
+.form-check-linguify {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+.form-check-input-linguify {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.75rem;
+  border: 2px solid var(--linguify-gray-300, #d1d5db);
+  border-radius: 0.25rem;
+  background-color: white;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+.form-check-input-linguify[type="radio"] {
+  border-radius: 50%;
+}
+.form-check-input-linguify:checked {
+  background-color: var(--linguify-primary, #2D5BBA) !important;
+  border-color: var(--linguify-primary, #2D5BBA) !important;
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-4.5 4.5-.707.707L5.5 5.707l.707-.707L9.5 8.293l3.646-3.647.708.707z'/%3e%3c/svg%3e");
+}
+.form-check-input-linguify[type="radio"]:checked {
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+}
+.form-check-input-linguify:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.2);
+  border-color: var(--linguify-primary, #2D5BBA);
+}
+.form-check-label-linguify {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--linguify-gray-700, #374151);
+  cursor: pointer;
+  user-select: none;
+}
+.form-check-linguify.form-switch .form-check-input-linguify {
+  width: 2.5rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background-position: left center;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-size: contain;
+  transition: all 0.15s ease-in-out;
+}
+.form-check-linguify.form-switch .form-check-input-linguify:checked {
+  background-position: right center;
+  background-color: var(--linguify-primary, #2D5BBA) !important;
+  border-color: var(--linguify-primary, #2D5BBA) !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+}
+
+/* Button Group */
+.btn-group-linguify {
+  display: inline-flex;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--linguify-gray-300, #d1d5db);
+  background: white;
+}
+.btn-group-linguify .btn-check {
+  display: none;
+}
+.btn-group-linguify label {
+  padding: 0.5rem 1rem;
+  background: white;
+  color: var(--linguify-gray-600, #4b5563);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--linguify-gray-300, #d1d5db);
+}
+.btn-group-linguify label:last-child {
+  border-right: none;
+}
+.btn-group-linguify input:checked + label {
+  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #017E84 100%)) !important;
+  color: white !important;
+}
+
+/* Notification Center Components */
+.notification-center {
+  position: fixed !important;
+  top: 70px !important;
+  right: 20px !important;
+  width: 380px;
+  max-height: 500px;
+  background: white;
+  border: 1px solid var(--linguify-gray-200, #e5e7eb);
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25), 0 20px 25px -5px rgb(0 0 0 / 0.1) !important;
+  z-index: 9999 !important;
+  overflow: hidden;
+  animation: slideInDown 0.2s ease-out;
+}
+
+.notification-header {
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.03) 0%, rgba(0, 212, 170, 0.02) 100%);
+  border-bottom: 1px solid var(--linguify-gray-100, #f3f4f6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notification-header h6 {
+  color: var(--linguify-primary-dark, #1E4A8C);
+  font-weight: 600;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.notification-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.notification-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem 0;
+  border-bottom: 1px solid var(--linguify-gray-100, #f3f4f6);
+}
+
+.notification-filter {
+  background: var(--linguify-gray-50, #f9fafb);
+  border: 1px solid var(--linguify-gray-200, #e5e7eb);
+  border-radius: 9999px;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--linguify-gray-600, #4b5563);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.notification-filter:hover {
+  background: var(--linguify-gray-100, #f3f4f6);
+  border-color: var(--linguify-gray-300, #d1d5db);
+}
+
+.notification-filter.active {
+  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #017E84 100%)) !important;
+  border-color: var(--linguify-primary, #2D5BBA) !important;
+  color: white !important;
+}
+
+.filter-count {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
+.notification-filter.active .filter-count {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.notification-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--linguify-gray-50, #f9fafb);
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.notification-item:hover {
+  background: var(--linguify-gray-50, #f9fafb);
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item.placeholder {
+  opacity: 0.6;
+  cursor: default;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.25rem;
+}
+
+.notification-icon {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--linguify-gray-100, #f3f4f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.notification-icon.new-deck {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+  color: var(--linguify-success, #10B981);
+}
+
+.notification-icon.favorite-update {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+  color: var(--linguify-error, #EF4444);
+}
+
+.notification-icon.collection-activity {
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(45, 91, 186, 0.05) 100%);
+  color: var(--linguify-primary, #2D5BBA);
+}
+
+.notification-icon.recommendation {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+  color: var(--linguify-warning, #F59E0B);
+}
+
+.notification-icon.system {
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.1) 0%, rgba(107, 114, 128, 0.05) 100%);
+  color: var(--linguify-gray, #6B7280);
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-title {
+  font-weight: 600;
+  color: var(--linguify-gray-900, #111827);
+  margin: 0 0 0.25rem 0;
+  font-size: 0.875rem;
+  line-height: 1.25;
+}
+
+.notification-text {
+  color: var(--linguify-gray-600, #4b5563);
+  margin: 0 0 0.5rem 0;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: var(--linguify-gray-400, #9ca3af);
+}
+
+.notification-actions-item {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.notification-action-btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.notification-action-btn.primary {
+  background: var(--linguify-primary, #2D5BBA);
+  color: white;
+}
+
+.notification-action-btn.primary:hover {
+  background: var(--linguify-primary-dark, #1E4A8C);
+}
+
+.notification-action-btn.secondary {
+  background: var(--linguify-gray-100, #f3f4f6);
+  color: var(--linguify-gray-600, #4b5563);
+  border-color: var(--linguify-gray-200, #e5e7eb);
+}
+
+.notification-action-btn.secondary:hover {
+  background: var(--linguify-gray-200, #e5e7eb);
+}
+
+.notification-footer {
+  padding: 0.75rem 1.25rem;
+  background: var(--linguify-gray-50, #f9fafb);
+  border-top: 1px solid var(--linguify-gray-100, #f3f4f6);
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Notification Overlay */
+.notification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+}
+
+.notification-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Notification Button Positioning */
+.notification-btn {
+  position: relative !important;
+  z-index: 10000 !important;
+}
+
+.search-actions {
+  position: relative;
+  z-index: 100;
+}
+
+/* Modal Layout Components */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  display: none;
+}
+
+.modal-backdrop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.modal-overlay-bg {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgb(107 114 128 / 0.75);
+  transition: opacity 150ms ease-in-out;
+}
+
+.modal-content {
+  position: relative;
+  background-color: white;
+  border-radius: 0.5rem;
+  max-width: 32rem;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem 0.75rem 1.5rem;
+}
+
+.modal-header-content {
+  display: flex;
+  align-items: center;
+}
+
+.modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.modal-icon-primary {
+  background-color: rgba(45, 91, 186, 0.1);
+}
+
+.modal-icon-accent {
+  background-color: rgba(0, 212, 170, 0.1);
+}
+
+.modal-icon-gray {
+  background-color: rgb(243 244 246);
+}
+
+.modal-close-btn {
+  color: rgb(156 163 175);
+  transition: color 150ms ease-in-out;
+}
+
+.modal-close-btn:hover {
+  color: rgb(75 85 99);
+}
+
+.modal-body {
+  padding: 0 1.5rem 1rem 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background-color: rgb(249 250 251);
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+/* Alert/Info Box Components */
+.alert-box {
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.alert-primary {
+  background-color: rgba(45, 91, 186, 0.05);
+  border: 1px solid rgba(45, 91, 186, 0.2);
+}
+
+.alert-warning {
+  background-color: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.alert-content {
+  display: flex;
+}
+
+.alert-icon {
+  flex-shrink: 0;
+  margin-right: 0.75rem;
+}
+
+/* List Components */
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-list > li + li {
+  margin-top: 0.5rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.feature-icon {
+  margin-right: 0.75rem;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+/* Typography shortcuts */
+.modal-title {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: rgb(17 24 39);
+  margin-bottom: 0.25rem;
+}
+
+.modal-subtitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(107 114 128);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: rgb(17 24 39);
+  margin-bottom: 0.75rem;
+}
+
+.section-title i {
+  margin-right: 0.5rem;
+}
+
+.feature-text {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(55 65 81);
+}
+
+.info-text {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(75 85 99);
+  background-color: rgb(249 250 251);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+.info-text i {
+  margin-right: 0.5rem;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+/* Share Modal Specific Components */
+.share-url-input {
+  flex: 1 1 0%;
+  padding: 0.5rem 0.75rem;
+  background-color: rgb(249 250 251);
+  border: 1px solid rgb(209 213 219);
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.share-url-input:focus {
+  outline: none;
+  --tw-ring-inset: inset;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: #017E84;
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow);
+  border-color: transparent;
+}
+
+.share-copy-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: white;
+  background-color: #017E84;
+  border: 1px solid #017E84;
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  transition: background-color 150ms ease-in-out;
+}
+
+.share-copy-btn:hover {
+  background-color: #26E4B8;
+}
+
+.share-copy-btn:focus {
+  outline: none;
+  --tw-ring-inset: inset;
+  --tw-ring-offset-width: 2px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: #017E84;
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow);
+}
+
+.share-buttons-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.share-btn {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  transition: all 150ms ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.share-btn i {
+  margin-right: 0.25rem;
+}
+
+.share-btn-success {
+  color: #10B981;
+  background-color: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.share-btn-success:hover {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.share-btn-success:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #10B981;
+}
+
+.share-btn-primary {
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.05);
+  border: 1px solid rgba(45, 91, 186, 0.2);
+}
+
+.share-btn-primary:hover {
+  background-color: rgba(45, 91, 186, 0.1);
+}
+
+.share-btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #2D5BBA;
+}
+
+.share-btn-accent {
+  color: #017E84;
+  background-color: rgba(0, 212, 170, 0.05);
+  border: 1px solid rgba(0, 212, 170, 0.2);
+}
+
+.share-btn-accent:hover {
+  background-color: rgba(0, 212, 170, 0.1);
+}
+
+.share-btn-accent:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #017E84;
+}
+
+.share-btn-gray {
+  color: #374151;
+  background-color: rgb(249 250 251);
+  border: 1px solid rgb(209 213 219);
+}
+
+.share-btn-gray:hover {
+  background-color: rgb(249 250 251);
+}
+
+.share-btn-gray:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #6B7280;
+}
+
+.success-message {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #10B981;
+  display: none;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease-in-out;
+}
+
+.success-message.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Auto-hide after 3 seconds with fade out */
+.success-message.fade-out {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+
+/* Input group styling */
+.input-group {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: rgb(17 24 39);
+  margin-bottom: 0.5rem;
+}
+
+/* Navbar Components - Linguify Design System - Tailwind approach */
+.navbar-linguify {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
+  width: 100%;
+}
+
+.navbar-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-section-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+/* Navigation Tabs */
+.nav-tabs-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(107 114 128);
+  text-decoration: none;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+}
+
+.nav-tab:hover {
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.05);
+  text-decoration: none;
+}
+
+.nav-tab.active {
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.1);
+  font-weight: 600;
+}
+
+.nav-tab i {
+  margin-right: 0.25rem;
+}
+
+/* Buttons - Linguify Navbar Variants */
+.btn-navbar {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  height: 2.25rem;
+  box-sizing: border-box;
+}
+
+.btn-navbar-outline {
+  color: rgb(107 114 128);
+  background-color: transparent;
+  border: 1px solid rgb(209 213 219);
+}
+
+.btn-navbar-outline:hover {
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.05);
+  border-color: rgba(45, 91, 186, 0.2);
+}
+
+.btn-navbar-primary {
+  color: white;
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+  border: none;
+}
+
+.btn-navbar-primary:hover {
+  background: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%);
+  transform: translateY(-1px);
+}
+
+.btn-navbar i {
+  margin-right: 0.25rem;
+}
+
+.btn-navbar .d-none {
+  display: none !important;
+}
+
+@media (min-width: 1200px) {
+  .btn-navbar .d-none.d-xl-inline {
+    display: inline !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .btn-navbar .d-none.d-xxl-inline {
+    display: inline !important;
+  }
+}
+
+/* Form Controls - Linguify Style */
+.form-control-linguify {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(17 24 39);
+  background-color: white;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  height: 2.25rem; /* Force exact height */
+  box-sizing: border-box;
+}
+
+.form-control-linguify:focus {
+  outline: none;
+  border-color: #2D5BBA;
+  box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+}
+
+.form-control-linguify::placeholder {
+  color: rgb(156 163 175);
+}
+
+.form-select-linguify {
+  padding: 0.5rem 0.75rem;
+  padding-right: 2rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(17 24 39);
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.form-select-linguify:focus {
+  outline: none;
+  border-color: #2D5BBA;
+  box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+}
+
+/* Button Outline Linguify - Unified style for all filter buttons */
+.btn-outline-linguify {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(107 114 128);
+  background-color: white;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  height: 2.25rem;
+  box-sizing: border-box;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-outline-linguify:hover {
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.05);
+  border-color: rgba(45, 91, 186, 0.2);
+  text-decoration: none;
+}
+
+.btn-outline-linguify:focus {
+  outline: none;
+  border-color: #2D5BBA;
+  box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+}
+
+.btn-outline-linguify.dropdown-toggle {
+  justify-content: space-between;
+}
+
+.btn-outline-linguify.dropdown-toggle::after {
+  margin-left: 0.5rem;
+  font-family: 'bootstrap-icons';
+  content: '';
+  border: none;
+  font-size: 0.75rem;
+  transition: transform 0.15s ease;
+}
+
+.btn-outline-linguify.show::after {
+  transform: rotate(180deg);
+}
+
+/* Tags Filter Component - Now unified with other filters using Bootstrap */
+/* Old custom styles removed - now uses .btn-outline-linguify and Bootstrap .dropdown-menu */
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .navbar-linguify {
+    gap: 0.25rem;
+  }
+  
+  .navbar-section {
+    gap: 0.5rem;
+  }
+  
+  .btn-navbar {
+    padding: 0.375rem 0.5rem;
+  }
+  
+  .form-control-linguify,
+  .form-select-linguify {
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Deck Cards - Linguify Design System */
+.deck-card {
+  background: white;
+  border: 1px solid rgb(229 231 235);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.deck-card:hover {
+  border-color: rgba(45, 91, 186, 0.2);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  transform: translateY(-2px);
+}
+
+.deck-card-header {
+  position: relative;
+  margin-bottom: 0.75rem;
+}
+
+.deck-card-title {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: rgb(17 24 39);
+  margin-bottom: 0.25rem;
+  padding-right: 3rem; /* Space for count badge */
+}
+
+.deck-card-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--linguify-primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  min-width: 1.5rem;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.deck-card-icons {
+  position: absolute;
+  top: 1.5rem;
+  right: 0;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.deck-card-description {
+  color: rgb(75 85 99);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.deck-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.deck-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(45, 91, 186, 0.1);
+  color: #2D5BBA;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+}
+
+.deck-tag-add {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background-color: transparent;
+  border: 1px dashed rgb(209 213 219);
+  color: rgb(107 114 128);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.deck-tag-add:hover {
+  border-color: #2D5BBA;
+  color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.05);
+}
+
+.deck-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.progress-bar-container {
+  flex: 1;
+  height: 0.5rem;
+  background-color: rgb(229 231 235);
+  border-radius: 0.25rem;
+  overflow: hidden;
+  margin-right: 0.75rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+  border-radius: 0.25rem;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: rgb(107 114 128);
+  white-space: nowrap;
+}
+
+.deck-date {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: rgb(156 163 175);
+  margin-top: 0.5rem;
+}
+
+/* Sidebar - Linguify Design System */
+
+.sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgb(229 231 235);
+  background: rgba(45, 91, 186, 0.02);
+}
+
+/* Linguify Sidebar Header - Définition unique et complète */
+.sidebar-header-linguify {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(0, 212, 170, 0.03) 100%);
+  border-radius: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  position: relative;
+  min-height: 42px;
+}
+
+/* Kanban header actions positioned at bottom right */
+.kanban-header-actions {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* Ultra-compact inline actions */
+.kanban-header-actions-inline {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+/* Mini action buttons for inline layout */
+.kanban-action-btn-mini {
+  background: none;
+  border: none;
+  color: var(--linguify-gray-500);
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kanban-action-btn-mini:hover {
+  color: var(--linguify-primary);
+  background-color: var(--linguify-gray-100);
+  transform: scale(1.15);
+}
+
+.kanban-action-btn-mini:active {
+  transform: scale(0.9);
+}
+
+/* Compact badge for inline layout */
+.badge-linguify-compact {
+  background: var(--linguify-primary);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 8px;
+  line-height: 1.2;
+  min-width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar-header-linguify::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #017E84 100%));
+}
+
+.sidebar-header-linguify h6 {
+  color: var(--linguify-primary-dark, #1E4A8C) !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin: 0 0 8px 0;
+}
+
+/* Override h6 margin for normal (non-folded) columns only */
+.kanban-column:not(.o_column_folded) .sidebar-header-linguify h6,
+.kanban-column:not(.o_column_folded) .sidebar-header-linguify .column-title-linguify {
+  margin: 0 !important;
+}
+
+/* Column title hover effects and tooltips */
+.column-title-linguify:hover {
+    background-color: rgba(45, 91, 186, 0.1);
+    transform: scale(1.02);
+}
+
+/* Show full title in tooltip if text is truncated */
+.column-title-linguify:hover::before {
+    content: attr(title);
+    position: absolute;
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 1;
+    pointer-events: none;
+    transform: translateY(-100%) translateX(-50%);
+    left: 50%;
+    top: -32px;
+    z-index: 1001;
+    max-width: 200px;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+/* Better header layout for long titles */
+.sidebar-header-linguify .flex.items-start.justify-between {
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Badge should not shrink */
+.badge-linguify {
+    flex-shrink: 0;
+    min-width: fit-content;
+}
+
+/* Hide actions for folded columns */
+.kanban-column.o_column_folded .kanban-header-actions,
+.kanban-column.o_column_folded .kanban-header-actions-inline {
+    display: none;
+}
+
+/* Hide old action elements */
+.kanban-header-actions {
+    display: none;
+}
+
+/* Responsive title width adjustment */
+@media (max-width: 768px) {
+    .column-title-linguify {
+        max-width: 120px;
+    }
+}
+
+@media (max-width: 600px) {
+    .column-title-linguify {
+        max-width: 100px;
+    }
+}
+
+/* Ultra-compact responsive adjustments */
+@media (max-width: 480px) {
+    .sidebar-header-linguify {
+        min-height: 38px;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .kanban-action-btn-mini {
+        font-size: 12px;
+        width: 14px;
+        height: 14px;
+    }
+    
+    .column-title-linguify {
+        max-width: 120px;
+        font-size: 13px;
+    }
+    
+    .badge-linguify-compact {
+        font-size: 9px;
+        padding: 1px 3px;
+        min-width: 14px;
+    }
+}
+
+/* Tailwind utility classes for revision app state management */
+.hidden { 
+  display: none; 
+}
+
+.block { 
+  display: block; 
+}
+
+/* Force hide deck-related content by default with higher specificity */
+#deckDetails {
+  display: none;
+}
+
+#createDeckForm {
+  display: none;
+}
+
+#createCardForm {
+  display: none;
+}
+
+#editCardForm {
+  display: none;
+}
+
+/* Flashcard Study Mode Components */
+.flashcard {
+  position: relative;
+  cursor: pointer;
+  width: 400px;
+  height: 250px;
+  perspective: 1000px;
+  max-width: 90vw;
+  margin: 0 auto;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+  transform-style: preserve-3d;
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  border: 2px solid rgb(229 231 235);
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  backface-visibility: hidden;
+}
+
+.flashcard-front {
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
+  border-color: rgba(45, 91, 186, 0.3);
+}
+
+.flashcard-back {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
+  border-color: rgba(0, 212, 170, 0.3);
+  transform: rotateY(180deg);
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-text {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 500;
+  color: rgb(31 41 55);
+  word-wrap: break-word;
+}
+
+/* Speak Buttons */
+.speak-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgb(209 213 219);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(107 114 128);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.speak-btn:hover {
+  color: #2D5BBA;
+  background: rgb(239 246 255);
+  border-color: rgb(191 219 254);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  transform: scale(1.05);
+}
+
+/* Study Mode Layout */
+.study-mode-hidden,
+.study-actions-hidden {
+  display: none;
+}
+
+/* Flashcard Study Mode Layout */
+#flashcardStudyMode {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#flashcardStudyMode.study-mode-hidden {
+  display: none !important;
+}
+
+.study-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgb(229 231 235);
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(0, 212, 170, 0.03) 100%);
+  flex-shrink: 0;
+}
+
+.study-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(249, 250, 251, 0.8) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+/* Quiz mode specific overrides */
+#quizStudyMode {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#quizStudyMode .study-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.study-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* Quiz Mode Layout - Same as Flashcards */
+#quizStudyMode {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#quizStudyMode.study-mode-hidden {
+  display: none !important;
+}
+
+/* Quiz Feedback */
+#quizFeedback {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+#quizFeedback.correct {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.9) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #065f46;
+}
+
+#quizFeedback.incorrect {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.9) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #7f1d1d;
+}
+
+.quiz-btn-next {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 40px;
+  box-shadow: 0 2px 8px rgba(45, 91, 186, 0.2);
+}
+
+.quiz-btn-next:hover {
+  background: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);
+}
+
+/* Quiz Study Area - Perfect Viewport Fit */
+.quiz-study-area {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  margin: 0 auto;
+  height: 100%;
+  max-width: 900px;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Question Section - Fixed proportion */
+.quiz-question-container {
+  flex: 0 0 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  margin: 0;
+  width: 100%;
+}
+
+/* Override Bootstrap margins */
+.quiz-question-container.mb-4 {
+  margin-bottom: 0 !important;
+}
+
+/* Options Section - Main content area */
+.quiz-options {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
+  max-width: 700px;
+}
+
+/* Override Bootstrap margins */
+.quiz-options.mb-4 {
+  margin-bottom: 0 !important;
+}
+
+/* Actions Section - Fixed bottom section */
+.quiz-actions-area {
+  flex: 0 0 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-top: 1px solid rgba(45, 91, 186, 0.08);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 700px;
+}
+
+/* Quiz feedback - Compact design */
+#quizFeedback .alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+#quizFeedback .alert strong {
+  font-size: 0.875rem;
+}
+
+#quizFeedback .alert div {
+  font-size: 0.8125rem;
+}
+
+/* Quiz-specific components */
+.quiz-progress-container {
+  height: 0.5rem;
+  background-color: rgba(45, 91, 186, 0.1);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.quiz-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2D5BBA 0%, #017E84 100%);
+  border-radius: 0.25rem;
+  transition: width 0.3s ease;
+}
+
+.quiz-question-linguify {
+  background: white;
+  border: 1px solid rgba(45, 91, 186, 0.15);
+  border-radius: 1rem;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(45, 91, 186, 0.08);
+  position: relative;
+  height: 100%;
+  max-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.quiz-question-linguify::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #2D5BBA 0%, #017E84 100%);
+  border-radius: 0 0 6px 6px;
+}
+
+/* Quiz Options - Balanced Design */
+.quiz-option {
+  background: white;
+  border: 1px solid rgba(45, 91, 186, 0.12);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #374151;
+  text-align: left;
+  width: 100%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+  height: 48px;
+  overflow: hidden;
+}
+
+.quiz-option:hover {
+  border-color: rgba(45, 91, 186, 0.25);
+  background: rgba(45, 91, 186, 0.02);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 91, 186, 0.1);
+}
+
+.quiz-option.correct {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+  border-color: #10b981;
+  color: #059669;
+}
+
+.quiz-option.incorrect {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.quiz-option-letter {
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+  color: white;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-right: 0.875rem;
+  flex-shrink: 0;
+}
+
+.quiz-option.correct .quiz-option-letter {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.quiz-option.incorrect .quiz-option-letter {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* Flashcard Return Button - Linguify Accent */
+.flashcard-btn-return {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  border: 2px solid #017E84;
+  background: white;
+  color: #017E84;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flashcard-btn-return:hover {
+  background: #017E84;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(1, 126, 132, 0.2);
+}
+
+.flashcard-btn-return:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(1, 126, 132, 0.2);
+}
+
+/* Flashcard Action Buttons - Linguify Design */
+.flashcard-btn-difficult,
+.flashcard-btn-medium,
+.flashcard-btn-easy {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: 2px solid;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.flashcard-btn-difficult {
+  background: linear-gradient(135deg, #fee2e2 0%, #ffffff 100%);
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.flashcard-btn-difficult:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.flashcard-btn-medium {
+  background: linear-gradient(135deg, #fef3c7 0%, #ffffff 100%);
+  border-color: #f59e0b;
+  color: #d97706;
+}
+
+.flashcard-btn-medium:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.flashcard-btn-easy {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+  border-color: #10b981;
+  color: #059669;
+}
+
+.flashcard-btn-easy:hover {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Study Stats - Fixed at bottom */
+.study-stats {
+  flex: 0 0 60px;
+  border-top: 2px solid rgba(45, 91, 186, 0.1);
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.02) 0%, rgba(255, 255, 255, 1) 100%);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.study-stats .row {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.study-stats .col {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  display: block;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: rgb(107 114 128);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+  display: block;
+}
+
+/* Matching Study Mode - Linguify Design System */
+#matchingStudyMode {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#matchingStudyMode.study-mode-hidden {
+  display: none !important;
+}
+
+#matchingStudyMode .study-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#matchingStudyMode .study-stats {
+  flex-shrink: 0;
+  display: flex;
+}
+
+.matching-game-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin: 0 auto;
+  height: 100%;
+  max-width: 900px;
+  overflow: hidden;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.matching-instructions {
+  flex: 0 0 auto;
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.05) 100%);
+  border: 1px solid rgba(45, 91, 186, 0.15);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  color: #2D5BBA;
+  font-weight: 500;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+}
+
+.matching-board {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45, 91, 186, 0.3) transparent;
+  max-height: 100%;
+  width: 100%;
+}
+
+.matching-item {
+  background: white;
+  border: 2px solid rgba(45, 91, 186, 0.12);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(45, 91, 186, 0.08);
+  position: relative;
+  min-height: 70px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+.matching-item:hover {
+  border-color: rgba(45, 91, 186, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(45, 91, 186, 0.15);
+}
+
+.matching-item.selected {
+  border-color: #2D5BBA;
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.03) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(45, 91, 186, 0.2);
+}
+
+.matching-item.matched {
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
+  transform: none;
+  cursor: default;
+  opacity: 0.8;
+}
+
+.matching-item.error {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.matching-item-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.75rem;
+}
+
+.matching-item-type {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+  color: white;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(45, 91, 186, 0.2);
+}
+
+.matching-item.matched .matching-item-type {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.matching-item.error .matching-item-type {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.matching-item-text {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1f2937;
+  line-height: 1.3;
+  word-break: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.matching-item.term {
+  border-left: 4px solid #2D5BBA;
+}
+
+.matching-item.definition {
+  border-left: 4px solid #017E84;
+}
+
+/* Responsive matching board */
+@media (max-width: 768px) {
+  .matching-board {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .matching-item {
+    min-height: 60px;
+    height: 70px;
+    padding: 0.5rem;
+  }
+  
+  .matching-item-type {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+  }
+  
+  .matching-item-text {
+    font-size: 0.8rem;
+  }
+}
+
+/* Hide other study mode sections by default */
+#spacedStudyMode,
+#writeStudyMode {
+  display: none;
+}
+
+/* Hide deck creation/editing elements */
+.create-deck-form-hidden,
+.create-card-form-hidden,
+.edit-card-form-hidden,
+.deck-details-hidden,
+.empty-state-hidden,
+.no-cards-message-hidden,
+.study-session-hidden,
+.display-none {
+  display: none;
+}
+
+/* Dropdown Menu Styling - Tailwind Linguify */
+.dropdown-menu {
+  background: white !important;
+  border: 1px solid var(--linguify-gray-200, #e5e7eb) !important;
+  border-radius: 0.375rem !important;
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+  padding: 0.5rem 0 !important;
+  margin-top: 0.25rem !important;
+  z-index: 10001 !important; /* Ensure dropdown appears above all deck content */
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem !important;
+  color: var(--linguify-gray-700, #374151) !important;
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  font-size: 0.875rem !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.dropdown-item:hover {
+  background: var(--linguify-gray-50, #f9fafb) !important;
+  color: var(--linguify-primary, #2D5BBA) !important;
+}
+
+.dropdown-item:focus {
+  background: var(--linguify-gray-50, #f9fafb) !important;
+  color: var(--linguify-primary, #2D5BBA) !important;
+}
+
+.dropdown-item.text-danger {
+  color: var(--linguify-error, #EF4444) !important;
+}
+
+.dropdown-item.text-danger:hover {
+  background: rgba(239, 68, 68, 0.05) !important;
+  color: var(--linguify-error, #EF4444) !important;
+}
+
+/* Active (selected) dropdown items - No special color, same as normal */
+.dropdown-item.active {
+  background: transparent !important;
+  color: var(--linguify-gray-700, #374151) !important;
+}
+
+.dropdown-item.active:hover {
+  background: var(--linguify-gray-50, #f9fafb) !important;
+  color: var(--linguify-primary, #2D5BBA) !important;
+}
+
+.dropdown-item.active:focus {
+  background: var(--linguify-gray-50, #f9fafb) !important;
+  color: var(--linguify-primary, #2D5BBA) !important;
+}
+
+.dropdown-divider {
+  margin: 0.5rem 0 !important;
+  border-color: var(--linguify-gray-200, #e5e7eb) !important;
+}
+
+/* Remove mobile overrides entirely */
+
+/* Universal scrollbar styling - Linguify design system */
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-content::-webkit-scrollbar,
+.study-content::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-y-scroll::-webkit-scrollbar,
+#publicDecksGrid::-webkit-scrollbar,
+.notification-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-content::-webkit-scrollbar-track,
+.study-content::-webkit-scrollbar-track,
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-y-scroll::-webkit-scrollbar-track,
+#publicDecksGrid::-webkit-scrollbar-track,
+.notification-list::-webkit-scrollbar-track {
+  background: var(--linguify-gray-50, #f9fafb);
+  border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb,
+.study-content::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-y-scroll::-webkit-scrollbar-thumb,
+#publicDecksGrid::-webkit-scrollbar-thumb,
+.notification-list::-webkit-scrollbar-thumb {
+  background: var(--linguify-gray-300, #d1d5db);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover,
+.study-content::-webkit-scrollbar-thumb:hover,
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.overflow-y-scroll::-webkit-scrollbar-thumb:hover,
+#publicDecksGrid::-webkit-scrollbar-thumb:hover,
+.notification-list::-webkit-scrollbar-thumb:hover {
+  background: var(--linguify-gray-400, #9ca3af);
+}
+
+.welcome-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.03) 0%, rgba(0, 212, 170, 0.03) 100%);
+}
+
+.welcome-state-icon {
+  width: 5rem;
+  height: 5rem;
+  color: var(--linguify-primary);
+  margin-bottom: 1.5rem;
+  font-size: 5rem;
+  opacity: 0.8;
+}
+
+.welcome-state-title {
+  font-size: 2rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--linguify-primary);
+  margin-bottom: 1rem;
+  letter-spacing: -0.025em;
+}
+
+.welcome-state-description {
+  color: var(--linguify-gray);
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  max-width: 32rem;
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+/* Study Mode Cards */
+
+.study-mode-card-linguify {
+  background: white;
+  border: 2px solid rgb(229 231 235);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.study-mode-card-linguify:hover {
+  border-color: #2D5BBA;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+  transform: translateY(-1px);
+}
+
+.study-mode-card-linguify.active {
+  border-color: #2D5BBA;
+  background-color: rgba(45, 91, 186, 0.05);
+}
+
+/* Card Component - General */
+.card-linguify {
+  background: white;
+  border: 1px solid var(--linguify-gray-200, #e5e7eb);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+}
+.card-linguify:hover {
+  border-color: var(--linguify-primary, #2D5BBA);
+  box-shadow: 0 10px 25px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  transform: translateY(-2px);
+}
+.card-linguify .card-header {
+  padding: 1.25rem 1.5rem 1rem;
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.03) 0%, rgba(0, 212, 170, 0.02) 100%);
+  border-bottom: 1px solid var(--linguify-gray-100, #f3f4f6);
+}
+.card-linguify .card-body {
+  padding: 1.5rem;
+}
+.card-linguify h6, .card-linguify .card-title {
+  color: var(--linguify-primary-dark, #1E4A8C);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+/* Study Mode Grid */
+.study-mode-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+  align-items: stretch;
+  overflow-x: auto;
+  padding: 0 1rem;
+}
+
+.study-mode-grid .study-mode-card-linguify {
+  flex: 1;
+  min-width: 240px;
+  max-width: 280px;
+}
+
+/* Study Mode Cards - Updated for Tailwind */
+.study-mode-card-linguify {
+  background: white;
+  border: 2px solid var(--linguify-gray-200, #e5e7eb);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+.study-mode-card-linguify:hover {
+  border-color: var(--linguify-primary, #2D5BBA);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.study-mode-card-linguify.active {
+  border-color: var(--linguify-primary, #2D5BBA);
+  background-color: rgba(45, 91, 186, 0.05);
+}
+
+/* Badge Component - Updated for Linguify */
+.badge-linguify {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: var(--linguify-gradient, linear-gradient(135deg, #2D5BBA 0%, #017E84 100%)) !important;
+  color: white !important;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Deck List Container */
+.deck-list {
+  list-style: none;
+  padding: 1rem;
+  margin: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Load more button */
+.load-more-container {
+  flex-shrink: 0;
+  padding: 1rem;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Deck Cards Component */
+.deck-card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  list-style: none;
+}
+
+.deck-card:hover {
+  border-color: var(--linguify-primary, #2D5BBA);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.deck-card.active {
+  border-color: var(--linguify-primary, #2D5BBA);
+  background-color: rgba(45, 91, 186, 0.05);
+}
+
+.deck-card-header {
+  margin-bottom: 0.75rem;
+}
+
+.deck-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.deck-card-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.deck-card-tags {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.deck-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.deck-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.progress-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.progress-bar-container {
+  flex: 1;
+  margin: 0 0.75rem;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  height: 0.5rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--linguify-primary, #2D5BBA) 0%, var(--linguify-accent, #017E84) 100%);
+  border-radius: 9999px;
+  transition: all 0.3s ease-in-out;
+}
+
+.deck-date {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-align: right;
+}
+
+/* Tag Components for Deck Cards */
+.tag-linguify {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  color: white;
+}
+
+.tag-linguify-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.tag-linguify-pink {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.tag-linguify-blue {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.tag-linguify-green {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.tag-linguify-orange {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.tag-linguify-teal {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.tag-linguify-yellow {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+.tag-linguify-indigo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.no-tags-message {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Button link for tags */
+.btn-link-linguify {
+  background: none;
+  border: none;
+  color: var(--linguify-accent, #017E84);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-link-linguify:hover {
+  background-color: rgba(0, 212, 170, 0.1);
+  color: var(--linguify-primary, #2D5BBA);
+}
+
+/* Layout fixes for sidebar and main area */
+.sidebar-linguify {
+  background: white;
+  width: 300px;
+  flex: 0 0 300px;
+  height: 100vh;
+  max-height: calc(100vh - 64px - 60px);
+  overflow-y: auto;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease, opacity 0.3s ease, flex 0.3s ease;
+  position: relative;
+}
+
+/* Sidebar collapsed state - ONLY for revision app */
+#revisionSidebar.sidebar-linguify:not(.show) {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  border-right: none;
+  flex: 0 0 0;
+}
+
+/* Main content adjustment when sidebar is collapsed */
+.main-content-area {
+  flex: 1;
+  transition: margin-left 0.3s ease;
+}
+
+/* Mobile responsiveness - ONLY for revision app */
+@media (max-width: 768px) {
+  #revisionSidebar.sidebar-linguify {
+    position: fixed;
+    top: 64px; /* Height of navbar */
+    left: 0;
+    z-index: 1000;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  
+  #revisionSidebar.sidebar-linguify.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  #revisionSidebar.sidebar-linguify:not(.show) {
+    transform: translateX(-100%);
+    opacity: 0;
+    width: 280px; /* Maintain width on mobile */
+    flex: none;
+  }
+  
+  /* Overlay when sidebar is open on mobile */
+  #revisionSidebar.sidebar-linguify.show::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 280px;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -1;
+  }
+}
+
+/* ===== NOTEBOOK SIDEBAR TOGGLE STYLES ===== */
+
+/* Sidebar collapsed state - ONLY for notebook app */
+#notebookSidebar.sidebar-linguify:not(.show) {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  border-right: none;
+  flex: 0 0 0;
+}
+
+/* Mobile responsiveness - ONLY for notebook app */
+@media (max-width: 768px) {
+  #notebookSidebar.sidebar-linguify {
+    position: fixed;
+    top: 64px; /* Height of navbar */
+    left: 0;
+    z-index: 1000;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  
+  #notebookSidebar.sidebar-linguify.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  #notebookSidebar.sidebar-linguify:not(.show) {
+    transform: translateX(-100%);
+    opacity: 0;
+    width: 280px; /* Maintain width on mobile */
+    flex: none;
+  }
+  
+  /* Overlay when sidebar is open on mobile */
+  #notebookSidebar.sidebar-linguify.show::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 280px;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -1;
+  }
+}
+
+.revision-study {
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Navbar actions group */
+.navbar-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Navbar Checkbox Group */
+.navbar-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 12px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--linguify-gray-50);
+    border: 1px solid var(--linguify-gray-200);
+}
+
+.navbar-label {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-700);
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* Layout horizontal pour les cartes */
+.study-mode-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.study-mode-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.study-mode-icon {
+  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, var(--linguify-primary-light), var(--linguify-primary));
+  color: white;
+  box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);
+  flex-shrink: 0;
+}
+
+.study-mode-icon i {
+  font-size: 1.75rem;
+}
+
+/* Couleurs spécifiques pour chaque mode */
+#studyFlashcards .study-mode-icon {
+  background: linear-gradient(135deg, var(--linguify-primary-light), var(--linguify-primary));
+  box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);
+}
+
+#studyLearn .study-mode-icon {
+  background: linear-gradient(135deg, var(--linguify-accent-light), var(--linguify-accent));
+  box-shadow: 0 4px 15px rgba(1, 126, 132, 0.2);
+}
+
+#studyMatch .study-mode-icon {
+  background: linear-gradient(135deg, var(--linguify-secondary-light), var(--linguify-secondary));
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+}
+
+#studyReview .study-mode-icon {
+  background: linear-gradient(135deg, #FDE047, var(--linguify-warning));
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+}
+
+#studyWrite .study-mode-icon {
+  background: linear-gradient(135deg, #34D399, var(--linguify-success));
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+}
+
+/* Effet hover */
+.study-mode-card-linguify:hover .study-mode-icon {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3);
+}
+
+.study-mode-card-linguify:active .study-mode-icon {
+  transform: translateY(0) scale(0.95);
+  transition: all 0.1s ease;
+}
+
+#studyLearn:hover .study-mode-icon {
+  box-shadow: 0 8px 25px rgba(1, 126, 132, 0.3);
+}
+
+#studyMatch:hover .study-mode-icon {
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+}
+
+#studyReview:hover .study-mode-icon {
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+}
+
+#studyWrite:hover .study-mode-icon {
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.study-mode-title {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  color: rgb(17 24 39);
+  margin-bottom: 0.25rem;
+  text-align: left;
+}
+
+.study-mode-description {
+  color: rgb(107 114 128);
+  font-size: 0.875rem;
+  line-height: 1.3rem;
+  text-align: left;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Ensure icons and text within Linguify elements use correct colors */
+.text-linguify-primary i,
+.text-linguify-primary *:not(.btn):not(button) {
+  color: #2D5BBA !important;
+}
+
+/* Boutons compacts */
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.btn-linguify.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.btn-linguify-secondary.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.text-linguify-accent i,
+.text-linguify-secondary i,
+.text-linguify-secondary *:not(.btn):not(button) {
+  color: #8B5CF6 !important;
+}
+.text-linguify-accent i,
+.text-linguify-accent *:not(.btn):not(button) {
+  color: #017E84 !important;
+}
+
+.text-linguify-success i,
+.text-linguify-success *:not(.btn):not(button) {
+  color: #10B981 !important;
+}
+
+.text-linguify-warning i,
+.text-linguify-warning *:not(.btn):not(button) {
+  color: #F59E0B !important;
+}
+
+.text-linguify-error i,
+.text-linguify-error *:not(.btn):not(button) {
+  color: #EF4444 !important;
+}
+
+/* Tags Filter Dropdown Styles - Removed duplicate, using the primary definition above */
+
+.tags-filter-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  background-color: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tags-filter-content {
+  padding: 8px 0;
+}
+
+.tags-filter-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  font-size: 14px;
+  color: #374151;
+}
+
+.tags-filter-item:hover {
+  background-color: #f3f4f6;
+}
+
+.tags-filter-item.selected {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.tags-filter-checkbox {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tags-filter-checkbox.checked {
+  background-color: var(--linguify-primary);
+  border-color: var(--linguify-primary);
+  color: white;
+}
+
+.tags-filter-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tags-filter-tag-count {
+  margin-left: 8px;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.tags-filter-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.tags-filter-actions {
+  padding: 8px 16px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tags-filter-clear {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.tags-filter-clear:hover {
+  color: #374151;
+  background-color: #e5e7eb;
+}
+
+.tags-filter-apply {
+  background-color: var(--linguify-primary);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.tags-filter-apply:hover {
+  background-color: var(--linguify-primary-dark);
+}
+
+/* =================================================================
+   APP LAYOUT SYSTEM - Linguify Design Standard
+   For consistent app structure across all Linguify applications
+   ================================================================= */
+
+/* Body Layout - Fixed header with flexible content */
+.app-body-layout {
+  height: 100vh;
+  overflow: hidden;
+  padding-top: 64px; /* Header Linguify standard height */
+}
+
+/* Main app container below fixed header */
+.app-container-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* App-specific header section (navbar area) */
+.app-header-layout {
+  flex-shrink: 0;
+  background: white;
+  border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
+  z-index: 999;
+}
+
+.app-header-layout .header-content {
+  padding: 0;
+  min-height: 60px; /* Standard navbar height */
+  display: flex;
+  align-items: center;
+}
+
+/* Main content area - flexible height */
+.app-main-layout {
+  flex: 1;
+  overflow: hidden;
+  background: var(--linguify-gray-50, #f9fafb);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header positioning - consistent across apps */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  height: 64px;
+  background: white;
+  border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* =================================================================
+   USAGE INSTRUCTIONS:
+   
+   1. Base Template Structure:
+   <body class="app-body-layout">
+     {% include 'components/header/app_header.html' %}
+     <div class="app-container-layout">
+       <div class="app-header-layout">
+         <div class="header-content">
+           <!-- Your navbar component here -->
+         </div>
+       </div>
+       <div class="app-main-layout">
+         <!-- Your main content here -->
+       </div>
+     </div>
+   </body>
+   
+   2. CSS Override (in each base template):
+   <style>
+     .app-header {
+       position: fixed;
+       top: 0;
+       left: 0;
+       right: 0;
+       z-index: 1001;
+     }
+   </style>
+   
+   This system provides:
+   - Fixed header at top (64px height)
+   - Sticky navbar below header (60px min-height)  
+   - Flexible content area that fills remaining space
+   - Consistent z-index layering
+   - Responsive design ready
+   ================================================================= */
+
+/* ===== FORM LINGUIFY COMPONENTS ===== */
+
+/* Form Layout - openlinguify style full height */
+.form-layout {
+    height: 100vh; /* Full viewport height */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Full width layout for forms */
+.form-layout-full-width {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+}
+
+.form-container {
+    flex: 1;
+    padding: 0;
+    background-color: var(--linguify-gray-50);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Form Header */
+.form-header-linguify {
+    padding: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--linguify-gray-200);
+}
+
+.form-title-linguify {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--linguify-gray-900);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-title-linguify i {
+    color: var(--linguify-primary);
+}
+
+/* Breadcrumb */
+.breadcrumb-linguify {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-600);
+}
+
+.breadcrumb-link-linguify {
+    color: var(--linguify-gray-500);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-link-linguify:hover {
+    color: var(--linguify-primary);
+}
+
+.breadcrumb-separator-linguify {
+    color: var(--linguify-gray-400);
+    margin: 0 8px;
+}
+
+.breadcrumb-current-linguify {
+    color: var(--linguify-gray-700);
+    font-weight: 500;
+}
+
+/* Form Main Content and Sidebar Layout */
+.form-main-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.form-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Main form card */
+.form-card-linguify {
+    background: white;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Form groups and inputs */
+.form-group-linguify {
+    margin-bottom: 16px;
+}
+
+/* Description group takes full height */
+.form-group-description-linguify {
+    margin-bottom: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Editor.js Linguify Integration */
+.editor-js-linguify {
+    flex: 1;
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    background: white;
+    min-height: 300px;
+    overflow-y: auto;
+    position: relative;
+    z-index: 0; /* Base container */
+}
+
+.editor-js-linguify .codex-editor {
+    height: 100%;
+}
+
+.editor-js-linguify .codex-editor__redactor {
+    padding: 16px !important; /* Padding normal, plus besoin d'espace pour le bouton + */
+    position: relative; /* Contexte de positionnement pour inline toolbar */
+}
+
+.editor-js-linguify .ce-block {
+    position: relative;
+    margin: 8px 0;
+}
+
+.editor-js-linguify .ce-block__content {
+    max-width: none !important;
+    margin: 0 !important;
+    position: relative;
+}
+
+.editor-js-linguify .ce-paragraph {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--linguify-gray-900);
+}
+
+.editor-js-linguify .ce-header {
+    font-weight: 600;
+    color: var(--linguify-gray-900);
+}
+
+/* Cacher visuellement les boutons mais laisser la toolbar fonctionner */
+.editor-js-linguify .ce-toolbar__plus,
+.editor-js-linguify .ce-toolbar__settings-btn {
+    visibility: hidden !important; /* Invisible mais prend encore l'espace */
+    opacity: 0 !important;
+}
+
+.editor-js-linguify .ce-toolbar {
+    /* Toolbar complètement fonctionnelle, seuls les boutons sont cachés */
+}
+
+/* Mais permettre les popups de commandes slash */
+.editor-js-linguify .ce-popover,
+.editor-js-linguify .ce-toolbar__actions,
+.editor-js-linguify .ce-toolbox {
+    display: block !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 99999 !important;
+    background: white !important;
+    border: 1px solid var(--linguify-gray-300) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Styles pour les éléments du menu slash */
+.editor-js-linguify .ce-popover__item {
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+    transition: background 0.2s ease !important;
+}
+
+.editor-js-linguify .ce-popover__item:hover,
+.editor-js-linguify .ce-popover__item--focused {
+    background: rgba(45, 91, 186, 0.1) !important;
+    color: var(--linguify-primary) !important;
+}
+
+/* Règles hover supprimées - toolbar désactivée */
+
+/* Bouton + supprimé */
+
+/* Hover bouton + supprimé */
+
+/* Bouton settings supprimé */
+
+/* Hover settings supprimé */
+
+.editor-js-linguify .ce-inline-toolbar {
+    background: white !important;
+    border: 1px solid var(--linguify-gray-300) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+    border-radius: 8px !important;
+    z-index: 99999 !important;
+    position: absolute !important; /* Position absolue pour être relative au contenu */
+    padding: 4px !important;
+    max-width: none !important;
+    transform: translateY(-100%) translateY(-25px) !important; /* Espacement confortable */
+}
+
+.editor-js-linguify .ce-inline-toolbar--showed {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.editor-js-linguify .ce-inline-toolbar__buttons {
+    padding: 4px;
+}
+
+.editor-js-linguify .ce-inline-tool {
+    color: var(--linguify-gray-600);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+    transition: all 0.2s ease;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.editor-js-linguify .ce-inline-tool:hover {
+    background: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary);
+    transform: translateY(-1px);
+}
+
+.editor-js-linguify .ce-inline-tool--active {
+    background: var(--linguify-primary);
+    color: white;
+}
+
+.editor-js-linguify .ce-inline-tool--active:hover {
+    background: var(--linguify-primary-dark);
+}
+
+/* Focus states */
+.editor-js-linguify:focus-within {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
+}
+
+/* Always show toolbar when editor is focused or when hovering over empty editor */
+.editor-js-linguify:hover .ce-toolbar,
+.editor-js-linguify:focus-within .ce-toolbar {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Toolbar principale désactivée - plus besoin de ces règles */
+
+/* Force inline toolbar to show on text selection */
+.editor-js-linguify .ce-inline-toolbar--showed,
+.editor-js-linguify .ce-inline-toolbar.ce-inline-toolbar--showed {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    z-index: 99999 !important; /* Au-dessus de tout */
+}
+
+/* Override any potential conflicting styles */
+.ce-inline-toolbar {
+    z-index: 99999 !important;
+    position: absolute !important; /* Position relative au contenu */
+    background: white !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+    border-radius: 8px !important;
+    transform: translateY(-100%) translateY(-20px) !important;
+}
+
+/* Better initial state for empty editor */
+.editor-js-linguify:not(.codex-editor--empty) .ce-block:first-child .ce-toolbar {
+    opacity: 0;
+}
+
+.editor-js-linguify.codex-editor--empty .ce-block:first-child .ce-toolbar,
+.editor-js-linguify:focus-within .ce-block:first-child .ce-toolbar {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Ensure first block always shows toolbar when editor is empty */
+.editor-js-linguify .ce-block:first-child .ce-toolbar {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Z-index hierarchy for Editor.js elements */
+.editor-js-linguify .ce-block {
+    z-index: 1; /* Base layer */
+}
+
+.editor-js-linguify .ce-toolbar {
+    z-index: 100; /* Toolbar base */
+}
+
+.editor-js-linguify .ce-toolbar__plus,
+.editor-js-linguify .ce-toolbar__settings-btn {
+    z-index: 101; /* Toolbar buttons */
+}
+
+.editor-js-linguify .ce-popover,
+.editor-js-linguify .ce-toolbar__actions {
+    z-index: 200; /* Popover menus */
+    background: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 8px;
+}
+
+/* Duplicate removed - already defined above with z-index: 99999 */
+
+.editor-js-linguify .ce-conversion-toolbar {
+    z-index: 160; /* Conversion toolbar */
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.editor-js-linguify .ce-settings {
+    z-index: 180; /* Settings panels */
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Better spacing for first and last blocks */
+.editor-js-linguify .ce-block:first-child {
+    margin-top: 0;
+}
+
+.editor-js-linguify .ce-block:last-child {
+    margin-bottom: 16px;
+}
+
+/* Error states only */
+
+.editor-js-linguify.editor-error {
+    border-color: var(--linguify-error);
+    background-color: #fef2f2;
+}
+
+/* Smooth transitions for editor states */
+.editor-js-linguify {
+    transition: all 0.2s ease;
+}
+
+/* Enhanced placeholder styling */
+.editor-js-linguify .ce-paragraph[data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: var(--linguify-gray-400);
+    font-style: italic;
+    pointer-events: none;
+}
+
+/* Better focus indication */
+.editor-js-linguify:focus-within {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+/* Duplicate removed - already defined above */
+
+/* Additional Editor.js Tool Styles */
+
+/* Quote styles */
+.editor-js-linguify .cdx-quote {
+    border-left: 3px solid var(--linguify-primary);
+    padding-left: 16px;
+    margin: 12px 0;
+    font-style: italic;
+}
+
+.editor-js-linguify .cdx-quote__text {
+    font-size: 1rem;
+    color: var(--linguify-gray-700);
+    line-height: 1.6;
+}
+
+.editor-js-linguify .cdx-quote__caption {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-500);
+    margin-top: 8px;
+    font-style: normal;
+}
+
+/* Code block styles */
+.editor-js-linguify .ce-code__textarea {
+    background: var(--linguify-gray-50);
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    padding: 12px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.875rem;
+    color: var(--linguify-gray-900);
+    line-height: 1.4;
+}
+
+/* Table styles */
+.editor-js-linguify .tc-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+}
+
+.editor-js-linguify .tc-table__cell {
+    border: 1px solid var(--linguify-gray-300);
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    color: var(--linguify-gray-900);
+}
+
+.editor-js-linguify .tc-table__cell--selected {
+    background: rgba(45, 91, 186, 0.1);
+}
+
+/* Checklist styles */
+.editor-js-linguify .cdx-checklist {
+    margin: 8px 0;
+}
+
+.editor-js-linguify .cdx-checklist__item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.editor-js-linguify .cdx-checklist__item-checkbox {
+    margin-right: 12px;
+    margin-top: 2px;
+}
+
+.editor-js-linguify .cdx-checklist__item-text {
+    flex: 1;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--linguify-gray-900);
+}
+
+.editor-js-linguify .cdx-checklist__item--checked .cdx-checklist__item-text {
+    text-decoration: line-through;
+    color: var(--linguify-gray-500);
+}
+
+/* Delimiter styles */
+.editor-js-linguify .ce-delimiter {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.editor-js-linguify .ce-delimiter::before {
+    content: "***";
+    color: var(--linguify-gray-400);
+    font-size: 1.2rem;
+    letter-spacing: 8px;
+}
+
+/* Link styles */
+.editor-js-linguify .link-tool {
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    padding: 12px;
+    margin: 8px 0;
+}
+
+.editor-js-linguify .link-tool__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--linguify-gray-900);
+    margin-bottom: 4px;
+}
+
+.editor-js-linguify .link-tool__description {
+    font-size: 0.8125rem;
+    color: var(--linguify-gray-600);
+    margin-bottom: 8px;
+}
+
+.editor-js-linguify .link-tool__anchor {
+    color: var(--linguify-primary);
+    text-decoration: none;
+    font-size: 0.8125rem;
+}
+
+/* Alert/Banner styles */
+.editor-js-linguify .cdx-alert {
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 6px;
+    border-left: 4px solid;
+}
+
+.editor-js-linguify .cdx-alert--info {
+    background: rgba(59, 130, 246, 0.1);
+    border-left-color: #3b82f6;
+    color: #1e40af;
+}
+
+.editor-js-linguify .cdx-alert--success {
+    background: rgba(16, 185, 129, 0.1);
+    border-left-color: #10b981;
+    color: #065f46;
+}
+
+.editor-js-linguify .cdx-alert--warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-left-color: #f59e0b;
+    color: #92400e;
+}
+
+.editor-js-linguify .cdx-alert--danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+    color: #991b1b;
+}
+
+/* Image styles */
+.editor-js-linguify .image-tool {
+    text-align: center;
+    margin: 12px 0;
+}
+
+.editor-js-linguify .image-tool__image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+}
+
+.editor-js-linguify .image-tool__caption {
+    margin-top: 8px;
+    font-size: 0.8125rem;
+    color: var(--linguify-gray-500);
+    font-style: italic;
+}
+
+.form-row-linguify {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.form-label-linguify {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--linguify-gray-700);
+    margin-bottom: 4px;
+}
+
+.text-required {
+    color: var(--linguify-danger);
+}
+
+.input-linguify, .textarea-linguify, .select-linguify {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: white;
+    box-sizing: border-box;
+}
+
+.input-linguify:focus, .textarea-linguify:focus, .select-linguify:focus {
+    outline: none;
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+.textarea-linguify {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.input-sm-linguify {
+    padding: 6px 8px;
+    font-size: 0.8125rem;
+}
+
+/* Range slider */
+.range-linguify {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--linguify-gray-200);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.range-linguify::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--linguify-primary);
+    cursor: pointer;
+}
+
+.range-linguify::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--linguify-primary);
+    cursor: pointer;
+    border: none;
+}
+
+/* Color selector */
+.color-selector-linguify {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-option-linguify {
+    display: none;
+}
+
+.color-label-linguify {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.color-option-linguify:checked + .color-label-linguify {
+    border-color: var(--linguify-primary);
+    transform: scale(1.1);
+}
+
+.color-option-linguify:checked + .color-label-linguify::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    text-shadow: 0 0 2px rgba(0,0,0,0.8);
+}
+
+/* Color definitions */
+.color-0 { background-color: #6c757d; }
+.color-1 { background-color: #dc3545; }
+.color-2 { background-color: #fd7e14; }
+.color-3 { background-color: #ffc107; }
+.color-4 { background-color: #28a745; }
+.color-5 { background-color: #20c997; }
+.color-6 { background-color: #17a2b8; }
+.color-7 { background-color: #007bff; }
+.color-8 { background-color: #6f42c1; }
+.color-9 { background-color: #e83e8c; }
+.color-10 { background-color: #343a40; }
+.color-11 { background-color: #f8f9fa; }
+
+/* Tags */
+.tags-container-linguify {
+    position: relative;
+}
+
+.selected-tags-linguify {
+    min-height: 48px;
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 8px;
+    padding: 8px;
+    background: white;
+    margin-bottom: 8px;
+}
+
+.tag-badge-linguify {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.tag-remove-linguify {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 4px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.tag-remove-linguify:hover {
+    opacity: 1;
+}
+
+.tag-input-group-linguify {
+    position: relative;
+}
+
+.tag-suggestions-linguify {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    max-height: 160px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tag-suggestion {
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+}
+
+.tag-suggestion:hover {
+    background-color: var(--linguify-gray-50);
+}
+
+.tag-suggestion.create {
+    color: var(--linguify-primary);
+    font-style: italic;
+}
+
+/* Sidebar */
+.sidebar-card-linguify {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--linguify-gray-200);
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* .sidebar-header-linguify definition removed - consolidated above */
+
+.sidebar-content-linguify {
+    padding: 12px 16px 16px 16px;
+}
+
+/* Form actions stack */
+.form-actions-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+.btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-sm-linguify {
+    padding: 6px 12px;
+    font-size: 0.8125rem;
+}
+
+.btn-success {
+    background-color: var(--linguify-success);
+    border-color: var(--linguify-success);
+}
+
+.btn-success:hover {
+    background-color: #0d8043;
+    border-color: #0d8043;
+}
+
+.btn-danger {
+    background-color: var(--linguify-danger);
+    border-color: var(--linguify-danger);
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* Info items */
+.info-item-linguify {
+    margin-bottom: 16px;
+}
+
+.info-item-linguify:last-child {
+    margin-bottom: 0;
+}
+
+.info-label {
+    color: var(--linguify-gray-500);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.info-value {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-900);
+    margin-top: 4px;
+}
+
+/* Tips list */
+.tips-list-linguify {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tips-list-linguify li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 0.875rem;
+    color: var(--linguify-gray-600);
+}
+
+.tips-list-linguify li:last-child {
+    margin-bottom: 0;
+}
+
+.tips-list-linguify li i {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* Badge */
+.badge-linguify {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid currentColor;
+    opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .form-container {
+        flex-direction: column;
+    }
+    
+    .form-main-content {
+        margin-right: 0;
+        margin-bottom: 24px;
+        max-width: none;
+    }
+    
+    .form-sidebar {
+        width: 100%;
+    }
+    
+    .form-row-linguify {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+/* ===== LIST LINGUIFY COMPONENTS ===== */
+
+/* List Layout - openlinguify style full height */
+.list-layout {
+    height: 100%; /* Use 100% instead of 100vh since we're inside app-main-layout */
+    min-height: 100%; /* Same for min-height */
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Include borders in height calculation */
+}
+
+.list-container {
+    flex: 1;
+    padding: 0px;
+    background-color: var(--linguify-gray-50);
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Take full available height from parent */
+    overflow: hidden; /* Prevent container from scrolling */
+    min-height: 0; /* Important for proper flexbox behavior */
+    box-sizing: border-box;
+}
+
+/* Unified Table Container */
+.unified-table-container-linguify {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--linguify-gray-200);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    overflow: hidden;
+    height: 100%; /* Ensure it takes full height */
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Important for proper flexbox behavior */
+    margin: 0; /* Remove any default margins */
+    box-sizing: border-box;
+}
+
+/* Make the table-responsive container handle scroll properly */
+.unified-table-container-linguify .table-responsive {
+    flex: 1; /* Take all available height */
+    overflow-y: auto;
+    height: 100%;
+    min-height: 0; /* Important for proper flexbox behavior */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Ensure table takes full width */
+.unified-table-container-linguify .table {
+    margin-bottom: 0;
+}
+
+/* Custom scrollbar for table */
+.unified-table-container-linguify .table-responsive::-webkit-scrollbar {
+    width: 8px;
+}
+
+.unified-table-container-linguify .table-responsive::-webkit-scrollbar-track {
+    background: var(--linguify-gray-100);
+    border-radius: 4px;
+}
+
+.unified-table-container-linguify .table-responsive::-webkit-scrollbar-thumb {
+    background: var(--linguify-gray-300);
+    border-radius: 4px;
+}
+
+.unified-table-container-linguify .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: var(--linguify-gray-400);
+}
+
+.table-linguify {
+    --bs-table-bg: transparent;
+    --bs-table-border-color: var(--linguify-gray-200);
+}
+
+.table-header-sticky {
+    background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #ffffff 100%);
+    position: sticky;
+    top: 0;
+    z-index: 100; /* Higher z-index to ensure it stays on top */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow when sticky */
+}
+
+.table-header-sticky th {
+    background: inherit;
+    border-bottom: 2px solid var(--linguify-primary);
+    padding: 12px 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--linguify-gray-700);
+    white-space: nowrap;
+    position: relative;
+}
+
+.table-header-sticky th.sortable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
+}
+
+.table-header-sticky th.sortable:hover {
+    background-color: rgba(45, 91, 186, 0.1);
+    color: var(--linguify-primary);
+}
+
+.table-header-sticky th.sortable:active {
+    background-color: rgba(45, 91, 186, 0.2);
+    transform: translateY(1px);
+}
+
+.table-header-sticky th i {
+    color: var(--linguify-gray-500);
+}
+
+.table-header-sticky th.sortable:hover i {
+    color: var(--linguify-primary);
+}
+
+/* Column specific styles with fixed widths for perfect alignment */
+.col-selector {
+    text-align: left;
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+    padding-left: 16px !important; /* Match kanban card padding */
+}
+
+/* Checkbox alignment */
+.col-selector .form-check {
+    margin-bottom: 0;
+    padding-left: 0;
+}
+
+.col-selector .form-check-input {
+    margin-left: 0;
+}
+
+/* Header selector alignment */
+thead .col-selector {
+    padding-left: 16px !important;
+}
+
+thead .col-selector .form-check {
+    margin-bottom: 0;
+    padding-left: 0;
+}
+
+.col-priority,
+.col-status {
+    text-align: center;
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+}
+
+.col-title {
+    min-width: 250px;
+}
+
+.col-stage {
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
+}
+
+.col-project {
+    width: 140px;
+    min-width: 140px;
+    max-width: 140px;
+}
+
+.col-tags {
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
+}
+
+.col-due-date {
+    width: 130px;
+    min-width: 130px;
+    max-width: 130px;
+}
+
+.col-actions {
+    text-align: center;
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+}
+
+/* Ensure table layout is fixed for consistent column widths */
+#tasksTable {
+    table-layout: fixed;
+    width: 100%;
+    transition: opacity 0.3s ease;
+}
+
+/* Sorting state */
+#tasksTable.sorting {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+#tasksTable th,
+#tasksTable td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 12px 8px;
+}
+
+/* Title column can wrap text */
+#tasksTable .col-title {
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Stage and Project columns with ellipsis for overflow */
+#tasksTable .col-stage,
+#tasksTable .col-project {
+    position: relative;
+}
+
+#tasksTable .col-stage span,
+#tasksTable .col-project span {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Tags column layout */
+#tasksTable .col-tags .tags-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 2px;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Task Row Styles - Fixed Height */
+.task-row-linguify {
+    border-bottom: 1px solid var(--linguify-gray-100);
+    transition: all 0.2s ease;
+    height: 56px; /* Fixed row height */
+}
+
+.task-row-linguify:hover {
+    background-color: rgba(45, 91, 186, 0.02);
+}
+
+.task-row-linguify.task-completed {
+    opacity: 0.7;
+}
+
+.task-row-linguify td {
+    padding: 12px 8px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--linguify-gray-100);
+    height: 56px; /* Fixed cell height */
+    box-sizing: border-box;
+}
+
+/* Table Button Styles */
+.priority-btn-table,
+.status-btn-table {
+    background: none;
+    border: none;
+    padding: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.priority-btn-table:hover,
+.status-btn-table:hover {
+    background-color: rgba(45, 91, 186, 0.1);
+}
+
+/* Task Title Container - Single Line */
+.task-title-container {
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.task-title-row {
+    width: 100%;
+    min-height: 32px; /* Minimum height for content */
+}
+
+.task-title-text {
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--linguify-gray-900);
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    max-width: calc(100% - 60px); /* Leave space for indicators */
+}
+
+.task-title-text:hover {
+    color: var(--linguify-primary);
+    text-decoration: underline;
+}
+
+.task-meta-indicators {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Task description is now shown as an icon with tooltip */
+
+/* Badge styles */
+.badge-tag {
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 4px;
+    padding: 2px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+}
+
+/* Stage badge specific styles */
+#tasksTable .col-stage .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 4px;
+    padding: 3px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+    display: inline-block;
+}
+
+.badge-outline-secondary {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-600);
+    border: 1px solid var(--linguify-gray-200);
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Tags container */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    align-items: center;
+}
+
+/* Due date container */
+.due-date-container {
+    white-space: nowrap;
+}
+
+/* Empty state for table */
+.empty-state-table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* Simple Header */
+.simple-header-linguify {
+    padding: 20px 16px 16px;
+    background: white;
+}
+
+th, tr, td, thead, tbody, tfoot {
+  border-color: inherit;
+    border-style: solid;
+    border-width: 0;
+}
+
+.badge-count-linguify {
+    background: var(--linguify-primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* List Filters */
+.list-filters-linguify {
+    padding: 16px;
+    background: white;
+    border-bottom: 1px solid var(--linguify-gray-200);
+}
+
+.filter-card {
+    background: white;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.border-bottom {
+    border-bottom: 1px solid var(--linguify-gray-200);
+}
+
+.filter-group-linguify {
+    margin-bottom: 0;
+}
+
+.filter-label-linguify {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--linguify-gray-700);
+    margin-bottom: 4px;
+    display: block;
+}
+
+.filter-input-linguify {
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-input-linguify:focus {
+    outline: none;
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+/* List Controls */
+.list-controls-linguify {
+    padding: 16px;
+    background: white;
+    border-bottom: 1px solid var(--linguify-gray-200);
+}
+
+.sort-controls-linguify {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sort-btn-linguify {
+    background: white;
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    color: var(--linguify-gray-700);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sort-btn-linguify:hover {
+    background-color: var(--linguify-gray-50);
+    border-color: var(--linguify-primary);
+    color: var(--linguify-primary);
+}
+
+/* Task List Container */
+.task-list-container-linguify {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Tasks Grid */
+.tasks-grid-linguify {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Task Item (Card) */
+.task-item-linguify {
+    background: white;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.task-item-linguify:hover {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.15);
+    transform: translateY(-1px);
+}
+
+.task-item-linguify.task-completed {
+    background-color: rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.task-item-linguify.selected {
+    background-color: rgba(45, 91, 186, 0.05);
+    border-color: var(--linguify-primary);
+}
+
+/* Task Header Section */
+.task-header-section {
+    margin-bottom: 12px;
+}
+
+.task-actions {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.task-item-linguify:hover .task-actions {
+    opacity: 1;
+}
+
+.action-btn-linguify {
+    background: var(--linguify-gray-100);
+    border: none;
+    border-radius: 6px;
+    padding: 6px 8px;
+    color: var(--linguify-gray-600);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.action-btn-linguify:hover {
+    background-color: var(--linguify-primary);
+    color: white;
+}
+
+.action-btn-linguify.text-red-500:hover {
+    background-color: var(--linguify-error);
+    color: white;
+}
+
+/* Priority Button */
+.priority-btn-linguify {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--linguify-gray-400);
+    transition: all 0.2s ease;
+}
+
+.priority-btn-linguify:hover {
+    transform: scale(1.1);
+}
+
+/* Complete Button */
+.complete-btn-linguify {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--linguify-gray-400);
+    transition: all 0.2s ease;
+}
+
+.complete-btn-linguify:hover {
+    transform: scale(1.1);
+}
+
+/* Task Content Section */
+.task-content-section {
+    margin-bottom: 12px;
+}
+
+.task-title-linguify {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--linguify-gray-900);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    margin-bottom: 4px;
+}
+
+.task-title-linguify:hover {
+    color: var(--linguify-primary);
+}
+
+.task-description-linguify {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-600);
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.subtask-counter {
+    font-size: 0.75rem;
+    color: var(--linguify-gray-500);
+    font-weight: normal;
+}
+
+/* Task Progress */
+.task-progress-linguify {
+    width: 100px;
+    height: 4px;
+    background-color: var(--linguify-gray-200);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.progress-bar-linguify {
+    height: 100%;
+    background: linear-gradient(90deg, var(--linguify-primary) 0%, var(--linguify-secondary) 100%);
+    transition: width 0.3s ease;
+}
+
+/* Task Meta Section */
+.task-meta-section {
+    border-top: 1px solid var(--linguify-gray-100);
+    padding-top: 12px;
+}
+
+/* Badges */
+.stage-badge-linguify {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-700);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.project-badge-linguify {
+    background: var(--linguify-primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.due-date-badge-linguify {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-700);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.due-date-badge-linguify.overdue {
+    background: var(--linguify-error);
+    color: white;
+}
+
+.due-date-badge-linguify.today {
+    background: var(--linguify-warning);
+    color: white;
+}
+
+.created-date-linguify {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-600);
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Task Tags */
+.task-tags-linguify {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tag-badge-linguify {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.tag-more-linguify {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-600);
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+/* Empty State */
+.empty-state-linguify {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+/* Task Color Indicators - reuse kanban colors */
+.task-color-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Fix pour le champ importDeckName - forcer la couleur normale - BRUTAL FORCE */
+#importDeckName,
+#importDeckName.form-control,
+.form-control#importDeckName,
+input#importDeckName {
+    border-color: #dee2e6 !important;
+    box-shadow: none !important;
+}
+
+#importDeckName:focus,
+#importDeckName.form-control:focus,
+.form-control#importDeckName:focus,
+input#importDeckName:focus {
+    border-color: var(--linguify-primary, #2D5BBA) !important;
+    box-shadow: 0 0 0 0.2rem rgba(45, 91, 186, 0.25) !important;
+}
+
+/* Spécifiquement pour annuler le rouge */
+#importDeckName.is-invalid {
+    border-color: #dee2e6 !important;
+    box-shadow: none !important;
+}
+
+/* ===== TAILWIND GRADIENT AND IMPORT UTILITIES ===== */
+
+/* Gradient backgrounds */
+.bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)) !important;
+}
+
+.bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops)) !important;
+}
+
+/* Gradient stops for linguify colors */
+.from-linguify-primary {
+    --tw-gradient-from: #2D5BBA;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(45, 91, 186, 0));
+}
+
+.from-linguify-accent {
+    --tw-gradient-from: #017E84;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(1, 126, 132, 0));
+}
+
+.from-linguify-success {
+    --tw-gradient-from: #10B981;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(16, 185, 129, 0));
+}
+
+.from-linguify-gray-50 {
+    --tw-gradient-from: #f9fafb;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(249, 250, 251, 0));
+}
+
+.to-linguify-accent {
+    --tw-gradient-to: #017E84;
+}
+
+.to-linguify-primary {
+    --tw-gradient-to: #2D5BBA;
+}
+
+.to-white {
+    --tw-gradient-to: #ffffff;
+}
+
+/* Border colors with opacity */
+.border-linguify-primary\/30 {
+    border-color: rgba(45, 91, 186, 0.3) !important;
+}
+
+.border-linguify-success\/20 {
+    border-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.border-linguify-success\/30 {
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.border-linguify-accent\/30 {
+    border-color: rgba(1, 126, 132, 0.3) !important;
+}
+
+.border-linguify-warning\/20 {
+    border-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+/* Background colors with opacity */
+.bg-linguify-success\/10 {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+}
+
+.bg-linguify-accent\/10 {
+    background-color: rgba(1, 126, 132, 0.1) !important;
+}
+
+.bg-linguify-success\/20 {
+    background-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.bg-linguify-accent\/20 {
+    background-color: rgba(1, 126, 132, 0.2) !important;
+}
+
+.bg-linguify-warning\/10 {
+    background-color: rgba(245, 158, 11, 0.1) !important;
+}
+
+/* Text colors for new grays */
+.text-linguify-gray {
+    color: var(--linguify-gray) !important;
+}
+
+.text-linguify-gray-400 {
+    color: var(--linguify-gray-400) !important;
+}
+
+.text-linguify-gray-500 {
+    color: var(--linguify-gray-500) !important;
+}
+
+.text-linguify-gray-700 {
+    color: var(--linguify-gray-700) !important;
+}
+
+/* Border colors for grays */
+.border-linguify-gray-200 {
+    border-color: var(--linguify-gray-200) !important;
+}
+
+.border-linguify-gray-300 {
+    border-color: var(--linguify-gray-300) !important;
+}
+
+/* Background colors for grays */
+.bg-linguify-gray-50 {
+    background-color: var(--linguify-gray-50) !important;
+}
+
+.bg-linguify-gray-200 {
+    background-color: var(--linguify-gray-200) !important;
+}
+
+/* Focus ring colors with opacity */
+.focus\:ring-linguify-primary\/20:focus {
+    --tw-ring-opacity: 0.2;
+    --tw-ring-color: rgba(45, 91, 186, var(--tw-ring-opacity));
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:ring-linguify-accent\/20:focus {
+    --tw-ring-opacity: 0.2;
+    --tw-ring-color: rgba(1, 126, 132, var(--tw-ring-opacity));
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+/* Placeholder colors */
+.placeholder\:text-linguify-gray-400::placeholder {
+    color: var(--linguify-gray-400) !important;
+}
+
+/* Group hover effects */
+.group:hover .group-hover\:scale-110 {
+    transform: scale(1.1) !important;
+}
+
+/* Animation classes */
+.animate-bounce {
+    animation: bounce 1s infinite;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+    50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Additional utility classes */
+.space-y-4 > * + * {
+    margin-top: 1rem !important;
+}
+
+.space-y-2 > * + * {
+    margin-top: 0.5rem !important;
+}
+
+.space-x-2 > * + * {
+    margin-left: 0.5rem !important;
+}
+
+.space-x-3 > * + * {
+    margin-left: 0.75rem !important;
+}
+
+.space-x-4 > * + * {
+    margin-left: 1rem !important;
+}
+
+/* Grid system */
+.grid {
+    display: grid !important;
+}
+
+.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+
+@media (min-width: 768px) {
+    .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    .md\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+
+/* Gap utilities */
+.gap-4 {
+    gap: 1rem !important;
+}
+
+.gap-6 {
+    gap: 1.5rem !important;
+}
+
+/* Transition utilities */
+.transition-all {
+    transition-property: all !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.transition-colors {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.transition-opacity {
+    transition-property: opacity !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.transition-transform {
+    transition-property: transform !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.transition-shadow {
+    transition-property: box-shadow !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.duration-200 {
+    transition-duration: 200ms !important;
+}
+
+.duration-300 {
+    transition-duration: 300ms !important;
+}
+
+/* Hover effects */
+.hover\:bg-linguify-gray-50:hover {
+    background-color: var(--linguify-gray-50) !important;
+}
+
+.hover\:shadow-lg:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.hover\:shadow-md:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Disabled states */
+.disabled\:opacity-50:disabled {
+    opacity: 0.5 !important;
+}
+
+.disabled\:cursor-not-allowed:disabled {
+    cursor: not-allowed !important;
+}
+
+/* Width and Height utilities */
+.w-8 {
+    width: 2rem !important;
+}
+
+.w-10 {
+    width: 2.5rem !important;
+}
+
+.w-12 {
+    width: 3rem !important;
+}
+
+.w-16 {
+    width: 4rem !important;
+}
+
+.w-20 {
+    width: 5rem !important;
+}
+
+.w-4 {
+    width: 1rem !important;
+}
+
+.h-8 {
+    height: 2rem !important;
+}
+
+.h-10 {
+    height: 2.5rem !important;
+}
+
+.h-12 {
+    height: 3rem !important;
+}
+
+.h-16 {
+    height: 4rem !important;
+}
+
+.h-20 {
+    height: 5rem !important;
+}
+
+.h-4 {
+    height: 1rem !important;
+}
+
+.h-px {
+    height: 1px !important;
+}
+
+/* Text sizing */
+.text-xs {
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+}
+
+.text-sm {
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
+}
+
+.text-lg {
+    font-size: 1.125rem !important;
+    line-height: 1.75rem !important;
+}
+
+.text-2xl {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+}
+
+.text-3xl {
+    font-size: 1.875rem !important;
+    line-height: 2.25rem !important;
+}
+
+/* Font weight utilities */
+.font-medium {
+    font-weight: 500 !important;
+}
+
+.font-semibold {
+    font-weight: 600 !important;
+}
+
+.font-bold {
+    font-weight: 700 !important;
+}
+
+/* Padding utilities */
+.p-4 {
+    padding: 1rem !important;
+}
+
+.p-6 {
+    padding: 1.5rem !important;
+}
+
+.px-3 {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+}
+
+.px-4 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
+.px-6 {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+.py-1 {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+}
+
+.py-2 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+.py-3 {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+}
+
+/* Margin utilities */
+.mb-2 {
+    margin-bottom: 0.5rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 0.75rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1rem !important;
+}
+
+.mb-6 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mr-1 {
+    margin-right: 0.25rem !important;
+}
+
+.mr-2 {
+    margin-right: 0.5rem !important;
+}
+
+.mt-1 {
+    margin-top: 0.25rem !important;
+}
+
+.mt-2 {
+    margin-top: 0.5rem !important;
+}
+
+.mt-4 {
+    margin-top: 1rem !important;
+}
+
+.mt-auto {
+    margin-top: auto !important;
+}
+
+/* Border radius utilities */
+.rounded-lg {
+    border-radius: 0.5rem !important;
+}
+
+.rounded-full {
+    border-radius: 9999px !important;
+}
+
+/* Shadow utilities */
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Additional display utilities */
+.inline-flex {
+    display: inline-flex !important;
+}
+
+/* Text alignment */
+.text-center {
+    text-align: center !important;
+}
+
+/* Letter spacing */
+.tracking-wider {
+    letter-spacing: 0.05em !important;
+}
+
+/* Text transform */
+.uppercase {
+    text-transform: uppercase !important;
+}
+
+/* Flexbox utilities - Additional */
+.items-start {
+    align-items: flex-start !important;
+}
+
+.justify-between {
+    justify-content: space-between !important;
+}
+
+.justify-center {
+    justify-content: center !important;
+}
+
+.justify-end {
+    justify-content: flex-end !important;
+}
+
+.flex-shrink-0 {
+    flex-shrink: 0 !important;
+}
+
+.flex-col {
+    flex-direction: column !important;
+}
+
+/* Position utilities */
+.absolute {
+    position: absolute !important;
+}
+
+.relative {
+    position: relative !important;
+}
+
+.inset-0 {
+    top: 0px !important;
+    right: 0px !important;
+    bottom: 0px !important;
+    left: 0px !important;
+}
+
+.inset-y-0 {
+    top: 0px !important;
+    bottom: 0px !important;
+}
+
+/* Z-index utilities */
+.z-10 {
+    z-index: 10 !important;
+}
+
+/* Pointer events */
+.pointer-events-none {
+    pointer-events: none !important;
+}
+
+/* Cursor utilities */
+.cursor-pointer {
+    cursor: pointer !important;
+}
+
+/* Opacity utilities */
+.opacity-0 {
+    opacity: 0 !important;
+}
+
+.opacity-90 {
+    opacity: 0.9 !important;
+}
+
+/* Border width */
+.border {
+    border-width: 1px !important;
+}
+
+.border-2 {
+    border-width: 2px !important;
+}
+
+.border-4 {
+    border-width: 4px !important;
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.border-t {
+    border-top-width: 1px !important;
+}
+
+/* Focus ring base */
+.focus\:ring-2:focus {
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+
+/* Gradient color stops - missing ones */
+.from-linguify-gray-200 {
+    --tw-gradient-from: var(--linguify-gray-200);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(229, 231, 235, 0));
+}
+
+.from-linguify-gray-300 {
+    --tw-gradient-from: var(--linguify-gray-300);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(209, 213, 219, 0));
+}
+
+.to-linguify-gray-300 {
+    --tw-gradient-to: var(--linguify-gray-300);
+}
+
+/* Enhanced file import drag and drop styles */
+#fileDropZone.drag-over {
+    border-color: var(--linguify-primary) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    transform: scale(1.02);
+}
+
+#fileDropZone.drag-over #dropZoneOverlay {
+    opacity: 0.9 !important;
+}
+
+/* Additional shadow utility */
+.shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ===== KANBAN COLUMN FOLDING - HIGHEST PRIORITY ===== */
+/* Force folded styles with maximum specificity to override everything */
+.kanban-columns .kanban-column.force-folded {
+    flex: 0 0 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    width: 36px !important;
+    background: #ff6b6b !important;
+    border: 3px solid #0066cc !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    z-index: 9999 !important;
+    position: relative !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.kanban-columns .kanban-column.force-folded .kanban-tasks-container {
+    display: none !important;
+}
+
+.kanban-columns .kanban-column.force-folded .sidebar-header-linguify {
+    writing-mode: vertical-lr !important;
+    text-orientation: mixed !important;
+    transform: rotate(180deg) !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.kanban-columns .kanban-column.force-folded .btn-linguify-secondary,
+.kanban-columns .kanban-column.force-folded .dropdown,
+.kanban-columns .kanban-column.force-folded .kanban-quick-add {
+    display: none !important;
+}
+
+/* Normal folded styles (without visible colors for production) */
+.kanban-columns .kanban-column.o_column_folded {
+    flex: 0 0 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    width: 36px !important;
+    background: var(--linguify-gray-50) !important;
+    border-right: 1px solid var(--linguify-gray-200) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .kanban-tasks-container {
+    display: none !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .sidebar-header-linguify {
+    writing-mode: vertical-lr !important;
+    text-orientation: mixed !important;
+    transform: rotate(180deg) !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .btn-linguify-secondary,
+.kanban-columns .kanban-column.o_column_folded .dropdown,
+.kanban-columns .kanban-column.o_column_folded .kanban-quick-add {
+    display: none !important;
+}

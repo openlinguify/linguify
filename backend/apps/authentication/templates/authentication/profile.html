@@ -289,7 +289,7 @@
                         {% for app in user_apps %}
                         <a href="{{ app.route_path }}" class="tool-item">
                             <div class="tool-icon">
-                                <i class="bi {{ app.icon_class }}"></i>
+                                <img src="http://localhost:8000/app-icons/{{ app.code }}/icon.png" alt="{{ app.display_name }} icon" style="width: 24px; height: 24px; object-fit: contain;">
                             </div>
                             <div class="tool-info">
                                 <span class="tool-name">{{ app.display_name }}</span>
@@ -297,36 +297,36 @@
                             </div>
                         </a>
                         {% empty %}
-                        <a href="{{ app.route_path }}" class="tool-item">
+                        <a href="/chat" class="tool-item">
                             <div class="tool-icon">
-                                <i class="bi bi-chat-dots"></i>
+                                <img src="http://localhost:8000/app-icons/chat/icon.png" alt="Chat icon" style="width: 24px; height: 24px; object-fit: contain;">
                             </div>
                             <div class="tool-info">
                                 <span class="tool-name">Chat</span>
                                 <span class="tool-usage">il y a 2 heures</span>
                             </div>
                         </a>
-                        <a href="{{ app.route_path }}" class="tool-item">
+                        <a href="/language-ai" class="tool-item">
                             <div class="tool-icon">
-                                <i class="bi bi-robot"></i>
+                                <img src="http://localhost:8000/app-icons/language_ai/icon.png" alt="AI Conversation icon" style="width: 24px; height: 24px; object-fit: contain;">
                             </div>
                             <div class="tool-info">
                                 <span class="tool-name">AI Conversation</span>
                                 <span class="tool-usage">il y a 2 heures</span>
                             </div>
                         </a>
-                        <a href="{{ app.route_path }}" class="tool-item">
+                        <a href="/notebook" class="tool-item">
                             <div class="tool-icon">
-                                <i class="bi bi-journal-text"></i>
+                                <img src="http://localhost:8000/app-icons/notebook/icon.png" alt="Notes icon" style="width: 24px; height: 24px; object-fit: contain;">
                             </div>
                             <div class="tool-info">
                                 <span class="tool-name">Notes</span>
                                 <span class="tool-usage">il y a 2 heures</span>
                             </div>
                         </a>
-                        <a href="{{ app.route_path }}" class="tool-item">
+                        <a href="/quizz" class="tool-item">
                             <div class="tool-icon">
-                                <i class="bi bi-question-circle"></i>
+                                <img src="http://localhost:8000/app-icons/quizz/icon.png" alt="Quiz icon" style="width: 24px; height: 24px; object-fit: contain;">
                             </div>
                             <div class="tool-info">
                                 <span class="tool-name">Quiz</span>

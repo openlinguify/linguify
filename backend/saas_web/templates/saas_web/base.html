@@ -15,6 +15,9 @@
     
     {% load static %}
     
+    <!-- Tailwind CSS Global -->
+    <link rel="stylesheet" href="{% static 'css/tailwind-built.css' %}">
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'saas_web/css/main.css' %}">
     <link rel="stylesheet" href="{% static 'saas_web/css/app_header.css' %}">
@@ -52,6 +55,158 @@
             background: #f8fafc;
             padding-top: 70px; /* Pour le header fixe */
             min-height: 100vh;
+        }
+        
+        /* Load dashboard background early to prevent flash */
+        body.dashboard-bg-loaded {
+            transition: background-color 0.3s ease;
+        }
+        
+        /* Background-specific text adaptations */
+        
+        /* Dark backgrounds - White text */
+        body.bg-dark,
+        body.bg-dark-blue {
+            color: #f1f5f9;
+        }
+        
+        body.bg-dark .page-title,
+        body.bg-dark .section-title,
+        body.bg-dark h1, body.bg-dark h2, body.bg-dark h3, 
+        body.bg-dark h4, body.bg-dark h5, body.bg-dark h6,
+        body.bg-dark-blue .page-title,
+        body.bg-dark-blue .section-title,
+        body.bg-dark-blue h1, body.bg-dark-blue h2, body.bg-dark-blue h3, 
+        body.bg-dark-blue h4, body.bg-dark-blue h5, body.bg-dark-blue h6 {
+            color: #f1f5f9 !important;
+        }
+        
+        body.bg-dark .app-name-simple,
+        body.bg-dark-blue .app-name-simple {
+            color: #e2e8f0 !important;
+        }
+        
+        /* Light backgrounds with color tints - Darker text for better contrast */
+        body.bg-linguify-light,
+        body.bg-linguify-accent,
+        body.bg-linguify-purple,
+        body.bg-warm,
+        body.bg-cool,
+        body.bg-nature {
+            color: #1f2937;
+        }
+        
+        body.bg-linguify-light .page-title,
+        body.bg-linguify-light .section-title,
+        body.bg-linguify-light h1, body.bg-linguify-light h2, body.bg-linguify-light h3,
+        body.bg-linguify-light h4, body.bg-linguify-light h5, body.bg-linguify-light h6,
+        body.bg-linguify-accent .page-title,
+        body.bg-linguify-accent .section-title,
+        body.bg-linguify-accent h1, body.bg-linguify-accent h2, body.bg-linguify-accent h3,
+        body.bg-linguify-accent h4, body.bg-linguify-accent h5, body.bg-linguify-accent h6,
+        body.bg-linguify-purple .page-title,
+        body.bg-linguify-purple .section-title,
+        body.bg-linguify-purple h1, body.bg-linguify-purple h2, body.bg-linguify-purple h3,
+        body.bg-linguify-purple h4, body.bg-linguify-purple h5, body.bg-linguify-purple h6,
+        body.bg-warm .page-title,
+        body.bg-warm .section-title,
+        body.bg-warm h1, body.bg-warm h2, body.bg-warm h3,
+        body.bg-warm h4, body.bg-warm h5, body.bg-warm h6,
+        body.bg-cool .page-title,
+        body.bg-cool .section-title,
+        body.bg-cool h1, body.bg-cool h2, body.bg-cool h3,
+        body.bg-cool h4, body.bg-cool h5, body.bg-cool h6,
+        body.bg-nature .page-title,
+        body.bg-nature .section-title,
+        body.bg-nature h1, body.bg-nature h2, body.bg-nature h3,
+        body.bg-nature h4, body.bg-nature h5, body.bg-nature h6 {
+            color: #111827 !important;
+        }
+        
+        body.bg-linguify-light .app-name-simple,
+        body.bg-linguify-accent .app-name-simple,
+        body.bg-linguify-purple .app-name-simple,
+        body.bg-warm .app-name-simple,
+        body.bg-cool .app-name-simple,
+        body.bg-nature .app-name-simple {
+            color: #374151 !important;
+        }
+        
+        /* Neutral backgrounds - Standard dark text */
+        body.bg-default,
+        body.bg-white,
+        body.bg-gray-light,
+        body.bg-gray {
+            color: #374151;
+        }
+        
+        body.bg-default .page-title,
+        body.bg-default .section-title,
+        body.bg-default h1, body.bg-default h2, body.bg-default h3,
+        body.bg-default h4, body.bg-default h5, body.bg-default h6,
+        body.bg-white .page-title,
+        body.bg-white .section-title,
+        body.bg-white h1, body.bg-white h2, body.bg-white h3,
+        body.bg-white h4, body.bg-white h5, body.bg-white h6,
+        body.bg-gray-light .page-title,
+        body.bg-gray-light .section-title,
+        body.bg-gray-light h1, body.bg-gray-light h2, body.bg-gray-light h3,
+        body.bg-gray-light h4, body.bg-gray-light h5, body.bg-gray-light h6,
+        body.bg-gray .page-title,
+        body.bg-gray .section-title,
+        body.bg-gray h1, body.bg-gray h2, body.bg-gray h3,
+        body.bg-gray h4, body.bg-gray h5, body.bg-gray h6 {
+            color: #111827 !important;
+        }
+        
+        body.bg-default .app-name-simple,
+        body.bg-white .app-name-simple,
+        body.bg-gray-light .app-name-simple,
+        body.bg-gray .app-name-simple {
+            color: #1e293b !important;
+        }
+        
+        /* Card adjustments for all backgrounds */
+        
+        /* Pure white background - Invisible cards */
+        body.bg-white .app-card-simple,
+        body.bg-white .app-card-simple:hover,
+        body.bg-white .app-card-simple:focus,
+        body.bg-white .app-card-simple:active {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            border-radius: 12px;
+        }
+        
+        /* Neutral backgrounds */
+        body.bg-default .app-card-simple,
+        body.bg-gray-light .app-card-simple,
+        body.bg-gray .app-card-simple {
+            background: rgba(255, 255, 255, 0.4) !important;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Colored backgrounds */
+        body.bg-linguify-light .app-card-simple,
+        body.bg-linguify-accent .app-card-simple,
+        body.bg-linguify-purple .app-card-simple,
+        body.bg-warm .app-card-simple,
+        body.bg-cool .app-card-simple,
+        body.bg-nature .app-card-simple {
+            background: rgba(255, 255, 255, 0.8) !important;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Dark backgrounds */
+        body.bg-dark .app-card-simple,
+        body.bg-dark-blue .app-card-simple {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
         }
         
         .main-content {
@@ -147,6 +302,56 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body>
+    <!-- Load dashboard background immediately to prevent flash -->
+    <script>
+    (function() {
+        const savedBackground = localStorage.getItem('dashboard_background') || 'default';
+        const backgroundColors = {
+            // Couleurs neutres
+            'default': '#f8fafc',
+            'white': '#ffffff',
+            'gray-light': '#f9fafb',
+            'gray': '#f3f4f6',
+            
+            // Couleurs Linguify
+            'linguify-light': 'linear-gradient(135deg, #f0f4ff 0%, #e0f2fe 100%)',
+            'linguify-accent': 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+            'linguify-purple': 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)',
+            
+            // Couleurs premium
+            'warm': 'linear-gradient(135deg, #fefbf3 0%, #fef7ed 100%)',
+            'cool': 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+            'nature': 'linear-gradient(135deg, #f7fee7 0%, #ecfccb 100%)',
+            
+            // Mode sombre
+            'dark': '#1f2937',
+            'dark-blue': 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+            
+            // Compatibilité ancienne version
+            'blue': '#eff6ff',
+            'green': '#f0fdf4',
+            'purple': '#faf5ff'
+        };
+        
+        const color = backgroundColors[savedBackground] || backgroundColors['default'];
+        document.body.style.setProperty('background', color, 'important');
+        document.body.classList.add('dashboard-bg-loaded');
+        
+        // Remove all background classes first
+        document.body.classList.remove(
+            'bg-default', 'bg-white', 'bg-gray-light', 'bg-gray',
+            'bg-linguify-light', 'bg-linguify-accent', 'bg-linguify-purple',
+            'bg-warm', 'bg-cool', 'bg-nature', 
+            'bg-dark', 'bg-dark-blue',
+            'bg-blue', 'bg-green', 'bg-purple', // compatibility
+            'dark-background' // old class
+        );
+        
+        // Apply specific background class for text adaptation
+        document.body.classList.add('bg-' + savedBackground);
+    })();
+    </script>
+    
     <!-- Include SaaS header -->
     {% include 'components/header/app_header.html' %}
     
@@ -154,6 +359,9 @@
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
+    
+    <!-- HTMX Global Integration -->
+    <script src="https://unpkg.com/htmx.org@2.0.3/dist/htmx.min.js"></script>
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -163,6 +371,84 @@
     
     <!-- Custom JS -->
     <script src="{% static 'saas_web/js/main.js' %}"></script>
+    
+    <!-- HTMX Global Configuration -->
+    <script>
+        // Configure HTMX globally for Linguify
+        document.addEventListener('DOMContentLoaded', function() {
+            // CSRF Token configuration for HTMX
+            htmx.config.getCacheBusterParam = false;
+            
+            // Add CSRF token to all HTMX requests
+            document.body.addEventListener('htmx:configRequest', function(evt) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                if (csrfToken) {
+                    evt.detail.headers['X-CSRFToken'] = csrfToken;
+                }
+            });
+            
+            // Global loading states
+            document.body.addEventListener('htmx:beforeRequest', function(evt) {
+                const target = evt.detail.elt;
+                // Add loading class
+                target.classList.add('htmx-loading');
+                
+                // Show loading indicator if element has loading target
+                const loadingTarget = target.getAttribute('hx-indicator') || target.querySelector('.htmx-indicator');
+                if (loadingTarget) {
+                    if (typeof loadingTarget === 'string') {
+                        const indicator = document.querySelector(loadingTarget);
+                        if (indicator) indicator.style.display = 'block';
+                    } else {
+                        loadingTarget.style.display = 'block';
+                    }
+                }
+            });
+            
+            document.body.addEventListener('htmx:afterRequest', function(evt) {
+                const target = evt.detail.elt;
+                // Remove loading class
+                target.classList.remove('htmx-loading');
+                
+                // Hide loading indicator
+                const loadingTarget = target.getAttribute('hx-indicator') || target.querySelector('.htmx-indicator');
+                if (loadingTarget) {
+                    if (typeof loadingTarget === 'string') {
+                        const indicator = document.querySelector(loadingTarget);
+                        if (indicator) indicator.style.display = 'none';
+                    } else {
+                        loadingTarget.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Error handling
+            document.body.addEventListener('htmx:responseError', function(evt) {
+                console.error('HTMX Error:', evt.detail);
+                
+                // Show user-friendly error message
+                if (window.notificationService) {
+                    window.notificationService.error('Une erreur s\'est produite. Veuillez réessayer.');
+                } else {
+                    alert('Une erreur s\'est produite. Veuillez réessayer.');
+                }
+            });
+            
+            // Success notifications for common actions
+            document.body.addEventListener('htmx:afterSwap', function(evt) {
+                // Check if the response contains a success message
+                const response = evt.detail.xhr.response;
+                if (response && response.includes('success-message')) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(response, 'text/html');
+                    const successMsg = doc.querySelector('.success-message');
+                    if (successMsg && window.notificationService) {
+                        window.notificationService.success(successMsg.textContent);
+                    }
+                }
+            });
+        });
+    </script>
     
     <!-- Language switching -->
     <script>
@@ -201,7 +487,9 @@
     
     {% block extra_js %}{% endblock %}
     
-    <!-- Bouton chat flottant global (sauf sur la page de chat) -->
+    <!-- Bouton chat flottant global (désactivé car app chat non activée) -->
+    {% comment %}
+    <!-- Widget Messenger désactivé car l'app Chat n'est pas activée -->
     {% if user.is_authenticated and request.resolver_match.url_name != 'chat_home' %}
         <style>
             .global-chat-btn {
@@ -277,9 +565,9 @@
             <i class="bi bi-chat-dots-fill"></i>
             <span class="chat-badge" id="global-chat-badge">0</span>
         </button>
-        
         <!-- Widget chat popup -->
         {% include 'chat/messenger_widget.html' %}
     {% endif %}
+    {% endcomment %}
 </body>
 </html>

@@ -1,0 +1,35 @@
+/* Styles généraux pour Language Learning */
+.language_learning-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.language_learning-card {
+    transition: transform 0.2s;
+}
+
+.language_learning-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.language_learning-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+
+.language_learning-stats {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+@media (max-width: 768px) {
+    .language_learning-header {
+        padding: 1rem;
+        text-align: center;
+    }
+}

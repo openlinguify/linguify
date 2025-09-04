@@ -9,8 +9,16 @@ urlpatterns = [
     path('discover/', views.DiscoverUsersView.as_view(), name='discover'),
     path('friends/', views.FriendsListView.as_view(), name='friends'),
     path('friends/requests/', views.FriendRequestsView.as_view(), name='friend_requests'),
-    path('messages/', views.MessagesView.as_view(), name='messages'),
     path('groups/', views.GroupsView.as_view(), name='groups'),
+    path('groups/<int:group_id>/', views.GroupDetailView.as_view(), name='group_detail'),
+    path('groups/<int:group_id>/manage/', views.GroupManageView.as_view(), name='group_manage'),
+    path('groups/<int:group_id>/send-message/', views.send_group_message, name='send_group_message'),
+    path('groups/<int:group_id>/messages/', views.get_group_messages, name='get_group_messages'),
+    path('groups/<int:group_id>/promote/<int:user_id>/', views.promote_to_moderator, name='promote_to_moderator'),
+    path('groups/<int:group_id>/demote/<int:user_id>/', views.remove_moderator, name='remove_moderator'),
+    path('groups/<int:group_id>/remove/<int:user_id>/', views.remove_group_member, name='remove_group_member'),
+    path('groups/<int:group_id>/update/', views.update_group_settings, name='update_group_settings'),
+    path('groups/<int:group_id>/delete/', views.delete_group, name='delete_group'),
     path('feed/', views.ActivityFeedView.as_view(), name='feed'),
     path('profile/<str:username>/', views.UserProfileView.as_view(), name='user_profile'),
     
@@ -18,6 +26,9 @@ urlpatterns = [
     path('api/send-friend-request/<int:user_id>/', views.send_friend_request, name='send_friend_request'),
     path('api/accept-friend-request/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
     path('api/reject-friend-request/<int:request_id>/', views.reject_friend_request, name='reject_friend_request'),
+    
+    # Group management API endpoints
+    path('api/create-group/', views.create_group, name='create_group'),
     
     # Messaging API endpoints
     path('api/conversations/', api_views.get_conversations, name='get_conversations'),

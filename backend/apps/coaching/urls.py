@@ -1,5 +1,0 @@
-# teaching/urls.py
-
-urlpatterns = [
-
-]

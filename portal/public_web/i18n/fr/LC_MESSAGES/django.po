@@ -1,461 +1,49 @@
-# ENGLISH TRANSLATION FOR PUBLIC_WEB
+# French translations for Open Linguify
 # Copyright (C) 2025 Open Linguify
 # This file is distributed under the same license as the Open Linguify package.
+# Open Linguify Team <team@openlinguify.com>, 2025.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Open Linguify Public Web\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-17 00:00+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Open Linguify Team\n"
-"Language-Team: Fr\n"
+"Project-Id-Version: Open Linguify Portal 1.0\n"
+"Report-Msgid-Bugs-To: bugs@openlinguify.com\n"
+"POT-Creation-Date: 2025-08-31 02:05+0200\n"
+"PO-Revision-Date: 2025-08-31 02:05+0200\n"
+"Last-Translator: Open Linguify Team <team@openlinguify.com>\n"
+"Language-Team: French <fr@openlinguify.com>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-# SEO Meta Tags
-msgid "Open Linguify - Open source educational apps platform"
-msgstr "Open Linguify - Plateforme open source d'applications éducatives"
+# Basic UI elements
+msgid "Log In"
+msgstr "Se connecter"
 
-msgid ""
-"Open Linguify is an open source educational apps platform: memorization "
-"system, flashcards, note-taking, quizzes, collaborative chat, classrooms and "
-"much more. Discover our tools to revolutionize learning."
-msgstr ""
-"Open Linguify is an open source educational apps platform: memorization "
-"system, flashcards, note-taking, quizzes, collaborative chat, classrooms and "
-"much more. Discover our tools to revolutionize learning."
+msgid "Sign Up"
+msgstr "S'inscrire"
 
-msgid "Open Linguify - Open source platform for modern education"
-msgstr "Open Linguify - Open source platform for modern education"
-
-msgid ""
-"Discover a complete suite of open source educational apps: smart "
-"memorization, flashcards, note-taking, interactive quizzes, collaborative "
-"chat, virtual classrooms and much more. Revolutionize the way you learn."
-msgstr ""
-"Discover a complete suite of open source educational apps: smart "
-"memorization, flashcards, note-taking, interactive quizzes, collaborative "
-"chat, virtual classrooms and much more. Revolutionize the way you learn."
-
-msgid ""
-"Complete suite of open source educational apps: memorization, flashcards, "
-"notes, quizzes, collaborative chat and much more."
-msgstr ""
-"Complete suite of open source educational apps: memorization, flashcards, "
-"notes, quizzes, collaborative chat and much more."
-
-# Landing page content
-msgid "Open Source Education Apps"
-msgstr "Applications Éducatives Open Source"
-
-#, fuzzy
-msgid ""
-"A complete suite of open source educational apps: memorization, flashcards, "
-"note-taking, quizzes, collaborative chat and much more."
-msgstr ""
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"A complete suite of open source educational apps: memorization, flashcards, "
-"note-taking, quizzes, collaborative chat and much more.\n"
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Une suite complète d'applications éducatives open source : mémorisation, "
-"flashcards, prise de notes, quiz, chat collaboratif et bien plus."
-
-msgid "Start for free"
-msgstr "Commencer gratuitement"
-
-msgid "Discover our apps"
-msgstr "Découvrir nos applications"
-
-msgid "Access Dashboard"
-msgstr "Access Dashboard"
-
-msgid ""
-"open linguify, educational apps, flashcards, memorization, note-taking, "
-"quizzes, collaborative chat, classrooms, open source, education, learning"
-msgstr ""
-"open linguify, educational apps, flashcards, memorization, note-taking, "
-"quizzes, collaborative chat, classrooms, open source, education, learning"
-
-# Header navigation
-msgid "Features"
-msgstr "Fonctionnalités"
+msgid "Language"
+msgstr "Langue"
 
 msgid "Apps"
 msgstr "Applications"
 
-msgid "About"
-msgstr "À propos"
-
 msgid "Blog"
 msgstr "Blog"
-
-msgid "Contact"
-msgstr "Contact"
-
-# Stats section
-msgid "Educational Apps"
-msgstr "Applications Éducatives"
-
-msgid "Flashcards Created"
-msgstr "Flashcards Créées"
-
-msgid "Quizzes Generated"
-msgstr "Quiz Générés"
-
-msgid "Open Source"
-msgstr "Open Source"
-
-# Features section
-msgid "Our Educational Apps"
-msgstr "Nos Applications Éducatives"
-
-msgid ""
-"Discover our suite of 5 apps designed to transform your learning experience. "
-"Choose one for free or access all with Premium."
-msgstr ""
-"Discover our suite of 5 apps designed to transform your learning experience. "
-"Choose one for free or access all with Premium."
-
-msgid "Courses"
-msgstr "Cours"
-
-#, fuzzy
-msgid ""
-"Structured courses with progressive lessons, interactive exercises and "
-"personalized assessments."
-msgstr ""
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Structured courses with progressive lessons, interactive exercises and "
-"personalized assessments.\n"
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Cours structurés avec leçons progressives, exercices interactifs et "
-"évaluations personnalisées."
-
-msgid "Revision"
-msgstr "Révision"
-
-#, fuzzy
-msgid ""
-"Spaced repetition system with smart flashcards for optimal memorization."
-msgstr ""
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Spaced repetition system with smart flashcards for optimal memorization.\n"
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Système de répétition espacée avec flashcards intelligentes pour une "
-"mémorisation optimale."
-
-msgid "Notebook"
-msgstr "Notes"
-
-#, fuzzy
-msgid ""
-"Centralized note-taking with intelligent organization and advanced search."
-msgstr ""
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Centralized note-taking with intelligent organization and advanced search.\n"
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Prise de notes centralisée avec organisation intelligente et recherche "
-"avancée."
-
-msgid "Quiz"
-msgstr "Quiz"
-
-msgid "Adaptive quiz system to test your knowledge and identify weak points."
-msgstr "Adaptive quiz system to test your knowledge and identify weak points."
-
-msgid "Language AI"
-msgstr "IA Linguistique"
-
-#, fuzzy
-msgid ""
-"AI assistant for natural conversations and intelligent real-time corrections."
-msgstr ""
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"AI assistant for natural conversations and intelligent real-time "
-"corrections.\n"
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Assistant IA pour des conversations naturelles et des corrections "
-"intelligentes en temps réel."
-
-# Dynamic system translations
-msgid "No apps available"
-msgstr "No apps available"
-
-msgid "Learn more"
-msgstr "Learn more"
-
-msgid "Our Applications"
-msgstr "Our Applications"
-
-msgid "Discover all Open Linguify applications"
-msgstr "Discover all Open Linguify applications"
-
-msgid ""
-"Discover our complete suite of educational applications designed to enhance "
-"your learning experience."
-msgstr ""
-"Discover our complete suite of educational applications designed to enhance "
-"your learning experience."
-
-msgid "No applications available"
-msgstr "No applications available"
-
-msgid "Applications will appear here once they are configured."
-msgstr "Applications will appear here once they are configured."
-
-msgid "Ready to start learning?"
-msgstr "Ready to start learning?"
-
-msgid ""
-"Join our community and access all these amazing educational applications."
-msgstr ""
-"Join our community and access all these amazing educational applications."
-
-msgid "Ready to try"
-msgstr "Ready to try"
-
-msgid ""
-"Start using this application now and discover how it can enhance your "
-"learning experience."
-msgstr ""
-"Start using this application now and discover how it can enhance your "
-"learning experience."
-
-msgid "This application is part of the Open Linguify educational suite."
-msgstr "This application is part of the Open Linguify educational suite."
-
-msgid "Explore App Store"
-msgstr "Explore App Store"
-
-# New apps section
-msgid "New Educational Apps Coming Soon"
-msgstr "New Educational Apps Coming Soon"
-
-msgid ""
-"Our teams are actively working on innovative new educational apps to enrich "
-"our learning ecosystem. These upcoming tools will offer even more ways to "
-"master languages."
-msgstr ""
-"Our teams are actively working on innovative new educational apps to enrich "
-"our learning ecosystem. These upcoming tools will offer even more ways to "
-"master languages."
-
-msgid "AI Writing Assistant"
-msgstr "AI Writing Assistant"
-
-msgid "Pronunciation Trainer"
-msgstr "Pronunciation Trainer"
-
-msgid "Cultural Immersion"
-msgstr "Cultural Immersion"
-
-msgid "Grammar Checker"
-msgstr "Grammar Checker"
-
-msgid "Join the waiting list"
-msgstr "Join the waiting list"
-
-msgid "Coming in 2025"
-msgstr "Coming in 2025"
-
-msgid "Neuroscience-based language acquisition"
-msgstr "Neuroscience-based language acquisition"
-
-msgid "Native speaker community"
-msgstr "Native speaker community"
-
-msgid "Industry-recognized certifications"
-msgstr "Industry-recognized certifications"
-
-# Pricing section
-msgid "Plans adapted to your needs"
-msgstr "Plans adapted to your needs"
-
-msgid "Choose the offer that matches your goals and learning pace."
-msgstr "Choose the offer that matches your goals and learning pace."
-
-msgid "Free"
-msgstr "Free"
-
-msgid "forever"
-msgstr "forever"
-
-msgid "Perfect for discovering the platform"
-msgstr "Perfect for discovering the platform"
-
-msgid "Access to 1 app of your choice"
-msgstr "Access to 1 app of your choice"
-
-msgid "Full use of the chosen app"
-msgstr "Full use of the chosen app"
-
-msgid "Free updates"
-msgstr "Free updates"
-
-msgid "Community support"
-msgstr "Community support"
-
-msgid "Most popular"
-msgstr "Most popular"
-
-msgid "Premium"
-msgstr "Premium"
-
-msgid "per month"
-msgstr "per month"
-
-msgid "Full access to all applications"
-msgstr "Full access to all applications"
-
-msgid "Access to all applications"
-msgstr "Access to all applications"
-
-msgid "Courses: structured lessons"
-msgstr "Courses: structured lessons"
-
-msgid "Revision: unlimited flashcards"
-msgstr "Revision: unlimited flashcards"
-
-msgid "Notebook: unlimited notes"
-msgstr "Notebook: unlimited notes"
-
-msgid "Quiz & Language AI included"
-msgstr "Quiz & Language AI included"
-
-msgid "7-day free trial"
-msgstr "7-day free trial"
-
-# CTA section
-msgid "Ready to revolutionize your learning?"
-msgstr "Prêt à révolutionner votre apprentissage ?"
-
-#, fuzzy
-msgid ""
-"Join our community and access a complete suite of open source educational "
-"apps."
-msgstr ""
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Join our community and access a complete suite of open source educational "
-"apps.\n"
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Rejoignez notre communauté et accédez à une suite complète d'applications "
-"éducatives open source."
-
-msgid "Go to Dashboard"
-msgstr "Go to Dashboard"
-
-msgid "My Notes"
-msgstr "My Notes"
-
-# Authentication translations
-msgid "Back to home"
-msgstr "Back to home"
-
-msgid "Sign in to your account"
-msgstr "Sign in to your account"
-
-msgid "Login"
-msgstr "Login"
-
-msgid "Email or username"
-msgstr "Email or username"
-
-msgid "Password"
-msgstr "Password"
-
-msgid "Remember me"
-msgstr "Remember me"
-
-msgid "Forgot password?"
-msgstr "Forgot password?"
-
-msgid "Don't have an account?"
-msgstr "Don't have an account?"
-
-msgid "Create an account"
-msgstr "Create an account"
-
-msgid "or"
-msgstr "or"
-
-msgid "Invalid username or password."
-msgstr "Invalid username or password."
-
-msgid "Welcome, %(username)s!"
-msgstr "Welcome, %(username)s!"
-
-# Auth buttons
-msgid "Log In"
-msgstr "Log In"
-
-msgid "Sign Up"
-msgstr "Sign Up"
-
-# #-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#
-# Footer content
-#, fuzzy
-msgid ""
-"Open source educational apps platform: memorization, flashcards, notes, "
-"quizzes and collaborative chat."
-msgstr ""
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Open source educational apps platform: memorization, flashcards, notes, "
-"quizzes and collaborative chat.\n"
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"Plateforme d'applications éducatives open source : mémorisation, flashcards, "
-"notes, quiz et chat collaboratif."
-
-msgid "Product"
-msgstr "Produit"
-
-msgid "Pricing"
-msgstr "Tarifs"
-
-msgid "Roadmap"
-msgstr "Roadmap"
-
-msgid "Resources"
-msgstr "Ressources"
 
 msgid "Documentation"
 msgstr "Documentation"
 
-msgid "API"
-msgstr "API"
+msgid "Contact"
+msgstr "Contact"
 
-msgid "Community"
-msgstr "Community"
+msgid "About"
+msgstr "À propos"
 
-msgid "Company"
-msgstr "Entreprise"
-
-msgid "Careers"
-msgstr "Carrières"
-
-msgid "Press"
-msgstr "Press"
-
-msgid "Support"
-msgstr "Support"
-
-msgid "Help Center"
-msgstr "Help Center"
-
-msgid "Status"
-msgstr "Status"
-
-msgid "Report a bug"
-msgstr "Signaler un bug"
-
-msgid "Contact us"
-msgstr "Nous contacter"
-
-msgid "© 2025 Open Linguify. All rights reserved."
-msgstr "© 2025 Open Linguify. Tous droits réservés."
+msgid "Requests"
+msgstr "Demandes"
 
 msgid "Privacy"
 msgstr "Confidentialité"
@@ -466,202 +54,197 @@ msgstr "Conditions"
 msgid "Cookies"
 msgstr "Cookies"
 
-# Views content
-msgid "Open Linguify - Learn languages"
-msgstr "Open Linguify - Learn languages"
+# Todo App
+msgid "Todo"
+msgstr "Tâches"
 
-msgid "Open source platform for learning languages"
-msgstr "Open source platform for learning languages"
+msgid "Todo & Productivity"
+msgstr "Tâches et Productivité"
 
-# Brand page translations
-msgid "Revolutionizing education through open source technology"
-msgstr "Revolutionizing education through open source technology"
+msgid "Everything You Need for Productivity"
+msgstr "Tout ce dont vous avez besoin pour être productif"
 
-msgid "Explore Our Apps"
-msgstr "Explore Our Apps"
+msgid "A complete workspace to organize your tasks, projects, and ideas"
+msgstr "Un espace de travail complet pour organiser vos tâches, projets et idées"
 
-msgid "Learn More"
-msgstr "Learn More"
+msgid "Smart Task Management"
+msgstr "Gestion Intelligente des Tâches"
 
-msgid "Why Choose OpenLinguify?"
-msgstr "Why Choose OpenLinguify?"
+msgid "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive."
+msgstr "Créez, organisez et suivez les tâches avec des priorités, des dates d'échéance, des étiquettes et un suivi des progrès. Tout ce dont vous avez besoin pour rester productif."
 
-msgid ""
-"Our comprehensive platform offers cutting-edge educational tools designed "
-"for modern learners"
-msgstr ""
-"Our comprehensive platform offers cutting-edge educational tools designed "
-"for modern learners"
+msgid "Kanban Boards"
+msgstr "Tableaux Kanban"
 
-msgid "AI-Powered Learning"
-msgstr "AI-Powered Learning"
+msgid "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress."
+msgstr "Visualisez votre flux de travail avec des tableaux kanban personnalisables. Glissez-déposez les tâches entre les colonnes pour suivre les progrès."
 
-msgid ""
-"Advanced artificial intelligence adapts to your learning style and pace for "
-"personalized education"
-msgstr ""
-"Advanced artificial intelligence adapts to your learning style and pace for "
-"personalized education"
+msgid "Project Organization"
+msgstr "Organisation de Projets"
 
-msgid "Smart Flashcards"
-msgstr "Smart Flashcards"
+msgid "Group related tasks into projects with progress tracking, deadlines, and team collaboration features."
+msgstr "Regroupez les tâches liées en projets avec suivi des progrès, échéances et fonctionnalités de collaboration d'équipe."
 
-msgid ""
-"Spaced repetition algorithms optimize your memory retention with intelligent "
-"review scheduling"
-msgstr ""
-"Spaced repetition algorithms optimize your memory retention with intelligent "
-"review scheduling"
+msgid "Rich Note-Taking"
+msgstr "Prise de Notes Enrichie"
 
-msgid "Digital Notebooks"
-msgstr "Digital Notebooks"
+msgid "Take notes with markdown support, attach them to tasks or projects, and organize with tags and categories."
+msgstr "Prenez des notes avec support markdown, attachez-les aux tâches ou projets, et organisez avec des étiquettes et catégories."
 
-msgid ""
-"Organize your thoughts and knowledge with our comprehensive note-taking "
-"system"
-msgstr ""
-"Organize your thoughts and knowledge with our comprehensive note-taking "
-"system"
+msgid "Smart Reminders"
+msgstr "Rappels Intelligents"
 
-msgid "Adaptive Quizzes"
-msgstr "Adaptive Quizzes"
+msgid "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track."
+msgstr "Définissez des rappels personnalisés pour les tâches et échéances. Recevez des notifications au bon moment pour rester sur la bonne voie."
 
-msgid ""
-"Interactive assessments that adjust difficulty based on your progress and "
-"understanding"
-msgstr ""
-"Interactive assessments that adjust difficulty based on your progress and "
-"understanding"
+msgid "Ready to Get Organized?"
+msgstr "Prêt à vous Organiser ?"
 
-msgid "Collaborative Learning"
-msgstr "Collaborative Learning"
+msgid "Get Started in Minutes"
+msgstr "Commencez en Minutes"
 
-msgid ""
-"Connect with learners worldwide through our social learning features and "
-"study groups"
-msgstr ""
-"Connect with learners worldwide through our social learning features and "
-"study groups"
+msgid "Create Account"
+msgstr "Créer un Compte"
 
-msgid ""
-"Transparent, community-driven development ensuring privacy and continuous "
-"innovation"
-msgstr ""
-"Transparent, community-driven development ensuring privacy and continuous "
-"innovation"
+msgid "Start Organizing"
+msgstr "Commencer à Organiser"
 
-msgid "Trusted by Learners Worldwide"
-msgstr "Trusted by Learners Worldwide"
+msgid "Start Now - It's Free"
+msgstr "Commencer Maintenant - C'est Gratuit"
 
-msgid "Active Learners"
-msgstr "Active Learners"
+# App navigation
+msgid "Revision"
+msgstr "Révision"
 
-msgid "Languages Supported"
-msgstr "Languages Supported"
+msgid "Notebook"
+msgstr "Carnet"
 
-msgid "User Satisfaction"
-msgstr "User Satisfaction"
+# Additional common phrases
+msgid "Coming Soon"
+msgstr "Prochainement"
 
-msgid "Our Mission"
-msgstr "Our Mission"
+msgid "Join Community"
+msgstr "Rejoindre la Communauté"
 
-msgid ""
-"We believe education should be accessible to everyone, everywhere. "
-"OpenLinguify democratizes learning through innovative open source "
-"technology, providing powerful educational tools that help millions of "
-"learners worldwide achieve their goals and unlock their potential."
-msgstr ""
-"We believe education should be accessible to everyone, everywhere. "
-"OpenLinguify democratizes learning through innovative open source "
-"technology, providing powerful educational tools that help millions of "
-"learners worldwide achieve their goals and unlock their potential."
+msgid "Explore All Apps"
+msgstr "Explorer Toutes les Applications"
 
-msgid "Accessibility First"
-msgstr "Accessibility First"
+msgid "Advanced productivity workspace"
+msgstr "Espace de travail de productivité avancé"
 
-msgid ""
-"Free, open source tools available to learners regardless of their background "
-"or location"
-msgstr ""
-"Free, open source tools available to learners regardless of their background "
-"or location"
+msgid "This application is part of the Open Linguify educational suite."
+msgstr "Cette application fait partie de la suite éducative Open Linguify."
 
-msgid "Innovation Driven"
-msgstr "Innovation Driven"
+msgid "Open Source Education Apps"
+msgstr "Applications Éducatives Open Source"
 
-msgid ""
-"Cutting-edge AI and learning science research integrated into practical tools"
-msgstr ""
-"Cutting-edge AI and learning science research integrated into practical tools"
+msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, to-do and much more."
+msgstr "Une suite complète d'applications éducatives open source : mémorisation, flashcards, prise de notes, to-do et bien plus encore."
 
-msgid "Community Powered"
-msgstr "Community Powered"
+msgid "Choose your Linguify product:"
+msgstr "Choisissez votre produit Linguify :"
 
-msgid "Built by educators and learners, for educators and learners worldwide"
-msgstr "Built by educators and learners, for educators and learners worldwide"
+msgid "For all students"
+msgstr "Pour tous les étudiants"
 
-msgid "Privacy Focused"
-msgstr "Privacy Focused"
+msgid "Discover our apps"
+msgstr "Découvrir nos applications"
 
-msgid ""
-"Your data belongs to you - transparent, secure, and privacy-first approach"
-msgstr ""
-"Your data belongs to you - transparent, secure, and privacy-first approach"
+msgid "View Source Code"
+msgstr "Voir le Code Source"
 
-msgid "Ready to Transform Your Learning?"
-msgstr "Ready to Transform Your Learning?"
+msgid "Access all your apps from a unified dashboard"
+msgstr "Accédez à toutes vos applications depuis un tableau de bord unifié"
 
-msgid ""
-"Join thousands of learners who have already discovered the power of "
-"OpenLinguify's educational tools"
-msgstr ""
-"Join thousands of learners who have already discovered the power of "
-"OpenLinguify's educational tools"
+msgid "Educational Useful Apps for the students"
+msgstr "Applications Éducatives Utiles pour les étudiants"
 
-msgid "Get Started Free"
-msgstr "Get Started Free"
+msgid "Open Source"
+msgstr "Open Source"
 
-msgid "Contact Us"
-msgstr "Contact Us"
+msgid "Our Educational Apps"
+msgstr "Nos Applications Éducatives"
 
-msgid "Brand"
-msgstr "Marque"
+msgid "Discover our complete suite of educational apps designed to transform your learning experience. Currently all apps are completely free to use."
+msgstr "Découvrez notre suite complète d'applications éducatives conçues pour transformer votre expérience d'apprentissage. Actuellement, toutes les applications sont entièrement gratuites."
 
-msgid ""
-"Discover our complete suite of educational apps designed to transform your "
-"learning experience. Choose one for free or access all with Premium."
-msgstr ""
-"Découvrez notre suite complète d'applications éducatives conçues pour "
-"transformer votre expérience d'apprentissage. Choisissez-en une gratuitement "
-"ou accédez à toutes avec Premium."
+msgid "All features are currently free • We're exploring sustainable business models for long-term platform development"
+msgstr "Toutes les fonctionnalités sont actuellement gratuites • Nous explorons des modèles économiques durables pour le développement à long terme de la plateforme"
 
-msgid ""
-"Connect with other learners, share progress and discover content created by "
-"the community."
-msgstr ""
-"Connectez-vous avec d'autres apprenants, partagez vos progrès et découvrez "
-"le contenu créé par la communauté."
+msgid "Available Now"
+msgstr "Disponible Maintenant"
 
-msgid ""
-"Real-time collaborative chat for study groups and language exchange with "
-"other learners."
-msgstr ""
-"Chat collaboratif en temps réel pour les groupes d'étude et l'échange "
-"linguistique avec d'autres apprenants."
+msgid "Ready"
+msgstr "Prêt"
+
+msgid "These exciting apps are in active development"
+msgstr "Ces applications passionnantes sont en développement actif"
+
+msgid "Soon"
+msgstr "Bientôt"
 
 msgid "Join the Open Source Revolution"
 msgstr "Rejoignez la Révolution Open Source"
 
-msgid ""
-"Open Linguify is built by the community, for the community. Help us create "
-"the future of education by contributing to our open source project."
-msgstr ""
-"Open Linguify est construit par la communauté, pour la communauté. Aidez-"
-"nous à créer l'avenir de l'éducation en contribuant à notre projet open "
-"source."
+msgid "Organize your tasks and boost your productivity with intelligent task management."
+msgstr "Organisez vos tâches et boostez votre productivité avec une gestion intelligente des tâches."
+
+msgid "Spaced repetition system with smart flashcards for optimal memorization."
+msgstr "Système de répétition espacée avec des flashcards intelligentes pour une mémorisation optimale."
+
+msgid "Centralized note-taking with intelligent organization and advanced search."
+msgstr "Prise de notes centralisée avec organisation intelligente et recherche avancée."
+
+msgid "Structured courses with progressive lessons, interactive exercises and personalized assessments."
+msgstr "Cours structurés avec leçons progressives, exercices interactifs et évaluations personnalisées."
+
+msgid "Adaptive quiz system to test your knowledge and identify weak points."
+msgstr "Système de quiz adaptatif pour tester vos connaissances et identifier les points faibles."
+
+msgid "Connect with other learners, share progress and discover content created by the community."
+msgstr "Connectez-vous avec d'autres apprenants, partagez vos progrès et découvrez le contenu créé par la communauté."
+
+msgid "Real-time collaborative chat for study groups and language exchange with other learners."
+msgstr "Chat collaboratif en temps réel pour les groupes d'étude et l'échange linguistique avec d'autres apprenants."
+
+msgid "Productivity"
+msgstr "Productivité"
+
+msgid "Spaced Learning"
+msgstr "Apprentissage Espacé"
+
+msgid "Note Taking"
+msgstr "Prise de Notes"
+
+msgid "Structured Learning"
+msgstr "Apprentissage Structuré"
+
+msgid "Assessment"
+msgstr "Évaluation"
+
+msgid "Collaboration"
+msgstr "Collaboration"
+
+msgid "Community"
+msgstr "Communauté"
+
+msgid "Documents"
+msgstr "Documents"
+
+msgid "Language AI"
+msgstr "IA Linguistique"
+
+msgid "Real-time collaborative documents with rich text editing, version control, and sharing capabilities for educational content."
+msgstr "Documents collaboratifs en temps réel avec édition de texte riche, contrôle de version et fonctionnalités de partage pour le contenu éducatif."
+
+msgid "AI assistant for natural conversations and intelligent real-time corrections."
+msgstr "Assistant IA pour des conversations naturelles et des corrections intelligentes en temps réel."
+
+msgid "Open Linguify is built by the community, for the community. Help us create the future of education by contributing to our open source project."
+msgstr "Open Linguify est conçu par la communauté, pour la communauté. Aidez-nous à créer l'avenir de l'éducation en contribuant à notre projet open source."
 
 msgid "Contribute code and new features"
-msgstr "Contribuer du code et de nouvelles fonctionnalités"
+msgstr "Contribuer au code et aux nouvelles fonctionnalités"
 
 msgid "Report bugs and suggest improvements"
 msgstr "Signaler des bugs et suggérer des améliorations"
@@ -687,50 +270,8 @@ msgstr "Licence"
 msgid "Latest Release"
 msgstr "Dernière Version"
 
-msgid "Contribute"
-msgstr "Contribuer"
-
-# Free badge messages
-msgid "100% FREE FOREVER"
-msgstr "100% GRATUIT À VIE"
-
-msgid "No credit card • No hidden fees • Always free"
-msgstr "Pas de carte de crédit • Pas de frais cachés • Toujours gratuit"
-
-# App status translations
-msgid "Available Now"
-msgstr "Disponible Maintenant"
-
-msgid "Coming Soon"
-msgstr "Bientôt Disponible"
-
-msgid "Ready"
-msgstr "Prêt"
-
-msgid "Soon"
-msgstr "Bientôt"
-
-msgid "These exciting apps are in active development"
-msgstr "Ces applications passionnantes sont en cours de développement actif"
-
-# Missing French translations
-msgid "Discover our complete suite of educational apps designed to transform your learning experience. Currently all apps are completely free to use."
-msgstr "Découvrez notre suite complète d'applications éducatives conçues pour transformer votre expérience d'apprentissage. Actuellement, toutes les applications sont entièrement gratuites."
-
-msgid "All features are currently free • We're exploring sustainable business models for long-term platform development"
-msgstr "Toutes les fonctionnalités sont actuellement gratuites • Nous explorons des modèles économiques durables pour le développement à long terme de la plateforme"
-
-msgid "Choose your Linguify product:"
-msgstr "Choisissez votre produit Linguify :"
-
-msgid "For all students"
-msgstr "Pour tous les étudiants"
-
-msgid "View Source Code"
-msgstr "Voir le Code Source"
-
 msgid "Frequently Asked Questions"
-msgstr "Foire Aux Questions"
+msgstr "Questions Fréquemment Posées"
 
 msgid "Everything you need to know about OpenLinguify and our educational platform."
 msgstr "Tout ce que vous devez savoir sur OpenLinguify et notre plateforme éducative."
@@ -739,7 +280,7 @@ msgid "What makes OpenLinguify different from other language learning platforms?
 msgstr "Qu'est-ce qui rend OpenLinguify différent des autres plateformes d'apprentissage des langues ?"
 
 msgid "OpenLinguify is completely open source, meaning our code is transparent and constantly improved by the community. We offer a complete suite of educational apps including spaced repetition, AI conversations, collaborative tools, and more - all designed to work together seamlessly."
-msgstr "OpenLinguify est entièrement open source, ce qui signifie que notre code est transparent et constamment amélioré par la communauté. Nous offrons une suite complète d'applications éducatives incluant la répétition espacée, des conversations IA, des outils collaboratifs, et plus encore - toutes conçues pour fonctionner ensemble de manière transparente."
+msgstr "OpenLinguify est entièrement open source, ce qui signifie que notre code est transparent et constamment amélioré par la communauté. Nous proposons une suite complète d'applications éducatives incluant la répétition espacée, les conversations IA, les outils collaboratifs, et plus encore - tout conçu pour fonctionner ensemble de manière transparente."
 
 msgid "Is OpenLinguify really free to use?"
 msgstr "OpenLinguify est-il vraiment gratuit à utiliser ?"
@@ -747,14 +288,47 @@ msgstr "OpenLinguify est-il vraiment gratuit à utiliser ?"
 msgid "Can I contribute to the OpenLinguify project?"
 msgstr "Puis-je contribuer au projet OpenLinguify ?"
 
+msgid "Ready to revolutionize your learning?"
+msgstr "Prêt à révolutionner votre apprentissage ?"
+
+msgid "Join our community and access a complete suite of open source educational apps."
+msgstr "Rejoignez notre communauté et accédez à une suite complète d'applications éducatives open source."
+
 msgid "Currently 100% free • Open Source • Future business model under development for platform sustainability"
 msgstr "Actuellement 100% gratuit • Open Source • Futur modèle économique en développement pour la durabilité de la plateforme"
 
 msgid "Start Your Learning Journey"
 msgstr "Commencez Votre Parcours d'Apprentissage"
 
-msgid "Documents"
-msgstr "Documents"
+msgid "Product"
+msgstr "Produit"
 
-msgid "Real-time collaborative documents with rich text editing, version control, and sharing capabilities for educational content."
-msgstr "Documents collaboratifs en temps réel avec édition de texte riche, contrôle de version et capacités de partage pour le contenu éducatif."
+msgid "Features"
+msgstr "Fonctionnalités"
+
+msgid "Resources"
+msgstr "Ressources"
+
+msgid "Contribute"
+msgstr "Contribuer"
+
+msgid "Company"
+msgstr "Entreprise"
+
+msgid "Brand"
+msgstr "Marque"
+
+msgid "Careers"
+msgstr "Carrières"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Report a bug"
+msgstr "Signaler un bug"
+
+msgid "Contact us"
+msgstr "Nous contacter"
+
+msgid "Open Linguify | Open Source Education Apps: Memorization, Flashcards, Notes, Quizzes And Collaborative Chat."
+msgstr "Open Linguify | Applications Éducatives Open Source : Mémorisation, Flashcards, Notes, Quiz et Chat Collaboratif."

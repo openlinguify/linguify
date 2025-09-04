@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 
 from apps.authentication.models import User
-from ..models import (Profile, FriendRequest, Post, Group, ActivityFeed, Recommendation,
+from ..models import (Profile, FriendRequest, Post, ActivityFeed, Recommendation,
                      LanguageExchangeSession, StudySession, LanguagePartnerMatch)
 
 
@@ -31,15 +31,34 @@ class CommunityMainView(LoginRequiredMixin, TemplateView):
             'route_path': '/community/'
         }
         
+        # Check if user is new (no friends yet)
+        is_new_user = profile.friends.count() == 0
+        
+        # Get smart friend suggestions
+        suggested_friends = profile.suggest_friends(limit=6)
+        
+        # Get perfect language exchange partners for new users
+        suggested_partners = []
+        if is_new_user and hasattr(self.request.user, 'native_language') and hasattr(self.request.user, 'target_language'):
+            # Find perfect language exchange matches
+            suggested_partners = Profile.objects.filter(
+                user__native_language=self.request.user.target_language,
+                user__target_language=self.request.user.native_language
+            ).exclude(id=profile.id)[:3]
+        
         context.update({
             'current_app': current_app_info,
             'profile': profile,
             'friend_requests_count': profile.friend_requests_received().filter(status='pending').count(),
             'friends_count': profile.friends.count(),
-            'recent_posts': Post.objects.filter(
-                author__in=[f.user for f in profile.friends.all()]
-            )[:5],
-            'suggested_friends': profile.suggest_friends()[:3],
+            'recent_posts': Post.objects.all().select_related('author')[:10],
+            'suggested_friends': suggested_friends,
+            'is_new_user': is_new_user,
+            'suggested_partners': suggested_partners,
+            'has_profile_completed': bool(
+                getattr(self.request.user, 'native_language', None) and 
+                getattr(self.request.user, 'target_language', None)
+            ),
         })
         return context
 
@@ -106,11 +125,15 @@ class FriendsListView(LoginRequiredMixin, TemplateView):
         # Obtenir ou créer le profil utilisateur
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         
+        friends = profile.friends.all()
+        online_friends_count = sum(1 for friend in friends if friend.is_online)
+        
         context.update({
             'profile': profile,
-            'friends': profile.friends.all(),
+            'friends': friends,
             'pending_requests': profile.friend_requests_received().filter(status='pending'),
             'sent_requests': profile.friend_requests_sent().filter(status='pending'),
+            'online_friends_count': online_friends_count,
         })
         return context
 
@@ -128,41 +151,6 @@ class FriendRequestsView(LoginRequiredMixin, TemplateView):
             'received_requests': profile.friend_requests_received().filter(status='pending'),
             'sent_requests': profile.friend_requests_sent().filter(status='pending'),
         })
-        return context
-
-
-class MessagesView(LoginRequiredMixin, TemplateView):
-    """Page des messages privés"""
-    template_name = 'community/messages.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        profile, created = Profile.objects.get_or_create(user=self.request.user)
-        
-        context.update({
-            'conversations': profile.conversations.all(),
-            'unread_count': profile.unread_messages().count(),
-        })
-        return context
-
-
-class GroupsView(LoginRequiredMixin, ListView):
-    """Page des groupes"""
-    model = Group
-    template_name = 'community/groups.html'
-    context_object_name = 'groups'
-    paginate_by = 10
-    
-    def get_queryset(self):
-        return Group.objects.all().prefetch_related('members')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        profile, created = Profile.objects.get_or_create(user=self.request.user)
-        context['my_groups'] = profile.groups.all()
-        
         return context
 
 
@@ -270,7 +258,8 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
         return context
 
 
-# API Views pour les actions AJAX
+# API Views pour les actions AJAX des amis
+
 @login_required
 @require_POST
 def send_friend_request(request, user_id):

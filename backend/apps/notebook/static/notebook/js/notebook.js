@@ -464,8 +464,12 @@ function debounceSearch() {
 function filterNotes() {
     const currentNoteId = currentNote?.id;
     loadNotes().then(() => {
+        // Appliquer les filtres selon la vue courante
+        const filteredNotes = applyViewFilters();
+        displayNotes(filteredNotes);
+        
         // Si la note courante existe encore après filtrage, la maintenir sélectionnée
-        if (currentNoteId && notes.find(n => n.id === currentNoteId)) {
+        if (currentNoteId && filteredNotes.find(n => n.id === currentNoteId)) {
             selectNote(currentNoteId);
         }
     });
@@ -475,8 +479,12 @@ function filterNotes() {
 function refreshNotes() {
     const currentNoteId = currentNote?.id;
     loadNotes().then(() => {
+        // Appliquer les filtres selon la vue courante
+        const filteredNotes = applyViewFilters();
+        displayNotes(filteredNotes);
+        
         // Essayer de restaurer la note sélectionnée
-        if (currentNoteId && notes.find(n => n.id === currentNoteId)) {
+        if (currentNoteId && filteredNotes.find(n => n.id === currentNoteId)) {
             selectNote(currentNoteId);
         }
     });
@@ -484,8 +492,28 @@ function refreshNotes() {
 
 // Basculer la sidebar sur mobile
 function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) sidebar.classList.toggle('show');
+    const sidebar = document.getElementById('notebookSidebar');
+    const isVisible = sidebar.classList.contains('show');
+    
+    // Toggle sidebar visibility
+    sidebar.classList.toggle('show');
+    
+    // Update button icon and accessibility attributes based on new state
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const icon = toggleBtn?.querySelector('i');
+    if (icon && toggleBtn) {
+        if (isVisible) {
+            // Sidebar will be hidden - show "expand" icon
+            icon.className = 'bi bi-layout-sidebar-inset-reverse';
+            toggleBtn.title = 'Afficher la barre latérale';
+            toggleBtn.setAttribute('aria-expanded', 'false');
+        } else {
+            // Sidebar will be shown - show "collapse" icon
+            icon.className = 'bi bi-layout-sidebar-inset';
+            toggleBtn.title = 'Masquer la barre latérale';
+            toggleBtn.setAttribute('aria-expanded', 'true');
+        }
+    }
 }
 
 // États d'affichage
@@ -888,3 +916,223 @@ async function bulkUnarchive() {
         window.notificationService?.error('Erreur lors du désarchivage en lot');
     }
 }
+
+// === FONCTIONS DE NAVIGATION ===
+
+// Variables globales pour la navigation
+let currentView = 'notes'; // 'notes', 'archived', 'tags'
+
+// Afficher la vue des notes
+function showNotesView() {
+    currentView = 'notes';
+    
+    // Mettre à jour les onglets
+    updateActiveTab('notes');
+    
+    // Créer ou mettre à jour l'élément archiveFilter pour les notes actives
+    let archiveFilter = document.getElementById('archiveFilter');
+    if (!archiveFilter) {
+        archiveFilter = document.createElement('input');
+        archiveFilter.type = 'hidden';
+        archiveFilter.id = 'archiveFilter';
+        document.body.appendChild(archiveFilter);
+    }
+    archiveFilter.value = 'active';
+    
+    // Recharger les notes avec le bon filtre
+    loadNotes();
+    
+    console.log('📝 Vue "Mes notes" activée');
+}
+
+// Afficher la vue des archives
+function showArchivedView() {
+    currentView = 'archived';
+    
+    // Mettre à jour les onglets
+    updateActiveTab('archived');
+    
+    // Créer ou mettre à jour l'élément archiveFilter pour les notes archivées
+    let archiveFilter = document.getElementById('archiveFilter');
+    if (!archiveFilter) {
+        archiveFilter = document.createElement('input');
+        archiveFilter.type = 'hidden';
+        archiveFilter.id = 'archiveFilter';
+        document.body.appendChild(archiveFilter);
+    }
+    archiveFilter.value = 'archived';
+    
+    // Recharger les notes avec le bon filtre
+    loadNotes();
+    
+    console.log('📦 Vue "Archives" activée');
+}
+
+// Afficher la vue des étiquettes
+function showTagsView() {
+    currentView = 'tags';
+    
+    // Mettre à jour les onglets
+    updateActiveTab('tags');
+    
+    // Créer ou mettre à jour l'élément archiveFilter pour toutes les notes
+    let archiveFilter = document.getElementById('archiveFilter');
+    if (!archiveFilter) {
+        archiveFilter = document.createElement('input');
+        archiveFilter.type = 'hidden';
+        archiveFilter.id = 'archiveFilter';
+        document.body.appendChild(archiveFilter);
+    }
+    archiveFilter.value = 'all';
+    
+    // Recharger les notes avec le bon filtre
+    loadNotes();
+    
+    // Ouvrir le modal de gestion des étiquettes
+    if (window.notebookTagsManagement) {
+        window.notebookTagsManagement.showTagsManagement();
+    }
+    
+    console.log('🏷️ Vue "Étiquettes" activée');
+}
+
+// === FONCTIONS DE FILTRAGE ===
+function selectLanguageFilter(value, label) {
+    const button = document.getElementById('languageFilterToggle');
+    const text = document.getElementById('languageFilterText');
+    
+    if (button && text) {
+        text.textContent = label;
+        // Mettre à jour un input caché ou une variable pour le filtrage
+        const hiddenInput = document.getElementById('languageFilter') || document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.id = 'languageFilter';
+        hiddenInput.value = value;
+        if (!document.getElementById('languageFilter')) {
+            document.body.appendChild(hiddenInput);
+        }
+        
+        // Rafraîchir les notes avec le nouveau filtre
+        refreshNotes();
+    }
+    console.log(`🌐 Filtre langue: ${label} (${value})`);
+}
+
+function selectSortFilter(value, label) {
+    const button = document.getElementById('sortFilterToggle');
+    const text = document.getElementById('sortFilterText');
+    
+    if (button && text) {
+        text.textContent = label;
+        // Mettre à jour un input caché ou une variable pour le tri
+        const hiddenInput = document.getElementById('sortFilter') || document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.id = 'sortFilter';
+        hiddenInput.value = value;
+        if (!document.getElementById('sortFilter')) {
+            document.body.appendChild(hiddenInput);
+        }
+        
+        // Rafraîchir les notes avec le nouveau tri
+        refreshNotes();
+    }
+    console.log(`🔄 Tri: ${label} (${value})`);
+}
+
+function selectTagsFilter(value, label) {
+    const button = document.getElementById('tagsFilterToggle');
+    const text = document.getElementById('tagsFilterText');
+    
+    if (button && text) {
+        text.textContent = label;
+        // Mettre à jour un input caché ou une variable pour le filtrage
+        const hiddenInput = document.getElementById('tagsFilter') || document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.id = 'tagsFilter';
+        hiddenInput.value = value;
+        if (!document.getElementById('tagsFilter')) {
+            document.body.appendChild(hiddenInput);
+        }
+        
+        // Rafraîchir les notes avec le nouveau filtre
+        refreshNotes();
+    }
+    console.log(`🏷️ Filtre tags: ${label} (${value})`);
+}
+
+// Exposer les fonctions de navigation globalement pour les onclick handlers
+window.showNotesView = showNotesView;
+window.showArchivedView = showArchivedView;
+window.showTagsView = showTagsView;
+window.refreshNotes = refreshNotes;
+window.toggleSidebar = toggleSidebar;
+window.createNewNote = createNewNote;
+window.saveCurrentNote = saveCurrentNote;
+window.selectLanguageFilter = selectLanguageFilter;
+window.selectSortFilter = selectSortFilter;
+window.selectTagsFilter = selectTagsFilter;
+window.debounceSearch = debounceSearch;
+
+// Mettre à jour l'onglet actif
+function updateActiveTab(activeTab) {
+    // Supprimer la classe active de tous les onglets
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Ajouter la classe active au bon onglet
+    const tabs = document.querySelectorAll('.nav-tab');
+    if (activeTab === 'notes' && tabs[0]) {
+        tabs[0].classList.add('active');
+    } else if (activeTab === 'archived' && tabs[1]) {
+        tabs[1].classList.add('active');
+    } else if (activeTab === 'tags' && tabs[2]) {
+        tabs[2].classList.add('active');
+    }
+}
+
+// Mettre à jour l'interface selon la vue
+function updateViewInterface() {
+    const notesContainer = document.getElementById('notesContainer');
+    const editor = document.getElementById('editor');
+    
+    if (currentView === 'notes') {
+        // Vue normale des notes
+        if (notesContainer) notesContainer.style.display = 'block';
+        if (editor) editor.style.display = 'block';
+    } else if (currentView === 'archived') {
+        // Vue des archives
+        if (notesContainer) notesContainer.style.display = 'block';
+        if (editor) editor.style.display = 'block';
+    } else if (currentView === 'tags') {
+        // Vue des étiquettes - garder l'interface normale
+        if (notesContainer) notesContainer.style.display = 'block';
+        if (editor) editor.style.display = 'block';
+    }
+    
+    // Mettre à jour le compteur
+    updateSelectedCounts();
+}
+
+// Appliquer les filtres selon la vue courante
+function applyViewFilters() {
+    let filteredNotes = [];
+    
+    if (currentView === 'notes') {
+        filteredNotes = notes.filter(note => !note.is_archived);
+    } else if (currentView === 'archived') {
+        filteredNotes = notes.filter(note => note.is_archived);
+    } else {
+        filteredNotes = notes; // Pour la vue étiquettes, on garde toutes les notes
+    }
+    
+    return filteredNotes;
+}
+
+// Initialiser la vue au chargement
+document.addEventListener('DOMContentLoaded', () => {
+    // S'assurer que la vue "Mes notes" est active par défaut
+    setTimeout(() => {
+        showNotesView();
+    }, 100);
+});

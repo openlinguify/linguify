@@ -1,0 +1,173 @@
+{% load static %}
+<!-- Interface unifiée Linguify Chat -->
+<div class="navbar-linguify">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="navbar-section">
+        <!-- Bouton toggle sidebar mobile -->
+        <button id="toggleSidebar" class="btn-navbar-outline d-md-none" onclick="toggleSidebar()">
+            <i class="bi bi-list"></i>
+        </button>
+        
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <a href="#" class="nav-tab active" onclick="showConversationsView()" style="white-space: nowrap;">
+                <i class="bi bi-chat-dots"></i>
+                Messages
+            </a>
+            <a href="#" class="nav-tab" onclick="showGroupsView()" style="white-space: nowrap;">
+                <i class="bi bi-people"></i>
+                Groupes
+            </a>
+            <a href="#" class="nav-tab" onclick="showContactsView()" style="white-space: nowrap;">
+                <i class="bi bi-person-lines-fill"></i>
+                Contacts
+            </a>
+        </div>
+        
+        <!-- Refresh -->
+        <button id="refreshChats" class="btn-navbar btn-navbar-outline" title="Actualiser les conversations" onclick="refreshChats()">
+            <i class="bi bi-arrow-clockwise" id="refreshIcon"></i>
+            <span class="d-none d-xl-inline">Actualiser</span>
+        </button>
+    </div>
+    
+    <!-- Droite: Actions et filtres contextuels -->
+    <div class="navbar-section-right">
+        <!-- Search Input -->
+        <input type="text" id="searchChatInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;" onkeyup="debounceSearchChats()">
+        
+        <!-- Status Filter Dropdown -->
+        <div class="dropdown">
+            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="statusFilterText">Tous statuts</span>
+            </button>
+            <ul id="statusFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous statuts')">Tous statuts</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('online', 'En ligne')">En ligne</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('away', 'Absent')">Absent</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('offline', 'Hors ligne')">Hors ligne</a></li>
+            </ul>
+        </div>
+        
+        <!-- Type Filter Dropdown -->
+        <div class="dropdown">
+            <button id="typeFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="typeFilterText">Tous types</span>
+            </button>
+            <ul id="typeFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectTypeFilter('', 'Tous types')">Tous types</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectTypeFilter('direct', 'Messages directs')">Messages directs</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectTypeFilter('group', 'Groupes')">Groupes</a></li>
+            </ul>
+        </div>
+        
+        <!-- Sort Filter Dropdown -->
+        <div class="dropdown">
+            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span id="sortFilterText">Plus récents</span>
+            </button>
+            <ul id="sortFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('recent', 'Plus récents')">Plus récents</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('alphabetical', 'Alphabétique')">Alphabétique</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('active', 'Plus actifs')">Plus actifs</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('unread', 'Non lus en premier')">Non lus en premier</a></li>
+            </ul>
+        </div>
+        
+        <!-- Actions -->
+        <div class="navbar-actions-group">
+            <button id="createGroupBtn" class="btn-navbar btn-navbar-outline" title="Créer un groupe" onclick="openCreateGroupModal()">
+                <i class="bi bi-people-fill"></i>
+                <span class="d-none d-xxl-inline">Groupe</span>
+            </button>
+            
+            <button id="chatSettingsBtn" class="btn-navbar btn-navbar-outline" title="Paramètres chat" onclick="openChatSettings()">
+                <i class="bi bi-gear"></i>
+                <span class="d-none d-xxl-inline">Paramètres</span>
+            </button>
+            
+            <button id="startNewConversation" class="btn-navbar btn-navbar-primary" onclick="startNewConversation()">
+                <i class="bi bi-plus-lg"></i>
+                <span class="d-none d-xl-inline">Nouvelle</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Chat navbar JavaScript functions
+function toggleSidebar() {
+    // Implementation for toggling chat sidebar
+    console.log('Toggle chat sidebar');
+}
+
+function showConversationsView() {
+    // Switch to conversations view
+    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+    event.target.closest('.nav-tab').classList.add('active');
+    console.log('Show conversations view');
+}
+
+function showGroupsView() {
+    // Switch to groups view
+    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+    event.target.closest('.nav-tab').classList.add('active');
+    console.log('Show groups view');
+}
+
+function showContactsView() {
+    // Switch to contacts view
+    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+    event.target.closest('.nav-tab').classList.add('active');
+    console.log('Show contacts view');
+}
+
+function refreshChats() {
+    // Refresh chat data with visual feedback
+    const icon = document.getElementById('refreshIcon');
+    icon.classList.add('animate-spin');
+    
+    setTimeout(() => {
+        icon.classList.remove('animate-spin');
+    }, 1000);
+    
+    console.log('Refreshing chats...');
+}
+
+function debounceSearchChats() {
+    // Debounced search for performance
+    clearTimeout(window.chatSearchTimeout);
+    window.chatSearchTimeout = setTimeout(() => {
+        const query = document.getElementById('searchChatInput').value;
+        console.log('Searching chats:', query);
+        // Implement actual search logic here
+    }, 300);
+}
+
+function selectStatusFilter(status, label) {
+    document.getElementById('statusFilterText').textContent = label;
+    console.log('Status filter selected:', status);
+}
+
+function selectTypeFilter(type, label) {
+    document.getElementById('typeFilterText').textContent = label;
+    console.log('Type filter selected:', type);
+}
+
+function selectSortFilter(sort, label) {
+    document.getElementById('sortFilterText').textContent = label;
+    console.log('Sort filter selected:', sort);
+}
+
+// startNewConversation est défini dans chat_page.html
+
+function openCreateGroupModal() {
+    console.log('Opening create group modal...');
+    alert('Fonctionnalité "Créer un groupe" en cours de développement');
+}
+
+function openChatSettings() {
+    console.log('Opening chat settings...');  
+    alert('Fonctionnalité "Paramètres chat" en cours de développement');
+}
+</script>

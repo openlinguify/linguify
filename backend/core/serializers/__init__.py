@@ -1,0 +1,1 @@
+# Serializers de base pour Linguify

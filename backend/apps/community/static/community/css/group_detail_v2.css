@@ -1,0 +1,980 @@
+/* 🚀 REVOLUTIONARY GROUP DETAIL V2 - 3-COLUMN CLEAR LAYOUT */
+
+/* ============================================
+   LAYOUT RÉVOLUTIONNAIRE EN 3 COLONNES CLAIRES
+   ============================================ */
+
+.revolutionary-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    gap: 1.5rem;
+    min-height: 70vh;
+    padding: 1rem 0;
+}
+
+/* ============================================
+   📋 COLONNE GAUCHE: Infos Groupe + Membres
+   ============================================ */
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: fit-content;
+    position: sticky;
+    top: 1rem;
+}
+
+/* Group Info Card Compact */
+.group-info-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(45, 91, 186, 0.1);
+    border: 1px solid rgba(45, 91, 186, 0.05);
+}
+
+.group-header-compact {
+    margin-bottom: 1rem;
+}
+
+.group-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2D5BBA;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+}
+
+.group-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.meta-badge {
+    background: rgba(45, 91, 186, 0.1);
+    color: #2D5BBA;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.meta-badge.language {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.meta-badge.level {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.meta-badge.type {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.group-description-compact {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #f8f9ff;
+    border-radius: 8px;
+    border-left: 3px solid #2D5BBA;
+}
+
+.group-description-compact p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #4b5563;
+}
+
+.group-stats-compact {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: 12px;
+}
+
+.stat-compact {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2D5BBA;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.group-actions-compact {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-compact {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-compact.primary {
+    background: linear-gradient(135deg, #2D5BBA, #3b82f6);
+    color: white;
+}
+
+.btn-compact.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3);
+}
+
+.btn-compact.secondary {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+.btn-compact.secondary:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* Members Online Card */
+.members-online-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(45, 91, 186, 0.1);
+    border: 1px solid rgba(45, 91, 186, 0.05);
+}
+
+.card-header {
+    margin-bottom: 1rem;
+}
+
+.card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2D5BBA;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.count-badge {
+    background: #10b981;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.members-list-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.member-compact {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #f8f9ff;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.member-compact:hover {
+    background: #e8f2ff;
+    transform: translateX(4px);
+}
+
+.member-avatar-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2D5BBA, #017e84);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.member-info-compact {
+    flex: 1;
+    min-width: 0;
+}
+
+.member-name-small {
+    font-weight: 500;
+    color: #374151;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.member-status-small {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.member-status-small.online {
+    color: #10b981;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    animation: pulse 2s infinite;
+}
+
+.member-score-small {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #f59e0b;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.empty-members-compact {
+    text-align: center;
+    color: #9ca3af;
+    padding: 1rem;
+}
+
+.empty-members-compact i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* ============================================
+   💬 COLONNE CENTRALE: Chat Révolutionnaire
+   ============================================ */
+
+.center-panel {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 600px;
+}
+
+/* Revolutionary Chat Header */
+.revolutionary-chat-header {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(45, 91, 186, 0.1);
+}
+
+.chat-title-section {
+    margin-bottom: 1rem;
+}
+
+.revolutionary-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2D5BBA;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.revolutionary-badge {
+    background: linear-gradient(135deg, #ff6b6b, #ffa500);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    animation: pulse 2s infinite;
+}
+
+/* Language Rotation Status */
+.language-rotation-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(45, 91, 186, 0.1);
+}
+
+.current-lang-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.lang-flag {
+    font-size: 1.5rem;
+}
+
+.lang-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2D5BBA;
+}
+
+.rotation-countdown {
+    position: relative;
+}
+
+.countdown-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: conic-gradient(#2D5BBA 25%, #e0e7ff 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.countdown-circle::before {
+    content: '';
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+}
+
+.countdown-time {
+    position: relative;
+    z-index: 1;
+    font-weight: 700;
+    color: #2D5BBA;
+    font-size: 0.75rem;
+}
+
+.next-lang-preview {
+    font-size: 0.875rem;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Smart Features Bar */
+.smart-features-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.feature-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 2px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.feature-switch:hover {
+    border-color: #2D5BBA;
+    transform: translateY(-2px);
+}
+
+.feature-switch.active {
+    background: linear-gradient(135deg, #2D5BBA, #3b82f6);
+    color: white;
+    border-color: #2D5BBA;
+}
+
+.settings-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #6b7280;
+    margin-left: auto;
+}
+
+.settings-btn:hover {
+    background: #e5e7eb;
+    transform: scale(1.1);
+}
+
+/* Revolutionary Messages Area */
+.revolutionary-messages {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    background: linear-gradient(to bottom, #ffffff 0%, #fafbff 100%);
+}
+
+.smart-notification {
+    background: rgba(45, 91, 186, 0.1);
+    border: 1px solid rgba(45, 91, 186, 0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.smart-notification.rotation-alert {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.notification-content strong {
+    color: #10b981;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.notification-content p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* Message Thread */
+.message-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message {
+    display: flex;
+    gap: 1rem;
+    max-width: 85%;
+}
+
+.message.user-msg {
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+.msg-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.user-avatar {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.other-avatar {
+    background: linear-gradient(135deg, #2D5BBA, #017e84);
+}
+
+.msg-bubble {
+    flex: 1;
+    position: relative;
+}
+
+.msg-content {
+    background: white;
+    padding: 1rem 1.25rem;
+    border-radius: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+    position: relative;
+    line-height: 1.5;
+}
+
+.user-bubble .msg-content {
+    background: linear-gradient(135deg, #2D5BBA, #3b82f6);
+    color: white;
+}
+
+.smart-highlight {
+    position: relative;
+    background: rgba(239, 68, 68, 0.2);
+    border-bottom: 2px wavy #ef4444;
+    cursor: pointer;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.smart-highlight.error {
+    background: rgba(239, 68, 68, 0.15);
+    border-bottom-color: #ef4444;
+}
+
+/* AI Correction Panel */
+.ai-correction-panel {
+    margin-top: 0.75rem;
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 12px;
+    padding: 1rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.correction-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #92400e;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.correction-suggestion {
+    background: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.correction-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.correction-actions button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.accept-btn {
+    background: #10b981;
+    color: white;
+}
+
+.accept-btn:hover {
+    background: #059669;
+    transform: scale(1.05);
+}
+
+.learn-btn {
+    background: #3b82f6;
+    color: white;
+}
+
+.learn-btn:hover {
+    background: #2563eb;
+    transform: scale(1.05);
+}
+
+.dismiss-btn {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.dismiss-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* Translation Helper */
+.translation-helper {
+    margin-top: 0.75rem;
+}
+
+.translation-toggle {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.translation-toggle:hover {
+    background: rgba(16, 185, 129, 0.2);
+    transform: translateY(-2px);
+}
+
+.translation-content {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(16, 185, 129, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #10b981;
+}
+
+.translation-content.hidden {
+    display: none;
+}
+
+.translation {
+    font-style: italic;
+    color: #059669;
+    font-size: 0.875rem;
+}
+
+.msg-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.user-bubble .msg-meta {
+    color: rgba(255,255,255,0.7);
+}
+
+.msg-lang {
+    font-size: 1rem;
+}
+
+/* Revolutionary Smart Input */
+.revolutionary-input {
+    background: white;
+    border-top: 1px solid rgba(45, 91, 186, 0.1);
+    padding: 1.5rem;
+}
+
+.input-status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.current-practice-lang {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    color: #2D5BBA;
+}
+
+.practice-flag {
+    font-size: 1.25rem;
+}
+
+.ai-status .ai-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #10b981;
+}
+
+.ai-indicator.active {
+    animation: pulse 2s infinite;
+}
+
+.smart-input-area {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.input-tools-left,
+.input-tools-right {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.input-tool-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #6b7280;
+}
+
+.input-tool-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+    transform: translateY(-2px);
+}
+
+.message-input-container {
+    flex: 1;
+    position: relative;
+}
+
+.revolutionary-textarea {
+    width: 100%;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    min-height: 80px;
+}
+
+.revolutionary-textarea:focus {
+    outline: none;
+    border-color: #2D5BBA;
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+.send-message-btn {
+    background: linear-gradient(135deg, #2D5BBA, #3b82f6);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.send-message-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3);
+}
+
+/* Live Suggestions */
+.live-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    z-index: 10;
+    margin-top: 0.5rem;
+}
+
+.suggestion-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background: #f8f9ff;
+    color: #2D5BBA;
+}
+
+.suggestion-item i {
+    color: #f59e0b;
+}
+
+/* ============================================
+   📊 COLONNE DROITE: Analytics + AI Features (kept in template but styled here for future use)
+   ============================================ */
+
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: fit-content;
+    position: sticky;
+    top: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .revolutionary-layout {
+        grid-template-columns: 250px 1fr 280px;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .revolutionary-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .left-panel,
+    .right-panel {
+        position: relative;
+        top: 0;
+    }
+    
+    .left-panel {
+        order: -1;
+    }
+    
+    .center-panel {
+        min-height: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    .revolutionary-layout {
+        padding: 0.5rem 0;
+    }
+    
+    .language-rotation-status {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .smart-features-bar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .smart-input-area {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .message {
+        max-width: 95%;
+    }
+    
+    .group-stats-compact {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .stat-compact {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem;
+    }
+}
+
+/* Animations et effets spéciaux */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes rotateIn {
+    from { transform: rotate(-10deg) scale(0.8); opacity: 0; }
+    to { transform: rotate(0) scale(1); opacity: 1; }
+}
+
+.smart-notification {
+    animation: rotateIn 0.5s ease-out;
+}
+
+/* Scrollbar personnalisé pour les messages */
+.revolutionary-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.revolutionary-messages::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.revolutionary-messages::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.revolutionary-messages::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

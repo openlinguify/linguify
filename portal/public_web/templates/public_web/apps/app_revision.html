@@ -3,9 +3,9 @@
 {% load app_tags %}
 {% load static %}
 
-{% block title %}Révision - Système de Flashcards avec Répétition Espacée{% endblock %}
+{% block title %}Revision - Spaced Repetition Flashcard System{% endblock %}
 
-{% block meta_description %}Révisez efficacement avec notre système de flashcards basé sur la répétition espacée. Optimisez votre mémorisation et suivez vos progrès.{% endblock %}
+{% block meta_description %}Study efficiently with our flashcard system based on spaced repetition. Optimize your memorization and track your progress.{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -16,24 +16,24 @@
                 <div class="col-lg-6">
                     <div class="d-flex align-items-center mb-4">
                         <div class="d-flex align-items-center justify-content-center rounded-circle bg-white me-4" style="width: 80px; height: 80px; box-shadow: 0 8px 25px rgba(255,255,255,0.3);">
-                            <img src="{% static 'img/app_icon/memory.png' %}" alt="Révision" style="width: 50px; height: 50px;">
+                            <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision" style="width: 50px; height: 50px;">
                         </div>
                         <div>
                             <h1 class="display-4 fw-bold mb-2 text-white">
-                                Révision
+                                Revision
                             </h1>
-                            <p class="lead mb-0 text-white" style="opacity: 0.9;">Système de flashcards avec répétition espacée</p>
+                            <p class="lead mb-0 text-white" style="opacity: 0.9;">Spaced repetition flashcard system</p>
                         </div>
                     </div>
                     
                     <div class="d-flex gap-3 flex-wrap">
                         {% if not user.is_authenticated %}
-                            <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-light btn-lg px-4 py-3">
-                                <i class="bi bi-person-plus me-2"></i>{% trans "Commencer gratuitement" %}
+                            <a href="{% backend_url_with_lang '/auth/register/' %}" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-person-plus me-2"></i>{% trans "Start for free" %}
                             </a>
                         {% else %}
-                            <a href="/revision/" class="btn btn-light btn-lg px-4 py-3">
-                                <i class="bi bi-lightning-charge me-2"></i>{% trans "Commencer les révisions" %}
+                            <a href="{% backend_url '/revision/' %}" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-lightning-charge me-2"></i>{% trans "Start studying" %}
                             </a>
                         {% endif %}
                         <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-4 py-3">
@@ -42,9 +42,111 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-4 bg-white" style="width: 200px; height: 200px; box-shadow: 0 15px 40px rgba(255,255,255,0.2);">
-                            <img src="{% static 'img/app_icon/memory.png' %}" alt="Révision" style="width: 120px; height: 120px;">
+                    <div class="hero-image">
+                        <div class="app-preview">
+                            <!-- Revision App Preview -->
+                            <div class="mock-browser">
+                                <div class="browser-header">
+                                    <div class="browser-dots">
+                                        <span class="dot red"></span>
+                                        <span class="dot yellow"></span>
+                                        <span class="dot green"></span>
+                                    </div>
+                                    <div class="browser-title">Revision - Open Linguify</div>
+                                </div>
+                                <div class="browser-content p-0">
+                                    <!-- Flashcard Interface Preview -->
+                                    <div class="revision-preview">
+                                        <!-- Top Navigation -->
+                                        <div class="nav-preview">
+                                            <div class="nav-brand">
+                                                <i class="bi bi-lightning-charge"></i>
+                                                <span>Revision</span>
+                                            </div>
+                                            <div class="nav-actions">
+                                                <span class="btn-preview active">
+                                                    <i class="bi bi-stack"></i> {% trans "Flashcards" %}
+                                                </span>
+                                                <span class="btn-preview">
+                                                    <i class="bi bi-graph-up"></i> {% trans "Progress" %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Study Area -->
+                                        <div class="study-preview">
+                                            <!-- Left Panel - Stats & Progress -->
+                                            <div class="study-sidebar">
+                                                <div class="deck-info">
+                                                    <h4>English Vocabulary</h4>
+                                                    <div class="progress-info">
+                                                        <div class="progress-text">15/23 cards</div>
+                                                        <div class="progress-bar-preview">
+                                                            <div class="progress-fill" style="width: 65%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="study-stats">
+                                                    <div class="stat-item">
+                                                        <div class="stat-number">12</div>
+                                                        <div class="stat-label">Mastered</div>
+                                                    </div>
+                                                    <div class="stat-item">
+                                                        <div class="stat-number">3</div>
+                                                        <div class="stat-label">Review</div>
+                                                    </div>
+                                                    <div class="stat-item">
+                                                        <div class="stat-number">8</div>
+                                                        <div class="stat-label">New</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Main Flashcard Area -->
+                                            <div class="flashcard-area">
+                                                <div class="flashcard-preview" id="flashcard-demo">
+                                                    <div class="flashcard-inner">
+                                                        <div class="flashcard-front active">
+                                                            <div class="flashcard-text">
+                                                                <div class="word">{% trans "Beautiful" %}</div>
+                                                                <div class="pronunciation">/ˈbjuːtɪfʊl/</div>
+                                                            </div>
+                                                            <button class="speak-btn">
+                                                                <i class="bi bi-volume-up"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="flashcard-back">
+                                                            <div class="flashcard-text">
+                                                                <div class="translation">Beautiful, magnificent</div>
+                                                                <div class="example">
+                                                                    <em>She has beautiful eyes</em>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Action Buttons -->
+                                                <div class="study-actions-preview">
+                                                    <button class="action-btn difficult">
+                                                        <i class="bi bi-x-circle"></i>
+                                                        Hard
+                                                    </button>
+                                                    <button class="action-btn medium">
+                                                        <i class="bi bi-dash-circle"></i>
+                                                        Good
+                                                    </button>
+                                                    <button class="action-btn easy">
+                                                        <i class="bi bi-check-circle"></i>
+                                                        Easy
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -62,13 +164,13 @@
                     <div class="card-body p-5">
                         <div class="text-center mb-4">
                             <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                                <img src="{% static 'img/app_icon/memory.png' %}" alt="Révision" style="width: 50px; height: 50px;">
+                                <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision" style="width: 50px; height: 50px;">
                             </div>
-                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "Système de Flashcards Intelligent" %}</h2>
+                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "Smart Flashcard System" %}</h2>
                         </div>
                         
                         <div class="description-content">
-                            <p class="lead text-center mb-4" style="color: #6b7280;">Notre système de révision utilise les principes scientifiques de la répétition espacée pour optimiser votre mémorisation. Créez vos decks de flashcards et laissez l'algorithme vous guider vers une mémorisation durable.</p>
+                            <p class="lead text-center mb-4" style="color: #6b7280;">Our revision system uses scientific principles of spaced repetition to optimize your memorization. Create your flashcard decks and let the algorithm guide you toward lasting memorization.</p>
                             
                             <div class="row g-3 mb-4">
                                 <div class="col-md-6">
@@ -79,8 +181,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Algorithme de répétition espacée</h6>
-                                            <small class="text-muted">Mémorisation optimale</small>
+                                            <h6 class="fw-bold mb-1">Spaced repetition algorithm</h6>
+                                            <small class="text-muted">Optimal memorization</small>
                                         </div>
                                     </div>
                                 </div>
@@ -92,8 +194,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Decks personnalisés</h6>
-                                            <small class="text-muted">Créez vos contenus</small>
+                                            <h6 class="fw-bold mb-1">Custom decks</h6>
+                                            <small class="text-muted">Create your content</small>
                                         </div>
                                     </div>
                                 </div>
@@ -105,8 +207,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Planification intelligente</h6>
-                                            <small class="text-muted">Sessions optimisées</small>
+                                            <h6 class="fw-bold mb-1">Smart scheduling</h6>
+                                            <small class="text-muted">Optimized sessions</small>
                                         </div>
                                     </div>
                                 </div>
@@ -118,8 +220,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Suivi des progrès</h6>
-                                            <small class="text-muted">Statistiques détaillées</small>
+                                            <h6 class="fw-bold mb-1">Progress tracking</h6>
+                                            <small class="text-muted">Detailed statistics</small>
                                         </div>
                                     </div>
                                 </div>
@@ -131,8 +233,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Multiples modes</h6>
-                                            <small class="text-muted">Flashcards, quiz, association</small>
+                                            <h6 class="fw-bold mb-1">Multiple modes</h6>
+                                            <small class="text-muted">Flashcards, quiz, matching</small>
                                         </div>
                                     </div>
                                 </div>
@@ -144,8 +246,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Intégration vocabulaire</h6>
-                                            <small class="text-muted">Depuis vos cours</small>
+                                            <h6 class="fw-bold mb-1">Vocabulary integration</h6>
+                                            <small class="text-muted">From your lessons</small>
                                         </div>
                                     </div>
                                 </div>
@@ -157,8 +259,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Révision rapide</h6>
-                                            <small class="text-muted">Sessions express</small>
+                                            <h6 class="fw-bold mb-1">Quick review</h6>
+                                            <small class="text-muted">Express sessions</small>
                                         </div>
                                     </div>
                                 </div>
@@ -170,8 +272,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1">Analytics avancés</h6>
-                                            <small class="text-muted">Optimisation continue</small>
+                                            <h6 class="fw-bold mb-1">Advanced analytics</h6>
+                                            <small class="text-muted">Continuous optimization</small>
                                         </div>
                                     </div>
                                 </div>
@@ -181,8 +283,8 @@
                                 <div class="d-flex align-items-center">
                                     <i class="bi bi-star me-3" style="color: var(--linguify-primary); font-size: 1.2rem;"></i>
                                     <div>
-                                        <strong style="color: var(--linguify-primary);">Science :</strong>
-                                        <span class="text-muted">La répétition espacée peut améliorer votre rétention jusqu'à 90% !</span>
+                                        <strong style="color: var(--linguify-primary);">Science:</strong>
+                                        <span class="text-muted">Spaced repetition can improve your retention up to 90%!</span>
                                     </div>
                                 </div>
                             </div>
@@ -196,7 +298,7 @@
                                     <i class="bi bi-tag text-white"></i>
                                 </div>
                                 <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Category" %}</h6>
-                                <p class="text-muted small">Mémorisation & Révision</p>
+                                <p class="text-muted small">Memorization & Review</p>
                             </div>
                             <div class="col-md-4">
                                 <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
@@ -225,8 +327,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center mb-5">
-                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Pourquoi la Répétition Espacée ?</h2>
-                <p class="lead text-muted">Une méthode scientifiquement prouvée</p>
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Why Spaced Repetition?</h2>
+                <p class="lead text-muted">A scientifically proven method</p>
             </div>
         </div>
         <div class="row g-4">
@@ -235,8 +337,8 @@
                     <div class="feature-icon mx-auto mb-3">
                         <i class="bi bi-lightning-charge"></i>
                     </div>
-                    <h5 class="fw-bold mb-3">Flashcards Intelligentes</h5>
-                    <p class="text-muted">Cartes adaptatives qui s'ajustent à votre rythme</p>
+                    <h5 class="fw-bold mb-3">Smart Flashcards</h5>
+                    <p class="text-muted">Adaptive cards that adjust to your pace</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -244,8 +346,8 @@
                     <div class="feature-icon mx-auto mb-3">
                         <i class="bi bi-clock"></i>
                     </div>
-                    <h5 class="fw-bold mb-3">Timing Optimal</h5>
-                    <p class="text-muted">Révision au moment parfait pour la mémorisation</p>
+                    <h5 class="fw-bold mb-3">Optimal Timing</h5>
+                    <p class="text-muted">Review at the perfect moment for memorization</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -253,8 +355,8 @@
                     <div class="feature-icon mx-auto mb-3">
                         <i class="bi bi-brain"></i>
                     </div>
-                    <h5 class="fw-bold mb-3">Mémorisation Durable</h5>
-                    <p class="text-muted">Transfert efficace en mémoire long terme</p>
+                    <h5 class="fw-bold mb-3">Long-lasting Memorization</h5>
+                    <p class="text-muted">Efficient transfer to long-term memory</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -262,8 +364,8 @@
                     <div class="feature-icon mx-auto mb-3">
                         <i class="bi bi-graph-up"></i>
                     </div>
-                    <h5 class="fw-bold mb-3">Suivi Précis</h5>
-                    <p class="text-muted">Analytics détaillés de vos performances</p>
+                    <h5 class="fw-bold mb-3">Precise Tracking</h5>
+                    <p class="text-muted">Detailed analytics of your performance</p>
                 </div>
             </div>
         </div>
@@ -275,8 +377,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center mb-5">
-                <h2 class="display-6 fw-bold">Modes de Révision</h2>
-                <p class="lead text-muted">Adaptez votre méthode selon vos besoins</p>
+                <h2 class="display-6 fw-bold">Study Modes</h2>
+                <p class="lead text-muted">Adapt your method according to your needs</p>
             </div>
         </div>
         <div class="row g-4">
@@ -285,9 +387,9 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-collection text-warning me-3" style="font-size: 2rem;"></i>
-                            <h5 class="mb-0">Flashcards Classiques</h5>
+                            <h5 class="mb-0">Classic Flashcards</h5>
                         </div>
-                        <p class="text-muted">Mode traditionnel de révision avec cartes recto-verso pour un apprentissage efficace.</p>
+                        <p class="text-muted">Traditional review mode with front-back cards for effective learning.</p>
                     </div>
                 </div>
             </div>
@@ -296,9 +398,9 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-mortarboard text-primary me-3" style="font-size: 2rem;"></i>
-                            <h5 class="mb-0">Mode Apprentissage</h5>
+                            <h5 class="mb-0">Learning Mode</h5>
                         </div>
-                        <p class="text-muted">Questions à choix multiples pour tester votre compréhension de manière interactive.</p>
+                        <p class="text-muted">Multiple choice questions to test your understanding interactively.</p>
                     </div>
                 </div>
             </div>
@@ -307,9 +409,9 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-puzzle text-success me-3" style="font-size: 2rem;"></i>
-                            <h5 class="mb-0">Association</h5>
+                            <h5 class="mb-0">Matching</h5>
                         </div>
-                        <p class="text-muted">Jeu d'association pour connecter termes et définitions de façon ludique.</p>
+                        <p class="text-muted">Matching game to connect terms and definitions in a fun way.</p>
                     </div>
                 </div>
             </div>
@@ -318,9 +420,9 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-stopwatch text-info me-3" style="font-size: 2rem;"></i>
-                            <h5 class="mb-0">Révision Rapide</h5>
+                            <h5 class="mb-0">Quick Review</h5>
                         </div>
-                        <p class="text-muted">Sessions courtes et intensives pour les révisions de dernière minute.</p>
+                        <p class="text-muted">Short and intensive sessions for last-minute reviews.</p>
                     </div>
                 </div>
             </div>
@@ -333,25 +435,25 @@
     <div class="container text-center position-relative" style="z-index: 2;">
         <div class="mb-4">
             <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white mb-3" style="width: 80px; height: 80px; box-shadow: 0 8px 30px rgba(255,255,255,0.3);">
-                <img src="{% static 'img/app_icon/memory.png' %}" alt="Révision" style="width: 50px; height: 50px;">
+                <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision" style="width: 50px; height: 50px;">
             </div>
         </div>
         
         <h2 class="display-5 fw-bold mb-4 text-white">
-            {% trans "Prêt à optimiser votre mémorisation ?" %}
+            {% trans "Ready to optimize your memorization?" %}
         </h2>
         <p class="lead mb-5 text-white" style="opacity: 0.95; max-width: 600px; margin: 0 auto;">
-            {% trans "Découvrez la puissance de la répétition espacée et transformez votre façon d'apprendre." %}
+            {% trans "Discover the power of spaced repetition and transform the way you learn." %}
         </p>
         
         <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
             {% if not user.is_authenticated %}
                 <a href="{% backend_url '/fr/auth/register/' %}" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
-                    <i class="bi bi-rocket-takeoff me-2"></i>{% trans "Commencer gratuitement" %}
+                    <i class="bi bi-rocket-takeoff me-2"></i>{% trans "Start for free" %}
                 </a>
             {% else %}
                 <a href="/revision/" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border-radius: 16px; color: var(--linguify-primary);">
-                    <i class="bi bi-lightning-charge me-2"></i>{% trans "Commencer les révisions" %}
+                    <i class="bi bi-lightning-charge me-2"></i>{% trans "Start studying" %}
                 </a>
             {% endif %}
             <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: 16px; border: 2px solid rgba(255,255,255,0.8);">
@@ -360,4 +462,409 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Revision Preview Styles */
+.hero-image {
+    position: relative;
+    transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+    transition: transform 0.3s ease;
+}
+
+.hero-image:hover {
+    transform: perspective(1000px) rotateY(-10deg) rotateX(2deg);
+}
+
+.mock-browser {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+.browser-header {
+    background: #f5f5f5;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.browser-dots {
+    display: flex;
+    gap: 6px;
+    margin-right: 16px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.dot.red { background: #ff5f57; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #28ca42; }
+
+.browser-title {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.revision-preview {
+    background: #f8fafc;
+    height: 400px;
+    overflow: hidden;
+    position: relative;
+}
+
+.nav-preview {
+    background: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #2D5BBA;
+    font-size: 16px;
+}
+
+.nav-brand i {
+    font-size: 18px;
+    color: #fbbf24;
+}
+
+.nav-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-preview {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
+    background: transparent;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-preview.active {
+    background: #2D5BBA;
+    color: white;
+    border-color: #2D5BBA;
+}
+
+.btn-preview i {
+    font-size: 11px;
+}
+
+.study-preview {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    height: 100%;
+}
+
+.study-sidebar {
+    width: 180px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 16px;
+    flex-shrink: 0;
+}
+
+.deck-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 12px;
+}
+
+.progress-info {
+    margin-bottom: 16px;
+}
+
+.progress-text {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.progress-bar-preview {
+    background: #f1f5f9;
+    height: 6px;
+    border-radius: 3px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.study-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 8px;
+    background: #f8fafc;
+    border-radius: 6px;
+}
+
+.stat-number {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2D5BBA;
+}
+
+.stat-label {
+    font-size: 10px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.flashcard-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.flashcard-preview {
+    width: 280px;
+    height: 160px;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flashcard-preview:hover .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+.flashcard-front {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.flashcard-back {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    color: #1e293b;
+    transform: rotateY(180deg);
+}
+
+.flashcard-text {
+    text-align: center;
+    width: 100%;
+}
+
+.word {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.pronunciation {
+    font-size: 12px;
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.translation {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.example {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.speak-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.speak-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.1);
+}
+
+.study-actions-preview {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.action-btn {
+    background: white;
+    border: 2px solid;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    flex: 1;
+    justify-content: center;
+}
+
+.action-btn.difficult {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.action-btn.difficult:hover {
+    background: #ef4444;
+    color: white;
+}
+
+.action-btn.medium {
+    border-color: #f59e0b;
+    color: #f59e0b;
+}
+
+.action-btn.medium:hover {
+    background: #f59e0b;
+    color: white;
+}
+
+.action-btn.easy {
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.action-btn.easy:hover {
+    background: #10b981;
+    color: white;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .mock-browser {
+        max-width: 480px;
+    }
+    
+    .revision-preview {
+        height: 340px;
+    }
+    
+    .study-preview {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .study-sidebar {
+        width: 100%;
+        margin-bottom: 16px;
+    }
+    
+    .study-stats {
+        flex-direction: row;
+        gap: 12px;
+    }
+    
+    .stat-item {
+        flex: 1;
+    }
+    
+    .flashcard-preview {
+        width: 240px;
+        height: 140px;
+    }
+    
+    .word {
+        font-size: 20px;
+    }
+    
+    .translation {
+        font-size: 16px;
+    }
+    
+    .example {
+        font-size: 12px;
+    }
+    
+    .study-actions-preview {
+        gap: 10px;
+        max-width: 320px;
+    }
+    
+    .action-btn {
+        padding: 8px 12px;
+        font-size: 10px;
+    }
+    
+    .study-preview {
+        padding: 16px;
+        gap: 14px;
+    }
+}
+</style>
 {% endblock %}

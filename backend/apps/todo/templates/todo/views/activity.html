@@ -1,0 +1,514 @@
+{% extends "todo/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block page_title %}Todo - Activity{% endblock %}
+
+{% block header_content %}
+{% include 'components/todo_navbar.html' with active_view='activity' %}
+{% endblock %}
+
+{% block content %}
+<div class="todo-activity-workspace">
+    <!-- Activity Controls -->
+    <div class="activity-controls mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <h4 class="mb-0">{% trans "Activity Overview" %}</h4>
+                <div class="view-controls">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="{% url 'todo_web:kanban' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-kanban"></i> {% trans "Kanban" %}
+                        </a>
+                        <a href="{% url 'todo_web:list' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-list-ul"></i> {% trans "List" %}
+                        </a>
+                        <a href="{% url 'todo_web:activity' %}" class="btn btn-primary">
+                            <i class="bi bi-clock-history"></i> {% trans "Activity" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="activity-actions">
+                <button class="btn btn-success btn-sm" onclick="createNewTask()">
+                    <i class="bi bi-plus-lg"></i> {% trans "New Task" %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Stats -->
+    <div class="activity-stats mb-4">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="stat-card stat-card-primary">
+                    <div class="stat-icon">
+                        <i class="bi bi-plus-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ activity_stats.tasks_created_today }}</div>
+                        <div class="stat-label">{% trans "Created Today" %}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-card-success">
+                    <div class="stat-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ activity_stats.tasks_completed_today }}</div>
+                        <div class="stat-label">{% trans "Completed Today" %}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-card-info">
+                    <div class="stat-icon">
+                        <i class="bi bi-calendar-week"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ activity_stats.tasks_created_this_week }}</div>
+                        <div class="stat-label">{% trans "Created This Week" %}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-card-warning">
+                    <div class="stat-icon">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ activity_stats.tasks_completed_this_week }}</div>
+                        <div class="stat-label">{% trans "Completed This Week" %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Due Tasks & Alerts -->
+        <div class="col-lg-8">
+            <!-- Overdue Tasks -->
+            {% if overdue_tasks %}
+            <div class="activity-section mb-4">
+                <div class="section-header">
+                    <h5 class="section-title text-danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        {% trans "Overdue Tasks" %}
+                        <span class="badge bg-danger">{{ overdue_tasks.count }}</span>
+                    </h5>
+                </div>
+                <div class="section-content">
+                    {% for task in overdue_tasks|slice:":5" %}
+                    <div class="activity-task-item overdue-task">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-sm p-0 me-2 complete-btn" onclick="toggleComplete('{{ task.id }}')"
+                                    title="{% trans 'Mark as Complete' %}">
+                                <i class="bi bi-circle text-danger"></i>
+                            </button>
+                            <div class="flex-grow-1">
+                                <div class="task-title" onclick="openTask('{{ task.id }}')">
+                                    {{ task.title }}
+                                    {% if task.priority == '1' %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    {% endif %}
+                                </div>
+                                <small class="text-danger">
+                                    <i class="bi bi-calendar-x"></i>
+                                    {% trans "Due" %} {{ task.due_date|timesince }} {% trans "ago" %}
+                                    {% if task.project %}
+                                    • {{ task.project.name }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div class="task-actions">
+                                <button class="btn btn-sm btn-outline-primary" onclick="editTask('{{ task.id }}')" title="{% trans 'Edit' %}">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if overdue_tasks.count > 5 %}
+                    <div class="text-center mt-2">
+                        <button class="btn btn-sm btn-outline-danger" onclick="viewAllOverdue()">
+                            {% trans "View All" %} ({{ overdue_tasks.count }}) {% trans "Overdue Tasks" %}
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Due Today -->
+            {% if due_today_tasks %}
+            <div class="activity-section mb-4">
+                <div class="section-header">
+                    <h5 class="section-title text-warning">
+                        <i class="bi bi-calendar-day"></i>
+                        {% trans "Due Today" %}
+                        <span class="badge bg-warning">{{ due_today_tasks.count }}</span>
+                    </h5>
+                </div>
+                <div class="section-content">
+                    {% for task in due_today_tasks %}
+                    <div class="activity-task-item due-today-task">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-sm p-0 me-2 complete-btn" onclick="toggleComplete('{{ task.id }}')"
+                                    title="{% trans 'Mark as Complete' %}">
+                                {% if task.state == '1_done' %}
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                {% else %}
+                                <i class="bi bi-circle text-warning"></i>
+                                {% endif %}
+                            </button>
+                            <div class="flex-grow-1">
+                                <div class="task-title {% if task.state == '1_done' %}completed{% endif %}" onclick="openTask('{{ task.id }}')">
+                                    {{ task.title }}
+                                    {% if task.priority == '1' %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i>
+                                    {% if task.due_date.time %}
+                                    {{ task.due_date|time:"H:i" }}
+                                    {% else %}
+                                    {% trans "All day" %}
+                                    {% endif %}
+                                    {% if task.project %}
+                                    • {{ task.project.name }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div class="task-actions">
+                                <button class="btn btn-sm btn-outline-primary" onclick="editTask('{{ task.id }}')" title="{% trans 'Edit' %}">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Due This Week -->
+            {% if due_week_tasks %}
+            <div class="activity-section mb-4">
+                <div class="section-header">
+                    <h5 class="section-title text-info">
+                        <i class="bi bi-calendar-week"></i>
+                        {% trans "Due This Week" %}
+                        <span class="badge bg-info">{{ due_week_tasks.count }}</span>
+                    </h5>
+                </div>
+                <div class="section-content">
+                    {% for task in due_week_tasks|slice:":10" %}
+                    <div class="activity-task-item due-week-task">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-sm p-0 me-2 complete-btn" onclick="toggleComplete('{{ task.id }}')"
+                                    title="{% trans 'Mark as Complete' %}">
+                                {% if task.state == '1_done' %}
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                {% else %}
+                                <i class="bi bi-circle text-info"></i>
+                                {% endif %}
+                            </button>
+                            <div class="flex-grow-1">
+                                <div class="task-title {% if task.state == '1_done' %}completed{% endif %}" onclick="openTask('{{ task.id }}')">
+                                    {{ task.title }}
+                                    {% if task.priority == '1' %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i>
+                                    {{ task.due_date|date:"l, M d" }}
+                                    {% if task.project %}
+                                    • {{ task.project.name }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div class="task-actions">
+                                <button class="btn btn-sm btn-outline-primary" onclick="editTask('{{ task.id }}')" title="{% trans 'Edit' %}">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if due_week_tasks.count > 10 %}
+                    <div class="text-center mt-2">
+                        <button class="btn btn-sm btn-outline-info" onclick="viewAllWeek()">
+                            {% trans "View All" %} ({{ due_week_tasks.count }}) {% trans "This Week" %}
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column - Recent Activity -->
+        <div class="col-lg-4">
+            <!-- Recently Completed -->
+            <div class="activity-section mb-4">
+                <div class="section-header">
+                    <h5 class="section-title text-success">
+                        <i class="bi bi-check-circle"></i>
+                        {% trans "Recently Completed" %}
+                    </h5>
+                </div>
+                <div class="section-content">
+                    {% for task in completed_tasks|slice:":8" %}
+                    <div class="activity-item completed-item">
+                        <div class="d-flex align-items-start">
+                            <div class="activity-icon me-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="activity-title">{{ task.title }}</div>
+                                <small class="text-muted">
+                                    {% trans "Completed" %} {{ task.completed_at|timesince }} {% trans "ago" %}
+                                    {% if task.project %}
+                                    • {{ task.project.name }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-inbox display-6"></i>
+                        <p class="mb-0">{% trans "No completed tasks yet" %}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Recently Created -->
+            <div class="activity-section mb-4">
+                <div class="section-header">
+                    <h5 class="section-title text-primary">
+                        <i class="bi bi-plus-circle"></i>
+                        {% trans "Recently Created" %}
+                    </h5>
+                </div>
+                <div class="section-content">
+                    {% for task in recent_tasks|slice:":8" %}
+                    <div class="activity-item created-item">
+                        <div class="d-flex align-items-start">
+                            <div class="activity-icon me-2">
+                                <i class="bi bi-plus-circle-fill text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="activity-title" onclick="openTask('{{ task.id }}')">
+                                    {{ task.title }}
+                                    {% if task.priority == '1' %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">
+                                    {% trans "Created" %} {{ task.created_at|timesince }} {% trans "ago" %}
+                                    {% if task.project %}
+                                    • {{ task.project.name }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-inbox display-6"></i>
+                        <p class="mb-0">{% trans "No recent tasks" %}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.todo-activity-workspace {
+    padding: 1rem;
+    min-height: calc(100vh - 120px);
+    background-color: #f8f9fa;
+}
+
+.activity-stats .stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.activity-stats .stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-card-primary { border-left: 4px solid #007bff; }
+.stat-card-success { border-left: 4px solid #28a745; }
+.stat-card-info { border-left: 4px solid #17a2b8; }
+.stat-card-warning { border-left: 4px solid #ffc107; }
+
+.stat-icon {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+.stat-card-primary .stat-icon { color: #007bff; }
+.stat-card-success .stat-icon { color: #28a745; }
+.stat-card-info .stat-icon { color: #17a2b8; }
+.stat-card-warning .stat-icon { color: #ffc107; }
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.activity-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.section-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+}
+
+.section-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-content {
+    padding: 1rem;
+}
+
+.activity-task-item {
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.activity-task-item:last-child {
+    margin-bottom: 0;
+}
+
+.activity-task-item:hover {
+    background-color: #f8f9fa;
+}
+
+.overdue-task {
+    border-left: 3px solid #dc3545;
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+.due-today-task {
+    border-left: 3px solid #ffc107;
+    background-color: rgba(255, 193, 7, 0.05);
+}
+
+.due-week-task {
+    border-left: 3px solid #17a2b8;
+    background-color: rgba(23, 162, 184, 0.05);
+}
+
+.task-title {
+    font-weight: 500;
+    color: #212529;
+    cursor: pointer;
+    margin-bottom: 0.25rem;
+}
+
+.task-title:hover {
+    color: #007bff;
+}
+
+.task-title.completed {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+.activity-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    font-size: 1.2rem;
+    margin-top: 0.1rem;
+}
+
+.activity-title {
+    font-weight: 500;
+    color: #212529;
+    margin-bottom: 0.25rem;
+    cursor: pointer;
+}
+
+.activity-title:hover {
+    color: #007bff;
+}
+
+.complete-btn {
+    border: none;
+    background: none;
+    font-size: 1.2rem;
+    padding: 0;
+}
+
+.complete-btn:hover {
+    transform: scale(1.1);
+}
+
+.task-actions .btn {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.activity-task-item:hover .task-actions .btn {
+    opacity: 1;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'todo/js/activity.js' %}"></script>
+<script>
+// Initialize Activity functionality
+document.addEventListener('DOMContentLoaded', function() {
+    initializeActivity();
+});
+</script>
+{% endblock %}

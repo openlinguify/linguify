@@ -1,0 +1,139 @@
+{% extends "teaching/base_teaching.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Mes professeurs" %}{% endblock %}
+
+{% block header_content %}
+{% include 'teaching/components/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="px-4 py-6">
+    <!-- Quick Stats -->
+    <div class="flex justify-end gap-4 mb-6">
+        <div class="card-linguify text-center p-3 min-w-24">
+            <div class="text-lg font-bold text-linguify-primary">{{ teachers_count|default:0 }}</div>
+            <div class="text-xs text-linguify-gray">{% trans "professeurs" %}</div>
+        </div>
+        <div class="card-linguify text-center p-3 min-w-24">
+            <div class="text-lg font-bold text-linguify-success">{{ total_lessons|default:0 }}</div>
+            <div class="text-xs text-linguify-gray">{% trans "cours au total" %}</div>
+        </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="card-linguify">
+        {% if my_teachers %}
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                {% for teacher in my_teachers %}
+                <div class="border border-linguify-gray-200 rounded-lg p-4 hover:bg-linguify-gray-50 transition-colors">
+                            <!-- Teacher Info -->
+                            <div class="flex items-center mb-4">
+                                <div class="mr-3">
+                                    {% if teacher.profile_picture_url %}
+                                        <img src="{{ teacher.profile_picture_url }}" alt="{{ teacher.full_name }}" 
+                                             class="w-15 h-15 rounded-full object-cover">
+                                    {% else %}
+                                        <div class="w-15 h-15 rounded-full bg-linguify-primary flex items-center justify-center text-white text-xl font-bold">
+                                            {{ teacher.full_name|first }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-1">
+                                    <h5 class="font-semibold text-gray-900 mb-1">{{ teacher.full_name }}</h5>
+                                    <div class="flex items-center mb-1">
+                                        <div class="flex text-linguify-warning mr-2">
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= teacher.average_rating|floatformat:0|add:0 %}
+                                                    <i class="bi bi-star-fill"></i>
+                                                {% else %}
+                                                    <i class="bi bi-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <span class="text-sm text-linguify-gray">
+                                            {{ teacher.average_rating|floatformat:1 }}/5
+                                        </span>
+                                    </div>
+                                    <div class="text-sm text-linguify-gray">
+                                        {{ teacher.lessons_count }} {% trans "cours avec moi" %}
+                                        ({{ teacher.completed_lessons_count }} {% trans "terminés" %})
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Languages -->
+                            <div class="mb-4">
+                                {% for lang in teacher.teaching_languages.all|slice:":4" %}
+                                    <span class="inline-block bg-linguify-gray-100 text-linguify-gray-700 px-2 py-1 rounded text-xs mr-1 mb-1">{{ lang.language_code|upper }}</span>
+                                {% endfor %}
+                                {% if teacher.teaching_languages.count > 4 %}
+                                    <span class="inline-block bg-linguify-secondary text-white px-2 py-1 rounded text-xs">+{{ teacher.teaching_languages.count|add:"-4" }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Upcoming lessons -->
+                            {% if teacher.upcoming_lessons %}
+                                <div class="mb-4">
+                                    <h6 class="text-linguify-primary font-semibold mb-2">
+                                        <i class="bi bi-calendar-event mr-1"></i>
+                                        {% trans "Prochains cours" %}
+                                    </h6>
+                                    {% for lesson in teacher.upcoming_lessons %}
+                                        <div class="text-sm text-linguify-gray mb-1">
+                                            <i class="bi bi-clock mr-1"></i>
+                                            {{ lesson.scheduled_datetime|date:"j M Y H:i" }} 
+                                            <span class="badge-linguify status-{{ lesson.status }} ml-1">{{ lesson.get_status_display }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Actions -->
+                            <div class="flex justify-between items-center">
+                                <div class="text-linguify-gray text-sm">
+                                    <i class="bi bi-currency-euro"></i>
+                                    {{ teacher.hourly_rate|floatformat:0 }}€/h
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="btn-linguify-outline text-xs py-1 px-3" onclick="contactTeacher('{{ teacher.id }}')">
+                                        <i class="bi bi-chat-dots mr-1"></i> {% trans "Contacter" %}
+                                    </button>
+                                    <button class="btn-linguify text-xs py-1 px-3" onclick="bookWithTeacher('{{ teacher.id }}')">
+                                        <i class="bi bi-calendar-plus mr-1"></i> {% trans "Réserver" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <i class="bi bi-person-x text-6xl text-linguify-gray mb-4 block"></i>
+                <h4 class="text-lg font-semibold text-gray-900 mb-2">{% trans "Aucun professeur pour l'instant" %}</h4>
+                <p class="text-linguify-gray mb-6">{% trans "Vous n'avez pas encore de cours avec un professeur" %}</p>
+                <a href="{% url 'teaching:find_teachers' %}" class="btn-linguify">
+                    <i class="bi bi-search mr-2"></i>
+                    {% trans "Trouver un professeur" %}
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function contactTeacher(teacherId) {
+    console.log('Contact teacher:', teacherId);
+    // TODO: Implémenter le système de messagerie
+    window.notificationService.info('{% trans "Système de messagerie en développement" %}');
+}
+
+function bookWithTeacher(teacherId) {
+    console.log('Book with teacher:', teacherId);
+    window.location.href = '{% url "teaching:find_teachers" %}';
+}
+</script>
+{% endblock %}

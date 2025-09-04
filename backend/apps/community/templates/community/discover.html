@@ -5,40 +5,21 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'community/css/community-clean.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/navbar_community.css' %}">
+<link rel="stylesheet" href="{% static 'community/css/discover_page.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="community-page">
-    <div class="container">
-        <!-- Header simple -->
+    <div class="community-container">
+        <!-- Header avec navbar intégrée -->
         <div class="community-header">
-            <div class="container">
-                <h1 class="h3 mb-3">
-                    <i class="bi bi-search me-2"></i>
-                    {% trans "Discover Language Partners" %}
-                </h1>
-                
-                <!-- Navigation simple -->
-                <div class="community-nav">
-                    <a href="{% url 'community:main' %}" class="nav-button">
-                        <i class="bi bi-house me-1"></i>
-                        {% trans "Overview" %}
-                    </a>
-                    <a href="{% url 'community:discover' %}" class="nav-button active">
-                        <i class="bi bi-search me-1"></i>
-                        {% trans "Discover" %}
-                    </a>
-                    <a href="{% url 'community:friends' %}" class="nav-button">
-                        <i class="bi bi-person-heart me-1"></i>
-                        {% trans "Friends" %}
-                    </a>
-                    <a href="{% url 'community:groups' %}" class="nav-button">
-                        <i class="bi bi-people me-1"></i>
-                        {% trans "Groups" %}
-                    </a>
-                </div>
-            </div>
+            <!-- Navigation unifiée -->
+            {% include 'community/components/navbar.html' %}
         </div>
+
+        <!-- Main scrollable content -->
+        <div class="community-main">
 
         <!-- Recherche simple -->
         <div class="search-section">
@@ -81,7 +62,7 @@
                     </div>
                     
                     <!-- Boutons -->
-                    <div style="display: flex; gap: 8px;">
+                    <div class="button-group">
                         <button type="submit" class="btn-simple">
                             <i class="bi bi-funnel me-1"></i>
                             {% trans "Filter" %}
@@ -175,7 +156,7 @@
             {% endif %}
         {% else %}
             <div class="empty-state">
-                <i class="bi bi-people" style="font-size: 48px; margin-bottom: 16px;"></i>
+                <i class="bi bi-people large-icon"></i>
                 <h4>{% trans "No users found" %}</h4>
                 <p>
                     {% if current_search or current_native_language or current_target_language %}
@@ -185,13 +166,14 @@
                     {% endif %}
                 </p>
                 {% if current_search or current_native_language or current_target_language %}
-                <a href="{% url 'community:discover' %}" class="btn-simple" style="margin-top: 16px;">
+                <a href="{% url 'community:discover' %}" class="btn-simple clear-filters-btn">
                     <i class="bi bi-arrow-clockwise me-1"></i>
                     {% trans "Clear Filters" %}
                 </a>
                 {% endif %}
             </div>
         {% endif %}
+        </div> <!-- End community-main -->
     </div>
 </div>
 

@@ -1,0 +1,55 @@
+/* ===== STYLES SPÉCIFIQUES À LA PAGE MAIN ===== */
+
+/* Image dans les posts */
+.post-image img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+/* Barres de progression */
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+.progress-bar.french-conversation {
+    width: 75%;
+}
+
+.progress-bar.daily-practice {
+    width: 90%;
+}
+
+.progress-bar.vocabulary-goal {
+    width: 60%;
+}
+
+/* Empty state styling */
+.empty-state i.large-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-state .spacing {
+    margin-bottom: 16px;
+}
+
+/* Modal headers */
+.modal-header.gradient {
+    background: var(--linguify-gradient);
+    color: white;
+}
+
+/* Post preview */
+.post-preview {
+    display: none;
+}
+
+.post-preview.show {
+    display: block;
+}
+
+/* Boutons avec gap spacing */
+.button-group {
+    display: flex;
+    gap: 8px;
+}
