@@ -56,7 +56,14 @@ class LanguageRedirectView(View):
             logger.warning(f"Error in language detection: {e}")
             preferred_language = 'en'
             
-        # Rediriger vers la page d'accueil avec la langue appropriée
+        # Pour les domaines personnalisés, servir directement le contenu
+        # au lieu de rediriger (évite les problèmes de DNS/proxy)  
+        host = request.get_host()
+        if host in ['openlinguify.com', 'www.openlinguify.com']:
+            # Servir la page d'accueil directement sans redirection
+            return LandingView.as_view()(request)
+        
+        # Pour le domaine Render direct, rediriger normalement
         return redirect(f'/{preferred_language}/')
 
 
