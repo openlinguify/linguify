@@ -10,75 +10,63 @@
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
 <section class="about-hero">
-    <div class="container position-relative">
-        <div class="row align-items-center">
-            <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-3 fw-bold mb-4 fade-in-up">{% trans "Democratizing Language Learning" %}</h1>
-                <p class="lead fs-4 mb-5 fade-in-up" style="animation-delay: 0.2s;">
-                    {% trans "Open Linguify is on a mission to break down language barriers worldwide through innovative AI technology and open-source education." %}
-                </p>
-                <div class="fade-in-up" style="animation-delay: 0.4s;">
-                    <a href="#our-story" class="btn btn-light btn-lg px-4 py-3 me-3">
-                        <i class="bi bi-arrow-down-circle me-2"></i>{% trans "Discover Our Story" %}
-                    </a>
-                    <a href="https://github.com/openlinguify/linguify" class="btn btn-outline-light btn-lg px-4 py-3" target="_blank">
-                        <i class="bi bi-github me-2"></i>{% trans "View on GitHub" %}
-                    </a>
-                </div>
+    <div class="container">
+        <div class="section-text">
+            <h1 class="section-heading">{% trans "Democratizing Language Learning" %}</h1>
+            <p class="section-subtitle">
+                {% trans "Open Linguify is on a mission to break down language barriers worldwide through innovative AI technology and open-source education." %}
+            </p>
+            <div class="hero-actions">
+                <a href="#our-story" class="btn-hero primary">
+                    <i class="bi bi-arrow-down-circle"></i>{% trans "Discover Our Story" %}
+                </a>
+                <a href="https://github.com/openlinguify/linguify" class="btn-hero secondary" target="_blank">
+                    <i class="bi bi-github"></i>{% trans "View on GitHub" %}
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="hero-floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="container">
+        <div class="section-text">
+            <h2 class="stats-subtitle">{% trans "Trusted by learners worldwide" %}</h2>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">50K+</div>
+                <div class="stat-label">{% trans "Active Learners" %}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">{% trans "Languages Supported" %}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">{% trans "Open Source" %}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">{% trans "AI Support" %}</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Stats Section -->
-<section class="py-6 bg-light border-0">
+<section id="our-story" class="story-section">
     <div class="container">
-        <div class="row justify-content-center mb-5">
-            <div class="col-lg-8 text-center">
-                <h2 class="h3 text-muted mb-4">{% trans "Trusted by learners worldwide" %}</h2>
-            </div>
-        </div>
-        <div class="row g-4 text-center">
-            <div class="col-md-3 col-6">
-                <div class="stat-card">
-                    <h2 class="stat-number">50K+</h2>
-                    <p class="text-muted mb-0">{% trans "Active Learners" %}</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="stat-card">
-                    <h2 class="stat-number">4</h2>
-                    <p class="text-muted mb-0">{% trans "Languages Supported" %}</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="stat-card">
-                    <h2 class="stat-number">100%</h2>
-                    <p class="text-muted mb-0">{% trans "Open Source" %}</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="stat-card">
-                    <h2 class="stat-number">24/7</h2>
-                    <p class="text-muted mb-0">{% trans "AI Support" %}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Our Story -->
-<section id="our-story" class="py-6">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto text-center mb-5">
-                <h2 class="display-5 fw-bold mb-4">{% trans "Our Story" %}</h2>
-                <p class="lead text-muted">
-                    {% trans "From a simple idea to a global movement - discover how Open Linguify is revolutionizing language education." %}
-                </p>
-            </div>
+        <div class="section-text">
+            <h2 class="section-heading">{% trans "Our Story" %}</h2>
+            <p class="section-description">
+                {% trans "From a simple idea to a global movement - discover how Open Linguify is revolutionizing language education." %}
+            </p>
         </div>
 
         <!-- Timeline -->
