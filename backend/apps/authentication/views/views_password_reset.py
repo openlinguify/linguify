@@ -45,14 +45,14 @@ class CustomPasswordResetView(BasePasswordResetView):
         """
         Override to use HTML email template with proper domain
         """
-        # Create a mock request with the correct domain
+        # Create a mock request with the functional domain
         class MockRequest:
             def is_secure(self):
                 return True
             def get_host(self):
-                return 'openlinguify.com'
+                return 'linguify-h47a.onrender.com'
             META = {
-                'SERVER_NAME': 'openlinguify.com',
+                'SERVER_NAME': 'linguify-h47a.onrender.com',
                 'SERVER_PORT': '443'
             }
         

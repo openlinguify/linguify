@@ -84,14 +84,14 @@ def test_password_reset_email(recipient_email):
         if form.is_valid():
             print("Formulaire valide, tentative d'envoi...")
             
-            # Simuler une requête HTTP avec le bon domaine
+            # Simuler une requête HTTP avec le domaine fonctionnel
             class MockRequest:
                 def is_secure(self):
                     return True
                 def get_host(self):
-                    return 'openlinguify.com'
+                    return 'linguify-h47a.onrender.com'
                 META = {
-                    'SERVER_NAME': 'openlinguify.com',
+                    'SERVER_NAME': 'linguify-h47a.onrender.com',
                     'SERVER_PORT': '443'
                 }
             
