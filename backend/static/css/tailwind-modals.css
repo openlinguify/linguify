@@ -2620,6 +2620,7 @@ button.bg-linguify-gradient:hover,
 
 /* Buttons - Linguify Navbar Variants */
 /* Buttons of the navbar without background */
+/* Normally we use this for the extra button on the right of the main buttons of the navbar */
 .btn-sb {
   border: none !important;
   background: none !important;

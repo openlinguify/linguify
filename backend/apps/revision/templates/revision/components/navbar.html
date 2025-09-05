@@ -33,17 +33,13 @@
         </div>
 
         <!-- Refresh - Always show, but different for stats -->
-        {% if view_type == 'stats' %}
-        <button id="refreshStats" class="btn-navbar btn-navbar-outline" title="Actualiser les statistiques">
-            <i class="bi bi-arrow-clockwise"></i>
-            <span class="d-none d-xl-inline">Actualiser</span>
-        </button>
-        {% else %}
-        <button id="refreshDecks" class="btn-navbar btn-navbar-outline" title="Actualiser la liste des decks">
-            <i class="bi bi-arrow-clockwise"></i>
-            <span class="d-none d-xl-inline">Actualiser</span>
-        </button>
-        {% endif %}
+        <div class="container-extra">
+            <button id="refreshStats" class="btn-sb" title="Actualiser les statistiques">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span class="d-none d-xl-inline"></span>
+            </button>
+        </div>
+
     </div>
     
     <!-- Droite: Actions et filtres contextuels -->
