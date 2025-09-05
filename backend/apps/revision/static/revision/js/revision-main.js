@@ -310,7 +310,7 @@ async function loadDecks(reset = true) {
     }
 }
 
-// Improved refresh function with visual feedback and error handling
+// Universal refresh function for all views with visual feedback and error handling
 async function handleRefreshDecks() {
     const refreshBtn = document.getElementById('refreshDecks') || document.getElementById('refreshStats');
     const refreshIcon = refreshBtn?.querySelector('i');
@@ -332,18 +332,36 @@ async function handleRefreshDecks() {
         // Show loading notification
         console.log('🔄 Actualisation en cours...');
         
+        // Determine current view from URL or page context
+        const currentPath = window.location.pathname;
+        const isStatsPage = currentPath.includes('/stats') || document.body.classList.contains('stats-page');
+        const isExplorePage = currentPath.includes('/explore') || document.body.classList.contains('explore-page');
+        
         // Reset filters if they might be causing issues
         const isFiltered = appState.filters.search || appState.filters.status || 
                           appState.filters.sort !== 'updated_desc' || 
                           (appState.filters.tags && appState.filters.tags.length > 0);
         
-        // Perform appropriate refresh based on current page
-        if (refreshBtn.id === 'refreshStats') {
-            // We're on the stats page - just reload the page for now
+        // Perform appropriate refresh based on current view
+        if (isStatsPage) {
+            // We're on the stats page - reload statistics data
             console.log('🔄 Actualisation des statistiques...');
-            window.location.reload();
+            if (typeof refreshStatsData === 'function') {
+                await refreshStatsData();
+            } else {
+                window.location.reload();
+            }
+        } else if (isExplorePage) {
+            // We're on the explore page - refresh search results
+            console.log('🔄 Actualisation des résultats de recherche...');
+            if (typeof refreshExploreResults === 'function') {
+                await refreshExploreResults();
+            } else {
+                window.location.reload();
+            }
         } else {
-            // We're on a deck-related page
+            // We're on the deck list page
+            console.log('🔄 Actualisation de la liste des cartes...');
             await Promise.all([
                 loadDecks(true), // Full reload of decks
                 // If we have a selected deck, refresh its data too

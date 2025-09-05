@@ -32,12 +32,33 @@
             </a>
         </div>
 
-        <!-- Refresh - Always show, but different for stats -->
+        <!-- Refresh - Always show, universal for all views -->
         <div class="container-extra">
-            <button id="refreshStats" class="btn-sb" title="Actualiser les statistiques">
+            {% if view_type == 'stats' %}
+            <button class="btn-sb" title="Actualiser les statistiques"
+                    hx-get="{% url 'revision_web:stats_dashboard' %}"
+                    hx-target="body"
+                    hx-indicator=".htmx-indicator">
                 <i class="bi bi-arrow-clockwise"></i>
                 <span class="d-none d-xl-inline"></span>
             </button>
+            {% elif view_type == 'explore' %}
+            <button class="btn-sb" title="Actualiser les résultats"
+                    hx-get="/revision/explore/"
+                    hx-target="#exploreResults"
+                    hx-indicator=".htmx-indicator">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span class="d-none d-xl-inline"></span>
+            </button>
+            {% else %}
+            <button class="btn-sb" title="Actualiser la liste"
+                    hx-get="{% url 'revision_web:main' %}"
+                    hx-target="#deckList"
+                    hx-indicator=".htmx-indicator">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span class="d-none d-xl-inline"></span>
+            </button>
+            {% endif %}
         </div>
 
     </div>
