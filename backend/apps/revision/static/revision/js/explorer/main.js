@@ -4042,31 +4042,7 @@ async function initializeExploreOptimized() {
     }
 }
 
-// ===== REFRESH FUNCTION =====
-/**
- * Refresh Explorer results
- */
-function refreshExploreResults() {
-    console.log('🔄 Refreshing explorer results...');
-    
-    return Promise.resolve().then(() => {
-        // Reset to first page and reload
-        exploreState.currentPage = 1;
-        return loadPublicDecks();
-    }).then(() => {
-        if (window.notificationService) {
-            window.notificationService.success('Résultats de recherche actualisés');
-        }
-    }).catch(error => {
-        console.error('❌ Error refreshing explorer results:', error);
-        if (window.notificationService) {
-            window.notificationService.error('Erreur lors de l\'actualisation');
-        }
-    });
-}
-
-// Make refresh function globally available
-window.refreshExploreResults = refreshExploreResults;
+// Refresh function removed - now handled by HTMX
 
 // Auto-initialize when DOM is ready with optimizations
 if (document.readyState === 'loading') {

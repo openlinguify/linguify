@@ -576,36 +576,10 @@ function getTimeAgo(date) {
     }
 }
 
-// ===== REFRESH FUNCTION =====
-/**
- * Refresh all statistics data
- */
-function refreshStatsData() {
-    console.log('🔄 Refreshing all statistics data...');
-    
-    return Promise.all([
-        loadCollectionOverview(),
-        loadStatistics(),
-        loadDeckStats(),
-        loadRecentActivity(),
-        loadStudyGoals()
-    ]).then(() => {
-        if (window.notificationService) {
-            window.notificationService.success('Statistiques actualisées avec succès');
-        }
-    }).catch(error => {
-        console.error('❌ Error refreshing stats:', error);
-        if (window.notificationService) {
-            window.notificationService.error('Erreur lors de l\'actualisation des statistiques');
-        }
-    });
-}
-
 // ===== GLOBAL EXPORTS =====
 // Make functions globally available for inline event handlers
 window.exportStats = exportStats;
 window.setStudyGoal = setStudyGoal;
 window.loadDeckStats = loadDeckStats;
-window.refreshStatsData = refreshStatsData;
 
 console.log('📊 Revision statistics module loaded successfully');

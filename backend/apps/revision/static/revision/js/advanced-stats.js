@@ -51,33 +51,6 @@ class AdvancedStatsManager {
     }
     
     /**
-     * Add debug indicator to show JavaScript is working
-     */
-    addDebugIndicator() {
-        const indicator = document.createElement('div');
-        indicator.innerHTML = `
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-2 mb-4">
-                <div class="flex">
-                    <div class="ml-3">
-                        <p class="text-sm">✅ JavaScript loaded and running - Advanced stats initializing...</p>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Try to find a stats container to add this to
-        const statsContainer = document.querySelector('.stats-container, .main-content, body');
-        if (statsContainer) {
-            statsContainer.insertBefore(indicator, statsContainer.firstChild);
-        }
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            indicator.remove();
-        }, 3000);
-    }
-    
-    /**
      * Add error indicator
      */
     addErrorIndicator(message) {

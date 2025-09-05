@@ -310,96 +310,7 @@ async function loadDecks(reset = true) {
     }
 }
 
-// Universal refresh function for all views with visual feedback and error handling
-async function handleRefreshDecks() {
-    const refreshBtn = document.getElementById('refreshDecks') || document.getElementById('refreshStats');
-    const refreshIcon = refreshBtn?.querySelector('i');
-    
-    if (!refreshBtn || appState.isRefreshing) {
-        return; // Prevent multiple simultaneous refreshes
-    }
-    
-    try {
-        // Set refreshing state
-        appState.isRefreshing = true;
-        refreshBtn.disabled = true;
-        
-        // Add spinning animation to icon
-        if (refreshIcon) {
-            refreshIcon.style.animation = 'spin 1s linear infinite';
-        }
-        
-        // Show loading notification
-        console.log('🔄 Actualisation en cours...');
-        
-        // Determine current view from URL or page context
-        const currentPath = window.location.pathname;
-        const isStatsPage = currentPath.includes('/stats') || document.body.classList.contains('stats-page');
-        const isExplorePage = currentPath.includes('/explore') || document.body.classList.contains('explore-page');
-        
-        // Reset filters if they might be causing issues
-        const isFiltered = appState.filters.search || appState.filters.status || 
-                          appState.filters.sort !== 'updated_desc' || 
-                          (appState.filters.tags && appState.filters.tags.length > 0);
-        
-        // Perform appropriate refresh based on current view
-        if (isStatsPage) {
-            // We're on the stats page - reload statistics data
-            console.log('🔄 Actualisation des statistiques...');
-            if (typeof refreshStatsData === 'function') {
-                await refreshStatsData();
-            } else {
-                window.location.reload();
-            }
-        } else if (isExplorePage) {
-            // We're on the explore page - refresh search results
-            console.log('🔄 Actualisation des résultats de recherche...');
-            if (typeof refreshExploreResults === 'function') {
-                await refreshExploreResults();
-            } else {
-                window.location.reload();
-            }
-        } else {
-            // We're on the deck list page
-            console.log('🔄 Actualisation de la liste des cartes...');
-            await Promise.all([
-                loadDecks(true), // Full reload of decks
-                // If we have a selected deck, refresh its data too
-                appState.selectedDeck ? refreshSelectedDeck() : Promise.resolve()
-            ]);
-        }
-        
-        // Success feedback (only for non-stats pages, stats page reloads)
-        if (refreshBtn.id !== 'refreshStats') {
-            window.notificationService.success(
-                isFiltered ? 
-                'Liste actualisée (filtres conservés)' : 
-                'Liste actualisée avec succès'
-            );
-        }
-        
-        console.log('✅ Actualisation terminée avec succès');
-        
-    } catch (error) {
-        console.error('❌ Erreur lors de l\'actualisation:', error);
-        
-        // Use the enhanced error handling with retry functionality
-        window.notificationService.handleApiError(
-            error, 
-            'Actualisation', 
-            () => handleRefreshDecks() // Retry function
-        );
-    } finally {
-        // Reset refreshing state
-        appState.isRefreshing = false;
-        refreshBtn.disabled = false;
-        
-        // Remove spinning animation
-        if (refreshIcon) {
-            refreshIcon.style.animation = '';
-        }
-    }
-}
+// Refresh function removed - now handled by HTMX
 
 // Helper function to refresh the currently selected deck
 async function refreshSelectedDeck() {
@@ -4367,7 +4278,7 @@ function setupEventListeners() {
             if (!isInInputField) {
                 event.preventDefault(); // Prevent page reload
                 console.log('🔄 Raccourci clavier détecté - actualisation...');
-                handleRefreshDecks(); // Call our custom refresh
+                location.reload(); // Simple page refresh for F5 key
             }
         }
     });
@@ -4378,7 +4289,7 @@ function setupEventListeners() {
     // Buttons
     elements.createDeck?.addEventListener('click', showCreateForm);
     elements.importDeck?.addEventListener('click', showImportForm);
-    elements.refreshDecks?.addEventListener('click', handleRefreshDecks);
+    // Refresh button now handled by HTMX - no event listener needed
     
     // Handle export stats button
     const exportStatsBtn = document.getElementById('exportStats');
