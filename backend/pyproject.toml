@@ -10,7 +10,7 @@ python = ">=3.11,<4.0"
 Django = "5.1.10"
 djangorestframework = "3.16.0"
 django-filter = "25.1"
-pillow = "11.2.1"
+pillow = ">=11.3.0"
 django-environ = "^0.11.2"
 django-extensions = "^3.2.3"
 dj-database-url = "^2.0.0"
@@ -31,7 +31,7 @@ redis = "^6.2.0"
 pyjwt = "^2.10.1"
 whitenoise = "^6.9.0"
 pywebpush = "^2.0.3"
-gunicorn = "^21.0.0"
+gunicorn = ">=23.0.0"
 
 # Voice/Audio dependencies
 pyttsx3 = "^2.90"
@@ -43,6 +43,7 @@ cryptography = "^45.0.6"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
 pytest-django = "^4.11.1"
+pip-audit = "^2.9.0"
 
 [build-system]
 requires = ["poetry-core"]
