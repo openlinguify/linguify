@@ -91,9 +91,9 @@ We actively support security updates for:
 
 ### How to Report
 
-1. **Critical Vulnerabilities**: Email `bugs@openlinguify.com` immediately
+1. **Critical Vulnerabilities**: Email `info@openlinguify.com` immediately
 2. **Non-sensitive Issues**: Create a GitHub issue with security label
-3. **General Security Questions**: Contact `noreply@openlinguify.com`
+3. **General Security Questions**: Contact `info@openlinguify.com`
 
 **Important**: Do NOT create public GitHub issues for sensitive security vulnerabilities.
 
@@ -163,8 +163,8 @@ We actively support security updates for:
 
 ## Contact Information
 
-- **Security Team**: `bugs@openlinguify.com`
-- **General Questions**: `noreply@openlinguify.com`
+- **Security Team**: `info@openlinguify.com`
+- **General Questions**: `info@openlinguify.com`
 - **Community**: [OpenLinguify Discord](https://discord.gg/PJ8uTzSS)
 - **Repository**: [GitHub](https://github.com/openlinguify/linguify)
 
@@ -179,4 +179,4 @@ We actively support security updates for:
 
 **Last Updated**: August 2025  
 **Version**: 2.0  
-**Maintained by**: OpenLinguify Security Team
+**Maintained by**: OpenLinguify Team
