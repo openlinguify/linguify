@@ -43,15 +43,28 @@ class CustomPasswordResetView(BasePasswordResetView):
     
     def form_valid(self, form):
         """
-        Override to use HTML email template
+        Override to use HTML email template with proper domain
         """
+        # Create a mock request with the correct domain
+        class MockRequest:
+            def is_secure(self):
+                return True
+            def get_host(self):
+                return 'openlinguify.com'
+            META = {
+                'SERVER_NAME': 'openlinguify.com',
+                'SERVER_PORT': '443'
+            }
+        
+        mock_request = MockRequest()
+        
         opts = {
-            'use_https': self.request.is_secure(),
+            'use_https': True,  # Always use HTTPS for production URLs
             'token_generator': self.token_generator,
             'from_email': self.from_email,
             'email_template_name': 'authentication/password_reset/password_reset_email.txt',  # Plain text
             'subject_template_name': self.subject_template_name,
-            'request': self.request,
+            'request': mock_request,  # Use mock request with correct domain
             'html_email_template_name': 'authentication/password_reset/password_reset_email.html',  # HTML
             'extra_email_context': self.extra_email_context,
         }
