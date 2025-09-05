@@ -15,21 +15,29 @@ class CustomPasswordResetView(BasePasswordResetView):
     def send_mail(self, subject_template_name, email_template_name, context,
                   from_email, to_email, html_email_template_name=None):
         """
-        Send a django.core.mail.EmailMultiAlternatives to `to_email`.
+        Send a django.core.mail.EmailMultiAlternatives to `to_email` with HTML as primary.
         """
         subject = loader.render_to_string(subject_template_name, context)
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
         
-        # Generate plain text version
-        body = loader.render_to_string(email_template_name, context)
-        
-        email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
-        
-        # Add HTML version if template is provided
+        # Generate HTML version first if template is provided
         if html_email_template_name is not None:
             html_email = loader.render_to_string(html_email_template_name, context)
+            # Use HTML as the primary content with correct from email
+            email_message = EmailMultiAlternatives(subject, '', 'noreply@openlinguify.com', [to_email])
             email_message.attach_alternative(html_email, 'text/html')
+            
+            # Set additional headers to force HTML rendering and correct sender
+            email_message.mixed_subtype = 'related'
+            email_message.extra_headers['X-Priority'] = '1'
+            email_message.extra_headers['X-MSMail-Priority'] = 'High'
+            email_message.extra_headers['Content-Type'] = 'text/html; charset=utf-8'
+            email_message.extra_headers['Reply-To'] = 'noreply@openlinguify.com'
+        else:
+            # Fallback to plain text
+            body = loader.render_to_string(email_template_name, context)
+            email_message = EmailMultiAlternatives(subject, body, 'noreply@openlinguify.com', [to_email])
         
         email_message.send()
     

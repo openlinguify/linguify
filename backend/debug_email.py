@@ -135,7 +135,7 @@ def main():
         return
     
     # Test 3: Email simple
-    test_email = "louisphilippelalou@outlook.com"  # Remplacez par votre email
+    test_email = "linguify.info@gmail.com"  # Changé pour utiliser linguify.info@gmail.com
     simple_ok = test_simple_email(test_email)
     print()
     
