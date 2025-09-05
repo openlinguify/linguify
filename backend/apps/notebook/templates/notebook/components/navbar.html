@@ -15,25 +15,29 @@
         
         <!-- Navigation tabs -->
         <div class="nav-tabs-group">
+            <!-- Liste of the note -->
             <a href="#" class="nav-tab active" onclick="showNotesView()">
                 <i class="bi bi-journal-text"></i>
                 Mes notes
             </a>
+            <!-- Archive the note -->
             <a href="#" class="nav-tab" onclick="showArchivedView()">
                 <i class="bi bi-archive"></i>
                 Archives
             </a>
-            <a href="#" class="nav-tab" onclick="showTagsView()">
-                <i class="bi bi-tags"></i>
-                Etiquettes
-            </a>
+            <!-- Save the note -->
+            <button id="saveButton" class="btn-sb" onclick="saveCurrentNote(true)" title="Sauvegarder la note">
+                <i class="bi bi-cloud-check"></i>
+                <span class="d-none d-xxl-inline"></span>
+            </button>
+            <!-- Refresh -->
+            <button id="refreshNotes" class="btn-sb" title="Actualiser les notes" onclick="refreshNotes()">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span class="d-none d-xl-inline"></span>
+            </button>
         </div>
         
-        <!-- Refresh -->
-        <button id="refreshNotes" class="btn-navbar btn-navbar-outline" title="Actualiser les notes" onclick="refreshNotes()">
-            <i class="bi bi-arrow-clockwise"></i>
-            <span class="d-none d-xl-inline">Actualiser</span>
-        </button>
+
     </div>
     
     <!-- Droite: Actions et filtres contextuels -->
@@ -86,10 +90,7 @@
                 <span class="d-none d-xxl-inline">Tags</span>
             </button>
             
-            <button id="saveButton" class="btn-navbar btn-navbar-outline" onclick="saveCurrentNote(true)" title="Sauvegarder la note">
-                <i class="bi bi-cloud-check"></i>
-                <span class="d-none d-xxl-inline">Sauver</span>
-            </button>
+
             
             <button id="createNewNote" class="btn-navbar btn-navbar-primary" onclick="createNewNote()">
                 <i class="bi bi-plus-lg"></i>
