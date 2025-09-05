@@ -51,10 +51,12 @@ if DEBUG:
     # Développement local
     BACKEND_URL = env.str('BACKEND_URL', default='http://localhost:8000')
     BASE_URL = BACKEND_URL
+    PORTAL_URL = env.str('PORTAL_URL', default='http://localhost:8080')
 else:
     # Production
     BACKEND_URL = env.str('BACKEND_URL', default='https://www.openlinguify.com')
     BASE_URL = BACKEND_URL
+    PORTAL_URL = env.str('PORTAL_URL', default='https://openlinguify.com')
 
 # PostgreSQL settings (local only)
 # All database configuration is now in DATABASES section below
@@ -299,6 +301,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'app_manager.context_processors.current_app_context',
+                'apps.authentication.context_processors.auth_context',
             ],
         },
     },
