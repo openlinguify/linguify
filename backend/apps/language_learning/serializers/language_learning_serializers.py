@@ -19,9 +19,9 @@ class LanguageSerializer(serializers.ModelSerializer):
         model = Language
         fields = [
             'id', 'code', 'name', 'native_name', 'flag_emoji', 'is_active',
-            'created_at', 'updated_at', 'is_learning', 'progress_stats'
+            'is_learning', 'progress_stats'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id']
     
     def get_is_learning(self, obj):
         """Détermine si l'utilisateur apprend cette langue"""
@@ -73,9 +73,9 @@ class UserLanguageSerializer(serializers.ModelSerializer):
             'id', 'language', 'language_code', 'proficiency_level', 'proficiency_level_display',
             'target_level', 'target_level_display', 'daily_goal', 'progress_percentage',
             'streak_count', 'total_time_spent', 'time_display', 'lessons_completed',
-            'is_active', 'last_activity', 'created_at', 'updated_at', 'daily_progress'
+            'is_active', 'last_activity', 'started_at', 'daily_progress'
         ]
-        read_only_fields = ['id', 'user', 'created_at', 'updated_at', 'last_activity']
+        read_only_fields = ['id', 'user', 'started_at', 'last_activity']
     
     def get_time_display(self, obj):
         """Formate le temps d'étude de manière lisible"""
