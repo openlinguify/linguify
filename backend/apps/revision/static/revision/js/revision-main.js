@@ -4725,6 +4725,9 @@ function initializeApp() {
     // Setup custom filter dropdowns
     setupFilterDropdowns();
     
+    // Initialize view mode
+    initializeViewMode();
+    
     // Show general actions on app init (no deck selected)
     updateNavbarActions(true);
     
@@ -4899,6 +4902,52 @@ function hideTailwindModal(modalElement) {
     // Clean up event listeners is handled automatically by removing the modal from DOM or using modern event handling
 }
 
+// View mode management
+function toggleViewMode(mode) {
+    console.log('Switching to view mode:', mode);
+    
+    const listViewBtn = document.getElementById('listViewBtn');
+    const tableViewBtn = document.getElementById('tableViewBtn');
+    const decksList = document.getElementById('decksList');
+    
+    if (!listViewBtn || !tableViewBtn || !decksList) {
+        console.warn('View toggle elements not found');
+        return;
+    }
+    
+    // Update button states
+    if (mode === 'list') {
+        listViewBtn.classList.add('active');
+        tableViewBtn.classList.remove('active');
+        
+        // Switch to list view
+        decksList.classList.remove('table-view');
+        decksList.classList.add('list-view');
+        
+        // Store preference
+        localStorage.setItem('decks_view_mode', 'list');
+        
+    } else if (mode === 'table') {
+        tableViewBtn.classList.add('active');
+        listViewBtn.classList.remove('active');
+        
+        // Switch to table view
+        decksList.classList.remove('list-view');
+        decksList.classList.add('table-view');
+        
+        // Store preference
+        localStorage.setItem('decks_view_mode', 'table');
+    }
+    
+    console.log('View mode switched to:', mode);
+}
+
+// Initialize view mode from stored preference
+function initializeViewMode() {
+    const savedViewMode = localStorage.getItem('decks_view_mode') || 'list';
+    toggleViewMode(savedViewMode);
+}
+
 // Export global functions for modal onclick handlers and filter dropdowns
 window.confirmResetProgress = confirmResetProgress;
 window.selectStatusFilter = selectStatusFilter;
@@ -4908,6 +4957,7 @@ window.clearTagsFilter = clearTagsFilter;
 window.showNavbarError = showNavbarError;
 window.dismissNavbarError = dismissNavbarError;
 window.selectDeck = selectDeck;
+window.toggleViewMode = toggleViewMode;
 
 // Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeApp);

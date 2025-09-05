@@ -198,6 +198,24 @@
             </ul>
         </div>
         
+        <!-- View Toggle - Only show on Liste de cartes page -->
+        <div id="viewToggleGroup" class="navbar-actions-group">
+            <div class="btn-group" role="group" aria-label="Mode d'affichage">
+                <button id="listViewBtn" class="btn-navbar btn-navbar-outline active" 
+                        title="Vue liste"
+                        onclick="toggleViewMode('list')">
+                    <i class="bi bi-list-ul"></i>
+                    <span class="d-none d-xl-inline">Liste</span>
+                </button>
+                <button id="tableViewBtn" class="btn-navbar btn-navbar-outline" 
+                        title="Vue tableau"
+                        onclick="toggleViewMode('table')">
+                    <i class="bi bi-table"></i>
+                    <span class="d-none d-xl-inline">Tableau</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Actions - Only show when no deck is selected -->
         <div id="generalActions" class="navbar-actions-group">
             <button id="importDeck" class="btn-navbar btn-navbar-outline">

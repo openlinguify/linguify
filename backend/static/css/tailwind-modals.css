@@ -7193,3 +7193,143 @@ input#importDeckName:focus {
 .kanban-columns .kanban-column.o_column_folded .kanban-quick-add {
     display: none !important;
 }
+
+/* ===== DECK VIEW MODES - LIST AND TABLE ===== */
+
+/* Default list view (current style) */
+#decksList.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#decksList.list-view .deck-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--linguify-gray-200);
+}
+
+/* Table view styles */
+#decksList.table-view {
+    display: table;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--linguify-gray-200);
+    overflow: hidden;
+}
+
+#decksList.table-view .deck-card {
+    display: table-row;
+    border-bottom: 1px solid var(--linguify-gray-200);
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    border: none;
+}
+
+#decksList.table-view .deck-card:hover {
+    background-color: var(--linguify-gray-50);
+}
+
+#decksList.table-view .deck-card:last-child {
+    border-bottom: none;
+}
+
+#decksList.table-view .deck-card .deck-info,
+#decksList.table-view .deck-card .deck-stats,
+#decksList.table-view .deck-card .deck-actions {
+    display: table-cell;
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+#decksList.table-view .deck-card .deck-info {
+    width: 40%;
+}
+
+#decksList.table-view .deck-card .deck-stats {
+    width: 35%;
+}
+
+#decksList.table-view .deck-card .deck-actions {
+    width: 25%;
+    text-align: right;
+}
+
+/* Table header (if needed later) */
+#decksList.table-view::before {
+    content: '';
+    display: table-header-group;
+}
+
+/* Responsive adjustments for table view */
+@media (max-width: 768px) {
+    #decksList.table-view {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    #decksList.table-view .deck-card {
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--linguify-gray-200);
+        margin-bottom: 0.5rem;
+    }
+    
+    #decksList.table-view .deck-card .deck-info,
+    #decksList.table-view .deck-card .deck-stats,
+    #decksList.table-view .deck-card .deck-actions {
+        display: block;
+        padding: 0.25rem 0;
+        width: 100%;
+        text-align: left;
+    }
+}
+
+/* View toggle button group styles */
+#viewToggleGroup .btn-group {
+    display: flex;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--linguify-gray-300);
+}
+
+#viewToggleGroup .btn-navbar {
+    border-radius: 0;
+    border: none;
+    border-right: 1px solid var(--linguify-gray-300);
+}
+
+#viewToggleGroup .btn-navbar:last-child {
+    border-right: none;
+}
+
+#viewToggleGroup .btn-navbar.active {
+    background-color: var(--linguify-primary);
+    color: white;
+}
+
+#viewToggleGroup .btn-navbar:not(.active) {
+    background-color: white;
+    color: var(--linguify-gray-700);
+}
+
+#viewToggleGroup .btn-navbar:not(.active):hover {
+    background-color: var(--linguify-gray-50);
+}
