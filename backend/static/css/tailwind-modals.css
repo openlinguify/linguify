@@ -47,20 +47,24 @@
     position: relative !important;
 }
 
-/* ===== SIDEBAR MODERNE EXPLORER ===== */
-.modern-sidebar,
-#exploreSidebar.sidebar-linguify {
-    width: 350px !important;
+/* ===== SIDEBAR UNIVERSELLE ===== */
+.sidebar-linguify {
     background: var(--linguify-white) !important;
     border-right: 1px solid var(--linguify-gray-200) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100vh !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 2px 0 20px rgba(45, 91, 186, 0.04) !important;
-    position: relative !important;
-    z-index: 100 !important;
-    flex-shrink: 0 !important;
+    transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease !important;
+    overflow: hidden !important;
+}
+
+.sidebar-linguify:not(.show) {
+    width: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-right: none !important;
+}
+
+.sidebar-linguify.show {
+    width: 350px !important;
+    min-width: 350px !important;
 }
 
 .sidebar-content-enhanced,
@@ -809,10 +813,11 @@
 
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1024px) {
-    .modern-sidebar,
-    #exploreSidebar.sidebar-linguify {
-        width: 320px;
+    .sidebar-linguify.show {
+        width: 320px !important;
+        min-width: 320px !important;
     }
+}
     
     .search-header-enhanced {
         flex-direction: column;
@@ -826,23 +831,20 @@
 }
 
 @media (max-width: 768px) {
-    .modern-sidebar,
-    #exploreSidebar.sidebar-linguify {
+    .sidebar-linguify {
         position: fixed;
         top: 64px;
         left: 0;
-        width: 100%;
-        max-width: 350px;
         height: calc(100vh - 64px);
         z-index: 1000;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
     }
     
-    .modern-sidebar.show,
-    #exploreSidebar.sidebar-linguify.show {
-        transform: translateX(0);
+    .sidebar-linguify.show {
+        width: 300px !important;
+        min-width: 300px !important;
+        max-width: 350px;
     }
+}
     
     .modern-search-container {
         padding: 1rem;
@@ -4346,18 +4348,6 @@ button.bg-linguify-gradient:hover,
   position: relative;
 }
 
-/* Sidebar collapsed state - ONLY for revision app */
-#revisionSidebar.sidebar-linguify:not(.show) {
-  width: 0 !important;
-  min-width: 0 !important;
-  max-width: 0 !important;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
-  border-right: none;
-  flex: 0 0 0;
-}
-
 /* Main content adjustment when sidebar is collapsed */
 .main-content-area {
   flex: 1;
@@ -4381,12 +4371,7 @@ button.bg-linguify-gradient:hover,
     opacity: 1;
   }
   
-  #revisionSidebar.sidebar-linguify:not(.show) {
-    transform: translateX(-100%);
-    opacity: 0;
-    width: 280px; /* Maintain width on mobile */
-    flex: none;
-  }
+  /* Règle mobile supprimée - remplacée par la règle universelle .sidebar-linguify */
   
   /* Overlay when sidebar is open on mobile */
   #revisionSidebar.sidebar-linguify.show::before {

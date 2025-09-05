@@ -9,7 +9,13 @@
                 title="Masquer/Afficher la barre latérale"
                 aria-label="Basculer la barre latérale"
                 aria-expanded="true"
-                onclick="document.querySelector('.sidebar-linguify')?.classList.toggle('show') || document.querySelector('#exploreSidebar')?.classList.toggle('show')">
+                onclick="
+                const sidebar = document.querySelector('.sidebar-linguify');
+                if (sidebar) {
+                    sidebar.classList.toggle('show');
+                    console.log('Sidebar toggled:', sidebar.id || 'generic', 'Show:', sidebar.classList.contains('show'));
+                }
+                ">
             <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
             </button>
         </div>
