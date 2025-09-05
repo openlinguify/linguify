@@ -334,6 +334,114 @@ body {
     }
 }
 
+/* Email Done Page Styles */
+.email-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    position: relative;
+    animation: fadeInScale 0.5s ease-out;
+}
+
+.email-icon i {
+    font-size: 2.5rem;
+}
+
+.email-icon .send-animation {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1rem;
+    animation: sendEmail 2s ease-out infinite;
+}
+
+@keyframes fadeInScale {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes sendEmail {
+    0%, 100% {
+        transform: translate(0, 0);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    80% {
+        transform: translate(30px, -30px);
+        opacity: 0;
+    }
+}
+
+.info-text {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+.steps-box {
+    background: var(--bg-light);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.steps-box h6 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.steps-box .step {
+    display: flex;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.steps-box .step-number {
+    background: var(--primary-color);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    margin-right: 1rem;
+}
+
+.steps-box .step-text {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.warning-box {
+    background: #fef3c7;
+    border-left: 4px solid var(--warning-color);
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 4px;
+    text-align: left;
+}
+
+.warning-box i {
+    color: var(--warning-color);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .auth-form {
