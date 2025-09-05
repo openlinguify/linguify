@@ -2614,26 +2614,34 @@ button.bg-linguify-gradient:hover,
   margin-right: 0.25rem;
 }
 
+.container-extra {
+  padding-left: 5px;
+}
+
 /* Buttons - Linguify Navbar Variants */
 /* Buttons of the navbar without background */
 .btn-sb {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-    --btn-color: #374151;
-    --btn-bg: #FFF;
-    --btn-border-color: #FFF;
-    --btn-hover-color: #111827;
-    --btn-hover-bg: #e7e9ed;
-    --btn-hover-border-color: #e7e9ed;
-    --btn-focus-shadow-rgb: 225, 227, 229;
-    --btn-active-color: #111827;
-    --btn-active-bg: #e6f2f3;
-    --btn-active-border-color: #017e84;
-    --btn-active-shadow: 0;
-    --btn-disabled-color: #000;
-    --btn-disabled-bg: #FFF;
-    --btn-disabled-border-color: #FFF;
+  border: none !important;
+  background: none !important;
+  padding: 8px !important;
+  color: #374151 !important;
+  cursor: pointer;
 }
+
+.btn-sb:hover {
+  color: #27111c !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: none !important;
+  border-radius: 4px;
+}
+
+.btn-sb:focus,
+.btn-sb:active {
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
 .btn-navbar {
   display: inline-flex;
   align-items: center;
