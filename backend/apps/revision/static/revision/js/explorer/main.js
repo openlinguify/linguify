@@ -1971,46 +1971,7 @@ function hideAdvancedSearchPanel() {
     advancedBtn.classList.remove('active');
 }
 
-// Sidebar Toggle - Norme Linguify standard avec overlay
-function toggleSidebar() {
-    const sidebar = document.getElementById('exploreSidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const toggleBtn = document.getElementById('sidebarToggle');
-    
-    if (!sidebar) return;
-    
-    // Simple toggle comme dans revision-main.js
-    const wasVisible = sidebar.classList.contains('show');
-    sidebar.classList.toggle('show');
-    
-    // Handle overlay for mobile
-    if (overlay) {
-        if (sidebar.classList.contains('show')) {
-            overlay.classList.add('active');
-            overlay.style.display = 'block';
-        } else {
-            overlay.classList.remove('active');
-            setTimeout(() => {
-                if (!overlay.classList.contains('active')) {
-                    overlay.style.display = 'none';
-                }
-            }, 300);
-        }
-    }
-    
-    // Update button state
-    if (sidebar.classList.contains('show')) {
-        toggleBtn?.classList.add('active');
-    } else {
-        toggleBtn?.classList.remove('active');
-    }
-    
-    // Track analytics
-    trackEvent('sidebar_toggle', { 
-        action: wasVisible ? 'close' : 'open',
-        timestamp: new Date().toISOString()
-    });
-}
+// Sidebar toggle function removed - now handled by inline onclick in navbar
 
 function applyAdvancedSearch() {
     const exactSearch = document.getElementById('exactSearch')?.value || '';
@@ -2612,6 +2573,7 @@ window.showAddToCollectionModal = showAddToCollectionModal;
 window.selectCollectionOption = selectCollectionOption;
 window.showManageCollectionModal = showManageCollectionModal;
 window.removeDeckFromCollection = removeDeckFromCollection;
+// toggleSidebar function removed - now handled by inline onclick
 
 // DOM Elements Helper
 function getExploreElements() {

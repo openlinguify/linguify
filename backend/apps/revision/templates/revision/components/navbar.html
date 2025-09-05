@@ -8,7 +8,8 @@
                 class="btn-navbar-outline" 
                 title="Masquer/Afficher la barre latérale"
                 aria-label="Basculer la barre latérale"
-                aria-expanded="true">
+                aria-expanded="true"
+                onclick="document.querySelector('.sidebar-linguify')?.classList.toggle('show') || document.querySelector('#exploreSidebar')?.classList.toggle('show')">
             <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
             </button>
         </div>
@@ -61,12 +62,6 @@
         </button>
         
         {% elif view_type == 'explore' %}
-        <!-- Bouton toggle sidebar pour Explorer -->
-        <button id="toggleSidebar" class="btn-navbar btn-navbar-outline" onclick="toggleSidebar()">
-            <i class="bi bi-layout-sidebar"></i>
-            <span class="d-none d-lg-inline">Filtres</span>
-        </button>
-        
         <!-- Filtres pour la page Explorer - Alignés avec la Liste de cartes -->
         <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
         
