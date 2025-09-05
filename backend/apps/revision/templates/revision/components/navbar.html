@@ -10,10 +10,61 @@
                 aria-label="Basculer la barre latérale"
                 aria-expanded="true"
                 onclick="
-                const sidebar = document.querySelector('.sidebar-linguify');
+                // Universal sidebar toggle that works on all pages
+                const revisionSidebar = document.getElementById('revisionSidebar');
+                const exploreSidebar = document.getElementById('exploreSidebar');  
+                const statsSidebar = document.getElementById('statsSidebar');
+                
+                const sidebar = revisionSidebar || exploreSidebar || statsSidebar;
+                
                 if (sidebar) {
-                    sidebar.classList.toggle('show');
-                    console.log('Sidebar toggled:', sidebar.id || 'generic', 'Show:', sidebar.classList.contains('show'));
+                    const isCurrentlyVisible = sidebar.classList.contains('show');
+                    
+                    if (isCurrentlyVisible) {
+                        // Hide sidebar
+                        sidebar.classList.remove('show');
+                        sidebar.style.width = '0px';
+                        sidebar.style.minWidth = '0px';
+                        sidebar.style.maxWidth = '0px';
+                        sidebar.style.padding = '0px';
+                        sidebar.style.margin = '0px';
+                        sidebar.style.border = 'none';
+                        sidebar.style.overflow = 'hidden';
+                        sidebar.style.flex = '0 0 0px';
+                        sidebar.style.opacity = '0';
+                        sidebar.style.visibility = 'hidden';
+                    } else {
+                        // Show sidebar
+                        sidebar.classList.add('show');
+                        sidebar.style.removeProperty('width');
+                        sidebar.style.removeProperty('minWidth');
+                        sidebar.style.removeProperty('maxWidth');
+                        sidebar.style.removeProperty('padding');
+                        sidebar.style.removeProperty('margin');
+                        sidebar.style.removeProperty('border');
+                        sidebar.style.removeProperty('overflow');
+                        sidebar.style.removeProperty('flex');
+                        sidebar.style.removeProperty('opacity');
+                        sidebar.style.removeProperty('visibility');
+                    }
+                    
+                    // Update button icon
+                    const toggleBtn = document.getElementById('toggleSidebar');
+                    const icon = toggleBtn?.querySelector('i');
+                    if (icon) {
+                        const nowVisible = sidebar.classList.contains('show');
+                        if (nowVisible) {
+                            icon.className = 'bi bi-layout-sidebar-inset';
+                            toggleBtn.title = 'Masquer la barre latérale';
+                        } else {
+                            icon.className = 'bi bi-layout-sidebar-inset-reverse';
+                            toggleBtn.title = 'Afficher la barre latérale';
+                        }
+                    }
+                    
+                    console.log('Sidebar toggled:', sidebar.id, 'Show:', sidebar.classList.contains('show'));
+                } else {
+                    console.error('No sidebar found on this page');
                 }
                 ">
             <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
