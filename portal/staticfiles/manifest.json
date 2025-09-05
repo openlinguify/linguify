@@ -1,12 +1,22 @@
 {
-  "name": "Open Linguify",
-  "short_name": "Linguify",
-  "description": "Portail d'accès aux produits Linguify",
+  "name": "Open Linguify Portal",
+  "short_name": "Open Linguify",
+  "description": "Portail d'accès aux produits Open Linguify",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#6366f1",
+  "theme_color": "#349ea3",
   "background_color": "#ffffff",
   "icons": [
+    {
+      "src": "/static/images/icons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/images/icons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
     {
       "src": "/static/images/favicon.png",
       "sizes": "512x512",
