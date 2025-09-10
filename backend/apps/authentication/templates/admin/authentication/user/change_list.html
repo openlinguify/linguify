@@ -1,0 +1,112 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block content_title %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>{{ title }}</h1>
+        <div style="display: flex; gap: 10px;">
+            {% if user_stats.online_now > 0 %}
+                <span style="background: #28a745; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px;">
+                    🟢 {{ user_stats.online_now }} en ligne
+                </span>
+            {% endif %}
+            {% if user_stats.new_today > 0 %}
+                <span style="background: #007cba; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px;">
+                    🆕 {{ user_stats.new_today }} nouveaux aujourd'hui
+                </span>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% if user_stats %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; padding: 0;">
+            
+            <!-- Carte Utilisateurs Totaux -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 24px; font-weight: bold;">{{ user_stats.total_users }}</div>
+                        <div style="opacity: 0.9; font-size: 14px;">Utilisateurs Totaux</div>
+                    </div>
+                    <div style="font-size: 32px; opacity: 0.7;">👥</div>
+                </div>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">
+                    {{ user_stats.active_users }} actifs
+                </div>
+            </div>
+
+            <!-- Carte Utilisateurs en Ligne -->
+            <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 24px; font-weight: bold;">{{ user_stats.online_now }}</div>
+                        <div style="opacity: 0.9; font-size: 14px;">En Ligne Maintenant</div>
+                    </div>
+                    <div style="font-size: 32px; opacity: 0.7;">🟢</div>
+                </div>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">
+                    Actifs < 15 min
+                </div>
+            </div>
+
+            <!-- Carte Nouveaux Aujourd'hui -->
+            <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 24px; font-weight: bold;">{{ user_stats.new_today }}</div>
+                        <div style="opacity: 0.8; font-size: 14px;">Nouveaux Aujourd'hui</div>
+                    </div>
+                    <div style="font-size: 32px; opacity: 0.7;">🆕</div>
+                </div>
+                <div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">
+                    Hier: {{ user_stats.new_yesterday }}
+                </div>
+            </div>
+
+            <!-- Carte Activité Hebdomadaire -->
+            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 24px; font-weight: bold;">{{ user_stats.new_week }}</div>
+                        <div style="opacity: 0.8; font-size: 14px;">Nouveaux (7j)</div>
+                    </div>
+                    <div style="font-size: 32px; opacity: 0.7;">📊</div>
+                </div>
+                <div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">
+                    Connectés: {{ user_stats.logged_in_week }}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Alertes et Notifications -->
+        {% if user_stats.new_today > 5 %}
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <strong>📈 Forte activité:</strong> {{ user_stats.new_today }} nouveaux utilisateurs aujourd'hui !
+            </div>
+        {% endif %}
+
+        {% if user_stats.online_now > 10 %}
+            <div style="background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <strong>🔥 Pic d'activité:</strong> {{ user_stats.online_now }} utilisateurs en ligne simultanément !
+            </div>
+        {% endif %}
+
+        <!-- Boutons d'action rapide -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="?new_users=today" style="background: #28a745; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px;">
+                📅 Nouveaux aujourd'hui ({{ user_stats.new_today }})
+            </a>
+            <a href="?new_users=online" style="background: #007bff; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px;">
+                🟢 En ligne maintenant ({{ user_stats.online_now }})
+            </a>
+            <a href="?new_users=week" style="background: #6f42c1; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px;">
+                📊 Cette semaine ({{ user_stats.new_week }})
+            </a>
+        </div>
+    {% endif %}
+
+    {{ block.super }}
+{% endblock %}

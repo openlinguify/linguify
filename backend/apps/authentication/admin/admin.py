@@ -2,7 +2,9 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.db.models import Avg
-from .models import User, CoachProfile, Review, UserFeedback, CookieConsent, CookieConsentLog
+from django.utils import timezone
+from datetime import timedelta
+from ..models import User, CoachProfile, Review, UserFeedback, CookieConsent, CookieConsentLog
 
 class CoachProfileInline(admin.StackedInline):
     model = CoachProfile
@@ -24,10 +26,42 @@ class CoachProfileInline(admin.StackedInline):
     )
     extra = 0
 
+class NewUsersFilter(admin.SimpleListFilter):
+    """Filtre pour voir les nouveaux utilisateurs"""
+    title = 'Nouveaux utilisateurs'
+    parameter_name = 'new_users'
+    
+    def lookups(self, request, model_admin):
+        return (
+            ('today', 'Aujourd\'hui'),
+            ('yesterday', 'Hier'),
+            ('week', 'Cette semaine'),
+            ('month', 'Ce mois'),
+            ('online', 'En ligne maintenant'),
+        )
+    
+    def queryset(self, request, queryset):
+        now = timezone.now()
+        if self.value() == 'today':
+            return queryset.filter(created_at__date=now.date())
+        elif self.value() == 'yesterday':
+            yesterday = now.date() - timedelta(days=1)
+            return queryset.filter(created_at__date=yesterday)
+        elif self.value() == 'week':
+            week_ago = now - timedelta(days=7)
+            return queryset.filter(created_at__gte=week_ago)
+        elif self.value() == 'month':
+            month_ago = now - timedelta(days=30)
+            return queryset.filter(created_at__gte=month_ago)
+        elif self.value() == 'online':
+            # Considéré en ligne si dernière activité < 15 minutes
+            online_threshold = now - timedelta(minutes=15)
+            return queryset.filter(last_login__gte=online_threshold)
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'username', 'full_name', 'language_info', 'terms_status', 'is_active', 'is_staff', 'is_coach')
-    list_filter = ('terms_accepted', 'is_active', 'is_staff', 'is_coach', 'native_language', 'target_language')
+    list_display = ('email', 'username', 'full_name', 'online_status', 'new_user_badge', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'last_login', 'created_at')
+    list_filter = (NewUsersFilter, 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'native_language', 'target_language', 'created_at')
     search_fields = ('email', 'username', 'first_name', 'last_name', 'public_id')
     readonly_fields = ('public_id', 'created_at', 'updated_at', 'last_login')
     exclude = ('password',)  # Do not expose password hash in admin forms
@@ -81,6 +115,49 @@ class UserAdmin(admin.ModelAdmin):
         return format_html('<span style="color: red;">✗</span> Not accepted')
     terms_status.short_description = "Terms & Conditions"
     
+    def online_status(self, obj):
+        """Affiche si l'utilisateur est en ligne"""
+        if not obj.last_login:
+            return format_html('<span style="color: #666;">❌ Jamais connecté</span>')
+        
+        now = timezone.now()
+        online_threshold = now - timedelta(minutes=15)
+        
+        if obj.last_login >= online_threshold:
+            return format_html('<span style="color: #28a745;">🟢 En ligne</span>')
+        
+        # Calcul du temps depuis dernière connexion
+        time_diff = now - obj.last_login
+        if time_diff.days > 0:
+            return format_html('<span style="color: #dc3545;">🔴 Il y a {} jours</span>', time_diff.days)
+        elif time_diff.seconds > 3600:
+            hours = time_diff.seconds // 3600
+            return format_html('<span style="color: #ffc107;">🟡 Il y a {} heures</span>', hours)
+        else:
+            minutes = time_diff.seconds // 60
+            return format_html('<span style="color: #17a2b8;">🔵 Il y a {} minutes</span>', minutes)
+    online_status.short_description = "Statut"
+    online_status.admin_order_field = 'last_login'
+    
+    def new_user_badge(self, obj):
+        """Badge pour les nouveaux utilisateurs"""
+        if not obj.created_at:
+            return '-'
+        
+        now = timezone.now()
+        time_diff = now - obj.created_at
+        
+        if time_diff.days == 0:
+            return format_html('<span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px;">🆕 AUJOURD\'HUI</span>')
+        elif time_diff.days == 1:
+            return format_html('<span style="background: #17a2b8; color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px;">📅 HIER</span>')
+        elif time_diff.days <= 7:
+            return format_html('<span style="background: #ffc107; color: black; padding: 2px 6px; border-radius: 3px; font-size: 11px;">📆 {} jours</span>', time_diff.days)
+        else:
+            return '-'
+    new_user_badge.short_description = "Nouveau"
+    new_user_badge.admin_order_field = 'created_at'
+    
     def activate_users(self, request, queryset):
         updated = queryset.update(is_active=True)
         self.message_user(request, f"{updated} users successfully activated.")
@@ -100,6 +177,48 @@ class UserAdmin(admin.ModelAdmin):
         updated = queryset.update(is_coach=False)
         self.message_user(request, f"{updated} users successfully removed from coach status.")
     remove_coach_status.short_description = "Remove coach status from selected users"
+    
+    def changelist_view(self, request, extra_context=None):
+        """Ajoute des statistiques au tableau de bord"""
+        extra_context = extra_context or {}
+        
+        now = timezone.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterday_start = today_start - timedelta(days=1)
+        week_start = now - timedelta(days=7)
+        month_start = now - timedelta(days=30)
+        online_threshold = now - timedelta(minutes=15)
+        
+        # Statistiques des utilisateurs
+        total_users = User.objects.count()
+        active_users = User.objects.filter(is_active=True).count()
+        
+        # Nouveaux utilisateurs
+        new_today = User.objects.filter(created_at__gte=today_start).count()
+        new_yesterday = User.objects.filter(created_at__range=(yesterday_start, today_start)).count()
+        new_week = User.objects.filter(created_at__gte=week_start).count()
+        new_month = User.objects.filter(created_at__gte=month_start).count()
+        
+        # Utilisateurs en ligne
+        online_now = User.objects.filter(last_login__gte=online_threshold).count()
+        
+        # Statistiques d'activité
+        logged_in_today = User.objects.filter(last_login__gte=today_start).count()
+        logged_in_week = User.objects.filter(last_login__gte=week_start).count()
+        
+        extra_context['user_stats'] = {
+            'total_users': total_users,
+            'active_users': active_users,
+            'new_today': new_today,
+            'new_yesterday': new_yesterday,
+            'new_week': new_week,
+            'new_month': new_month,
+            'online_now': online_now,
+            'logged_in_today': logged_in_today,
+            'logged_in_week': logged_in_week,
+        }
+        
+        return super().changelist_view(request, extra_context)
 
 @admin.register(CoachProfile)
 class CoachProfileAdmin(admin.ModelAdmin):

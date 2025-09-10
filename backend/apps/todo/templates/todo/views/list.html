@@ -212,7 +212,7 @@
                                             type="button" data-bs-toggle="dropdown" title="{% trans 'Actions' %}">
                                         <i class="bi bi-three-dots"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
+                                    <ul class="dropdown-menu dropdown-menu-end" style="z-index: 9999 !important;">
                                         <li>
                                             <a class="dropdown-item" href="#" onclick="editTask('{{ task.id }}')">
                                                 <i class="bi bi-pencil me-2"></i>{% trans "Edit" %}
@@ -339,7 +339,26 @@
 </div>
 {% endblock %}
 
+{% block extra_css %}
+<style>
+/* Fix dropdown visibility in table */
+.table tbody tr .dropdown-menu {
+    z-index: 9999 !important;
+    position: absolute !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
 
+.table tbody tr .dropdown {
+    position: relative;
+}
+
+/* Ensure dropdown appears above other elements */
+.table .dropdown-menu.show {
+    z-index: 9999 !important;
+}
+</style>
+{% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'todo/js/list.js' %}"></script>
