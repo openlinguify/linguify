@@ -301,7 +301,7 @@ class TodoKanban {
             });
             
             if (response.ok) {
-                this.showSuccess('Tâche déplacée avec succès');
+                // this.showSuccess('Tâche déplacée avec succès'); // Notification supprimée pour éviter la répétition
                 this.updateStageCounts();
                 // Update task's stage ID in DOM
                 taskElement.dataset.stageId = newStageId;
