@@ -266,11 +266,35 @@ class Task(models.Model):
                 default_stage = self.user.personal_stages.filter(name='To Do').first()
             self.personal_stage_type = default_stage
         
-        # Sync state with personal stage (only for new tasks or when stage changes)
-        if self.personal_stage_type and not self.pk:  # Only for new tasks
-            if self.personal_stage_type.is_closed:
-                self.state = '1_done'
-                self.status = 'completed'
+        # Sync state with personal stage (for new tasks or when stage changes)
+        if self.personal_stage_type:
+            # Check if this is a new task or if the stage has changed
+            stage_changed = False
+            if self.pk:
+                # For existing tasks, check if personal_stage_type changed
+                try:
+                    old_task = Task.objects.get(pk=self.pk)
+                    stage_changed = old_task.personal_stage_type != self.personal_stage_type
+                except Task.DoesNotExist:
+                    stage_changed = True
+            else:
+                # New task
+                stage_changed = True
+            
+            if stage_changed:
+                if self.personal_stage_type.is_closed:
+                    # Moving to a closed stage - mark as done
+                    if self.state != '1_done':
+                        self.state = '1_done'
+                        self.status = 'completed'
+                        if not self.completed_at:
+                            self.completed_at = timezone.now()
+                else:
+                    # Moving to an open stage - mark as todo if it was done
+                    if self.state == '1_done':
+                        self.state = '1_todo'
+                        self.status = 'todo'
+                        self.completed_at = None
         
         super().save(*args, **kwargs)
     
