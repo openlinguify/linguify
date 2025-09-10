@@ -24,6 +24,8 @@ python manage.py migrate --settings=core.settings
 
 # Create superuser if environment variables are set
 echo "👤 Ensuring superuser exists..."
+echo "DEBUG: DJANGO_SUPERUSER_USERNAME=$DJANGO_SUPERUSER_USERNAME"
+echo "DEBUG: DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL" 
 python manage.py ensure_superuser --settings=core.settings
 
 echo "✅ Build complete!"
