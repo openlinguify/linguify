@@ -302,9 +302,17 @@ class TodoKanban {
             
             if (response.ok) {
                 // this.showSuccess('Tâche déplacée avec succès'); // Notification supprimée pour éviter la répétition
-                this.updateStageCounts();
+                
+                // Get updated task data from response
+                const updatedTaskData = await response.json();
+                
                 // Update task's stage ID in DOM
                 taskElement.dataset.stageId = newStageId;
+                
+                // Update task card appearance based on new state
+                this.updateTaskCard(taskElement, updatedTaskData);
+                
+                this.updateStageCounts();
             } else {
                 const errorData = await response.json();
                 console.error('API Error:', errorData);
@@ -400,18 +408,26 @@ class TodoKanban {
     updateTaskCard(taskCard, taskData) {
         // Update completion button
         const completeBtn = taskCard.querySelector('[onclick*="toggleTaskComplete"] i');
+        const completeBtnContainer = taskCard.querySelector('[onclick*="toggleTaskComplete"]');
         if (completeBtn) {
             if (taskData.state === '1_done') {
-                completeBtn.className = 'bi bi-check-circle-fill';
+                completeBtn.className = 'bi bi-check-circle-fill text-success';
                 taskCard.classList.add('completed-task');
+                if (completeBtnContainer) {
+                    completeBtnContainer.className = 'btn btn-sm btn-outline-success p-1';
+                }
             } else {
                 completeBtn.className = 'bi bi-circle';
+                completeBtn.style.fontSize = '10px';
                 taskCard.classList.remove('completed-task');
+                if (completeBtnContainer) {
+                    completeBtnContainer.className = 'btn btn-sm btn-outline-success p-1';
+                }
             }
         }
         
         // Update task title appearance
-        const taskTitle = taskCard.querySelector('.task-title');
+        const taskTitle = taskCard.querySelector('.task-title, .task-title-linguify');
         if (taskTitle) {
             if (taskData.state === '1_done') {
                 taskTitle.classList.add('line-through', 'text-gray-400');

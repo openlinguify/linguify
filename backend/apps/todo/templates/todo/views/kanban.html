@@ -106,15 +106,7 @@
                                     </div>
                                     {% endif %}
 
-                                    <!-- Task Progress -->
-                                    {% if task.progress_percentage > 0 %}
-                                    <div class="mb-2">
-                                        <div class="progress-bar-container mb-1">
-                                            <div class="progress-bar-fill" style="width: {{ task.progress_percentage }}%"></div>
-                                        </div>
-                                        <small class="text-muted">{{ task.progress_percentage }}%</small>
-                                    </div>
-                                    {% endif %}
+                                    <!-- Task Progress - Supprimée car redondante -->
 
                                     <!-- Task Footer -->
                                     <div class="flex items-center justify-between pt-2" style="border-top: 1px solid var(--bs-gray-200);">
