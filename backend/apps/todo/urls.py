@@ -4,7 +4,10 @@ from .views import (
     TodoMainView, TodoKanbanView, TodoListView, TodoActivityView, TodoFormView,
     PersonalStageTypeViewSet, CategoryViewSet, TagViewSet, ProjectViewSet, TaskViewSet,
     NoteViewSet, ReminderViewSet, TaskTemplateViewSet,
-    TodoSettingsAPI, TodoUserPreferencesAPI, TodoDashboardAPI
+    TodoSettingsAPI, TodoUserPreferencesAPI, TodoDashboardAPI,
+    # HTMX Views
+    TaskToggleHTMXView, TaskMoveHTMXView, TaskQuickCreateHTMXView, TaskDeleteHTMXView,
+    TaskListTableHTMXView, KanbanColumnHTMXView, TaskFormModalHTMXView, StageDeleteHTMXView
 )
 from django.urls import path
 from django.contrib.auth.decorators import login_required
@@ -37,4 +40,16 @@ urlpatterns = [
     path('settings/', TodoSettingsAPI.as_view(), name='settings'),
     path('preferences/', TodoUserPreferencesAPI.as_view(), name='preferences'),
     path('dashboard/', TodoDashboardAPI.as_view(), name='dashboard'),
+    
+    # HTMX endpoints
+    path('htmx/tasks/<uuid:task_id>/toggle/', TaskToggleHTMXView.as_view(), name='task_toggle_htmx'),
+    path('htmx/tasks/<uuid:task_id>/move/', TaskMoveHTMXView.as_view(), name='task_move_htmx'),
+    path('htmx/tasks/<uuid:task_id>/delete/', TaskDeleteHTMXView.as_view(), name='task_delete_htmx'),
+    path('htmx/tasks/create/', TaskQuickCreateHTMXView.as_view(), name='task_quick_create_htmx'),
+    path('htmx/tasks/table/', TaskListTableHTMXView.as_view(), name='task_list_table_htmx'),
+    path('htmx/kanban/column/', KanbanColumnHTMXView.as_view(), name='kanban_column_htmx'),
+    path('htmx/kanban/column/<uuid:stage_id>/', KanbanColumnHTMXView.as_view(), name='kanban_column_htmx_stage'),
+    path('htmx/tasks/modal/', TaskFormModalHTMXView.as_view(), name='task_form_modal_htmx'),
+    path('htmx/tasks/modal/<uuid:task_id>/', TaskFormModalHTMXView.as_view(), name='task_form_modal_edit_htmx'),
+    path('htmx/stages/<uuid:stage_id>/delete/', StageDeleteHTMXView.as_view(), name='stage_delete_htmx'),
 ]

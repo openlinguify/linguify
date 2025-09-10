@@ -23,7 +23,12 @@
                                     <label class="form-check-label" for="selectAll"></label>
                                 </div>
                             </th>
-                            <th class="col-priority sortable" data-sort="priority">
+                            <th class="col-priority sortable" 
+                                hx-get="{% url 'todo:task_list_table_htmx' %}"
+                                hx-vals='{"order_by": "priority", "order_dir": "{% if current_filters.order_by == 'priority' and current_filters.order_dir == 'asc' %}desc{% else %}asc{% endif %}"}'
+                                hx-target="#task-table-container"
+                                hx-swap="innerHTML"
+                                style="cursor: pointer;">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <i class="bi bi-star" title="{% trans 'Priority' %}"></i>
                                     {% if current_filters.order_by == 'priority' %}
@@ -31,7 +36,12 @@
                                     {% endif %}
                                 </div>
                             </th>
-                            <th class="col-status sortable" data-sort="state">
+                            <th class="col-status sortable"
+                                hx-get="{% url 'todo:task_list_table_htmx' %}"
+                                hx-vals='{"order_by": "state", "order_dir": "{% if current_filters.order_by == 'state' and current_filters.order_dir == 'asc' %}desc{% else %}asc{% endif %}"}'
+                                hx-target="#task-table-container"
+                                hx-swap="innerHTML"
+                                style="cursor: pointer;">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <i class="bi bi-check-circle" title="{% trans 'Status' %}"></i>
                                     {% if current_filters.order_by == 'state' %}
@@ -39,7 +49,12 @@
                                     {% endif %}
                                 </div>
                             </th>
-                            <th class="col-title sortable" data-sort="title">
+                            <th class="col-title sortable"
+                                hx-get="{% url 'todo:task_list_table_htmx' %}"
+                                hx-vals='{"order_by": "title", "order_dir": "{% if current_filters.order_by == 'title' and current_filters.order_dir == 'asc' %}desc{% else %}asc{% endif %}"}'
+                                hx-target="#task-table-container"
+                                hx-swap="innerHTML"
+                                style="cursor: pointer;">
                                 <div class="d-flex align-items-center">
                                     <span>{% trans "Title" %}</span>
                                     {% if current_filters.order_by == 'title' %}
@@ -361,11 +376,59 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'todo/js/list.js' %}"></script>
+<!-- Simple HTMX JavaScript for List - replaces complex list.js! -->
 <script>
-// Initialize List functionality
+// Simple search with HTMX (replaces complex filtering logic)
 document.addEventListener('DOMContentLoaded', function() {
-    initializeList();
+    // Set up search input with HTMX delay
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        searchInput.setAttribute('hx-get', '{% url "todo:task_list_table_htmx" %}');
+        searchInput.setAttribute('hx-trigger', 'keyup changed delay:500ms');
+        searchInput.setAttribute('hx-target', '#task-table-container');
+        searchInput.setAttribute('hx-swap', 'innerHTML');
+        searchInput.setAttribute('hx-include', '.filter-input');
+    }
+    
+    // Set up filter inputs with HTMX
+    document.querySelectorAll('.filter-input').forEach(input => {
+        input.setAttribute('hx-get', '{% url "todo:task_list_table_htmx" %}');
+        input.setAttribute('hx-trigger', 'change');
+        input.setAttribute('hx-target', '#task-table-container');
+        input.setAttribute('hx-swap', 'innerHTML');
+        input.setAttribute('hx-include', '.filter-input, input[name="search"]');
+    });
+    
+    // Select all checkbox functionality (simple version)
+    const selectAllCheckbox = document.getElementById('selectAll');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.task-select');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    }
 });
+
+// Simple batch actions (replaces complex logic)
+function updateBatchActions() {
+    const selected = document.querySelectorAll('.task-select:checked').length;
+    const batchBar = document.getElementById('batch-actions');
+    const countSpan = document.getElementById('selected-count');
+    
+    if (selected > 0) {
+        batchBar.style.display = 'block';
+        countSpan.textContent = selected;
+    } else {
+        batchBar.style.display = 'none';
+    }
+}
+
+function clearSelection() {
+    document.querySelectorAll('.task-select:checked').forEach(cb => cb.checked = false);
+    document.getElementById('selectAll').checked = false;
+    updateBatchActions();
+}
 </script>
 {% endblock %}

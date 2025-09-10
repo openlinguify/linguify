@@ -1,10 +1,14 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db.models import Q, Count, Avg, Max
 from django.utils import timezone
 from datetime import timedelta
+from django.template.loader import render_to_string
+from django.views.decorators.http import require_http_methods
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from ..models.todo_models import Task, Project, PersonalStageType, Tag, Category, Project, Task, Note, Category, Tag, Reminder, TaskTemplate, PersonalStageType
 from ..serializers import (
     ProjectListSerializer, ProjectDetailSerializer,
@@ -17,6 +21,26 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 
+
+# HTMX Helper Mixin
+class HTMXResponseMixin:
+    """Mixin for handling HTMX requests and responses"""
+    
+    def get_htmx_template(self, template_name=None):
+        """Get template for HTMX partial response"""
+        if template_name:
+            return template_name
+        return getattr(self, 'htmx_template_name', self.template_name)
+    
+    def render_htmx_response(self, context, template_name=None):
+        """Render partial template for HTMX"""
+        template = self.get_htmx_template(template_name)
+        html = render_to_string(template, context, request=self.request)
+        return HttpResponse(html)
+    
+    def is_htmx(self):
+        """Check if request is from HTMX"""
+        return self.request.headers.get('HX-Request') == 'true'
 
 
 class TodoMainView(LoginRequiredMixin, TemplateView):
@@ -62,8 +86,8 @@ class TodoMainView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class TodoKanbanView(LoginRequiredMixin, TemplateView):
-    """Kanban board view - openlinguify-style"""
+class TodoKanbanView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX-powered Kanban board view"""
     template_name = 'todo/views/kanban.html'
     
     def get_context_data(self, **kwargs):
@@ -969,3 +993,249 @@ class TaskTemplateViewSet(viewsets.ModelViewSet):
         featured_templates = self.get_queryset().filter(is_featured=True)
         serializer = self.get_serializer(featured_templates, many=True)
         return Response(serializer.data)
+
+
+# HTMX Views for Todo
+class TaskToggleHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for toggling task completion"""
+    htmx_template_name = 'todo/partials/task_card.html'
+    
+    def post(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        
+        # Toggle completion
+        if task.state == '1_done':
+            task.state = '1_todo'
+            task.completed_at = None
+        else:
+            task.state = '1_done'
+            task.completed_at = timezone.now()
+        
+        task.save()
+        
+        context = {'task': task}
+        return self.render_htmx_response(context)
+
+
+class TaskMoveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for moving tasks between stages"""
+    htmx_template_name = 'todo/partials/task_card.html'
+    
+    def post(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        new_stage_id = request.POST.get('stage_id')
+        new_position = request.POST.get('position', 0)
+        
+        if new_stage_id:
+            new_stage = get_object_or_404(PersonalStageType, id=new_stage_id, user=request.user)
+            task.personal_stage_type = new_stage
+            task.sequence = int(new_position)
+            task.save()
+        
+        context = {'task': task}
+        return self.render_htmx_response(context)
+
+
+class TaskQuickCreateHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for quick task creation"""
+    htmx_template_name = 'todo/partials/task_card.html'
+    
+    def post(self, request):
+        title = request.POST.get('title', '').strip()
+        stage_id = request.POST.get('stage_id')
+        
+        if not title:
+            return HttpResponse('<div class="text-red-500">Title is required</div>')
+        
+        stage = get_object_or_404(PersonalStageType, id=stage_id, user=request.user) if stage_id else None
+        
+        # Get default stage if none provided
+        if not stage:
+            stage = PersonalStageType.objects.filter(user=request.user).first()
+            if not stage:
+                PersonalStageType.create_default_stages(request.user)
+                stage = PersonalStageType.objects.filter(user=request.user).first()
+        
+        task = Task.objects.create(
+            user=request.user,
+            title=title,
+            personal_stage_type=stage,
+            state='1_todo'
+        )
+        
+        context = {'task': task}
+        return self.render_htmx_response(context)
+
+
+class TaskDeleteHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for deleting tasks"""
+    
+    def delete(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        task.delete()
+        return HttpResponse('')  # Empty response removes element
+
+
+class TaskListTableHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for task list table with search/filter"""
+    htmx_template_name = 'todo/partials/task_list_table.html'
+    
+    def get(self, request):
+        user = request.user
+        search_query = request.GET.get('search', '').strip()
+        filter_stage = request.GET.get('stage', '')
+        filter_project = request.GET.get('project', '')
+        filter_priority = request.GET.get('priority', '')
+        
+        # Base queryset
+        tasks = Task.objects.filter(user=user, active=True)
+        
+        # Apply filters
+        if search_query:
+            tasks = tasks.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+        
+        if filter_stage:
+            tasks = tasks.filter(personal_stage_type_id=filter_stage)
+        
+        if filter_project:
+            tasks = tasks.filter(project_id=filter_project)
+            
+        if filter_priority:
+            tasks = tasks.filter(priority=filter_priority)
+        
+        tasks = tasks.order_by('-created_at')
+        
+        context = {
+            'tasks': tasks,
+            'search_query': search_query,
+            'filters': {
+                'stage': filter_stage,
+                'project': filter_project,
+                'priority': filter_priority,
+            }
+        }
+        return self.render_htmx_response(context)
+
+
+class KanbanColumnHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for refreshing kanban columns"""
+    htmx_template_name = 'todo/partials/kanban_column.html'
+    
+    def get(self, request, stage_id=None):
+        user = request.user
+        
+        if stage_id:
+            stage = get_object_or_404(PersonalStageType, id=stage_id, user=user)
+            stages = [stage]
+        else:
+            stages = PersonalStageType.objects.filter(user=user).order_by('sequence')
+        
+        kanban_data = {}
+        for stage in stages:
+            stage_tasks = Task.objects.filter(
+                user=user,
+                personal_stage_type=stage,
+                active=True
+            ).order_by('sequence', '-created_at')
+            
+            kanban_data[stage.id] = {
+                'stage': stage,
+                'tasks': stage_tasks,
+                'count': stage_tasks.count()
+            }
+        
+        context = {
+            'kanban_data': kanban_data,
+            'stages': stages
+        }
+        return self.render_htmx_response(context)
+
+
+class TaskFormModalHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for task form modal"""
+    htmx_template_name = 'todo/partials/task_form_modal.html'
+    
+    def get(self, request, task_id=None):
+        task = None
+        if task_id:
+            task = get_object_or_404(Task, id=task_id, user=request.user)
+        
+        context = {
+            'task': task,
+            'stages': PersonalStageType.objects.filter(user=request.user).order_by('sequence'),
+            'projects': Project.objects.filter(user=request.user, status='active'),
+            'categories': Category.objects.filter(user=request.user),
+            'tags': Tag.objects.filter(user=request.user)
+        }
+        return self.render_htmx_response(context)
+    
+    def post(self, request, task_id=None):
+        task = None
+        if task_id:
+            task = get_object_or_404(Task, id=task_id, user=request.user)
+        
+        # Process form data
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        stage_id = request.POST.get('stage_id')
+        project_id = request.POST.get('project_id')
+        category_id = request.POST.get('category_id')
+        priority = request.POST.get('priority', 'medium')
+        due_date = request.POST.get('due_date')
+        
+        if not title:
+            return HttpResponse('<div class="text-red-500">Title is required</div>')
+        
+        # Get related objects
+        stage = get_object_or_404(PersonalStageType, id=stage_id, user=request.user) if stage_id else None
+        project = get_object_or_404(Project, id=project_id, user=request.user) if project_id else None
+        category = get_object_or_404(Category, id=category_id, user=request.user) if category_id else None
+        
+        # Create or update task
+        if task:
+            task.title = title
+            task.description = description
+            task.personal_stage_type = stage
+            task.project = project
+            task.category = category
+            task.priority = priority
+            if due_date:
+                task.due_date = due_date
+            task.save()
+        else:
+            task = Task.objects.create(
+                user=request.user,
+                title=title,
+                description=description,
+                personal_stage_type=stage,
+                project=project,
+                category=category,
+                priority=priority,
+                due_date=due_date if due_date else None,
+                state='1_todo'
+            )
+        
+        # Return updated task card and close modal
+        context = {'task': task}
+        html = render_to_string('todo/partials/task_card.html', context, request=request)
+        return HttpResponse(f'''
+            <div hx-swap-oob="outerHTML:#task-{task.id}">{html}</div>
+            <script>document.getElementById('task-modal').classList.add('hidden');</script>
+        ''')
+
+
+class StageDeleteHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for deleting stages"""
+    
+    def delete(self, request, stage_id):
+        stage = get_object_or_404(PersonalStageType, id=stage_id, user=request.user)
+        
+        # Don't allow deletion if stage has tasks
+        if Task.objects.filter(personal_stage_type=stage, active=True).exists():
+            return HttpResponse('<div class="text-red-500">Cannot delete stage with active tasks</div>')
+        
+        stage.delete()
+        return HttpResponse('')  # Empty response removes element
