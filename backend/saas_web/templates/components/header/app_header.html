@@ -154,12 +154,14 @@
                         <span class="d-none d-md-inline">{{ user.username|default:"Utilisateur"|truncatechars:12 }}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        {% comment %}
                         <li>
                             <a class="dropdown-item" href="/profile/">
                                 <i class="bi bi-person me-2" aria-hidden="true"></i>
                                 {% trans "Profile" %}
                             </a>
                         </li>
+                        {% endcomment %}
                         <li>
                             <a class="dropdown-item" href="{% url 'saas_web:settings' %}">
                                 <i class="bi bi-gear me-2" aria-hidden="true"></i>
