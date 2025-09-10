@@ -22,4 +22,8 @@ python manage.py collectstatic --noinput --settings=core.settings
 echo "🗄️ Running migrations..."
 python manage.py migrate --settings=core.settings
 
+# Create superuser if environment variables are set
+echo "👤 Ensuring superuser exists..."
+python manage.py ensure_superuser --settings=core.settings
+
 echo "✅ Build complete!"
