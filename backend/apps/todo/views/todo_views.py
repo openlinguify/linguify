@@ -76,21 +76,24 @@ class TodoMainView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             PersonalStageType.create_default_stages(user)
             stages = PersonalStageType.objects.filter(user=user).order_by('sequence')
         
-        kanban_data = {}
+        # Get tasks grouped by stages
+        tasks_by_stage = {}
         for stage in stages:
             stage_tasks = Task.objects.filter(
                 user=user,
                 personal_stage_type=stage,
                 active=True
-            ).order_by('sequence', '-created_at')
+            ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('-created_at')
             
-            kanban_data[stage.id] = {
-                'stage': stage,
-                'tasks': stage_tasks,
-                'count': stage_tasks.count()
-            }
+            tasks_by_stage[stage.id] = stage_tasks
         
-        context = {'kanban_data': kanban_data, 'stages': stages}
+        context = {
+            'stages': stages, 
+            'tasks_by_stage': tasks_by_stage,
+            'today': timezone.now().date(),
+            'projects': Project.objects.filter(user=user),
+            'categories': Category.objects.filter(user=user)
+        }
         return self.render_htmx_response(context, 'todo/partials/kanban_board.html')
     
     def get_list_partial(self, user):
@@ -127,7 +130,7 @@ class TodoMainView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             ).count(),
             'personal_stages': PersonalStageType.objects.filter(user=user).order_by('sequence'),
             'projects': Project.objects.filter(user=user, status='active'),
-            'categories': Category.objects.filter(user=user),
+            # Category support can be added later
         })
         
         return context
@@ -155,29 +158,25 @@ class TodoKanbanView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             stages = PersonalStageType.objects.filter(user=user).order_by('sequence')
         
         # Get tasks grouped by stages
-        kanban_data = {}
+        tasks_by_stage = {}
         for stage in stages:
             stage_tasks = Task.objects.filter(
                 user=user,
                 personal_stage_type=stage,
                 active=True
-            ).select_related('project', 'category').prefetch_related('tags').order_by('sequence', '-created_at')
+            ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('-created_at')
             
-            kanban_data[stage.id] = {
-                'stage': stage,
-                'tasks': stage_tasks,
-                'count': stage_tasks.count()
-            }
+            tasks_by_stage[stage.id] = stage_tasks
         
         context.update({
-            'kanban_data': kanban_data,
             'stages': stages,
+            'tasks_by_stage': tasks_by_stage,
             'view_mode': 'kanban',
             'can_create': True,
             'can_edit': True,
             'today': timezone.now().date(),
             'projects': Project.objects.filter(user=user),
-            'categories': Category.objects.filter(user=user),
+            # Category support can be added later
         })
         
         return context
@@ -199,7 +198,7 @@ class TodoListView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
         user = self.request.user
         
         # Get tasks with filters
-        tasks = Task.objects.filter(user=user, active=True).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags')
+        tasks = Task.objects.filter(user=user, active=True).select_related('project', 'personal_stage_type').prefetch_related('tags')
         
         # Apply filters from query params
         project_filter = self.request.GET.get('project')
@@ -269,7 +268,7 @@ class TodoListView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             'view_mode': 'list',
             'projects': Project.objects.filter(user=user, status='active'),
             'stages': PersonalStageType.objects.filter(user=user).order_by('sequence'),
-            'categories': Category.objects.filter(user=user),
+            # Category support can be added later
             'today': timezone.now().date(),
             'current_filters': {
                 'project': project_filter,
@@ -309,14 +308,14 @@ class TodoActivityView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
         recent_tasks = Task.objects.filter(
             user=user,
             created_at__gte=thirty_days_ago
-        ).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags').order_by('-created_at')[:20]
+        ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('-created_at')[:20]
         
         # Recently completed tasks
         completed_tasks = Task.objects.filter(
             user=user,
             state='1_done',
             completed_at__gte=thirty_days_ago
-        ).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags').order_by('-completed_at')[:20]
+        ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('-completed_at')[:20]
         
         # Overdue tasks
         overdue_tasks = Task.objects.filter(
@@ -324,7 +323,7 @@ class TodoActivityView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             due_date__lt=timezone.now(),
             state__in=['1_todo', '1_in_progress'],
             active=True
-        ).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags').order_by('due_date')
+        ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('due_date')
         
         # Due today
         today = timezone.now().date()
@@ -333,7 +332,7 @@ class TodoActivityView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             due_date__date=today,
             state__in=['1_todo', '1_in_progress'],
             active=True
-        ).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags').order_by('due_date')
+        ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('due_date')
         
         # Due this week
         week_end = today + timedelta(days=7)
@@ -410,7 +409,7 @@ class TodoFormView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             'view_mode': 'form',
             'projects': Project.objects.filter(user=user, status='active'),
             'stages': stages,
-            'categories': Category.objects.filter(user=user),
+            # Category support can be added later
             'tags': Tag.objects.filter(user=user).order_by('name'),
             'priority_choices': Task.PRIORITY_CHOICES if hasattr(Task, 'PRIORITY_CHOICES') else [('low', 'Low'), ('medium', 'Medium'), ('high', 'High')],
             'state_choices': Task.STATE_CHOICES if hasattr(Task, 'STATE_CHOICES') else [('1_todo', 'To Do'), ('1_in_progress', 'In Progress'), ('1_done', 'Done')],

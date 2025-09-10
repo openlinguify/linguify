@@ -1,6 +1,7 @@
 {% extends "todo/base.html" %}
 {% load static %}
 {% load i18n %}
+{% load todo_extras %}
 
 {% block page_title %}Todo - Kanban{% endblock %}
 
@@ -14,21 +15,21 @@
     <div class="kanban-container">
         <div class="kanban-board">
             <div class="kanban-columns" id="kanbanBoard">
-                {% for stage_id, stage_data in kanban_data.items %}
+                {% for stage in stages %}
                 <!-- Kanban Column -->
-                <div class="kanban-column{% if stage_data.stage.fold or stage_data.stage.name == 'Archive' %} o_column_folded{% endif %}" data-stage-id="{{ stage_id }}">
+                <div class="kanban-column{% if stage.fold or stage.name == 'Archive' %} o_column_folded{% endif %}" data-stage-id="{{ stage.id }}">
                     <div class="kanban-column-card">
                         <!-- Column Header -->
                         <div class="sidebar-header-linguify">
                             <div class="flex items-center justify-between w-full">
                                 <div class="flex items-center gap-2 min-w-0 flex-1">
-                                    <h6 class="column-title-linguify" title="{{ stage_data.stage.name }}">{{ stage_data.stage.name }}</h6>
-                                    <span class="badge-linguify-compact">{{ stage_data.count }}</span>
+                                    <h6 class="column-title-linguify" title="{{ stage.name }}">{{ stage.name }}</h6>
+                                    <span class="badge-linguify-compact">{{ tasks_by_stage|dict_get_length:stage.id }}</span>
                                 </div>
                                 <div class="kanban-header-actions-inline">
                                     <button class="kanban-action-btn-mini kanban-quick-add" 
                                             hx-get="{% url 'todo:task_form_modal_htmx' %}"
-                                            hx-vals='{"stage_id": "{{ stage_id }}"}'
+                                            hx-vals='{"stage_id": "{{ stage.id }}"}'
                                             hx-target="#modal-container"
                                             hx-swap="innerHTML"
                                             title="{% trans 'Add task' %}">+</button>
@@ -36,15 +37,15 @@
                                         <button class="kanban-action-btn-mini dropdown-toggle" 
                                                 data-bs-toggle="dropdown">⋮</button>
                                         <ul class="dropdown-menu">
-                                            <li><button class="dropdown-item hide-stage-btn" type="button" onclick="toggleColumn('{{ stage_id }}')">
+                                            <li><button class="dropdown-item hide-stage-btn" type="button" onclick="toggleColumn('{{ stage.id }}')">
                                                 <i class="bi bi-arrows-collapse me-2"></i>
                                                 {% trans "Hide" %}
                                             </button></li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li><button class="dropdown-item text-danger" type="button" 
-                                                    hx-delete="{% url 'todo:stage_delete_htmx' stage_id %}"
+                                                    hx-delete="{% url 'todo:stage_delete_htmx' stage.id %}"
                                                     hx-confirm="{% trans 'Delete this stage?' %}"
-                                                    hx-target="#column-{{ stage_id }}"
+                                                    hx-target="#column-{{ stage.id }}"
                                                     hx-swap="outerHTML">
                                                 <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
                                             </button></li>
@@ -56,20 +57,20 @@
 
                         <!-- Tasks Container -->
                         <div class="kanban-tasks-container" 
-                             id="tasks-{{ stage_id }}" 
-                             data-stage-id="{{ stage_id }}"
+                             id="tasks-{{ stage.id }}" 
+                             data-stage-id="{{ stage.id }}"
                              ondrop="drop(event)" 
                              ondragover="allowDrop(event)"
-                             {% if stage_data.stage.fold %}style="display: none;"{% endif %}>
+                             {% if stage.fold %}style="display: none;"{% endif %}>
                             
                             <!-- Tasks List -->
                             <div class="tasks-list">
-                                {% for task in stage_data.tasks %}
+                                {% for task in tasks_by_stage|dict_get:stage.id %}
                             <!-- Task Card -->
                             <div class="task-card-linguify kanban-card" 
                                  id="task-{{ task.id }}"
                                  data-task-id="{{ task.id }}" 
-                                 data-stage-id="{{ stage_id }}" 
+                                 data-stage-id="{{ stage.id }}" 
                                  draggable="true"
                                  ondragstart="drag(event)"
                                  hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
