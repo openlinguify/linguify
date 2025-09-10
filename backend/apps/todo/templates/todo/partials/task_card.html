@@ -1,0 +1,88 @@
+<!-- HTMX Task Card Partial -->
+<div class="task-card-linguify kanban-card" 
+     id="task-{{ task.id }}"
+     data-task-id="{{ task.id }}" 
+     data-stage-id="{{ task.personal_stage_type.id }}" 
+     draggable="true"
+     ondragstart="drag(event)"
+     hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
+     hx-target="#modal-container"
+     hx-swap="innerHTML"
+     hx-trigger="click"
+     style="cursor: pointer;">
+    
+    <!-- Task Header -->
+    <div class="flex items-start justify-between mb-2">
+        <h6 class="task-title-linguify">{{ task.title }}</h6>
+        {% if task.priority == '1' %}
+        <i class="bi bi-star-fill text-warning"></i>
+        {% endif %}
+    </div>
+
+    <!-- Task Meta -->
+    {% if task.due_date or task.project %}
+    <div class="flex items-center gap-3 mb-2 text-xs text-gray-500">
+        {% if task.due_date %}
+        <span class="flex items-center gap-1 {% if task.is_overdue %}text-danger{% elif task.due_date.date == today %}text-warning{% endif %}">
+            <i class="bi bi-calendar"></i>
+            {% if task.due_date.date == today %}
+                Today
+            {% elif task.is_overdue %}
+                {{ task.due_date|date:"M d" }}
+            {% else %}
+                {{ task.due_date|date:"M d" }}
+            {% endif %}
+        </span>
+        {% endif %}
+        
+        {% if task.project %}
+        <span class="flex items-center gap-1">
+            <i class="bi bi-folder"></i>
+            {{ task.project.name }}
+        </span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Task Tags -->
+    {% if task.tags.exists %}
+    <div class="flex flex-wrap gap-1 mb-2">
+        {% for tag in task.tags.all|slice:":3" %}
+        <span class="badge badge-sm" 
+              style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
+            {{ tag.name }}
+        </span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Task Actions -->
+    <div class="flex items-center justify-between pt-2 border-top">
+        <small class="text-muted">{{ task.created_at|timesince }} ago</small>
+        
+        <div class="flex items-center gap-1">
+            <!-- Complete Toggle -->
+            <button class="btn btn-sm btn-outline-success p-1"
+                    hx-post="{% url 'todo:task_toggle_htmx' task.id %}"
+                    hx-target="#task-{{ task.id }}"
+                    hx-swap="outerHTML"
+                    onclick="event.stopPropagation()">
+                {% if task.state == '1_done' %}
+                <i class="bi bi-check-circle-fill text-success"></i>
+                {% else %}
+                <i class="bi bi-circle"></i>
+                {% endif %}
+            </button>
+            
+            <!-- Delete -->
+            <button class="btn btn-sm btn-outline-danger p-1"
+                    hx-delete="{% url 'todo:task_delete_htmx' task.id %}"
+                    hx-confirm="Delete this task?"
+                    hx-target="#task-{{ task.id }}"
+                    hx-swap="outerHTML"
+                    onclick="event.stopPropagation()">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>

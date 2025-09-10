@@ -43,20 +43,71 @@ class HTMXResponseMixin:
         return self.request.headers.get('HX-Request') == 'true'
 
 
-class TodoMainView(LoginRequiredMixin, TemplateView):
-    """Main Todo interface - intelligent view router"""
+class TodoMainView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX-powered main Todo interface"""
+    template_name = 'todo/main.html'
     
     def get(self, request, *args, **kwargs):
-        # Redirect main todo URL to kanban view by default
-        from django.shortcuts import redirect
-        return redirect('todo_web:kanban')
+        # If HTMX request, return partial content
+        if self.is_htmx():
+            view_type = request.GET.get('view', 'kanban')
+            return self.get_partial_view(request, view_type)
+        
+        # Full page load - show main interface
+        return super().get(request, *args, **kwargs)
+    
+    def get_partial_view(self, request, view_type):
+        """Return HTMX partial based on view type"""
+        user = request.user
+        
+        if view_type == 'kanban':
+            return self.get_kanban_partial(user)
+        elif view_type == 'list':
+            return self.get_list_partial(user)
+        elif view_type == 'activity':
+            return self.get_activity_partial(user)
+        else:
+            return self.get_kanban_partial(user)  # Default
+    
+    def get_kanban_partial(self, user):
+        """Return Kanban view partial"""
+        stages = PersonalStageType.objects.filter(user=user).order_by('sequence')
+        if not stages.exists():
+            PersonalStageType.create_default_stages(user)
+            stages = PersonalStageType.objects.filter(user=user).order_by('sequence')
+        
+        kanban_data = {}
+        for stage in stages:
+            stage_tasks = Task.objects.filter(
+                user=user,
+                personal_stage_type=stage,
+                active=True
+            ).order_by('sequence', '-created_at')
+            
+            kanban_data[stage.id] = {
+                'stage': stage,
+                'tasks': stage_tasks,
+                'count': stage_tasks.count()
+            }
+        
+        context = {'kanban_data': kanban_data, 'stages': stages}
+        return self.render_htmx_response(context, 'todo/partials/kanban_board.html')
+    
+    def get_list_partial(self, user):
+        """Return List view partial"""
+        tasks = Task.objects.filter(user=user, active=True).order_by('-created_at')
+        context = {'tasks': tasks}
+        return self.render_htmx_response(context, 'todo/partials/task_list.html')
+    
+    def get_activity_partial(self, user):
+        """Return Activity view partial"""
+        recent_tasks = Task.objects.filter(user=user, active=True).order_by('-updated_at')[:20]
+        context = {'recent_tasks': recent_tasks}
+        return self.render_htmx_response(context, 'todo/partials/activity_feed.html')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        
-        # Get user's default view preference from settings
-        default_view = self.request.GET.get('view', 'kanban')  # Default to kanban
         
         # Ensure user has personal stages
         if not PersonalStageType.objects.filter(user=user).exists():
@@ -67,7 +118,6 @@ class TodoMainView(LoginRequiredMixin, TemplateView):
         today = timezone.now().date()
         
         context.update({
-            'current_view': default_view,
             'total_tasks': tasks.count(),
             'completed_tasks': tasks.filter(state='1_done').count(),
             'due_today': tasks.filter(due_date__date=today).count(),
@@ -78,9 +128,6 @@ class TodoMainView(LoginRequiredMixin, TemplateView):
             'personal_stages': PersonalStageType.objects.filter(user=user).order_by('sequence'),
             'projects': Project.objects.filter(user=user, status='active'),
             'categories': Category.objects.filter(user=user),
-            'popular_tags': Tag.objects.filter(user=user).annotate(
-                usage_count=Count('tasks')
-            ).order_by('-usage_count')[:10],
         })
         
         return context
@@ -89,6 +136,13 @@ class TodoMainView(LoginRequiredMixin, TemplateView):
 class TodoKanbanView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
     """HTMX-powered Kanban board view"""
     template_name = 'todo/views/kanban.html'
+    htmx_template_name = 'todo/partials/kanban_board.html'
+    
+    def get(self, request, *args, **kwargs):
+        # If HTMX request, return partial content
+        if self.is_htmx():
+            return self.render_htmx_response(self.get_context_data())
+        return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -107,7 +161,7 @@ class TodoKanbanView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
                 user=user,
                 personal_stage_type=stage,
                 active=True
-            ).order_by('sequence', '-created_at')
+            ).select_related('project', 'category').prefetch_related('tags').order_by('sequence', '-created_at')
             
             kanban_data[stage.id] = {
                 'stage': stage,
@@ -121,21 +175,31 @@ class TodoKanbanView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             'view_mode': 'kanban',
             'can_create': True,
             'can_edit': True,
+            'today': timezone.now().date(),
+            'projects': Project.objects.filter(user=user),
+            'categories': Category.objects.filter(user=user),
         })
         
         return context
 
 
-class TodoListView(LoginRequiredMixin, TemplateView):
-    """List view - openlinguify-style editable list"""
+class TodoListView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX-powered List view - openlinguify-style editable list"""
     template_name = 'todo/views/list.html'
+    htmx_template_name = 'todo/partials/task_list_table.html'
+    
+    def get(self, request, *args, **kwargs):
+        # If HTMX request, return partial content
+        if self.is_htmx():
+            return self.render_htmx_response(self.get_context_data())
+        return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         
         # Get tasks with filters
-        tasks = Task.objects.filter(user=user, active=True)
+        tasks = Task.objects.filter(user=user, active=True).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags')
         
         # Apply filters from query params
         project_filter = self.request.GET.get('project')
@@ -205,6 +269,8 @@ class TodoListView(LoginRequiredMixin, TemplateView):
             'view_mode': 'list',
             'projects': Project.objects.filter(user=user, status='active'),
             'stages': PersonalStageType.objects.filter(user=user).order_by('sequence'),
+            'categories': Category.objects.filter(user=user),
+            'today': timezone.now().date(),
             'current_filters': {
                 'project': project_filter,
                 'stage': stage_filter,
@@ -221,9 +287,16 @@ class TodoListView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class TodoActivityView(LoginRequiredMixin, TemplateView):
-    """Activity/Timeline view - openlinguify-style activity tracking"""
+class TodoActivityView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX-powered Activity/Timeline view - openlinguify-style activity tracking"""
     template_name = 'todo/views/activity.html'
+    htmx_template_name = 'todo/partials/activity_feed.html'
+    
+    def get(self, request, *args, **kwargs):
+        # If HTMX request, return partial content
+        if self.is_htmx():
+            return self.render_htmx_response(self.get_context_data())
+        return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -236,14 +309,14 @@ class TodoActivityView(LoginRequiredMixin, TemplateView):
         recent_tasks = Task.objects.filter(
             user=user,
             created_at__gte=thirty_days_ago
-        ).order_by('-created_at')[:20]
+        ).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags').order_by('-created_at')[:20]
         
         # Recently completed tasks
         completed_tasks = Task.objects.filter(
             user=user,
             state='1_done',
             completed_at__gte=thirty_days_ago
-        ).order_by('-completed_at')[:20]
+        ).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags').order_by('-completed_at')[:20]
         
         # Overdue tasks
         overdue_tasks = Task.objects.filter(
@@ -251,7 +324,7 @@ class TodoActivityView(LoginRequiredMixin, TemplateView):
             due_date__lt=timezone.now(),
             state__in=['1_todo', '1_in_progress'],
             active=True
-        ).order_by('due_date')
+        ).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags').order_by('due_date')
         
         # Due today
         today = timezone.now().date()
@@ -260,7 +333,7 @@ class TodoActivityView(LoginRequiredMixin, TemplateView):
             due_date__date=today,
             state__in=['1_todo', '1_in_progress'],
             active=True
-        ).order_by('due_date')
+        ).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags').order_by('due_date')
         
         # Due this week
         week_end = today + timedelta(days=7)
@@ -269,7 +342,7 @@ class TodoActivityView(LoginRequiredMixin, TemplateView):
             due_date__date__range=[today, week_end],
             state__in=['1_todo', '1_in_progress'],
             active=True
-        ).exclude(due_date__date=today).order_by('due_date')
+        ).exclude(due_date__date=today).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags').order_by('due_date')
         
         # Activity statistics
         stats = {
@@ -299,14 +372,22 @@ class TodoActivityView(LoginRequiredMixin, TemplateView):
             'due_week_tasks': due_week_tasks,
             'activity_stats': stats,
             'view_mode': 'activity',
+            'today': today,
         })
         
         return context
 
 
-class TodoFormView(LoginRequiredMixin, TemplateView):
-    """Task creation/editing form - openlinguify-style"""
+class TodoFormView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX-powered Task creation/editing form - openlinguify-style"""
     template_name = 'todo/views/form.html'
+    htmx_template_name = 'todo/partials/task_form.html'
+    
+    def get(self, request, *args, **kwargs):
+        # If HTMX request, return partial content
+        if self.is_htmx():
+            return self.render_htmx_response(self.get_context_data(**kwargs))
+        return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -331,8 +412,8 @@ class TodoFormView(LoginRequiredMixin, TemplateView):
             'stages': stages,
             'categories': Category.objects.filter(user=user),
             'tags': Tag.objects.filter(user=user).order_by('name'),
-            'priority_choices': Task.PRIORITY_CHOICES,
-            'state_choices': Task.STATE_CHOICES,
+            'priority_choices': Task.PRIORITY_CHOICES if hasattr(Task, 'PRIORITY_CHOICES') else [('low', 'Low'), ('medium', 'Medium'), ('high', 'High')],
+            'state_choices': Task.STATE_CHOICES if hasattr(Task, 'STATE_CHOICES') else [('1_todo', 'To Do'), ('1_in_progress', 'In Progress'), ('1_done', 'Done')],
         })
         
         return context
