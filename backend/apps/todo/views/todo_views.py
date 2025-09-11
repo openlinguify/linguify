@@ -441,6 +441,27 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
     
+    def perform_update(self, serializer):
+        """Override perform_update to handle stage updates properly"""
+        try:
+            logger.info(f"Updating stage: {serializer.validated_data}")
+            serializer.save()
+            logger.info("Stage updated successfully")
+        except Exception as e:
+            logger.error(f"Error updating stage: {e}", exc_info=True)
+            raise
+    
+    def update(self, request, *args, **kwargs):
+        """Override update to add more detailed logging"""
+        try:
+            logger.info(f"Stage update request data: {request.data}")
+            stage = self.get_object()
+            logger.info(f"Found stage: {stage.name} (ID: {stage.id})")
+            return super().update(request, *args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in stage update view: {e}", exc_info=True)
+            raise
+    
     def destroy(self, request, *args, **kwargs):
         """Override destroy to prevent deletion of critical stages"""
         stage = self.get_object()
@@ -463,6 +484,18 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
                 'stage_name': stage.name,
                 'reason': f'Le stage "{stage.name}" est utilisé automatiquement par le système.'
             }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Additional check: prevent deletion if this is the only closed stage and there are completed tasks
+        if stage.is_closed:
+            other_closed_stages = user_stages.filter(is_closed=True).exclude(id=stage.id)
+            completed_tasks_count = Task.objects.filter(user=request.user, state='1_done', active=True).count()
+            
+            if not other_closed_stages.exists() and completed_tasks_count > 0:
+                return Response({
+                    'error': f'Impossible de supprimer le stage "{stage.name}" car il contient {completed_tasks_count} tâche(s) terminée(s). Vous devez avoir au moins un stage fermé.',
+                    'type': 'LAST_CLOSED_STAGE_WITH_TASKS_ERROR',
+                    'completed_tasks_count': completed_tasks_count
+                }, status=status.HTTP_400_BAD_REQUEST)
         
         # Prevent deletion of the only closed stage (Done stage)
         if stage.is_closed:

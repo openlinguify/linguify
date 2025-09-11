@@ -49,7 +49,7 @@
                                            x-ref="stageInput"
                                            type="text" 
                                            value="{{ stage.name }}"
-                                           class="form-control form-control-sm"
+                                           class="form-control form-control-sm stage-title-input"
                                            style="width: auto; min-width: 100px; max-width: 150px; display: none;"
                                            @blur="saveStageTitle('{{ stage.id }}')"
                                            @keydown.enter="saveStageTitle('{{ stage.id }}')"
@@ -1750,8 +1750,16 @@ document.addEventListener('alpine:init', () => {
             this.editingStage = stageId;
             this.originalTitle = currentTitle;
             this.$nextTick(() => {
-                this.$refs.stageInput.focus();
-                this.$refs.stageInput.select();
+                // Find the specific input for this stage
+                const inputElement = document.querySelector(`[data-stage-id="${stageId}"] .stage-title-input`);
+                if (inputElement) {
+                    inputElement.focus();
+                    inputElement.select();
+                } else if (this.$refs.stageInput) {
+                    // Fallback to x-ref if available
+                    this.$refs.stageInput.focus();
+                    this.$refs.stageInput.select();
+                }
             });
         },
         
@@ -1761,7 +1769,15 @@ document.addEventListener('alpine:init', () => {
         },
         
         saveStageTitle(stageId) {
-            const newTitle = this.$refs.stageInput.value.trim();
+            // Find the input for this specific stage
+            const inputElement = document.querySelector(`[data-stage-id="${stageId}"] input[x-ref="stageInput"], [data-stage-id="${stageId}"] .stage-title-input`);
+            if (!inputElement) {
+                console.error('Could not find stage input for ID:', stageId);
+                this.cancelEditStage();
+                return;
+            }
+            
+            const newTitle = inputElement.value.trim();
             if (newTitle && newTitle !== this.originalTitle) {
                 // Update via API
                 fetch(`/api/v1/todo/stages/${stageId}/`, {
@@ -1774,13 +1790,23 @@ document.addEventListener('alpine:init', () => {
                 }).then(response => {
                     if (response.ok) {
                         // Update the DOM
-                        document.querySelector(`[data-stage-id="${stageId}"] .column-title-linguify`).textContent = newTitle;
+                        const titleElement = document.querySelector(`[data-stage-id="${stageId}"] .column-title-linguify`);
+                        if (titleElement) {
+                            titleElement.textContent = newTitle;
+                            titleElement.setAttribute('title', newTitle);
+                        }
                         this.cancelEditStage();
+                        window.notificationService?.success('Titre du stage modifié');
                     } else {
-                        throw new Error('Failed to update');
+                        response.text().then(text => {
+                            console.error('Server error:', text);
+                            window.notificationService?.error('Erreur serveur lors de la modification');
+                        });
+                        this.cancelEditStage();
                     }
-                }).catch(() => {
-                    window.notificationService?.error('Erreur lors de la modification du titre');
+                }).catch(error => {
+                    console.error('Network error:', error);
+                    window.notificationService?.error('Erreur de connexion');
                     this.cancelEditStage();
                 });
             } else {
@@ -1957,40 +1983,63 @@ document.addEventListener('alpine:init', () => {
             const kanbanColumns = document.querySelector('.kanban-columns');
             const addStageColumn = document.querySelector('.add-stage-column');
             
-            // Create new stage column HTML
+            // Create new stage column HTML with proper event handlers
             const newStageHtml = `
-                <div class="kanban-column" data-stage-id="${stageData.id}" data-stage-sequence="${stageData.sequence}">
+                <div class="kanban-column" data-stage-id="${stageData.id}" data-stage-sequence="${stageData.sequence}"
+                     @dragover="handleDragOver($event)"
+                     @dragleave="handleDragLeave($event)"
+                     @drop="handleDrop($event)">
                     <div class="kanban-column-card">
-                        <div class="sidebar-header-linguify mb-2">
+                        <div class="sidebar-header-linguify stage-drag-handle"
+                             draggable="true"
+                             @dragstart="onStageDragStart($event)"
+                             @dragend="onStageDragEnd($event)">
                             <div class="flex items-center justify-between w-full">
-                                <div class="flex items-center gap-3 min-w-0 flex-1">
-                                    <span class="column-title-linguify" 
-                                          title="${stageData.name}"
-                                          @dblclick="startEditStage('${stageData.id}', '${stageData.name}')"
-                                          x-show="editingStage !== '${stageData.id}'">
-                                        ${stageData.name}
+                                <div class="flex items-center gap-2 min-w-0 flex-1">
+                                    <!-- Drag Handle Icon -->
+                                    <span class="stage-drag-icon text-gray-400 hover:text-gray-600" title="Cliquez et glissez pour déplacer cette colonne">
+                                        <i class="bi bi-grip-vertical" style="font-size: 12px;"></i>
                                     </span>
-                                    <input type="text" 
-                                           class="form-control form-control-sm column-title-input-linguify"
-                                           x-show="editingStage === '${stageData.id}'"
-                                           x-model="originalTitle"
-                                           @keydown.enter="saveStageEdit('${stageData.id}')"
-                                           @keydown.escape="cancelStageEdit()"
-                                           @blur="saveStageEdit('${stageData.id}')"
-                                           style="display: none;">
-                                    <span class="badge badge-linguify-compact">0</span>
+                                    <!-- Stage Title Display -->
+                                    <h6 class="column-title-linguify" 
+                                        title="${stageData.name}" 
+                                        data-stage-id="${stageData.id}"
+                                        x-show="editingStage !== '${stageData.id}'"
+                                        @dblclick="startEditStage('${stageData.id}', '${stageData.name}')"
+                                        ondblclick="console.log('Fallback double-click for stage ${stageData.id}'); window.fallbackStageEdit('${stageData.id}', '${stageData.name}')">
+                                        ${stageData.name}
+                                    </h6>
+                                    
+                                    <!-- Stage Title Input -->
+                                    <input x-show="editingStage === '${stageData.id}'" 
+                                           x-ref="stageInput"
+                                           type="text" 
+                                           value="${stageData.name}"
+                                           class="form-control form-control-sm stage-title-input"
+                                           style="width: auto; min-width: 100px; max-width: 150px; display: none;"
+                                           @blur="saveStageTitle('${stageData.id}')"
+                                           @keydown.enter="saveStageTitle('${stageData.id}')"
+                                           @keydown.escape="cancelEditStage()">
+                                    
+                                    <span class="badge-linguify-compact">0</span>
                                 </div>
-                                <div class="flex-shrink-0 flex items-center gap-1 ml-auto">
-                                    <button type="button" class="btn-linguify-ghost" @click="startQuickAdd('${stageData.id}')" title="Ajouter une tâche">
-                                        <i class="bi bi-plus" style="font-size: 12px;"></i>
-                                    </button>
+                                <div class="kanban-header-actions-inline">
+                                    <button class="kanban-action-btn-mini kanban-quick-add" 
+                                            @click="startQuickAdd('${stageData.id}')"
+                                            onclick="startQuickAddFallback('${stageData.id}')"
+                                            title="Ajouter une tâche">+</button>
                                     <div class="dropdown">
-                                        <button class="btn-linguify-ghost" type="button" data-bs-toggle="dropdown">
-                                            <i class="bi bi-three-dots-vertical" style="font-size: 10px;"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li><button class="dropdown-item text-danger" @click="deleteStage('${stageData.id}', '${stageData.name}')">
-                                                <i class="bi bi-trash me-2"></i>Supprimer
+                                        <button class="kanban-action-btn-mini dropdown-toggle" 
+                                                data-bs-toggle="dropdown">⋮</button>
+                                        <ul class="dropdown-menu">
+                                            <li><button class="dropdown-item hide-stage-btn" type="button" @click="toggleColumn('${stageData.id}')">
+                                                <i class="bi bi-arrows-collapse me-2"></i>
+                                                Masquer
+                                            </button></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><button class="dropdown-item text-danger" type="button" 
+                                                    @click="deleteStage('${stageData.id}', '${stageData.name}')">
+                                                <i class="bi bi-trash me-2"></i> Supprimer
                                             </button></li>
                                         </ul>
                                     </div>
@@ -1998,7 +2047,9 @@ document.addEventListener('alpine:init', () => {
                             </div>
                         </div>
                         
+                        <!-- Tasks Container -->
                         <div class="kanban-tasks-container" 
+                             id="tasks-${stageData.id}" 
                              data-stage-id="${stageData.id}"
                              @drop="onDrop($event)"
                              @dragover="onDragOver($event)"
@@ -2042,6 +2093,39 @@ document.addEventListener('alpine:init', () => {
             
             // Insert before the "Add Stage" button
             addStageColumn.insertAdjacentHTML('beforebegin', newStageHtml);
+            
+            // Re-initialize drag and drop for the new stage
+            this.initializeDragAndDrop();
+        },
+        
+        // Initialize drag and drop functionality for dynamically added elements
+        initializeDragAndDrop() {
+            // Re-initialize sortable for tasks within stages if using SortableJS
+            const taskContainers = document.querySelectorAll('.kanban-tasks-container');
+            taskContainers.forEach(container => {
+                // Reset any existing sortable instance
+                if (container._sortable) {
+                    container._sortable.destroy();
+                }
+                
+                // Re-apply event listeners for drag and drop
+                container.addEventListener('dragover', this.onDragOver.bind(this));
+                container.addEventListener('drop', this.onDrop.bind(this));
+            });
+            
+            // Re-initialize stage drag and drop
+            const stageHeaders = document.querySelectorAll('.stage-drag-handle');
+            stageHeaders.forEach(header => {
+                header.addEventListener('dragstart', this.onStageDragStart.bind(this));
+                header.addEventListener('dragend', this.onStageDragEnd.bind(this));
+            });
+            
+            // Re-initialize task cards drag and drop
+            const taskCards = document.querySelectorAll('.task-card-linguify');
+            taskCards.forEach(card => {
+                card.addEventListener('dragstart', this.onTaskDragStart.bind(this));
+                card.addEventListener('dragend', this.onTaskDragEnd.bind(this));
+            });
         },
         
         // Delete stage method - Using custom modal

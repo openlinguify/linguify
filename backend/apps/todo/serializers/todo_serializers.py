@@ -15,7 +15,33 @@ class PersonalStageTypeSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at']
     
     def get_task_count(self, obj):
-        return obj.tasks.filter(active=True).count()
+        try:
+            return obj.tasks.filter(active=True).count()
+        except Exception as e:
+            # Log the specific error for debugging
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error getting task count for stage {obj.name}: {e}")
+            # Fallback if tasks relationship is not available
+            from ..models import Task
+            return Task.objects.filter(personal_stage_type=obj, user=obj.user, active=True).count()
+    
+    def validate_name(self, value):
+        """Validate stage name"""
+        if not value or not value.strip():
+            raise serializers.ValidationError("Le nom du stage ne peut pas être vide.")
+        return value.strip()
+    
+    def update(self, instance, validated_data):
+        """Override update with logging"""
+        import logging
+        logger = logging.getLogger(__name__)
+        try:
+            logger.info(f"Updating stage {instance.name} with data: {validated_data}")
+            return super().update(instance, validated_data)
+        except Exception as e:
+            logger.error(f"Error in PersonalStageTypeSerializer.update: {e}", exc_info=True)
+            raise
 
 
 class CategorySerializer(serializers.ModelSerializer):
