@@ -3024,6 +3024,66 @@ button.bg-linguify-gradient:hover,
   transform: scale(0.9);
 }
 
+/* Kanban Alpine.js Dropdown Styles */
+.kanban-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.kanban-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  min-width: 160px;
+  background: white;
+  border: 1px solid var(--linguify-gray-200);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 4px;
+}
+
+.kanban-dropdown-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  color: var(--linguify-gray-700);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  text-decoration: none;
+}
+
+.kanban-dropdown-item:hover:not(.disabled) {
+  background-color: var(--linguify-gray-100);
+}
+
+.kanban-dropdown-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--linguify-gray-400);
+}
+
+.kanban-dropdown-item.text-danger {
+  color: #dc3545;
+}
+
+.kanban-dropdown-item.text-danger:hover {
+  background-color: #fee;
+}
+
+.kanban-dropdown-divider {
+  height: 1px;
+  background-color: var(--linguify-gray-200);
+  margin: 4px 0;
+}
+
 /* Compact badge for inline layout */
 .badge-linguify-compact {
   background: var(--linguify-primary);
@@ -7342,4 +7402,649 @@ input#importDeckName:focus {
 
 #viewToggleGroup .btn-navbar:not(.active):hover {
     background-color: var(--linguify-gray-50);
+}
+
+/* ========================================
+   KANBAN DRAG & DROP STYLES
+   ======================================== */
+
+/* SortableJS drag & drop styles */
+.kanban-card-ghost {
+    opacity: 0.4;
+    background: #f8f9fa;
+    border: 2px dashed #6c757d;
+}
+
+.kanban-card-chosen {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: rotate(2deg);
+}
+
+.kanban-card-drag {
+    transform: rotate(5deg);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.kanban-tasks-container.sortable-drag-over {
+    background-color: rgba(45, 91, 186, 0.05);
+    border-radius: 8px;
+}
+
+/* Task drag and drop improvements */
+.task-card-linguify {
+    transition: all 0.2s ease;
+    cursor: grab;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.task-card-linguify:hover {
+    border-color: rgba(45, 91, 186, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.task-card-linguify:active {
+    cursor: grabbing;
+}
+
+.task-card-linguify.dragging {
+    opacity: 0.8;
+    transform: rotate(5deg) scale(1.05);
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-color: #2d5bba;
+    background: #fff;
+}
+
+/* Task drop zones */
+.task-drop-zone {
+    height: 8px;
+    margin: 2px 0;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    opacity: 0;
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.task-drop-zone.active {
+    opacity: 1;
+    height: 20px;
+    margin: 8px 0;
+    background: rgba(45, 91, 186, 0.1);
+    border: 2px dashed rgba(45, 91, 186, 0.4);
+}
+
+.task-drop-zone .drop-indicator {
+    width: 100%;
+    height: 2px;
+    background: #2d5bba;
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.task-drop-zone.active .drop-indicator {
+    opacity: 1;
+    animation: pulse 1.5s infinite;
+}
+
+.task-drop-zone.final-drop-zone {
+    height: 20px;
+    margin-top: 8px;
+}
+
+/* Pulse animation for drop indicator */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: translateY(-50%) scaleX(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: translateY(-50%) scaleX(0.95);
+    }
+}
+
+/* Smooth task repositioning */
+.task-card-linguify.repositioning {
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+/* Dragging state for entire column */
+.kanban-column.task-dragging .task-card-linguify:not(.dragging) {
+    transition: transform 0.2s ease;
+}
+
+.kanban-column.task-dragging .task-drop-zone {
+    opacity: 0.3;
+}
+
+/* Alpine.js drop zone active state */
+.kanban-tasks-container.drop-zone-active {
+    background-color: rgba(45, 91, 186, 0.05);
+    border: 2px dashed rgba(45, 91, 186, 0.3);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+/* Quick add form styles */
+.quick-add-form {
+    background: white;
+    border: 2px solid rgba(45, 91, 186, 0.2);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.quick-add-form:focus-within {
+    border-color: rgba(45, 91, 186, 0.4);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.15);
+}
+
+.quick-add-form input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 13px;
+}
+
+.quick-add-form input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Quick add buttons */
+.quick-add-form .btn {
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.quick-add-form .btn-primary {
+    background-color: #2d5bba;
+    border-color: #2d5bba;
+}
+
+.quick-add-form .btn-primary:hover {
+    background-color: #1e3d82;
+    border-color: #1e3d82;
+    transform: translateY(-1px);
+}
+
+.quick-add-form .btn-outline-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles for editable stage titles */
+.column-title-linguify {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    padding: 2px 6px;
+    position: relative;
+    display: inline-block;
+    /* Prevent title from growing too much */
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 1;
+}
+
+.column-title-linguify:hover {
+    background-color: rgba(45, 91, 186, 0.1);
+    transform: scale(1.02);
+}
+
+/* Hint tooltip for stage editing - only show on hover if text is not truncated */
+.column-title-linguify::after {
+    content: "Double-cliquez pour éditer";
+    position: absolute;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-100%) translateX(-50%);
+    left: 50%;
+    top: -8px;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+/* Show full title in tooltip if text is truncated */
+.column-title-linguify:hover::before {
+    content: attr(title);
+    position: absolute;
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-100%) translateX(-50%);
+    left: 50%;
+    top: -32px;
+    transition: opacity 0.3s ease 0.5s;
+    z-index: 1001;
+    max-width: 200px;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.column-title-linguify:hover::before {
+    opacity: 1;
+}
+
+.column-title-linguify:hover::after {
+    opacity: 1;
+}
+
+/* Better header layout for long titles */
+.sidebar-header-linguify .flex.items-center.justify-between {
+    gap: 0.5rem;
+}
+
+/* Badge should not shrink */
+.badge-linguify {
+    flex-shrink: 0;
+    min-width: fit-content;
+}
+
+/* Ensure buttons container never shrinks */
+.sidebar-header-linguify .flex-shrink-0 {
+    min-width: fit-content;
+}
+
+/* Alternative layout: Stack buttons vertically on very small screens */
+@media (max-width: 480px) {
+    .sidebar-header-linguify .flex.items-center.justify-between {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    
+    .sidebar-header-linguify .flex.items-center.gap-3 {
+        justify-content: center;
+    }
+    
+    .sidebar-header-linguify .flex-shrink-0 {
+        justify-content: center;
+        margin-left: 0;
+    }
+    
+    .column-title-linguify {
+        max-width: none;
+        text-align: center;
+    }
+}
+
+/* Responsive title width adjustment */
+@media (max-width: 768px) {
+    .column-title-linguify {
+        max-width: 120px;
+    }
+}
+
+@media (max-width: 600px) {
+    .column-title-linguify {
+        max-width: 100px;
+    }
+}
+
+/* Styles for fold/unfold button */
+.btn-linguify-ghost {
+    background: transparent;
+    border: none;
+    color: var(--bs-gray-600);
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-linguify-ghost:hover {
+    background: var(--bs-gray-200);
+    color: var(--bs-gray-800);
+}
+
+/* Stage drag and drop styles */
+.stage-drag-handle {
+    cursor: grab;
+}
+
+.stage-drag-handle:active {
+    cursor: grabbing;
+}
+
+.stage-drag-handle:hover {
+    background-color: rgba(45, 91, 186, 0.05);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.stage-drag-icon {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    user-select: none;
+    pointer-events: none;
+}
+
+.stage-drag-handle:hover .stage-drag-icon {
+    opacity: 1;
+}
+
+.kanban-column.dragging-stage {
+    opacity: 0.6;
+    transform: rotate(2deg);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    z-index: 1000;
+    position: relative;
+}
+
+.kanban-column.stage-drop-target {
+    border: 2px dashed #2d5bba;
+    background-color: rgba(45, 91, 186, 0.1);
+    transform: scale(1.02);
+}
+
+/* CLEAN ODOO STYLE KANBAN COLUMNS */
+.kanban-columns {
+    display: flex !important;
+    gap: 0 !important;
+    align-items: flex-start !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding-bottom: 10px !important;
+}
+
+/* Custom scrollbar for horizontal scroll */
+.kanban-columns::-webkit-scrollbar {
+    height: 8px;
+}
+
+.kanban-columns::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.kanban-columns::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.kanban-columns::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.kanban-column {
+    flex: 0 0 300px !important;
+    min-width: 300px !important;
+    max-width: 300px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: #f9fafb !important;
+    border-right: 1px solid #e7e9ed !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* CLEAN ODOO STYLE FOLDED COLUMN - MAXIMUM SPECIFICITY */
+.kanban-columns .kanban-column.o_column_folded {
+    flex: 0 0 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    width: 36px !important;
+    cursor: pointer !important;
+    background: #f9fafb !important;
+    border-right: 1px solid #e7e9ed !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    position: relative !important;
+}
+
+/* Visual feedback during task drag for folded columns */
+.kanban-column.o_column_folded.task-dragging {
+    border: 2px dashed rgba(45, 91, 186, 0.4) !important;
+    background: rgba(45, 91, 186, 0.05) !important;
+    position: relative !important;
+}
+
+.kanban-column.o_column_folded.task-dragging::after {
+    content: '💭 Zone de drop' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) rotate(90deg) !important;
+    font-size: 10px !important;
+    color: rgba(45, 91, 186, 0.7) !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+    z-index: 20 !important;
+}
+
+/* Active drop state - when actually hovering */
+.kanban-column.o_column_folded.drag-over {
+    background: rgba(45, 91, 186, 0.25) !important;
+    border: 3px solid #2d5bba !important;
+    border-radius: 6px !important;
+    position: relative !important;
+    box-shadow: 0 0 20px rgba(45, 91, 186, 0.4) !important;
+    animation: pulseGlow 1.5s infinite alternate !important;
+}
+
+.kanban-column.o_column_folded.drag-over::before {
+    content: '⬇ DÉPOSER ICI ⬇' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) rotate(90deg) !important;
+    font-size: 13px !important;
+    color: #1d4ed8 !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+    z-index: 21 !important;
+    text-shadow: 2px 2px 4px rgba(255,255,255,0.9) !important;
+    background: rgba(255,255,255,0.95) !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    border: 1px solid #2d5bba !important;
+}
+
+.kanban-column.o_column_folded.drag-over::after {
+    display: none !important; /* Hide the soft hint when actively hovering */
+}
+
+@keyframes pulseGlow {
+    0% { 
+        box-shadow: 0 0 15px rgba(45, 91, 186, 0.4);
+        background: rgba(45, 91, 186, 0.25);
+    }
+    100% { 
+        box-shadow: 0 0 30px rgba(45, 91, 186, 0.6);
+        background: rgba(45, 91, 186, 0.4);
+    }
+}
+
+.kanban-columns .kanban-column.o_column_folded .kanban-column-card {
+    padding: 12px 4px !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important;
+    min-height: 400px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .sidebar-header-linguify {
+    writing-mode: vertical-lr !important;
+    text-orientation: mixed !important;
+    transform: rotate(180deg) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .column-title-linguify {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #6b7280 !important;
+    margin: 0 !important;
+    margin-bottom: 8px !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.025em !important;
+    text-transform: none !important;
+    transition: color 0.2s ease !important;
+    /* Ensure text doesn't overflow in folded columns */
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: none !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded:hover .column-title-linguify {
+    color: #374151 !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .badge-linguify {
+    writing-mode: horizontal-tb !important;
+    margin: 0 !important;
+    background: #e5e7eb !important;
+    color: #6b7280 !important;
+    border: none !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 2px 6px !important;
+    border-radius: 10px !important;
+    min-width: 18px !important;
+    text-align: center !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .btn-linguify-ghost,
+.kanban-columns .kanban-column.o_column_folded .btn-linguify-secondary,
+.kanban-columns .kanban-column.o_column_folded .kanban-dropdown {
+    display: none !important;
+}
+
+.kanban-columns .kanban-column.o_column_folded .kanban-tasks-container {
+    display: none !important;
+}
+
+/* Hover effect for folded columns */
+.kanban-columns .kanban-column.o_column_folded:hover {
+    background: #f3f4f6 !important;
+}
+
+/* Success feedback for task added to folded column (no unfolding) */
+.kanban-column.task-added-success {
+    animation: successPulse 0.6s ease-in-out;
+    border: 2px solid #10b981 !important;
+}
+
+@keyframes successPulse {
+    0% { 
+        background-color: #f9fafb;
+        box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+    50% { 
+        background-color: #d1fae5;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    }
+    100% { 
+        background-color: #f9fafb;
+        box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+}
+
+/* Flash animation for updated count */
+.task-count.count-updated,
+.badge-linguify-compact.count-updated {
+    animation: countBounce 0.4s ease-in-out;
+    color: #10b981 !important;
+    font-weight: 700 !important;
+    border-color: #10b981 !important;
+}
+
+@keyframes countBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+/* Legacy flash animation (still used by tempUnfoldColumn) */
+.kanban-column.task-added-flash {
+    animation: flashGreen 0.5s ease-in-out;
+}
+
+@keyframes flashGreen {
+    0% { background-color: #f9fafb; }
+    50% { background-color: #d1ecf1; }
+    100% { background-color: #f9fafb; }
+}
+
+/* Smooth transitions for all elements */
+.kanban-column .sidebar-header-linguify,
+.kanban-column .column-title-linguify,
+.kanban-column .badge-linguify,
+.kanban-column .kanban-column-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hide dropdown in folded columns */
+.kanban-column.o_column_folded .kanban-dropdown,
+.kanban-column.force-folded .kanban-dropdown {
+    display: none !important;
+}
+
+/* FORCE FOLDED STYLES - MAXIMUM PRIORITY */
+.kanban-column.force-folded {
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    flex: 0 0 36px !important;
+    background: #ff6b6b !important;
+    border: 3px solid #0066cc !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    z-index: 9999 !important;
+    position: relative !important;
+}
+
+.kanban-column.force-folded .kanban-tasks-container {
+    display: none !important;
+}
+
+.kanban-column.force-folded .sidebar-header-linguify {
+    writing-mode: vertical-lr !important;
+    transform: rotate(180deg) !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.kanban-column.force-folded .btn-linguify-secondary,
+.kanban-column.force-folded .kanban-dropdown,
+.kanban-column.force-folded .kanban-quick-add {
+    display: none !important;
 }
