@@ -28,7 +28,8 @@
                                         title="{{ stage.name }}" 
                                         data-stage-id="{{ stage.id }}"
                                         x-show="editingStage !== '{{ stage.id }}'"
-                                        @dblclick="startEditStage('{{ stage.id }}', '{{ stage.name }}')">
+                                        @dblclick="startEditStage('{{ stage.id }}', '{{ stage.name }}')"
+                                        ondblclick="console.log('Fallback double-click for stage {{ stage.id }}')">
                                         {{ stage.name }}
                                     </h6>
                                     
@@ -38,7 +39,7 @@
                                            type="text" 
                                            value="{{ stage.name }}"
                                            class="form-control form-control-sm"
-                                           style="width: auto; min-width: 100px; max-width: 150px;"
+                                           style="width: auto; min-width: 100px; max-width: 150px; display: none;"
                                            @blur="saveStageTitle('{{ stage.id }}')"
                                            @keydown.enter="saveStageTitle('{{ stage.id }}')"
                                            @keydown.escape="cancelEditStage()">
@@ -47,10 +48,8 @@
                                 </div>
                                 <div class="kanban-header-actions-inline">
                                     <button class="kanban-action-btn-mini kanban-quick-add" 
-                                            hx-get="{% url 'todo:task_form_modal_htmx' %}"
-                                            hx-vals='{"stage_id": "{{ stage.id }}"}'
-                                            hx-target="#modal-container"
-                                            hx-swap="innerHTML"
+                                            @click="startQuickAdd('{{ stage.id }}')"
+                                            onclick="startQuickAddFallback('{{ stage.id }}')"
                                             title="{% trans 'Add task' %}">+</button>
                                     <div class="dropdown">
                                         <button class="kanban-action-btn-mini dropdown-toggle" 
@@ -82,6 +81,34 @@
                              @dragover="onDragOver($event)"
                              :class="{ 'drop-zone-active': dropZoneActive }"
                              {% if stage.fold %}style="display: none;"{% endif %}>
+                            
+                            <!-- Quick Add Form -->
+                            <div class="quick-add-form" 
+                                 x-show="quickAddStage === '{{ stage.id }}'" 
+                                 style="display: none; padding: 10px; margin-bottom: 8px;">
+                                <input type="text" 
+                                       x-ref="quickAddInput"
+                                       placeholder="{% trans 'Task title...' %}"
+                                       class="form-control form-control-sm mb-2"
+                                       @keydown.enter="saveQuickAdd('{{ stage.id }}')"
+                                       @keydown.escape="cancelQuickAdd()">
+                                
+                                <!-- Action buttons -->
+                                <div class="d-flex gap-2">
+                                    <button type="button" 
+                                            class="btn btn-primary btn-sm"
+                                            @click="saveQuickAdd('{{ stage.id }}')"
+                                            style="font-size: 11px; padding: 4px 8px;">
+                                        <i class="bi bi-check"></i> OK
+                                    </button>
+                                    <button type="button" 
+                                            class="btn btn-outline-secondary btn-sm"
+                                            @click="cancelQuickAdd()"
+                                            style="font-size: 11px; padding: 4px 8px;">
+                                        <i class="bi bi-x"></i> {% trans "Cancel" %}
+                                    </button>
+                                </div>
+                            </div>
                             
                             <!-- Tasks List -->
                             <div class="tasks-list">
@@ -348,6 +375,32 @@
     border: 2px dashed rgba(45, 91, 186, 0.3);
     border-radius: 8px;
     transition: all 0.2s ease;
+}
+
+/* Quick add form styles */
+.quick-add-form {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(45, 91, 186, 0.2);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.quick-add-form:focus-within {
+    border-color: rgba(45, 91, 186, 0.5);
+    background: white;
+    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.1);
+}
+
+.quick-add-form input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+}
+
+.quick-add-form input:focus {
+    outline: none;
+    box-shadow: none;
 }
 
 /* Styles for editable stage titles */
@@ -650,6 +703,9 @@ document.addEventListener('alpine:init', () => {
         editingStage: null,
         originalTitle: '',
         
+        // Quick add state
+        quickAddStage: null,
+        
         // Modal state
         taskModal: false,
         
@@ -688,20 +744,39 @@ document.addEventListener('alpine:init', () => {
                 // Visual feedback first
                 dropTarget.querySelector('.tasks-list').appendChild(draggedElement);
                 
-                // Update via HTMX
+                // Update task stage visually
+                draggedElement.setAttribute('data-stage-id', stageId);
+                
+                // Update via HTMX without page reload
                 htmx.ajax('POST', `/todo/htmx/tasks/${taskId}/move/`, {
                     values: { 
                         stage_id: stageId,
                         position: dropTarget.children.length 
                     }
-                }).then(() => {
-                    // Refresh for state updates
-                    window.location.reload();
+                }).then((response) => {
+                    console.log('Task moved successfully');
+                    // Update task counts
+                    this.updateStageCounts();
+                    // Show success notification
+                    window.notificationService?.success('Tâche déplacée avec succès');
                 }).catch(() => {
-                    window.notificationService?.error('Erreur lors du déplacement');
+                    window.notificationService?.error('Erreur lors du déplacement de la tâche');
+                    // Revert the visual change on error
                     window.location.reload();
                 });
             }
+        },
+        
+        // Update stage task counts
+        updateStageCounts() {
+            document.querySelectorAll('.kanban-column').forEach(column => {
+                const stageId = column.getAttribute('data-stage-id');
+                const taskCount = column.querySelectorAll('.task-card-linguify').length;
+                const badge = column.querySelector('.badge-linguify-compact');
+                if (badge) {
+                    badge.textContent = taskCount;
+                }
+            });
         },
         
         // Stage editing methods
@@ -747,12 +822,82 @@ document.addEventListener('alpine:init', () => {
             }
         },
         
+        // Quick add methods
+        startQuickAdd(stageId) {
+            // Close any other quick add forms first
+            this.quickAddStage = null;
+            this.$nextTick(() => {
+                this.quickAddStage = stageId;
+                this.$nextTick(() => {
+                    const input = this.$refs.quickAddInput;
+                    if (input) {
+                        input.focus();
+                    }
+                });
+            });
+        },
+        
+        cancelQuickAdd() {
+            this.quickAddStage = null;
+        },
+        
+        saveQuickAdd(stageId) {
+            const input = this.$refs.quickAddInput;
+            const title = input.value.trim();
+            
+            if (title) {
+                // Create task via HTMX
+                htmx.ajax('POST', '/todo/htmx/tasks/create/', {
+                    values: {
+                        title: title,
+                        stage_id: stageId
+                    }
+                }).then(() => {
+                    // Add the new task to the DOM immediately
+                    const tasksContainer = document.querySelector(`[data-stage-id="${stageId}"] .tasks-list`);
+                    
+                    // Create temporary task card
+                    const tempCard = document.createElement('div');
+                    tempCard.className = 'task-card-linguify kanban-card';
+                    tempCard.innerHTML = `
+                        <div class="flex items-start justify-between mb-2">
+                            <h6 class="task-title-linguify">${title}</h6>
+                        </div>
+                        <div class="flex items-center justify-between pt-2">
+                            <small class="text-muted">À l'instant</small>
+                        </div>
+                    `;
+                    
+                    if (tasksContainer) {
+                        tasksContainer.appendChild(tempCard);
+                    }
+                    
+                    // Update counter
+                    this.updateStageCounts();
+                    
+                    // Clear and close
+                    input.value = '';
+                    this.cancelQuickAdd();
+                    
+                    window.notificationService?.success('Tâche créée');
+                }).catch(() => {
+                    window.notificationService?.error('Erreur lors de la création');
+                });
+            } else {
+                this.cancelQuickAdd();
+            }
+        },
+        
         // Task editing methods
         editTask(taskId) {
-            htmx.ajax('GET', `/todo/htmx/tasks/modal/${taskId}/`, {
-                target: '#modal-container',
-                swap: 'innerHTML'
-            });
+            if (taskId) {
+                htmx.ajax('GET', `/todo/htmx/tasks/modal/${taskId}/`, {
+                    target: '#modal-container',
+                    swap: 'innerHTML'
+                });
+            } else {
+                console.error('No task ID provided for editing');
+            }
         },
         
         // Column methods
@@ -784,7 +929,9 @@ document.addEventListener('alpine:init', () => {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         // Close Alpine modals
-        Alpine.store('modals', { taskModal: false });
+        if (typeof Alpine !== 'undefined') {
+            Alpine.store('modals', { taskModal: false });
+        }
         // Close regular modals
         document.querySelectorAll('.modal:not(.hidden)').forEach(modal => {
             modal.classList.add('hidden');
@@ -792,5 +939,211 @@ document.addEventListener('keydown', function(e) {
         });
     }
 });
+
+// Fallback functions if Alpine.js fails
+window.fallbackStageEdit = function(stageId, stageName) {
+    const titleElement = document.querySelector(`[data-stage-id="${stageId}"] .column-title-linguify`);
+    if (!titleElement) return;
+    
+    // Create input
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = stageName;
+    input.className = 'form-control form-control-sm';
+    input.style.width = 'auto';
+    input.style.minWidth = '100px';
+    input.style.maxWidth = '150px';
+    
+    // Replace title with input
+    titleElement.style.display = 'none';
+    titleElement.parentNode.insertBefore(input, titleElement.nextSibling);
+    input.focus();
+    input.select();
+    
+    // Save function
+    function save() {
+        const newTitle = input.value.trim();
+        if (newTitle && newTitle !== stageName) {
+            fetch(`/api/v1/todo/stages/${stageId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ name: newTitle })
+            }).then(response => {
+                if (response.ok) {
+                    titleElement.textContent = newTitle;
+                    titleElement.setAttribute('title', newTitle);
+                } else {
+                    window.notificationService?.error('Erreur lors de la modification');
+                }
+            }).catch(() => {
+                window.notificationService?.error('Erreur de connexion');
+            });
+        }
+        
+        // Cleanup
+        input.remove();
+        titleElement.style.display = '';
+    }
+    
+    // Cancel function
+    function cancel() {
+        input.remove();
+        titleElement.style.display = '';
+    }
+    
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            save();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancel();
+        }
+    });
+};
+
+// Fallback quick add functions
+window.startQuickAddFallback = function(stageId) {
+    // Hide all other quick add forms
+    document.querySelectorAll('.quick-add-form').forEach(form => {
+        form.style.display = 'none';
+    });
+    
+    // Show the current stage's quick add form
+    const form = document.querySelector(`[data-stage-id="${stageId}"] .quick-add-form`);
+    const input = form.querySelector('input');
+    
+    if (form && input) {
+        form.style.display = 'block';
+        input.focus();
+        
+        // Add event listeners
+        input.addEventListener('blur', function() {
+            setTimeout(() => form.style.display = 'none', 150);
+        });
+        
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const title = input.value.trim();
+                
+                if (title) {
+                    htmx.ajax('POST', '/todo/htmx/tasks/create/', {
+                        values: {
+                            title: title,
+                            stage_id: stageId
+                        }
+                    }).then(() => {
+                        window.location.reload(); // Simple fallback - reload page
+                    }).catch(() => {
+                        window.notificationService?.error('Erreur lors de la création');
+                    });
+                }
+                
+                input.value = '';
+                form.style.display = 'none';
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                input.value = '';
+                form.style.display = 'none';
+            }
+        });
+    }
+};
+
+// Fallback drag and drop functions
+window.fallbackDragStart = function(event) {
+    event.dataTransfer.setData("text", event.target.id);
+    event.target.classList.add('dragging');
+    document.querySelectorAll('.kanban-tasks-container').forEach(container => {
+        container.classList.add('drop-zone-active');
+    });
+};
+
+window.fallbackDragEnd = function(event) {
+    event.target.classList.remove('dragging');
+    document.querySelectorAll('.kanban-tasks-container').forEach(container => {
+        container.classList.remove('drop-zone-active');
+    });
+};
+
+window.fallbackDrop = function(event) {
+    event.preventDefault();
+    const taskId = event.dataTransfer.getData("text");
+    const draggedElement = document.getElementById(taskId);
+    const dropTarget = event.currentTarget;
+    const stageId = dropTarget.getAttribute('data-stage-id');
+    const actualTaskId = draggedElement.getAttribute('data-task-id');
+    
+    if (draggedElement && actualTaskId && stageId) {
+        // Visual feedback
+        dropTarget.querySelector('.tasks-list').appendChild(draggedElement);
+        draggedElement.setAttribute('data-stage-id', stageId);
+        
+        // Update counts
+        document.querySelectorAll('.kanban-column').forEach(column => {
+            const colStageId = column.getAttribute('data-stage-id');
+            const taskCount = column.querySelectorAll('.task-card-linguify').length;
+            const badge = column.querySelector('.badge-linguify-compact');
+            if (badge) badge.textContent = taskCount;
+        });
+        
+        // Update via HTMX
+        htmx.ajax('POST', `/todo/htmx/tasks/${actualTaskId}/move/`, {
+            values: { 
+                stage_id: stageId,
+                position: dropTarget.children.length 
+            }
+        }).then(() => {
+            window.notificationService?.success('Tâche déplacée');
+        }).catch(() => {
+            window.notificationService?.error('Erreur de déplacement');
+        });
+    }
+};
+
+// Check if Alpine.js loaded, if not use fallbacks
+setTimeout(() => {
+    if (typeof Alpine === 'undefined') {
+        console.warn('Alpine.js not loaded, using fallback functions');
+        
+        // Add fallback double-click listeners for stages
+        document.querySelectorAll('.column-title-linguify').forEach(title => {
+            title.addEventListener('dblclick', function() {
+                const stageId = this.getAttribute('data-stage-id');
+                const stageName = this.textContent.trim();
+                window.fallbackStageEdit(stageId, stageName);
+            });
+        });
+        
+        // Add fallback drag-and-drop listeners
+        document.querySelectorAll('.task-card-linguify').forEach(taskCard => {
+            taskCard.addEventListener('dragstart', window.fallbackDragStart);
+            taskCard.addEventListener('dragend', window.fallbackDragEnd);
+            
+            // Double-click to edit task
+            taskCard.addEventListener('dblclick', function() {
+                const taskId = this.getAttribute('data-task-id');
+                if (taskId) {
+                    htmx.ajax('GET', `/todo/htmx/tasks/modal/${taskId}/`, {
+                        target: '#modal-container',
+                        swap: 'innerHTML'
+                    });
+                } else {
+                    console.error('No task ID found for editing');
+                }
+            });
+        });
+        
+        document.querySelectorAll('.kanban-tasks-container').forEach(container => {
+            container.addEventListener('dragover', function(e) { e.preventDefault(); });
+            container.addEventListener('drop', window.fallbackDrop);
+        });
+    }
+}, 1000);
 </script>
 {% endblock %}

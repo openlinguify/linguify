@@ -1109,6 +1109,7 @@ class TaskMoveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
         if new_stage_id:
             new_stage = get_object_or_404(PersonalStageType, id=new_stage_id, user=request.user)
             old_stage = task.personal_stage_type
+            old_state = task.state
             
             task.personal_stage_type = new_stage
             task.sequence = int(new_position)
@@ -1118,22 +1119,28 @@ class TaskMoveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
                 # Moving to a closed stage (like Done) - mark as completed
                 task.state = '1_done'
                 task.completed_at = timezone.now()
+                print(f"Task {task.title} moved to closed stage {new_stage.name}, marked as done")
             elif not new_stage.is_closed and task.state == '1_done':
                 # Moving from closed stage to open stage - reopen task
                 task.state = '1_todo'
                 task.completed_at = None
+                print(f"Task {task.title} moved from closed stage to open stage {new_stage.name}, reopened")
             
             # Special handling for common stage names
             if new_stage.name.lower() in ['done', 'terminé', 'completed', 'fini']:
                 task.state = '1_done'
                 task.completed_at = timezone.now()
+                print(f"Task {task.title} moved to '{new_stage.name}', marked as done")
             elif new_stage.name.lower() in ['in progress', 'en cours', 'doing', 'work']:
                 if task.state not in ['1_done']:
                     task.state = '1_in_progress'
+                    print(f"Task {task.title} moved to '{new_stage.name}', marked as in progress")
             elif new_stage.name.lower() in ['todo', 'to do', 'à faire', 'backlog']:
                 if task.state not in ['1_done']:
                     task.state = '1_todo'
+                    print(f"Task {task.title} moved to '{new_stage.name}', marked as todo")
             
+            print(f"Task state change: {old_state} -> {task.state} (Stage: {old_stage.name if old_stage else 'None'} -> {new_stage.name})")
             task.save()
         
         context = {'task': task}
