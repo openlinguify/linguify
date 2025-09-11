@@ -19,8 +19,9 @@
                 <!-- Kanban Column -->
                 <div class="kanban-column{% if stage.fold or stage.name == 'Archive' %} o_column_folded{% endif %}" 
                      data-stage-id="{{ stage.id }}"
-                     @dragover="onStageDragOver($event)"
-                     @drop="onStageDrop($event)">
+                     @dragover="handleDragOver($event)"
+                     @dragleave="handleDragLeave($event)"
+                     @drop="handleDrop($event)">
                     <div class="kanban-column-card">
                         <!-- Column Header -->
                         <div class="sidebar-header-linguify stage-drag-handle"
@@ -843,36 +844,69 @@
     position: relative !important;
 }
 
-/* Enable drop zone for folded columns */
-.kanban-columns .kanban-column.o_column_folded::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: transparent;
-    pointer-events: auto;
-    z-index: 10;
+/* Visual feedback during task drag for folded columns */
+.kanban-column.o_column_folded.task-dragging {
+    border: 2px dashed rgba(45, 91, 186, 0.4) !important;
+    background: rgba(45, 91, 186, 0.05) !important;
+    position: relative !important;
 }
 
-.kanban-columns .kanban-column.o_column_folded.stage-drop-target {
-    background: rgba(45, 91, 186, 0.2) !important;
-    border: 2px solid #2d5bba !important;
+.kanban-column.o_column_folded.task-dragging::after {
+    content: '💭 Zone de drop' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) rotate(90deg) !important;
+    font-size: 10px !important;
+    color: rgba(45, 91, 186, 0.7) !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+    z-index: 20 !important;
 }
 
-.kanban-columns .kanban-column.o_column_folded.stage-drop-target::before {
-    content: 'Déposer ici';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(90deg);
-    font-size: 10px;
-    color: #2d5bba;
-    font-weight: 600;
-    white-space: nowrap;
-    pointer-events: none;
-    z-index: 11;
+/* Active drop state - when actually hovering */
+.kanban-column.o_column_folded.drag-over {
+    background: rgba(45, 91, 186, 0.25) !important;
+    border: 3px solid #2d5bba !important;
+    border-radius: 6px !important;
+    position: relative !important;
+    box-shadow: 0 0 20px rgba(45, 91, 186, 0.4) !important;
+    animation: pulseGlow 1.5s infinite alternate !important;
+}
+
+.kanban-column.o_column_folded.drag-over::before {
+    content: '⬇ DÉPOSER ICI ⬇' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) rotate(90deg) !important;
+    font-size: 13px !important;
+    color: #1d4ed8 !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+    z-index: 21 !important;
+    text-shadow: 2px 2px 4px rgba(255,255,255,0.9) !important;
+    background: rgba(255,255,255,0.95) !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    border: 1px solid #2d5bba !important;
+}
+
+.kanban-column.o_column_folded.drag-over::after {
+    display: none !important; /* Hide the soft hint when actively hovering */
+}
+
+@keyframes pulseGlow {
+    0% { 
+        box-shadow: 0 0 15px rgba(45, 91, 186, 0.4);
+        background: rgba(45, 91, 186, 0.25);
+    }
+    100% { 
+        box-shadow: 0 0 30px rgba(45, 91, 186, 0.6);
+        background: rgba(45, 91, 186, 0.4);
+    }
 }
 
 .kanban-columns .kanban-column.o_column_folded .kanban-column-card {
@@ -948,7 +982,41 @@
     background: #f3f4f6 !important;
 }
 
-/* Flash animation for task added to folded column */
+/* Success feedback for task added to folded column (no unfolding) */
+.kanban-column.task-added-success {
+    animation: successPulse 0.6s ease-in-out;
+    border: 2px solid #10b981 !important;
+}
+
+@keyframes successPulse {
+    0% { 
+        background-color: #f9fafb;
+        box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+    50% { 
+        background-color: #d1fae5;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    }
+    100% { 
+        background-color: #f9fafb;
+        box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+}
+
+/* Flash animation for updated count */
+.task-count.count-updated {
+    animation: countBounce 0.4s ease-in-out;
+    color: #10b981 !important;
+    font-weight: 700 !important;
+}
+
+@keyframes countBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Legacy flash animation (still used by tempUnfoldColumn) */
 .kanban-column.task-added-flash {
     animation: flashGreen 0.5s ease-in-out;
 }
@@ -1072,8 +1140,14 @@ document.addEventListener('alpine:init', () => {
         
         // Drop zone management methods
         showAllDropZones() {
+            // Show regular drop zones
             document.querySelectorAll('.task-drop-zone').forEach(zone => {
                 zone.style.opacity = '0.3';
+            });
+            
+            // Add visual feedback to folded columns
+            document.querySelectorAll('.kanban-column.o_column_folded').forEach(column => {
+                column.classList.add('task-dragging');
             });
         },
         
@@ -1082,6 +1156,12 @@ document.addEventListener('alpine:init', () => {
                 zone.classList.remove('active');
                 zone.style.opacity = '0';
             });
+            
+            // Remove visual feedback from folded columns
+            document.querySelectorAll('.kanban-column.o_column_folded').forEach(column => {
+                column.classList.remove('task-dragging', 'drag-over');
+            });
+            
             this.activeDropZone = null;
         },
         
@@ -1092,6 +1172,33 @@ document.addEventListener('alpine:init', () => {
             event.dataTransfer.dropEffect = 'move';
             
             const dropZone = event.currentTarget;
+            const draggedElement = this.draggedTaskElement;
+            
+            // Special handling for folded columns
+            if (dropZone.classList.contains('folded-drop-zone')) {
+                const column = dropZone.closest('.kanban-column');
+                if (column) {
+                    // Remove drag-over from all other folded columns
+                    document.querySelectorAll('.kanban-column.o_column_folded.drag-over').forEach(col => {
+                        if (col !== column) col.classList.remove('drag-over');
+                    });
+                    // Add drag-over to current column
+                    column.classList.add('drag-over');
+                }
+                return;
+            }
+            
+            // Don't activate drop zone if it's immediately next to the dragged element
+            if (draggedElement) {
+                const nextSibling = draggedElement.nextElementSibling;
+                const prevSibling = draggedElement.previousElementSibling;
+                
+                // Skip if this is the drop zone right after or before the dragged element
+                if ((nextSibling && nextSibling === dropZone) || 
+                    (prevSibling && prevSibling === dropZone)) {
+                    return;
+                }
+            }
             
             // Deactivate previous drop zone
             if (this.activeDropZone && this.activeDropZone !== dropZone) {
@@ -1105,6 +1212,15 @@ document.addEventListener('alpine:init', () => {
         
         onTaskDropZoneLeave(event) {
             const dropZone = event.currentTarget;
+            
+            // Special handling for folded columns
+            if (dropZone.classList.contains('folded-drop-zone')) {
+                const column = dropZone.closest('.kanban-column');
+                if (column && !column.contains(event.relatedTarget)) {
+                    column.classList.remove('drag-over');
+                }
+                return;
+            }
             
             // Only remove active state if we're really leaving the drop zone
             if (!dropZone.contains(event.relatedTarget)) {
@@ -1124,35 +1240,65 @@ document.addEventListener('alpine:init', () => {
             let newStageId = dropZone.getAttribute('data-stage-id');
             let newPosition = parseInt(dropZone.getAttribute('data-position'));
             const taskId = this.draggedTask;
+            const currentStageId = this.draggedTaskElement.getAttribute('data-stage-id');
+            const currentPosition = parseInt(this.draggedTaskElement.getAttribute('data-position'));
             
             // Handle drop on folded column
             const targetColumn = document.querySelector(`[data-stage-id="${newStageId}"]`);
             if (targetColumn && targetColumn.classList.contains('o_column_folded')) {
                 // For folded columns, add to the end
-                newPosition = 999; // Add at the end
-                
-                // Temporarily unfold the column to show the task was added
-                this.tempUnfoldColumn(targetColumn);
+                newPosition = 999;
+                // Keep the column folded - just show subtle feedback
+                this.showTaskAddedFeedback(targetColumn);
             }
+            
+            // If dropping in the same stage and same or adjacent position, do nothing
+            if (currentStageId === newStageId) {
+                if (newPosition === currentPosition || 
+                    newPosition === currentPosition + 1 || 
+                    newPosition === currentPosition - 1) {
+                    console.log('Dropping in same or adjacent position, ignoring');
+                    return;
+                }
+                
+                // Adjust position for same-stage reordering
+                if (newPosition > currentPosition) {
+                    newPosition -= 1; // Account for the element being removed first
+                }
+            }
+            
+            console.log(`Moving task from position ${currentPosition} to ${newPosition} in stage ${newStageId}`);
             
             // Get the tasks list for the target stage
             const tasksList = targetColumn.querySelector('.tasks-list');
             
             if (tasksList && !targetColumn.classList.contains('o_column_folded')) {
-                // Normal drop handling for unfolded columns
-                const dropZones = tasksList.querySelectorAll('.task-drop-zone');
-                const targetDropZone = dropZones[newPosition];
+                // Get all task elements (not drop zones)
+                const allTasks = Array.from(tasksList.querySelectorAll('.task-card-linguify')).filter(task => task !== this.draggedTaskElement);
                 
-                // Move task visually
-                if (targetDropZone && targetDropZone.nextElementSibling) {
-                    tasksList.insertBefore(this.draggedTaskElement, targetDropZone.nextElementSibling);
-                } else {
-                    // Insert at the end (before final drop zone)
+                // Insert at the correct position
+                if (newPosition >= allTasks.length) {
+                    // Insert at the end
                     const finalDropZone = tasksList.querySelector('.final-drop-zone');
                     if (finalDropZone) {
                         tasksList.insertBefore(this.draggedTaskElement, finalDropZone);
                     } else {
                         tasksList.appendChild(this.draggedTaskElement);
+                    }
+                } else {
+                    // Insert before the task at the new position
+                    const targetTask = allTasks[newPosition];
+                    if (targetTask) {
+                        // Find the drop zone before this task
+                        let insertPoint = targetTask.previousElementSibling;
+                        while (insertPoint && !insertPoint.classList.contains('task-drop-zone')) {
+                            insertPoint = insertPoint.previousElementSibling;
+                        }
+                        if (insertPoint) {
+                            tasksList.insertBefore(this.draggedTaskElement, insertPoint.nextElementSibling);
+                        } else {
+                            tasksList.insertBefore(this.draggedTaskElement, targetTask);
+                        }
                     }
                 }
             } else if (tasksList) {
@@ -1183,18 +1329,38 @@ document.addEventListener('alpine:init', () => {
             this.updateTaskPositions();
         },
         
+        showTaskAddedFeedback(column) {
+            // Add success flash without unfolding the column
+            column.classList.add('task-added-success');
+            
+            // Update task count immediately for visual feedback
+            const countElement = column.querySelector('.task-count');
+            if (countElement) {
+                const currentCount = parseInt(countElement.textContent) || 0;
+                countElement.textContent = currentCount + 1;
+                countElement.classList.add('count-updated');
+            }
+            
+            // Remove feedback classes after animation
+            setTimeout(() => {
+                column.classList.remove('task-added-success');
+                if (countElement) {
+                    countElement.classList.remove('count-updated');
+                }
+            }, 600);
+        },
+        
         tempUnfoldColumn(column) {
+            // This function is kept for other uses but not called on task drop anymore
             const tasksContainer = column.querySelector('.kanban-tasks-container');
             if (tasksContainer) {
                 tasksContainer.style.display = 'block';
                 column.classList.remove('o_column_folded');
                 
-                // Show a brief flash to indicate task was added
                 setTimeout(() => {
                     column.classList.add('task-added-flash');
                     setTimeout(() => {
                         column.classList.remove('task-added-flash');
-                        // Re-fold after showing the task
                         setTimeout(() => {
                             tasksContainer.style.display = 'none';
                             column.classList.add('o_column_folded');
@@ -1242,6 +1408,99 @@ document.addEventListener('alpine:init', () => {
                     task.setAttribute('data-position', index);
                 });
             });
+        },
+        
+        // Unified drag handlers for columns (handles both stage and task drags)
+        handleDragOver(event) {
+            // Handle stage drag (stage reordering)
+            if (this.draggedStage) {
+                return this.onStageDragOver(event);
+            }
+            
+            // Handle task drag
+            if (this.draggedTask) {
+                const column = event.currentTarget;
+                
+                // For folded columns, handle task drop
+                if (column.classList.contains('o_column_folded')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.dataTransfer.dropEffect = 'move';
+                    column.classList.add('drag-over');
+                    return;
+                }
+                
+                // For unfolded columns, let the existing task drop zones handle it
+                event.preventDefault();
+                return;
+            }
+        },
+        
+        handleDragLeave(event) {
+            const column = event.currentTarget;
+            
+            // Handle stage drag leave
+            if (this.draggedStage) {
+                // Remove stage drop target styling
+                column.classList.remove('stage-drop-target');
+                return;
+            }
+            
+            // Handle task drag leave for folded columns
+            if (this.draggedTask && column.classList.contains('o_column_folded')) {
+                if (!column.contains(event.relatedTarget)) {
+                    column.classList.remove('drag-over');
+                }
+                return;
+            }
+        },
+        
+        handleDrop(event) {
+            // Handle stage drop (stage reordering)
+            if (this.draggedStage) {
+                return this.onStageDrop(event);
+            }
+            
+            // Handle task drop on folded column
+            if (this.draggedTask && this.draggedTaskElement) {
+                const column = event.currentTarget;
+                
+                if (column.classList.contains('o_column_folded')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    const newStageId = column.getAttribute('data-stage-id');
+                    const taskId = this.draggedTask;
+                    
+                    console.log('Dropping task on folded column:', newStageId);
+                    
+                    // Remove visual feedback
+                    column.classList.remove('drag-over');
+                    
+                    // Move task to folded column
+                    const tasksList = column.querySelector('.tasks-list');
+                    if (tasksList) {
+                        tasksList.appendChild(this.draggedTaskElement);
+                    }
+                    
+                    // Update data attributes
+                    this.draggedTaskElement.setAttribute('data-stage-id', newStageId);
+                    this.draggedTaskElement.setAttribute('data-position', 999); // Add at end
+                    
+                    // Show subtle feedback that task was added (keep stage folded)
+                    this.showTaskAddedFeedback(column);
+                    
+                    // Update via API
+                    this.moveTaskToPosition(taskId, newStageId, 999);
+                    
+                    // Update UI
+                    this.updateTaskCompletionIcon(taskId, newStageId);
+                    this.updateStageCounts();
+                    this.updateTaskPositions();
+                    
+                    return;
+                }
+            }
         },
         
         // Legacy drag methods for backward compatibility
