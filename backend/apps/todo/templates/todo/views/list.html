@@ -17,13 +17,14 @@
                 <table class="table table-hover table-linguify mb-0" id="tasksTable">
                     <thead class="table-header-sticky">
                         <tr>
-                            <th class="col-selector">
+                            <th class="col-selector resizable-column" data-column="selector">
                                 <div class="form-check">
                                     <input type="checkbox" class="form-check-input" id="selectAll">
                                     <label class="form-check-label" for="selectAll"></label>
                                 </div>
+                                <div class="column-resizer"></div>
                             </th>
-                            <th class="col-priority sortable" 
+                            <th class="col-priority sortable resizable-column" data-column="priority"
                                 hx-get="{% url 'todo:task_list_table_htmx' %}"
                                 hx-vals='{"order_by": "priority", "order_dir": "{% if current_filters.order_by == 'priority' and current_filters.order_dir == 'asc' %}desc{% else %}asc{% endif %}"}'
                                 hx-target="#task-table-container"
@@ -35,8 +36,9 @@
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
                                     {% endif %}
                                 </div>
+                                <div class="column-resizer"></div>
                             </th>
-                            <th class="col-status sortable"
+                            <th class="col-status sortable resizable-column" data-column="status"
                                 hx-get="{% url 'todo:task_list_table_htmx' %}"
                                 hx-vals='{"order_by": "state", "order_dir": "{% if current_filters.order_by == 'state' and current_filters.order_dir == 'asc' %}desc{% else %}asc{% endif %}"}'
                                 hx-target="#task-table-container"
@@ -48,8 +50,10 @@
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
                                     {% endif %}
                                 </div>
+                                <div class="column-resizer"></div>
                             </th>
-                            <th class="col-title sortable"
+                            <th class="col-title sortable resizable-column"
+                                data-column="title"
                                 hx-get="{% url 'todo:task_list_table_htmx' %}"
                                 hx-vals='{"order_by": "title", "order_dir": "{% if current_filters.order_by == 'title' and current_filters.order_dir == 'asc' %}desc{% else %}asc{% endif %}"}'
                                 hx-target="#task-table-container"
@@ -61,39 +65,46 @@
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
                                     {% endif %}
                                 </div>
+                                <div class="column-resizer"></div>
                             </th>
-                            <th class="col-stage sortable" data-sort="personal_stage_type__name">
+                            <th class="col-stage sortable resizable-column" data-column="stage" data-sort="personal_stage_type__name">
                                 <div class="d-flex align-items-center">
                                     <span>{% trans "Stage" %}</span>
                                     {% if current_filters.order_by == 'personal_stage_type__name' %}
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
                                     {% endif %}
                                 </div>
+                                <div class="column-resizer"></div>
                             </th>
-                            <th class="col-project sortable" data-sort="project__name">
+                            <th class="col-project sortable resizable-column" data-column="project" data-sort="project__name">
                                 <div class="d-flex align-items-center">
                                     <span>{% trans "Project" %}</span>
                                     {% if current_filters.order_by == 'project__name' %}
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
                                     {% endif %}
                                 </div>
+                                <div class="column-resizer"></div>
                             </th>
-                            <th class="col-tags">
+                            <th class="col-tags resizable-column" data-column="tags">
                                 {% trans "Tags" %}
+                                <div class="column-resizer"></div>
                             </th>
-                            <th class="col-due-date sortable" data-sort="due_date">
+                            <th class="col-due-date sortable resizable-column" data-column="due-date" data-sort="due_date">
                                 <div class="d-flex align-items-center">
                                     <span>{% trans "Due Date" %}</span>
                                     {% if current_filters.order_by == 'due_date' %}
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
                                     {% endif %}
                                 </div>
+                                <div class="column-resizer"></div>
                             </th>
-                            <th class="col-actions">
+                            <th class="col-actions resizable-column" data-column="actions">
                                 {% trans "Actions" %}
+                                <div class="column-resizer"></div>
                             </th>
-                            <th class="col-custom">
+                            <th class="col-custom resizable-column" data-column="custom">
                                 {% trans "Custom" %}
+                                <div class="column-resizer"></div>
                             </th>
                         </tr>
                     </thead>

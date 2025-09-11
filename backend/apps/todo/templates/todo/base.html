@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="fr" class="h-full">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,9 +59,79 @@
         #mainHeader .dropdown-menu {
             z-index: 10000 !important;
         }
+        
+        /* Fix scrolling issues - keep header fixed */
+        html, body {
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        
+        .app-container-layout {
+            height: calc(100vh - 70px); /* Adjust for header height */
+            overflow: hidden !important;
+            display: flex;
+            flex-direction: column;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* Keep todo navbar fixed */
+        .navbar-linguify {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: white;
+            border-bottom: 1px solid var(--linguify-gray-200);
+        }
+        
+        /* Make only the task list scrollable */
+        .list-layout {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .list-container {
+            flex: 1;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .unified-table-container-linguify {
+            height: auto !important;
+            overflow: visible !important;
+            width: 100%;
+        }
+        
+        .table-responsive {
+            overflow: visible !important;
+            width: 100%;
+        }
+        
+        /* Keep table header sticky */
+        .table-header-sticky {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* Fix table layout */
+        #tasksTable {
+            width: 100% !important;
+            margin: 0 !important;
+        }
     </style>
 </head>
-<body class="app-body-layout">
+<body class="app-body-layout" style="height: 100vh; overflow: hidden;">
     <!-- Include the unified app header -->
     {% include 'components/header/app_header.html' %}
     
@@ -124,6 +194,130 @@
                     dropdown.remove();
                 }
             });
+        });
+
+        // Column Resizing Functionality
+        function initColumnResizing() {
+            let isResizing = false;
+            let currentColumn = null;
+            let startX = 0;
+            let startWidth = 0;
+
+            const table = document.getElementById('tasksTable');
+            if (!table) return;
+
+            // Add event listeners to all column resizers
+            document.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('column-resizer')) {
+                    isResizing = true;
+                    currentColumn = e.target.closest('th');
+                    startX = e.clientX;
+                    startWidth = currentColumn.offsetWidth;
+                    
+                    e.target.classList.add('resizing');
+                    table.classList.add('table-resizing');
+                    e.preventDefault();
+                }
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isResizing) return;
+
+                const diff = e.clientX - startX;
+                const newWidth = Math.max(50, startWidth + diff); // Minimum 50px width
+                
+                const columnClass = currentColumn.className.match(/col-\w+/)[0];
+                const style = document.createElement('style');
+                style.id = 'column-resize-temp';
+                document.head.appendChild(style);
+                style.sheet.insertRule(`.${columnClass} { width: ${newWidth}px !important; min-width: ${newWidth}px !important; max-width: ${newWidth}px !important; }`);
+                
+                // Remove previous temp style
+                const oldStyle = document.getElementById('column-resize-temp');
+                if (oldStyle && oldStyle !== style) {
+                    oldStyle.remove();
+                }
+            });
+
+            document.addEventListener('mouseup', function(e) {
+                if (!isResizing) return;
+
+                isResizing = false;
+                table.classList.remove('table-resizing');
+                
+                const resizer = document.querySelector('.column-resizer.resizing');
+                if (resizer) {
+                    resizer.classList.remove('resizing');
+                }
+
+                // Save column preferences to localStorage
+                if (currentColumn) {
+                    const columnName = currentColumn.dataset.column;
+                    const columnWidth = currentColumn.offsetWidth;
+                    
+                    let preferences = JSON.parse(localStorage.getItem('todoColumnWidths') || '{}');
+                    preferences[columnName] = columnWidth;
+                    localStorage.setItem('todoColumnWidths', JSON.stringify(preferences));
+
+                    // Apply permanent CSS
+                    const columnClass = currentColumn.className.match(/col-\w+/)[0];
+                    updateColumnCSS(columnClass, columnWidth);
+                }
+                
+                currentColumn = null;
+            });
+        }
+
+        function updateColumnCSS(columnClass, width) {
+            let customStyle = document.getElementById('column-custom-widths');
+            if (!customStyle) {
+                customStyle = document.createElement('style');
+                customStyle.id = 'column-custom-widths';
+                document.head.appendChild(customStyle);
+            }
+            
+            // Update or add rule for this column
+            const rules = customStyle.sheet.cssRules;
+            let ruleFound = false;
+            
+            for (let i = 0; i < rules.length; i++) {
+                if (rules[i].selectorText === `.${columnClass}`) {
+                    rules[i].style.width = width + 'px';
+                    rules[i].style.minWidth = width + 'px';
+                    rules[i].style.maxWidth = width + 'px';
+                    ruleFound = true;
+                    break;
+                }
+            }
+            
+            if (!ruleFound) {
+                customStyle.sheet.insertRule(`.${columnClass} { width: ${width}px !important; min-width: ${width}px !important; max-width: ${width}px !important; }`);
+            }
+        }
+
+        function loadColumnPreferences() {
+            const preferences = JSON.parse(localStorage.getItem('todoColumnWidths') || '{}');
+            Object.entries(preferences).forEach(([columnName, width]) => {
+                const column = document.querySelector(`[data-column="${columnName}"]`);
+                if (column) {
+                    const columnClass = column.className.match(/col-\w+/)[0];
+                    updateColumnCSS(columnClass, width);
+                }
+            });
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            loadColumnPreferences();
+            initColumnResizing();
+        });
+
+        // Reinitialize after HTMX updates
+        document.body.addEventListener('htmx:afterSwap', function() {
+            setTimeout(() => {
+                loadColumnPreferences();
+                initColumnResizing();
+            }, 100);
         });
     </script>
     
