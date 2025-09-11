@@ -77,47 +77,13 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     
     <!-- Alpine.js -->
     <script defer src="{% static 'js/alpine.min.js' %}"></script>
     
-    <!-- Global Bootstrap Dropdowns Initialization -->
-    <script>
-        // Global function to initialize all Bootstrap dropdowns
-        function initializeAllDropdowns() {
-            if (typeof bootstrap === 'undefined') {
-                console.error('Bootstrap not loaded, retrying...');
-                setTimeout(initializeAllDropdowns, 200);
-                return;
-            }
-            
-            // Initialize all dropdowns on the page
-            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function(dropdownElement) {
-                const existingInstance = bootstrap.Dropdown.getInstance(dropdownElement);
-                if (existingInstance) {
-                    existingInstance.dispose();
-                }
-                new bootstrap.Dropdown(dropdownElement);
-            });
-            
-            console.log('All Bootstrap dropdowns initialized');
-        }
-        
-        // Initialize on DOM load
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initializeAllDropdowns, 100);
-        });
-        
-        // Reinitialize after HTMX updates
-        document.body.addEventListener('htmx:afterSettle', function(event) {
-            setTimeout(initializeAllDropdowns, 50);
-        });
-    </script>
     
     <script>
         // HTMX Configuration
