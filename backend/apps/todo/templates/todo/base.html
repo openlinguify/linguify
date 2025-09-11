@@ -93,6 +93,8 @@
         document.body.addEventListener('htmx:configRequest', (event) => {
             // Include CSRF token in all HTMX requests
             event.detail.headers['X-CSRFToken'] = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            // Include credentials (session cookies) for authentication
+            event.detail.withCredentials = true;
         });
         
         // Handle HTMX errors

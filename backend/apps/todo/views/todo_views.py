@@ -1613,7 +1613,12 @@ class TaskDropdownToggleHTMXView(LoginRequiredMixin, HTMXResponseMixin, Template
                 'dropdown_open': True
             }
             print(f"DEBUG TaskDropdownToggleHTMXView: context={context}")
-            return self.render_htmx_response(context)
+            response = self.render_htmx_response(context)
+            # Prevent caching of HTMX responses
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response['Pragma'] = 'no-cache'
+            response['Expires'] = '0'
+            return response
         except Exception as e:
             print(f"DEBUG TaskDropdownToggleHTMXView: ERROR={e}")
             # Return a simple error response for debugging
