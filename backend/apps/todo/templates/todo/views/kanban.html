@@ -78,11 +78,7 @@
                                             </button></li>
                                             {% else %}
                                             <li><button class="dropdown-item text-danger" type="button"
-                                                    hx-delete="{% url 'todo_web:stage_delete_htmx' stage.id %}"
-                                                    hx-target="#stage-{{ stage.id }}"
-                                                    hx-swap="outerHTML"
-                                                    hx-confirm="Are you sure you want to delete stage '{{ stage.name }}'?"
-                                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                                                    onclick="showDeleteModal('{{ stage.id }}', '{{ stage.name }}')">
                                                 <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
                                             </button></li>
                                             {% endif %}
@@ -262,6 +258,28 @@
 <!-- Modal Container for HTMX -->
 <div id="modal-container"></div>
 
+<!-- Delete Stage Confirmation Modal - Compact -->
+<div id="delete-confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 8px; padding: 16px; width: 280px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <div style="text-align: center;">
+            <i class="bi bi-exclamation-triangle-fill" style="font-size: 24px; color: #F59E0B; margin-bottom: 8px;"></i>
+            <p style="font-size: 14px; margin-bottom: 4px; margin-top: 0;">
+                {% trans "Delete" %} <strong id="stage-name-to-delete" style="color: #2D5BBA;"></strong>?
+            </p>
+            <p style="font-size: 11px; color: #6B7280; margin-bottom: 12px; margin-top: 0;">{% trans "Tasks → Done" %}</p>
+            
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-linguify-secondary" style="flex: 1; padding: 8px; font-size: 12px;" onclick="hideDeleteModal()">
+                    {% trans "Cancel" %}
+                </button>
+                <button type="button" id="confirm-delete-btn" class="btn-linguify-danger" style="flex: 1; padding: 8px; font-size: 12px;">
+                    <i class="bi bi-trash"></i> {% trans "Delete" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Quick Task Creation Modal - Tailwind Modal -->
 <div class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" id="quickTaskModal">
     <div class="bg-white rounded-lg max-w-md w-full mx-4">
@@ -312,7 +330,7 @@
     </div>
 </div>
 
-<!-- Delete Stage Confirmation Modal - Linguify Design -->
+
 {% endblock %}
 
 {% comment %} Tous les styles sont centralisés dans tailwind-modals.css {% endcomment %}
@@ -983,6 +1001,7 @@ document.addEventListener('alpine:init', () => {
         // Modal state
         taskModal: false,
         
+        
         // Initialize
         init() {
             console.log('Kanban Alpine.js initialized');
@@ -992,6 +1011,7 @@ document.addEventListener('alpine:init', () => {
                 dropZoneActive: this.dropZoneActive,
                 quickAddStage: this.quickAddStage
             });
+            
         },
         
         // Enhanced Task Drag & Drop methods
@@ -1928,11 +1948,7 @@ document.addEventListener('alpine:init', () => {
                                             </button></li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li><button class="dropdown-item text-danger" type="button"
-                                                    hx-delete="/todo/htmx/stages/${stageData.id}/delete/"
-                                                    hx-target="#stage-${stageData.id}"
-                                                    hx-swap="outerHTML"
-                                                    hx-confirm="Are you sure you want to delete stage '${stageData.name}'?"
-                                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                                                    onclick="showDeleteModal('${stageData.id}', '${stageData.name}')">
                                                 <i class="bi bi-trash me-2"></i> Supprimer
                                             </button></li>
                                         </ul>
@@ -2301,6 +2317,64 @@ document.body.addEventListener('refresh-kanban-columns', function(event) {
     setTimeout(() => {
         window.location.reload();
     }, 1000); // Give time for notification to show
+});
+
+// Simple delete confirmation modal functions
+let currentStageToDelete = null;
+
+function showDeleteModal(stageId, stageName) {
+    console.log('Showing delete modal for:', stageName, stageId);
+    currentStageToDelete = stageId;
+    document.getElementById('stage-name-to-delete').textContent = stageName;
+    const modal = document.getElementById('delete-confirm-modal');
+    modal.style.display = 'flex';
+}
+
+function hideDeleteModal() {
+    currentStageToDelete = null;
+    document.getElementById('delete-confirm-modal').style.display = 'none';
+}
+
+function confirmStageDelete() {
+    if (!currentStageToDelete) return;
+    
+    const deleteBtn = document.getElementById('confirm-delete-btn');
+    const originalContent = deleteBtn.innerHTML;
+    deleteBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>{% trans "Deleting..." %}';
+    deleteBtn.disabled = true;
+    
+    // Use HTMX to delete the stage
+    htmx.ajax('DELETE', `/todo/htmx/stages/${currentStageToDelete}/delete/`, {
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        target: `#stage-${currentStageToDelete}`,
+        swap: 'outerHTML'
+    }).then(() => {
+        hideDeleteModal();
+        window.notificationService?.success('Stage deleted successfully');
+        setTimeout(() => window.location.reload(), 1000);
+    }).catch(error => {
+        console.error('Error deleting stage:', error);
+        deleteBtn.innerHTML = originalContent;
+        deleteBtn.disabled = false;
+        window.notificationService?.error('Error deleting stage');
+    });
+}
+
+// Set up the confirm button
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmBtn = document.getElementById('confirm-delete-btn');
+    if (confirmBtn) {
+        confirmBtn.onclick = confirmStageDelete;
+    }
+});
+
+// Close modal on ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && currentStageToDelete) {
+        hideDeleteModal();
+    }
 });
 
 </script>
