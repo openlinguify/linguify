@@ -209,7 +209,7 @@
 
                 <!-- Add Stage Column -->
                 <div class="add-stage-column flex items-center justify-center">
-                    <button class="add-stage-btn-linguify" onclick="addNewStage()">
+                    <button class="add-stage-btn-linguify" @click="addNewStage()">
                         <i class="bi bi-plus-lg" style="font-size: 2rem;"></i>
                         <span class="fw-medium">{% trans "Add Stage" %}</span>
                     </button>
@@ -994,6 +994,39 @@ document.addEventListener('alpine:init', () => {
         
         hideModal() {
             this.taskModal = false;
+        },
+        
+        // Stage creation method
+        addNewStage() {
+            // Count existing stages to generate next stage number
+            const existingStages = document.querySelectorAll('.kanban-column').length;
+            const stageName = `Stage ${existingStages + 1}`;
+            
+            // Create new stage via API
+            fetch('/todo/stages/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    name: stageName,
+                    sequence: 999 // Put at the end
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.notificationService?.success('Stage créé avec succès');
+                    // Reload to show the new stage
+                    setTimeout(() => window.location.reload(), 500);
+                } else {
+                    window.notificationService?.error('Erreur lors de la création du stage');
+                }
+            })
+            .catch(error => {
+                console.error('Error creating stage:', error);
+                window.notificationService?.error('Erreur de connexion');
+            });
         }
     }));
 });
