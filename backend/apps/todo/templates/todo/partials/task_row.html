@@ -1,0 +1,134 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Single Task Row (for HTMX updates) -->
+<tr class="task-row-linguify {% if task.state == '1_done' %}task-completed{% endif %}" 
+    id="task-row-{{ task.id }}" data-task-id="{{ task.id }}">
+    
+    <!-- Selector Column -->
+    <td class="col-selector">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input task-select" value="{{ task.id }}">
+            <label class="form-check-label"></label>
+        </div>
+    </td>
+    
+    <!-- Priority Column -->
+    <td class="col-priority">
+        {% include 'todo/partials/task_priority_button.html' with task=task %}
+    </td>
+    
+    <!-- Status Column -->
+    <td class="col-status">
+        {% include 'todo/partials/task_status_button.html' with task=task %}
+    </td>
+    
+    <!-- Title Column -->
+    <td class="col-title">
+        <div class="task-title-container">
+            <div class="task-title-row d-flex align-items-center">
+                <div class="task-title-text {% if task.state == '1_done' %}text-muted text-decoration-line-through{% endif %}" 
+                     hx-get="{% url 'todo:task_edit_htmx' task.id %}"
+                     hx-target="#task-row-{{ task.id }}"
+                     hx-swap="outerHTML"
+                     style="cursor: pointer;"
+                     {% if task.description %}title="{{ task.title }} - {{ task.description|striptags }}"{% else %}title="{{ task.title }}"{% endif %}>
+                    {{ task.title }}
+                </div>
+                <div class="task-meta-indicators ms-auto d-flex align-items-center gap-1">
+                    {% if task.subtask_count > 0 %}
+                    <span class="badge badge-outline-secondary">
+                        {{ task.completed_subtask_count }}/{{ task.subtask_count }}
+                    </span>
+                    {% endif %}
+                    {% if task.description %}
+                    <i class="bi bi-chat-text text-muted" title="{{ task.description|striptags }}" style="font-size: 0.8rem;"></i>
+                    {% endif %}
+                    {% if task.progress_percentage > 0 and task.state != '1_done' %}
+                    <div class="progress-indicator" style="width: 30px; height: 4px; background: var(--linguify-gray-200); border-radius: 2px; position: relative;">
+                        <div class="progress-bar" style="width: {{ task.progress_percentage }}%; height: 100%; background: var(--linguify-primary); border-radius: 2px;"></div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </td>
+    
+    <!-- Stage Column -->
+    <td class="col-stage">
+        <span class="badge" style="background-color: {{ task.personal_stage_type.color }}20; color: {{ task.personal_stage_type.color }}; border: 1px solid {{ task.personal_stage_type.color }}40;" 
+              title="{{ task.personal_stage_type.name }}">
+            {{ task.personal_stage_type.name }}
+        </span>
+    </td>
+    
+    <!-- Project Column -->
+    <td class="col-project">
+        {% if task.project %}
+        <div class="d-flex align-items-center" title="{{ task.project.name }}">
+            <i class="bi bi-folder text-muted me-1" style="flex-shrink: 0;"></i>
+            <span>{{ task.project.name }}</span>
+        </div>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+    </td>
+    
+    <!-- Tags Column -->
+    <td class="col-tags">
+        {% if task.tags.exists %}
+        <div class="tags-container">
+            {% for tag in task.tags.all|slice:":3" %}
+            <span class="badge badge-tag me-1" style="background-color: {{ tag.color }}20; color: {{ tag.color }};">
+                {{ tag.name }}
+            </span>
+            {% endfor %}
+            {% if task.tags.count > 3 %}
+            <span class="badge badge-outline-secondary">+{{ task.tags.count|add:"-3" }}</span>
+            {% endif %}
+        </div>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+    </td>
+    
+    <!-- Due Date Column -->
+    <td class="col-due-date">
+        {% if task.due_date %}
+        <div class="due-date-container">
+            {% if task.due_date.date == today %}
+            <span class="badge bg-warning text-dark">
+                <i class="bi bi-exclamation-triangle me-1"></i>{% trans "Today" %}
+            </span>
+            {% elif task.is_overdue %}
+            <span class="badge bg-danger">
+                <i class="bi bi-exclamation-circle me-1"></i>{{ task.due_date|date:"M d" }}
+            </span>
+            {% else %}
+            <span class="text-muted">
+                <i class="bi bi-calendar me-1"></i>{{ task.due_date|date:"M d, Y" }}
+            </span>
+            {% endif %}
+        </div>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+    </td>
+    
+    <!-- Actions Column -->
+    <td class="col-actions">
+        <div class="relative inline-block" id="dropdown-container-{{ task.id }}">
+            <button type="button" 
+                    class="menu-button inline-flex items-center justify-center w-8 h-8 text-gray-400 bg-transparent border border-gray-300 rounded-md hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50 transition-colors duration-150"
+                    hx-post="{% url 'todo:task_dropdown_toggle_htmx' task.id %}"
+                    hx-target="#dropdown-container-{{ task.id }}"
+                    hx-swap="beforeend"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+            </button>
+        </div>
+    </td>
+</tr>

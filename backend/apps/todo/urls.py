@@ -1,14 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (
-    TodoMainView, TodoKanbanView, TodoListView, TodoActivityView, TodoFormView,
-    PersonalStageTypeViewSet, CategoryViewSet, TagViewSet, ProjectViewSet, TaskViewSet,
-    NoteViewSet, ReminderViewSet, TaskTemplateViewSet,
-    TodoSettingsAPI, TodoUserPreferencesAPI, TodoDashboardAPI,
-    # HTMX Views
-    TaskToggleHTMXView, TaskMoveHTMXView, TaskQuickCreateHTMXView, TaskDeleteHTMXView,
-    TaskListTableHTMXView, KanbanColumnHTMXView, TaskFormModalHTMXView, StageDeleteHTMXView, StageReorderHTMXView
-)
+from .views import *
 from django.urls import path
 from django.contrib.auth.decorators import login_required
 
@@ -53,4 +45,11 @@ urlpatterns = [
     path('htmx/tasks/modal/<uuid:task_id>/', TaskFormModalHTMXView.as_view(), name='task_form_modal_edit_htmx'),
     path('htmx/stages/<uuid:stage_id>/delete/', StageDeleteHTMXView.as_view(), name='stage_delete_htmx'),
     path('htmx/stages/<uuid:stage_id>/reorder/', StageReorderHTMXView.as_view(), name='stage_reorder_htmx'),
+    
+    # New HTMX dropdown endpoints
+    path('htmx/tasks/<uuid:task_id>/dropdown/', TaskDropdownToggleHTMXView.as_view(), name='task_dropdown_toggle_htmx'),
+    path('htmx/tasks/<uuid:task_id>/edit/', TaskEditHTMXView.as_view(), name='task_edit_htmx'),
+    path('htmx/tasks/<uuid:task_id>/duplicate/', TaskDuplicateHTMXView.as_view(), name='task_duplicate_htmx'),
+    path('htmx/tasks/<uuid:task_id>/priority/', TaskPriorityToggleHTMXView.as_view(), name='task_priority_toggle_htmx'),
+    path('htmx/tasks/<uuid:task_id>/status/', TaskStatusToggleHTMXView.as_view(), name='task_status_toggle_htmx'),
 ]

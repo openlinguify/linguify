@@ -1,0 +1,15 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Status Button (HTMX) -->
+<button hx-post="{% url 'todo:task_status_toggle_htmx' task.id %}"
+        hx-target="closest tr"
+        hx-swap="outerHTML"
+        class="status-btn-table"
+        title="{% trans 'Toggle Complete' %}">
+    {% if task.state == '1_done' %}
+    <i class="bi bi-check-circle-fill text-success"></i>
+    {% else %}
+    <i class="bi bi-circle text-muted"></i>
+    {% endif %}
+</button>

@@ -1592,3 +1592,128 @@ class StageReorderHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             s.save(update_fields=['sequence'])
         
         return HttpResponse('')  # Empty response for successful reorder
+
+
+class TaskDropdownToggleHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for toggling task dropdown menus"""
+    htmx_template_name = 'todo/partials/task_dropdown.html'
+    
+    def post(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        
+        context = {
+            'task': task,
+            'dropdown_open': True
+        }
+        return self.render_htmx_response(context)
+
+
+class TaskEditHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for editing tasks"""
+    htmx_template_name = 'todo/partials/task_edit_form.html'
+    
+    def get(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        
+        context = {
+            'task': task,
+            'stages': PersonalStageType.objects.filter(user=request.user).order_by('sequence'),
+            'projects': Project.objects.filter(user=request.user, status='active'),
+            'tags': Tag.objects.filter(user=request.user).order_by('name'),
+        }
+        return self.render_htmx_response(context)
+    
+    def post(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        
+        # Process form data
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        stage_id = request.POST.get('stage_id')
+        project_id = request.POST.get('project_id')
+        priority = request.POST.get('priority', '0')
+        due_date = request.POST.get('due_date')
+        
+        if not title:
+            return HttpResponse('<div class="text-red-500">Title is required</div>')
+        
+        # Get related objects
+        stage = get_object_or_404(PersonalStageType, id=stage_id, user=request.user) if stage_id else task.personal_stage_type
+        project = get_object_or_404(Project, id=project_id, user=request.user) if project_id else None
+        
+        # Update task
+        task.title = title
+        task.description = description
+        task.personal_stage_type = stage
+        task.project = project
+        task.priority = priority
+        if due_date:
+            task.due_date = due_date
+        task.save()
+        
+        # Return updated task row
+        return self.render_htmx_response({'task': task}, 'todo/partials/task_row.html')
+
+
+class TaskDuplicateHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for duplicating tasks"""
+    htmx_template_name = 'todo/partials/task_row.html'
+    
+    def post(self, request, task_id):
+        original_task = get_object_or_404(Task, id=task_id, user=request.user)
+        
+        # Create duplicate task
+        duplicate_task = Task.objects.create(
+            user=request.user,
+            title=f"{original_task.title} (Copy)",
+            description=original_task.description,
+            personal_stage_type=original_task.personal_stage_type,
+            project=original_task.project,
+            priority=original_task.priority,
+            due_date=original_task.due_date,
+            state='1_todo'
+        )
+        
+        # Copy tags
+        duplicate_task.tags.set(original_task.tags.all())
+        
+        # Return new task row with HX-Swap-OOB to add it after the original
+        context = {'task': duplicate_task, 'today': timezone.now().date()}
+        html = render_to_string('todo/partials/task_row.html', context, request=request)
+        return HttpResponse(f'{html}')  # Just return the new row, let HTMX handle placement
+
+
+class TaskPriorityToggleHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for toggling task priority"""
+    htmx_template_name = 'todo/partials/task_priority_button.html'
+    
+    def post(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        
+        # Toggle priority
+        task.priority = '1' if task.priority == '0' else '0'
+        task.save()
+        
+        context = {'task': task}
+        return self.render_htmx_response(context)
+
+
+class TaskStatusToggleHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for toggling task completion status"""
+    htmx_template_name = 'todo/partials/task_row.html'
+    
+    def post(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        
+        # Toggle completion
+        if task.state == '1_done':
+            task.state = '1_todo'
+            task.completed_at = None
+        else:
+            task.state = '1_done'
+            task.completed_at = timezone.now()
+        
+        task.save()
+        
+        context = {'task': task, 'today': timezone.now().date()}
+        return self.render_htmx_response(context)

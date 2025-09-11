@@ -1,0 +1,15 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Priority Button (HTMX) -->
+<button hx-post="{% url 'todo:task_priority_toggle_htmx' task.id %}"
+        hx-target="this"
+        hx-swap="outerHTML"
+        class="priority-btn-table" 
+        title="{% trans 'Toggle Priority' %}">
+    {% if task.priority == '1' %}
+    <i class="bi bi-star-fill text-warning"></i>
+    {% else %}
+    <i class="bi bi-star text-muted"></i>
+    {% endif %}
+</button>
