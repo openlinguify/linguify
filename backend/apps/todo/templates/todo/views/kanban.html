@@ -76,8 +76,11 @@
                                                 <i class="bi bi-shield-check me-2"></i> Stage protégé
                                             </button></li>
                                             {% else %}
-                                            <li><button class="dropdown-item text-danger" type="button" 
-                                                    @click="deleteStage('{{ stage.id }}', '{{ stage.name }}')">
+                                            <li><button class="dropdown-item text-danger" type="button"
+                                                    hx-delete="{% url 'todo_web:stage_delete_htmx' stage.id %}"
+                                                    hx-target="#stage-{{ stage.id }}"
+                                                    hx-swap="outerHTML"
+                                                    hx-confirm="Are you sure you want to delete stage '{{ stage.name }}'?">
                                                 <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
                                             </button></li>
                                             {% endif %}
@@ -257,83 +260,6 @@
 <!-- Modal Container for HTMX -->
 <div id="modal-container"></div>
 
-<!-- Stage Deletion Confirmation Modal -->
-<div x-data="{ show: false, stageId: null, stageName: '', confirmCallback: null }"
-     x-show="show"
-     x-transition:enter="transition ease-out duration-300"
-     x-transition:enter-start="opacity-0"
-     x-transition:enter-end="opacity-100"
-     x-transition:leave="transition ease-in duration-200"
-     x-transition:leave-start="opacity-100"
-     x-transition:leave-end="opacity-0"
-     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-     id="deleteStageModal"
-     style="display: none;"
-     @keydown.escape.window="show = false">
-    
-    <div x-show="show"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 transform scale-90"
-         x-transition:enter-end="opacity-100 transform scale-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100 transform scale-100"
-         x-transition:leave-end="opacity-0 transform scale-90"
-         class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4"
-         @click.stop>
-        
-        <!-- Header -->
-        <div class="px-6 py-4 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                        <i class="bi bi-exclamation-triangle text-red-600 text-lg"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Supprimer le stage</h3>
-                </div>
-                <button @click="show = false" class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <i class="bi bi-x text-xl"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Body -->
-        <div class="px-6 py-4">
-            <div class="mb-4">
-                <p class="text-gray-700 mb-3">
-                    Êtes-vous sûr de vouloir supprimer le stage 
-                    <span class="font-semibold text-gray-900" x-text="stageName"></span> ?
-                </p>
-                
-                <div class="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-lg">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <i class="bi bi-info-circle text-amber-600"></i>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-amber-700">
-                                <strong>Cette action est irréversible.</strong><br>
-                                Les tâches de ce stage ne seront pas supprimées mais n'appartiendront plus à aucun stage.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <div class="px-6 py-4 bg-gray-50 rounded-b-xl flex items-center justify-end space-x-3">
-            <button @click="show = false" 
-                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
-                <i class="bi bi-x-circle me-2"></i>Annuler
-            </button>
-            <button @click="if(confirmCallback) confirmCallback(); show = false;" 
-                    class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700 hover:border-red-700 transition-all duration-200 shadow-sm">
-                <i class="bi bi-trash me-2"></i>Supprimer définitivement
-            </button>
-        </div>
-    </div>
-</div>
-
 <!-- Quick Task Creation Modal - Tailwind Modal -->
 <div class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" id="quickTaskModal">
     <div class="bg-white rounded-lg max-w-md w-full mx-4">
@@ -384,63 +310,14 @@
     </div>
 </div>
 
-<!-- Delete Stage Confirmation Modal -->
-<div class="modal fade" id="deleteStageModal" tabindex="-1" aria-labelledby="deleteStageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title text-danger" id="deleteStageModalLabel">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    Supprimer le stage
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="text-center mb-4">
-                    <div class="text-danger mb-3" style="font-size: 3rem;">
-                        <i class="bi bi-trash"></i>
-                    </div>
-                    <h6 class="fw-bold mb-3" id="stageNameToDelete">Nom du stage</h6>
-                </div>
-                
-                <div class="alert alert-warning border-0 mb-3" style="background: #fff3cd;">
-                    <div class="d-flex">
-                        <i class="bi bi-exclamation-triangle text-warning me-3 mt-1 flex-shrink-0"></i>
-                        <div>
-                            <p class="mb-2"><strong>Êtes-vous sûr de vouloir supprimer ce stage ?</strong></p>
-                            <p class="mb-0" id="deleteStageWarning">Cette action est irréversible.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="tasksWarning" class="alert alert-info border-0" style="background: #d1ecf1; display: none;">
-                    <div class="d-flex">
-                        <i class="bi bi-info-circle text-info me-3 mt-1 flex-shrink-0"></i>
-                        <div>
-                            <p class="mb-2"><strong>Que se passe-t-il avec les tâches ?</strong></p>
-                            <ul class="mb-0 ps-0" style="list-style: none;">
-                                <li class="mb-1"><i class="bi bi-shield-check text-info me-2"></i>Les tâches <strong>ne seront pas supprimées</strong></li>
-                                <li class="mb-1"><i class="bi bi-arrow-right text-info me-2"></i>Elles n'appartiendront plus à aucun stage</li>
-                                <li><i class="bi bi-list-task text-info me-2"></i>Vous pourrez les réassigner depuis la vue Liste</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-2"></i>Annuler
-                </button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteStage">
-                    <i class="bi bi-trash me-2"></i>Supprimer définitivement
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Delete Stage Confirmation Modal - Linguify Design -->
 {% endblock %}
 
 {% comment %} Tous les styles sont centralisés dans tailwind-modals.css {% endcomment %}
+
+<!-- Linguify Modal Styles -->
+<style>
+</style>
 
 <style>
 /* SortableJS drag & drop styles */
@@ -1108,6 +985,11 @@ document.addEventListener('alpine:init', () => {
         init() {
             console.log('Kanban Alpine.js initialized');
             console.log('Alpine.js version:', Alpine.version);
+            console.log('Available variables:', {
+                editingStage: this.editingStage,
+                dropZoneActive: this.dropZoneActive,
+                quickAddStage: this.quickAddStage
+            });
         },
         
         // Enhanced Task Drag & Drop methods
@@ -1802,17 +1684,17 @@ document.addEventListener('alpine:init', () => {
                             titleElement.setAttribute('title', newTitle);
                         }
                         this.cancelEditStage();
-                        window.notificationService?.success('Titre du stage modifié');
+                        window.notificationService?.success('Stage title updated');
                     } else {
                         response.text().then(text => {
                             console.error('Server error:', text);
-                            window.notificationService?.error('Erreur serveur lors de la modification');
+                            window.notificationService?.error('Server error during update');
                         });
                         this.cancelEditStage();
                     }
                 }).catch(error => {
                     console.error('Network error:', error);
-                    window.notificationService?.error('Erreur de connexion');
+                    window.notificationService?.error('Connection error');
                     this.cancelEditStage();
                 });
             } else {
@@ -1973,14 +1855,14 @@ document.addEventListener('alpine:init', () => {
                 if (data.id) {
                     // Add stage to DOM immediately without page reload
                     this.addStageToDOM(data);
-                    window.notificationService?.success('Stage créé avec succès');
+                    window.notificationService?.success('Stage created successfully');
                 } else {
-                    window.notificationService?.error('Erreur lors de la création du stage');
+                    window.notificationService?.error('Error creating stage');
                 }
             })
             .catch(error => {
                 console.error('Error creating stage:', error);
-                window.notificationService?.error('Erreur de connexion');
+                window.notificationService?.error('Connection error');
             });
         },
         
@@ -2043,8 +1925,11 @@ document.addEventListener('alpine:init', () => {
                                                 Masquer
                                             </button></li>
                                             <li><hr class="dropdown-divider"></li>
-                                            <li><button class="dropdown-item text-danger" type="button" 
-                                                    @click="deleteStage('${stageData.id}', '${stageData.name}')">
+                                            <li><button class="dropdown-item text-danger" type="button"
+                                                    hx-delete="/todo/htmx/stages/${stageData.id}/delete/"
+                                                    hx-target="#stage-${stageData.id}"
+                                                    hx-swap="outerHTML"
+                                                    hx-confirm="Are you sure you want to delete stage '${stageData.name}'?">
                                                 <i class="bi bi-trash me-2"></i> Supprimer
                                             </button></li>
                                         </ul>
@@ -2134,72 +2019,11 @@ document.addEventListener('alpine:init', () => {
             });
         },
         
-        // Delete stage method - Using custom modal
-        deleteStage(stageId, stageName) {
-            // Check if stage is critical and should not be deleted
-            const criticalStages = ['To Do', 'Done', 'Archives'];
-            if (criticalStages.includes(stageName)) {
-                window.notificationService?.error(`Impossible de supprimer le stage "${stageName}" car il est nécessaire au bon fonctionnement de l'application.`);
-                return;
-            }
-            
-            // Show custom confirmation modal for non-critical stages
-            this.showDeleteConfirmModal(stageId, stageName, () => {
-                this.performStageDelete(stageId);
-            });
-        },
+        // Delete stage method - Simple Bootstrap modal
         
-        showDeleteConfirmModal(stageId, stageName, callback) {
-            const modal = document.getElementById('deleteStageModal');
-            const modalComponent = Alpine.$data(modal);
-            
-            modalComponent.stageId = stageId;
-            modalComponent.stageName = stageName;
-            modalComponent.confirmCallback = callback;
-            modalComponent.show = true;
-        },
-        
-        performStageDelete(stageId) {
-            fetch(`/todo/htmx/stages/${stageId}/delete/`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                    'HX-Request': 'true'
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Remove stage from DOM with animation
-                    const stageElement = document.querySelector(`[data-stage-id="${stageId}"]`);
-                    if (stageElement) {
-                        stageElement.style.opacity = '0.5';
-                        stageElement.style.transform = 'translateX(-100px)';
-                        stageElement.style.transition = 'all 0.3s ease';
-                        
-                        setTimeout(() => {
-                            stageElement.remove();
-                        }, 300);
-                    }
-                    window.notificationService?.success('Stage supprimé avec succès');
-                } else {
-                    response.text().then(text => {
-                        // Extract error message from HTML response
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(text, 'text/html');
-                        const errorDiv = doc.querySelector('.text-red-500');
-                        const errorMessage = errorDiv ? errorDiv.textContent : 'Erreur lors de la suppression du stage';
-                        
-                        window.notificationService?.error(errorMessage);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting stage:', error);
-                window.notificationService?.error('Erreur de connexion');
-            });
-        }
     }));
 });
+
 
 // Global escape key handler
 document.addEventListener('keydown', function(e) {
@@ -2277,7 +2101,7 @@ window.fallbackStageEdit = function(stageId, stageName) {
                     window.notificationService?.error('Erreur lors de la modification');
                 }
             }).catch(() => {
-                window.notificationService?.error('Erreur de connexion');
+                window.notificationService?.error('Connection error');
             });
         }
         
