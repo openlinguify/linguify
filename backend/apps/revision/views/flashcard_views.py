@@ -667,6 +667,58 @@ class FlashcardViewSet(viewsets.ModelViewSet):
             
         return super().destroy(request, *args, **kwargs)
 
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def flip_card(self, request, pk=None):
+        """Inverser le contenu recto/verso d'une carte individuelle."""
+        try:
+            card = self.get_object()
+            
+            # Vérifier que l'utilisateur est propriétaire de la carte
+            if card.user != request.user:
+                return Response(
+                    {"detail": "You don't have permission to modify this card"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            # Vérifier si le deck est archivé
+            if card.deck.is_archived:
+                return Response(
+                    {"detail": "You cannot modify cards in an archived deck"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Sauvegarder les valeurs actuelles
+            original_front = card.front_text
+            original_back = card.back_text
+            original_front_lang = card.front_language
+            original_back_lang = card.back_language
+            
+            # Inverser le contenu
+            card.front_text = original_back
+            card.back_text = original_front
+            
+            # Inverser aussi les langues si elles sont définies
+            if original_front_lang and original_back_lang:
+                card.front_language = original_back_lang
+                card.back_language = original_front_lang
+            
+            card.save()
+            
+            # Retourner la carte mise à jour
+            serializer = self.get_serializer(card)
+            return Response({
+                "success": True,
+                "message": "Contenu de la carte inversé avec succès",
+                "card": serializer.data
+            })
+            
+        except Exception as e:
+            logger.error(f"Error flipping card {pk}: {str(e)}")
+            return Response(
+                {"detail": f"Failed to flip card: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
     @action(detail=True, methods=['patch'], permission_classes=[IsAuthenticated])
     def toggle_learned(self, request, pk=None):
         """Basculer l'état d'apprentissage et mettre à jour les statistiques."""

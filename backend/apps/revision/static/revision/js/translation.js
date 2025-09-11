@@ -257,6 +257,73 @@ function getNotificationIcon(type) {
     return mapping[type] || 'bi-info-circle';
 }
 
+// Fonction simple pour inverser une carte
+window.flipCard = async function(cardId) {
+    console.log('Inversion carte:', cardId);
+    
+    // Trouver la carte dans le DOM
+    const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+    const frontElement = cardElement?.querySelector('.card-front-text');
+    const backElement = cardElement?.querySelector('.card-back-text');
+    
+    if (!cardElement || !frontElement || !backElement) {
+        showNotification('Carte non trouvée', 'error');
+        return;
+    }
+    
+    // Ajouter animation de chargement
+    const button = cardElement.querySelector('button');
+    const originalContent = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="spinner-border spinner-border-sm"></i>';
+    
+    try {
+        const response = await fetch(`/api/v1/revision/flashcards/${cardId}/flip_card/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Animation d'inversion - swap le contenu
+            const frontText = frontElement.textContent;
+            const backText = backElement.textContent;
+            
+            // Animation de fade out
+            cardElement.style.transition = 'opacity 0.2s ease';
+            cardElement.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                // Échanger le contenu
+                frontElement.textContent = backText;
+                backElement.textContent = frontText;
+                
+                // Animation de fade in
+                cardElement.style.opacity = '1';
+                
+                showNotification('Carte inversée !', 'success');
+            }, 200);
+            
+        } else {
+            showNotification(data.detail || 'Erreur', 'error');
+        }
+    } catch (error) {
+        showNotification('Erreur réseau', 'error');
+        console.error(error);
+    } finally {
+        // Restaurer le bouton
+        setTimeout(() => {
+            button.disabled = false;
+            button.innerHTML = originalContent;
+        }, 400);
+    }
+};
+
 // Exposer la fonction globalement
 window.translateText = translateText;
 

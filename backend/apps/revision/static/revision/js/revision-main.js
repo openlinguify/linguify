@@ -890,16 +890,24 @@ async function loadDeckCards() {
         
         // Render cards with deck ID for debugging
         elements.cardsContainer.innerHTML = filteredCards.map(card => `
-            <div class="card mb-3">
+            <div class="card mb-3" data-card-id="${card.id}">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
                             <h6 class="text-muted">Recto</h6>
-                            <p class="card-text">${card.front_text}</p>
+                            <p class="card-text card-front-text">${card.front_text}</p>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-2 text-center">
+                            <button class="btn btn-link p-0" 
+                                    onclick="window.flipCard(${card.id})" 
+                                    title="Inverser recto/verso"
+                                    style="color: #6c757d; font-size: 1rem; border: none; background: none; text-decoration: none;">
+                                <i class="bi bi-arrow-left-right"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-5">
                             <h6 class="text-muted">Verso</h6>
-                            <p class="card-text">${card.back_text}</p>
+                            <p class="card-text card-back-text">${card.back_text}</p>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-3">
