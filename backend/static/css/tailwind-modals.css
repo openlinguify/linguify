@@ -5933,45 +5933,6 @@ thead .col-selector .form-check {
     max-width: 100px;
 }
 
-/* Column Resizer Styles */
-.resizable-column {
-    position: relative;
-}
-
-.column-resizer {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 5px;
-    height: 100%;
-    cursor: col-resize;
-    background: transparent;
-    z-index: 10;
-    border-right: 2px solid transparent;
-    transition: border-color 0.2s ease;
-}
-
-.column-resizer:hover,
-.column-resizer.resizing {
-    border-right-color: var(--linguify-primary, #007bff);
-}
-
-.resizable-column:last-child .column-resizer {
-    display: none; /* Hide resizer on last column */
-}
-
-/* Prevent text selection during resize */
-.table-resizing {
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-}
-
-.table-resizing * {
-    cursor: col-resize !important;
-}
-
 /* Ensure table layout is fixed for consistent column widths */
 #tasksTable {
     table-layout: fixed;
