@@ -871,11 +871,29 @@ async function loadDeckCards() {
         
         console.log(`API response for deck ${deckId}:`, response);
         
-        // Handle both paginated response and direct array response
-        const cards = response.results || response || [];
+        // Handle different response formats:
+        // 1. Paginated response: {results: [...]}
+        // 2. Smart mode response: {cards: [...], study_session: {...}}
+        // 3. Direct array response: [...]
+        let cards = [];
+        if (response.results) {
+            cards = response.results; // Paginated response
+        } else if (response.cards) {
+            cards = response.cards; // Smart mode response
+        } else if (Array.isArray(response)) {
+            cards = response; // Direct array
+        } else {
+            console.error('Unexpected response format:', response);
+            cards = [];
+        }
+        
+        console.log('Raw cards data:', cards);
+        console.log('First card sample:', cards[0]);
         
         // Filter cards to only show those belonging to the current deck
         const filteredCards = cards.filter(card => card.deck === deckId);
+        console.log('Filtered cards:', filteredCards);
+        console.log('First filtered card sample:', filteredCards[0]);
         
         console.log(`Found ${filteredCards.length} cards for deck ${deckId}`);
         
@@ -889,18 +907,22 @@ async function loadDeckCards() {
         elements.cardsContainer.style.display = 'block';
         
         // Render cards with deck ID for debugging
-        elements.cardsContainer.innerHTML = filteredCards.map(card => `
-            <div class="card mb-3 position-relative" data-card-id="${card.id}">
+        elements.cardsContainer.innerHTML = filteredCards.map((card, index) => {
+            const cardId = card.id || card.pk || `temp-${deckId}-${index}`;
+            console.log('Rendering card with ID:', cardId, 'Card object:', card);
+            
+            return `
+            <div class="card mb-3 position-relative" data-card-id="${cardId}">
                 <div class="position-absolute" style="top: 8px; right: 8px; z-index: 10;">
                     <div class="d-flex gap-2">
                         <button class="btn btn-link p-0" 
-                                onclick="window.revisionMain.editCard(${card.id})" 
+                                onclick="window.revisionMain?.editCard(${cardId})" 
                                 title="Modifier"
                                 style="color: #6c757d; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <button class="btn btn-link p-0" 
-                                onclick="window.revisionMain.deleteCard(${card.id})" 
+                                onclick="window.revisionMain?.deleteCard(${cardId})" 
                                 title="Supprimer"
                                 style="color: #6c757d; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
                             <i class="bi bi-trash"></i>
@@ -910,18 +932,18 @@ async function loadDeckCards() {
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-5">
-                            <p class="card-text card-front-text mb-0">${card.front_text}</p>
+                            <p class="card-text card-front-text mb-0">${card.front_text || ''}</p>
                         </div>
                         <div class="col-md-2 text-center">
                             <button class="btn btn-link p-0" 
-                                    onclick="window.flipCard(${card.id})" 
+                                    onclick="window.flipCard(${cardId})" 
                                     title="Inverser recto/verso"
                                     style="color: #6c757d; font-size: 1rem; border: none; background: none; text-decoration: none;">
                                 <i class="bi bi-arrow-left-right"></i>
                             </button>
                         </div>
                         <div class="col-md-5">
-                            <p class="card-text card-back-text mb-0">${card.back_text}</p>
+                            <p class="card-text card-back-text mb-0">${card.back_text || ''}</p>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-3">
@@ -936,7 +958,8 @@ async function loadDeckCards() {
                     </div>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
         
     } catch (error) {
         console.error('Error loading deck cards:', error);

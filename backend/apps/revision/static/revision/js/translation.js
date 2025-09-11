@@ -261,13 +261,26 @@ function getNotificationIcon(type) {
 window.flipCard = async function(cardId) {
     console.log('Inversion carte:', cardId);
     
+    // Valider l'ID de la carte
+    if (!cardId || cardId === 'undefined' || cardId === 'unknown') {
+        console.error('ID de carte invalide:', cardId);
+        showNotification('Impossible d\'inverser la carte: ID invalide', 'error');
+        return;
+    }
+    
+    // Si c'est un ID temporaire, faire uniquement l'inversion visuelle
+    if (cardId.toString().startsWith('temp-')) {
+        console.log('ID temporaire détecté, inversion locale uniquement:', cardId);
+    }
+    
     // Trouver la carte dans le DOM
     const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
     const frontElement = cardElement?.querySelector('.card-front-text');
     const backElement = cardElement?.querySelector('.card-back-text');
     
     if (!cardElement || !frontElement || !backElement) {
-        showNotification('Carte non trouvée', 'error');
+        console.error('Éléments de carte introuvables pour l\'ID:', cardId);
+        showNotification('Impossible de trouver les éléments de la carte', 'error');
         return;
     }
     
@@ -278,18 +291,35 @@ window.flipCard = async function(cardId) {
     button.innerHTML = '<i class="spinner-border spinner-border-sm"></i>';
     
     try {
-        const response = await fetch(`/api/v1/revision/flashcards/${cardId}/flip_card/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken(),
-                'X-Requested-With': 'XMLHttpRequest'
+        let apiSuccess = true;
+        
+        // Pour les IDs temporaires, on fait uniquement l'inversion visuelle
+        if (cardId.toString().startsWith('temp-')) {
+            console.log('Inversion locale pour ID temporaire');
+            // Simuler un délai d'API pour l'UX
+            await new Promise(resolve => setTimeout(resolve, 200));
+        } else {
+            // Pour les vraies cartes, appeler l'API
+            const response = await fetch(`/api/v1/revision/flashcards/${cardId}/flip_card/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken(),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const data = await response.json();
+            apiSuccess = response.ok && data.success;
+            
+            if (!apiSuccess) {
+                console.error('Erreur API flip:', data);
+                showNotification(data.error || 'Erreur lors de l\'inversion', 'error');
+                return;
             }
-        });
+        }
         
-        const data = await response.json();
-        
-        if (response.ok && data.success) {
+        if (apiSuccess) {
             // Animation d'inversion - swap le contenu
             const frontText = frontElement.textContent;
             const backText = backElement.textContent;
@@ -306,11 +336,10 @@ window.flipCard = async function(cardId) {
                 // Animation de fade in
                 cardElement.style.opacity = '1';
                 
-                showNotification('Carte inversée !', 'success');
+                const message = cardId.toString().startsWith('temp-') ? 
+                    'Carte inversée (temporaire)' : 'Carte inversée !';
+                showNotification(message, 'success');
             }, 200);
-            
-        } else {
-            showNotification(data.detail || 'Erreur', 'error');
         }
     } catch (error) {
         showNotification('Erreur réseau', 'error');

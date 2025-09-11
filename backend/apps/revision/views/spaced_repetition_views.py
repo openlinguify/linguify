@@ -49,6 +49,56 @@ class SpacedRepetitionMixin:
         'easy': 1.5      # Easy recall
     }
     
+    def _get_user_preferences(self, user):
+        """Get user preferences from database using existing RevisionSettings"""
+        try:
+            # Import here to avoid circular imports
+            from ..models.settings_models import RevisionSettings
+            
+            # Get existing revision settings
+            revision_settings, created = RevisionSettings.objects.get_or_create(user=user)
+            
+            # Map existing settings to spaced repetition preferences
+            difficulty_perception_map = {
+                'beginner': 0.5,
+                'intermediate': 1.0,
+                'advanced': 1.5
+            }
+            
+            return {
+                'max_cards_per_session': revision_settings.max_cards_per_session or 20,
+                'difficulty_preference': difficulty_perception_map.get(
+                    revision_settings.difficulty_preference or 'intermediate', 1.0
+                ),
+                'time_limit_minutes': revision_settings.time_limit_minutes or 30,
+                'show_hints': revision_settings.show_hints,
+                'auto_advance': revision_settings.auto_advance,
+                'learning_steps': [1, 10, 1440],  # 1min, 10min, 1day in minutes
+                'graduating_interval': 4,  # days
+                'easy_interval': 7,       # days
+                'maximum_interval': 365,  # days
+                'ease_factor': 2.5,
+                'hard_multiplier': 1.2,
+                'easy_multiplier': 1.3
+            }
+        except Exception as e:
+            logger.error(f"Error getting user preferences: {str(e)}")
+            # Return default preferences
+            return {
+                'max_cards_per_session': 20,
+                'difficulty_preference': 1.0,
+                'time_limit_minutes': 30,
+                'show_hints': True,
+                'auto_advance': False,
+                'learning_steps': [1, 10, 1440],
+                'graduating_interval': 4,
+                'easy_interval': 7,
+                'maximum_interval': 365,
+                'ease_factor': 2.5,
+                'hard_multiplier': 1.2,
+                'easy_multiplier': 1.3
+            }
+    
     # Priority weights for different scenarios
     PRIORITY_WEIGHTS = {
         'overdue_days': 2.0,        # Weight for overdue cards
@@ -79,9 +129,7 @@ class SpacedRepetitionMixin:
         user_intervals = self._get_user_interval_settings(deck.user)
         
         # Get all cards in deck with related data
-        all_cards = deck.flashcard_set.select_related().prefetch_related(
-            'revision_entries'
-        ).all()
+        all_cards = deck.flashcards.select_related().all()
         
         if not all_cards.exists():
             return self._empty_session_response(deck)
@@ -157,9 +205,6 @@ class SpacedRepetitionMixin:
         # Save changes
         card.save()
         
-        # Create revision entry for tracking
-        self._create_revision_entry(card, user_response, next_interval_days)
-        
         logger.info(f"Card {card.id} reviewed: {user_response} -> {next_interval_days} days")
     
     def get_deck_review_summary(self, deck):
@@ -172,7 +217,7 @@ class SpacedRepetitionMixin:
         Returns:
             Dictionary with detailed deck statistics
         """
-        all_cards = deck.flashcard_set.all()
+        all_cards = deck.flashcards.all()
         
         if not all_cards.exists():
             return {'total_cards': 0, 'message': 'No cards in deck'}
@@ -482,20 +527,6 @@ class SpacedRepetitionMixin:
         # For now, difficulty is calculated on-the-fly from review history
         pass
     
-    def _create_revision_entry(self, card, user_response, interval_days):
-        """Create revision entry for analytics"""
-        try:
-            from ..models.revision_schedule import RevisionEntry
-            
-            RevisionEntry.objects.create(
-                card=card,
-                user=card.user,
-                response_quality=user_response,
-                interval_days=interval_days,
-                reviewed_at=timezone.now()
-            )
-        except Exception as e:
-            logger.error(f"Error creating revision entry: {str(e)}")
     
     def _calculate_session_statistics(self, all_card_analyses, session_cards):
         """Calculate comprehensive session statistics"""
