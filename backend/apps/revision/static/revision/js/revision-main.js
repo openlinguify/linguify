@@ -910,8 +910,7 @@ async function loadDeckCards() {
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-5">
-                            <h6 class="text-muted">Recto</h6>
-                            <p class="card-text card-front-text">${card.front_text}</p>
+                            <p class="card-text card-front-text mb-0">${card.front_text}</p>
                         </div>
                         <div class="col-md-2 text-center">
                             <button class="btn btn-link p-0" 
@@ -922,8 +921,7 @@ async function loadDeckCards() {
                             </button>
                         </div>
                         <div class="col-md-5">
-                            <h6 class="text-muted">Verso</h6>
-                            <p class="card-text card-back-text">${card.back_text}</p>
+                            <p class="card-text card-back-text mb-0">${card.back_text}</p>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-3">
