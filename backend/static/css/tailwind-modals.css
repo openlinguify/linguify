@@ -5761,7 +5761,7 @@ button.bg-linguify-gradient:hover,
     display: flex;
     flex-direction: column;
     height: 100%; /* Take full available height from parent */
-    overflow: hidden; /* Prevent container from scrolling */
+
     min-height: 0; /* Important for proper flexbox behavior */
     box-sizing: border-box;
 }
@@ -5772,6 +5772,9 @@ button.bg-linguify-gradient:hover,
     border-radius: 8px;
     border: 1px solid var(--linguify-gray-200);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    overflow-y: auto;
+    max-height: calc(100vh - 140px);
 }
 
 /* Make the table-responsive container handle scroll properly */
@@ -5779,6 +5782,20 @@ button.bg-linguify-gradient:hover,
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    flex: 1;
+    overflow-y: auto;
+    display: block;
+}
+
+/* Simple table with sticky header */
+.unified-table-container-linguify .table {
+    margin-bottom: 0;
+}
+
+.unified-table-container-linguify .table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 /* Ensure table takes full width */
