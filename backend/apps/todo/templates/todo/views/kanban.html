@@ -123,16 +123,27 @@
                             <!-- Tasks List -->
                             <div class="tasks-list">
                                 {% for task in tasks_by_stage|dict_get:stage.id %}
-                            <!-- Task Card -->
-                            <div class="task-card-linguify kanban-card" 
-                                 id="task-{{ task.id }}"
-                                 data-task-id="{{ task.id }}" 
-                                 data-stage-id="{{ stage.id }}" 
-                                 draggable="true"
-                                 @dragstart="onDragStart($event)"
-                                 @dragend="onDragEnd($event)"
-                                 @dblclick="editTask('{{ task.id }}')"
-                                 style="cursor: pointer;">
+                                    <!-- Drop Zone Above Task -->
+                                    <div class="task-drop-zone" 
+                                         data-position="{{ forloop.counter0 }}"
+                                         data-stage-id="{{ stage.id }}"
+                                         @dragover="onTaskDropZoneOver($event)"
+                                         @dragleave="onTaskDropZoneLeave($event)"
+                                         @drop="onTaskDropZoneDrop($event)">
+                                        <div class="drop-indicator"></div>
+                                    </div>
+                                    
+                                    <!-- Task Card -->
+                                    <div class="task-card-linguify kanban-card" 
+                                         id="task-{{ task.id }}"
+                                         data-task-id="{{ task.id }}" 
+                                         data-stage-id="{{ stage.id }}" 
+                                         data-position="{{ forloop.counter0 }}"
+                                         draggable="true"
+                                         @dragstart="onTaskDragStart($event)"
+                                         @dragend="onTaskDragEnd($event)"
+                                         @dblclick="editTask('{{ task.id }}')"
+                                         style="cursor: pointer;">
                                 
                                 <!-- Task Header -->
                                 <div class="flex items-start justify-between mb-2">
@@ -210,6 +221,16 @@
                                     </div>
                                 </div>
                                 {% endfor %}
+                                
+                                <!-- Final Drop Zone (at the end of the list) -->
+                                <div class="task-drop-zone final-drop-zone" 
+                                     data-position="{{ tasks_by_stage|dict_get:stage.id|length }}"
+                                     data-stage-id="{{ stage.id }}"
+                                     @dragover="onTaskDropZoneOver($event)"
+                                     @dragleave="onTaskDropZoneLeave($event)"
+                                     @drop="onTaskDropZoneDrop($event)">
+                                    <div class="drop-indicator"></div>
+                                </div>
                             </div>
 
                         </div>
@@ -363,10 +384,18 @@
     border-radius: 8px;
 }
 
-/* Améliorer l'apparence des cartes pendant le drag */
+/* Task drag and drop improvements */
 .task-card-linguify {
     transition: all 0.2s ease;
     cursor: grab;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.task-card-linguify:hover {
+    border-color: rgba(45, 91, 186, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .task-card-linguify:active {
@@ -375,8 +404,80 @@
 
 .task-card-linguify.dragging {
     opacity: 0.8;
-    transform: rotate(3deg);
+    transform: rotate(5deg) scale(1.05);
     z-index: 1000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-color: #2d5bba;
+    background: #fff;
+}
+
+/* Task drop zones */
+.task-drop-zone {
+    height: 8px;
+    margin: 2px 0;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    opacity: 0;
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.task-drop-zone.active {
+    opacity: 1;
+    height: 20px;
+    margin: 8px 0;
+    background: rgba(45, 91, 186, 0.1);
+    border: 2px dashed rgba(45, 91, 186, 0.4);
+}
+
+.task-drop-zone .drop-indicator {
+    width: 100%;
+    height: 2px;
+    background: #2d5bba;
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.task-drop-zone.active .drop-indicator {
+    opacity: 1;
+    animation: pulse 1.5s infinite;
+}
+
+.task-drop-zone.final-drop-zone {
+    height: 20px;
+    margin-top: 8px;
+}
+
+/* Pulse animation for drop indicator */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: translateY(-50%) scaleX(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: translateY(-50%) scaleX(0.95);
+    }
+}
+
+/* Smooth task repositioning */
+.task-card-linguify.repositioning {
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+/* Dragging state for entire column */
+.kanban-column.task-dragging .task-card-linguify:not(.dragging) {
+    transition: transform 0.2s ease;
+}
+
+.kanban-column.task-dragging .task-drop-zone {
+    opacity: 0.3;
 }
 
 /* Alpine.js drop zone active state */
@@ -794,8 +895,10 @@ document.addEventListener('alpine:init', () => {
         // Drag & Drop state
         draggedTask: null,
         draggedStage: null,
+        draggedTaskElement: null,
         dropZoneActive: false,
         stageDropZoneActive: false,
+        activeDropZone: null,
         
         // Stage editing state
         editingStage: null,
@@ -813,18 +916,188 @@ document.addEventListener('alpine:init', () => {
             console.log('Alpine.js version:', Alpine.version);
         },
         
-        // Drag & Drop methods
-        onDragStart(event) {
-            this.draggedTask = event.target.id;
+        // Enhanced Task Drag & Drop methods
+        onTaskDragStart(event) {
+            this.draggedTask = event.target.getAttribute('data-task-id');
+            this.draggedTaskElement = event.target;
+            
+            // Add dragging state to card and column
             event.target.classList.add('dragging');
+            const column = event.target.closest('.kanban-column');
+            if (column) {
+                column.classList.add('task-dragging');
+            }
+            
             this.dropZoneActive = true;
-            event.dataTransfer.setData("text", event.target.id);
+            event.dataTransfer.setData("text/task-id", this.draggedTask);
+            event.dataTransfer.effectAllowed = 'move';
+            
+            // Show all drop zones
+            this.showAllDropZones();
+        },
+        
+        onTaskDragEnd(event) {
+            // Clean up dragging states
+            event.target.classList.remove('dragging');
+            const column = event.target.closest('.kanban-column');
+            if (column) {
+                column.classList.remove('task-dragging');
+            }
+            
+            this.dropZoneActive = false;
+            this.draggedTask = null;
+            this.draggedTaskElement = null;
+            
+            // Hide all drop zones
+            this.hideAllDropZones();
+        },
+        
+        // Drop zone management methods
+        showAllDropZones() {
+            document.querySelectorAll('.task-drop-zone').forEach(zone => {
+                zone.style.opacity = '0.3';
+            });
+        },
+        
+        hideAllDropZones() {
+            document.querySelectorAll('.task-drop-zone').forEach(zone => {
+                zone.classList.remove('active');
+                zone.style.opacity = '0';
+            });
+            this.activeDropZone = null;
+        },
+        
+        onTaskDropZoneOver(event) {
+            if (!this.draggedTask) return;
+            
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            
+            const dropZone = event.currentTarget;
+            
+            // Deactivate previous drop zone
+            if (this.activeDropZone && this.activeDropZone !== dropZone) {
+                this.activeDropZone.classList.remove('active');
+            }
+            
+            // Activate current drop zone
+            dropZone.classList.add('active');
+            this.activeDropZone = dropZone;
+        },
+        
+        onTaskDropZoneLeave(event) {
+            const dropZone = event.currentTarget;
+            
+            // Only remove active state if we're really leaving the drop zone
+            if (!dropZone.contains(event.relatedTarget)) {
+                dropZone.classList.remove('active');
+                if (this.activeDropZone === dropZone) {
+                    this.activeDropZone = null;
+                }
+            }
+        },
+        
+        onTaskDropZoneDrop(event) {
+            event.preventDefault();
+            
+            if (!this.draggedTask || !this.draggedTaskElement) return;
+            
+            const dropZone = event.currentTarget;
+            const newStageId = dropZone.getAttribute('data-stage-id');
+            const newPosition = parseInt(dropZone.getAttribute('data-position'));
+            const taskId = this.draggedTask;
+            
+            // Get the tasks list for the target stage
+            const targetColumn = document.querySelector(`[data-stage-id="${newStageId}"]`);
+            const tasksList = targetColumn.querySelector('.tasks-list');
+            
+            // Find insertion point
+            const dropZones = tasksList.querySelectorAll('.task-drop-zone');
+            const targetDropZone = dropZones[newPosition];
+            
+            // Move task visually
+            if (targetDropZone && targetDropZone.nextElementSibling) {
+                tasksList.insertBefore(this.draggedTaskElement, targetDropZone.nextElementSibling);
+            } else {
+                // Insert at the end (before final drop zone)
+                const finalDropZone = tasksList.querySelector('.final-drop-zone');
+                if (finalDropZone) {
+                    tasksList.insertBefore(this.draggedTaskElement, finalDropZone);
+                } else {
+                    tasksList.appendChild(this.draggedTaskElement);
+                }
+            }
+            
+            // Update data attributes
+            this.draggedTaskElement.setAttribute('data-stage-id', newStageId);
+            this.draggedTaskElement.setAttribute('data-position', newPosition);
+            
+            // Add repositioning animation
+            if (this.draggedTaskElement) {
+                this.draggedTaskElement.classList.add('repositioning');
+                setTimeout(() => {
+                    if (this.draggedTaskElement) {
+                        this.draggedTaskElement.classList.remove('repositioning');
+                    }
+                }, 300);
+            }
+            
+            // Update via API
+            this.moveTaskToPosition(taskId, newStageId, newPosition);
+            
+            // Update UI
+            this.updateTaskCompletionIcon(taskId, newStageId);
+            this.updateStageCounts();
+            this.updateTaskPositions();
+        },
+        
+        moveTaskToPosition(taskId, stageId, position) {
+            const formData = new FormData();
+            formData.append('stage_id', stageId);
+            formData.append('position', position);
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            fetch(`/todo/htmx/tasks/${taskId}/move/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'HX-Request': 'true'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Task moved successfully to position', position);
+                    window.notificationService?.success('Tâche repositionnée avec succès');
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                window.notificationService?.error('Erreur lors du déplacement de la tâche');
+                console.error('Failed to move task:', error);
+                // Reload page on error to restore correct order
+                setTimeout(() => window.location.reload(), 1000);
+            });
+        },
+        
+        updateTaskPositions() {
+            // Update position data attributes for all tasks
+            document.querySelectorAll('.kanban-column').forEach(column => {
+                const tasks = column.querySelectorAll('.task-card-linguify');
+                tasks.forEach((task, index) => {
+                    task.setAttribute('data-position', index);
+                });
+            });
+        },
+        
+        // Legacy drag methods for backward compatibility
+        onDragStart(event) {
+            return this.onTaskDragStart(event);
         },
         
         onDragEnd(event) {
-            event.target.classList.remove('dragging');
-            this.dropZoneActive = false;
-            this.draggedTask = null;
+            return this.onTaskDragEnd(event);
         },
         
         onDragOver(event) {
@@ -832,53 +1105,9 @@ document.addEventListener('alpine:init', () => {
         },
         
         onDrop(event) {
-            event.preventDefault();
-            const draggedElement = document.getElementById(this.draggedTask);
-            const dropTarget = event.currentTarget;
-            const stageId = dropTarget.getAttribute('data-stage-id');
-            const taskId = draggedElement.getAttribute('data-task-id');
-            
-            if (draggedElement && taskId && stageId) {
-                // Visual feedback first
-                dropTarget.querySelector('.tasks-list').appendChild(draggedElement);
-                
-                // Update task stage visually
-                draggedElement.setAttribute('data-stage-id', stageId);
-                
-                // Use fetch instead of htmx.ajax to avoid navigation issues
-                const formData = new FormData();
-                formData.append('stage_id', stageId);
-                formData.append('position', dropTarget.children.length);
-                formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-                
-                fetch(`/todo/htmx/tasks/${taskId}/move/`, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'HX-Request': 'true'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        console.log('Task moved successfully');
-                        
-                        // Update task completion state visually based on stage
-                        this.updateTaskCompletionIcon(taskId, stageId);
-                        
-                        // Update task counts
-                        this.updateStageCounts();
-                        // Show success notification
-                        window.notificationService?.success('Tâche déplacée avec succès');
-                    } else {
-                        throw new Error('Network response was not ok');
-                    }
-                })
-                .catch(error => {
-                    window.notificationService?.error('Erreur lors du déplacement de la tâche');
-                    console.error('Failed to move task:', error);
-                });
-            }
+            // This method is kept for column-level drops (stage changes)
+            // The new drop zone system handles precise positioning
+            return this.onTaskDropZoneDrop(event);
         },
         
         // Update stage task counts

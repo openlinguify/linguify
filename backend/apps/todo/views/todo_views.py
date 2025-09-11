@@ -1124,49 +1124,61 @@ class TaskMoveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
     htmx_template_name = 'todo/partials/task_card.html'
     
     def post(self, request, task_id):
-        task = get_object_or_404(Task, id=task_id, user=request.user)
-        new_stage_id = request.POST.get('stage_id')
-        new_position = request.POST.get('position', 0)
-        
-        if new_stage_id:
-            new_stage = get_object_or_404(PersonalStageType, id=new_stage_id, user=request.user)
-            old_stage = task.personal_stage_type
-            old_state = task.state
+        try:
+            task = get_object_or_404(Task, id=task_id, user=request.user)
+            new_stage_id = request.POST.get('stage_id')
+            new_position = request.POST.get('position', 0)
             
-            task.personal_stage_type = new_stage
-            task.sequence = int(new_position)
+            print(f"Task move request: task_id={task_id}, stage_id={new_stage_id}, position={new_position}")
             
-            # Update task state based on stage
-            if new_stage.is_closed and task.state != '1_done':
-                # Moving to a closed stage (like Done) - mark as completed
-                task.state = '1_done'
-                task.completed_at = timezone.now()
-                print(f"Task {task.title} moved to closed stage {new_stage.name}, marked as done")
-            elif not new_stage.is_closed and task.state == '1_done':
-                # Moving from closed stage to open stage - reopen task
-                task.state = '1_todo'
-                task.completed_at = None
-                print(f"Task {task.title} moved from closed stage to open stage {new_stage.name}, reopened")
-            
-            # Special handling for common stage names
-            if new_stage.name.lower() in ['done', 'terminé', 'completed', 'fini']:
-                task.state = '1_done'
-                task.completed_at = timezone.now()
-                print(f"Task {task.title} moved to '{new_stage.name}', marked as done")
-            elif new_stage.name.lower() in ['in progress', 'en cours', 'doing', 'work']:
-                if task.state not in ['1_done']:
-                    task.state = '1_in_progress'
-                    print(f"Task {task.title} moved to '{new_stage.name}', marked as in progress")
-            elif new_stage.name.lower() in ['todo', 'to do', 'à faire', 'backlog']:
-                if task.state not in ['1_done']:
+            if new_stage_id:
+                new_stage = get_object_or_404(PersonalStageType, id=new_stage_id, user=request.user)
+                old_stage = task.personal_stage_type
+                old_state = task.state
+                
+                task.personal_stage_type = new_stage
+                
+                # Safely convert position to int
+                try:
+                    task.sequence = int(new_position) if new_position else 0
+                except (ValueError, TypeError):
+                    task.sequence = 0
+                
+                # Update task state based on stage
+                if new_stage.is_closed and task.state != '1_done':
+                    # Moving to a closed stage (like Done) - mark as completed
+                    task.state = '1_done'
+                    task.completed_at = timezone.now()
+                    print(f"Task {task.title} moved to closed stage {new_stage.name}, marked as done")
+                elif not new_stage.is_closed and task.state == '1_done':
+                    # Moving from closed stage to open stage - reopen task
                     task.state = '1_todo'
-                    print(f"Task {task.title} moved to '{new_stage.name}', marked as todo")
+                    task.completed_at = None
+                    print(f"Task {task.title} moved from closed stage to open stage {new_stage.name}, reopened")
+                
+                # Special handling for common stage names
+                if new_stage.name.lower() in ['done', 'terminé', 'completed', 'fini']:
+                    task.state = '1_done'
+                    task.completed_at = timezone.now()
+                    print(f"Task {task.title} moved to '{new_stage.name}', marked as done")
+                elif new_stage.name.lower() in ['in progress', 'en cours', 'doing', 'work']:
+                    if task.state not in ['1_done']:
+                        task.state = '1_in_progress'
+                        print(f"Task {task.title} moved to '{new_stage.name}', marked as in progress")
+                elif new_stage.name.lower() in ['todo', 'to do', 'à faire', 'backlog']:
+                    if task.state not in ['1_done']:
+                        task.state = '1_todo'
+                        print(f"Task {task.title} moved to '{new_stage.name}', marked as todo")
+                
+                print(f"Task state change: {old_state} -> {task.state} (Stage: {old_stage.name if old_stage else 'None'} -> {new_stage.name})")
+                task.save()
             
-            print(f"Task state change: {old_state} -> {task.state} (Stage: {old_stage.name if old_stage else 'None'} -> {new_stage.name})")
-            task.save()
-        
-        # Return empty response for successful move - frontend handles UI updates
-        return HttpResponse('')
+            # Return empty response for successful move - frontend handles UI updates
+            return HttpResponse('')
+            
+        except Exception as e:
+            print(f"Error in TaskMoveHTMXView: {str(e)}")
+            return HttpResponse(f"Error: {str(e)}", status=500)
 
 
 class TaskQuickCreateHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
