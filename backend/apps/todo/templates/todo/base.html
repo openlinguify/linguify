@@ -97,10 +97,10 @@
         }
         
         .list-container {
-            flex: 1;
             overflow-y: auto !important;
             overflow-x: hidden !important;
-            height: 100%;
+            height: calc(100vh - 150px) !important;
+            max-height: calc(100vh - 150px) !important;
             width: 100%;
         }
         
@@ -108,6 +108,10 @@
             height: auto !important;
             overflow: visible !important;
             width: 100%;
+            flex: none !important;
+            display: block !important;
+            min-height: auto !important;
+            box-sizing: border-box !important;
         }
         
         .table-responsive {

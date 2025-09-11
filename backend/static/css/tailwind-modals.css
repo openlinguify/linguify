@@ -5772,22 +5772,10 @@ button.bg-linguify-gradient:hover,
     border-radius: 8px;
     border: 1px solid var(--linguify-gray-200);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    flex: 1;
-    overflow: hidden;
-    height: 100%; /* Ensure it takes full height */
-    display: flex;
-    flex-direction: column;
-    min-height: 0; /* Important for proper flexbox behavior */
-    margin: 0; /* Remove any default margins */
-    box-sizing: border-box;
 }
 
 /* Make the table-responsive container handle scroll properly */
 .unified-table-container-linguify .table-responsive {
-    flex: 1; /* Take all available height */
-    overflow-y: auto;
-    height: 100%;
-    min-height: 0; /* Important for proper flexbox behavior */
     margin: 0;
     padding: 0;
     box-sizing: border-box;
