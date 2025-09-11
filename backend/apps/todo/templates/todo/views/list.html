@@ -126,9 +126,7 @@
                                 <div class="task-title-container">
                                     <div class="task-title-row d-flex align-items-center">
                                         <div class="task-title-text {% if task.state == '1_done' %}text-muted text-decoration-line-through{% endif %}" 
-                                             hx-get="{% url 'todo:task_edit_htmx' task.id %}"
-                                             hx-target="#task-row-{{ task.id }}"
-                                             hx-swap="outerHTML"
+                                             onclick="window.location.href='/todo/task/{{ task.id }}/'"
                                              style="cursor: pointer;"
                                              {% if task.description %}title="{{ task.title }} - {{ task.description|striptags }}"{% else %}title="{{ task.title }}"{% endif %}>
                                             {{ task.title }}

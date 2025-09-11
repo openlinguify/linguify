@@ -159,7 +159,7 @@
                                          draggable="true"
                                          @dragstart="onTaskDragStart($event)"
                                          @dragend="onTaskDragEnd($event)"
-                                         @dblclick="editTask('{{ task.id }}')"
+                                         @dblclick="editTask('{{ task.id }}', $event)"
                                          style="cursor: pointer;">
                                 
                                 <!-- Task Header -->
@@ -214,7 +214,7 @@
                                         <small class="text-muted">{{ task.created_at|timesince }} {% trans "ago" %}</small>
                                         <div class="flex items-center gap-1">
                                             <button class="btn btn-sm btn-outline-primary p-1" 
-                                                    onclick="event.stopPropagation(); editTask('{{ task.id }}')" 
+                                                    onclick="event.stopPropagation(); window.location.href='/todo/task/{{ task.id }}/'" 
                                                     title="{% trans 'Edit' %}">
                                                 <i class="bi bi-pencil" style="font-size: 10px;"></i>
                                             </button>
@@ -1162,12 +1162,10 @@ document.addEventListener('alpine:init', () => {
         },
         
         // Task editing methods
-        editTask(taskId) {
+        editTask(taskId, event) {
             if (taskId) {
-                htmx.ajax('GET', `/todo/htmx/tasks/modal/${taskId}/`, {
-                    target: '#modal-container',
-                    swap: 'innerHTML'
-                });
+                // Toujours ouvrir la page complète
+                window.location.href = `/todo/task/${taskId}/`;
             } else {
                 console.error('No task ID provided for editing');
             }
@@ -1666,13 +1664,11 @@ setTimeout(() => {
             taskCard.addEventListener('dragend', window.fallbackDragEnd);
             
             // Double-click to edit task
-            taskCard.addEventListener('dblclick', function() {
+            taskCard.addEventListener('dblclick', function(event) {
                 const taskId = this.getAttribute('data-task-id');
                 if (taskId) {
-                    htmx.ajax('GET', `/todo/htmx/tasks/modal/${taskId}/`, {
-                        target: '#modal-container',
-                        swap: 'innerHTML'
-                    });
+                    // Toujours ouvrir la page complète
+                    window.location.href = `/todo/task/${taskId}/`;
                 } else {
                     console.error('No task ID found for editing');
                 }

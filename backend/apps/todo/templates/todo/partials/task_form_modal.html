@@ -25,7 +25,11 @@
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                            value="{% if task %}{{ task.title }}{% endif %}"
                            maxlength="200"
-                           required>
+                           required
+                           oninput="document.getElementById('titleCharCount').textContent = this.value.length">
+                    <div class="text-xs text-gray-500 mt-1">
+                        <span id="titleCharCount">{% if task %}{{ task.title|length }}{% else %}0{% endif %}</span>/200 characters
+                    </div>
                 </div>
                 
                 <!-- Description -->
