@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="kanban-layout flex">
+<div class="kanban-layout flex" x-data="kanban">
     <!-- Kanban Board - Style Linguify -->
     <div class="kanban-container">
         <div class="kanban-board">
@@ -23,7 +23,26 @@
                         <div class="sidebar-header-linguify">
                             <div class="flex items-center justify-between w-full">
                                 <div class="flex items-center gap-2 min-w-0 flex-1">
-                                    <h6 class="column-title-linguify" title="{{ stage.name }}">{{ stage.name }}</h6>
+                                    <!-- Stage Title Display -->
+                                    <h6 class="column-title-linguify" 
+                                        title="{{ stage.name }}" 
+                                        data-stage-id="{{ stage.id }}"
+                                        x-show="editingStage !== '{{ stage.id }}'"
+                                        @dblclick="startEditStage('{{ stage.id }}', '{{ stage.name }}')">
+                                        {{ stage.name }}
+                                    </h6>
+                                    
+                                    <!-- Stage Title Input -->
+                                    <input x-show="editingStage === '{{ stage.id }}'" 
+                                           x-ref="stageInput"
+                                           type="text" 
+                                           value="{{ stage.name }}"
+                                           class="form-control form-control-sm"
+                                           style="width: auto; min-width: 100px; max-width: 150px;"
+                                           @blur="saveStageTitle('{{ stage.id }}')"
+                                           @keydown.enter="saveStageTitle('{{ stage.id }}')"
+                                           @keydown.escape="cancelEditStage()">
+                                    
                                     <span class="badge-linguify-compact">{{ tasks_by_stage|dict_get_length:stage.id }}</span>
                                 </div>
                                 <div class="kanban-header-actions-inline">
@@ -37,7 +56,7 @@
                                         <button class="kanban-action-btn-mini dropdown-toggle" 
                                                 data-bs-toggle="dropdown">⋮</button>
                                         <ul class="dropdown-menu">
-                                            <li><button class="dropdown-item hide-stage-btn" type="button" onclick="toggleColumn('{{ stage.id }}')">
+                                            <li><button class="dropdown-item hide-stage-btn" type="button" @click="toggleColumn('{{ stage.id }}')">
                                                 <i class="bi bi-arrows-collapse me-2"></i>
                                                 {% trans "Hide" %}
                                             </button></li>
@@ -59,8 +78,9 @@
                         <div class="kanban-tasks-container" 
                              id="tasks-{{ stage.id }}" 
                              data-stage-id="{{ stage.id }}"
-                             ondrop="drop(event)" 
-                             ondragover="allowDrop(event)"
+                             @drop="onDrop($event)"
+                             @dragover="onDragOver($event)"
+                             :class="{ 'drop-zone-active': dropZoneActive }"
                              {% if stage.fold %}style="display: none;"{% endif %}>
                             
                             <!-- Tasks List -->
@@ -72,11 +92,9 @@
                                  data-task-id="{{ task.id }}" 
                                  data-stage-id="{{ stage.id }}" 
                                  draggable="true"
-                                 ondragstart="drag(event)"
-                                 hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
-                                 hx-target="#modal-container"
-                                 hx-swap="innerHTML"
-                                 hx-trigger="click"
+                                 @dragstart="onDragStart($event)"
+                                 @dragend="onDragEnd($event)"
+                                 @dblclick="editTask('{{ task.id }}')"
                                  style="cursor: pointer;">
                                 
                                 <!-- Task Header -->
@@ -173,6 +191,9 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Container for HTMX -->
+<div id="modal-container"></div>
 
 <!-- Quick Task Creation Modal - Tailwind Modal -->
 <div class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" id="quickTaskModal">
@@ -318,6 +339,15 @@
 .task-card-linguify.dragging {
     opacity: 0.8;
     transform: rotate(3deg);
+    z-index: 1000;
+}
+
+/* Alpine.js drop zone active state */
+.kanban-tasks-container.drop-zone-active {
+    background-color: rgba(45, 91, 186, 0.05);
+    border: 2px dashed rgba(45, 91, 186, 0.3);
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
 /* Styles for editable stage titles */
@@ -607,84 +637,159 @@
 </style>
 
 {% block extra_js %}
-<!-- Simple HTMX JavaScript for Kanban - replaces 800+ lines! -->
+<!-- Alpine.js + HTMX Kanban - Clean & Minimal -->
 <script>
-// Simple Drag & Drop for HTMX Kanban (replaces SortableJS)
-function allowDrop(ev) {
-    ev.preventDefault();
-}
+// Global Kanban Alpine.js data
+document.addEventListener('alpine:init', () => {
+    Alpine.data('kanban', () => ({
+        // Drag & Drop state
+        draggedTask: null,
+        dropZoneActive: false,
+        
+        // Stage editing state
+        editingStage: null,
+        originalTitle: '',
+        
+        // Modal state
+        taskModal: false,
+        
+        // Initialize
+        init() {
+            console.log('Kanban Alpine.js initialized');
+            console.log('Alpine.js version:', Alpine.version);
+        },
+        
+        // Drag & Drop methods
+        onDragStart(event) {
+            this.draggedTask = event.target.id;
+            event.target.classList.add('dragging');
+            this.dropZoneActive = true;
+            event.dataTransfer.setData("text", event.target.id);
+        },
+        
+        onDragEnd(event) {
+            event.target.classList.remove('dragging');
+            this.dropZoneActive = false;
+            this.draggedTask = null;
+        },
+        
+        onDragOver(event) {
+            event.preventDefault();
+        },
+        
+        onDrop(event) {
+            event.preventDefault();
+            const draggedElement = document.getElementById(this.draggedTask);
+            const dropTarget = event.currentTarget;
+            const stageId = dropTarget.getAttribute('data-stage-id');
+            const taskId = draggedElement.getAttribute('data-task-id');
+            
+            if (draggedElement && taskId && stageId) {
+                // Visual feedback first
+                dropTarget.querySelector('.tasks-list').appendChild(draggedElement);
+                
+                // Update via HTMX
+                htmx.ajax('POST', `/todo/htmx/tasks/${taskId}/move/`, {
+                    values: { 
+                        stage_id: stageId,
+                        position: dropTarget.children.length 
+                    }
+                }).then(() => {
+                    // Refresh for state updates
+                    window.location.reload();
+                }).catch(() => {
+                    window.notificationService?.error('Erreur lors du déplacement');
+                    window.location.reload();
+                });
+            }
+        },
+        
+        // Stage editing methods
+        startEditStage(stageId, currentTitle) {
+            this.editingStage = stageId;
+            this.originalTitle = currentTitle;
+            this.$nextTick(() => {
+                this.$refs.stageInput.focus();
+                this.$refs.stageInput.select();
+            });
+        },
+        
+        cancelEditStage() {
+            this.editingStage = null;
+            this.originalTitle = '';
+        },
+        
+        saveStageTitle(stageId) {
+            const newTitle = this.$refs.stageInput.value.trim();
+            if (newTitle && newTitle !== this.originalTitle) {
+                // Update via API
+                fetch(`/api/v1/todo/stages/${stageId}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ name: newTitle })
+                }).then(response => {
+                    if (response.ok) {
+                        // Update the DOM
+                        document.querySelector(`[data-stage-id="${stageId}"] .column-title-linguify`).textContent = newTitle;
+                        this.cancelEditStage();
+                    } else {
+                        throw new Error('Failed to update');
+                    }
+                }).catch(() => {
+                    window.notificationService?.error('Erreur lors de la modification du titre');
+                    this.cancelEditStage();
+                });
+            } else {
+                this.cancelEditStage();
+            }
+        },
+        
+        // Task editing methods
+        editTask(taskId) {
+            htmx.ajax('GET', `/todo/htmx/tasks/modal/${taskId}/`, {
+                target: '#modal-container',
+                swap: 'innerHTML'
+            });
+        },
+        
+        // Column methods
+        toggleColumn(stageId) {
+            const column = document.querySelector(`[data-stage-id="${stageId}"]`);
+            const tasksContainer = column.querySelector('.kanban-tasks-container');
+            
+            if (tasksContainer.style.display === 'none') {
+                tasksContainer.style.display = 'block';
+                column.classList.remove('o_column_folded');
+            } else {
+                tasksContainer.style.display = 'none';
+                column.classList.add('o_column_folded');
+            }
+        },
+        
+        // Modal methods
+        showModal() {
+            this.taskModal = true;
+        },
+        
+        hideModal() {
+            this.taskModal = false;
+        }
+    }));
+});
 
-function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
-}
-
-function drop(ev) {
-    ev.preventDefault();
-    const data = ev.dataTransfer.getData("text");
-    const draggedElement = document.getElementById(data);
-    const dropTarget = ev.currentTarget;
-    const stageId = dropTarget.getAttribute('data-stage-id');
-    const taskId = draggedElement.getAttribute('data-task-id');
-    
-    if (draggedElement && taskId && stageId) {
-        // Move task via HTMX
-        htmx.ajax('POST', `/todo/htmx/tasks/${taskId}/move/`, {
-            values: { 
-                stage_id: stageId,
-                position: dropTarget.children.length 
-            },
-            target: `#task-${taskId}`,
-            swap: 'outerHTML'
-        });
-    }
-}
-
-// Simple column toggle (replaces complex localStorage logic)
-function toggleColumn(stageId) {
-    const column = document.querySelector(`[data-stage-id="${stageId}"]`);
-    const tasksContainer = column.querySelector('.kanban-tasks-container');
-    
-    if (tasksContainer.style.display === 'none') {
-        tasksContainer.style.display = 'block';
-        column.classList.remove('o_column_folded');
-    } else {
-        tasksContainer.style.display = 'none';
-        column.classList.add('o_column_folded');
-    }
-}
-
-// Simple modal functions (replaces complex modal logic)
-function showModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-}
-
-function hideModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-}
-
-// Close modals with Escape key
+// Global escape key handler
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+        // Close Alpine modals
+        Alpine.store('modals', { taskModal: false });
+        // Close regular modals
         document.querySelectorAll('.modal:not(.hidden)').forEach(modal => {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         });
-    }
-});
-
-// HTMX event listeners for automatic updates
-document.body.addEventListener('htmx:afterRequest', function(evt) {
-    // Refresh column counts after task moves
-    if (evt.detail.xhr.status === 200) {
-        console.log('HTMX request completed successfully');
     }
 });
 </script>

@@ -26,7 +26,7 @@ router.register(r'reminders', ReminderViewSet, basename='reminder')
 router.register(r'templates', TaskTemplateViewSet, basename='template')
 
 urlpatterns = [
-    path('', TodoMainView.as_view(), name='main'),
+    path('', TodoKanbanView.as_view(), name='main'),
     path('kanban/', TodoKanbanView.as_view(), name='kanban'),
     path('list/', TodoListView.as_view(), name='list'),
     path('activity/', TodoActivityView.as_view(), name='activity'),

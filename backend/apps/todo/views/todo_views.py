@@ -1108,8 +1108,32 @@ class TaskMoveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
         
         if new_stage_id:
             new_stage = get_object_or_404(PersonalStageType, id=new_stage_id, user=request.user)
+            old_stage = task.personal_stage_type
+            
             task.personal_stage_type = new_stage
             task.sequence = int(new_position)
+            
+            # Update task state based on stage
+            if new_stage.is_closed and task.state != '1_done':
+                # Moving to a closed stage (like Done) - mark as completed
+                task.state = '1_done'
+                task.completed_at = timezone.now()
+            elif not new_stage.is_closed and task.state == '1_done':
+                # Moving from closed stage to open stage - reopen task
+                task.state = '1_todo'
+                task.completed_at = None
+            
+            # Special handling for common stage names
+            if new_stage.name.lower() in ['done', 'terminé', 'completed', 'fini']:
+                task.state = '1_done'
+                task.completed_at = timezone.now()
+            elif new_stage.name.lower() in ['in progress', 'en cours', 'doing', 'work']:
+                if task.state not in ['1_done']:
+                    task.state = '1_in_progress'
+            elif new_stage.name.lower() in ['todo', 'to do', 'à faire', 'backlog']:
+                if task.state not in ['1_done']:
+                    task.state = '1_todo'
+            
             task.save()
         
         context = {'task': task}
