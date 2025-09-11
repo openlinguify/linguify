@@ -1847,7 +1847,8 @@ class TaskAutoSaveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
                     message = "Saved"
                 else:
                     # No changes, just return success without saving
-                    return HttpResponse('<span class="text-gray-500 text-sm">No changes</span>')
+                    context = {'success': True, 'created': False, 'no_changes': True}
+                    return self.render_to_response(context)
                 
             else:
                 # Create new task
@@ -1873,21 +1874,27 @@ class TaskAutoSaveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
                     if tag_ids:
                         task.tags.set(Tag.objects.filter(id__in=tag_ids, user=request.user))
                 
-                message = "Created"
+                created = True
                 
-                # Update the browser URL for new tasks
-                response = HttpResponse(f'<span class="text-green-500">✓ {message}</span>')
+                # Update the browser URL for new tasks and use template
+                context = {'success': True, 'created': created}
+                response = self.render_to_response(context)
                 response['HX-Push-Url'] = f'/todo/task/{task.id}/'
                 return response
             
-            return HttpResponse(f'<span class="text-green-500">✓ {message}</span>')
+            # Use template for update response
+            context = {'success': True, 'created': False}
+            return self.render_to_response(context)
             
         except Exception as e:
             import logging
             logger = logging.getLogger(__name__)
             logger.error(f"Auto-save error: {str(e)}", exc_info=True)
             logger.error(f"POST data: {dict(request.POST)}")
-            return HttpResponse(f'<span class="text-red-500">Save failed: {str(e)}</span>', status=400)
+            context = {'error': True}
+            response = self.render_to_response(context)
+            response.status_code = 400
+            return response
 
 
 class TaskToggleFormHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
