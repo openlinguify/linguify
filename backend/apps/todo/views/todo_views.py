@@ -464,7 +464,20 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
                 logger.info(f"Recreated missing critical stage '{stage_data['name']}' for user {user.username}")
     
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        # Generate unique name if needed
+        user = self.request.user
+        name = serializer.validated_data.get('name', 'New Stage')
+        
+        # Check if name already exists and generate unique one
+        counter = 1
+        original_name = name
+        while PersonalStageType.objects.filter(user=user, name=name).exists():
+            name = f"{original_name} {counter}"
+            counter += 1
+        
+        # Update validated data with unique name
+        serializer.validated_data['name'] = name
+        serializer.save(user=user)
     
     def perform_update(self, serializer):
         """Override perform_update to handle stage updates properly"""

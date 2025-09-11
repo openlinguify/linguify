@@ -2292,25 +2292,15 @@ setTimeout(() => {
 
 // HTMX event listener for refreshing kanban columns after stage deletion
 document.body.addEventListener('refresh-kanban-columns', function(event) {
-    console.log('Refreshing kanban columns after stage deletion with task movement');
-    
-    // Refresh all kanban columns to show updated task counts and positions
-    const columns = document.querySelectorAll('.kanban-column');
-    columns.forEach(column => {
-        const stageId = column.getAttribute('data-stage-id');
-        if (stageId) {
-            // Refresh the tasks container for this column
-            htmx.ajax('GET', `/todo/htmx/kanban/column/${stageId}/`, {
-                target: `#tasks-${stageId}`,
-                swap: 'outerHTML'
-            }).catch(error => {
-                console.error('Error refreshing column:', stageId, error);
-            });
-        }
-    });
+    console.log('Refreshing kanban board after stage deletion with task movement');
     
     // Show notification
     window.notificationService?.success('Stage deleted and tasks moved to Done');
+    
+    // Simple page reload to ensure all changes are visible
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000); // Give time for notification to show
 });
 
 </script>
