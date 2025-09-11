@@ -540,6 +540,38 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
                     'type': 'LAST_OPEN_STAGE_ERROR'
                 }, status=status.HTTP_400_BAD_REQUEST)
         
+        # If stage has tasks, move them to "Done" stage before deletion
+        tasks_to_move = Task.objects.filter(personal_stage_type=stage, active=True)
+        if tasks_to_move.exists():
+            # Find the "Done" stage
+            try:
+                done_stage = PersonalStageType.objects.get(user=request.user, name='Done')
+                tasks_count = tasks_to_move.count()
+                
+                # Move all tasks to "Done" stage and mark them as completed
+                tasks_to_move.update(
+                    personal_stage_type=done_stage,
+                    state='1_done',
+                    status='done'
+                )
+                
+                logger.info(f"API: Moved {tasks_count} tasks from stage '{stage.name}' to 'Done' and marked as completed before deletion")
+            except PersonalStageType.DoesNotExist:
+                # If "Done" stage doesn't exist, find the first closed stage
+                fallback_stage = user_stages.filter(is_closed=True).exclude(id=stage.id).first()
+                if fallback_stage:
+                    tasks_to_move.update(
+                        personal_stage_type=fallback_stage,
+                        state='1_done',
+                        status='done'
+                    )
+                    logger.info(f"API: Moved {tasks_to_move.count()} tasks from stage '{stage.name}' to '{fallback_stage.name}' and marked as completed before deletion")
+                else:
+                    return Response({
+                        'error': 'Impossible de supprimer le stage: aucun stage fermé de destination trouvé pour les tâches.',
+                        'type': 'NO_FALLBACK_STAGE_ERROR'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+        
         return super().destroy(request, *args, **kwargs)
     
     @action(detail=False, methods=['post'])
@@ -1470,14 +1502,50 @@ class StageDeleteHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             if not other_open_stages.exists():
                 return HttpResponse(f'<div class="text-red-500">Impossible de supprimer le dernier stage ouvert. Au moins un stage ouvert est nécessaire pour les nouvelles tâches.</div>')
         
-        # Don't allow deletion if stage has tasks
-        if Task.objects.filter(personal_stage_type=stage, active=True).exists():
-            return HttpResponse('<div class="text-red-500">Impossible de supprimer un stage contenant des tâches actives</div>')
+        # If stage has tasks, move them to "Done" stage before deletion
+        tasks_to_move = Task.objects.filter(personal_stage_type=stage, active=True)
+        tasks_were_moved = False
+        
+        if tasks_to_move.exists():
+            # Find the "Done" stage
+            try:
+                done_stage = PersonalStageType.objects.get(user=user, name='Done')
+                tasks_count = tasks_to_move.count()
+                
+                # Move all tasks to "Done" stage and mark them as completed
+                tasks_to_move.update(
+                    personal_stage_type=done_stage,
+                    state='1_done',
+                    status='done'
+                )
+                
+                tasks_were_moved = True
+                logger.info(f"Moved {tasks_count} tasks from stage '{stage.name}' to 'Done' and marked as completed before deletion")
+            except PersonalStageType.DoesNotExist:
+                # If "Done" stage doesn't exist, find the first closed stage
+                fallback_stage = user_stages.filter(is_closed=True).exclude(id=stage.id).first()
+                if fallback_stage:
+                    tasks_to_move.update(
+                        personal_stage_type=fallback_stage,
+                        state='1_done',
+                        status='done'
+                    )
+                    tasks_were_moved = True
+                    logger.info(f"Moved {tasks_to_move.count()} tasks from stage '{stage.name}' to '{fallback_stage.name}' and marked as completed before deletion")
+                else:
+                    return HttpResponse('<div class="text-red-500">Impossible de supprimer le stage: aucun stage fermé de destination trouvé pour les tâches.</div>')
         
         # If we get here, deletion is allowed
         logger.info(f"Deleting stage '{stage.name}' for user {user.username}")
         stage.delete()
-        return HttpResponse('')  # Empty response removes element
+        
+        # Return response with trigger to refresh other columns if tasks were moved
+        if tasks_were_moved:
+            response = HttpResponse('')
+            response['HX-Trigger'] = 'refresh-kanban-columns'
+            return response
+        else:
+            return HttpResponse('')  # Empty response removes element
 
 
 class StageReorderHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):

@@ -1,0 +1,135 @@
+{% comment %}
+Partial template for refreshing a kanban column via HTMX
+{% endcomment %}
+
+{% for stage_id, data in kanban_data.items %}
+<div class="kanban-tasks-container" 
+     id="tasks-{{ data.stage.id }}" 
+     data-stage-id="{{ data.stage.id }}"
+     @drop="onDrop($event)"
+     @dragover="onDragOver($event)"
+     :class="{ 'drop-zone-active': dropZoneActive }"
+     {% if data.stage.fold %}style="display: none;"{% endif %}>
+    
+    <!-- Quick Add Form -->
+    <div x-show="quickAddStage === '{{ data.stage.id }}'" class="quick-add-form p-3 mb-3">
+        <form @submit.prevent="submitQuickTask('{{ data.stage.id }}')">
+            <div class="mb-2">
+                <input type="text" 
+                       class="form-control form-control-sm" 
+                       placeholder="{% trans 'Task title' %}"
+                       x-ref="quickAddInput" 
+                       x-model="quickAddTitle"
+                       maxlength="200">
+            </div>
+            <div class="d-flex gap-1">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus"></i> {% trans "Add" %}
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" @click="cancelQuickAdd">
+                    {% trans "Cancel" %}
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Tasks List -->
+    <div class="tasks-list">
+        {% for task in data.tasks %}
+        <div class="task-card-linguify mb-3" 
+             id="task-{{ task.id }}"
+             data-task-id="{{ task.id }}"
+             data-stage-id="{{ task.personal_stage_type.id }}"
+             draggable="true"
+             @dragstart="onTaskDragStart($event)"
+             @dragend="onTaskDragEnd($event)"
+             @dblclick="openTaskModal('{{ task.id }}')">
+            
+            <!-- Task Card Content -->
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="flex-grow-1">
+                    <h6 class="task-title mb-1">{{ task.title }}</h6>
+                    {% if task.description %}
+                    <p class="task-description text-muted small mb-2">{{ task.description|truncatechars:100 }}</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Task Actions -->
+                <div class="d-flex align-items-center gap-1">
+                    {% if task.is_important %}
+                    <i class="bi bi-exclamation-circle text-warning" title="{% trans 'Important' %}"></i>
+                    {% endif %}
+                    
+                    {% if task.due_date %}
+                    <small class="text-muted">
+                        <i class="bi bi-calendar-event"></i>
+                        {{ task.due_date|date:"M d" }}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Task Tags -->
+            {% if task.tags.all %}
+            <div class="d-flex flex-wrap gap-1 mb-2">
+                {% for tag in task.tags.all %}
+                <span class="badge badge-sm" 
+                      style="background-color: {{ tag.color }}20; color: {{ tag.color }}; font-size: 10px;">
+                    {{ tag.name }}
+                </span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Task Footer -->
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Subtask Count -->
+                    {% if task.subtask_count > 0 %}
+                    <small class="text-muted">
+                        <i class="bi bi-list-check"></i>
+                        {{ task.completed_subtask_count }}/{{ task.subtask_count }}
+                    </small>
+                    {% endif %}
+                    
+                    <!-- Progress -->
+                    {% if task.progress_percentage > 0 %}
+                    <div class="progress" style="width: 40px; height: 4px;">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {{ task.progress_percentage }}%"></div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Toggle Button -->
+                <button class="btn btn-sm btn-outline-success task-toggle-btn" 
+                        hx-post="{% url 'todo:task_toggle_htmx' task.id %}"
+                        hx-target="#task-{{ task.id }}"
+                        hx-swap="outerHTML"
+                        title="{% if task.state == '1_done' %}{% trans 'Mark as incomplete' %}{% else %}{% trans 'Mark as complete' %}{% endif %}">
+                    {% if task.state == '1_done' %}
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    {% else %}
+                    <i class="bi bi-circle"></i>
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center text-muted py-4">
+            <i class="bi bi-inbox display-6"></i>
+            <p>{% trans "No tasks in this stage" %}</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Add Task Button -->
+    <div class="text-center mt-3">
+        <button class="btn btn-outline-primary btn-sm w-100" 
+                x-show="quickAddStage !== '{{ data.stage.id }}'"
+                @click="startQuickAdd('{{ data.stage.id }}')">
+            <i class="bi bi-plus"></i> {% trans "Add Task" %}
+        </button>
+    </div>
+</div>
+{% endfor %}

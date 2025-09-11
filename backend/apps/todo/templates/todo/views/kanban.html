@@ -18,6 +18,7 @@
                 {% for stage in stages %}
                 <!-- Kanban Column -->
                 <div class="kanban-column{% if stage.fold or stage.name == 'Archive' %} o_column_folded{% endif %}" 
+                     id="stage-{{ stage.id }}"
                      data-stage-id="{{ stage.id }}"
                      @dragover="handleDragOver($event)"
                      @dragleave="handleDragLeave($event)"
@@ -80,7 +81,8 @@
                                                     hx-delete="{% url 'todo_web:stage_delete_htmx' stage.id %}"
                                                     hx-target="#stage-{{ stage.id }}"
                                                     hx-swap="outerHTML"
-                                                    hx-confirm="Are you sure you want to delete stage '{{ stage.name }}'?">
+                                                    hx-confirm="Are you sure you want to delete stage '{{ stage.name }}'?"
+                                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
                                                 <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
                                             </button></li>
                                             {% endif %}
@@ -1873,7 +1875,7 @@ document.addEventListener('alpine:init', () => {
             
             // Create new stage column HTML with proper event handlers
             const newStageHtml = `
-                <div class="kanban-column" data-stage-id="${stageData.id}" data-stage-sequence="${stageData.sequence}"
+                <div class="kanban-column" id="stage-${stageData.id}" data-stage-id="${stageData.id}" data-stage-sequence="${stageData.sequence}"
                      @dragover="handleDragOver($event)"
                      @dragleave="handleDragLeave($event)"
                      @drop="handleDrop($event)">
@@ -1929,7 +1931,8 @@ document.addEventListener('alpine:init', () => {
                                                     hx-delete="/todo/htmx/stages/${stageData.id}/delete/"
                                                     hx-target="#stage-${stageData.id}"
                                                     hx-swap="outerHTML"
-                                                    hx-confirm="Are you sure you want to delete stage '${stageData.name}'?">
+                                                    hx-confirm="Are you sure you want to delete stage '${stageData.name}'?"
+                                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
                                                 <i class="bi bi-trash me-2"></i> Supprimer
                                             </button></li>
                                         </ul>
@@ -2286,5 +2289,29 @@ setTimeout(() => {
         console.log('Alpine.js loaded successfully, using Alpine.js functions');
     }
 }, 2000);
+
+// HTMX event listener for refreshing kanban columns after stage deletion
+document.body.addEventListener('refresh-kanban-columns', function(event) {
+    console.log('Refreshing kanban columns after stage deletion with task movement');
+    
+    // Refresh all kanban columns to show updated task counts and positions
+    const columns = document.querySelectorAll('.kanban-column');
+    columns.forEach(column => {
+        const stageId = column.getAttribute('data-stage-id');
+        if (stageId) {
+            // Refresh the tasks container for this column
+            htmx.ajax('GET', `/todo/htmx/kanban/column/${stageId}/`, {
+                target: `#tasks-${stageId}`,
+                swap: 'outerHTML'
+            }).catch(error => {
+                console.error('Error refreshing column:', stageId, error);
+            });
+        }
+    });
+    
+    // Show notification
+    window.notificationService?.success('Stage deleted and tasks moved to Done');
+});
+
 </script>
 {% endblock %}
