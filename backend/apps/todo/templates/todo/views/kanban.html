@@ -71,7 +71,7 @@
                                                 {% trans "Hide" %}
                                             </button></li>
                                             <li><hr class="dropdown-divider"></li>
-                                            {% if stage.name == "To Do" or stage.name == "Done" or stage.name == "Archive" %}
+                                            {% if stage.name == "To Do" or stage.name == "Done" or stage.name == "Archives" %}
                                             <li><button class="dropdown-item text-muted" type="button" disabled title="Ce stage ne peut pas être supprimé">
                                                 <i class="bi bi-shield-check me-2"></i> Stage protégé
                                             </button></li>
@@ -2137,7 +2137,7 @@ document.addEventListener('alpine:init', () => {
         // Delete stage method - Using custom modal
         deleteStage(stageId, stageName) {
             // Check if stage is critical and should not be deleted
-            const criticalStages = ['To Do', 'Done', 'Archive'];
+            const criticalStages = ['To Do', 'Done', 'Archives'];
             if (criticalStages.includes(stageName)) {
                 window.notificationService?.error(`Impossible de supprimer le stage "${stageName}" car il est nécessaire au bon fonctionnement de l'application.`);
                 return;

@@ -451,7 +451,7 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
         critical_stages = [
             {'name': 'To Do', 'sequence': 1, 'color': '#6c757d', 'is_closed': False, 'fold': False},
             {'name': 'Done', 'sequence': 4, 'color': '#28a745', 'is_closed': True, 'fold': False},
-            {'name': 'Archive', 'sequence': 5, 'color': '#6f42c1', 'is_closed': True, 'fold': True},
+            {'name': 'Archives', 'sequence': 5, 'color': '#6f42c1', 'is_closed': True, 'fold': True},
         ]
         
         for stage_data in critical_stages:
@@ -501,7 +501,7 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Prevent deletion of critical system stages
-        critical_stage_names = ['To Do', 'Done', 'Archive']
+        critical_stage_names = ['To Do', 'Done', 'Archives']
         if stage.name in critical_stage_names:
             return Response({
                 'error': f'Impossible de supprimer le stage "{stage.name}" car il est nécessaire au bon fonctionnement de l\'application.',
@@ -1446,7 +1446,7 @@ class StageDeleteHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             return HttpResponse('<div class="text-red-500">Impossible de supprimer le dernier stage. Vous devez avoir au moins un stage.</div>')
         
         # Prevent deletion of critical system stages
-        critical_stage_names = ['To Do', 'Done', 'Archive']
+        critical_stage_names = ['To Do', 'Done', 'Archives']
         if stage.name in critical_stage_names:
             return HttpResponse(f'<div class="text-red-500">Impossible de supprimer le stage "{stage.name}" car il est nécessaire au bon fonctionnement de l\'application.</div>')
         
