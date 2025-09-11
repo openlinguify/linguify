@@ -1596,20 +1596,49 @@ class StageReorderHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
 
 class TaskDropdownToggleHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
     """HTMX endpoint for toggling task dropdown menus"""
+    template_name = 'todo/partials/task_dropdown.html'
     htmx_template_name = 'todo/partials/task_dropdown.html'
     
     def post(self, request, task_id):
-        task = get_object_or_404(Task, id=task_id, user=request.user)
+        print(f"DEBUG TaskDropdownToggleHTMXView: task_id={task_id}")
+        print(f"DEBUG TaskDropdownToggleHTMXView: user={request.user}, authenticated={request.user.is_authenticated}")
+        print(f"DEBUG TaskDropdownToggleHTMXView: CSRF token={request.headers.get('X-CSRFToken', 'NOT_FOUND')}")
         
+        try:
+            task = get_object_or_404(Task, id=task_id, user=request.user)
+            print(f"DEBUG TaskDropdownToggleHTMXView: task={task}, task.id={task.id}, task.title={task.title}")
+            
+            context = {
+                'task': task,
+                'dropdown_open': True
+            }
+            print(f"DEBUG TaskDropdownToggleHTMXView: context={context}")
+            return self.render_htmx_response(context)
+        except Exception as e:
+            print(f"DEBUG TaskDropdownToggleHTMXView: ERROR={e}")
+            # Return a simple error response for debugging
+            from django.http import HttpResponse
+            return HttpResponse(f"Error: {e}", status=500)
+
+
+class TaskDropdownTestView(TemplateView):
+    """Simple test endpoint to check if task dropdown works - no auth for testing"""
+    template_name = 'todo/partials/task_dropdown.html'
+    
+    def get(self, request, task_id):
+        print(f"DEBUG TaskDropdownTestView: task_id={task_id}")
+        # For testing, we'll create a fake task context
         context = {
-            'task': task,
+            'task': {'id': task_id, 'title': 'Test Task', 'pk': task_id},
             'dropdown_open': True
         }
-        return self.render_htmx_response(context)
+        print(f"DEBUG TaskDropdownTestView: context={context}")
+        return self.render_to_response(context)
 
 
 class TaskEditHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
     """HTMX endpoint for editing tasks"""
+    template_name = 'todo/partials/task_edit_form.html'
     htmx_template_name = 'todo/partials/task_edit_form.html'
     
     def get(self, request, task_id):
@@ -1657,6 +1686,7 @@ class TaskEditHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
 
 class TaskDuplicateHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
     """HTMX endpoint for duplicating tasks"""
+    template_name = 'todo/partials/task_row.html'
     htmx_template_name = 'todo/partials/task_row.html'
     
     def post(self, request, task_id):
@@ -1685,6 +1715,7 @@ class TaskDuplicateHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView)
 
 class TaskPriorityToggleHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
     """HTMX endpoint for toggling task priority"""
+    template_name = 'todo/partials/task_priority_button.html'
     htmx_template_name = 'todo/partials/task_priority_button.html'
     
     def post(self, request, task_id):
@@ -1700,6 +1731,7 @@ class TaskPriorityToggleHTMXView(LoginRequiredMixin, HTMXResponseMixin, Template
 
 class TaskStatusToggleHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
     """HTMX endpoint for toggling task completion status"""
+    template_name = 'todo/partials/task_row.html'
     htmx_template_name = 'todo/partials/task_row.html'
     
     def post(self, request, task_id):
