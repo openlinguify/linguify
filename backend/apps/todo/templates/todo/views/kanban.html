@@ -1004,15 +1004,17 @@
 }
 
 /* Flash animation for updated count */
-.task-count.count-updated {
+.task-count.count-updated,
+.badge-linguify-compact.count-updated {
     animation: countBounce 0.4s ease-in-out;
     color: #10b981 !important;
     font-weight: 700 !important;
+    border-color: #10b981 !important;
 }
 
 @keyframes countBounce {
     0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
+    50% { transform: scale(1.4); }
     100% { transform: scale(1); }
 }
 
@@ -1243,11 +1245,16 @@ document.addEventListener('alpine:init', () => {
             const currentStageId = this.draggedTaskElement.getAttribute('data-stage-id');
             const currentPosition = parseInt(this.draggedTaskElement.getAttribute('data-position'));
             
+            // Validate positions - fallback to 0 if NaN
+            if (isNaN(newPosition)) newPosition = 0;
+            if (isNaN(currentPosition)) currentPosition = 0;
+            
             // Handle drop on folded column
             const targetColumn = document.querySelector(`[data-stage-id="${newStageId}"]`);
             if (targetColumn && targetColumn.classList.contains('o_column_folded')) {
                 // For folded columns, add to the end
-                newPosition = 999;
+                const existingTasksCount = targetColumn.querySelectorAll('.task-card-linguify').length;
+                newPosition = existingTasksCount; // Add after existing tasks
                 // Keep the column folded - just show subtle feedback
                 this.showTaskAddedFeedback(targetColumn);
             }
@@ -1272,38 +1279,32 @@ document.addEventListener('alpine:init', () => {
             // Get the tasks list for the target stage
             const tasksList = targetColumn.querySelector('.tasks-list');
             
-            if (tasksList && !targetColumn.classList.contains('o_column_folded')) {
-                // Get all task elements (not drop zones)
-                const allTasks = Array.from(tasksList.querySelectorAll('.task-card-linguify')).filter(task => task !== this.draggedTaskElement);
-                
-                // Insert at the correct position
-                if (newPosition >= allTasks.length) {
-                    // Insert at the end
-                    const finalDropZone = tasksList.querySelector('.final-drop-zone');
-                    if (finalDropZone) {
-                        tasksList.insertBefore(this.draggedTaskElement, finalDropZone);
-                    } else {
-                        tasksList.appendChild(this.draggedTaskElement);
-                    }
+            // Always move the task visually to the new stage
+            if (tasksList) {
+                // For cross-stage moves, just append to the target stage
+                if (currentStageId !== newStageId) {
+                    console.log(`Moving task visually from stage ${currentStageId} to ${newStageId}`);
+                    tasksList.appendChild(this.draggedTaskElement);
                 } else {
-                    // Insert before the task at the new position
-                    const targetTask = allTasks[newPosition];
-                    if (targetTask) {
-                        // Find the drop zone before this task
-                        let insertPoint = targetTask.previousElementSibling;
-                        while (insertPoint && !insertPoint.classList.contains('task-drop-zone')) {
-                            insertPoint = insertPoint.previousElementSibling;
-                        }
-                        if (insertPoint) {
-                            tasksList.insertBefore(this.draggedTaskElement, insertPoint.nextElementSibling);
+                    // For same-stage moves, handle positioning
+                    const allTasks = Array.from(tasksList.querySelectorAll('.task-card-linguify')).filter(task => task !== this.draggedTaskElement);
+                    
+                    if (newPosition >= allTasks.length) {
+                        // Insert at the end
+                        const finalDropZone = tasksList.querySelector('.final-drop-zone');
+                        if (finalDropZone) {
+                            tasksList.insertBefore(this.draggedTaskElement, finalDropZone);
                         } else {
+                            tasksList.appendChild(this.draggedTaskElement);
+                        }
+                    } else {
+                        // Insert before the task at the new position
+                        const targetTask = allTasks[newPosition];
+                        if (targetTask) {
                             tasksList.insertBefore(this.draggedTaskElement, targetTask);
                         }
                     }
                 }
-            } else if (tasksList) {
-                // For folded columns, just append to the tasks list
-                tasksList.appendChild(this.draggedTaskElement);
             }
             
             // Update data attributes
@@ -1325,8 +1326,13 @@ document.addEventListener('alpine:init', () => {
             
             // Update UI
             this.updateTaskCompletionIcon(taskId, newStageId);
-            this.updateStageCounts();
+            this.updateAllStageCounts();
             this.updateTaskPositions();
+            
+            // Force visual update if moving between different stages
+            if (currentStageId && currentStageId !== newStageId) {
+                this.syncStageDisplay(newStageId, currentStageId);
+            }
         },
         
         showTaskAddedFeedback(column) {
@@ -1334,18 +1340,18 @@ document.addEventListener('alpine:init', () => {
             column.classList.add('task-added-success');
             
             // Update task count immediately for visual feedback
-            const countElement = column.querySelector('.task-count');
-            if (countElement) {
-                const currentCount = parseInt(countElement.textContent) || 0;
-                countElement.textContent = currentCount + 1;
-                countElement.classList.add('count-updated');
+            const badge = column.querySelector('.badge-linguify-compact');
+            if (badge) {
+                const currentCount = parseInt(badge.textContent) || 0;
+                badge.textContent = currentCount + 1;
+                badge.classList.add('count-updated');
             }
             
             // Remove feedback classes after animation
             setTimeout(() => {
                 column.classList.remove('task-added-success');
-                if (countElement) {
-                    countElement.classList.remove('count-updated');
+                if (badge) {
+                    badge.classList.remove('count-updated');
                 }
             }, 600);
         },
@@ -1471,32 +1477,43 @@ document.addEventListener('alpine:init', () => {
                     
                     const newStageId = column.getAttribute('data-stage-id');
                     const taskId = this.draggedTask;
+                    const currentStageId = this.draggedTaskElement.getAttribute('data-stage-id');
                     
                     console.log('Dropping task on folded column:', newStageId);
                     
                     // Remove visual feedback
                     column.classList.remove('drag-over');
                     
-                    // Move task to folded column
-                    const tasksList = column.querySelector('.tasks-list');
-                    if (tasksList) {
-                        tasksList.appendChild(this.draggedTaskElement);
+                    // Only proceed if moving to a different stage
+                    if (currentStageId !== newStageId) {
+                        // Move task to folded column
+                        const tasksList = column.querySelector('.tasks-list');
+                        if (tasksList) {
+                            tasksList.appendChild(this.draggedTaskElement);
+                        }
+                        
+                        // Get proper position (end of list)
+                        const allTasksInNewStage = column.querySelectorAll('.task-card-linguify');
+                        const newPosition = allTasksInNewStage.length - 1; // Since we just added it
+                        
+                        // Update data attributes
+                        this.draggedTaskElement.setAttribute('data-stage-id', newStageId);
+                        this.draggedTaskElement.setAttribute('data-position', newPosition);
+                        
+                        // Show subtle feedback that task was added (keep stage folded)
+                        this.showTaskAddedFeedback(column);
+                        
+                        // Update via API with correct position
+                        this.moveTaskToPosition(taskId, newStageId, newPosition);
+                        
+                        // Update UI
+                        this.updateTaskCompletionIcon(taskId, newStageId);
+                        this.updateAllStageCounts();
+                        this.updateTaskPositions();
+                        
+                        // Force visual update of both old and new stages
+                        this.syncStageDisplay(newStageId, currentStageId);
                     }
-                    
-                    // Update data attributes
-                    this.draggedTaskElement.setAttribute('data-stage-id', newStageId);
-                    this.draggedTaskElement.setAttribute('data-position', 999); // Add at end
-                    
-                    // Show subtle feedback that task was added (keep stage folded)
-                    this.showTaskAddedFeedback(column);
-                    
-                    // Update via API
-                    this.moveTaskToPosition(taskId, newStageId, 999);
-                    
-                    // Update UI
-                    this.updateTaskCompletionIcon(taskId, newStageId);
-                    this.updateStageCounts();
-                    this.updateTaskPositions();
                     
                     return;
                 }
@@ -1532,6 +1549,76 @@ document.addEventListener('alpine:init', () => {
                     badge.textContent = taskCount;
                 }
             });
+        },
+        
+        // Update all stage counts with animation
+        updateAllStageCounts() {
+            document.querySelectorAll('.kanban-column').forEach(column => {
+                const stageId = column.getAttribute('data-stage-id');
+                const taskCount = column.querySelectorAll('.task-card-linguify').length;
+                const badge = column.querySelector('.badge-linguify-compact');
+                if (badge) {
+                    const oldCount = parseInt(badge.textContent) || 0;
+                    const newCount = taskCount;
+                    
+                    if (oldCount !== newCount) {
+                        badge.textContent = newCount;
+                        badge.classList.add('count-updated');
+                        setTimeout(() => {
+                            badge.classList.remove('count-updated');
+                        }, 400);
+                    }
+                }
+            });
+        },
+        
+        // Synchronize display between stages after task move
+        syncStageDisplay(newStageId, oldStageId) {
+            console.log(`Syncing stages: ${oldStageId} -> ${newStageId}`);
+            
+            // Force update both stages
+            [newStageId, oldStageId].forEach(stageId => {
+                if (!stageId) return;
+                
+                const column = document.querySelector(`[data-stage-id="${stageId}"]`);
+                if (!column) return;
+                
+                // Get all tasks currently in this stage's DOM
+                const tasks = column.querySelectorAll('.task-card-linguify');
+                const badge = column.querySelector('.badge-linguify-compact');
+                
+                console.log(`Stage ${stageId} now has ${tasks.length} tasks`);
+                
+                // Update badge with animation
+                if (badge) {
+                    const oldCount = parseInt(badge.textContent) || 0;
+                    const newCount = tasks.length;
+                    
+                    if (oldCount !== newCount) {
+                        badge.textContent = newCount;
+                        badge.classList.add('count-updated');
+                        
+                        // Add visual feedback based on change
+                        if (newCount > oldCount) {
+                            column.classList.add('task-added-success');
+                            setTimeout(() => column.classList.remove('task-added-success'), 600);
+                        }
+                        
+                        setTimeout(() => {
+                            badge.classList.remove('count-updated');
+                        }, 400);
+                    }
+                }
+                
+                // Update task positions within stage
+                tasks.forEach((task, index) => {
+                    task.setAttribute('data-position', index);
+                    console.log(`  Task ${task.getAttribute('data-task-id')} at position ${index}`);
+                });
+            });
+            
+            // Show success notification
+            window.notificationService?.success('Tâche déplacée avec succès');
         },
         
         // Update task completion icon based on stage
