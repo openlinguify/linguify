@@ -41,6 +41,9 @@ from .stats_api_views import (
     get_deck_performance
 )
 
+# Translation API Views
+from .translation_views import *
+
 __all__ = [
     # API Views (ViewSets for REST API)
     'FlashcardDeckViewSet',
@@ -67,4 +70,7 @@ __all__ = [
     'get_recent_sessions',
     'get_study_goals',
     'get_deck_performance',
+    # Translation API Views
+    'TranslationAPIView',
+    'TranslationDetectAPIView',
 ]

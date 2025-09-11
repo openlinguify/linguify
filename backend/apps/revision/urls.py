@@ -15,6 +15,7 @@ from .views import (
 # Import exploration views - migrated to explorer_views.py
 from .views.explorer_views import PublicDecksViewSet
 from .views.flashcard_views import TagsAPIView, WordStatsAPIView
+from .views.translation_views import TranslationAPIView, TranslationDetectAPIView
 from .views.revision_settings_views import (
     get_user_revision_settings,
     RevisionSettingsViewSet,
@@ -64,6 +65,10 @@ urlpatterns = [
     path('tags/', TagsAPIView.as_view(), name='tags-api'),
     path('word-stats/', WordStatsAPIView.as_view(), name='word-stats-api'),
     path('user-settings/', get_user_revision_settings, name='user-settings'),
+    
+    # Translation endpoints
+    path('translate/', TranslationAPIView.as_view(), name='translate'),
+    path('translate/detect/', TranslationDetectAPIView.as_view(), name='translate-detect'),
     
     # Debug endpoint
     path('debug/auth/', lambda request: JsonResponse({

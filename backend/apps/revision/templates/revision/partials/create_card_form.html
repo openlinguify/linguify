@@ -14,10 +14,6 @@
     </div>
     
     <div class="study-content p-4">
-        <div class="alert bg-gradient-subtle-linguify border-linguify p-3 mb-4">
-            <i class="bi bi-info-circle text-linguify-accent me-2" style="font-size: 1rem;"></i>
-            <span class="text-linguify-primary" style="font-size: 0.9rem; font-weight: 500;">Les langues par défaut du deck seront utilisées. Vous pouvez les modifier uniquement pour cette carte si nécessaire.</span>
-        </div>
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
@@ -47,8 +43,19 @@
                         <option value="pt">🇵🇹 Portugais</option>
                     </select>
                 </div>
-                <textarea id="newCardFront" class="form-control" rows="4" 
-                          placeholder="Ex: Comment dit-on 'bonjour' en anglais ?" required></textarea>
+                <div class="position-relative">
+                    <textarea id="newCardFront" class="form-control" rows="4" 
+                              placeholder="Ex: Comment dit-on 'bonjour' en anglais ?" required></textarea>
+                    <button type="button" 
+                            class="btn btn-outline-primary btn-sm position-absolute translate-btn" 
+                            style="top: 8px; right: 8px; z-index: 10;"
+                            id="translateFrontBtn"
+                            title="Traduire automatiquement vers la langue du verso"
+                            onclick="translateText('front')">
+                        <i class="bi bi-translate me-1"></i>
+                        <span>Traduire</span>
+                    </button>
+                </div>
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
@@ -78,8 +85,19 @@
                         <option value="pt">🇵🇹 Portugais</option>
                     </select>
                 </div>
-                <textarea id="newCardBack" class="form-control" rows="4" 
-                          placeholder="Ex: Hello" required></textarea>
+                <div class="position-relative">
+                    <textarea id="newCardBack" class="form-control" rows="4" 
+                              placeholder="Ex: Hello" required></textarea>
+                    <button type="button" 
+                            class="btn btn-outline-primary btn-sm position-absolute translate-btn" 
+                            style="top: 8px; right: 8px; z-index: 10;"
+                            id="translateBackBtn"
+                            title="Traduire automatiquement vers la langue du recto"
+                            onclick="translateText('back')">
+                        <i class="bi bi-translate me-1"></i>
+                        <span>Traduire</span>
+                    </button>
+                </div>
             </div>
         </div>
         

@@ -11,6 +11,7 @@ from .views.web_views import (
     revision_explore,
     revision_public_deck
 )
+from .views.translation_views import TranslationAPIView, TranslationDetectAPIView
 # HTMX Explorer views
 from .views.explorer_views import (
     ExploreMainView,
@@ -82,6 +83,14 @@ urlpatterns = [
     path('explore/trending/', TrendingDecksView.as_view(), name='explore_trending'),
     path('explore/popular/', PopularDecksView.as_view(), name='explore_popular'),
     
+    
+    # ==========================================
+    # === TRANSLATION ENDPOINTS ===
+    # ==========================================
+    
+    # Translation API endpoints
+    path('translate/', TranslationAPIView.as_view(), name='translate'),
+    path('translate/detect/', TranslationDetectAPIView.as_view(), name='translate-detect'),
     
     # ==========================================
     # === LEGACY ROUTES - BACKWARD COMPATIBILITY ===

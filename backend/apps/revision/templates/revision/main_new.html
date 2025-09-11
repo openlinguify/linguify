@@ -82,6 +82,54 @@
     flex-shrink: 0;
     min-height: fit-content;
 }
+
+/* Styles pour les boutons de traduction */
+.translate-btn {
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(13, 110, 253, 0.3);
+}
+
+.translate-btn:hover {
+    opacity: 1;
+    background: rgba(13, 110, 253, 0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.translate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Conteneur de notification */
+#notification-container {
+    z-index: 9999;
+    pointer-events: none;
+}
+
+#notification-container .alert {
+    pointer-events: auto;
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
 </style>
 {% endblock %}
 
@@ -98,6 +146,7 @@
 <script src="{% static 'revision/js/study/revision-matching.js' %}?v=20250823-optimized"></script>
 <script src="{% static 'revision/js/study/revision-spaced.js' %}"></script>
 <script src="{% static 'revision/js/study/revision-write.js' %}"></script>
+<script src="{% static 'revision/js/translation.js' %}"></script>
 
 <script>
 // Le JavaScript principal est maintenant dans revision-main.js
@@ -111,5 +160,9 @@ window.clearSelectedFile = window.revisionMain.clearSelectedFile;
 // Paramètres audio utilisateur depuis le serveur
 window.userAudioSettings = {{ audio_settings_json|safe }};
 console.log('Paramètres audio chargés depuis le serveur:', window.userAudioSettings);
+
+// Configuration des langues par défaut pour la traduction
+window.deckFrontLanguage = 'fr'; // Langue par défaut du recto
+window.deckBackLanguage = 'en';  // Langue par défaut du verso
 </script>
 {% endblock %}
