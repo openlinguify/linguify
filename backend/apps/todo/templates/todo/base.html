@@ -41,7 +41,23 @@
             top: 0;
             left: 0;
             right: 0;
-            z-index: 1001;
+            z-index: 9999;
+        }
+        
+        /* Global Bootstrap Dropdown Fixes */
+        body .dropdown-menu {
+            z-index: 9998 !important;
+        }
+        
+        body .dropdown-menu.show {
+            display: block !important;
+            z-index: 9999 !important;
+        }
+        
+        /* Force header dropdowns to highest z-index */
+        .fixed-header .dropdown-menu,
+        #mainHeader .dropdown-menu {
+            z-index: 10000 !important;
         }
     </style>
 </head>
@@ -51,14 +67,12 @@
     
     <div class="app-container-layout">
         <!-- App-specific header section (below main header) -->
-        <div class="app-header-layout">
-            <div class="header-content">
+        <div>
                 {% block header_content %}{% endblock %}
-            </div>
         </div>
         
         <!-- Main Content -->
-        <div class="app-main-layout">
+        <div>
             {% block content %}{% endblock %}
         </div>
     </div>
@@ -71,6 +85,40 @@
     
     <!-- Alpine.js -->
     <script defer src="{% static 'js/alpine.min.js' %}"></script>
+    
+    <!-- Global Bootstrap Dropdowns Initialization -->
+    <script>
+        // Global function to initialize all Bootstrap dropdowns
+        function initializeAllDropdowns() {
+            if (typeof bootstrap === 'undefined') {
+                console.error('Bootstrap not loaded, retrying...');
+                setTimeout(initializeAllDropdowns, 200);
+                return;
+            }
+            
+            // Initialize all dropdowns on the page
+            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function(dropdownElement) {
+                const existingInstance = bootstrap.Dropdown.getInstance(dropdownElement);
+                if (existingInstance) {
+                    existingInstance.dispose();
+                }
+                new bootstrap.Dropdown(dropdownElement);
+            });
+            
+            console.log('All Bootstrap dropdowns initialized');
+        }
+        
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initializeAllDropdowns, 100);
+        });
+        
+        // Reinitialize after HTMX updates
+        document.body.addEventListener('htmx:afterSettle', function(event) {
+            setTimeout(initializeAllDropdowns, 50);
+        });
+    </script>
+    
     <script>
         // HTMX Configuration
         document.body.addEventListener('htmx:configRequest', (event) => {
