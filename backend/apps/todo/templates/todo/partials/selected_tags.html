@@ -1,0 +1,26 @@
+{% load i18n %}
+<div id="selectedTagsContainer">
+{% for tag in tags %}
+<span class="tag-badge-linguify" 
+      data-tag-id="{{ tag.id }}" 
+      data-bg-color="{{ tag.color }}20"
+      data-text-color="{{ tag.color }}">
+    {{ tag.name }}
+    <button type="button" class="tag-remove-linguify" 
+            hx-delete="{% url 'todo:tag_remove_htmx' tag.id %}"
+            hx-vals='{"selected": "{{ selected_tag_ids|join:"," }}"}'
+            hx-target="#selectedTags"
+            hx-swap="innerHTML">&times;</button>
+</span>
+{% endfor %}
+</div>
+<input type="hidden" id="tagsInput" name="tags" value="{{ selected_tag_ids|join:',' }}">
+<script>
+// Apply colors to tags using data attributes
+document.querySelectorAll('.tag-badge-linguify').forEach(tag => {
+    const bgColor = tag.dataset.bgColor;
+    const textColor = tag.dataset.textColor;
+    if (bgColor) tag.style.backgroundColor = bgColor;
+    if (textColor) tag.style.color = textColor;
+});
+</script>

@@ -1754,3 +1754,247 @@ class TaskStatusToggleHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateVi
         
         context = {'task': task, 'today': timezone.now().date()}
         return self.render_htmx_response(context)
+
+
+class TaskAutoSaveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for auto-saving task data"""
+    template_name = 'todo/partials/save_indicator.html'
+    
+    def post(self, request, task_id=None):
+        """Handle both create (POST to /tasks/autosave/) and update (POST to /tasks/{id}/autosave/)"""
+        from django.utils.dateparse import parse_datetime
+        import json
+        
+        try:
+            # Get form data
+            data = {}
+            for key, value in request.POST.items():
+                if key != 'csrfmiddlewaretoken' and value.strip():
+                    # Handle date fields
+                    if key in ['due_date', 'start_date'] and value:
+                        try:
+                            # Convert datetime-local format to datetime object
+                            parsed_date = parse_datetime(value.replace('T', ' '))
+                            data[key] = parsed_date
+                        except (ValueError, TypeError):
+                            data[key] = None
+                    # Handle empty strings as None
+                    elif value.strip() == '':
+                        data[key] = None
+                    else:
+                        data[key] = value
+            
+            if task_id:
+                # Update existing task
+                task = get_object_or_404(Task, id=task_id, user=request.user)
+                
+                # Update task fields
+                for key, value in data.items():
+                    if hasattr(task, key):
+                        setattr(task, key, value)
+                
+                # Handle tags separately
+                if 'tags' in request.POST:
+                    tag_ids = request.POST.get('tags', '').split(',')
+                    tag_ids = [tid.strip() for tid in tag_ids if tid.strip()]
+                    if tag_ids:
+                        task.tags.set(Tag.objects.filter(id__in=tag_ids, user=request.user))
+                    else:
+                        task.tags.clear()
+                
+                task.save()
+                message = "Saved"
+                
+            else:
+                # Create new task
+                data['user'] = request.user
+                
+                # Handle required fields
+                if not data.get('title'):
+                    return HttpResponse('<span class="text-red-500">Title is required</span>')
+                
+                # Set defaults
+                if 'personal_stage_type' not in data or not data['personal_stage_type']:
+                    default_stage = PersonalStageType.objects.filter(user=request.user).first()
+                    if default_stage:
+                        data['personal_stage_type'] = default_stage
+                
+                # Create task
+                task = Task.objects.create(**data)
+                
+                # Handle tags for new task
+                if 'tags' in request.POST:
+                    tag_ids = request.POST.get('tags', '').split(',')
+                    tag_ids = [tid.strip() for tid in tag_ids if tid.strip()]
+                    if tag_ids:
+                        task.tags.set(Tag.objects.filter(id__in=tag_ids, user=request.user))
+                
+                message = "Created"
+                
+                # Update the browser URL for new tasks
+                response = HttpResponse(f'<span class="text-green-500">✓ {message}</span>')
+                response['HX-Push-Url'] = f'/todo/task/{task.id}/'
+                return response
+            
+            return HttpResponse(f'<span class="text-green-500">✓ {message}</span>')
+            
+        except Exception as e:
+            logger.error(f"Auto-save error: {str(e)}")
+            return HttpResponse('<span class="text-red-500">Save failed</span>', status=400)
+
+
+class TaskToggleFormHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for toggling task completion in form view"""
+    
+    def post(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        
+        # Toggle completion
+        if task.state == '1_done':
+            task.state = '1_todo'
+            task.completed_at = None
+        else:
+            task.state = '1_done'
+            task.completed_at = timezone.now()
+        
+        task.save()
+        
+        # Return updated button HTML
+        if task.state == '1_done':
+            button_html = '''
+            <button type="button" class="btn-linguify-outline btn-full btn-success" 
+                    hx-post="/todo/htmx/tasks/{}/toggle_form/" hx-swap="outerHTML" hx-target="this">
+                <i class="bi bi-arrow-counterclockwise"></i> Mark as Incomplete
+            </button>
+            '''.format(task.id)
+        else:
+            button_html = '''
+            <button type="button" class="btn-linguify-outline btn-full btn-success" 
+                    hx-post="/todo/htmx/tasks/{}/toggle_form/" hx-swap="outerHTML" hx-target="this">
+                <i class="bi bi-check-circle"></i> Mark as Complete
+            </button>
+            '''.format(task.id)
+        
+        return HttpResponse(button_html)
+
+
+class TaskDeleteFormHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for deleting tasks from form view"""
+    
+    def delete(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        task.delete()
+        
+        # Redirect to kanban view
+        response = HttpResponse('')
+        response['HX-Redirect'] = '/todo/kanban/'
+        return response
+
+
+class TagSearchHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for tag search suggestions"""
+    template_name = 'todo/partials/tag_suggestions.html'
+    
+    def get(self, request):
+        query = request.GET.get('q', '').strip()
+        selected_tag_ids = request.GET.get('selected', '')
+        
+        if selected_tag_ids:
+            selected_tag_ids = [tid.strip() for tid in selected_tag_ids.split(',') if tid.strip()]
+        else:
+            selected_tag_ids = []
+        
+        if not query:
+            return HttpResponse('')
+        
+        # Filter tags by query and exclude already selected ones
+        tags_query = Tag.objects.filter(
+            user=request.user,
+            name__icontains=query
+        )
+        
+        if selected_tag_ids:
+            tags_query = tags_query.exclude(id__in=selected_tag_ids)
+        
+        tags = tags_query[:10]
+        
+        context = {
+            'tags': tags,
+            'query': query,
+            'selected_tag_ids': selected_tag_ids,
+            'can_create': not Tag.objects.filter(user=request.user, name__iexact=query).exists()
+        }
+        
+        return self.render_to_response(context)
+
+
+class TagAddHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for adding tags to task"""
+    template_name = 'todo/partials/selected_tags.html'
+    
+    def post(self, request):
+        tag_id = request.POST.get('tag_id')
+        tag_name = request.POST.get('tag_name')
+        selected_tag_ids = request.POST.get('selected_tags', '').split(',')
+        selected_tag_ids = [tid.strip() for tid in selected_tag_ids if tid.strip()]
+        
+        if tag_id:
+            # Add existing tag
+            tag = get_object_or_404(Tag, id=tag_id, user=request.user)
+            if str(tag.id) not in selected_tag_ids:
+                selected_tag_ids.append(str(tag.id))
+        elif tag_name:
+            # Create new tag
+            tag, created = Tag.objects.get_or_create(
+                user=request.user,
+                name=tag_name,
+                defaults={'color': '#007bff'}
+            )
+            if str(tag.id) not in selected_tag_ids:
+                selected_tag_ids.append(str(tag.id))
+        
+        # Get all selected tags
+        tags = Tag.objects.filter(id__in=selected_tag_ids, user=request.user)
+        
+        context = {
+            'tags': tags,
+            'selected_tag_ids': selected_tag_ids
+        }
+        
+        return self.render_to_response(context)
+
+
+class TagRemoveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for removing tags from task"""
+    template_name = 'todo/partials/selected_tags.html'
+    
+    def delete(self, request, tag_id):
+        selected_tag_ids = request.GET.get('selected', '').split(',')
+        selected_tag_ids = [tid.strip() for tid in selected_tag_ids if tid.strip() and tid != str(tag_id)]
+        
+        # Get all selected tags
+        tags = Tag.objects.filter(id__in=selected_tag_ids, user=request.user)
+        
+        context = {
+            'tags': tags,
+            'selected_tag_ids': selected_tag_ids
+        }
+        
+        return self.render_to_response(context)
+
+
+class CharacterCountHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for character count updates"""
+    
+    def post(self, request):
+        title = request.POST.get('title', '')
+        length = len(title)
+        
+        if length > 180:
+            css_class = 'text-red-500'
+        elif length > 150:
+            css_class = 'text-yellow-500'
+        else:
+            css_class = 'text-gray-500'
+        
+        return HttpResponse(f'<span id="titleCharCount" class="{css_class}">{length}</span>/200 characters')

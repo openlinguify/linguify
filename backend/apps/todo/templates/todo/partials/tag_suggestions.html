@@ -1,0 +1,28 @@
+{% load i18n %}
+{% if tags %}
+    {% for tag in tags %}
+    <div class="tag-suggestion" 
+         hx-post="{% url 'todo:tag_add_htmx' %}" 
+         hx-vals='{"tag_id": "{{ tag.id }}", "selected_tags": "{{ selected_tag_ids|join:"," }}"}'
+         hx-target="#selectedTags"
+         hx-swap="innerHTML"
+         onclick="document.getElementById('tagInput').value = ''; this.parentElement.style.display = 'none';">
+        <span class="tag-badge" 
+              data-bg-color="{{ tag.color }}20"
+              data-text-color="{{ tag.color }}">
+            {{ tag.name }}
+        </span>
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% if can_create %}
+<div class="tag-suggestion create" 
+     hx-post="{% url 'todo:tag_add_htmx' %}" 
+     hx-vals='{"tag_name": "{{ query }}", "selected_tags": "{{ selected_tag_ids|join:"," }}"}'
+     hx-target="#selectedTags"
+     hx-swap="innerHTML"
+     onclick="document.getElementById('tagInput').value = ''; this.parentElement.style.display = 'none';">
+    <i class="bi bi-plus-circle"></i> {% trans "Create" %} "{{ query }}"
+</div>
+{% endif %}

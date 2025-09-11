@@ -52,4 +52,14 @@ urlpatterns = [
     path('htmx/tasks/<uuid:task_id>/duplicate/', TaskDuplicateHTMXView.as_view(), name='task_duplicate_htmx'),
     path('htmx/tasks/<uuid:task_id>/priority/', TaskPriorityToggleHTMXView.as_view(), name='task_priority_toggle_htmx'),
     path('htmx/tasks/<uuid:task_id>/status/', TaskStatusToggleHTMXView.as_view(), name='task_status_toggle_htmx'),
+    path('htmx/tasks/autosave/', TaskAutoSaveHTMXView.as_view(), name='task_autosave_create_htmx'),
+    path('htmx/tasks/<uuid:task_id>/autosave/', TaskAutoSaveHTMXView.as_view(), name='task_autosave_update_htmx'),
+    
+    # Form-specific HTMX endpoints
+    path('htmx/tasks/<uuid:task_id>/toggle_form/', TaskToggleFormHTMXView.as_view(), name='task_toggle_form_htmx'),
+    path('htmx/tasks/<uuid:task_id>/delete_form/', TaskDeleteFormHTMXView.as_view(), name='task_delete_form_htmx'),
+    path('htmx/tags/search/', TagSearchHTMXView.as_view(), name='tag_search_htmx'),
+    path('htmx/tags/add/', TagAddHTMXView.as_view(), name='tag_add_htmx'),
+    path('htmx/tags/<uuid:tag_id>/remove/', TagRemoveHTMXView.as_view(), name='tag_remove_htmx'),
+    path('htmx/character_count/', CharacterCountHTMXView.as_view(), name='character_count_htmx'),
 ]

@@ -15,3 +15,10 @@ def dict_get_length(dictionary, key):
     if isinstance(dictionary, dict):
         return len(dictionary.get(key, []))
     return 0
+
+@register.filter
+def add_alpha(color, alpha="20"):
+    """Add alpha transparency to a hex color"""
+    if color and color.startswith('#'):
+        return f"{color}{alpha}"
+    return color
