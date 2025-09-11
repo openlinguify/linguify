@@ -5769,9 +5769,7 @@ button.bg-linguify-gradient:hover,
 /* Unified Table Container */
 .unified-table-container-linguify {
     background: white;
-    border-radius: 8px;
-    border: 1px solid var(--linguify-gray-200);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
     flex: 1;
     overflow-y: auto;
     max-height: calc(100vh - 140px);
