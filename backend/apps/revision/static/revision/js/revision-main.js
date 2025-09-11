@@ -890,7 +890,23 @@ async function loadDeckCards() {
         
         // Render cards with deck ID for debugging
         elements.cardsContainer.innerHTML = filteredCards.map(card => `
-            <div class="card mb-3" data-card-id="${card.id}">
+            <div class="card mb-3 position-relative" data-card-id="${card.id}">
+                <div class="position-absolute" style="top: 8px; right: 8px; z-index: 10;">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-link p-0" 
+                                onclick="window.revisionMain.editCard(${card.id})" 
+                                title="Modifier"
+                                style="color: #6c757d; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-link p-0" 
+                                onclick="window.revisionMain.deleteCard(${card.id})" 
+                                title="Supprimer"
+                                style="color: #dc3545; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-5">
@@ -918,14 +934,6 @@ async function loadDeckCards() {
                             <small class="text-muted ms-2">
                                 Créée le ${formatDate(card.created_at)}
                             </small>
-                        </div>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-primary" onclick="window.revisionMain.editCard(${card.id})" title="Modifier">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-outline-danger" onclick="window.revisionMain.deleteCard(${card.id})" title="Supprimer">
-                                <i class="bi bi-trash"></i>
-                            </button>
                         </div>
                     </div>
                 </div>

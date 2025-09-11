@@ -271,8 +271,8 @@ window.flipCard = async function(cardId) {
         return;
     }
     
-    // Ajouter animation de chargement
-    const button = cardElement.querySelector('button');
+    // Ajouter animation de chargement sur le bon bouton (celui avec l'icône arrow-left-right)
+    const button = cardElement.querySelector('button[title="Inverser recto/verso"]');
     const originalContent = button.innerHTML;
     button.disabled = true;
     button.innerHTML = '<i class="spinner-border spinner-border-sm"></i>';
