@@ -18,8 +18,8 @@
                 <div class="form-card-linguify">
                 <form id="taskForm" method="post"
                           hx-post="{% if task %}{% url 'todo:task_autosave_update_htmx' task.id %}{% else %}{% url 'todo:task_autosave_create_htmx' %}{% endif %}"
-                          hx-trigger="change delay:2s, input delay:3s from:input, input delay:3s from:textarea, change delay:1s from:select"
-                          hx-target="#saveIndicator"
+                          hx-trigger="change delay:500ms, input delay:800ms from:input, input delay:800ms from:textarea, change delay:200ms from:select"
+                          hx-target="#navbarSaveIndicator"
                           hx-swap="innerHTML">
                     {% csrf_token %}
                     
@@ -73,10 +73,13 @@
                 </div>
                 <div class="sidebar-content-linguify">
                     <div class="form-actions-stack">
-                        <div id="saveIndicator" class="mb-3 text-sm"></div>
+                        <div id="saveIndicator" class="mb-3 text-sm" 
+                             style="min-height: 20px;">
+                            <!-- Save indicator moved to navbar -->
+                        </div>
                         <button type="submit" form="taskForm" class="btn-linguify btn-full"
                                 hx-post="{% if task %}{% url 'todo:task_autosave_update_htmx' task.id %}{% else %}{% url 'todo:task_autosave_create_htmx' %}{% endif %}"
-                                hx-target="#saveIndicator"
+                                hx-target="#navbarSaveIndicator"
                                 hx-swap="innerHTML">
                             <i class="bi bi-check"></i>
                             {% trans "Save" %}
@@ -276,6 +279,7 @@
 
 {% block extra_css %}
 <!-- All styles are centralized in tailwind-modals.css -->
+
 {% endblock %}
 
 {% block extra_js %}

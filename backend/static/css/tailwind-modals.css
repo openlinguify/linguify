@@ -8062,3 +8062,33 @@ input#importDeckName:focus {
 .kanban-column.force-folded .kanban-quick-add {
     display: none !important;
 }
+
+/* ===== TODO FORM AUTOSAVE STYLES ===== */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* HTMX indicator - hidden by default */
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+
+/* Show indicator during HTMX requests */
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+
+/* Navbar Save Indicator Colors */
+#navbarSaveIndicator .text-green-600 {
+    color: #16a34a;
+}
+
+#navbarSaveIndicator .text-red-600 {
+    color: #dc2626;
+}
+
+#navbarSaveIndicator .text-blue-500 {
+    color: #3b82f6;
+}

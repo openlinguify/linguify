@@ -1769,29 +1769,63 @@ class TaskAutoSaveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             # Get form data
             data = {}
             for key, value in request.POST.items():
-                if key != 'csrfmiddlewaretoken' and value.strip():
+                if key != 'csrfmiddlewaretoken':
                     # Handle date fields
-                    if key in ['due_date', 'start_date'] and value:
-                        try:
-                            # Convert datetime-local format to datetime object
-                            parsed_date = parse_datetime(value.replace('T', ' '))
-                            data[key] = parsed_date
-                        except (ValueError, TypeError):
+                    if key in ['due_date', 'start_date']:
+                        if value and value.strip():
+                            try:
+                                # Convert datetime-local format to datetime object
+                                parsed_date = parse_datetime(value.replace('T', ' '))
+                                data[key] = parsed_date
+                            except (ValueError, TypeError):
+                                pass  # Skip invalid dates
+                        else:
                             data[key] = None
-                    # Handle empty strings as None
-                    elif value.strip() == '':
-                        data[key] = None
+                    # Handle other fields
+                    elif value and value.strip():
+                        data[key] = value.strip()
                     else:
-                        data[key] = value
+                        # Set empty values as None for nullable fields, skip others
+                        if key in ['description', 'project', 'due_date', 'start_date']:
+                            data[key] = None
+                        elif key in ['color', 'priority'] and not value:
+                            # Skip empty color/priority to keep defaults
+                            continue
             
             if task_id:
                 # Update existing task
                 task = get_object_or_404(Task, id=task_id, user=request.user)
                 
+                # Track which fields actually changed
+                changed_fields = []
+                
                 # Update task fields
                 for key, value in data.items():
-                    if hasattr(task, key):
-                        setattr(task, key, value)
+                    if key == 'personal_stage_type' and value:
+                        try:
+                            stage = PersonalStageType.objects.get(id=value, user=request.user)
+                            if task.personal_stage_type != stage:
+                                task.personal_stage_type = stage
+                                changed_fields.append('personal_stage_type')
+                        except PersonalStageType.DoesNotExist:
+                            continue
+                    elif key == 'project' and value:
+                        try:
+                            project = Project.objects.get(id=value, user=request.user)
+                            if task.project != project:
+                                task.project = project
+                                changed_fields.append('project')
+                        except Project.DoesNotExist:
+                            continue
+                    elif key == 'project' and not value:
+                        if task.project is not None:
+                            task.project = None
+                            changed_fields.append('project')
+                    elif hasattr(task, key):
+                        current_value = getattr(task, key)
+                        if current_value != value:
+                            setattr(task, key, value)
+                            changed_fields.append(key)
                 
                 # Handle tags separately
                 if 'tags' in request.POST:
@@ -1802,8 +1836,18 @@ class TaskAutoSaveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
                     else:
                         task.tags.clear()
                 
-                task.save()
-                message = "Saved"
+                # Only save if there were actual changes
+                tags_changed = 'tags' in request.POST
+                
+                if changed_fields or tags_changed:
+                    # Add updated_at to changed fields
+                    if changed_fields and 'updated_at' not in changed_fields:
+                        changed_fields.append('updated_at')
+                    task.save(update_fields=changed_fields if changed_fields else None)
+                    message = "Saved"
+                else:
+                    # No changes, just return success without saving
+                    return HttpResponse('<span class="text-gray-500 text-sm">No changes</span>')
                 
             else:
                 # Create new task
@@ -1839,8 +1883,11 @@ class TaskAutoSaveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             return HttpResponse(f'<span class="text-green-500">✓ {message}</span>')
             
         except Exception as e:
-            logger.error(f"Auto-save error: {str(e)}")
-            return HttpResponse('<span class="text-red-500">Save failed</span>', status=400)
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Auto-save error: {str(e)}", exc_info=True)
+            logger.error(f"POST data: {dict(request.POST)}")
+            return HttpResponse(f'<span class="text-red-500">Save failed: {str(e)}</span>', status=400)
 
 
 class TaskToggleFormHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
