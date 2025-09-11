@@ -874,9 +874,17 @@
     padding: 0px;
 }
 
+.kanban-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 .kanban-board {
     overflow-x: auto;
+    overflow-y: hidden;
     height: 100%;
+    width: 100%;
     padding: 0px;
     padding-bottom: 24px;
 }
@@ -886,12 +894,12 @@
     gap: 16px;
     width: 100%;
     height: calc(100vh - 64px - 48px);
-    min-width: 100%;
+    padding-right: 20px;
 }
 
 /* Kanban Column */
 .kanban-column {
-    flex: 1;
+    flex: 1 1 0;
     min-width: 280px;
     max-width: none;
     height: 100%;
@@ -900,8 +908,14 @@
 /* Add Stage Column */
 .add-stage-column {
     flex: 0 0 auto;
-    width: 200px;
-    min-width: 200px;
+    width: auto;
+    min-width: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    height: 100%;
+    min-height: 500px;
 }
 
 .kanban-column-card {
@@ -7791,9 +7805,8 @@ input#importDeckName:focus {
 }
 
 .kanban-column {
-    flex: 0 0 300px !important;
-    min-width: 300px !important;
-    max-width: 300px !important;
+    flex: 1 1 0 !important;
+    min-width: 280px !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     background: #f9fafb !important;
     border-right: 1px solid #e7e9ed !important;
