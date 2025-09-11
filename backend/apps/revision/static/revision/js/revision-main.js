@@ -902,7 +902,7 @@ async function loadDeckCards() {
                         <button class="btn btn-link p-0" 
                                 onclick="window.revisionMain.deleteCard(${card.id})" 
                                 title="Supprimer"
-                                style="color: #dc3545; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
+                                style="color: #6c757d; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
