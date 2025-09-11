@@ -569,6 +569,28 @@
     display: flex !important;
     gap: 0 !important;
     align-items: flex-start !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding-bottom: 10px !important;
+}
+
+/* Custom scrollbar for horizontal scroll */
+.kanban-columns::-webkit-scrollbar {
+    height: 8px;
+}
+
+.kanban-columns::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.kanban-columns::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.kanban-columns::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 .kanban-column {
@@ -1014,17 +1036,138 @@ document.addEventListener('alpine:init', () => {
                     sequence: 999 // Put at the end
                 })
             })
-            .then(response => {
-                if (response.ok) {
+            .then(response => response.json())
+            .then(data => {
+                if (data.id) {
+                    // Add stage to DOM immediately without page reload
+                    this.addStageToDOM(data);
                     window.notificationService?.success('Stage créé avec succès');
-                    // Reload to show the new stage
-                    setTimeout(() => window.location.reload(), 500);
                 } else {
                     window.notificationService?.error('Erreur lors de la création du stage');
                 }
             })
             .catch(error => {
                 console.error('Error creating stage:', error);
+                window.notificationService?.error('Erreur de connexion');
+            });
+        },
+        
+        // Add new stage to DOM
+        addStageToDOM(stageData) {
+            const kanbanColumns = document.querySelector('.kanban-columns');
+            const addStageColumn = document.querySelector('.add-stage-column');
+            
+            // Create new stage column HTML
+            const newStageHtml = `
+                <div class="kanban-column" data-stage-id="${stageData.id}" data-stage-sequence="${stageData.sequence}">
+                    <div class="kanban-column-card">
+                        <div class="sidebar-header-linguify mb-2">
+                            <div class="flex items-center justify-between w-full">
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                                    <span class="column-title-linguify" 
+                                          title="${stageData.name}"
+                                          @dblclick="startEditStage('${stageData.id}', '${stageData.name}')"
+                                          x-show="editingStage !== '${stageData.id}'">
+                                        ${stageData.name}
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control form-control-sm column-title-input-linguify"
+                                           x-show="editingStage === '${stageData.id}'"
+                                           x-model="originalTitle"
+                                           @keydown.enter="saveStageEdit('${stageData.id}')"
+                                           @keydown.escape="cancelStageEdit()"
+                                           @blur="saveStageEdit('${stageData.id}')"
+                                           style="display: none;">
+                                    <span class="badge badge-linguify-compact">0</span>
+                                </div>
+                                <div class="flex-shrink-0 flex items-center gap-1 ml-auto">
+                                    <button type="button" class="btn-linguify-ghost" @click="startQuickAdd('${stageData.id}')" title="Ajouter une tâche">
+                                        <i class="bi bi-plus" style="font-size: 12px;"></i>
+                                    </button>
+                                    <div class="dropdown">
+                                        <button class="btn-linguify-ghost" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical" style="font-size: 10px;"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><button class="dropdown-item text-danger" @click="deleteStage('${stageData.id}', '${stageData.name}')">
+                                                <i class="bi bi-trash me-2"></i>Supprimer
+                                            </button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="kanban-tasks-container" 
+                             data-stage-id="${stageData.id}"
+                             @drop="onDrop($event)"
+                             @dragover="onDragOver($event)"
+                             :class="{ 'drop-zone-active': dropZoneActive }">
+                            
+                            <!-- Quick Add Form -->
+                            <div class="quick-add-form" 
+                                 x-show="quickAddStage === '${stageData.id}'" 
+                                 style="display: none; padding: 10px; margin-bottom: 8px;">
+                                <input type="text" 
+                                       x-ref="quickAddInput"
+                                       placeholder="Titre de la tâche..."
+                                       class="form-control form-control-sm mb-2"
+                                       @keydown.enter="saveQuickAdd('${stageData.id}')"
+                                       @keydown.escape="cancelQuickAdd()">
+                                
+                                <div class="d-flex gap-2">
+                                    <button type="button" 
+                                            class="btn btn-primary btn-sm"
+                                            @click="saveQuickAdd('${stageData.id}')"
+                                            style="font-size: 11px; padding: 4px 8px;">
+                                        OK
+                                    </button>
+                                    <button type="button" 
+                                            class="btn btn-outline-secondary btn-sm"
+                                            @click="cancelQuickAdd()"
+                                            style="font-size: 11px; padding: 4px 8px;">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Tasks List -->
+                            <div class="tasks-list">
+                                <!-- New tasks will be added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Insert before the "Add Stage" button
+            addStageColumn.insertAdjacentHTML('beforebegin', newStageHtml);
+        },
+        
+        // Delete stage method
+        deleteStage(stageId, stageName) {
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer le stage "${stageName}" ?`)) return;
+            
+            fetch(`/todo/stages/${stageId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Remove stage from DOM
+                    const stageElement = document.querySelector(`[data-stage-id="${stageId}"]`);
+                    if (stageElement) {
+                        stageElement.remove();
+                    }
+                    window.notificationService?.success('Stage supprimé avec succès');
+                } else {
+                    window.notificationService?.error('Erreur lors de la suppression du stage');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting stage:', error);
                 window.notificationService?.error('Erreur de connexion');
             });
         }
@@ -1043,6 +1186,28 @@ document.addEventListener('keydown', function(e) {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         });
+    }
+});
+
+// Handle double-click on folded columns to unfold them
+document.addEventListener('dblclick', function(e) {
+    const foldedColumn = e.target.closest('.kanban-column.o_column_folded');
+    if (foldedColumn) {
+        const stageId = foldedColumn.getAttribute('data-stage-id');
+        if (stageId) {
+            // Get Alpine component and trigger toggleColumn
+            const kanbanElement = document.querySelector('[x-data="kanban"]');
+            if (kanbanElement && kanbanElement._x_dataStack && kanbanElement._x_dataStack[0]) {
+                kanbanElement._x_dataStack[0].toggleColumn(stageId);
+            } else {
+                // Fallback: direct DOM manipulation
+                const tasksContainer = foldedColumn.querySelector('.kanban-tasks-container');
+                if (tasksContainer) {
+                    tasksContainer.style.display = 'block';
+                    foldedColumn.classList.remove('o_column_folded');
+                }
+            }
+        }
     }
 });
 
