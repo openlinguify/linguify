@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+import logging
 from ..models.todo_models import Task, Project, PersonalStageType, Tag, Category, Project, Task, Note, Category, Tag, Reminder, TaskTemplate, PersonalStageType
 from ..serializers import (
     ProjectListSerializer, ProjectDetailSerializer,
@@ -21,6 +22,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 
+logger = logging.getLogger(__name__)
 
 # HTMX Helper Mixin
 class HTMXResponseMixin:
@@ -436,7 +438,30 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        return PersonalStageType.objects.filter(user=self.request.user)
+        user = self.request.user
+        stages = PersonalStageType.objects.filter(user=user)
+        
+        # Ensure critical stages exist
+        self.ensure_critical_stages(user)
+        
+        return PersonalStageType.objects.filter(user=user)
+    
+    def ensure_critical_stages(self, user):
+        """Ensure critical stages exist for the user"""
+        critical_stages = [
+            {'name': 'To Do', 'sequence': 1, 'color': '#6c757d', 'is_closed': False, 'fold': False},
+            {'name': 'Done', 'sequence': 4, 'color': '#28a745', 'is_closed': True, 'fold': False},
+            {'name': 'Archive', 'sequence': 5, 'color': '#6f42c1', 'is_closed': True, 'fold': True},
+        ]
+        
+        for stage_data in critical_stages:
+            stage, created = PersonalStageType.objects.get_or_create(
+                user=user,
+                name=stage_data['name'],
+                defaults=stage_data
+            )
+            if created:
+                logger.info(f"Recreated missing critical stage '{stage_data['name']}' for user {user.username}")
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -1410,11 +1435,47 @@ class StageDeleteHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
     
     def delete(self, request, stage_id):
         stage = get_object_or_404(PersonalStageType, id=stage_id, user=request.user)
+        user = request.user
+        user_stages = PersonalStageType.objects.filter(user=user)
+        user_stages_count = user_stages.count()
+        
+        # Apply the same protection logic as the ViewSet
+        
+        # Prevent deletion of the last stage
+        if user_stages_count <= 1:
+            return HttpResponse('<div class="text-red-500">Impossible de supprimer le dernier stage. Vous devez avoir au moins un stage.</div>')
+        
+        # Prevent deletion of critical system stages
+        critical_stage_names = ['To Do', 'Done', 'Archive']
+        if stage.name in critical_stage_names:
+            return HttpResponse(f'<div class="text-red-500">Impossible de supprimer le stage "{stage.name}" car il est nécessaire au bon fonctionnement de l\'application.</div>')
+        
+        # Additional check: prevent deletion if this is the only closed stage and there are completed tasks
+        if stage.is_closed:
+            other_closed_stages = user_stages.filter(is_closed=True).exclude(id=stage.id)
+            completed_tasks_count = Task.objects.filter(user=user, state='1_done', active=True).count()
+            
+            if not other_closed_stages.exists() and completed_tasks_count > 0:
+                return HttpResponse(f'<div class="text-red-500">Impossible de supprimer le stage "{stage.name}" car il contient {completed_tasks_count} tâche(s) terminée(s). Vous devez avoir au moins un stage fermé.</div>')
+        
+        # Prevent deletion of the only closed stage (Done stage)
+        if stage.is_closed:
+            other_closed_stages = user_stages.filter(is_closed=True).exclude(id=stage.id)
+            if not other_closed_stages.exists():
+                return HttpResponse(f'<div class="text-red-500">Impossible de supprimer le dernier stage fermé. Au moins un stage fermé est nécessaire pour les tâches complétées.</div>')
+        
+        # Prevent deletion of the only open stage
+        if not stage.is_closed:
+            other_open_stages = user_stages.filter(is_closed=False).exclude(id=stage.id)
+            if not other_open_stages.exists():
+                return HttpResponse(f'<div class="text-red-500">Impossible de supprimer le dernier stage ouvert. Au moins un stage ouvert est nécessaire pour les nouvelles tâches.</div>')
         
         # Don't allow deletion if stage has tasks
         if Task.objects.filter(personal_stage_type=stage, active=True).exists():
-            return HttpResponse('<div class="text-red-500">Cannot delete stage with active tasks</div>')
+            return HttpResponse('<div class="text-red-500">Impossible de supprimer un stage contenant des tâches actives</div>')
         
+        # If we get here, deletion is allowed
+        logger.info(f"Deleting stage '{stage.name}' for user {user.username}")
         stage.delete()
         return HttpResponse('')  # Empty response removes element
 

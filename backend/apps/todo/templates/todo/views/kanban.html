@@ -71,10 +71,16 @@
                                                 {% trans "Hide" %}
                                             </button></li>
                                             <li><hr class="dropdown-divider"></li>
+                                            {% if stage.name == "To Do" or stage.name == "Done" or stage.name == "Archive" %}
+                                            <li><button class="dropdown-item text-muted" type="button" disabled title="Ce stage ne peut pas être supprimé">
+                                                <i class="bi bi-shield-check me-2"></i> Stage protégé
+                                            </button></li>
+                                            {% else %}
                                             <li><button class="dropdown-item text-danger" type="button" 
                                                     @click="deleteStage('{{ stage.id }}', '{{ stage.name }}')">
                                                 <i class="bi bi-trash me-2"></i> {% trans "Delete stage" %}
                                             </button></li>
+                                            {% endif %}
                                         </ul>
                                     </div>
                                 </div>
@@ -2130,7 +2136,14 @@ document.addEventListener('alpine:init', () => {
         
         // Delete stage method - Using custom modal
         deleteStage(stageId, stageName) {
-            // Show custom confirmation modal
+            // Check if stage is critical and should not be deleted
+            const criticalStages = ['To Do', 'Done', 'Archive'];
+            if (criticalStages.includes(stageName)) {
+                window.notificationService?.error(`Impossible de supprimer le stage "${stageName}" car il est nécessaire au bon fonctionnement de l'application.`);
+                return;
+            }
+            
+            // Show custom confirmation modal for non-critical stages
             this.showDeleteConfirmModal(stageId, stageName, () => {
                 this.performStageDelete(stageId);
             });
@@ -2170,11 +2183,13 @@ document.addEventListener('alpine:init', () => {
                     window.notificationService?.success('Stage supprimé avec succès');
                 } else {
                     response.text().then(text => {
-                        if (text.includes('Cannot delete stage with active tasks')) {
-                            window.notificationService?.error('Impossible de supprimer un stage contenant des tâches actives');
-                        } else {
-                            window.notificationService?.error('Erreur lors de la suppression du stage');
-                        }
+                        // Extract error message from HTML response
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(text, 'text/html');
+                        const errorDiv = doc.querySelector('.text-red-500');
+                        const errorMessage = errorDiv ? errorDiv.textContent : 'Erreur lors de la suppression du stage';
+                        
+                        window.notificationService?.error(errorMessage);
                     });
                 }
             })
