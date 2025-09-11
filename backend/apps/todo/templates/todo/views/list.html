@@ -4,6 +4,90 @@
 
 {% block page_title %}Todo - List{% endblock %}
 
+{% block extra_css %}
+<style>
+/* List-specific CSS */
+.list-container {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: calc(100vh - 130px) !important;
+    max-height: calc(100vh - 130px) !important;
+    width: 100%;
+}
+
+.unified-table-container-linguify {
+    height: auto !important;
+    overflow: visible !important;
+    width: 100%;
+    flex: none !important;
+    display: block !important;
+    min-height: auto !important;
+    box-sizing: border-box !important;
+}
+
+.table-responsive {
+    overflow: visible !important;
+    width: 100%;
+}
+
+/* Fix table layout */
+#tasksTable {
+    width: 100% !important;
+    margin: 0 !important;
+    table-layout: fixed !important;
+}
+
+/* Keep table header sticky and visible */
+.table-header-sticky {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Improve column resizer */
+.column-resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 100%;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 10;
+    border-right: 2px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.column-resizer:hover,
+.column-resizer.resizing {
+    border-right-color: var(--linguify-primary, #007bff);
+}
+
+.resizable-column {
+    position: relative;
+    user-select: none;
+}
+
+.resizable-column:last-child .column-resizer {
+    display: none;
+}
+
+/* Prevent text selection during resize */
+.table-resizing {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.table-resizing * {
+    cursor: col-resize !important;
+}
+</style>
+{% endblock %}
+
 {% block header_content %}
 {% include 'components/todo_navbar.html' with active_view='list' %}
 {% endblock %}
@@ -359,4 +443,207 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Column Resizing Functionality - List View Only
+function initColumnResizing() {
+    let isResizing = false;
+    let currentColumn = null;
+    let startX = 0;
+    let startWidth = 0;
+    let hasResized = false;
+
+    const table = document.getElementById('tasksTable');
+    if (!table) return;
+
+    // Add event listeners to all column resizers
+    document.addEventListener('mousedown', function(e) {
+        if (e.target.classList.contains('column-resizer')) {
+            isResizing = true;
+            hasResized = false;
+            currentColumn = e.target.closest('th');
+            startX = e.clientX;
+            startWidth = currentColumn.offsetWidth;
+            
+            e.target.classList.add('resizing');
+            table.classList.add('table-resizing');
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!isResizing) return;
+
+        hasResized = true;
+        const diff = e.clientX - startX;
+        const newWidth = Math.max(50, startWidth + diff); // Minimum 50px width
+        
+        const columnClass = currentColumn.className.match(/col-\w+/)[0];
+        
+        // Remove previous temp style
+        const oldStyle = document.getElementById('column-resize-temp');
+        if (oldStyle) {
+            oldStyle.remove();
+        }
+        
+        const style = document.createElement('style');
+        style.id = 'column-resize-temp';
+        document.head.appendChild(style);
+        style.sheet.insertRule(`.${columnClass} { width: ${newWidth}px !important; min-width: ${newWidth}px !important; max-width: ${newWidth}px !important; }`);
+    });
+
+    document.addEventListener('mouseup', function(e) {
+        if (!isResizing) return;
+
+        isResizing = false;
+        table.classList.remove('table-resizing');
+        
+        const resizer = document.querySelector('.column-resizer.resizing');
+        if (resizer) {
+            resizer.classList.remove('resizing');
+        }
+
+        // Save column preferences to localStorage only if actually resized
+        if (currentColumn && hasResized) {
+            const columnName = currentColumn.dataset.column;
+            const columnWidth = currentColumn.offsetWidth;
+            
+            let preferences = JSON.parse(localStorage.getItem('todoColumnWidths') || '{}');
+            preferences[columnName] = columnWidth;
+            localStorage.setItem('todoColumnWidths', JSON.stringify(preferences));
+
+            // Apply permanent CSS
+            const columnClass = currentColumn.className.match(/col-\w+/)[0];
+            updateColumnCSS(columnClass, columnWidth);
+        }
+        
+        currentColumn = null;
+        hasResized = false;
+    });
+
+    // Auto-resize column on double-click (Excel-like behavior)
+    document.addEventListener('dblclick', function(e) {
+        if (e.target.classList.contains('column-resizer')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const column = e.target.closest('th');
+            if (!column) return;
+            
+            autoResizeColumn(column);
+        } else if (e.target.closest('.resizable-column')) {
+            // Prevent other double-click behaviors on headers
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+}
+
+function autoResizeColumn(column) {
+    const columnIndex = Array.from(column.parentNode.children).indexOf(column);
+    const table = column.closest('table');
+    const rows = table.querySelectorAll('tbody tr');
+    
+    let maxWidth = 0;
+    
+    // Measure header content width
+    const headerContent = column.querySelector('span') || column;
+    const headerText = headerContent.textContent.trim();
+    const headerWidth = getTextWidth(headerText, getComputedStyle(column));
+    maxWidth = Math.max(maxWidth, headerWidth + 40); // +40 for padding and resizer
+    
+    // Measure content in all visible rows
+    rows.forEach(row => {
+        const cell = row.children[columnIndex];
+        if (cell) {
+            const cellText = cell.textContent.trim();
+            if (cellText && cellText !== '—') {
+                const cellWidth = getTextWidth(cellText, getComputedStyle(cell));
+                maxWidth = Math.max(maxWidth, cellWidth + 20); // +20 for padding
+            }
+        }
+    });
+    
+    // Set reasonable min/max bounds
+    const finalWidth = Math.max(80, Math.min(maxWidth, 400));
+    
+    // Apply the new width
+    const columnClass = column.className.match(/col-\w+/)[0];
+    updateColumnCSS(columnClass, finalWidth);
+    
+    // Save to preferences
+    const columnName = column.dataset.column;
+    if (columnName) {
+        let preferences = JSON.parse(localStorage.getItem('todoColumnWidths') || '{}');
+        preferences[columnName] = finalWidth;
+        localStorage.setItem('todoColumnWidths', JSON.stringify(preferences));
+    }
+}
+
+function getTextWidth(text, style) {
+    // Create a temporary element to measure text width
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    
+    // Set font properties from the computed style
+    context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    
+    return context.measureText(text).width;
+}
+
+function updateColumnCSS(columnClass, width) {
+    let customStyle = document.getElementById('column-custom-widths');
+    if (!customStyle) {
+        customStyle = document.createElement('style');
+        customStyle.id = 'column-custom-widths';
+        document.head.appendChild(customStyle);
+    }
+    
+    // Update or add rule for this column
+    const rules = customStyle.sheet.cssRules;
+    let ruleFound = false;
+    
+    for (let i = 0; i < rules.length; i++) {
+        if (rules[i].selectorText === `.${columnClass}`) {
+            rules[i].style.width = width + 'px';
+            rules[i].style.minWidth = width + 'px';
+            rules[i].style.maxWidth = width + 'px';
+            ruleFound = true;
+            break;
+        }
+    }
+    
+    if (!ruleFound) {
+        customStyle.sheet.insertRule(`.${columnClass} { width: ${width}px !important; min-width: ${width}px !important; max-width: ${width}px !important; }`);
+    }
+}
+
+function loadColumnPreferences() {
+    const preferences = JSON.parse(localStorage.getItem('todoColumnWidths') || '{}');
+    Object.entries(preferences).forEach(([columnName, width]) => {
+        const column = document.querySelector(`[data-column="${columnName}"]`);
+        if (column) {
+            const columnClass = column.className.match(/col-\w+/)[0];
+            updateColumnCSS(columnClass, width);
+        }
+    });
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    loadColumnPreferences();
+    initColumnResizing();
+});
+
+// Reinitialize after HTMX updates
+document.body.addEventListener('htmx:afterSwap', function() {
+    setTimeout(() => {
+        loadColumnPreferences();
+        initColumnResizing();
+    }, 100);
+});
+</script>
 {% endblock %}
