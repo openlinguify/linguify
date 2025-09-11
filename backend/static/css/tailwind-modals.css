@@ -5938,6 +5938,13 @@ thead .col-selector .form-check {
     max-width: 80px;
 }
 
+.col-custom {
+    text-align: center;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+}
+
 /* Ensure table layout is fixed for consistent column widths */
 #tasksTable {
     table-layout: fixed;
