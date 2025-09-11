@@ -379,16 +379,16 @@
 
 /* Quick add form styles */
 .quick-add-form {
-    background: rgba(255, 255, 255, 0.9);
+    background: white;
     border: 2px solid rgba(45, 91, 186, 0.2);
-    border-radius: 6px;
+    border-radius: 8px;
     transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .quick-add-form:focus-within {
-    border-color: rgba(45, 91, 186, 0.5);
-    background: white;
-    box-shadow: 0 2px 8px rgba(45, 91, 186, 0.1);
+    border-color: rgba(45, 91, 186, 0.4);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.15);
 }
 
 .quick-add-form input {
@@ -396,11 +396,35 @@
     background: transparent;
     outline: none;
     width: 100%;
+    font-size: 13px;
 }
 
 .quick-add-form input:focus {
     outline: none;
     box-shadow: none;
+}
+
+/* Quick add buttons */
+.quick-add-form .btn {
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.quick-add-form .btn-primary {
+    background-color: #2d5bba;
+    border-color: #2d5bba;
+}
+
+.quick-add-form .btn-primary:hover {
+    background-color: #1e3d82;
+    border-color: #1e3d82;
+    transform: translateY(-1px);
+}
+
+.quick-add-form .btn-outline-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Styles for editable stage titles */
@@ -747,22 +771,38 @@ document.addEventListener('alpine:init', () => {
                 // Update task stage visually
                 draggedElement.setAttribute('data-stage-id', stageId);
                 
-                // Update via HTMX without page reload
-                htmx.ajax('POST', `/todo/htmx/tasks/${taskId}/move/`, {
-                    values: { 
-                        stage_id: stageId,
-                        position: dropTarget.children.length 
+                // Use fetch instead of htmx.ajax to avoid navigation issues
+                const formData = new FormData();
+                formData.append('stage_id', stageId);
+                formData.append('position', dropTarget.children.length);
+                formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+                
+                fetch(`/todo/htmx/tasks/${taskId}/move/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'HX-Request': 'true'
                     }
-                }).then((response) => {
-                    console.log('Task moved successfully');
-                    // Update task counts
-                    this.updateStageCounts();
-                    // Show success notification
-                    window.notificationService?.success('Tâche déplacée avec succès');
-                }).catch(() => {
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Task moved successfully');
+                        
+                        // Update task completion state visually based on stage
+                        this.updateTaskCompletionIcon(taskId, stageId);
+                        
+                        // Update task counts
+                        this.updateStageCounts();
+                        // Show success notification
+                        window.notificationService?.success('Tâche déplacée avec succès');
+                    } else {
+                        throw new Error('Network response was not ok');
+                    }
+                })
+                .catch(error => {
                     window.notificationService?.error('Erreur lors du déplacement de la tâche');
-                    // Revert the visual change on error
-                    window.location.reload();
+                    console.error('Failed to move task:', error);
                 });
             }
         },
@@ -777,6 +817,39 @@ document.addEventListener('alpine:init', () => {
                     badge.textContent = taskCount;
                 }
             });
+        },
+        
+        // Update task completion icon based on stage
+        updateTaskCompletionIcon(taskId, stageId) {
+            const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+            const stageElement = document.querySelector(`[data-stage-id="${stageId}"]`);
+            
+            if (!taskElement || !stageElement) return;
+            
+            // Get stage name to determine if it's a "done" stage
+            const stageName = stageElement.querySelector('.column-title-linguify')?.textContent?.toLowerCase().trim();
+            const isDoneStage = stageName && (
+                stageName.includes('done') || 
+                stageName.includes('terminé') || 
+                stageName.includes('completed') || 
+                stageName.includes('fini')
+            );
+            
+            // Find the completion button icon in the task
+            const completionButton = taskElement.querySelector('button[title*="Toggle Complete"]');
+            if (completionButton) {
+                const icon = completionButton.querySelector('i');
+                if (icon) {
+                    if (isDoneStage) {
+                        // Mark as completed - green check
+                        icon.className = 'bi bi-check-circle-fill text-success';
+                    } else {
+                        // Mark as incomplete - empty circle
+                        icon.className = 'bi bi-circle';
+                        icon.style.fontSize = '10px';
+                    }
+                }
+            }
         },
         
         // Stage editing methods
@@ -1016,42 +1089,59 @@ window.startQuickAddFallback = function(stageId) {
     // Show the current stage's quick add form
     const form = document.querySelector(`[data-stage-id="${stageId}"] .quick-add-form`);
     const input = form.querySelector('input');
+    const okButton = form.querySelector('.btn-primary');
+    const cancelButton = form.querySelector('.btn-outline-secondary');
     
     if (form && input) {
         form.style.display = 'block';
         input.focus();
         
-        // Add event listeners
-        input.addEventListener('blur', function() {
-            setTimeout(() => form.style.display = 'none', 150);
-        });
+        // Save function
+        function saveTask() {
+            const title = input.value.trim();
+            if (title) {
+                htmx.ajax('POST', '/todo/htmx/tasks/create/', {
+                    values: {
+                        title: title,
+                        stage_id: stageId
+                    }
+                }).then(() => {
+                    // Show success feedback without reload
+                    window.notificationService?.success('Tâche créée');
+                    // Refresh page only for fallback mode
+                    setTimeout(() => window.location.reload(), 500);
+                }).catch(() => {
+                    window.notificationService?.error('Erreur lors de la création');
+                });
+            }
+            input.value = '';
+            form.style.display = 'none';
+        }
         
+        // Cancel function
+        function cancelTask() {
+            input.value = '';
+            form.style.display = 'none';
+        }
+        
+        // Add event listeners
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                const title = input.value.trim();
-                
-                if (title) {
-                    htmx.ajax('POST', '/todo/htmx/tasks/create/', {
-                        values: {
-                            title: title,
-                            stage_id: stageId
-                        }
-                    }).then(() => {
-                        window.location.reload(); // Simple fallback - reload page
-                    }).catch(() => {
-                        window.notificationService?.error('Erreur lors de la création');
-                    });
-                }
-                
-                input.value = '';
-                form.style.display = 'none';
+                saveTask();
             } else if (e.key === 'Escape') {
                 e.preventDefault();
-                input.value = '';
-                form.style.display = 'none';
+                cancelTask();
             }
         });
+        
+        // Button event listeners
+        if (okButton) {
+            okButton.addEventListener('click', saveTask);
+        }
+        if (cancelButton) {
+            cancelButton.addEventListener('click', cancelTask);
+        }
     }
 };
 
@@ -1106,10 +1196,10 @@ window.fallbackDrop = function(event) {
     }
 };
 
-// Check if Alpine.js loaded, if not use fallbacks
+// Check if Alpine.js loaded properly
 setTimeout(() => {
-    if (typeof Alpine === 'undefined') {
-        console.warn('Alpine.js not loaded, using fallback functions');
+    if (typeof Alpine === 'undefined' || !document.querySelector('[x-data="kanban"]')) {
+        console.warn('Alpine.js not loaded properly, using fallback functions');
         
         // Add fallback double-click listeners for stages
         document.querySelectorAll('.column-title-linguify').forEach(title => {
@@ -1143,7 +1233,9 @@ setTimeout(() => {
             container.addEventListener('dragover', function(e) { e.preventDefault(); });
             container.addEventListener('drop', window.fallbackDrop);
         });
+    } else {
+        console.log('Alpine.js loaded successfully, using Alpine.js functions');
     }
-}, 1000);
+}, 2000);
 </script>
 {% endblock %}

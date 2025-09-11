@@ -1143,8 +1143,8 @@ class TaskMoveHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             print(f"Task state change: {old_state} -> {task.state} (Stage: {old_stage.name if old_stage else 'None'} -> {new_stage.name})")
             task.save()
         
-        context = {'task': task}
-        return self.render_htmx_response(context)
+        # Return empty response for successful move - frontend handles UI updates
+        return HttpResponse('')
 
 
 class TaskQuickCreateHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
