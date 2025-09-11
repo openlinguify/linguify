@@ -7,7 +7,7 @@ from .views import (
     TodoSettingsAPI, TodoUserPreferencesAPI, TodoDashboardAPI,
     # HTMX Views
     TaskToggleHTMXView, TaskMoveHTMXView, TaskQuickCreateHTMXView, TaskDeleteHTMXView,
-    TaskListTableHTMXView, KanbanColumnHTMXView, TaskFormModalHTMXView, StageDeleteHTMXView
+    TaskListTableHTMXView, KanbanColumnHTMXView, TaskFormModalHTMXView, StageDeleteHTMXView, StageReorderHTMXView
 )
 from django.urls import path
 from django.contrib.auth.decorators import login_required
@@ -52,4 +52,5 @@ urlpatterns = [
     path('htmx/tasks/modal/', TaskFormModalHTMXView.as_view(), name='task_form_modal_htmx'),
     path('htmx/tasks/modal/<uuid:task_id>/', TaskFormModalHTMXView.as_view(), name='task_form_modal_edit_htmx'),
     path('htmx/stages/<uuid:stage_id>/delete/', StageDeleteHTMXView.as_view(), name='stage_delete_htmx'),
+    path('htmx/stages/<uuid:stage_id>/reorder/', StageReorderHTMXView.as_view(), name='stage_reorder_htmx'),
 ]

@@ -500,6 +500,28 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
         return Response({'message': 'Stages reordered successfully'})
     
     @action(detail=True, methods=['post'])
+    def reorder_single(self, request, pk=None):
+        """Reorder single stage to specific position"""
+        stage = self.get_object()
+        new_position = request.data.get('position', 0)
+        
+        # Get all stages ordered by sequence
+        all_stages = list(self.get_queryset().order_by('sequence'))
+        
+        # Remove current stage from list
+        all_stages = [s for s in all_stages if s.id != stage.id]
+        
+        # Insert stage at new position
+        all_stages.insert(int(new_position), stage)
+        
+        # Update sequences for all stages
+        for index, s in enumerate(all_stages):
+            s.sequence = (index + 1) * 10
+            s.save(update_fields=['sequence'])
+        
+        return Response({'message': 'Stage reordered successfully'})
+    
+    @action(detail=True, methods=['post'])
     def reorder_tasks(self, request, pk=None):
         """Reorder tasks within a stage"""
         stage = self.get_object()
@@ -1350,3 +1372,36 @@ class StageDeleteHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
         
         stage.delete()
         return HttpResponse('')  # Empty response removes element
+
+
+class StageReorderHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
+    """HTMX endpoint for reordering stages"""
+    
+    def post(self, request, stage_id):
+        import json
+        
+        stage = get_object_or_404(PersonalStageType, id=stage_id, user=request.user)
+        
+        try:
+            # Parse JSON from request body
+            data = json.loads(request.body)
+            new_position = data.get('position', 0)
+        except json.JSONDecodeError:
+            # Fallback to POST data
+            new_position = request.POST.get('position', 0)
+        
+        # Get all stages ordered by sequence
+        all_stages = list(PersonalStageType.objects.filter(user=request.user).order_by('sequence'))
+        
+        # Remove current stage from list
+        all_stages = [s for s in all_stages if s.id != stage.id]
+        
+        # Insert stage at new position
+        all_stages.insert(int(new_position), stage)
+        
+        # Update sequences for all stages
+        for index, s in enumerate(all_stages):
+            s.sequence = (index + 1) * 10
+            s.save(update_fields=['sequence'])
+        
+        return HttpResponse('')  # Empty response for successful reorder

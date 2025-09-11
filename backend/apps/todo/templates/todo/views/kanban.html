@@ -17,12 +17,22 @@
             <div class="kanban-columns" id="kanbanBoard">
                 {% for stage in stages %}
                 <!-- Kanban Column -->
-                <div class="kanban-column{% if stage.fold or stage.name == 'Archive' %} o_column_folded{% endif %}" data-stage-id="{{ stage.id }}">
+                <div class="kanban-column{% if stage.fold or stage.name == 'Archive' %} o_column_folded{% endif %}" 
+                     data-stage-id="{{ stage.id }}"
+                     @dragover="onStageDragOver($event)"
+                     @drop="onStageDrop($event)">
                     <div class="kanban-column-card">
                         <!-- Column Header -->
-                        <div class="sidebar-header-linguify">
+                        <div class="sidebar-header-linguify stage-drag-handle"
+                             draggable="true"
+                             @dragstart="onStageDragStart($event)"
+                             @dragend="onStageDragEnd($event)">
                             <div class="flex items-center justify-between w-full">
                                 <div class="flex items-center gap-2 min-w-0 flex-1">
+                                    <!-- Drag Handle Icon -->
+                                    <span class="stage-drag-icon text-gray-400 hover:text-gray-600" title="Cliquez et glissez pour déplacer cette colonne">
+                                        <i class="bi bi-grip-vertical" style="font-size: 12px;"></i>
+                                    </span>
                                     <!-- Stage Title Display -->
                                     <h6 class="column-title-linguify" 
                                         title="{{ stage.name }}" 
@@ -564,6 +574,46 @@
     color: var(--bs-gray-800);
 }
 
+/* Stage drag and drop styles */
+.stage-drag-handle {
+    cursor: grab;
+}
+
+.stage-drag-handle:active {
+    cursor: grabbing;
+}
+
+.stage-drag-handle:hover {
+    background-color: rgba(45, 91, 186, 0.05);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.stage-drag-icon {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    user-select: none;
+    pointer-events: none;
+}
+
+.stage-drag-handle:hover .stage-drag-icon {
+    opacity: 1;
+}
+
+.kanban-column.dragging-stage {
+    opacity: 0.6;
+    transform: rotate(2deg);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    z-index: 1000;
+    position: relative;
+}
+
+.kanban-column.stage-drop-target {
+    border: 2px dashed #2d5bba;
+    background-color: rgba(45, 91, 186, 0.1);
+    transform: scale(1.02);
+}
+
 /* CLEAN ODOO STYLE KANBAN COLUMNS */
 .kanban-columns {
     display: flex !important;
@@ -743,7 +793,9 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('kanban', () => ({
         // Drag & Drop state
         draggedTask: null,
+        draggedStage: null,
         dropZoneActive: false,
+        stageDropZoneActive: false,
         
         // Stage editing state
         editingStage: null,
@@ -872,6 +924,97 @@ document.addEventListener('alpine:init', () => {
                     }
                 }
             }
+        },
+        
+        // Stage drag & drop methods
+        onStageDragStart(event) {
+            // Get stage ID from the closest kanban-column
+            const stageColumn = event.target.closest('.kanban-column');
+            this.draggedStage = stageColumn.getAttribute('data-stage-id');
+            
+            // Add dragging class to the entire column
+            stageColumn.classList.add('dragging-stage');
+            
+            this.stageDropZoneActive = true;
+            event.dataTransfer.setData("text/stage-id", this.draggedStage);
+            event.dataTransfer.effectAllowed = 'move';
+        },
+        
+        onStageDragEnd(event) {
+            // Remove dragging class from the entire column
+            const stageColumn = event.target.closest('.kanban-column');
+            if (stageColumn) {
+                stageColumn.classList.remove('dragging-stage');
+            }
+            
+            this.stageDropZoneActive = false;
+            this.draggedStage = null;
+        },
+        
+        onStageDragOver(event) {
+            if (this.draggedStage) {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'move';
+                event.target.closest('.kanban-column').classList.add('stage-drop-target');
+            }
+        },
+        
+        onStageDrop(event) {
+            event.preventDefault();
+            const dropTargetColumn = event.target.closest('.kanban-column');
+            const draggedColumn = document.querySelector(`[data-stage-id="${this.draggedStage}"]`);
+            
+            if (dropTargetColumn && draggedColumn && dropTargetColumn !== draggedColumn) {
+                const targetStageId = dropTargetColumn.getAttribute('data-stage-id');
+                const draggedStageId = this.draggedStage;
+                
+                // Get all columns for position calculation
+                const allColumns = Array.from(document.querySelectorAll('.kanban-column'));
+                const targetIndex = allColumns.indexOf(dropTargetColumn);
+                
+                // Move visually first
+                const kanbanColumns = document.querySelector('.kanban-columns');
+                if (targetIndex < allColumns.indexOf(draggedColumn)) {
+                    kanbanColumns.insertBefore(draggedColumn, dropTargetColumn);
+                } else {
+                    kanbanColumns.insertBefore(draggedColumn, dropTargetColumn.nextSibling);
+                }
+                
+                // Update sequence via API
+                this.updateStageOrder(draggedStageId, targetIndex);
+            }
+            
+            // Cleanup
+            document.querySelectorAll('.stage-drop-target').forEach(el => {
+                el.classList.remove('stage-drop-target');
+            });
+        },
+        
+        updateStageOrder(stageId, newPosition) {
+            fetch(`/todo/htmx/stages/${stageId}/reorder/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'HX-Request': 'true'
+                },
+                body: JSON.stringify({ 
+                    position: newPosition 
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.notificationService?.success('Ordre des stages mis à jour');
+                } else {
+                    throw new Error('Failed to update stage order');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating stage order:', error);
+                window.notificationService?.error('Erreur lors de la réorganisation');
+                // Reload page on error to restore correct order
+                setTimeout(() => window.location.reload(), 1000);
+            });
         },
         
         // Stage editing methods
