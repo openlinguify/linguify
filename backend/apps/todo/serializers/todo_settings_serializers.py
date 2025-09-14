@@ -16,9 +16,9 @@ class TodoSettingsSerializer(serializers.Serializer):
     
     # Task settings
     auto_archive_completed = serializers.BooleanField(default=False)
-    auto_archive_days = serializers.IntegerField(default=30, min_value=1, max_value=365)
+    auto_archive_days = serializers.IntegerField(default=30, min_value=1, max_value=90)
     auto_delete_archived = serializers.BooleanField(default=False)
-    auto_delete_archive_days = serializers.IntegerField(default=30, min_value=1, max_value=365)
+    auto_delete_archive_days = serializers.IntegerField(default=30, min_value=1, max_value=90)
     show_subtask_count = serializers.BooleanField(default=True)
     show_progress_bars = serializers.BooleanField(default=True)
     
@@ -60,10 +60,6 @@ class TodoSettingsSerializer(serializers.Serializer):
     backup_frequency = serializers.ChoiceField(
         choices=[('never', 'Never'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly')],
         default='weekly'
-    )
-    export_format = serializers.ChoiceField(
-        choices=[('json', 'JSON'), ('csv', 'CSV'), ('pdf', 'PDF')],
-        default='json'
     )
 
 

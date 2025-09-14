@@ -135,7 +135,6 @@ class TodoSettingsAPI(APIView):
                 
                 # Data settings
                 'backup_frequency': 'weekly',
-                'export_format': 'json',
             }
             
             # Cache for 1 hour

@@ -78,7 +78,8 @@ class Command(BaseCommand):
                 'auto_archive_completed': True,  # Default enabled for this command
                 'auto_archive_days': 30,
                 'auto_delete_archived': False,  # Default disabled
-                'auto_delete_archive_days': 30
+                'auto_delete_archive_days': 30,
+                'include_completed_in_exports': True
             }
             self.stdout.write(f'  Using default settings for user {user.username}')
             
@@ -90,8 +91,8 @@ class Command(BaseCommand):
             self.stdout.write(f'  No auto-processing enabled for user {user.username}')
             return 0, 0
             
-        # Get archive days setting
-        archive_days = settings_data.get('auto_archive_days', 30)
+        # Get archive days setting (limit to 90 days max)
+        archive_days = min(settings_data.get('auto_archive_days', 30), 90)
         cutoff_date = timezone.now() - timedelta(days=archive_days)
         
         # Find Archives stage for this user
@@ -145,7 +146,7 @@ class Command(BaseCommand):
         # Process deletion from Archives
         deleted_count = 0
         if auto_delete_enabled:
-            delete_days = settings_data.get('auto_delete_archive_days', 30)
+            delete_days = min(settings_data.get('auto_delete_archive_days', 30), 90)
             delete_cutoff_date = timezone.now() - timedelta(days=delete_days)
             
             # Find tasks in Archives that should be deleted
@@ -183,7 +184,7 @@ class Command(BaseCommand):
                 self.stdout.write(f'Debug - Archive days: {archive_days}')
                 self.stdout.write(f'Debug - Archive cutoff: {cutoff_date}')
             if auto_delete_enabled:
-                self.stdout.write(f'Debug - Delete days: {settings_data.get("auto_delete_archive_days", 30)}')
+                self.stdout.write(f'Debug - Delete days: {min(settings_data.get("auto_delete_archive_days", 30), 90)}')
                 self.stdout.write(f'Debug - Delete cutoff: {delete_cutoff_date if auto_delete_enabled else "N/A"}')
             self.stdout.write(f'Debug - Archives stage: {archives_stage.name if archives_stage else "None"}')
             

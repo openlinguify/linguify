@@ -299,41 +299,21 @@
                 <input type="hidden" name="setting_type" value="data">
                 
                 <div class="form-group">
-                    <label class="form-label">Format d'export par defaut</label>
-                    <select name="default_export_format" class="form-control">
-                        <option value="csv">CSV</option>
-                        <option value="json" selected>JSON</option>
-                        <option value="xlsx">Excel</option>
-                    </select>
-                    <div class="form-help">Format utilise par defaut lors de l'export de vos donnees</div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">
-                            <input type="checkbox" name="include_completed_in_exports" checked>
-                            Inclure les taches terminees dans les exports
-                        </label>
-                        <div class="form-help">Exporter aussi les taches marquees comme terminees et archivees</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            <input type="checkbox" name="auto_archive_completed">
-                            Archivage automatique des taches terminees
-                        </label>
-                        <div class="form-help">Deplacer automatiquement les taches vers Archives apres le delai configure</div>
-                    </div>
+                    <label class="form-label">
+                        <input type="checkbox" name="auto_archive_completed">
+                        Archivage automatique des taches terminees
+                    </label>
+                    <div class="form-help">Deplacer automatiquement les taches vers Archives apres le delai configure</div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Delai d'archivage automatique (jours)</label>
                         <div class="range-input">
-                            <input type="range" name="auto_archive_days" min="1" max="365" value="30" class="form-range">
+                            <input type="range" name="auto_archive_days" min="1" max="90" value="30" class="form-range">
                             <span class="range-value">30</span>
                         </div>
-                        <div class="form-help">Nombre de jours apres completion avant deplacement vers Archives</div>
+                        <div class="form-help">Nombre de jours apres completion avant deplacement vers Archives (max 90 jours)</div>
                     </div>
 
                     <div class="form-group">
@@ -348,10 +328,10 @@
                 <div class="form-group">
                     <label class="form-label">Delai de suppression des archives (jours)</label>
                     <div class="range-input">
-                        <input type="range" name="auto_delete_archive_days" min="1" max="365" value="30" class="form-range">
+                        <input type="range" name="auto_delete_archive_days" min="1" max="90" value="30" class="form-range">
                         <span class="range-value">30</span>
                     </div>
-                    <div class="form-help">Nombre de jours dans Archives avant suppression définitive</div>
+                    <div class="form-help">Nombre de jours dans Archives avant suppression définitive (max 90 jours)</div>
                 </div>
 
                 <!-- Manual Actions Buttons -->
@@ -378,6 +358,10 @@
                         <i class="bi bi-download" style="margin-right: 8px;"></i>
                         Exporter vos données
                     </label>
+                    
+                    <!-- Export Options -->
+
+                    
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <a href="{% url 'todo:activity_export' %}?format=csv" class="btn-export btn-export-csv" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-green-500); color: var(--linguify-white); text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-filetype-csv" style="margin-right: 6px;"></i>
@@ -393,6 +377,13 @@
                         </a>
                     </div>
                     <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">Télécharger toutes vos tâches et projets</div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: flex; align-items: center; font-size: 14px; color: #495057; margin-bottom: 8px;">
+                            <input type="checkbox" name="include_completed_in_exports" checked style="margin-right: 8px;">
+                            Inclure les taches terminees dans les exports
+                        </label>
+                        <div style="font-size: 13px; color: var(--linguify-gray-500); margin-left: 24px;">Exporter aussi les taches marquees comme terminees et archivees</div>
+                    </div>
                 </div>
 
                 <!-- Import Buttons -->
