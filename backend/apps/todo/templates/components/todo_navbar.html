@@ -57,7 +57,7 @@
     <div class="navbar-section-right">
         <!-- Activity-specific controls -->
         {% if active_view == 'activity' %}
-        <div class="activity-period-selector" x-data="{ loading: false }">
+        <div class="activity-period-selector">
             <label class="navbar-label">{% trans "Period:" %}</label>
             <select class="form-control-linguify" style="width: 120px;" 
                     hx-get="{% url 'todo:activity' %}" 
@@ -65,17 +65,11 @@
                     hx-target="#activity-content" 
                     hx-swap="innerHTML"
                     hx-include="this"
-                    name="range"
-                    @htmx:before-request="loading = true"
-                    @htmx:after-swap="loading = false"
-                    :disabled="loading">
+                    name="range">
                 <option value="7" {% if request.GET.range == '7' %}selected{% endif %}>{% trans "7 days" %}</option>
                 <option value="30" {% if request.GET.range == '30' or not request.GET.range %}selected{% endif %}>{% trans "30 days" %}</option>
                 <option value="90" {% if request.GET.range == '90' %}selected{% endif %}>{% trans "3 months" %}</option>
             </select>
-            <div x-show="loading" class="inline-flex ml-2">
-                <i class="bi bi-arrow-clockwise animate-spin text-blue-500"></i>
-            </div>
         </div>
         {% endif %}
         
