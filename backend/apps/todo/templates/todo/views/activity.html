@@ -30,7 +30,10 @@
                 </div>
             </div>
             <div class="activity-actions">
-                <button class="btn btn-success btn-sm" onclick="createNewTask()">
+                <button class="btn btn-success btn-sm" 
+                        hx-get="{% url 'todo:task_form_modal_htmx' %}" 
+                        hx-target="#task-modal-container" 
+                        hx-trigger="click">
                     <i class="bi bi-plus-lg"></i> {% trans "New Task" %}
                 </button>
             </div>

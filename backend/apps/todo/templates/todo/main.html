@@ -21,7 +21,10 @@
                 <i class="bi bi-check-square text-6xl text-linguify-gray mb-4 block"></i>
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">{% trans "No tasks yet" %}</h3>
                 <p class="text-linguify-gray mb-6">{% trans "Create your first task to start organizing your work" %}</p>
-                <button class="btn-linguify" onclick="createNewTask()">
+                <button class="btn-linguify" 
+                        hx-get="{% url 'todo:task_form_modal_htmx' %}" 
+                        hx-target="#task-modal-container" 
+                        hx-trigger="click">
                     <i class="bi bi-plus-lg mr-2"></i>
                     {% trans "Create task" %}
                 </button>
@@ -58,14 +61,17 @@
                 </p>
                 
                 <div class="flex flex-wrap gap-4 justify-center mb-12">
-                    <button class="btn-linguify text-lg py-4 px-8" onclick="createNewTask()">
+                    <button class="btn-linguify text-lg py-4 px-8" 
+                            hx-get="{% url 'todo:task_form_modal_htmx' %}" 
+                            hx-target="#task-modal-container" 
+                            hx-trigger="click">
                         <i class="bi bi-plus-circle mr-2"></i>
                         {% trans "Create your first task" %}
                     </button>
-                    <button class="btn-linguify-outline text-lg py-4 px-8" onclick="setView('kanban')">
+                    <a href="{% url 'todo:kanban' %}" class="btn-linguify-outline text-lg py-4 px-8">
                         <i class="bi bi-kanban mr-2"></i>
                         {% trans "Try Kanban view" %}
-                    </button>
+                    </a>
                 </div>
                 
                 <!-- Feature highlights -->

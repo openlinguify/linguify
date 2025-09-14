@@ -343,7 +343,7 @@ class TodoActivityView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             due_date__date__range=[today, week_end],
             state__in=['1_todo', '1_in_progress'],
             active=True
-        ).exclude(due_date__date=today).select_related('project', 'personal_stage_type', 'category').prefetch_related('tags').order_by('due_date')
+        ).exclude(due_date__date=today).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('due_date')
         
         # Activity statistics
         stats = {
@@ -707,10 +707,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if status_filter:
             queryset = queryset.filter(status=status_filter)
         
-        # Filter by category
+        # Filter by category (project-based filtering)
+        # Note: Tasks don't have direct category, but projects do
         category = self.request.query_params.get('category')
         if category:
-            queryset = queryset.filter(category_id=category)
+            queryset = queryset.filter(project__category_id=category)
         
         # Filter favorites
         favorites_only = self.request.query_params.get('favorites')
@@ -1430,7 +1431,7 @@ class TaskFormModalHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView)
         description = request.POST.get('description', '').strip()
         stage_id = request.POST.get('stage_id')
         project_id = request.POST.get('project_id')
-        category_id = request.POST.get('category_id')
+        # Note: Tasks don't have direct category field
         priority = request.POST.get('priority', 'medium')
         due_date = request.POST.get('due_date')
         
@@ -1440,7 +1441,6 @@ class TaskFormModalHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView)
         # Get related objects
         stage = get_object_or_404(PersonalStageType, id=stage_id, user=request.user) if stage_id else None
         project = get_object_or_404(Project, id=project_id, user=request.user) if project_id else None
-        category = get_object_or_404(Category, id=category_id, user=request.user) if category_id else None
         
         # Create or update task
         if task:
@@ -1448,7 +1448,6 @@ class TaskFormModalHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView)
             task.description = description
             task.personal_stage_type = stage
             task.project = project
-            task.category = category
             task.priority = priority
             if due_date:
                 task.due_date = due_date
@@ -1460,7 +1459,6 @@ class TaskFormModalHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView)
                 description=description,
                 personal_stage_type=stage,
                 project=project,
-                category=category,
                 priority=priority,
                 due_date=due_date if due_date else None,
                 state='1_todo'

@@ -5,23 +5,26 @@
     <!-- Gauche: Navigation + Actions principales -->
     <div class="navbar-section">    
                 <!-- New Task Button - Left side -->
-        <button id="createTask" class="btn-navbar btn-navbar-primary" onclick="createNewTask()">
+        <button id="createTask" class="btn-navbar btn-navbar-primary" 
+                hx-get="{% url 'todo:task_form_modal_htmx' %}" 
+                hx-target="#task-modal-container" 
+                hx-trigger="click">
             <i class="bi bi-plus-lg"></i>
             <span class="d-none d-xl-inline">{% trans "New Task" %}</span>
         </button>    
         <!-- Navigation tabs -->
         <div class="nav-tabs-group">
-            <a href="{% url 'todo_web:kanban' %}" 
+            <a href="{% url 'todo:kanban' %}" 
                class="nav-tab {% if active_view == 'kanban' %}active{% endif %}">
                 <i class="bi bi-kanban"></i>
                 {% trans "Kanban" %}
             </a>
-            <a href="{% url 'todo_web:list' %}" 
+            <a href="{% url 'todo:list' %}" 
                class="nav-tab {% if active_view == 'list' %}active{% endif %}">
                 <i class="bi bi-list-ul"></i>
                 {% trans "List" %}
             </a>
-            <a href="{% url 'todo_web:activity' %}" 
+            <a href="{% url 'todo:activity' %}" 
                class="nav-tab {% if active_view == 'activity' %}active{% endif %}">
                 <i class="bi bi-clock-history"></i>
                 {% trans "Activity" %}
@@ -116,17 +119,19 @@
             </button>
             {% endif %}
             
-            <button id="configureTasks" class="btn-navbar btn-navbar-outline" onclick="configureStages()" title="{% trans 'Configure Stages' %}">
+            <a href="{% url 'todo:settings' %}" id="configureTasks" class="btn-navbar btn-navbar-outline" title="{% trans 'Configure Stages' %}">
                 <i class="bi bi-gear"></i>
                 <span class="d-none d-xxl-inline">{% trans "Configure" %}</span>
-            </button>
+            </a>
             
-            <button id="exportTasks" class="btn-navbar btn-navbar-outline" onclick="exportTasks()" title="{% trans 'Export Tasks' %}">
+            <a href="#" id="exportTasks" class="btn-navbar btn-navbar-outline" title="{% trans 'Export Tasks' %}" 
+               hx-get="/todo/export/" hx-target="body" hx-swap="afterbegin">
                 <i class="bi bi-download"></i>
                 <span class="d-none d-xxl-inline">{% trans "Export" %}</span>
-            </button>
+            </a>
             
-            <button id="importTasks" class="btn-navbar btn-navbar-outline" onclick="importTasks()">
+            <button id="importTasks" class="btn-navbar btn-navbar-outline" 
+                    hx-get="/todo/import/" hx-target="#import-modal-container" hx-trigger="click">
                 <i class="bi bi-upload"></i>
                 <span class="d-none d-xxl-inline">{% trans "Import" %}</span>
             </button>
