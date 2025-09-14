@@ -1,0 +1,354 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Task Import Modal - Linguify Design System -->
+<div id="taskImportModal" 
+     class="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+     x-data="{ 
+         showModal: true, 
+         uploadProgress: 0, 
+         importing: false,
+         importResults: null 
+     }"
+     x-show="showModal"
+     x-transition:enter="ease-out duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="ease-in duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0">
+    
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 xl:w-2/5 shadow-lg rounded-md bg-white max-w-2xl"
+         @click.away="closeImportModal()">
+        
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-4 border-b rounded-t">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-blue-100 rounded-full">
+                    <i class="bi bi-upload text-blue-600 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900">
+                        {% trans "Import Tasks" %}
+                    </h3>
+                    <p class="text-sm text-gray-500">
+                        {% trans "Upload CSV or JSON files to import your tasks" %}
+                    </p>
+                </div>
+            </div>
+            <button type="button" 
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center"
+                    @click="closeImportModal()">
+                <i class="bi bi-x-lg"></i>
+                <span class="sr-only">{% trans "Close modal" %}</span>
+            </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
+            <!-- Import Instructions -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" x-show="!importing && !importResults">
+                <div class="flex items-start space-x-3">
+                    <i class="bi bi-info-circle text-blue-600 text-lg mt-0.5"></i>
+                    <div>
+                        <h4 class="text-sm font-medium text-blue-900">{% trans "Import Instructions" %}</h4>
+                        <div class="mt-2 text-sm text-blue-700">
+                            <p class="mb-2">{% trans "Supported file formats:" %}</p>
+                            <ul class="list-disc list-inside space-y-1 mb-3">
+                                <li><strong>CSV:</strong> {% trans "Comma-separated values with headers" %}</li>
+                                <li><strong>JSON:</strong> {% trans "Array of task objects or exported activity data" %}</li>
+                            </ul>
+                            <p class="text-xs">
+                                {% trans "Required fields: title. Optional: description, priority, state, project, stage, due_date" %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- File Upload Area -->
+            <div x-show="!importing && !importResults">
+                <form id="importForm" enctype="multipart/form-data" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    <!-- File Drop Zone -->
+                    <div class="relative">
+                        <input type="file" 
+                               id="import_file" 
+                               name="import_file" 
+                               class="sr-only" 
+                               accept=".csv,.json"
+                               @change="handleFileSelect($event)">
+                        <label for="import_file" 
+                               class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i class="bi bi-cloud-upload text-4xl text-gray-400 mb-4"></i>
+                                <p class="mb-2 text-sm text-gray-500">
+                                    <span class="font-semibold">{% trans "Click to upload" %}</span> 
+                                    {% trans "or drag and drop" %}
+                                </p>
+                                <p class="text-xs text-gray-500">CSV, JSON (MAX. 10MB)</p>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <!-- Selected File Info -->
+                    <div id="fileInfo" class="hidden">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <i class="bi bi-file-text text-gray-500"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900" id="fileName"></p>
+                                    <p class="text-xs text-gray-500" id="fileSize"></p>
+                                </div>
+                            </div>
+                            <button type="button" 
+                                    class="text-red-600 hover:text-red-800"
+                                    onclick="clearFile()">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Import Options -->
+                    <div class="space-y-3">
+                        <h4 class="text-sm font-medium text-gray-900">{% trans "Import Options" %}</h4>
+                        
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" 
+                                       name="skip_duplicates" 
+                                       class="form-checkbox h-4 w-4 text-blue-600 rounded"
+                                       checked>
+                                <span class="text-sm text-gray-700">{% trans "Skip duplicate tasks (based on title)" %}</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" 
+                                       name="create_missing_projects" 
+                                       class="form-checkbox h-4 w-4 text-blue-600 rounded"
+                                       checked>
+                                <span class="text-sm text-gray-700">{% trans "Create missing projects automatically" %}</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" 
+                                       name="create_missing_stages" 
+                                       class="form-checkbox h-4 w-4 text-blue-600 rounded"
+                                       checked>
+                                <span class="text-sm text-gray-700">{% trans "Create missing stages automatically" %}</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div x-show="importing" class="space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                    <span class="text-sm text-gray-600">{% trans "Importing tasks..." %}</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                         :style="`width: ${uploadProgress}%`"></div>
+                </div>
+            </div>
+            
+            <!-- Import Results -->
+            <div x-show="importResults" class="space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-green-100 rounded-full">
+                        <i class="bi bi-check-circle text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-medium text-gray-900">{% trans "Import Complete" %}</h4>
+                        <p x-text="importResults?.message" class="text-sm text-gray-600"></p>
+                    </div>
+                </div>
+                
+                <!-- Error List -->
+                <div x-show="importResults?.errors && importResults.errors.length > 0" 
+                     class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <i class="bi bi-exclamation-triangle text-yellow-600 text-lg mt-0.5"></i>
+                        <div>
+                            <h5 class="text-sm font-medium text-yellow-900">{% trans "Import Warnings" %}</h5>
+                            <div class="mt-2 text-sm text-yellow-700">
+                                <ul class="list-disc list-inside space-y-1">
+                                    <template x-for="error in importResults.errors" :key="error">
+                                        <li x-text="error"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-between p-6 space-x-2 border-t border-gray-200 rounded-b">
+            <div>
+                <!-- Sample File Download -->
+                <button type="button" 
+                        class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        onclick="downloadSampleFile()"
+                        x-show="!importing && !importResults">
+                    <i class="bi bi-download me-2"></i>
+                    {% trans "Download Sample CSV" %}
+                </button>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <!-- Cancel -->
+                <button type="button" 
+                        class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5"
+                        @click="closeImportModal()"
+                        x-show="!importing">
+                    {% trans "Cancel" %}
+                </button>
+                
+                <!-- Import -->
+                <button type="button" 
+                        class="btn-linguify"
+                        @click="startImport()"
+                        x-show="!importing && !importResults"
+                        :disabled="!document.getElementById('import_file')?.files?.length">
+                    <i class="bi bi-upload me-2"></i>
+                    {% trans "Import Tasks" %}
+                </button>
+                
+                <!-- Close -->
+                <button type="button" 
+                        class="btn-linguify"
+                        @click="closeImportModal(); location.reload()"
+                        x-show="importResults">
+                    <i class="bi bi-check me-2"></i>
+                    {% trans "Done" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Import Modal Functions
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    
+    if (file) {
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        fileInfo.classList.remove('hidden');
+    }
+}
+
+function clearFile() {
+    document.getElementById('import_file').value = '';
+    document.getElementById('fileInfo').classList.add('hidden');
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function startImport() {
+    const form = document.getElementById('importForm');
+    const formData = new FormData(form);
+    const fileInput = document.getElementById('import_file');
+    
+    if (!fileInput.files.length) {
+        alert('{% trans "Please select a file to import" %}');
+        return;
+    }
+    
+    // Show progress
+    Alpine.store('importModal').importing = true;
+    Alpine.store('importModal').uploadProgress = 0;
+    
+    // Simulate progress (since we can't track real upload progress easily)
+    const progressInterval = setInterval(() => {
+        Alpine.store('importModal').uploadProgress += 10;
+        if (Alpine.store('importModal').uploadProgress >= 90) {
+            clearInterval(progressInterval);
+        }
+    }, 200);
+    
+    fetch('{% url "todo:import_process" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        clearInterval(progressInterval);
+        Alpine.store('importModal').uploadProgress = 100;
+        
+        setTimeout(() => {
+            Alpine.store('importModal').importing = false;
+            Alpine.store('importModal').importResults = data;
+            
+            if (data.success) {
+                // Show success notification
+                if (window.notificationService) {
+                    window.notificationService.success(data.message);
+                }
+            } else {
+                // Show error notification
+                if (window.notificationService) {
+                    window.notificationService.error(data.error);
+                }
+            }
+        }, 500);
+    })
+    .catch(error => {
+        clearInterval(progressInterval);
+        Alpine.store('importModal').importing = false;
+        Alpine.store('importModal').importResults = {
+            success: false,
+            error: 'Network error occurred during import'
+        };
+        console.error('Import error:', error);
+    });
+}
+
+function closeImportModal() {
+    document.getElementById('taskImportModal').remove();
+}
+
+function downloadSampleFile() {
+    const csvContent = `title,description,state,priority,project,stage,tags,due_date
+"Sample Task 1","This is a sample task description","To Do","Normal","My Project","To Do","tag1,tag2","2025-12-31T23:59:59"
+"Sample Task 2","Another sample task","In Progress","High","My Project","In Progress","tag2,tag3","2025-11-30T18:00:00"
+"Sample Task 3","Completed sample task","Done","Normal","Other Project","Done","tag1","2025-10-15T12:00:00"`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'sample_tasks.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Initialize Alpine store for import modal
+document.addEventListener('alpine:init', () => {
+    Alpine.store('importModal', {
+        importing: false,
+        uploadProgress: 0,
+        importResults: null
+    });
+});
+</script>

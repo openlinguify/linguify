@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import *
 from .views.todo_activity_views import *
+from .views.todo_import_views import *
 from django.urls import path
 from django.contrib.auth.decorators import login_required
 

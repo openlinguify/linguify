@@ -364,15 +364,52 @@ class ActivityExportView(LoginRequiredMixin, TemplateView):
         ).select_related('project', 'personal_stage_type').order_by('-created_at')
         
         for task in tasks:
+            # Get priority display name
+            if hasattr(task, 'priority') and task.priority is not None:
+                if task.priority == 0:
+                    priority_display = 'Normal'
+                elif task.priority == 1:
+                    priority_display = 'High'
+                elif task.priority == 2:
+                    priority_display = 'Critical'
+                else:
+                    priority_display = 'Normal'
+            else:
+                priority_display = 'Normal'
+            
+            # Get state display name
+            state_display = ''
+            if hasattr(task, 'state'):
+                if task.state == '0_todo':
+                    state_display = 'To Do'
+                elif task.state == '1_progress':
+                    state_display = 'In Progress'
+                elif task.state == '2_review':
+                    state_display = 'Review'
+                elif task.state == '1_done':
+                    state_display = 'Done'
+                else:
+                    state_display = task.personal_stage_type.name if task.personal_stage_type else 'Unknown'
+            
+            # Get tags
+            tags = ', '.join([tag.name for tag in task.tags.all()]) if hasattr(task, 'tags') else ''
+            
             activities.append({
-                'type': 'task',
-                'action': 'created',
-                'timestamp': task.created_at.isoformat(),
+                'id': task.id,
                 'title': task.title,
-                'project': task.project.name if task.project else '',
-                'stage': task.personal_stage_type.name if task.personal_stage_type else '',
-                'priority': task.get_priority_display() if hasattr(task, 'get_priority_display') else task.priority,
+                'description': task.description[:100] + '...' if task.description and len(task.description) > 100 else task.description or '',
+                'state': state_display,
+                'priority': priority_display,
+                'project': task.project.name if task.project else 'No Project',
+                'stage': task.personal_stage_type.name if task.personal_stage_type else 'No Stage',
+                'tags': tags,
+                'created_at': task.created_at.isoformat(),
+                'updated_at': task.updated_at.isoformat() if hasattr(task, 'updated_at') and task.updated_at else '',
                 'completed_at': task.completed_at.isoformat() if task.completed_at else '',
+                'due_date': task.due_date.isoformat() if task.due_date else '',
+                'progress_percentage': task.progress_percentage if hasattr(task, 'progress_percentage') else 0,
+                'is_overdue': 'Yes' if task.due_date and task.due_date < timezone.now() and task.state != '1_done' else 'No',
+                'active': 'Yes' if task.active else 'No',
             })
         
         if export_format == 'json':
@@ -391,18 +428,27 @@ class ActivityExportView(LoginRequiredMixin, TemplateView):
         return response
     
     def _export_csv(self, activities):
-        """Export as CSV"""
+        """Export as CSV with UTF-8 encoding"""
         import csv
         from django.http import HttpResponse
         
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="activity_export.csv"'
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="tasks_export.csv"'
+        # Add BOM for Excel compatibility with UTF-8
+        response.write('\ufeff')
         
         if activities:
-            writer = csv.DictWriter(response, fieldnames=activities[0].keys())
+            writer = csv.DictWriter(response, fieldnames=activities[0].keys(), lineterminator='\n')
             writer.writeheader()
             for activity in activities:
-                writer.writerow(activity)
+                # Ensure all values are properly encoded strings
+                encoded_activity = {}
+                for key, value in activity.items():
+                    if value is None:
+                        encoded_activity[key] = ''
+                    else:
+                        encoded_activity[key] = str(value)
+                writer.writerow(encoded_activity)
         
         return response
     
@@ -437,7 +483,7 @@ class ActivityExportView(LoginRequiredMixin, TemplateView):
                 buffer.getvalue(),
                 content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
-            response['Content-Disposition'] = 'attachment; filename="activity_export.xlsx"'
+            response['Content-Disposition'] = 'attachment; filename="tasks_export.xlsx"'
             return response
             
         except ImportError:

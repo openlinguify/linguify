@@ -180,8 +180,7 @@
             }
             </script>
             {% else %}
-            <a href="#" id="exportTasks" class="btn-navbar btn-navbar-outline" title="{% trans 'Export Tasks' %}" 
-               hx-get="/todo/export/" hx-target="body" hx-swap="afterbegin">
+            <a href="{% url 'todo:activity_export' %}?format=csv" id="exportTasks" class="btn-navbar btn-navbar-outline" title="{% trans 'Export Tasks' %}">
                 <i class="bi bi-download"></i>
                 <span class="d-none d-xxl-inline">{% trans "Export" %}</span>
             </a>
