@@ -560,6 +560,12 @@ function collectFormData() {
         }
     });
     
+    // Also collect the export checkbox that's outside forms
+    const exportCheckbox = document.querySelector('input[name="include_completed_in_exports"]');
+    if (exportCheckbox) {
+        settings['include_completed_in_exports'] = exportCheckbox.checked;
+    }
+    
     return settings;
 }
 

@@ -11,6 +11,7 @@ from django.core.cache import cache
 from django.core.management import call_command
 from app_manager.mixins import SettingsContextMixin
 from ..serializers import TodoSettingsSerializer, TodoUserPreferencesSerializer
+from ..models import TodoSettings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -87,58 +88,41 @@ class TodoSettingsAPI(APIView):
     def get(self, request):
         """Get current todo settings for the user"""
         user = request.user
-        cache_key = f"todo_settings_{user.id}"
         
-        # Try to get from cache first
-        settings_data = cache.get(cache_key)
+        # Get or create settings from database
+        settings = TodoSettings.get_or_create_for_user(user)
         
-        if settings_data is None:
-            # Default settings if not found
-            settings_data = {
-                # View preferences
-                'default_project_view': 'list',
-                'default_task_view': 'list',
-                
-                # Task settings
-                'auto_archive_completed': False,
-                'auto_archive_days': 30,
-                'show_subtask_count': True,
-                'show_progress_bars': True,
-                
-                # Notification settings
-                'enable_reminders': True,
-                'reminder_minutes_before': 15,
-                'daily_digest': True,
-                'daily_digest_time': '09:00:00',
-                'overdue_notifications': True,
-                
-                # Productivity settings
-                'enable_time_tracking': False,
-                'pomodoro_timer': False,
-                'pomodoro_duration': 25,
-                'break_duration': 5,
-                
-                # Interface settings
-                'theme': 'auto',
-                'compact_mode': False,
-                'show_completed_tasks': True,
-                'quick_add_shortcut': True,
-                
-                # Default values
-                'default_task_priority': 'medium',
-                'default_reminder_time': '09:00:00',
-                
-                # Collaboration settings
-                'allow_task_sharing': True,
-                'allow_project_sharing': True,
-                'public_templates': False,
-                
-                # Data settings
-                'backup_frequency': 'weekly',
-            }
-            
-            # Cache for 1 hour
-            cache.set(cache_key, settings_data, 3600)
+        # Convert model instance to dictionary for serializer
+        settings_data = {
+            'default_project_view': settings.default_project_view,
+            'default_task_view': settings.default_task_view,
+            'auto_archive_completed': settings.auto_archive_completed,
+            'auto_archive_days': settings.auto_archive_days,
+            'auto_delete_archived': settings.auto_delete_archived,
+            'auto_delete_archive_days': settings.auto_delete_archive_days,
+            'show_subtask_count': settings.show_subtask_count,
+            'show_progress_bars': settings.show_progress_bars,
+            'enable_reminders': settings.enable_reminders,
+            'reminder_minutes_before': settings.reminder_minutes_before,
+            'daily_digest': settings.daily_digest,
+            'daily_digest_time': settings.daily_digest_time.strftime('%H:%M:%S'),
+            'overdue_notifications': settings.overdue_notifications,
+            'enable_time_tracking': settings.enable_time_tracking,
+            'pomodoro_timer': settings.pomodoro_timer,
+            'pomodoro_duration': settings.pomodoro_duration,
+            'break_duration': settings.break_duration,
+            'theme': settings.theme,
+            'compact_mode': settings.compact_mode,
+            'show_completed_tasks': settings.show_completed_tasks,
+            'quick_add_shortcut': settings.quick_add_shortcut,
+            'default_task_priority': settings.default_task_priority,
+            'default_reminder_time': settings.default_reminder_time.strftime('%H:%M:%S'),
+            'allow_task_sharing': settings.allow_task_sharing,
+            'allow_project_sharing': settings.allow_project_sharing,
+            'public_templates': settings.public_templates,
+            'backup_frequency': settings.backup_frequency,
+            'include_completed_in_exports': settings.include_completed_in_exports,
+        }
         
         serializer = TodoSettingsSerializer(data=settings_data)
         if serializer.is_valid():
@@ -154,12 +138,16 @@ class TodoSettingsAPI(APIView):
         if serializer.is_valid():
             settings_data = serializer.validated_data
             
-            # Save to cache
-            cache_key = f"todo_settings_{user.id}"
-            cache.set(cache_key, settings_data, 3600)
+            # Get or create settings object
+            settings = TodoSettings.get_or_create_for_user(user)
             
-            # Here you could also save to database if needed
-            # For now, we'll just use cache
+            # Update all fields
+            for field, value in settings_data.items():
+                if hasattr(settings, field):
+                    setattr(settings, field, value)
+            
+            # Save to database
+            settings.save()
             
             return Response({
                 'message': 'Settings updated successfully',

@@ -354,14 +354,29 @@ class ActivityExportView(LoginRequiredMixin, TemplateView):
         
         start_date = timezone.now() - timedelta(days=time_range)
         
+        # Get user export settings from database
+        from ..models import TodoSettings
+        try:
+            settings = TodoSettings.objects.get(user=user)
+            include_completed = settings.include_completed_in_exports
+        except TodoSettings.DoesNotExist:
+            # Default to including completed tasks if no settings found
+            include_completed = True
+        
         # Collect activity data
         activities = []
         
-        # Task activities
-        tasks = Task.objects.filter(
+        # Task activities - filter based on settings
+        tasks_query = Task.objects.filter(
             user=user,
             created_at__gte=start_date
-        ).select_related('project', 'personal_stage_type').order_by('-created_at')
+        )
+        
+        # Exclude completed tasks if setting is disabled
+        if not include_completed:
+            tasks_query = tasks_query.exclude(state='1_done')
+        
+        tasks = tasks_query.select_related('project', 'personal_stage_type').order_by('-created_at')
         
         for task in tasks:
             # Get priority display name

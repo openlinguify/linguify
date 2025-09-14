@@ -65,34 +65,31 @@ class Command(BaseCommand):
     def process_user(self, user, dry_run=False):
         """Process auto-archiving for a specific user"""
         
-        # Get user settings from cache
-        cache_key = f"todo_settings_{user.id}"
-        settings_data = cache.get(cache_key)
-        
-        self.stdout.write(f'  Cache key: {cache_key}')
-        self.stdout.write(f'  Settings found: {settings_data}')
-        
-        if not settings_data:
+        # Get user settings from database
+        from apps.todo.models import TodoSettings
+        try:
+            settings = TodoSettings.objects.get(user=user)
+            auto_archive_enabled = settings.auto_archive_completed
+            auto_delete_enabled = settings.auto_delete_archived
+            archive_days = settings.auto_archive_days
+            delete_days = settings.auto_delete_archive_days
+            self.stdout.write(f'  Settings found in database for user {user.username}')
+        except TodoSettings.DoesNotExist:
             # Use default settings for testing/fallback
-            settings_data = {
-                'auto_archive_completed': True,  # Default enabled for this command
-                'auto_archive_days': 30,
-                'auto_delete_archived': False,  # Default disabled
-                'auto_delete_archive_days': 30,
-                'include_completed_in_exports': True
-            }
-            self.stdout.write(f'  Using default settings for user {user.username}')
+            auto_archive_enabled = True  # Default enabled for this command
+            auto_delete_enabled = False  # Default disabled
+            archive_days = 30
+            delete_days = 30
+            self.stdout.write(f'  Using default settings for user {user.username} (no database record)')
             
         # Check if any auto-processing is enabled
-        auto_archive_enabled = settings_data.get('auto_archive_completed', False)
-        auto_delete_enabled = settings_data.get('auto_delete_archived', False)
         
         if not auto_archive_enabled and not auto_delete_enabled:
             self.stdout.write(f'  No auto-processing enabled for user {user.username}')
             return 0, 0
             
-        # Get archive days setting (limit to 90 days max)
-        archive_days = min(settings_data.get('auto_archive_days', 30), 90)
+        # Get archive cutoff date (limit to 90 days max)
+        archive_days = min(archive_days, 90)
         cutoff_date = timezone.now() - timedelta(days=archive_days)
         
         # Find Archives stage for this user
@@ -146,7 +143,7 @@ class Command(BaseCommand):
         # Process deletion from Archives
         deleted_count = 0
         if auto_delete_enabled:
-            delete_days = min(settings_data.get('auto_delete_archive_days', 30), 90)
+            delete_days = min(delete_days, 90)
             delete_cutoff_date = timezone.now() - timedelta(days=delete_days)
             
             # Find tasks in Archives that should be deleted

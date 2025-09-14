@@ -61,6 +61,9 @@ class TodoSettingsSerializer(serializers.Serializer):
         choices=[('never', 'Never'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly')],
         default='weekly'
     )
+    
+    # Export settings
+    include_completed_in_exports = serializers.BooleanField(default=True)
 
 
 class TodoUserPreferencesSerializer(serializers.Serializer):

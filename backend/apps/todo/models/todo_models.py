@@ -530,3 +530,107 @@ class TaskTemplate(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class TodoSettings(models.Model):
+    """User settings for Todo app - persistent database storage"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='todo_settings')
+    
+    # View preferences
+    default_project_view = models.CharField(
+        max_length=20, 
+        choices=[('list', 'List'), ('kanban', 'Kanban'), ('calendar', 'Calendar'), ('timeline', 'Timeline')],
+        default='list'
+    )
+    default_task_view = models.CharField(
+        max_length=20,
+        choices=[('list', 'List'), ('priority', 'Priority'), ('due_date', 'Due Date'), ('project', 'Project')],
+        default='list'
+    )
+    
+    # Task settings
+    auto_archive_completed = models.BooleanField(default=False)
+    auto_archive_days = models.PositiveIntegerField(
+        default=30,
+        validators=[MinValueValidator(1), MaxValueValidator(90)]
+    )
+    auto_delete_archived = models.BooleanField(default=False)
+    auto_delete_archive_days = models.PositiveIntegerField(
+        default=30,
+        validators=[MinValueValidator(1), MaxValueValidator(90)]
+    )
+    show_subtask_count = models.BooleanField(default=True)
+    show_progress_bars = models.BooleanField(default=True)
+    
+    # Notification settings
+    enable_reminders = models.BooleanField(default=True)
+    reminder_minutes_before = models.PositiveIntegerField(
+        default=15,
+        validators=[MinValueValidator(1), MaxValueValidator(1440)]
+    )
+    daily_digest = models.BooleanField(default=True)
+    daily_digest_time = models.TimeField(default='09:00:00')
+    overdue_notifications = models.BooleanField(default=True)
+    
+    # Productivity settings
+    enable_time_tracking = models.BooleanField(default=False)
+    pomodoro_timer = models.BooleanField(default=False)
+    pomodoro_duration = models.PositiveIntegerField(
+        default=25,
+        validators=[MinValueValidator(5), MaxValueValidator(60)]
+    )
+    break_duration = models.PositiveIntegerField(
+        default=5,
+        validators=[MinValueValidator(1), MaxValueValidator(30)]
+    )
+    
+    # Interface settings
+    theme = models.CharField(
+        max_length=10,
+        choices=[('light', 'Light'), ('dark', 'Dark'), ('auto', 'Auto')],
+        default='auto'
+    )
+    compact_mode = models.BooleanField(default=False)
+    show_completed_tasks = models.BooleanField(default=True)
+    quick_add_shortcut = models.BooleanField(default=True)
+    
+    # Default values
+    default_task_priority = models.CharField(
+        max_length=10,
+        choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('urgent', 'Urgent')],
+        default='medium'
+    )
+    default_reminder_time = models.TimeField(default='09:00:00')
+    
+    # Collaboration settings
+    allow_task_sharing = models.BooleanField(default=True)
+    allow_project_sharing = models.BooleanField(default=True)
+    public_templates = models.BooleanField(default=False)
+    
+    # Data settings
+    backup_frequency = models.CharField(
+        max_length=10,
+        choices=[('never', 'Never'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly')],
+        default='weekly'
+    )
+    
+    # Export settings
+    include_completed_in_exports = models.BooleanField(default=True)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Todo Settings'
+        verbose_name_plural = 'Todo Settings'
+    
+    def __str__(self):
+        return f"Todo Settings for {self.user.username}"
+    
+    @classmethod
+    def get_or_create_for_user(cls, user):
+        """Get or create settings for a user with defaults"""
+        settings, created = cls.objects.get_or_create(user=user)
+        return settings
