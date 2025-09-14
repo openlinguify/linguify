@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.core.cache import cache
+from django.core.management import call_command
 from app_manager.mixins import SettingsContextMixin
 from ..serializers import TodoSettingsSerializer, TodoUserPreferencesSerializer
 import logging
@@ -317,3 +318,26 @@ class TodoDashboardAPI(APIView):
         }
         
         return Response(dashboard_data)
+
+
+class TodoArchiveTasksAPIView(APIView):
+    """API pour déclencher l'archivage automatique des tâches"""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        """Déclenche l'archivage automatique pour l'utilisateur connecté"""
+        try:
+            # Appeler la commande d'archivage pour cet utilisateur uniquement
+            call_command('archive_completed_tasks', user_id=request.user.id)
+            
+            return Response({
+                'success': True,
+                'message': 'Archivage automatique effectué avec succès'
+            })
+            
+        except Exception as e:
+            logger.error(f"Error in manual archive: {e}")
+            return Response(
+                {'error': 'Erreur lors de l\'archivage automatique'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
