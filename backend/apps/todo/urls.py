@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import *
+from .views.todo_activity_views import *
 from django.urls import path
 from django.contrib.auth.decorators import login_required
 
@@ -22,6 +23,8 @@ urlpatterns = [
     path('kanban/', TodoKanbanView.as_view(), name='kanban'),
     path('list/', TodoListView.as_view(), name='list'),
     path('activity/', TodoActivityView.as_view(), name='activity'),
+    path('activity/dashboard/', ActivityDashboardView.as_view(), name='activity_dashboard'),
+    path('activity/export/', ActivityExportView.as_view(), name='activity_export'),
     path('task/new/', TodoFormView.as_view(), name='task_new'),
     path('task/<uuid:task_id>/', TodoFormView.as_view(), name='task_edit'),
 
@@ -62,4 +65,8 @@ urlpatterns = [
     path('htmx/tags/add/', TagAddHTMXView.as_view(), name='tag_add_htmx'),
     path('htmx/tags/<uuid:tag_id>/remove/', TagRemoveHTMXView.as_view(), name='tag_remove_htmx'),
     path('htmx/character_count/', CharacterCountHTMXView.as_view(), name='character_count_htmx'),
+    
+    # Activity HTMX endpoints
+    path('htmx/activity/timeline/', ActivityTimelineHTMXView.as_view(), name='activity_timeline_htmx'),
+    path('htmx/activity/stats/', ActivityStatsHTMXView.as_view(), name='activity_stats_htmx'),
 ]

@@ -11,13 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import logging
 from ..models.todo_models import Task, Project, PersonalStageType, Tag, Category, Project, Task, Note, Category, Tag, Reminder, TaskTemplate, PersonalStageType
-from ..serializers import (
-    ProjectListSerializer, ProjectDetailSerializer,
-    TaskListSerializer, TaskDetailSerializer, TaskKanbanSerializer,
-    TaskQuickCreateSerializer, TaskToggleSerializer, DashboardStatsSerializer,
-    NoteSerializer, CategorySerializer, TagSerializer,
-    ReminderSerializer, TaskTemplateSerializer, PersonalStageTypeSerializer
-)
+from ..serializers import *
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
@@ -67,7 +61,13 @@ class TodoMainView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
         elif view_type == 'list':
             return self.get_list_partial(user)
         elif view_type == 'activity':
-            return self.get_activity_partial(user)
+            from .todo_activity_views import TodoActivityView
+            activity_view = TodoActivityView()
+            activity_view.request = request
+            return activity_view.render_htmx_response(
+                activity_view.get_context_data(), 
+                'todo/partials/activity_feed.html'
+            )
         else:
             return self.get_kanban_partial(user)  # Default
     
@@ -104,11 +104,6 @@ class TodoMainView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
         context = {'tasks': tasks}
         return self.render_htmx_response(context, 'todo/partials/task_list.html')
     
-    def get_activity_partial(self, user):
-        """Return Activity view partial"""
-        recent_tasks = Task.objects.filter(user=user, active=True).order_by('-updated_at')[:20]
-        context = {'recent_tasks': recent_tasks}
-        return self.render_htmx_response(context, 'todo/partials/activity_feed.html')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -287,96 +282,6 @@ class TodoListView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
         
         return context
 
-
-class TodoActivityView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
-    """HTMX-powered Activity/Timeline view - openlinguify-style activity tracking"""
-    template_name = 'todo/views/activity.html'
-    htmx_template_name = 'todo/partials/activity_feed.html'
-    
-    def get(self, request, *args, **kwargs):
-        # If HTMX request, return partial content
-        if self.is_htmx():
-            return self.render_htmx_response(self.get_context_data())
-        return super().get(request, *args, **kwargs)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-        
-        # Get recent activity (last 30 days)
-        thirty_days_ago = timezone.now() - timedelta(days=30)
-        
-        # Recently created tasks
-        recent_tasks = Task.objects.filter(
-            user=user,
-            created_at__gte=thirty_days_ago
-        ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('-created_at')[:20]
-        
-        # Recently completed tasks
-        completed_tasks = Task.objects.filter(
-            user=user,
-            state='1_done',
-            completed_at__gte=thirty_days_ago
-        ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('-completed_at')[:20]
-        
-        # Overdue tasks
-        overdue_tasks = Task.objects.filter(
-            user=user,
-            due_date__lt=timezone.now(),
-            state__in=['1_todo', '1_in_progress'],
-            active=True
-        ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('due_date')
-        
-        # Due today
-        today = timezone.now().date()
-        due_today_tasks = Task.objects.filter(
-            user=user,
-            due_date__date=today,
-            state__in=['1_todo', '1_in_progress'],
-            active=True
-        ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('due_date')
-        
-        # Due this week
-        week_end = today + timedelta(days=7)
-        due_week_tasks = Task.objects.filter(
-            user=user,
-            due_date__date__range=[today, week_end],
-            state__in=['1_todo', '1_in_progress'],
-            active=True
-        ).exclude(due_date__date=today).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('due_date')
-        
-        # Activity statistics
-        stats = {
-            'tasks_created_today': Task.objects.filter(
-                user=user,
-                created_at__date=today
-            ).count(),
-            'tasks_completed_today': Task.objects.filter(
-                user=user,
-                completed_at__date=today
-            ).count(),
-            'tasks_created_this_week': Task.objects.filter(
-                user=user,
-                created_at__gte=timezone.now() - timedelta(days=7)
-            ).count(),
-            'tasks_completed_this_week': Task.objects.filter(
-                user=user,
-                completed_at__gte=timezone.now() - timedelta(days=7)
-            ).count(),
-        }
-        
-        context.update({
-            'recent_tasks': recent_tasks,
-            'completed_tasks': completed_tasks,
-            'overdue_tasks': overdue_tasks,
-            'due_today_tasks': due_today_tasks,
-            'due_week_tasks': due_week_tasks,
-            'activity_stats': stats,
-            'view_mode': 'activity',
-            'today': today,
-        })
-        
-        return context
 
 
 class TodoFormView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
