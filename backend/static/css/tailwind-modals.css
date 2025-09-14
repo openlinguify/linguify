@@ -8082,6 +8082,22 @@ input#importDeckName:focus {
     vertical-align: top;
     overflow: hidden;
     transition: none !important;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    line-height: 20px;
+}
+
+/* Saving state indicator */
+.htmx-request #navbarSaveIndicator::after {
+    content: "💾 Saving...";
+    color: var(--linguify-primary);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
 /* ===== TODO FORM LAYOUT ===== */

@@ -15,7 +15,7 @@
             <div class="form-card-linguify" style="height: 100%; display: flex; flex-direction: column;">
             <form id="taskForm" method="post" style="height: 100%; display: flex; flex-direction: column;"
                       hx-post="{% if task %}{% url 'todo:task_autosave_update_htmx' task.id %}{% else %}{% url 'todo:task_autosave_create_htmx' %}{% endif %}"
-                      hx-trigger="change delay:1500ms from:select, blur delay:1000ms from:input, blur delay:1000ms from:textarea"
+                      hx-trigger="change delay:800ms from:select, blur delay:600ms from:input, blur delay:600ms from:textarea, input delay:2000ms from:textarea"
                       hx-target="#navbarSaveIndicator"
                       hx-swap="innerHTML">
                 {% csrf_token %}
