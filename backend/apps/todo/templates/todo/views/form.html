@@ -256,6 +256,30 @@ document.addEventListener('DOMContentLoaded', function() {
     let saveTimeout;
     const cloudIndicator = document.getElementById('cloudSaveIndicator');
     
+    // Ensure initial state is correct
+    if (cloudIndicator) {
+        cloudIndicator.classList.remove('show-saved', 'fade-out');
+        cloudIndicator.style.display = 'none';
+        
+        // TEMPORARY: Test function to show cloud indicator
+        window.testCloudShow = function() {
+            cloudIndicator.style.display = 'inline-flex';
+            cloudIndicator.classList.remove('show-saved', 'fade-out');
+        };
+        
+        window.testCloudSaving = function() {
+            cloudIndicator.classList.add('show-saved');
+        };
+        
+        window.testCloudHide = function() {
+            cloudIndicator.classList.add('fade-out');
+            setTimeout(() => {
+                cloudIndicator.style.display = 'none';
+                cloudIndicator.classList.remove('show-saved', 'fade-out');
+            }, 500);
+        };
+    }
+    
     // Show cloud during save
     document.body.addEventListener('htmx:beforeRequest', function(evt) {
         // Only for autosave requests

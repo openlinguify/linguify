@@ -8070,6 +8070,28 @@ input#importDeckName:focus {
     transition: all 0.3s ease;
     border: none !important;
     cursor: default;
+    background: var(--linguify-gray-100) !important;
+    color: var(--linguify-gray-600) !important;
+}
+
+/* Override btn-sb defaults for save indicator */
+#cloudSaveIndicator.save-indicator-cloud {
+    background: var(--linguify-gray-100) !important;
+    color: var(--linguify-gray-600) !important;
+    border: 1px solid var(--linguify-gray-200) !important;
+}
+
+/* Force reset any inherited styles */
+#cloudSaveIndicator.save-indicator-cloud:hover {
+    background: var(--linguify-gray-200) !important;
+    color: var(--linguify-gray-700) !important;
+}
+
+#cloudSaveIndicator.save-indicator-cloud:focus {
+    background: var(--linguify-gray-100) !important;
+    color: var(--linguify-gray-600) !important;
+    outline: none;
+    box-shadow: none;
 }
 
 /* Show cloud when saving */
