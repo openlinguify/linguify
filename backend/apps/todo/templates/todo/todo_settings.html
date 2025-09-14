@@ -469,6 +469,92 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Function to load Todo settings from API
+async function loadTodoSettings() {
+    try {
+        const response = await fetch('/api/v1/todo/settings/', {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        if (response.ok) {
+            const settings = await response.json();
+            console.log('[TodoSettings] Loaded settings:', settings);
+            
+            // Populate form fields with current settings
+            populateFormFields(settings);
+        } else {
+            console.warn('[TodoSettings] Could not load settings, using defaults');
+        }
+    } catch (error) {
+        console.error('[TodoSettings] Error loading settings:', error);
+    }
+}
+
+// Function to populate form fields with settings data
+function populateFormFields(settings) {
+    Object.keys(settings).forEach(key => {
+        const element = document.querySelector(`[name="${key}"]`);
+        if (element) {
+            if (element.type === 'checkbox') {
+                element.checked = settings[key];
+            } else if (element.type === 'range') {
+                element.value = settings[key];
+                // Update range display
+                const valueDisplay = element.parentNode.querySelector('.range-value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = settings[key];
+                }
+            } else if (element.tagName === 'SELECT') {
+                element.value = settings[key];
+            } else if (element.type === 'time') {
+                // Convert time format if needed (remove seconds if present)
+                let timeValue = settings[key];
+                if (timeValue && timeValue.includes(':')) {
+                    // Convert from HH:MM:SS to HH:MM
+                    timeValue = timeValue.substr(0, 5);
+                }
+                element.value = timeValue;
+            } else {
+                element.value = settings[key];
+            }
+        }
+    });
+}
+
+// Function to collect all form data
+function collectFormData() {
+    const forms = document.querySelectorAll('#todo form');
+    const settings = {};
+    
+    forms.forEach(form => {
+        const formData = new FormData(form);
+        for (let [key, value] of formData.entries()) {
+            if (key !== 'setting_type' && key !== 'csrfmiddlewaretoken') {
+                // Handle different input types
+                const element = form.querySelector(`[name="${key}"]`);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        settings[key] = element.checked;
+                    } else if (element.type === 'range' || element.type === 'number') {
+                        settings[key] = parseInt(value);
+                    } else if (element.type === 'time') {
+                        // Ensure proper time format
+                        settings[key] = value.includes(':') ? value + ':00' : value;
+                    } else {
+                        settings[key] = value;
+                    }
+                }
+            }
+        }
+    });
+    
+    return settings;
+}
+
 // Function to save all Todo settings
 async function saveAllTodoSettings() {
     const button = document.querySelector('button[onclick="saveAllTodoSettings()"]');
@@ -481,35 +567,28 @@ async function saveAllTodoSettings() {
     statusDiv.innerHTML = '';
     
     try {
-        // Get all form data
-        const forms = document.querySelectorAll('#todo form');
-        const formData = new FormData();
+        // Collect all form data
+        const settings = collectFormData();
+        console.log('[TodoSettings] Saving settings:', settings);
         
-        forms.forEach(form => {
-            const data = new FormData(form);
-            for (let [key, value] of data.entries()) {
-                formData.append(key, value);
-            }
-        });
-        
-        // Add CSRF token
-        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-        formData.append('save_all', 'true');
-        
-        // Send request
-        const response = await fetch(window.location.href, {
+        // Send to API
+        const response = await fetch('/api/v1/todo/settings/', {
             method: 'POST',
-            body: formData,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(settings)
         });
         
         if (response.ok) {
+            const result = await response.json();
             // Success
             button.innerHTML = '<i class="bi bi-check-circle"></i> Sauvegardé !';
             button.style.background = '#28a745';
             statusDiv.innerHTML = '<span style="color: #28a745; font-weight: 500;"><i class="bi bi-check-circle"></i> Paramètres sauvegardés avec succès</span>';
+            
+            console.log('[TodoSettings] Settings saved successfully:', result);
             
             // Reset button after 2 seconds
             setTimeout(() => {
@@ -518,10 +597,12 @@ async function saveAllTodoSettings() {
                 button.disabled = false;
             }, 2000);
         } else {
-            throw new Error('Erreur lors de la sauvegarde');
+            const error = await response.json();
+            throw new Error(error.message || 'Erreur lors de la sauvegarde');
         }
         
     } catch (error) {
+        console.error('[TodoSettings] Save error:', error);
         // Error
         button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Erreur';
         button.style.background = '#dc3545';
@@ -639,6 +720,9 @@ async function saveAllTodoSettings() {
             initRangeSliders();
             initSectionToggles();
             initFormHandlers();
+            
+            // Load current settings from API
+            loadTodoSettings();
         }
         
         function initRangeSliders() {
