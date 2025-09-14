@@ -42,15 +42,15 @@ class Command(BaseCommand):
         
         for user in users:
             self.stdout.write(f'Processing user: {user.username}')
-            archived_count = self.process_user(user, dry_run)
-            if archived_count > 0:
+            archived_count, deleted_count = self.process_user(user, dry_run)
+            if archived_count > 0 or deleted_count > 0:
                 total_archived += archived_count
                 users_processed += 1
                 self.stdout.write(
-                    f'User {user.username}: {archived_count} tasks archived'
+                    f'User {user.username}: {archived_count} tasks archived, {deleted_count} tasks deleted'
                 )
             else:
-                self.stdout.write(f'User {user.username}: No tasks to archive')
+                self.stdout.write(f'User {user.username}: No tasks to process')
         
         if total_archived > 0:
             self.stdout.write(
@@ -76,15 +76,19 @@ class Command(BaseCommand):
             # Use default settings for testing/fallback
             settings_data = {
                 'auto_archive_completed': True,  # Default enabled for this command
-                'auto_archive_days': 30
+                'auto_archive_days': 30,
+                'auto_delete_archived': False,  # Default disabled
+                'auto_delete_archive_days': 30
             }
             self.stdout.write(f'  Using default settings for user {user.username}')
             
-        # Check if auto-archiving is enabled
+        # Check if any auto-processing is enabled
         auto_archive_enabled = settings_data.get('auto_archive_completed', False)
-        if not auto_archive_enabled:
-            self.stdout.write(f'  Auto-archive disabled for user {user.username}')
-            return 0
+        auto_delete_enabled = settings_data.get('auto_delete_archived', False)
+        
+        if not auto_archive_enabled and not auto_delete_enabled:
+            self.stdout.write(f'  No auto-processing enabled for user {user.username}')
+            return 0, 0
             
         # Get archive days setting
         archive_days = settings_data.get('auto_archive_days', 30)
@@ -119,41 +123,79 @@ class Command(BaseCommand):
             personal_stage_type=archives_stage  # Don't archive tasks already in Archives
         )
         
-        archived_count = tasks_to_archive.count()
+        # Process archiving (Done -> Archives)
+        archived_count = 0
+        if auto_archive_enabled:
+            archived_count = tasks_to_archive.count()
+            
+            if not dry_run and archived_count > 0:
+                # Move tasks to Archives stage
+                tasks_to_archive.update(personal_stage_type=archives_stage)
+                
+                self.stdout.write(
+                    f'Archived {archived_count} tasks for user {user.username} '
+                    f'(completed before {cutoff_date.strftime("%Y-%m-%d")})'
+                )
+            elif dry_run and archived_count > 0:
+                self.stdout.write(
+                    f'[DRY RUN] Would archive {archived_count} tasks for user {user.username} '
+                    f'(completed before {cutoff_date.strftime("%Y-%m-%d")})'
+                )
+        
+        # Process deletion from Archives
+        deleted_count = 0
+        if auto_delete_enabled:
+            delete_days = settings_data.get('auto_delete_archive_days', 30)
+            delete_cutoff_date = timezone.now() - timedelta(days=delete_days)
+            
+            # Find tasks in Archives that should be deleted
+            tasks_to_delete = Task.objects.filter(
+                user=user,
+                state='1_done',
+                active=True,
+                personal_stage_type=archives_stage
+            ).filter(
+                Q(updated_at__lt=delete_cutoff_date)  # Use updated_at as proxy for when moved to Archives
+            )
+            
+            deleted_count = tasks_to_delete.count()
+            
+            if not dry_run and deleted_count > 0:
+                # Soft delete (set active=False)
+                tasks_to_delete.update(active=False)
+                
+                self.stdout.write(
+                    f'Deleted {deleted_count} archived tasks for user {user.username} '
+                    f'(in archives before {delete_cutoff_date.strftime("%Y-%m-%d")})'
+                )
+            elif dry_run and deleted_count > 0:
+                self.stdout.write(
+                    f'[DRY RUN] Would delete {deleted_count} archived tasks for user {user.username} '
+                    f'(in archives before {delete_cutoff_date.strftime("%Y-%m-%d")})'
+                )
         
         # Debug info
         if dry_run:
             self.stdout.write(f'Debug - User: {user.username}')
             self.stdout.write(f'Debug - Auto archive enabled: {auto_archive_enabled}')
-            self.stdout.write(f'Debug - Archive days: {archive_days}')
-            self.stdout.write(f'Debug - Cutoff date: {cutoff_date}')
+            self.stdout.write(f'Debug - Auto delete enabled: {auto_delete_enabled}')
+            if auto_archive_enabled:
+                self.stdout.write(f'Debug - Archive days: {archive_days}')
+                self.stdout.write(f'Debug - Archive cutoff: {cutoff_date}')
+            if auto_delete_enabled:
+                self.stdout.write(f'Debug - Delete days: {settings_data.get("auto_delete_archive_days", 30)}')
+                self.stdout.write(f'Debug - Delete cutoff: {delete_cutoff_date if auto_delete_enabled else "N/A"}')
             self.stdout.write(f'Debug - Archives stage: {archives_stage.name if archives_stage else "None"}')
             
-            # Show all completed tasks
-            all_completed = Task.objects.filter(user=user, state='1_done', active=True)
-            self.stdout.write(f'Debug - Total completed tasks: {all_completed.count()}')
+            if auto_archive_enabled:
+                # Show all completed tasks
+                all_completed = Task.objects.filter(user=user, state='1_done', active=True)
+                self.stdout.write(f'Debug - Total completed tasks: {all_completed.count()}')
+                self.stdout.write(f'Debug - Tasks to archive: {archived_count}')
             
-            for task in all_completed:
-                stage_name = task.personal_stage_type.name if task.personal_stage_type else "None"
-                completed_date = task.completed_at or task.updated_at
-                eligible = "YES" if completed_date < cutoff_date and task.personal_stage_type != archives_stage else "NO"
-                self.stdout.write(f'  - {task.title} | Stage: {stage_name} | Date: {completed_date} | Eligible: {eligible}')
-                
-            # Show the actual query that would be executed
-            self.stdout.write(f'Debug - Tasks matching query: {tasks_to_archive.count()}')
-        
-        if not dry_run and archived_count > 0:
-            # Move tasks to Archives stage
-            tasks_to_archive.update(personal_stage_type=archives_stage)
+            if auto_delete_enabled:
+                all_archived = Task.objects.filter(user=user, personal_stage_type=archives_stage, active=True)
+                self.stdout.write(f'Debug - Tasks in Archives: {all_archived.count()}')
+                self.stdout.write(f'Debug - Tasks to delete: {deleted_count}')
             
-            self.stdout.write(
-                f'Archived {archived_count} tasks for user {user.username} '
-                f'(completed before {cutoff_date.strftime("%Y-%m-%d")})'
-            )
-        elif dry_run and archived_count > 0:
-            self.stdout.write(
-                f'[DRY RUN] Would archive {archived_count} tasks for user {user.username} '
-                f'(completed before {cutoff_date.strftime("%Y-%m-%d")})'
-            )
-            
-        return archived_count
+        return archived_count, deleted_count

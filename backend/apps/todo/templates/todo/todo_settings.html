@@ -322,28 +322,49 @@
                             <input type="checkbox" name="auto_archive_completed">
                             Archivage automatique des taches terminees
                         </label>
-                        <div class="form-help">Deplacer automatiquement les taches vers Archives apres le delai configure (nécessite l'exécution périodique de la commande d'archivage)</div>
+                        <div class="form-help">Deplacer automatiquement les taches vers Archives apres le delai configure</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Delai d'archivage automatique (jours)</label>
+                        <div class="range-input">
+                            <input type="range" name="auto_archive_days" min="1" max="365" value="30" class="form-range">
+                            <span class="range-value">30</span>
+                        </div>
+                        <div class="form-help">Nombre de jours apres completion avant deplacement vers Archives</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" name="auto_delete_archived">
+                            Suppression automatique des archives anciennes
+                        </label>
+                        <div class="form-help">Supprimer définitivement les tâches des Archives après le délai configuré</div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Delai d'archivage automatique (jours)</label>
+                    <label class="form-label">Delai de suppression des archives (jours)</label>
                     <div class="range-input">
-                        <input type="range" name="auto_archive_days" min="1" max="365" value="30" class="form-range">
+                        <input type="range" name="auto_delete_archive_days" min="1" max="365" value="30" class="form-range">
                         <span class="range-value">30</span>
                     </div>
-                    <div class="form-help">Nombre de jours apres completion avant deplacement vers Archives</div>
+                    <div class="form-help">Nombre de jours dans Archives avant suppression définitive</div>
                 </div>
 
-                <!-- Manual Archive Button -->
-                <div class="form-group" style="margin-top: 20px;">
-                    <button type="button" onclick="triggerManualArchive()" class="btn-archive" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-purple-500); color: var(--linguify-white); border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
-                        <i class="bi bi-archive" style="margin-right: 6px;"></i>
-                        Déclencher l'archivage maintenant
-                    </button>
-                    <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">Déplacer immédiatement les tâches éligibles vers Archives</div>
-                    <div id="archive-status" style="margin-top: 8px; font-size: 14px;"></div>
+                <!-- Manual Actions Buttons -->
+                <div class="form-group" style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <button type="button" onclick="triggerManualArchive()" class="btn-archive" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-purple-500); color: var(--linguify-white); border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; width: 100%;">
+                            <i class="bi bi-archive" style="margin-right: 6px;"></i>
+                            Déclencher l'archivage et nettoyage
+                        </button>
+                        <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">Exécuter immédiatement l'archivage et la suppression selon vos paramètres</div>
+                    </div>
                 </div>
+                <div id="archive-status" style="margin-top: 8px; font-size: 14px;"></div>
             </form>
 
             <!-- Separator -->
@@ -756,6 +777,8 @@ async function saveAllTodoSettings() {
                 const minutes = value % 60;
                 valueSpan.textContent = hours + 'h' + (minutes > 0 ? minutes + 'm' : '');
             } else if (slider.name === 'auto_archive_days') {
+                valueSpan.textContent = value + ' jours';
+            } else if (slider.name === 'auto_delete_archive_days') {
                 valueSpan.textContent = value + ' jours';
             } else if (slider.name === 'pomodoro_duration') {
                 valueSpan.textContent = value + ' min';
