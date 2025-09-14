@@ -57,17 +57,25 @@
     <div class="navbar-section-right">
         <!-- Activity-specific controls -->
         {% if active_view == 'activity' %}
-        <div class="activity-period-selector">
+        <div class="activity-period-selector" x-data="{ loading: false }">
             <label class="navbar-label">{% trans "Period:" %}</label>
-            <select id="activityTimeRange" class="form-control-linguify" style="width: 120px;" 
+            <select class="form-control-linguify" style="width: 120px;" 
                     hx-get="{% url 'todo:activity' %}" 
                     hx-trigger="change" 
                     hx-target="#activity-content" 
-                    hx-include="[name='range']">
-                <option value="7">{% trans "7 days" %}</option>
-                <option value="30">{% trans "30 days" %}</option>
-                <option value="90">{% trans "3 months" %}</option>
+                    hx-swap="innerHTML"
+                    hx-include="this"
+                    name="range"
+                    @htmx:before-request="loading = true"
+                    @htmx:after-swap="loading = false"
+                    :disabled="loading">
+                <option value="7" {% if request.GET.range == '7' %}selected{% endif %}>{% trans "7 days" %}</option>
+                <option value="30" {% if request.GET.range == '30' or not request.GET.range %}selected{% endif %}>{% trans "30 days" %}</option>
+                <option value="90" {% if request.GET.range == '90' %}selected{% endif %}>{% trans "3 months" %}</option>
             </select>
+            <div x-show="loading" class="inline-flex ml-2">
+                <i class="bi bi-arrow-clockwise animate-spin text-blue-500"></i>
+            </div>
         </div>
         {% endif %}
         
@@ -152,12 +160,20 @@
             
             <!-- Export (différent pour Activity) -->
             {% if active_view == 'activity' %}
-            <div class="dropdown" style="position: relative;">
-                <button id="activityExportBtn" class="btn-navbar btn-navbar-outline dropdown-toggle" title="{% trans 'Export Activity Data' %}" onclick="toggleActivityExportDropdown()">
+            <div class="dropdown" style="position: relative;" x-data="{ open: false }" @click.outside="open = false">
+                <button @click="open = !open" class="btn-navbar btn-navbar-outline dropdown-toggle" title="{% trans 'Export Activity Data' %}">
                     <i class="bi bi-download"></i>
                     <span class="d-none d-xxl-inline">{% trans "Export" %}</span>
                 </button>
-                <div id="activityExportDropdown" class="dropdown-menu" style="display: none; position: absolute; right: 0; top: 100%; z-index: 1000;">
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-100"
+                     x-transition:enter-start="transform opacity-0 scale-95"
+                     x-transition:enter-end="transform opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="transform opacity-100 scale-100"
+                     x-transition:leave-end="transform opacity-0 scale-95"
+                     class="dropdown-menu" 
+                     style="position: absolute; right: 0; top: 100%; z-index: 1000;">
                     <a class="dropdown-item" href="{% url 'todo:activity_export' %}?format=json">
                         <i class="bi bi-filetype-json me-2"></i>{% trans "Export JSON" %}
                     </a>
