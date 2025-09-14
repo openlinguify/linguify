@@ -284,7 +284,7 @@ class ActivityTimelineHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateVi
     """HTMX endpoint for activity timeline"""
     template_name = 'todo/partials/activity_timeline.html'
     
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         user = request.user
         
         # Get pagination params
@@ -378,15 +378,32 @@ class ActivityStatsHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView)
     """HTMX endpoint for activity statistics"""
     template_name = 'todo/partials/activity_stats.html'
     
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         user = request.user
         time_range = int(request.GET.get('range', 7))  # days
         
         start_date = timezone.now() - timedelta(days=time_range)
         today = timezone.now().date()
+        week_start = today - timedelta(days=today.weekday())
         
         # Calculate statistics
         stats = {
+            'tasks_created_today': Task.objects.filter(
+                user=user,
+                created_at__date=today
+            ).count(),
+            'tasks_completed_today': Task.objects.filter(
+                user=user,
+                completed_at__date=today
+            ).count(),
+            'tasks_created_this_week': Task.objects.filter(
+                user=user,
+                created_at__date__gte=week_start
+            ).count(),
+            'tasks_completed_this_week': Task.objects.filter(
+                user=user,
+                completed_at__date__gte=week_start
+            ).count(),
             'tasks_created': Task.objects.filter(
                 user=user,
                 created_at__gte=start_date
@@ -395,14 +412,6 @@ class ActivityStatsHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView)
                 user=user,
                 completed_at__gte=start_date
             ).count(),
-            'projects_created': Project.objects.filter(
-                user=user,
-                created_at__gte=start_date
-            ).count(),
-            'notes_created': Note.objects.filter(
-                user=user,
-                created_at__gte=start_date
-            ).count() if hasattr(Note, 'objects') else 0,
         }
         
         # Calculate trends (compare with previous period)

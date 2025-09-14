@@ -1,0 +1,119 @@
+{% load i18n %}
+<!-- Activity Stats Partial Template for HTMX -->
+<div class="activity-stats-modern mb-8" 
+     x-data="{ loaded: false }"
+     x-init="setTimeout(() => loaded = true, 100)"
+     hx-get="{% url 'todo:activity_stats_htmx' %}" 
+     hx-trigger="every 30s" 
+     hx-target="this" 
+     hx-swap="outerHTML">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Created Today -->
+        <div class="stat-card-modern group hover:scale-105 transition-all duration-300"
+             x-show="loaded"
+             x-transition:enter="transition ease-out duration-300 delay-[0ms]"
+             x-transition:enter-start="opacity-0 transform translate-y-4"
+             x-transition:enter-end="opacity-100 transform translate-y-0">
+            <div class="stat-card-header bg-gradient-to-br from-blue-500 to-blue-600">
+                <div class="stat-icon-modern">
+                    <i class="bi bi-plus-circle text-white"></i>
+                </div>
+                <div class="stat-trend-modern">
+                    <span class="text-xs text-blue-100">vs {% trans "yesterday" %}</span>
+                </div>
+            </div>
+            <div class="stat-card-body">
+                <div class="stat-number-modern text-blue-600" data-count="{{ stats.tasks_created_today|default:0 }}">
+                    {{ stats.tasks_created_today|default:0 }}
+                </div>
+                <div class="stat-label-modern">{% trans "Created Today" %}</div>
+                <div class="stat-progress-modern">
+                    <div class="bg-blue-100 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: {% widthratio stats.tasks_created_today|default:0 10 100 %}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Today -->
+        <div class="stat-card-modern group hover:scale-105 transition-all duration-300"
+             x-show="loaded"
+             x-transition:enter="transition ease-out duration-300 delay-[100ms]"
+             x-transition:enter-start="opacity-0 transform translate-y-4"
+             x-transition:enter-end="opacity-100 transform translate-y-0">
+            <div class="stat-card-header bg-gradient-to-br from-green-500 to-green-600">
+                <div class="stat-icon-modern">
+                    <i class="bi bi-check-circle text-white"></i>
+                </div>
+                <div class="stat-trend-modern">
+                    <span class="text-xs text-green-100">{% trans "completion rate" %}</span>
+                </div>
+            </div>
+            <div class="stat-card-body">
+                <div class="stat-number-modern text-green-600" data-count="{{ stats.tasks_completed_today|default:0 }}">
+                    {{ stats.tasks_completed_today|default:0 }}
+                </div>
+                <div class="stat-label-modern">{% trans "Completed Today" %}</div>
+                <div class="stat-progress-modern">
+                    <div class="bg-green-100 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: {% if stats.tasks_created_today|default:0 > 0 %}{% widthratio stats.tasks_completed_today|default:0 stats.tasks_created_today|default:1 100 %}{% else %}0{% endif %}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Created This Week -->
+        <div class="stat-card-modern group hover:scale-105 transition-all duration-300"
+             x-show="loaded"
+             x-transition:enter="transition ease-out duration-300 delay-[200ms]"
+             x-transition:enter-start="opacity-0 transform translate-y-4"
+             x-transition:enter-end="opacity-100 transform translate-y-0">
+            <div class="stat-card-header bg-gradient-to-br from-purple-500 to-purple-600">
+                <div class="stat-icon-modern">
+                    <i class="bi bi-calendar-week text-white"></i>
+                </div>
+                <div class="stat-trend-modern">
+                    <span class="text-xs text-purple-100">{% trans "this week" %}</span>
+                </div>
+            </div>
+            <div class="stat-card-body">
+                <div class="stat-number-modern text-purple-600" data-count="{{ stats.tasks_created_this_week|default:0 }}">
+                    {{ stats.tasks_created_this_week|default:0 }}
+                </div>
+                <div class="stat-label-modern">{% trans "Created This Week" %}</div>
+                <div class="stat-progress-modern">
+                    <div class="bg-purple-100 rounded-full h-2">
+                        <div class="bg-purple-500 h-2 rounded-full transition-all duration-500" style="width: {% widthratio stats.tasks_created_this_week|default:0 30 100 %}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed This Week -->
+        <div class="stat-card-modern group hover:scale-105 transition-all duration-300"
+             x-show="loaded"
+             x-transition:enter="transition ease-out duration-300 delay-[300ms]"
+             x-transition:enter-start="opacity-0 transform translate-y-4"
+             x-transition:enter-end="opacity-100 transform translate-y-0">
+            <div class="stat-card-header bg-gradient-to-br from-amber-500 to-amber-600">
+                <div class="stat-icon-modern">
+                    <i class="bi bi-trophy text-white"></i>
+                </div>
+                <div class="stat-trend-modern">
+                    <span class="text-xs text-amber-100">{% trans "productivity" %}</span>
+                </div>
+            </div>
+            <div class="stat-card-body">
+                <div class="stat-number-modern text-amber-600" data-count="{{ stats.tasks_completed_this_week|default:0 }}">
+                    {{ stats.tasks_completed_this_week|default:0 }}
+                </div>
+                <div class="stat-label-modern">{% trans "Completed This Week" %}</div>
+                <div class="stat-progress-modern">
+                    <div class="bg-amber-100 rounded-full h-2">
+                        <div class="bg-amber-500 h-2 rounded-full transition-all duration-500" style="width: {% if stats.tasks_created_this_week|default:0 > 0 %}{% widthratio stats.tasks_completed_this_week|default:0 stats.tasks_created_this_week|default:1 100 %}{% else %}0{% endif %}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

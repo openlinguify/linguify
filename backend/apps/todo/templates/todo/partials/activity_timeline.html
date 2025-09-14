@@ -1,0 +1,62 @@
+{% load i18n %}
+<!-- Activity Timeline Partial Template for HTMX -->
+<div class="space-y-4">
+    {% if activities %}
+        {% for activity in activities %}
+        <div class="timeline-item-modern {% if activity.type == 'task_completed' %}completed-timeline-item{% elif activity.type == 'task_created' %}created-timeline-item{% endif %}">
+            <div class="timeline-marker-modern {% if activity.type == 'task_completed' %}bg-green-500{% elif activity.type == 'task_created' %}bg-blue-500{% else %}bg-gray-500{% endif %}">
+                <i class="bi {% if activity.type == 'task_completed' %}bi-check{% elif activity.type == 'task_created' %}bi-plus{% else %}bi-circle{% endif %} text-white text-xs"></i>
+            </div>
+            <div class="timeline-content-wrapper-modern">
+                <div class="timeline-header-item-modern">
+                    <span class="timeline-action-modern {% if activity.type == 'task_completed' %}text-green-600{% elif activity.type == 'task_created' %}text-blue-600{% else %}text-gray-600{% endif %} font-medium">
+                        {% if activity.type == 'task_completed' %}
+                            {% trans "Completed" %}
+                        {% elif activity.type == 'task_created' %}
+                            {% trans "Created" %}
+                        {% else %}
+                            {{ activity.title }}
+                        {% endif %}
+                    </span>
+                    <span class="timeline-time-modern">{{ activity.timestamp|timesince }} {% trans "ago" %}</span>
+                </div>
+                <div class="timeline-title-modern {% if activity.type == 'task_created' %}cursor-pointer hover:text-blue-600 transition-colors{% endif %}"
+                     {% if activity.type == 'task_created' and activity.task %}
+                     hx-get="{% url 'todo:task_form_modal_edit_htmx' activity.task.id %}"
+                     hx-target="#task-modal-container"
+                     hx-trigger="click"
+                     {% endif %}>
+                    {{ activity.description|default:activity.task.title }}
+                    {% if activity.task.priority == '1' %}
+                    <span class="priority-star-modern small ml-1">
+                        <i class="bi bi-star-fill text-amber-500"></i>
+                    </span>
+                    {% endif %}
+                </div>
+                {% if activity.project %}
+                <div class="timeline-meta-modern">
+                    <span class="project-badge-modern">{{ activity.project.name }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if has_more %}
+        <div class="text-center py-4">
+            <button class="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 font-medium bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                    hx-get="{% url 'todo:activity_timeline_htmx' %}?page={{ next_page }}"
+                    hx-target="#timeline-content"
+                    hx-swap="beforeend">
+                {% trans "Load more" %}
+                <i class="bi bi-arrow-down ml-1"></i>
+            </button>
+        </div>
+        {% endif %}
+    {% else %}
+    <div class="empty-timeline-modern">
+        <i class="bi bi-clock-history text-gray-300 text-2xl"></i>
+        <p class="text-gray-500 text-sm mt-2">{% trans "No recent activity" %}</p>
+    </div>
+    {% endif %}
+</div>

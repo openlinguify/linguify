@@ -1,0 +1,239 @@
+{% load i18n %}
+<!-- Activity Dashboard Content Partial for HTMX -->
+<div x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
+    <!-- Key Metrics Overview -->
+    <div class="metrics-overview mb-8" 
+         x-show="loaded"
+         x-transition:enter="transition ease-out duration-500"
+         x-transition:enter-start="opacity-0 transform translate-y-8"
+         x-transition:enter-end="opacity-100 transform translate-y-0">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Tasks Created -->
+            <div class="metric-card bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200">
+                <div class="metric-header">
+                    <div class="metric-icon bg-blue-500">
+                        <i class="bi bi-plus-circle text-white"></i>
+                    </div>
+                    <span class="metric-label">{% trans "Tasks Created" %}</span>
+                </div>
+                <div class="metric-value text-blue-700">{{ activity_metrics.total_tasks_created }}</div>
+                <div class="metric-subtitle text-blue-600">{% trans "in" %} {{ time_range }} {% trans "days" %}</div>
+            </div>
+
+            <!-- Tasks Completed -->
+            <div class="metric-card bg-gradient-to-br from-green-50 to-green-100 border border-green-200">
+                <div class="metric-header">
+                    <div class="metric-icon bg-green-500">
+                        <i class="bi bi-check-circle text-white"></i>
+                    </div>
+                    <span class="metric-label">{% trans "Tasks Completed" %}</span>
+                </div>
+                <div class="metric-value text-green-700">{{ activity_metrics.total_tasks_completed }}</div>
+                <div class="metric-subtitle text-green-600">{{ activity_metrics.completion_rate }}% {% trans "completion rate" %}</div>
+            </div>
+
+            <!-- Active Tasks -->
+            <div class="metric-card bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200">
+                <div class="metric-header">
+                    <div class="metric-icon bg-amber-500">
+                        <i class="bi bi-clock text-white"></i>
+                    </div>
+                    <span class="metric-label">{% trans "Active Tasks" %}</span>
+                </div>
+                <div class="metric-value text-amber-700">{{ activity_metrics.total_active_tasks }}</div>
+                <div class="metric-subtitle text-amber-600">{% trans "currently in progress" %}</div>
+            </div>
+
+            <!-- Productivity Score -->
+            <div class="metric-card bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200">
+                <div class="metric-header">
+                    <div class="metric-icon bg-purple-500">
+                        <i class="bi bi-trophy text-white"></i>
+                    </div>
+                    <span class="metric-label">{% trans "Productivity Score" %}</span>
+                </div>
+                <div class="metric-value text-purple-700">{{ activity_metrics.productivity_score }}</div>
+                <div class="metric-subtitle text-purple-600">{% trans "tasks per day" %}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Analytics Section -->
+    <div class="analytics-section mb-8" 
+         x-show="loaded"
+         x-transition:enter="transition ease-out duration-500 delay-200"
+         x-transition:enter-start="opacity-0 transform translate-y-8"
+         x-transition:enter-end="opacity-100 transform translate-y-0">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Daily Activity Chart -->
+            <div class="analytics-card">
+                <div class="analytics-header">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">{% trans "Daily Activity" %}</h3>
+                    <p class="text-sm text-gray-600">{% trans "Tasks created and completed over time" %}</p>
+                </div>
+                <div class="analytics-content">
+                    <div class="daily-activity-chart">
+                        {% for day_data in daily_activity %}
+                        <div class="chart-day" title="{{ day_data.date|date:'M d' }}: {{ day_data.created }} created, {{ day_data.completed }} completed">
+                            <div class="chart-bars">
+                                <div class="chart-bar created" style="height: {% if day_data.created > 0 %}{{ day_data.created|floatformat:0 }}0{% else %}2{% endif %}px;"></div>
+                                <div class="chart-bar completed" style="height: {% if day_data.completed > 0 %}{{ day_data.completed|floatformat:0 }}0{% else %}2{% endif %}px;"></div>
+                            </div>
+                            <div class="chart-label">{{ day_data.date|date:'d' }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color bg-blue-500"></div>
+                            <span>{% trans "Created" %}</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color bg-green-500"></div>
+                            <span>{% trans "Completed" %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Activity -->
+            <div class="analytics-card">
+                <div class="analytics-header">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">{% trans "Project Activity" %}</h3>
+                    <p class="text-sm text-gray-600">{% trans "Most active projects" %}</p>
+                </div>
+                <div class="analytics-content">
+                    {% if project_activity %}
+                    <div class="project-list space-y-3">
+                        {% for project in project_activity %}
+                        <div class="project-item">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-3 h-3 bg-indigo-500 rounded-full"></div>
+                                    <span class="font-medium text-gray-800">{{ project.name }}</span>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    {{ project.tasks_completed }} / {{ project.tasks_created }}
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-indigo-500 h-2 rounded-full transition-all duration-500" 
+                                         style="width: {% if project.tasks_created > 0 %}{% widthratio project.tasks_completed project.tasks_created 100 %}{% else %}0{% endif %}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-folder text-gray-300 text-3xl"></i>
+                        <p class="text-gray-500 mt-2">{% trans "No project activity yet" %}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goals Progress -->
+    <div class="goals-section mb-8" 
+         x-show="loaded"
+         x-transition:enter="transition ease-out duration-500 delay-400"
+         x-transition:enter-start="opacity-0 transform translate-y-8"
+         x-transition:enter-end="opacity-100 transform translate-y-0">
+        <div class="analytics-card">
+            <div class="analytics-header">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">{% trans "Goals Progress" %}</h3>
+                <p class="text-sm text-gray-600">{% trans "Your productivity targets and achievements" %}</p>
+            </div>
+            <div class="analytics-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Daily Goal -->
+                    <div class="goal-item">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="font-medium text-gray-800">{% trans "Daily Goal" %}</span>
+                            <span class="text-sm text-gray-600">{{ goals.daily_progress|floatformat:1 }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-1000" 
+                                 style="width: {{ goals.daily_progress }}%"></div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500">
+                            {% trans "Target:" %} {{ goals.daily_goal|floatformat:1 }} {% trans "tasks per day" %}
+                        </div>
+                    </div>
+
+                    <!-- Weekly Goal -->
+                    <div class="goal-item">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="font-medium text-gray-800">{% trans "Weekly Goal" %}</span>
+                            <span class="text-sm text-gray-600">{{ goals.weekly_progress|floatformat:1 }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-1000" 
+                                 style="width: {{ goals.weekly_progress }}%"></div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500">
+                            {% trans "Target:" %} {{ goals.weekly_goal }} {% trans "tasks per week" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Timeline -->
+    <div class="timeline-section" 
+         x-show="loaded"
+         x-transition:enter="transition ease-out duration-500 delay-600"
+         x-transition:enter-start="opacity-0 transform translate-y-8"
+         x-transition:enter-end="opacity-100 transform translate-y-0">
+        <div class="analytics-card">
+            <div class="analytics-header">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">{% trans "Recent Activity Timeline" %}</h3>
+                <p class="text-sm text-gray-600">{% trans "Latest task activities and updates" %}</p>
+            </div>
+            <div class="analytics-content">
+                {% if recent_activities %}
+                <div class="timeline-list space-y-4 max-h-96 overflow-y-auto">
+                    {% for activity in recent_activities %}
+                    <div class="timeline-activity-item">
+                        <div class="flex items-start space-x-3">
+                            <div class="timeline-marker-small {% if activity.type == 'task_completed' %}bg-green-500{% else %}bg-blue-500{% endif %}">
+                                <i class="bi {% if activity.type == 'task_completed' %}bi-check{% else %}bi-plus{% endif %} text-white text-xs"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium {% if activity.type == 'task_completed' %}text-green-700{% else %}text-blue-700{% endif %}">
+                                        {% if activity.type == 'task_completed' %}
+                                            {% trans "Completed" %}
+                                        {% else %}
+                                            {% trans "Created" %}
+                                        {% endif %}
+                                    </span>
+                                    <span class="text-xs text-gray-500">{{ activity.timestamp|timesince }} {% trans "ago" %}</span>
+                                </div>
+                                <p class="text-sm text-gray-800 mt-1">{{ activity.task.title }}</p>
+                                {% if activity.task.project %}
+                                <div class="mt-1">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                                        {{ activity.task.project.name }}
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-clock-history text-gray-300 text-3xl"></i>
+                    <p class="text-gray-500 mt-2">{% trans "No recent activity" %}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
