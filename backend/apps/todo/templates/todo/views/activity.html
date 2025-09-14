@@ -10,327 +10,532 @@
 
 {% block content %}
 <div class="todo-activity-workspace">
-    <!-- Activity Controls -->
-    <div class="activity-controls mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <h4 class="mb-0">{% trans "Activity Overview" %}</h4>
-                <div class="view-controls">
-                    <div class="btn-group btn-group-sm" role="group">
-                        <a href="{% url 'todo_web:kanban' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-kanban"></i> {% trans "Kanban" %}
-                        </a>
-                        <a href="{% url 'todo_web:list' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-list-ul"></i> {% trans "List" %}
-                        </a>
-                        <a href="{% url 'todo_web:activity' %}" class="btn btn-primary">
-                            <i class="bi bi-clock-history"></i> {% trans "Activity" %}
-                        </a>
+    <!-- Enhanced Activity Header -->
+    <div class="activity-header mb-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="activity-title-section">
+                    <h1 class="text-2xl font-bold text-gray-900 mb-1">{% trans "Activity Overview" %}</h1>
+                    <p class="text-gray-600">{% trans "Track your productivity and recent activity" %}</p>
+                </div>
+                <!-- Time Range Selector -->
+                <div class="activity-filters">
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-gray-700">{% trans "Period:" %}</label>
+                        <select id="timeRange" class="form-select-modern text-sm" hx-get="{% url 'todo:activity' %}" hx-trigger="change" hx-target="#activity-content" hx-include="[name='range']">
+                            <option value="7">{% trans "Last 7 days" %}</option>
+                            <option value="30">{% trans "Last 30 days" %}</option>
+                            <option value="90">{% trans "Last 3 months" %}</option>
+                        </select>
                     </div>
                 </div>
             </div>
-            <div class="activity-actions">
-                <button class="btn btn-success btn-sm" 
+            <div class="activity-actions flex items-center space-x-2">
+                <!-- Export Button -->
+                <div class="dropdown relative">
+                    <button class="btn-secondary-modern flex items-center" onclick="toggleExportDropdown()">
+                        <i class="bi bi-download mr-2"></i>
+                        {% trans "Export" %}
+                        <i class="bi bi-chevron-down ml-1"></i>
+                    </button>
+                    <div id="exportDropdown" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden z-50">
+                        <a href="{% url 'todo:activity_export' %}?format=json" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg">
+                            <i class="bi bi-filetype-json mr-2"></i>
+                            {% trans "Export JSON" %}
+                        </a>
+                        <a href="{% url 'todo:activity_export' %}?format=csv" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <i class="bi bi-filetype-csv mr-2"></i>
+                            {% trans "Export CSV" %}
+                        </a>
+                        <a href="{% url 'todo:activity_export' %}?format=xlsx" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-b-lg">
+                            <i class="bi bi-file-earmark-excel mr-2"></i>
+                            {% trans "Export Excel" %}
+                        </a>
+                    </div>
+                </div>
+                <!-- Dashboard Button -->
+                <a href="{% url 'todo:activity_dashboard' %}" class="btn-secondary-modern">
+                    <i class="bi bi-graph-up mr-2"></i>
+                    {% trans "Analytics" %}
+                </a>
+                <!-- New Task Button -->
+                <button class="btn-primary-modern" 
                         hx-get="{% url 'todo:task_form_modal_htmx' %}" 
                         hx-target="#task-modal-container" 
                         hx-trigger="click">
-                    <i class="bi bi-plus-lg"></i> {% trans "New Task" %}
+                    <i class="bi bi-plus-lg mr-2"></i>
+                    {% trans "New Task" %}
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Activity Stats -->
-    <div class="activity-stats mb-4">
-        <div class="row g-3">
-            <div class="col-md-3">
-                <div class="stat-card stat-card-primary">
-                    <div class="stat-icon">
-                        <i class="bi bi-plus-circle"></i>
+    <div id="activity-content">
+
+        <!-- Enhanced Activity Stats -->
+        <div class="activity-stats-modern mb-8" hx-get="{% url 'todo:activity_stats_htmx' %}" hx-trigger="load, every 30s" hx-target="this" hx-swap="outerHTML">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Created Today -->
+                <div class="stat-card-modern group hover:scale-105 transition-all duration-300">
+                    <div class="stat-card-header bg-gradient-to-br from-blue-500 to-blue-600">
+                        <div class="stat-icon-modern">
+                            <i class="bi bi-plus-circle text-white"></i>
+                        </div>
+                        <div class="stat-trend-modern">
+                            <span class="text-xs text-blue-100">vs {% trans "yesterday" %}</span>
+                        </div>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-number">{{ activity_stats.tasks_created_today }}</div>
-                        <div class="stat-label">{% trans "Created Today" %}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card stat-card-success">
-                    <div class="stat-icon">
-                        <i class="bi bi-check-circle"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">{{ activity_stats.tasks_completed_today }}</div>
-                        <div class="stat-label">{% trans "Completed Today" %}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card stat-card-info">
-                    <div class="stat-icon">
-                        <i class="bi bi-calendar-week"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">{{ activity_stats.tasks_created_this_week }}</div>
-                        <div class="stat-label">{% trans "Created This Week" %}</div>
+                    <div class="stat-card-body">
+                        <div class="stat-number-modern text-blue-600" data-count="{{ activity_stats.tasks_created_today }}">
+                            {{ activity_stats.tasks_created_today }}
+                        </div>
+                        <div class="stat-label-modern">{% trans "Created Today" %}</div>
+                        <div class="stat-progress-modern">
+                            <div class="bg-blue-100 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: {% widthratio activity_stats.tasks_created_today 10 100 %}%"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card stat-card-warning">
-                    <div class="stat-icon">
-                        <i class="bi bi-trophy"></i>
+
+                <!-- Completed Today -->
+                <div class="stat-card-modern group hover:scale-105 transition-all duration-300">
+                    <div class="stat-card-header bg-gradient-to-br from-green-500 to-green-600">
+                        <div class="stat-icon-modern">
+                            <i class="bi bi-check-circle text-white"></i>
+                        </div>
+                        <div class="stat-trend-modern">
+                            <span class="text-xs text-green-100">{% trans "completion rate" %}</span>
+                        </div>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-number">{{ activity_stats.tasks_completed_this_week }}</div>
-                        <div class="stat-label">{% trans "Completed This Week" %}</div>
+                    <div class="stat-card-body">
+                        <div class="stat-number-modern text-green-600" data-count="{{ activity_stats.tasks_completed_today }}">
+                            {{ activity_stats.tasks_completed_today }}
+                        </div>
+                        <div class="stat-label-modern">{% trans "Completed Today" %}</div>
+                        <div class="stat-progress-modern">
+                            <div class="bg-green-100 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: {% if activity_stats.tasks_created_today > 0 %}{% widthratio activity_stats.tasks_completed_today activity_stats.tasks_created_today 100 %}{% else %}0{% endif %}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Created This Week -->
+                <div class="stat-card-modern group hover:scale-105 transition-all duration-300">
+                    <div class="stat-card-header bg-gradient-to-br from-purple-500 to-purple-600">
+                        <div class="stat-icon-modern">
+                            <i class="bi bi-calendar-week text-white"></i>
+                        </div>
+                        <div class="stat-trend-modern">
+                            <span class="text-xs text-purple-100">{% trans "this week" %}</span>
+                        </div>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="stat-number-modern text-purple-600" data-count="{{ activity_stats.tasks_created_this_week }}">
+                            {{ activity_stats.tasks_created_this_week }}
+                        </div>
+                        <div class="stat-label-modern">{% trans "Created This Week" %}</div>
+                        <div class="stat-progress-modern">
+                            <div class="bg-purple-100 rounded-full h-2">
+                                <div class="bg-purple-500 h-2 rounded-full transition-all duration-500" style="width: {% widthratio activity_stats.tasks_created_this_week 30 100 %}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed This Week -->
+                <div class="stat-card-modern group hover:scale-105 transition-all duration-300">
+                    <div class="stat-card-header bg-gradient-to-br from-amber-500 to-amber-600">
+                        <div class="stat-icon-modern">
+                            <i class="bi bi-trophy text-white"></i>
+                        </div>
+                        <div class="stat-trend-modern">
+                            <span class="text-xs text-amber-100">{% trans "productivity" %}</span>
+                        </div>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="stat-number-modern text-amber-600" data-count="{{ activity_stats.tasks_completed_this_week }}">
+                            {{ activity_stats.tasks_completed_this_week }}
+                        </div>
+                        <div class="stat-label-modern">{% trans "Completed This Week" %}</div>
+                        <div class="stat-progress-modern">
+                            <div class="bg-amber-100 rounded-full h-2">
+                                <div class="bg-amber-500 h-2 rounded-full transition-all duration-500" style="width: {% if activity_stats.tasks_created_this_week > 0 %}{% widthratio activity_stats.tasks_completed_this_week activity_stats.tasks_created_this_week 100 %}{% else %}0{% endif %}%"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <!-- Left Column - Due Tasks & Alerts -->
-        <div class="col-lg-8">
-            <!-- Overdue Tasks -->
-            {% if overdue_tasks %}
-            <div class="activity-section mb-4">
-                <div class="section-header">
-                    <h5 class="section-title text-danger">
-                        <i class="bi bi-exclamation-triangle"></i>
-                        {% trans "Overdue Tasks" %}
-                        <span class="badge bg-danger">{{ overdue_tasks.count }}</span>
-                    </h5>
-                </div>
-                <div class="section-content">
-                    {% for task in overdue_tasks|slice:":5" %}
-                    <div class="activity-task-item overdue-task">
-                        <div class="d-flex align-items-center">
-                            <button class="btn btn-sm p-0 me-2 complete-btn" onclick="toggleComplete('{{ task.id }}')"
-                                    title="{% trans 'Mark as Complete' %}">
-                                <i class="bi bi-circle text-danger"></i>
-                            </button>
-                            <div class="flex-grow-1">
-                                <div class="task-title" onclick="openTask('{{ task.id }}')">
-                                    {{ task.title }}
-                                    {% if task.priority == '1' %}
-                                    <i class="bi bi-star-fill text-warning"></i>
-                                    {% endif %}
+        <!-- Main Activity Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Priority & Due Tasks -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Critical Alerts Section -->
+                {% if overdue_tasks %}
+                <div class="alert-section-modern overdue-alert">
+                    <div class="alert-header-modern">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="alert-icon-modern bg-red-100 text-red-600">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
                                 </div>
-                                <small class="text-danger">
-                                    <i class="bi bi-calendar-x"></i>
-                                    {% trans "Due" %} {{ task.due_date|timesince }} {% trans "ago" %}
-                                    {% if task.project %}
-                                    • {{ task.project.name }}
-                                    {% endif %}
-                                </small>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-red-800">{% trans "Overdue Tasks" %}</h3>
+                                    <p class="text-sm text-red-600">{% trans "These tasks need immediate attention" %}</p>
+                                </div>
                             </div>
-                            <div class="task-actions">
-                                <button class="btn btn-sm btn-outline-primary" onclick="editTask('{{ task.id }}')" title="{% trans 'Edit' %}">
-                                    <i class="bi bi-pencil"></i>
+                            <div class="badge-modern bg-red-100 text-red-800">{{ overdue_tasks.count }}</div>
+                        </div>
+                    </div>
+                    <div class="alert-content-modern">
+                        <div class="space-y-3">
+                            {% for task in overdue_tasks|slice:":5" %}
+                            <div class="task-item-modern overdue-item group" data-task-id="{{ task.id }}">
+                                <div class="flex items-start space-x-3">
+                                    <button class="task-checkbox-modern overdue-checkbox" 
+                                            hx-post="{% url 'todo:task_toggle_htmx' task.id %}"
+                                            hx-target="[data-task-id='{{ task.id }}']"
+                                            hx-swap="outerHTML"
+                                            title="{% trans 'Mark as Complete' %}">
+                                        <i class="bi bi-circle text-red-500"></i>
+                                    </button>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="task-content-modern">
+                                            <h4 class="task-title-modern text-gray-900 hover:text-red-600 cursor-pointer transition-colors"
+                                                hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
+                                                hx-target="#task-modal-container"
+                                                hx-trigger="click">
+                                                {{ task.title }}
+                                                {% if task.priority == '1' %}
+                                                <span class="priority-star-modern">
+                                                    <i class="bi bi-star-fill text-amber-500"></i>
+                                                </span>
+                                                {% endif %}
+                                            </h4>
+                                            <div class="task-meta-modern text-red-600">
+                                                <span class="flex items-center space-x-1">
+                                                    <i class="bi bi-clock"></i>
+                                                    <span class="font-medium">{{ task.due_date|timesince }} {% trans "overdue" %}</span>
+                                                </span>
+                                                {% if task.project %}
+                                                <span class="project-tag-modern">{{ task.project.name }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="task-actions-modern opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button class="action-btn-modern" 
+                                                hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
+                                                hx-target="#task-modal-container"
+                                                title="{% trans 'Edit Task' %}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            {% if overdue_tasks.count > 5 %}
+                            <div class="view-all-modern">
+                                <button class="view-all-btn-modern text-red-600 hover:text-red-800" 
+                                        hx-get="{% url 'todo:activity' %}?filter=overdue"
+                                        hx-target="#activity-content">
+                                    {% trans "View all" %} {{ overdue_tasks.count }} {% trans "overdue tasks" %}
+                                    <i class="bi bi-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Due Today Section -->
+                {% if due_today_tasks %}
+                <div class="section-modern today-section">
+                    <div class="section-header-modern">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="section-icon-modern bg-amber-100 text-amber-600">
+                                    <i class="bi bi-calendar-day"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">{% trans "Due Today" %}</h3>
+                                    <p class="text-sm text-gray-600">{% trans "Focus on these tasks today" %}</p>
+                                </div>
+                            </div>
+                            <div class="badge-modern bg-amber-100 text-amber-800">{{ due_today_tasks.count }}</div>
+                        </div>
+                    </div>
+                    <div class="section-content-modern">
+                        <div class="space-y-3">
+                            {% for task in due_today_tasks %}
+                            <div class="task-item-modern today-item group" data-task-id="{{ task.id }}">
+                                <div class="flex items-start space-x-3">
+                                    <button class="task-checkbox-modern {% if task.state == '1_done' %}completed-checkbox{% else %}today-checkbox{% endif %}" 
+                                            hx-post="{% url 'todo:task_toggle_htmx' task.id %}"
+                                            hx-target="[data-task-id='{{ task.id }}']"
+                                            hx-swap="outerHTML">
+                                        {% if task.state == '1_done' %}
+                                        <i class="bi bi-check-circle-fill text-green-500"></i>
+                                        {% else %}
+                                        <i class="bi bi-circle text-amber-500"></i>
+                                        {% endif %}
+                                    </button>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="task-content-modern">
+                                            <h4 class="task-title-modern {% if task.state == '1_done' %}line-through text-gray-500{% else %}text-gray-900 hover:text-amber-600{% endif %} cursor-pointer transition-colors"
+                                                hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
+                                                hx-target="#task-modal-container"
+                                                hx-trigger="click">
+                                                {{ task.title }}
+                                                {% if task.priority == '1' %}
+                                                <span class="priority-star-modern">
+                                                    <i class="bi bi-star-fill text-amber-500"></i>
+                                                </span>
+                                                {% endif %}
+                                            </h4>
+                                            <div class="task-meta-modern text-amber-600">
+                                                <span class="flex items-center space-x-1">
+                                                    <i class="bi bi-clock"></i>
+                                                    <span>
+                                                        {% if task.due_date.time %}
+                                                        {{ task.due_date|time:"H:i" }}
+                                                        {% else %}
+                                                        {% trans "All day" %}
+                                                        {% endif %}
+                                                    </span>
+                                                </span>
+                                                {% if task.project %}
+                                                <span class="project-tag-modern">{{ task.project.name }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="task-actions-modern opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button class="action-btn-modern" 
+                                                hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
+                                                hx-target="#task-modal-container"
+                                                title="{% trans 'Edit Task' %}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Due This Week Section -->
+                {% if due_week_tasks %}
+                <div class="section-modern week-section">
+                    <div class="section-header-modern">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="section-icon-modern bg-blue-100 text-blue-600">
+                                    <i class="bi bi-calendar-week"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">{% trans "Due This Week" %}</h3>
+                                    <p class="text-sm text-gray-600">{% trans "Plan ahead for the week" %}</p>
+                                </div>
+                            </div>
+                            <div class="badge-modern bg-blue-100 text-blue-800">{{ due_week_tasks.count }}</div>
+                        </div>
+                    </div>
+                    <div class="section-content-modern">
+                        <div class="space-y-2">
+                            {% for task in due_week_tasks|slice:":8" %}
+                            <div class="task-item-modern week-item group compact" data-task-id="{{ task.id }}">
+                                <div class="flex items-center space-x-3">
+                                    <button class="task-checkbox-modern {% if task.state == '1_done' %}completed-checkbox{% else %}week-checkbox{% endif %}" 
+                                            hx-post="{% url 'todo:task_toggle_htmx' task.id %}"
+                                            hx-target="[data-task-id='{{ task.id }}']"
+                                            hx-swap="outerHTML">
+                                        {% if task.state == '1_done' %}
+                                        <i class="bi bi-check-circle-fill text-green-500"></i>
+                                        {% else %}
+                                        <i class="bi bi-circle text-blue-500"></i>
+                                        {% endif %}
+                                    </button>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center justify-between">
+                                            <h4 class="task-title-modern compact {% if task.state == '1_done' %}line-through text-gray-500{% else %}text-gray-900 hover:text-blue-600{% endif %} cursor-pointer transition-colors"
+                                                hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
+                                                hx-target="#task-modal-container"
+                                                hx-trigger="click">
+                                                {{ task.title|truncatechars:40 }}
+                                                {% if task.priority == '1' %}
+                                                <span class="priority-star-modern small">
+                                                    <i class="bi bi-star-fill text-amber-500"></i>
+                                                </span>
+                                                {% endif %}
+                                            </h4>
+                                            <div class="task-date-modern">
+                                                <span class="text-xs text-blue-600 font-medium">{{ task.due_date|date:"M d" }}</span>
+                                            </div>
+                                        </div>
+                                        {% if task.project %}
+                                        <div class="project-tag-modern small">{{ task.project.name }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            {% if due_week_tasks.count > 8 %}
+                            <div class="view-all-modern">
+                                <button class="view-all-btn-modern text-blue-600 hover:text-blue-800" 
+                                        hx-get="{% url 'todo:activity' %}?filter=week"
+                                        hx-target="#activity-content">
+                                    {% trans "View all" %} {{ due_week_tasks.count }} {% trans "tasks this week" %}
+                                    <i class="bi bi-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right Column - Activity Timeline -->
+            <div class="space-y-6">
+                <!-- Activity Timeline -->
+                <div class="timeline-section-modern">
+                    <div class="timeline-header-modern">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">{% trans "Recent Activity" %}</h3>
+                            <button class="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                    hx-get="{% url 'todo:activity_timeline_htmx' %}"
+                                    hx-target="#timeline-content"
+                                    hx-swap="innerHTML">
+                                {% trans "View all" %}
+                                <i class="bi bi-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Timeline Filter Tabs -->
+                        <div class="timeline-tabs-modern mb-4">
+                            <div class="flex space-x-1 bg-gray-100 rounded-lg p-1">
+                                <button class="tab-btn-modern active" data-filter="all" onclick="filterTimeline('all')">
+                                    {% trans "All" %}
+                                </button>
+                                <button class="tab-btn-modern" data-filter="completed" onclick="filterTimeline('completed')">
+                                    {% trans "Completed" %}
+                                </button>
+                                <button class="tab-btn-modern" data-filter="created" onclick="filterTimeline('created')">
+                                    {% trans "Created" %}
                                 </button>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
-                    {% if overdue_tasks.count > 5 %}
-                    <div class="text-center mt-2">
-                        <button class="btn btn-sm btn-outline-danger" onclick="viewAllOverdue()">
-                            {% trans "View All" %} ({{ overdue_tasks.count }}) {% trans "Overdue Tasks" %}
-                        </button>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
 
-            <!-- Due Today -->
-            {% if due_today_tasks %}
-            <div class="activity-section mb-4">
-                <div class="section-header">
-                    <h5 class="section-title text-warning">
-                        <i class="bi bi-calendar-day"></i>
-                        {% trans "Due Today" %}
-                        <span class="badge bg-warning">{{ due_today_tasks.count }}</span>
-                    </h5>
-                </div>
-                <div class="section-content">
-                    {% for task in due_today_tasks %}
-                    <div class="activity-task-item due-today-task">
-                        <div class="d-flex align-items-center">
-                            <button class="btn btn-sm p-0 me-2 complete-btn" onclick="toggleComplete('{{ task.id }}')"
-                                    title="{% trans 'Mark as Complete' %}">
-                                {% if task.state == '1_done' %}
-                                <i class="bi bi-check-circle-fill text-success"></i>
-                                {% else %}
-                                <i class="bi bi-circle text-warning"></i>
-                                {% endif %}
-                            </button>
-                            <div class="flex-grow-1">
-                                <div class="task-title {% if task.state == '1_done' %}completed{% endif %}" onclick="openTask('{{ task.id }}')">
-                                    {{ task.title }}
-                                    {% if task.priority == '1' %}
-                                    <i class="bi bi-star-fill text-warning"></i>
+                    <div id="timeline-content" class="timeline-content-modern" 
+                         hx-get="{% url 'todo:activity_timeline_htmx' %}" 
+                         hx-trigger="load"
+                         hx-swap="innerHTML">
+                        <!-- Timeline will be loaded here via HTMX -->
+                        <div class="space-y-4">
+                            <!-- Completed Tasks Timeline -->
+                            {% for task in completed_tasks|slice:":6" %}
+                            <div class="timeline-item-modern completed-timeline-item">
+                                <div class="timeline-marker-modern bg-green-500">
+                                    <i class="bi bi-check text-white text-xs"></i>
+                                </div>
+                                <div class="timeline-content-wrapper-modern">
+                                    <div class="timeline-header-item-modern">
+                                        <span class="timeline-action-modern text-green-600 font-medium">{% trans "Completed" %}</span>
+                                        <span class="timeline-time-modern">{{ task.completed_at|timesince }} {% trans "ago" %}</span>
+                                    </div>
+                                    <div class="timeline-title-modern">{{ task.title }}</div>
+                                    {% if task.project %}
+                                    <div class="timeline-meta-modern">
+                                        <span class="project-badge-modern">{{ task.project.name }}</span>
+                                    </div>
                                     {% endif %}
                                 </div>
-                                <small class="text-muted">
-                                    <i class="bi bi-clock"></i>
-                                    {% if task.due_date.time %}
-                                    {{ task.due_date|time:"H:i" }}
-                                    {% else %}
-                                    {% trans "All day" %}
-                                    {% endif %}
+                            </div>
+                            {% empty %}
+                            <div class="empty-timeline-modern">
+                                <i class="bi bi-check-circle text-gray-300 text-2xl"></i>
+                                <p class="text-gray-500 text-sm mt-2">{% trans "No completed tasks yet" %}</p>
+                            </div>
+                            {% endfor %}
+                            
+                            <!-- Created Tasks Timeline -->
+                            {% for task in recent_tasks|slice:":6" %}
+                            <div class="timeline-item-modern created-timeline-item">
+                                <div class="timeline-marker-modern bg-blue-500">
+                                    <i class="bi bi-plus text-white text-xs"></i>
+                                </div>
+                                <div class="timeline-content-wrapper-modern">
+                                    <div class="timeline-header-item-modern">
+                                        <span class="timeline-action-modern text-blue-600 font-medium">{% trans "Created" %}</span>
+                                        <span class="timeline-time-modern">{{ task.created_at|timesince }} {% trans "ago" %}</span>
+                                    </div>
+                                    <div class="timeline-title-modern cursor-pointer hover:text-blue-600 transition-colors"
+                                         hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
+                                         hx-target="#task-modal-container"
+                                         hx-trigger="click">
+                                        {{ task.title }}
+                                        {% if task.priority == '1' %}
+                                        <span class="priority-star-modern small ml-1">
+                                            <i class="bi bi-star-fill text-amber-500"></i>
+                                        </span>
+                                        {% endif %}
+                                    </div>
                                     {% if task.project %}
-                                    • {{ task.project.name }}
-                                    {% endif %}
-                                </small>
-                            </div>
-                            <div class="task-actions">
-                                <button class="btn btn-sm btn-outline-primary" onclick="editTask('{{ task.id }}')" title="{% trans 'Edit' %}">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Due This Week -->
-            {% if due_week_tasks %}
-            <div class="activity-section mb-4">
-                <div class="section-header">
-                    <h5 class="section-title text-info">
-                        <i class="bi bi-calendar-week"></i>
-                        {% trans "Due This Week" %}
-                        <span class="badge bg-info">{{ due_week_tasks.count }}</span>
-                    </h5>
-                </div>
-                <div class="section-content">
-                    {% for task in due_week_tasks|slice:":10" %}
-                    <div class="activity-task-item due-week-task">
-                        <div class="d-flex align-items-center">
-                            <button class="btn btn-sm p-0 me-2 complete-btn" onclick="toggleComplete('{{ task.id }}')"
-                                    title="{% trans 'Mark as Complete' %}">
-                                {% if task.state == '1_done' %}
-                                <i class="bi bi-check-circle-fill text-success"></i>
-                                {% else %}
-                                <i class="bi bi-circle text-info"></i>
-                                {% endif %}
-                            </button>
-                            <div class="flex-grow-1">
-                                <div class="task-title {% if task.state == '1_done' %}completed{% endif %}" onclick="openTask('{{ task.id }}')">
-                                    {{ task.title }}
-                                    {% if task.priority == '1' %}
-                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <div class="timeline-meta-modern">
+                                        <span class="project-badge-modern">{{ task.project.name }}</span>
+                                    </div>
                                     {% endif %}
                                 </div>
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar"></i>
-                                    {{ task.due_date|date:"l, M d" }}
-                                    {% if task.project %}
-                                    • {{ task.project.name }}
-                                    {% endif %}
-                                </small>
                             </div>
-                            <div class="task-actions">
-                                <button class="btn btn-sm btn-outline-primary" onclick="editTask('{{ task.id }}')" title="{% trans 'Edit' %}">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
+                            {% empty %}
+                            <div class="empty-timeline-modern">
+                                <i class="bi bi-plus-circle text-gray-300 text-2xl"></i>
+                                <p class="text-gray-500 text-sm mt-2">{% trans "No recent tasks" %}</p>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
-                    {% endfor %}
-                    {% if due_week_tasks.count > 10 %}
-                    <div class="text-center mt-2">
-                        <button class="btn btn-sm btn-outline-info" onclick="viewAllWeek()">
-                            {% trans "View All" %} ({{ due_week_tasks.count }}) {% trans "This Week" %}
-                        </button>
-                    </div>
-                    {% endif %}
                 </div>
-            </div>
-            {% endif %}
-        </div>
 
-        <!-- Right Column - Recent Activity -->
-        <div class="col-lg-4">
-            <!-- Recently Completed -->
-            <div class="activity-section mb-4">
-                <div class="section-header">
-                    <h5 class="section-title text-success">
-                        <i class="bi bi-check-circle"></i>
-                        {% trans "Recently Completed" %}
-                    </h5>
-                </div>
-                <div class="section-content">
-                    {% for task in completed_tasks|slice:":8" %}
-                    <div class="activity-item completed-item">
-                        <div class="d-flex align-items-start">
-                            <div class="activity-icon me-2">
-                                <i class="bi bi-check-circle-fill text-success"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="activity-title">{{ task.title }}</div>
-                                <small class="text-muted">
-                                    {% trans "Completed" %} {{ task.completed_at|timesince }} {% trans "ago" %}
-                                    {% if task.project %}
-                                    • {{ task.project.name }}
-                                    {% endif %}
-                                </small>
-                            </div>
-                        </div>
+                <!-- Productivity Insights -->
+                <div class="insights-section-modern">
+                    <div class="insights-header-modern">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">{% trans "Productivity Insights" %}</h3>
                     </div>
-                    {% empty %}
-                    <div class="text-center text-muted py-3">
-                        <i class="bi bi-inbox display-6"></i>
-                        <p class="mb-0">{% trans "No completed tasks yet" %}</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Recently Created -->
-            <div class="activity-section mb-4">
-                <div class="section-header">
-                    <h5 class="section-title text-primary">
-                        <i class="bi bi-plus-circle"></i>
-                        {% trans "Recently Created" %}
-                    </h5>
-                </div>
-                <div class="section-content">
-                    {% for task in recent_tasks|slice:":8" %}
-                    <div class="activity-item created-item">
-                        <div class="d-flex align-items-start">
-                            <div class="activity-icon me-2">
-                                <i class="bi bi-plus-circle-fill text-primary"></i>
+                    <div class="insights-grid-modern">
+                        <div class="insight-card-modern">
+                            <div class="insight-icon-modern bg-purple-100 text-purple-600">
+                                <i class="bi bi-graph-up"></i>
                             </div>
-                            <div class="flex-grow-1">
-                                <div class="activity-title" onclick="openTask('{{ task.id }}')">
-                                    {{ task.title }}
-                                    {% if task.priority == '1' %}
-                                    <i class="bi bi-star-fill text-warning"></i>
-                                    {% endif %}
+                            <div class="insight-content-modern">
+                                <div class="insight-value-modern">
+                                    {% widthratio activity_stats.tasks_completed_today activity_stats.tasks_created_today 100 %}%
                                 </div>
-                                <small class="text-muted">
-                                    {% trans "Created" %} {{ task.created_at|timesince }} {% trans "ago" %}
-                                    {% if task.project %}
-                                    • {{ task.project.name }}
-                                    {% endif %}
-                                </small>
+                                <div class="insight-label-modern">{% trans "Today's completion rate" %}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-card-modern">
+                            <div class="insight-icon-modern bg-emerald-100 text-emerald-600">
+                                <i class="bi bi-trophy"></i>
+                            </div>
+                            <div class="insight-content-modern">
+                                <div class="insight-value-modern">{{ activity_stats.tasks_completed_this_week }}</div>
+                                <div class="insight-label-modern">{% trans "Week streak" %}</div>
                             </div>
                         </div>
                     </div>
-                    {% empty %}
-                    <div class="text-center text-muted py-3">
-                        <i class="bi bi-inbox display-6"></i>
-                        <p class="mb-0">{% trans "No recent tasks" %}</p>
-                    </div>
-                    {% endfor %}
                 </div>
-            </div>
         </div>
     </div>
 </div>
@@ -338,170 +543,461 @@
 
 {% block extra_css %}
 <style>
+/* Modern Activity Workspace Styles */
 .todo-activity-workspace {
-    padding: 1rem;
     min-height: calc(100vh - 120px);
-    background-color: #f8f9fa;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2rem;
 }
 
-.activity-stats .stat-card {
+/* Enhanced Stats Cards */
+.stat-card-modern {
     background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    transition: transform 0.2s ease;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.activity-stats .stat-card:hover {
-    transform: translateY(-2px);
-}
-
-.stat-card-primary { border-left: 4px solid #007bff; }
-.stat-card-success { border-left: 4px solid #28a745; }
-.stat-card-info { border-left: 4px solid #17a2b8; }
-.stat-card-warning { border-left: 4px solid #ffc107; }
-
-.stat-icon {
-    font-size: 2rem;
-    opacity: 0.8;
-}
-
-.stat-card-primary .stat-icon { color: #007bff; }
-.stat-card-success .stat-icon { color: #28a745; }
-.stat-card-info .stat-icon { color: #17a2b8; }
-.stat-card-warning .stat-icon { color: #ffc107; }
-
-.stat-number {
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 0.25rem;
-}
-
-.stat-label {
-    font-size: 0.85rem;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.activity-section {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+.stat-card-header {
+    padding: 1rem;
+    position: relative;
     overflow: hidden;
 }
 
-.section-header {
-    padding: 1rem;
-    border-bottom: 1px solid #e9ecef;
-    background-color: #f8f9fa;
+.stat-card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    opacity: 0.1;
 }
 
-.section-title {
-    margin: 0;
-    font-size: 1.1rem;
+.stat-icon-modern {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.stat-card-body {
+    padding: 1.5rem;
+    padding-top: 0.5rem;
+}
+
+.stat-number-modern {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, currentColor 0%, currentColor 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.stat-label-modern {
+    font-size: 0.875rem;
     font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+}
+
+.stat-progress-modern {
+    margin-top: 0.75rem;
+}
+
+/* Modern Sections */
+.section-modern, .alert-section-modern, .timeline-section-modern, .insights-section-modern {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.section-modern:hover, .alert-section-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.section-header-modern, .alert-header-modern {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.section-content-modern, .alert-content-modern {
+    padding: 1.5rem;
+}
+
+.section-icon-modern, .alert-icon-modern {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 1.25rem;
+}
+
+.badge-modern {
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Task Items */
+.task-item-modern {
+    padding: 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.task-item-modern:hover {
+    background-color: #f8fafc;
+    border-color: #e5e7eb;
+    transform: translateX(4px);
+}
+
+.task-item-modern.compact {
+    padding: 0.75rem;
+}
+
+.task-checkbox-modern {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.task-checkbox-modern:hover {
+    transform: scale(1.1);
+}
+
+.task-title-modern {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 0.25rem;
+}
+
+.task-title-modern.compact {
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+.task-meta-modern {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+.project-tag-modern {
+    background: #e5e7eb;
+    color: #374151;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+}
+
+.project-tag-modern.small {
+    font-size: 0.5rem;
+    padding: 0.0625rem 0.375rem;
+}
+
+.priority-star-modern {
+    display: inline-flex;
+    align-items: center;
+}
+
+.priority-star-modern.small {
+    font-size: 0.75rem;
+}
+
+.task-actions-modern {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.action-btn-modern {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: #f3f4f6;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.action-btn-modern:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.view-all-modern {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+    margin-top: 1rem;
+}
+
+.view-all-btn-modern {
+    background: none;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Timeline Styles */
+.timeline-tabs-modern {
+    display: flex;
+}
+
+.tab-btn-modern {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.tab-btn-modern.active,
+.tab-btn-modern:hover {
+    background: white;
+    color: #1f2937;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-item-modern {
+    display: flex;
+    gap: 1rem;
+    position: relative;
+}
+
+.timeline-item-modern:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 2.5rem;
+    bottom: -1rem;
+    width: 2px;
+    background: #e5e7eb;
+    transform: translateX(-50%);
+}
+
+.timeline-marker-modern {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.timeline-content-wrapper-modern {
+    flex: 1;
+    min-width: 0;
+    padding-bottom: 1rem;
+}
+
+.timeline-header-item-modern {
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-action-modern {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.timeline-time-modern {
+    font-size: 0.625rem;
+    color: #9ca3af;
+    margin-left: auto;
+}
+
+.timeline-title-modern {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1f2937;
+    line-height: 1.4;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-meta-modern {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.section-content {
-    padding: 1rem;
+.project-badge-modern {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.625rem;
+    font-weight: 600;
 }
 
-.activity-task-item {
-    padding: 0.75rem;
-    border-radius: 6px;
-    margin-bottom: 0.5rem;
+.empty-timeline-modern {
+    text-align: center;
+    padding: 2rem;
+    color: #9ca3af;
+}
+
+/* Insights */
+.insights-grid-modern {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.insight-card-modern {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     transition: all 0.2s ease;
 }
 
-.activity-task-item:last-child {
-    margin-bottom: 0;
+.insight-card-modern:hover {
+    background: #f1f5f9;
+    transform: translateY(-1px);
 }
 
-.activity-task-item:hover {
-    background-color: #f8f9fa;
+.insight-icon-modern {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
 }
 
-.overdue-task {
-    border-left: 3px solid #dc3545;
-    background-color: rgba(220, 53, 69, 0.05);
+.insight-value-modern {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
 }
 
-.due-today-task {
-    border-left: 3px solid #ffc107;
-    background-color: rgba(255, 193, 7, 0.05);
+.insight-label-modern {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 600;
+    margin-top: 0.25rem;
 }
 
-.due-week-task {
-    border-left: 3px solid #17a2b8;
-    background-color: rgba(23, 162, 184, 0.05);
+/* Responsive */
+@media (max-width: 1024px) {
+    .todo-activity-workspace {
+        padding: 1rem;
+    }
+    
+    .insights-grid-modern {
+        grid-template-columns: 1fr;
+    }
 }
 
-.task-title {
-    font-weight: 500;
-    color: #212529;
-    cursor: pointer;
-    margin-bottom: 0.25rem;
+@media (max-width: 640px) {
+    .stat-card-modern {
+        margin-bottom: 1rem;
+    }
+    
+    .timeline-item-modern {
+        gap: 0.75rem;
+    }
+    
+    .timeline-marker-modern {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
 }
 
-.task-title:hover {
-    color: #007bff;
+/* Animation */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.task-title.completed {
-    text-decoration: line-through;
-    color: #6c757d;
+.task-item-modern,
+.timeline-item-modern,
+.stat-card-modern {
+    animation: slideInUp 0.3s ease-out;
 }
 
-.activity-item {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f0f0f0;
+/* Loading States */
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, transparent 63%, #f0f0f0 75%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
 }
 
-.activity-item:last-child {
-    border-bottom: none;
+@keyframes shimmer {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-.activity-icon {
-    font-size: 1.2rem;
-    margin-top: 0.1rem;
-}
-
-.activity-title {
-    font-weight: 500;
-    color: #212529;
-    margin-bottom: 0.25rem;
-    cursor: pointer;
-}
-
-.activity-title:hover {
-    color: #007bff;
-}
-
-.complete-btn {
-    border: none;
-    background: none;
-    font-size: 1.2rem;
-    padding: 0;
-}
-
-.complete-btn:hover {
-    transform: scale(1.1);
-}
-
-.task-actions .btn {
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
-}
-
-.activity-task-item:hover .task-actions .btn {
-    opacity: 1;
+/* Focus States */
+.task-checkbox-modern:focus,
+.action-btn-modern:focus,
+.tab-btn-modern:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
 }
 </style>
 {% endblock %}
@@ -509,9 +1005,228 @@
 {% block extra_js %}
 <script src="{% static 'todo/js/activity.js' %}"></script>
 <script>
-// Initialize Activity functionality
+// Enhanced Modern Activity JavaScript
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize activity functionality
     initializeActivity();
+    
+    // Initialize modern features
+    initializeModernActivity();
 });
+
+function initializeModernActivity() {
+    // Animate statistics cards on load
+    animateStatsCards();
+    
+    // Initialize real-time updates
+    initializeRealTimeUpdates();
+    
+    // Initialize timeline interactions
+    initializeTimelineInteractions();
+    
+    // Initialize export functionality
+    initializeExportFunctionality();
+    
+    // Initialize counter animations
+    animateCounters();
+}
+
+function animateStatsCards() {
+    const cards = document.querySelectorAll('.stat-card-modern');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+}
+
+function animateCounters() {
+    const counters = document.querySelectorAll('.stat-number-modern[data-count]');
+    
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-count'));
+        const duration = 1000; // 1 second
+        const step = target / (duration / 16); // 60fps
+        let current = 0;
+        
+        const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+                counter.textContent = target;
+                clearInterval(timer);
+            } else {
+                counter.textContent = Math.floor(current);
+            }
+        }, 16);
+    });
+}
+
+function initializeRealTimeUpdates() {
+    // Update stats every 30 seconds
+    setInterval(() => {
+        const statsElement = document.querySelector('.activity-stats-modern');
+        if (statsElement) {
+            htmx.trigger(statsElement, 'update-stats');
+        }
+    }, 30000);
+}
+
+function initializeTimelineInteractions() {
+    // Timeline filter functionality
+    window.filterTimeline = function(filter) {
+        // Update active tab
+        document.querySelectorAll('.tab-btn-modern').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+        
+        // Filter timeline items
+        const timelineItems = document.querySelectorAll('.timeline-item-modern');
+        timelineItems.forEach(item => {
+            if (filter === 'all') {
+                item.style.display = 'flex';
+            } else {
+                const isCompleted = item.classList.contains('completed-timeline-item');
+                const isCreated = item.classList.contains('created-timeline-item');
+                
+                if ((filter === 'completed' && isCompleted) || 
+                    (filter === 'created' && isCreated)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+        });
+    };
+}
+
+function initializeExportFunctionality() {
+    // Export dropdown toggle
+    window.toggleExportDropdown = function() {
+        const dropdown = document.getElementById('exportDropdown');
+        dropdown.classList.toggle('hidden');
+    };
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('exportDropdown');
+        const button = e.target.closest('button');
+        
+        if (dropdown && !dropdown.contains(e.target) && (!button || !button.onclick)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+}
+
+// Enhanced task interactions
+function toggleTaskComplete(taskId) {
+    const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (taskElement) {
+        taskElement.style.opacity = '0.5';
+        taskElement.style.transform = 'scale(0.95)';
+        
+        // HTMX will handle the actual toggle
+        setTimeout(() => {
+            taskElement.style.opacity = '1';
+            taskElement.style.transform = 'scale(1)';
+        }, 300);
+    }
+}
+
+// Notification system for activity updates
+function showActivityNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `activity-notification ${type}`;
+    notification.innerHTML = `
+        <div class="flex items-center space-x-2">
+            <i class="bi ${type === 'success' ? 'bi-check-circle' : 'bi-info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    // Add styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        background: ${type === 'success' ? '#10b981' : '#3b82f6'};
+        color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 9999;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// HTMX event listeners for enhanced UX
+document.body.addEventListener('htmx:afterSwap', function(e) {
+    // Re-initialize animations after HTMX updates
+    if (e.detail.target.classList.contains('activity-stats-modern')) {
+        animateCounters();
+    }
+    
+    // Show success notification for task updates
+    if (e.detail.target.hasAttribute('data-task-id')) {
+        showActivityNotification('Task updated successfully!', 'success');
+    }
+});
+
+document.body.addEventListener('htmx:beforeSwap', function(e) {
+    // Add loading state
+    if (e.detail.target.classList.contains('timeline-content-modern')) {
+        e.detail.target.innerHTML = '<div class="loading-skeleton h-32 rounded"></div>';
+    }
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + N to create new task
+    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
+        const newTaskBtn = document.querySelector('button[hx-get*="task_form_modal_htmx"]');
+        if (newTaskBtn) {
+            newTaskBtn.click();
+        }
+    }
+    
+    // Escape to close modals
+    if (e.key === 'Escape') {
+        const exportDropdown = document.getElementById('exportDropdown');
+        if (exportDropdown && !exportDropdown.classList.contains('hidden')) {
+            exportDropdown.classList.add('hidden');
+        }
+    }
+});
+
+// Enhanced responsive behavior
+function handleResponsiveChanges() {
+    const isMobile = window.innerWidth < 768;
+    const timeline = document.querySelector('.timeline-section-modern');
+    
+    if (isMobile && timeline) {
+        // Simplify timeline on mobile
+        timeline.classList.add('mobile-simplified');
+    } else if (timeline) {
+        timeline.classList.remove('mobile-simplified');
+    }
+}
+
+window.addEventListener('resize', handleResponsiveChanges);
+handleResponsiveChanges(); // Call on load
 </script>
 {% endblock %}
