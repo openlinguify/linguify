@@ -1,4 +1,6 @@
 /* Linguify Color Variables for the settings section of any apps of Open Linguify */
+/* ===== GLOBAL SETTINGS LAYOUT & DESIGN ===== */
+
 :root {
     --linguify-primary: #2D5BBA;
     --linguify-secondary: #8B5CF6;
@@ -17,6 +19,7 @@
     
     /* Additional colors for consistency */
     --linguify-white: #ffffff;
+    --linguify-gray-25: #fafafa;
     --linguify-gray-50: #f9fafb;
     --linguify-gray-100: #f3f4f6;
     --linguify-gray-200: #e5e7eb;
@@ -28,10 +31,947 @@
     --linguify-gray-800: #1f2937;
     --linguify-gray-900: #111827;
     
+    /* Extended color palette */
+    --linguify-blue-25: #f8faff;
+    --linguify-blue-500: #3b82f6;
+    --linguify-green-500: #10b981;
+    --linguify-red-500: #ef4444;
+    --linguify-red-600: #dc2626;
+    --linguify-red-700: #b91c1c;
+    --linguify-orange-500: #f59e0b;
+    --linguify-purple-500: #8b5cf6;
+    --linguify-purple-600: #7c3aed;
+    --linguify-indigo-500: #6366f1;
+    --linguify-teal-500: #14b8a6;
+    
     /* Gray aliases for convenience */
     --linguify-gray-light: var(--linguify-gray-200);
     --linguify-gray-dark: var(--linguify-gray-700);
     
     /* Gradient officiel */
     --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+}
+
+
+/* Reset and base styles */
+body.settings-page {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--linguify-gray-50);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Main layout improvements - Structure identique au chat */
+.settings-container {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Enhanced sidebar - Structure identique au chat */
+.settings-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal-500) 100%);
+    color: var(--linguify-white);
+    padding: 0;
+    overflow-y: auto;
+    box-shadow: 2px 0 8px color-mix(in srgb, var(--linguify-gray-900) 10%, transparent);
+    border-right: 1px solid color-mix(in srgb, var(--linguify-white) 10%, transparent);
+    height: 100%;
+}
+
+.sidebar-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid color-mix(in srgb, var(--linguify-white) 15%, transparent);
+    background: color-mix(in srgb, var(--linguify-white) 10%, transparent);
+    backdrop-filter: blur(10px);
+}
+
+.sidebar-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--linguify-white);
+}
+
+.sidebar-header .subtitle {
+    font-size: 13px;
+    color: color-mix(in srgb, var(--linguify-white) 80%, transparent);
+    margin-top: 4px;
+}
+
+/* Navigation categories */
+.nav-category {
+    margin: 16px 0;
+}
+
+.nav-category-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--linguify-white) 60%, transparent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 8px 24px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    margin: 2px 12px;
+    border-radius: 8px;
+    color: color-mix(in srgb, var(--linguify-white) 90%, transparent);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    background: color-mix(in srgb, var(--linguify-white) 5%, transparent);
+}
+
+.nav-item:hover {
+    background: color-mix(in srgb, var(--linguify-white) 10%, transparent);
+    color: var(--linguify-white);
+    text-decoration: none;
+    border-left-color: color-mix(in srgb, var(--linguify-white) 30%, transparent);
+}
+
+.nav-item.active {
+    background: color-mix(in srgb, var(--linguify-white) 15%, transparent);
+    color: var(--linguify-white);
+    border-left-color: var(--linguify-white);
+    font-weight: 600;
+}
+
+.nav-item i {
+    margin-right: 12px;
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Style pour les icônes d'apps (images) */
+.nav-item-icon {
+    margin-right: 8px !important;
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--linguify-white) 90%, transparent);
+    padding: 1px;
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--linguify-gray-900) 20%, transparent);
+}
+
+.nav-item .badge {
+    margin-left: auto;
+    background: color-mix(in srgb, var(--linguify-white) 20%, transparent);
+    color: var(--linguify-white);
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+.nav-item-badge {
+    background: var(--linguify-green-500);
+    color: var(--linguify-white);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 500;
+    margin-left: auto;
+    margin-right: 8px;
+    opacity: 0.8;
+}
+
+.nav-item-text {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+/* Main content area */
+.settings-main {
+    flex: 1;
+    background: var(--linguify-white);
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content-header {
+    background: var(--linguify-white);
+    border-bottom: 1px solid var(--linguify-gray-200);
+    padding: 20px 32px;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--linguify-gray-500);
+    margin-bottom: 8px;
+}
+
+.breadcrumb-nav .active {
+    color: var(--linguify-gray-900);
+    font-weight: 500;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--linguify-gray-900);
+    margin: 0;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: var(--linguify-gray-500);
+    margin-top: 4px;
+}
+
+/* Content sections */
+.main-content-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.content-section {
+    background: var(--linguify-white);
+    border-bottom: 1px solid var(--linguify-gray-100);
+    padding: 32px;
+    transition: all 0.2s ease;
+}
+
+.content-section:hover {
+    background: var(--linguify-gray-25);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--linguify-gray-100);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--linguify-gray-900);
+    margin: 0;
+}
+
+.section-title i {
+    margin-right: 12px;
+    color: var(--linguify-primary);
+    font-size: 20px;
+}
+
+.section-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.section-toggle {
+    background: none;
+    border: none;
+    color: var(--linguify-gray-500);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.section-toggle:hover {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-700);
+}
+
+.section-content {
+    display: grid;
+    gap: 24px;
+}
+
+.section-content.collapsed {
+    display: none;
+}
+
+/* Form improvements */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--linguify-gray-700);
+    font-size: 14px;
+}
+
+.form-control {
+    border: 1px solid var(--linguify-gray-300);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: var(--linguify-white);
+}
+
+.form-control:focus {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--linguify-primary) 10%, transparent);
+    outline: none;
+}
+
+.form-help {
+    font-size: 12px;
+    color: var(--linguify-gray-500);
+    margin-top: 4px;
+}
+
+/* Enhanced buttons */
+.btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--linguify-gray-100);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-purple-600) 100%);
+    border: none;
+    color: var(--linguify-white);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--linguify-primary) 30%, transparent);
+}
+
+.btn-secondary {
+    background: var(--linguify-gray-100);
+    border: 1px solid var(--linguify-gray-300);
+    color: var(--linguify-gray-700);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: var(--linguify-gray-200);
+    border-color: var(--linguify-gray-400);
+}
+
+/* Auto-save indicator */
+.auto-save-indicator {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    background: var(--linguify-green-500);
+    color: var(--linguify-white);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 1000;
+    transform: translateY(-10px);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.auto-save-indicator.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.auto-save-indicator.error {
+    background: var(--linguify-red-500);
+}
+
+/* Theme switcher */
+.theme-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.theme-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid var(--linguify-gray-200);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--linguify-white);
+}
+
+.theme-option:hover {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--linguify-primary) 10%, transparent);
+}
+
+.theme-option.active {
+    border-color: var(--linguify-primary);
+    background: var(--linguify-blue-25);
+}
+
+.theme-preview {
+    width: 60px;
+    height: 40px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-preview.light {
+    background: linear-gradient(135deg, var(--linguify-white) 0%, var(--linguify-gray-50) 100%);
+}
+
+.theme-preview.dark {
+    background: linear-gradient(135deg, var(--linguify-gray-800) 0%, var(--linguify-gray-900) 100%);
+}
+
+.theme-preview.auto {
+    background: linear-gradient(135deg, var(--linguify-white) 0%, var(--linguify-gray-800) 100%);
+}
+
+/* Color picker */
+.color-options {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.color-option {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid var(--linguify-white);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--linguify-gray-900) 10%, transparent);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.active {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--linguify-primary) 30%, transparent);
+}
+
+.color-option.violet { background: var(--linguify-purple-500); }
+.color-option.blue { background: var(--linguify-blue-500); }
+.color-option.green { background: var(--linguify-green-500); }
+.color-option.red { background: var(--linguify-red-500); }
+.color-option.orange { background: var(--linguify-orange-500); }
+
+/* Dashboard background options */
+.dashboard-background-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.background-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px;
+    border: 2px solid var(--linguify-gray-200);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 90px;
+    position: relative;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--linguify-gray-900) 8%, transparent);
+    overflow: hidden;
+}
+
+.background-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 14px;
+    padding: 2px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--linguify-primary) 10%, transparent) 0%, color-mix(in srgb, var(--linguify-teal-500) 10%, transparent) 100%);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.background-option:hover {
+    border-color: var(--linguify-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--linguify-primary) 15%, transparent);
+}
+
+.background-option:hover::before {
+    opacity: 1;
+}
+
+.background-option.active {
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--linguify-primary) 10%, transparent), 0 4px 16px color-mix(in srgb, var(--linguify-primary) 20%, transparent);
+    transform: translateY(-2px);
+}
+
+.background-option.active::before {
+    opacity: 1;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--linguify-primary) 20%, transparent) 0%, color-mix(in srgb, var(--linguify-teal-500) 20%, transparent) 100%);
+}
+
+.background-option.active::after {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--linguify-primary);
+    color: var(--linguify-white);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 3;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--linguify-primary) 30%, transparent);
+}
+
+.background-option span {
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    background: color-mix(in srgb, var(--linguify-white) 95%, transparent);
+    padding: 6px 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--linguify-gray-900) 10%, transparent);
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.background-option small {
+    font-size: 10px;
+    font-weight: 500;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    background: color-mix(in srgb, var(--linguify-white) 85%, transparent);
+    padding: 3px 6px;
+    border-radius: 6px;
+    color: var(--linguify-gray-500);
+    line-height: 1.1;
+}
+
+/* Dark mode adjustments for text */
+.background-option[data-background="dark"] span,
+.background-option[data-background="dark-blue"] span {
+    background: color-mix(in srgb, var(--linguify-gray-900) 80%, transparent);
+    color: var(--linguify-white);
+}
+
+.background-option[data-background="dark"] small,
+.background-option[data-background="dark-blue"] small {
+    background: color-mix(in srgb, var(--linguify-gray-900) 60%, transparent);
+}
+
+/* Search bar */
+.settings-search {
+    padding: 16px 24px;
+    border-bottom: 1px solid color-mix(in srgb, var(--linguify-white) 15%, transparent);
+}
+
+.search-input {
+    width: 100%;
+    background: color-mix(in srgb, var(--linguify-white) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--linguify-white) 20%, transparent);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--linguify-white);
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.search-input::placeholder {
+    color: color-mix(in srgb, var(--linguify-white) 60%, transparent);
+}
+
+.search-input:focus {
+    background: color-mix(in srgb, var(--linguify-white) 15%, transparent);
+    border-color: color-mix(in srgb, var(--linguify-white) 40%, transparent);
+    outline: none;
+}
+
+/* Animation improvements */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading states */
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--linguify-gray-100);
+    border-top: 2px solid var(--linguify-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success/Error states */
+.form-success {
+    color: var(--linguify-green-500);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.form-error {
+    color: var(--linguify-red-500);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Accessibility improvements */
+.nav-item:focus,
+.btn-primary:focus,
+.btn-secondary:focus {
+    outline: 2px solid var(--linguify-primary);
+    outline-offset: 2px;
+}
+
+/* ===== TODO-SPECIFIC SETTINGS ENHANCEMENTS ===== */
+/* Enhanced form controls for Todo settings */
+
+#todo input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    accent-color: var(--linguify-primary) !important;
+    cursor: pointer !important;
+    border: 2px solid var(--linguify-gray-400) !important;
+    border-radius: 4px !important;
+    background-color: var(--linguify-white) !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    position: relative !important;
+    transition: all 0.2s ease !important;
+}
+
+#todo input[type="checkbox"]:checked {
+    background-color: var(--linguify-primary) !important;
+    border-color: var(--linguify-primary) !important;
+}
+
+#todo input[type="checkbox"]:checked::before {
+    content: "✓" !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: var(--linguify-white) !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+}
+
+#todo input[type="checkbox"]:hover {
+    border-color: var(--linguify-primary-light) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--linguify-primary) 20%, transparent) !important;
+}
+
+#todo input[type="checkbox"]:focus {
+    outline: none !important;
+    border-color: var(--linguify-primary) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--linguify-primary) 30%, transparent) !important;
+}
+
+/* Enhanced Range Slider Styling */
+#todo input[type="range"] {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    height: 8px !important;
+    background: linear-gradient(to right, var(--linguify-primary) 0%, var(--linguify-primary) var(--value, 50%), var(--linguify-gray-200) var(--value, 50%), var(--linguify-gray-200) 100%) !important;
+    border-radius: 4px !important;
+    outline: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    border: 1px solid var(--linguify-gray-300) !important;
+}
+
+#todo input[type="range"]:hover {
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--linguify-primary) 20%, transparent) !important;
+}
+
+#todo input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    height: 20px !important;
+    width: 20px !important;
+    border-radius: 50% !important;
+    background: var(--linguify-primary) !important;
+    cursor: pointer !important;
+    border: 2px solid var(--linguify-white) !important;
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--linguify-gray-900) 20%, transparent) !important;
+    transition: all 0.2s ease !important;
+}
+
+#todo input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1) !important;
+    background: var(--linguify-primary-light) !important;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--linguify-primary) 40%, transparent) !important;
+}
+
+#todo input[type="range"]::-moz-range-thumb {
+    height: 20px !important;
+    width: 20px !important;
+    border-radius: 50% !important;
+    background: var(--linguify-primary) !important;
+    cursor: pointer !important;
+    border: 2px solid var(--linguify-white) !important;
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--linguify-gray-900) 20%, transparent) !important;
+}
+
+/* Range Value Display */
+#todo .range-value {
+    background: var(--linguify-primary) !important;
+    color: var(--linguify-white) !important;
+    padding: 2px 8px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    min-width: 30px !important;
+    text-align: center !important;
+    border: 1px solid var(--linguify-primary) !important;
+}
+
+/* Enhanced Range Input Container */
+#todo .range-input {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 8px !important;
+    background: var(--linguify-gray-50) !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--linguify-gray-200) !important;
+}
+
+#todo .range-input:hover {
+    background: var(--linguify-gray-100) !important;
+    border-color: var(--linguify-primary) !important;
+}
+
+/* Enhanced Select and Input Styling */
+#todo select.form-control {
+    border: 2px solid var(--linguify-gray-200) !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    background-color: var(--linguify-white) !important;
+    color: var(--linguify-gray-700) !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+#todo select.form-control:hover {
+    border-color: var(--linguify-primary-light) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--linguify-primary) 10%, transparent) !important;
+}
+
+#todo select.form-control:focus {
+    border-color: var(--linguify-primary) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--linguify-primary) 20%, transparent) !important;
+    outline: none !important;
+}
+
+#todo input.form-control {
+    border: 2px solid var(--linguify-gray-200) !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    background-color: var(--linguify-white) !important;
+    color: var(--linguify-gray-700) !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+
+#todo input.form-control:hover {
+    border-color: var(--linguify-primary-light) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--linguify-primary) 10%, transparent) !important;
+}
+
+#todo input.form-control:focus {
+    border-color: var(--linguify-primary) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--linguify-primary) 20%, transparent) !important;
+    outline: none !important;
+}
+
+/* Enhanced Labels */
+#todo .form-label {
+    color: var(--linguify-gray-700) !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+#todo .form-help {
+    color: var(--linguify-gray-500) !important;
+    font-size: 12px !important;
+    margin-top: 4px !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .settings-container {
+        grid-template-columns: 260px 1fr;
+    }
+    
+    .content-section {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .settings-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .settings-sidebar {
+        display: none;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .content-section {
+        padding: 16px;
+    }
+    
+    .dashboard-background-options {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+    }
+    
+    .background-option {
+        min-height: 80px;
+        padding: 12px 8px;
+    }
+    
+    .background-option span {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+    
+    .background-option small {
+        font-size: 9px;
+        padding: 2px 4px;
+    }
+    
+    #todo .form-row {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .settings-main {
+        background: var(--linguify-gray-800);
+        color: var(--linguify-gray-50);
+    }
+    
+    .content-section {
+        background: var(--linguify-gray-800);
+        border-bottom-color: var(--linguify-gray-700);
+    }
+    
+    .content-section:hover {
+        background: var(--linguify-gray-900);
+    }
 }
