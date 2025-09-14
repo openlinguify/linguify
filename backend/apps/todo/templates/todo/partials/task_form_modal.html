@@ -1,6 +1,6 @@
 <!-- Task Creation Modal with Linguify Design System -->
-<div id="task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closeTaskModal()">
-    <div class="modal-content bg-white rounded-lg shadow-xl w-96 max-h-[90vh] overflow-y-auto" style="max-width: 28rem;" onclick="event.stopPropagation()">
+<div id="task-modal" class="fixed inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5); z-index: 99999;" onclick="closeTaskModal()">
+    <div class="modal-content bg-white rounded-lg shadow-xl w-96 max-h-[90vh] overflow-y-auto" style="max-width: 28rem; z-index: 100000;" onclick="event.stopPropagation()">
             <form hx-post="{% if task %}{% url 'todo:task_form_modal_edit_htmx' task.id %}{% else %}{% url 'todo:task_form_modal_htmx' %}{% endif %}"
                   hx-target="#task-modal"
                   hx-swap="outerHTML">
@@ -34,17 +34,17 @@
                             <input type="text" 
                                    id="title" 
                                    name="title" 
-                                   class="form-control-linguify w-full"
+                                   class="form-control-linguify w-full pr-16"
                                    value="{% if task %}{{ task.title }}{% endif %}"
                                    maxlength="200"
                                    required
                                    placeholder="Entrez le titre de votre tâche..."
                                    oninput="document.getElementById('titleCharCount').textContent = this.value.length">
-                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                                <span class="text-xs text-gray-400">
-                                    <span id="titleCharCount">{% if task %}{{ task.title|length }}{% else %}0{% endif %}</span>/200
-                                </span>
-                            </div>
+                        </div>
+                        <div class="text-right mt-1">
+                            <span class="text-xs text-gray-400">
+                                <span id="titleCharCount">{% if task %}{{ task.title|length }}{% else %}0{% endif %}</span>/200
+                            </span>
                         </div>
                     </div>
                     
