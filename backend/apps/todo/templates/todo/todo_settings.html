@@ -1,46 +1,5 @@
 <!-- Todo Tab -->
 <div id="todo" class="tab-content active">
-    <!-- Statistics Section -->
-    <div class="content-section">
-        <div class="section-header">
-            <h3 class="section-title">
-                <i class="bi bi-clipboard-check"></i>
-                Statistiques To-do
-            </h3>
-            <div class="section-actions">
-                <button type="button" onclick="loadTodoStats()" style="margin-right: 8px; padding: 4px 8px; font-size: 12px; background: #007bff; color: white; border: none; border-radius: 4px;">
-                    🔄 Actualiser
-                </button>
-                <button type="button" onclick="testTodoAPI()" style="margin-right: 8px; padding: 4px 8px; font-size: 12px; background: #28a745; color: white; border: none; border-radius: 4px;">
-                    🧪 Test
-                </button>
-                <button class="section-toggle">
-                    <i class="bi bi-chevron-up"></i>
-                </button>
-            </div>
-        </div>
-        <div class="section-content">
-            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
-                <div class="stat-card">
-                    <div class="stat-value" id="total-tasks">0</div>
-                    <div class="stat-label">Taches totales</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="completed-tasks">0</div>
-                    <div class="stat-label">Taches terminees</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="active-projects">0</div>
-                    <div class="stat-label">Projets actifs</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="completion-rate">0%</div>
-                    <div class="stat-label">Taux de reussite</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Productivity Settings Section -->
     <div class="content-section">
         <div class="section-header">
@@ -95,12 +54,6 @@
                     </div>
                 </div>
 
-                <div class="btn-group">
-                    <button type="submit" class="btn-primary">
-                        <i class="bi bi-save"></i>
-                        Enregistrer
-                    </button>
-                </div>
             </form>
         </div>
     </div>
@@ -183,12 +136,6 @@
                     <div class="form-help">Nombre de jours avant archivage automatique</div>
                 </div>
 
-                <div class="btn-group">
-                    <button type="submit" class="btn-primary">
-                        <i class="bi bi-save"></i>
-                        Enregistrer
-                    </button>
-                </div>
             </form>
         </div>
     </div>
@@ -254,12 +201,6 @@
                     </div>
                 </div>
 
-                <div class="btn-group">
-                    <button type="submit" class="btn-primary">
-                        <i class="bi bi-save"></i>
-                        Enregistrer
-                    </button>
-                </div>
             </form>
         </div>
     </div>
@@ -334,12 +275,6 @@
                     <div class="form-help">Activer le raccourci clavier pour ajouter rapidement des taches</div>
                 </div>
 
-                <div class="btn-group">
-                    <button type="submit" class="btn-primary">
-                        <i class="bi bi-save"></i>
-                        Enregistrer
-                    </button>
-                </div>
             </form>
         </div>
     </div>
@@ -401,61 +336,84 @@
                     <div class="form-help">Permettre le partage de projets avec d'autres utilisateurs</div>
                 </div>
 
-                <!-- Import/Export Actions -->
-                <div class="form-group" style="border-top: 1px solid #e9ecef; padding-top: 20px; margin-top: 20px;">
-                    <label class="form-label" style="font-weight: 600; margin-bottom: 12px;">Actions de données</label>
-                    
-                    <div class="btn-group" style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <!-- Export Buttons -->
-                        <div class="export-actions" style="display: flex; flex-direction: column; gap: 8px;">
-                            <label style="font-size: 14px; font-weight: 500; color: #495057;">Exporter vos données</label>
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                <a href="{% url 'todo:activity_export' %}?format=csv" class="btn-export" style="display: inline-flex; align-items: center; padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
-                                    <i class="bi bi-filetype-csv" style="margin-right: 6px;"></i>
-                                    Exporter CSV
-                                </a>
-                                <a href="{% url 'todo:activity_export' %}?format=json" class="btn-export" style="display: inline-flex; align-items: center; padding: 8px 16px; background: #17a2b8; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
-                                    <i class="bi bi-filetype-json" style="margin-right: 6px;"></i>
-                                    Exporter JSON
-                                </a>
-                                <a href="{% url 'todo:activity_export' %}?format=xlsx" class="btn-export" style="display: inline-flex; align-items: center; padding: 8px 16px; background: #20c997; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
-                                    <i class="bi bi-file-earmark-excel" style="margin-right: 6px;"></i>
-                                    Exporter Excel
-                                </a>
-                            </div>
-                            <div style="font-size: 12px; color: #6c757d;">Télécharger toutes vos tâches et projets</div>
-                        </div>
-
-                        <!-- Import Buttons -->
-                        <div class="import-actions" style="display: flex; flex-direction: column; gap: 8px;">
-                            <label style="font-size: 14px; font-weight: 500; color: #495057;">Importer des données</label>
-                            <div style="display: flex; gap: 8px;">
-                                <button type="button" 
-                                        hx-get="{% url 'todo:import_modal' %}" 
-                                        hx-target="#import-modal-container" 
-                                        hx-trigger="click"
-                                        class="btn-import" style="display: inline-flex; align-items: center; padding: 8px 16px; background: #007bff; color: white; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
-                                    <i class="bi bi-upload" style="margin-right: 6px;"></i>
-                                    Importer fichier
-                                </button>
-                                <button type="button" onclick="downloadSampleCSV()" class="btn-sample" style="display: inline-flex; align-items: center; padding: 8px 16px; background: #6c757d; color: white; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
-                                    <i class="bi bi-download" style="margin-right: 6px;"></i>
-                                    Exemple CSV
-                                </button>
-                            </div>
-                            <div style="font-size: 12px; color: #6c757d;">Importer des tâches depuis CSV ou JSON</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="btn-group" style="margin-top: 20px;">
-                    <button type="submit" class="btn-primary">
-                        <i class="bi bi-save"></i>
-                        Enregistrer
-                    </button>
-                </div>
             </form>
         </div>
+    </div>
+
+    <!-- Import/Export Actions Section (Separate from settings) -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="bi bi-arrow-down-up"></i>
+                Actions de données
+            </h3>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                <!-- Export Buttons -->
+                <div class="export-actions" style="display: flex; flex-direction: column; gap: 12px; flex: 1; min-width: 300px;">
+                    <label style="font-size: 16px; font-weight: 600; color: #495057; margin-bottom: 8px;">
+                        <i class="bi bi-download" style="margin-right: 8px;"></i>
+                        Exporter vos données
+                    </label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <a href="{% url 'todo:activity_export' %}?format=csv" class="btn-export" style="display: inline-flex; align-items: center; padding: 10px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
+                            <i class="bi bi-filetype-csv" style="margin-right: 6px;"></i>
+                            Exporter CSV
+                        </a>
+                        <a href="{% url 'todo:activity_export' %}?format=json" class="btn-export" style="display: inline-flex; align-items: center; padding: 10px 16px; background: #17a2b8; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
+                            <i class="bi bi-filetype-json" style="margin-right: 6px;"></i>
+                            Exporter JSON
+                        </a>
+                        <a href="{% url 'todo:activity_export' %}?format=xlsx" class="btn-export" style="display: inline-flex; align-items: center; padding: 10px 16px; background: #20c997; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
+                            <i class="bi bi-file-earmark-excel" style="margin-right: 6px;"></i>
+                            Exporter Excel
+                        </a>
+                    </div>
+                    <div style="font-size: 13px; color: #6c757d; margin-top: 4px;">Télécharger toutes vos tâches et projets</div>
+                </div>
+
+                <!-- Import Buttons -->
+                <div class="import-actions" style="display: flex; flex-direction: column; gap: 12px; flex: 1; min-width: 300px;">
+                    <label style="font-size: 16px; font-weight: 600; color: #495057; margin-bottom: 8px;">
+                        <i class="bi bi-upload" style="margin-right: 8px;"></i>
+                        Importer des données
+                    </label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" 
+                                hx-get="{% url 'todo:import_modal' %}" 
+                                hx-target="#import-modal-container" 
+                                hx-trigger="click"
+                                class="btn-import" style="display: inline-flex; align-items: center; padding: 10px 16px; background: #007bff; color: white; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
+                            <i class="bi bi-upload" style="margin-right: 6px;"></i>
+                            Importer fichier
+                        </button>
+                        <button type="button" onclick="downloadSampleCSV()" class="btn-sample" style="display: inline-flex; align-items: center; padding: 10px 16px; background: #6c757d; color: white; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
+                            <i class="bi bi-download" style="margin-right: 6px;"></i>
+                            Exemple CSV
+                        </button>
+                    </div>
+                    <div style="font-size: 13px; color: #6c757d; margin-top: 4px;">Importer des tâches depuis CSV ou JSON</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Save Button for Settings -->
+    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; border: 1px solid #e9ecef;">
+        <div style="margin-bottom: 10px; font-size: 14px; color: #6c757d;">
+            Sauvegarder tous les paramètres de configuration Todo
+        </div>
+        <button type="button" onclick="saveAllTodoSettings()" class="btn-primary" style="padding: 12px 24px; font-size: 16px; min-width: 200px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <i class="bi bi-save"></i>
+            Enregistrer tous les paramètres
+        </button>
+        <div id="save-status" style="margin-top: 10px; font-size: 14px;"></div>
     </div>
 </div>
 
@@ -510,6 +468,73 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Function to save all Todo settings
+async function saveAllTodoSettings() {
+    const button = document.querySelector('button[onclick="saveAllTodoSettings()"]');
+    const statusDiv = document.getElementById('save-status');
+    
+    // Update button state
+    button.innerHTML = '<i class="bi bi-hourglass-split"></i> Sauvegarde en cours...';
+    button.disabled = true;
+    button.style.background = '#6c757d';
+    statusDiv.innerHTML = '';
+    
+    try {
+        // Get all form data
+        const forms = document.querySelectorAll('#todo form');
+        const formData = new FormData();
+        
+        forms.forEach(form => {
+            const data = new FormData(form);
+            for (let [key, value] of data.entries()) {
+                formData.append(key, value);
+            }
+        });
+        
+        // Add CSRF token
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        formData.append('save_all', 'true');
+        
+        // Send request
+        const response = await fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        if (response.ok) {
+            // Success
+            button.innerHTML = '<i class="bi bi-check-circle"></i> Sauvegardé !';
+            button.style.background = '#28a745';
+            statusDiv.innerHTML = '<span style="color: #28a745; font-weight: 500;"><i class="bi bi-check-circle"></i> Paramètres sauvegardés avec succès</span>';
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                button.innerHTML = '<i class="bi bi-save"></i> Enregistrer tous les paramètres';
+                button.style.background = '';
+                button.disabled = false;
+            }, 2000);
+        } else {
+            throw new Error('Erreur lors de la sauvegarde');
+        }
+        
+    } catch (error) {
+        // Error
+        button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Erreur';
+        button.style.background = '#dc3545';
+        statusDiv.innerHTML = '<span style="color: #dc3545; font-weight: 500;"><i class="bi bi-exclamation-triangle"></i> Erreur lors de la sauvegarde</span>';
+        
+        // Reset button after 3 seconds
+        setTimeout(() => {
+            button.innerHTML = '<i class="bi bi-save"></i> Enregistrer tous les paramètres';
+            button.style.background = '';
+            button.disabled = false;
+        }, 3000);
+    }
+}
 </script>
 
 <style>
@@ -614,7 +639,6 @@ document.addEventListener('DOMContentLoaded', function() {
             initRangeSliders();
             initSectionToggles();
             initFormHandlers();
-            loadTodoStats();
         }
         
         function initRangeSliders() {
@@ -717,37 +741,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        function loadTodoStats() {
-            console.log('[TodoSettings] Loading todo statistics...');
-            
-            // Use test data for now
-            const stats = {
-                total_tasks: 5,
-                completed_tasks: 3,
-                active_projects: 2,
-                completion_rate: 60
-            };
-            
-            const updateElement = (id, value) => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.textContent = value;
-                }
-            };
-            
-            updateElement('total-tasks', stats.total_tasks);
-            updateElement('completed-tasks', stats.completed_tasks);
-            updateElement('active-projects', stats.active_projects);
-            updateElement('completion-rate', stats.completion_rate + '%');
-        }
-        
-        function testTodoAPI() {
-            alert('Test API Todo: Fonctionnement OK!\nStatistiques chargées avec succès\nTemplate rendu correctement');
-        }
-        
-        // Make functions globally available for button clicks
-        window.loadTodoStats = loadTodoStats;
-        window.testTodoAPI = testTodoAPI;
         
     })(); // End of isolated scope
 </script>
