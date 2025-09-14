@@ -11,7 +11,7 @@
 {% block content %}
 <div style="height: calc(100vh - 120px); display: flex; gap: 5px; box-sizing: border-box;">
         <!-- Left Column: Form Content -->
-        <div class="form-main-content" style="flex: 1; height: 100%; display: flex; flex-direction: column;">
+        <div class="form-main-content">
             <div class="form-card-linguify" style="height: 100%; display: flex; flex-direction: column;">
             <form id="taskForm" method="post" style="height: 100%; display: flex; flex-direction: column;"
                       hx-post="{% if task %}{% url 'todo:task_autosave_update_htmx' task.id %}{% else %}{% url 'todo:task_autosave_create_htmx' %}{% endif %}"
@@ -61,7 +61,7 @@
         </div>
         
         <!-- Right Column: Sidebar -->
-        <div class="form-sidebar" style="width: 320px; height: 100%; display: flex; flex-direction: column; flex-shrink: 0;">
+        <div class="form-sidebar">
             <!-- Info Card -->
             {% if task %}
             <div class="sidebar-card-linguify">

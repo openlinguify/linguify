@@ -4990,21 +4990,6 @@ button.bg-linguify-gradient:hover,
     font-weight: 500;
 }
 
-/* Form Main Content and Sidebar Layout */
-.form-main-content {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.form-sidebar {
-    width: 240px;
-    flex-shrink: 0;
-    height: 100%;
-    overflow-y: auto;
-}
 
 /* Main form card */
 .form-card-linguify {
@@ -8091,4 +8076,48 @@ input#importDeckName:focus {
 
 #navbarSaveIndicator .text-blue-500 {
     color: #3b82f6;
+}
+
+/* ===== TODO FORM LAYOUT ===== */
+.form-main-content {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-sidebar {
+    width: 320px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 20px;
+    background: var(--linguify-white);
+    min-height: 0; /* Important pour le flexbox */
+}
+
+/* Make Configuration card take remaining space */
+.form-sidebar .sidebar-card-linguify:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.form-sidebar .sidebar-card-linguify:last-child .sidebar-content-linguify {
+    flex: 1;
+    overflow-y: auto;
+    max-height: none;
+}
+
+/* Remove border radius from all todo form elements */
+.form-main-content input,
+.form-main-content textarea,
+.form-main-content select,
+.form-sidebar input,
+.form-sidebar textarea,
+.form-sidebar select,
+.sidebar-card-linguify {
+    border-radius: 0 !important;
 }
