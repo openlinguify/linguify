@@ -181,7 +181,7 @@ class Command(BaseCommand):
                 self.stdout.write(f'Debug - Archive days: {archive_days}')
                 self.stdout.write(f'Debug - Archive cutoff: {cutoff_date}')
             if auto_delete_enabled:
-                self.stdout.write(f'Debug - Delete days: {min(settings_data.get("auto_delete_archive_days", 30), 90)}')
+                self.stdout.write(f'Debug - Delete days: {min(delete_days, 90)}')
                 self.stdout.write(f'Debug - Delete cutoff: {delete_cutoff_date if auto_delete_enabled else "N/A"}')
             self.stdout.write(f'Debug - Archives stage: {archives_stage.name if archives_stage else "None"}')
             
