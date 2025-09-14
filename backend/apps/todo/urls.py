@@ -69,4 +69,8 @@ urlpatterns = [
     # Activity HTMX endpoints
     path('htmx/activity/timeline/', ActivityTimelineHTMXView.as_view(), name='activity_timeline_htmx'),
     path('htmx/activity/stats/', ActivityStatsHTMXView.as_view(), name='activity_stats_htmx'),
+    
+    # Import endpoints
+    path('import/', TaskImportModalHTMXView.as_view(), name='import_modal'),
+    path('import/process/', TaskImportProcessHTMXView.as_view(), name='import_process'),
 ]
