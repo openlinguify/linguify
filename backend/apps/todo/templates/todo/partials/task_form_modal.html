@@ -1,8 +1,6 @@
 <!-- Task Creation Modal with Linguify Design System -->
-<div id="task-modal" class="modal-overlay" style="display: flex; z-index: 10000;">
-    <div class="modal-backdrop">
-        <div class="modal-overlay-bg" onclick="closeTaskModal()"></div>
-        <div class="modal-content" style="max-width: 28rem;">
+<div id="task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closeTaskModal()">
+    <div class="bg-white rounded-lg shadow-xl w-96 mx-4" onclick="event.stopPropagation()">
             <form hx-post="{% if task %}{% url 'todo:task_form_modal_edit_htmx' task.id %}{% else %}{% url 'todo:task_form_modal_htmx' %}{% endif %}"
                   hx-target="#task-modal"
                   hx-swap="outerHTML">
@@ -131,7 +129,6 @@
                     </button>
                 </div>
             </form>
-        </div>
     </div>
 </div>
 
@@ -159,15 +156,5 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Close modal when clicking outside
-document.getElementById('task-modal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeTaskModal();
-    }
-});
-
-// Update close buttons to use the new function
-document.querySelectorAll('#task-modal button[onclick*="remove"]').forEach(btn => {
-    btn.onclick = closeTaskModal;
-});
+// Note: Close modal when clicking outside is now handled inline with onclick="closeTaskModal()"
 </script>
