@@ -8106,13 +8106,21 @@ input#importDeckName:focus {
     max-height: none;
 }
 
-/* Remove border radius from all todo form elements */
+/* Add nice border radius for main content inputs (Title and Description) */
 .form-main-content input,
 .form-main-content textarea,
-.form-main-content select,
+.form-main-content select {
+    border-radius: 8px !important;
+}
+
+/* Add border radius to sidebar inputs for better UX */
 .form-sidebar input,
 .form-sidebar textarea,
-.form-sidebar select,
+.form-sidebar select {
+    border-radius: 6px !important;
+}
+
+/* Keep sidebar cards without border radius */
 .sidebar-card-linguify {
     border-radius: 0 !important;
 }
@@ -8151,4 +8159,24 @@ input#importDeckName:focus {
 .form-sidebar .sidebar-content-linguify > div[style*="grid-template-columns"] > div {
     min-width: 0;
     overflow: hidden;
+}
+
+/* Information section styling */
+.info-item-linguify {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--linguify-gray-600);
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+}
+
+.info-value {
+    color: var(--linguify-gray-800);
+    font-weight: 500;
 }
