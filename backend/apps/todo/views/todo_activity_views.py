@@ -472,7 +472,11 @@ class ActivityExportView(LoginRequiredMixin, TemplateView):
                 # Write data
                 for row, activity in enumerate(activities, 2):
                     for col, key in enumerate(headers, 1):
-                        ws.cell(row=row, column=col, value=activity[key])
+                        value = activity[key]
+                        # Convert UUID objects to strings for Excel compatibility
+                        if hasattr(value, 'hex'):  # Check if it's a UUID
+                            value = str(value)
+                        ws.cell(row=row, column=col, value=value)
             
             # Save to BytesIO
             buffer = BytesIO()
