@@ -15,7 +15,7 @@
             <div class="form-card-linguify" style="height: 100%; display: flex; flex-direction: column;">
             <form id="taskForm" method="post" style="height: 100%; display: flex; flex-direction: column;"
                       hx-post="{% if task %}{% url 'todo:task_autosave_update_htmx' task.id %}{% else %}{% url 'todo:task_autosave_create_htmx' %}{% endif %}"
-                      hx-trigger="change delay:1000ms from:select, blur delay:500ms from:input, blur delay:500ms from:textarea"
+                      hx-trigger="change delay:1500ms from:select, blur delay:1000ms from:input, blur delay:1000ms from:textarea"
                       hx-target="#navbarSaveIndicator"
                       hx-swap="innerHTML">
                 {% csrf_token %}
@@ -28,13 +28,9 @@
                     <input type="text" class="input-linguify" id="title" name="title" 
                            value="{{ task.title|default:'' }}" required autofocus maxlength="200"
                            placeholder="{% trans 'Enter task title (max 200 characters)' %}"
-                           hx-post="{% url 'todo:character_count_htmx' %}"
-                           hx-trigger="keyup changed delay:100ms"
-                           hx-target="#titleCharCount"
-                           hx-swap="outerHTML"
-                           hx-vals='js:{"title": document.getElementById("title").value}'>
+                           oninput="updateCharCount()">
                     <div class="text-xs text-gray-500 mt-1" id="titleCharCount">
-                        <span class="text-gray-500">{{ task.title|length|default:0 }}</span>/200 {% trans "characters" %}
+                        <span id="charCountSpan">{{ task.title|length|default:0 }}</span>/200 {% trans "characters" %}
                     </div>
                 </div>
                 
@@ -246,6 +242,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Re-apply colors after HTMX updates (for tags)
     document.body.addEventListener('htmx:afterSwap', applyColors);
+    
+    // Simple character count function
+    window.updateCharCount = function() {
+        const titleInput = document.getElementById('title');
+        const charCountSpan = document.getElementById('charCountSpan');
+        if (titleInput && charCountSpan) {
+            charCountSpan.textContent = titleInput.value.length;
+        }
+    };
     
     // Keep minimal JavaScript for form submission handling
     document.getElementById('taskForm').addEventListener('submit', function(e) {

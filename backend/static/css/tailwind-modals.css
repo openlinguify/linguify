@@ -8074,6 +8074,16 @@ input#importDeckName:focus {
     color: #3b82f6;
 }
 
+/* Stabilize save indicator to prevent page shake */
+#navbarSaveIndicator {
+    width: 120px;
+    height: 20px;
+    display: inline-block !important;
+    vertical-align: top;
+    overflow: hidden;
+    transition: none !important;
+}
+
 /* ===== TODO FORM LAYOUT ===== */
 .form-main-content {
     flex: 1;
