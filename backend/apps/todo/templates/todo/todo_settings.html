@@ -401,7 +401,54 @@
                     <div class="form-help">Permettre le partage de projets avec d'autres utilisateurs</div>
                 </div>
 
-                <div class="btn-group">
+                <!-- Import/Export Actions -->
+                <div class="form-group" style="border-top: 1px solid #e9ecef; padding-top: 20px; margin-top: 20px;">
+                    <label class="form-label" style="font-weight: 600; margin-bottom: 12px;">Actions de données</label>
+                    
+                    <div class="btn-group" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <!-- Export Buttons -->
+                        <div class="export-actions" style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-size: 14px; font-weight: 500; color: #495057;">Exporter vos données</label>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <a href="{% url 'todo:activity_export' %}?format=csv" class="btn-export" style="display: inline-flex; align-items: center; padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
+                                    <i class="bi bi-filetype-csv" style="margin-right: 6px;"></i>
+                                    Exporter CSV
+                                </a>
+                                <a href="{% url 'todo:activity_export' %}?format=json" class="btn-export" style="display: inline-flex; align-items: center; padding: 8px 16px; background: #17a2b8; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
+                                    <i class="bi bi-filetype-json" style="margin-right: 6px;"></i>
+                                    Exporter JSON
+                                </a>
+                                <a href="{% url 'todo:activity_export' %}?format=xlsx" class="btn-export" style="display: inline-flex; align-items: center; padding: 8px 16px; background: #20c997; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
+                                    <i class="bi bi-file-earmark-excel" style="margin-right: 6px;"></i>
+                                    Exporter Excel
+                                </a>
+                            </div>
+                            <div style="font-size: 12px; color: #6c757d;">Télécharger toutes vos tâches et projets</div>
+                        </div>
+
+                        <!-- Import Buttons -->
+                        <div class="import-actions" style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-size: 14px; font-weight: 500; color: #495057;">Importer des données</label>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" 
+                                        hx-get="{% url 'todo:import_modal' %}" 
+                                        hx-target="#import-modal-container" 
+                                        hx-trigger="click"
+                                        class="btn-import" style="display: inline-flex; align-items: center; padding: 8px 16px; background: #007bff; color: white; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
+                                    <i class="bi bi-upload" style="margin-right: 6px;"></i>
+                                    Importer fichier
+                                </button>
+                                <button type="button" onclick="downloadSampleCSV()" class="btn-sample" style="display: inline-flex; align-items: center; padding: 8px 16px; background: #6c757d; color: white; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
+                                    <i class="bi bi-download" style="margin-right: 6px;"></i>
+                                    Exemple CSV
+                                </button>
+                            </div>
+                            <div style="font-size: 12px; color: #6c757d;">Importer des tâches depuis CSV ou JSON</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-top: 20px;">
                     <button type="submit" class="btn-primary">
                         <i class="bi bi-save"></i>
                         Enregistrer
@@ -411,6 +458,59 @@
         </div>
     </div>
 </div>
+
+<!-- Import Modal Container -->
+<div id="import-modal-container"></div>
+
+<script>
+// Function to download sample CSV
+function downloadSampleCSV() {
+    const csvContent = `title,description,state,priority,project,stage,tags,due_date
+"Exemple de tâche 1","Description de la première tâche","To Do","Normal","Mon Projet","To Do","tag1,tag2","2025-12-31T23:59:59"
+"Exemple de tâche 2","Autre tâche exemple","In Progress","High","Mon Projet","In Progress","tag2,tag3","2025-11-30T18:00:00"
+"Exemple de tâche 3","Tâche complétée","Done","Normal","Autre Projet","Done","tag1","2025-10-15T12:00:00"`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'exemple_taches.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Add hover effects for buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects for export buttons
+    const exportButtons = document.querySelectorAll('.btn-export');
+    exportButtons.forEach(btn => {
+        const originalBg = btn.style.backgroundColor;
+        btn.addEventListener('mouseover', function() {
+            this.style.opacity = '0.9';
+            this.style.transform = 'translateY(-1px)';
+        });
+        btn.addEventListener('mouseout', function() {
+            this.style.opacity = '1';
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Add hover effects for import buttons
+    const importButtons = document.querySelectorAll('.btn-import, .btn-sample');
+    importButtons.forEach(btn => {
+        btn.addEventListener('mouseover', function() {
+            this.style.opacity = '0.9';
+            this.style.transform = 'translateY(-1px)';
+        });
+        btn.addEventListener('mouseout', function() {
+            this.style.opacity = '1';
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
 
 <style>
     /* Todo-specific styles */

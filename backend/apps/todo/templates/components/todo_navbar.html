@@ -145,55 +145,6 @@
                 <i class="bi bi-gear"></i>
                 <span class="d-none d-xxl-inline">{% trans "Configure" %}</span>
             </a>
-            
-            <!-- Export (différent pour Activity) -->
-            {% if active_view == 'activity' %}
-            <div class="dropdown" x-data="{ open: false }" @click.outside="open = false" style="position: relative;">
-                <button @click="open = !open" class="btn-navbar btn-navbar-outline" title="{% trans 'Export Activity Data' %}">
-                    <i class="bi bi-download"></i>
-                    <span class="d-none d-xxl-inline">{% trans "Export" %}</span>
-                    <i class="bi bi-chevron-down ms-1" :class="{ 'rotate-180': open }" style="transition: transform 0.2s;"></i>
-                </button>
-                <div :style="open ? 'display: block; position: absolute; right: 0; top: 100%; min-width: 160px; z-index: 10001; background: white; border: 1px solid var(--linguify-gray-200, #e5e7eb); border-radius: 0.375rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); padding: 0.5rem 0; margin-top: 0.25rem;' : 'display: none;'">
-                    <a href="#" @click="exportActivityData('json'); open = false" style="display: flex; align-items: center; padding: 0.5rem 1rem; color: var(--linguify-gray-700, #374151); text-decoration: none; font-size: 0.875rem; transition: all 0.15s ease-in-out;" 
-                       onmouseover="this.style.background='var(--linguify-gray-50, #f9fafb)'; this.style.color='var(--linguify-primary, #2D5BBA)'" 
-                       onmouseout="this.style.background='transparent'; this.style.color='var(--linguify-gray-700, #374151)'">
-                        <i class="bi bi-filetype-json me-2"></i>{% trans "Export JSON" %}
-                    </a>
-                    <a href="#" @click="exportActivityData('csv'); open = false" style="display: flex; align-items: center; padding: 0.5rem 1rem; color: var(--linguify-gray-700, #374151); text-decoration: none; font-size: 0.875rem; transition: all 0.15s ease-in-out;"
-                       onmouseover="this.style.background='var(--linguify-gray-50, #f9fafb)'; this.style.color='var(--linguify-primary, #2D5BBA)'" 
-                       onmouseout="this.style.background='transparent'; this.style.color='var(--linguify-gray-700, #374151)'">
-                        <i class="bi bi-filetype-csv me-2"></i>{% trans "Export CSV" %}
-                    </a>
-                    <a href="#" @click="exportActivityData('xlsx'); open = false" style="display: flex; align-items: center; padding: 0.5rem 1rem; color: var(--linguify-gray-700, #374151); text-decoration: none; font-size: 0.875rem; transition: all 0.15s ease-in-out;"
-                       onmouseover="this.style.background='var(--linguify-gray-50, #f9fafb)'; this.style.color='var(--linguify-primary, #2D5BBA)'" 
-                       onmouseout="this.style.background='transparent'; this.style.color='var(--linguify-gray-700, #374151)'">
-                        <i class="bi bi-file-earmark-excel me-2"></i>{% trans "Export Excel" %}
-                    </a>
-                </div>
-            </div>
-            <script>
-            function exportActivityData(format) {
-                const range = document.querySelector('select[name=range]')?.value || '30';
-                const url = '{% url 'todo:activity_export' %}' + '?format=' + format + '&range=' + range;
-                window.location.href = url;
-            }
-            </script>
-            {% else %}
-            <a href="{% url 'todo:activity_export' %}?format=csv" id="exportTasks" class="btn-navbar btn-navbar-outline" title="{% trans 'Export Tasks' %}">
-                <i class="bi bi-download"></i>
-                <span class="d-none d-xxl-inline">{% trans "Export" %}</span>
-            </a>
-            {% endif %}
-            
-            <!-- Import (pas sur Activity) -->
-            {% if active_view != 'activity' %}
-            <button id="importTasks" class="btn-navbar btn-navbar-outline" 
-                    hx-get="{% url 'todo:import_modal' %}" hx-target="#import-modal-container" hx-trigger="click">
-                <i class="bi bi-upload"></i>
-                <span class="d-none d-xxl-inline">{% trans "Import" %}</span>
-            </button>
-            {% endif %}
         </div>
     </div>
 </div>
