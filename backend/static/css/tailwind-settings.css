@@ -1,0 +1,37 @@
+/* Linguify Color Variables for the settings section of any apps of Open Linguify */
+:root {
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #017E84;
+    --linguify-gray: #6B7280;
+    --linguify-primary-light: #4F7BD9;
+    --linguify-primary-dark: #1E4A8C;
+    --linguify-secondary-light: #A78BFA;
+    --linguify-secondary-dark: #7C3AED;
+    --linguify-accent-light: #26E4B8;
+    --linguify-accent-dark: #00B894;
+    --linguify-success: #10B981;
+    --linguify-warning: #F59E0B;
+    --linguify-error: #EF4444;
+    --linguify-danger: #DC2626;
+    
+    /* Additional colors for consistency */
+    --linguify-white: #ffffff;
+    --linguify-gray-50: #f9fafb;
+    --linguify-gray-100: #f3f4f6;
+    --linguify-gray-200: #e5e7eb;
+    --linguify-gray-300: #d1d5db;
+    --linguify-gray-400: #9ca3af;
+    --linguify-gray-500: #6b7280;
+    --linguify-gray-600: #4b5563;
+    --linguify-gray-700: #374151;
+    --linguify-gray-800: #1f2937;
+    --linguify-gray-900: #111827;
+    
+    /* Gray aliases for convenience */
+    --linguify-gray-light: var(--linguify-gray-200);
+    --linguify-gray-dark: var(--linguify-gray-700);
+    
+    /* Gradient officiel */
+    --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+}
