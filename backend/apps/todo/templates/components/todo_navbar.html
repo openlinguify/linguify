@@ -137,13 +137,7 @@
         
         <!-- Actions -->
         <div class="navbar-actions-group">
-            <!-- Activity-specific actions -->
-            {% if active_view == 'activity' %}
-            <a href="{% url 'todo:activity_dashboard' %}" class="btn-navbar btn-navbar-outline" title="{% trans 'Advanced Analytics' %}">
-                <i class="bi bi-graph-up"></i>
-                <span class="d-none d-xl-inline">{% trans "Analytics" %}</span>
-            </a>
-            {% endif %}
+            <!-- Activity-specific actions removed - now integrated in main activity page -->
             
             <!-- Bulk Actions (List view only) -->
             {% if active_view == 'list' %}

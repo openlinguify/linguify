@@ -23,7 +23,6 @@ urlpatterns = [
     path('kanban/', TodoKanbanView.as_view(), name='kanban'),
     path('list/', TodoListView.as_view(), name='list'),
     path('activity/', TodoActivityView.as_view(), name='activity'),
-    path('activity/dashboard/', ActivityDashboardView.as_view(), name='activity_dashboard'),
     path('activity/export/', ActivityExportView.as_view(), name='activity_export'),
     path('task/new/', TodoFormView.as_view(), name='task_new'),
     path('task/<uuid:task_id>/', TodoFormView.as_view(), name='task_edit'),

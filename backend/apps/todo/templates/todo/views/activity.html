@@ -14,16 +14,78 @@
     <div id="activity-content" class="activity-workspace-container">
 
         <!-- Enhanced Activity Stats -->
-        <div class="activity-stats-modern mb-8" 
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" 
              x-data="{ loaded: false }"
-             x-init="setTimeout(() => loaded = true, 100)"
-             hx-get="{% url 'todo:activity_stats_htmx' %}" 
-             hx-trigger="load, every 30s" 
-             hx-target="this" 
-             hx-swap="outerHTML">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Created Today -->
-                <div class="stat-card-modern group hover:scale-105 transition-all duration-300"
+             x-init="setTimeout(() => loaded = true, 100)">
+            <!-- Tasks Created -->
+            <div class="form-card-linguify text-center">
+                <div style="padding: 1.5rem;">
+                    <div class="flex items-center justify-center mb-3">
+                        <div style="width: 3rem; height: 3rem; background: var(--linguify-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-plus-circle" style="color: white; font-size: 1.25rem;"></i>
+                        </div>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--linguify-primary); margin-bottom: 0.5rem;">
+                        {{ activity_stats.tasks_created_today|default:0 }}
+                    </div>
+                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--linguify-gray); margin-bottom: 0.5rem;">
+                        {% trans "Created Today" %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Completed -->
+            <div class="form-card-linguify text-center">
+                <div style="padding: 1.5rem;">
+                    <div class="flex items-center justify-center mb-3">
+                        <div style="width: 3rem; height: 3rem; background: var(--linguify-success); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-check-circle" style="color: white; font-size: 1.25rem;"></i>
+                        </div>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--linguify-success); margin-bottom: 0.5rem;">
+                        {{ activity_stats.tasks_completed_today|default:0 }}
+                    </div>
+                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--linguify-gray); margin-bottom: 0.5rem;">
+                        {% trans "Completed Today" %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Created This Week -->
+            <div class="form-card-linguify text-center">
+                <div style="padding: 1.5rem;">
+                    <div class="flex items-center justify-center mb-3">
+                        <div style="width: 3rem; height: 3rem; background: var(--linguify-secondary); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-calendar-week" style="color: white; font-size: 1.25rem;"></i>
+                        </div>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--linguify-secondary); margin-bottom: 0.5rem;">
+                        {{ activity_stats.tasks_created_this_week|default:0 }}
+                    </div>
+                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--linguify-gray); margin-bottom: 0.5rem;">
+                        {% trans "Created This Week" %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed This Week -->
+            <div class="form-card-linguify text-center">
+                <div style="padding: 1.5rem;">
+                    <div class="flex items-center justify-center mb-3">
+                        <div style="width: 3rem; height: 3rem; background: var(--linguify-warning); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-trophy" style="color: white; font-size: 1.25rem;"></i>
+                        </div>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--linguify-warning); margin-bottom: 0.5rem;">
+                        {{ activity_stats.tasks_completed_this_week|default:0 }}
+                    </div>
+                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--linguify-gray); margin-bottom: 0.5rem;">
+                        {% trans "Completed This Week" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Activity Content -->
                      x-show="loaded"
                      x-transition:enter="transition ease-out duration-300 delay-[0ms]"
                      x-transition:enter-start="opacity-0 transform translate-y-4"

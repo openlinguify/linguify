@@ -86,8 +86,10 @@ class TodoActivityView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             active=True
         ).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('due_date')
         
-        # Due this week
+        # Due this week  
         week_end = today + timedelta(days=7)
+        week_start = today - timedelta(days=today.weekday())
+        
         due_week_tasks = Task.objects.filter(
             user=user,
             due_date__date__range=[today, week_end],
@@ -95,7 +97,7 @@ class TodoActivityView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             active=True
         ).exclude(due_date__date=today).select_related('project', 'personal_stage_type').prefetch_related('tags').order_by('due_date')
         
-        # Activity statistics
+        # Enhanced activity statistics with dashboard metrics
         stats = {
             'tasks_created_today': Task.objects.filter(
                 user=user,
@@ -107,13 +109,32 @@ class TodoActivityView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
             ).count(),
             'tasks_created_this_week': Task.objects.filter(
                 user=user,
-                created_at__gte=timezone.now() - timedelta(days=7)
+                created_at__date__gte=week_start
             ).count(),
             'tasks_completed_this_week': Task.objects.filter(
                 user=user,
-                completed_at__gte=timezone.now() - timedelta(days=7)
+                completed_at__date__gte=week_start
             ).count(),
+            'total_active_tasks': Task.objects.filter(
+                user=user,
+                active=True,
+                state__in=['1_todo', '1_in_progress']
+            ).count(),
+            'overdue_count': overdue_tasks.count(),
+            'due_today_count': due_today_tasks.count(),
+            'due_week_count': due_week_tasks.count(),
         }
+        
+        # Calculate completion rate
+        if stats['tasks_created_this_week'] > 0:
+            stats['completion_rate'] = round(
+                (stats['tasks_completed_this_week'] / stats['tasks_created_this_week']) * 100, 1
+            )
+        else:
+            stats['completion_rate'] = 0
+            
+        # Calculate productivity score
+        stats['productivity_score'] = round(stats['tasks_completed_this_week'] / 7, 1)
         
         context.update({
             'recent_tasks': recent_tasks,
@@ -129,155 +150,6 @@ class TodoActivityView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
         return context
 
 
-class ActivityDashboardView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
-    """Enhanced activity dashboard with analytics"""
-    template_name = 'todo/views/activity_dashboard.html'
-    htmx_template_name = 'todo/partials/activity_dashboard.html'
-    
-    def get(self, request, *args, **kwargs):
-        if self.is_htmx():
-            return self.render_htmx_response(self.get_context_data())
-        return super().get(request, *args, **kwargs)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-        
-        # Get time range from query params
-        time_range = self.request.GET.get('range', '7')  # Default to 7 days
-        
-        try:
-            days = int(time_range)
-        except (ValueError, TypeError):
-            days = 7
-        
-        start_date = timezone.now() - timedelta(days=days)
-        today = timezone.now().date()
-        
-        # Activity metrics
-        activity_metrics = {
-            'total_tasks_created': Task.objects.filter(
-                user=user,
-                created_at__gte=start_date
-            ).count(),
-            'total_tasks_completed': Task.objects.filter(
-                user=user,
-                completed_at__gte=start_date
-            ).count(),
-            'total_active_tasks': Task.objects.filter(
-                user=user,
-                active=True,
-                state__in=['1_todo', '1_in_progress']
-            ).count(),
-            'completion_rate': 0,
-            'productivity_score': 0,
-        }
-        
-        # Calculate completion rate
-        if activity_metrics['total_tasks_created'] > 0:
-            activity_metrics['completion_rate'] = round(
-                (activity_metrics['total_tasks_completed'] / activity_metrics['total_tasks_created']) * 100, 1
-            )
-        
-        # Calculate productivity score (tasks completed per day)
-        activity_metrics['productivity_score'] = round(
-            activity_metrics['total_tasks_completed'] / max(days, 1), 1
-        )
-        
-        # Daily activity breakdown
-        daily_activity = []
-        for i in range(days):
-            day = today - timedelta(days=i)
-            created = Task.objects.filter(
-                user=user,
-                created_at__date=day
-            ).count()
-            completed = Task.objects.filter(
-                user=user,
-                completed_at__date=day
-            ).count()
-            
-            daily_activity.append({
-                'date': day,
-                'created': created,
-                'completed': completed,
-                'net': completed - created
-            })
-        
-        daily_activity.reverse()  # Show chronologically
-        
-        # Project activity
-        project_activity = Project.objects.filter(user=user).annotate(
-            tasks_completed=Count(
-                'tasks',
-                filter=Q(tasks__completed_at__gte=start_date)
-            ),
-            tasks_created=Count(
-                'tasks',
-                filter=Q(tasks__created_at__gte=start_date)
-            )
-        ).filter(
-            Q(tasks_completed__gt=0) | Q(tasks_created__gt=0)
-        ).order_by('-tasks_completed')[:10]
-        
-        # Recent activity timeline
-        recent_activities = []
-        
-        # Add task completions
-        completed_tasks = Task.objects.filter(
-            user=user,
-            completed_at__gte=start_date
-        ).select_related('project', 'personal_stage_type').order_by('-completed_at')[:20]
-        
-        for task in completed_tasks:
-            recent_activities.append({
-                'type': 'task_completed',
-                'timestamp': task.completed_at,
-                'task': task,
-                'message': f'Completed task: {task.title}'
-            })
-        
-        # Add task creations
-        created_tasks = Task.objects.filter(
-            user=user,
-            created_at__gte=start_date
-        ).select_related('project', 'personal_stage_type').order_by('-created_at')[:20]
-        
-        for task in created_tasks:
-            recent_activities.append({
-                'type': 'task_created',
-                'timestamp': task.created_at,
-                'task': task,
-                'message': f'Created task: {task.title}'
-            })
-        
-        # Sort activities by timestamp
-        recent_activities.sort(key=lambda x: x['timestamp'], reverse=True)
-        recent_activities = recent_activities[:30]  # Limit to 30 most recent
-        
-        # Goals and targets
-        weekly_goal = user.profile.weekly_task_goal if hasattr(user, 'profile') and hasattr(user.profile, 'weekly_task_goal') else 10
-        daily_goal = weekly_goal / 7
-        
-        goals = {
-            'daily_goal': daily_goal,
-            'weekly_goal': weekly_goal,
-            'daily_progress': min(100, (activity_metrics['total_tasks_completed'] / max(daily_goal, 1)) * 100),
-            'weekly_progress': min(100, (activity_metrics['total_tasks_completed'] / max(weekly_goal, 1)) * 100),
-        }
-        
-        context.update({
-            'activity_metrics': activity_metrics,
-            'daily_activity': daily_activity,
-            'project_activity': project_activity,
-            'recent_activities': recent_activities,
-            'goals': goals,
-            'time_range': days,
-            'view_mode': 'activity',
-            'today': today,
-        })
-        
-        return context
 
 
 class ActivityTimelineHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
