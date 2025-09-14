@@ -5668,11 +5668,7 @@ button.bg-linguify-gradient:hover,
 
 /* Sidebar */
 .sidebar-card-linguify {
-    background: white;
-    border-radius: 8px;
     border: 1px solid var(--linguify-gray-200);
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* .sidebar-header-linguify definition removed - consolidated above */
@@ -8096,15 +8092,15 @@ input#importDeckName:focus {
     min-height: 0; /* Important pour le flexbox */
 }
 
-/* Make Configuration card take remaining space */
-.form-sidebar .sidebar-card-linguify:last-child {
+/* Make Configuration card (first one) take remaining space */
+.form-sidebar .sidebar-card-linguify:first-child {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
 
-.form-sidebar .sidebar-card-linguify:last-child .sidebar-content-linguify {
+.form-sidebar .sidebar-card-linguify:first-child .sidebar-content-linguify {
     flex: 1;
     overflow-y: auto;
     max-height: none;

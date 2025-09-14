@@ -62,39 +62,6 @@
         
         <!-- Right Column: Sidebar -->
         <div class="form-sidebar">
-            <!-- Info Card -->
-            {% if task %}
-            <div class="sidebar-card-linguify">
-                <div class="sidebar-header-linguify">
-                    <h6>{% trans "Information" %}</h6>
-                </div>
-                <div class="sidebar-content-linguify">
-                    <div class="info-item-linguify" style="margin-bottom: 8px;">
-                        <small class="info-label">{% trans "Création" %}</small>
-                        <div class="info-value" style="font-size: 0.875rem;">{{ task.created_at|date:"M d, Y H:i" }}</div>
-                    </div>
-                    
-                    {% if task.updated_at != task.created_at %}
-                    <div class="info-item-linguify" style="margin-bottom: 8px;">
-                        <small class="info-label">{% trans "Last Modified" %}</small>
-                        <div class="info-value" style="font-size: 0.875rem;">{{ task.updated_at|date:"M d, Y H:i" }}</div>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="info-item-linguify">
-                        <small class="info-label">{% trans "Status" %}</small>
-                        <div class="info-value">
-                            <span class="badge-linguify" style="font-size: 0.8rem; padding: 2px 6px;"
-                                  data-bg-color="{{ task.personal_stage_type.color }}20"
-                                  data-text-color="{{ task.personal_stage_type.color }}">
-                                {{ task.personal_stage_type.name }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-            
             <!-- Configuration Card -->
             <div class="sidebar-card-linguify">
                 <div class="sidebar-header-linguify">
@@ -218,6 +185,39 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Info Card -->
+            {% if task %}
+            <div class="sidebar-card-linguify">
+                <div class="sidebar-header-linguify">
+                    <h6>{% trans "Information" %}</h6>
+                </div>
+                <div class="sidebar-content-linguify">
+                    <div class="info-item-linguify" style="margin-bottom: 8px;">
+                        <small class="info-label">{% trans "Création" %}</small>
+                        <div class="info-value" style="font-size: 0.875rem;">{{ task.created_at|date:"M d, Y H:i" }}</div>
+                    </div>
+                    
+                    {% if task.updated_at != task.created_at %}
+                    <div class="info-item-linguify" style="margin-bottom: 8px;">
+                        <small class="info-label">{% trans "Last Modified" %}</small>
+                        <div class="info-value" style="font-size: 0.875rem;">{{ task.updated_at|date:"M d, Y H:i" }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="info-item-linguify">
+                        <small class="info-label">{% trans "Status" %}</small>
+                        <div class="info-value">
+                            <span class="badge-linguify" style="font-size: 0.8rem; padding: 2px 6px;"
+                                  data-bg-color="{{ task.personal_stage_type.color }}20"
+                                  data-text-color="{{ task.personal_stage_type.color }}">
+                                {{ task.personal_stage_type.name }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
             
         </div>
 </div>
