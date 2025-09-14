@@ -64,7 +64,8 @@
                             <label for="stage_id" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
                             <select id="stage_id" 
                                     name="stage_id" 
-                                    class="form-select-linguify w-full appearance-none">
+                                    class="form-select-linguify w-full"
+                                    style="appearance: none; -webkit-appearance: none; -moz-appearance: none;">
                                 {% for stage in stages %}
                                 <option value="{{ stage.id }}" {% if task and task.personal_stage_type.id == stage.id %}selected{% elif not task and stage.name == 'To Do' %}selected{% endif %}>{{ stage.name }}</option>
                                 {% endfor %}
@@ -75,7 +76,8 @@
                             <label for="project_id" class="block text-sm font-medium text-gray-700 mb-2">Projet</label>
                             <select id="project_id" 
                                     name="project_id" 
-                                    class="form-select-linguify w-full">
+                                    class="form-select-linguify w-full"
+                                    style="appearance: none; -webkit-appearance: none; -moz-appearance: none;">
                                 <option value="">Aucun projet</option>
                                 {% for project in projects %}
                                 <option value="{{ project.id }}" {% if task and task.project and task.project.id == project.id %}selected{% endif %}>{{ project.name }}</option>
@@ -90,7 +92,8 @@
                             <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">Priorité</label>
                             <select id="priority" 
                                     name="priority" 
-                                    class="form-select-linguify w-full">
+                                    class="form-select-linguify w-full"
+                                    style="appearance: none; -webkit-appearance: none; -moz-appearance: none;">
                                 <option value="0" {% if task and task.priority == '0' %}selected{% elif not task %}selected{% endif %}>Normal</option>
                                 <option value="1" {% if task and task.priority == '1' %}selected{% endif %}>⭐ Important</option>
                             </select>
