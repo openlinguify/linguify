@@ -8061,43 +8061,62 @@ input#importDeckName:focus {
     opacity: 1;
 }
 
-/* Navbar Save Indicator Colors */
-#navbarSaveIndicator .text-green-600 {
-    color: #16a34a;
+/* Old navbar save indicator styles removed - now using cloud indicator */
+
+/* Cloud Save Indicator - Like Notebook btn-sb */
+.save-indicator-cloud {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+    border: none !important;
+    cursor: default;
 }
 
-#navbarSaveIndicator .text-red-600 {
-    color: #dc2626;
+/* Show cloud when saving */
+.htmx-request .save-indicator-cloud {
+    display: inline-flex !important;
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    background: var(--linguify-primary) !important;
+    color: white !important;
+    animation: cloudPulse 1s infinite;
 }
 
-#navbarSaveIndicator .text-blue-500 {
-    color: #3b82f6;
+/* Show cloud briefly after save */
+.save-indicator-cloud.show-saved {
+    display: inline-flex !important;
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    background: var(--linguify-success) !important;
+    color: white !important;
 }
 
-/* Stabilize save indicator to prevent page shake */
-#navbarSaveIndicator {
-    width: 120px;
-    height: 20px;
-    display: inline-block !important;
-    vertical-align: top;
-    overflow: hidden;
-    transition: none !important;
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-align: center;
-    line-height: 20px;
+/* Cloud animations */
+@keyframes cloudPulse {
+    0%, 100% { 
+        transform: scale(1); 
+        opacity: 1; 
+    }
+    50% { 
+        transform: scale(1.1); 
+        opacity: 0.8; 
+    }
 }
 
-/* Saving state indicator */
-.htmx-request #navbarSaveIndicator::after {
-    content: "💾 Saving...";
-    color: var(--linguify-primary);
-    animation: pulse 1s infinite;
+@keyframes fadeOut {
+    0% { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+    100% { 
+        opacity: 0; 
+        transform: scale(0.8); 
+    }
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+/* Hide the cloud after 2 seconds of being saved */
+.save-indicator-cloud.fade-out {
+    animation: fadeOut 0.5s ease forwards;
 }
 
 /* ===== TODO FORM LAYOUT ===== */

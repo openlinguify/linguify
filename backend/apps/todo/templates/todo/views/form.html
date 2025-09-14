@@ -252,6 +252,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
+    // Smart Cloud Save Indicator - Like Notebook/Odoo
+    let saveTimeout;
+    const cloudIndicator = document.getElementById('cloudSaveIndicator');
+    
+    // Show cloud during save
+    document.body.addEventListener('htmx:beforeRequest', function(evt) {
+        // Only for autosave requests
+        if (evt.detail.elt.id === 'taskForm' && cloudIndicator) {
+            cloudIndicator.style.display = 'inline-flex';
+            cloudIndicator.classList.remove('show-saved', 'fade-out');
+        }
+    });
+    
+    // Show success and schedule hide after save
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        // Only for autosave requests
+        if (evt.detail.elt.id === 'taskForm' && cloudIndicator) {
+            clearTimeout(saveTimeout);
+            cloudIndicator.classList.add('show-saved');
+            
+            // Hide after 2 seconds
+            saveTimeout = setTimeout(() => {
+                cloudIndicator.classList.add('fade-out');
+                setTimeout(() => {
+                    cloudIndicator.style.display = 'none';
+                    cloudIndicator.classList.remove('show-saved', 'fade-out');
+                }, 500); // Wait for fade animation
+            }, 2000);
+        }
+    });
+    
     // Keep minimal JavaScript for form submission handling
     document.getElementById('taskForm').addEventListener('submit', function(e) {
         e.preventDefault();

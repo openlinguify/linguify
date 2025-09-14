@@ -1,21 +1,4 @@
-{% load i18n %}
-<div hx-indicator="this">
-    <span class="htmx-indicator text-blue-500">
-        <i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite;"></i>
-    </span>
-</div>
-{% if success %}
-    {% if no_changes %}
-        <span class="text-gray-500" title="{% trans 'No changes' %}">
-            —
-        </span>
-    {% else %}
-        <span class="text-green-600" title="{% if created %}{% trans 'Created' %}{% else %}{% trans 'Saved' %}{% endif %}">
-            ✓
-        </span>
-    {% endif %}
-{% elif error %}
-    <span class="text-red-600" title="{% trans 'Save failed' %}">
-        ✗
-    </span>
-{% endif %}
+{% comment %}
+Save indicator is now handled by the cloud icon in JavaScript
+This template returns empty content to avoid interference
+{% endcomment %}
