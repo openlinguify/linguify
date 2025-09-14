@@ -55,6 +55,22 @@
     
     <!-- Droite: Actions et filtres contextuels -->
     <div class="navbar-section-right">
+        <!-- Activity-specific controls -->
+        {% if active_view == 'activity' %}
+        <div class="activity-period-selector">
+            <label class="navbar-label">{% trans "Period:" %}</label>
+            <select id="activityTimeRange" class="form-control-linguify" style="width: 120px;" 
+                    hx-get="{% url 'todo:activity' %}" 
+                    hx-trigger="change" 
+                    hx-target="#activity-content" 
+                    hx-include="[name='range']">
+                <option value="7">{% trans "7 days" %}</option>
+                <option value="30">{% trans "30 days" %}</option>
+                <option value="90">{% trans "3 months" %}</option>
+            </select>
+        </div>
+        {% endif %}
+        
         <!-- Select All (List view only) -->
         {% if active_view == 'list' %}
         <div class="navbar-checkbox-group">
@@ -63,8 +79,10 @@
         </div>
         {% endif %}
         
-        <!-- Filtres -->
+        <!-- Search (pas sur Activity) -->
+        {% if active_view != 'activity' %}
         <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Search tasks...' %}" style="width: 140px; min-width: 100px;">
+        {% endif %}
         
         <!-- Project Filter (List view) -->
         {% if active_view == 'list' %}
@@ -111,6 +129,14 @@
         
         <!-- Actions -->
         <div class="navbar-actions-group">
+            <!-- Activity-specific actions -->
+            {% if active_view == 'activity' %}
+            <a href="{% url 'todo:activity_dashboard' %}" class="btn-navbar btn-navbar-outline" title="{% trans 'Advanced Analytics' %}">
+                <i class="bi bi-graph-up"></i>
+                <span class="d-none d-xl-inline">{% trans "Analytics" %}</span>
+            </a>
+            {% endif %}
+            
             <!-- Bulk Actions (List view only) -->
             {% if active_view == 'list' %}
             <button id="bulkActionsBtn" class="btn-navbar btn-navbar-outline" onclick="showBulkActionsMenu()" disabled title="{% trans 'Bulk Actions' %}">
@@ -124,17 +150,41 @@
                 <span class="d-none d-xxl-inline">{% trans "Configure" %}</span>
             </a>
             
+            <!-- Export (différent pour Activity) -->
+            {% if active_view == 'activity' %}
+            <div class="dropdown" style="position: relative;">
+                <button id="activityExportBtn" class="btn-navbar btn-navbar-outline dropdown-toggle" title="{% trans 'Export Activity Data' %}" onclick="toggleActivityExportDropdown()">
+                    <i class="bi bi-download"></i>
+                    <span class="d-none d-xxl-inline">{% trans "Export" %}</span>
+                </button>
+                <div id="activityExportDropdown" class="dropdown-menu" style="display: none; position: absolute; right: 0; top: 100%; z-index: 1000;">
+                    <a class="dropdown-item" href="{% url 'todo:activity_export' %}?format=json">
+                        <i class="bi bi-filetype-json me-2"></i>{% trans "Export JSON" %}
+                    </a>
+                    <a class="dropdown-item" href="{% url 'todo:activity_export' %}?format=csv">
+                        <i class="bi bi-filetype-csv me-2"></i>{% trans "Export CSV" %}
+                    </a>
+                    <a class="dropdown-item" href="{% url 'todo:activity_export' %}?format=xlsx">
+                        <i class="bi bi-file-earmark-excel me-2"></i>{% trans "Export Excel" %}
+                    </a>
+                </div>
+            </div>
+            {% else %}
             <a href="#" id="exportTasks" class="btn-navbar btn-navbar-outline" title="{% trans 'Export Tasks' %}" 
                hx-get="/todo/export/" hx-target="body" hx-swap="afterbegin">
                 <i class="bi bi-download"></i>
                 <span class="d-none d-xxl-inline">{% trans "Export" %}</span>
             </a>
+            {% endif %}
             
+            <!-- Import (pas sur Activity) -->
+            {% if active_view != 'activity' %}
             <button id="importTasks" class="btn-navbar btn-navbar-outline" 
                     hx-get="/todo/import/" hx-target="#import-modal-container" hx-trigger="click">
                 <i class="bi bi-upload"></i>
                 <span class="d-none d-xxl-inline">{% trans "Import" %}</span>
             </button>
+            {% endif %}
         </div>
     </div>
 </div>

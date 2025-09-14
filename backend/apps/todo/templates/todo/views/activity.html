@@ -10,67 +10,8 @@
 
 {% block content %}
 <div class="todo-activity-workspace">
-    <!-- Enhanced Activity Header -->
-    <div class="activity-header mb-6">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <div class="activity-title-section">
-                    <h1 class="text-2xl font-bold text-gray-900 mb-1">{% trans "Activity Overview" %}</h1>
-                    <p class="text-gray-600">{% trans "Track your productivity and recent activity" %}</p>
-                </div>
-                <!-- Time Range Selector -->
-                <div class="activity-filters">
-                    <div class="flex items-center space-x-2">
-                        <label class="text-sm font-medium text-gray-700">{% trans "Period:" %}</label>
-                        <select id="timeRange" class="form-select-modern text-sm" hx-get="{% url 'todo:activity' %}" hx-trigger="change" hx-target="#activity-content" hx-include="[name='range']">
-                            <option value="7">{% trans "Last 7 days" %}</option>
-                            <option value="30">{% trans "Last 30 days" %}</option>
-                            <option value="90">{% trans "Last 3 months" %}</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="activity-actions flex items-center space-x-2">
-                <!-- Export Button -->
-                <div class="dropdown relative">
-                    <button class="btn-secondary-modern flex items-center" onclick="toggleExportDropdown()">
-                        <i class="bi bi-download mr-2"></i>
-                        {% trans "Export" %}
-                        <i class="bi bi-chevron-down ml-1"></i>
-                    </button>
-                    <div id="exportDropdown" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden z-50">
-                        <a href="{% url 'todo:activity_export' %}?format=json" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg">
-                            <i class="bi bi-filetype-json mr-2"></i>
-                            {% trans "Export JSON" %}
-                        </a>
-                        <a href="{% url 'todo:activity_export' %}?format=csv" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                            <i class="bi bi-filetype-csv mr-2"></i>
-                            {% trans "Export CSV" %}
-                        </a>
-                        <a href="{% url 'todo:activity_export' %}?format=xlsx" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-b-lg">
-                            <i class="bi bi-file-earmark-excel mr-2"></i>
-                            {% trans "Export Excel" %}
-                        </a>
-                    </div>
-                </div>
-                <!-- Dashboard Button -->
-                <a href="{% url 'todo:activity_dashboard' %}" class="btn-secondary-modern">
-                    <i class="bi bi-graph-up mr-2"></i>
-                    {% trans "Analytics" %}
-                </a>
-                <!-- New Task Button -->
-                <button class="btn-primary-modern" 
-                        hx-get="{% url 'todo:task_form_modal_htmx' %}" 
-                        hx-target="#task-modal-container" 
-                        hx-trigger="click">
-                    <i class="bi bi-plus-lg mr-2"></i>
-                    {% trans "New Task" %}
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="activity-content">
+    <!-- Activity Content Container -->
+    <div id="activity-content" class="activity-workspace-container">
 
         <!-- Enhanced Activity Stats -->
         <div class="activity-stats-modern mb-8" hx-get="{% url 'todo:activity_stats_htmx' %}" hx-trigger="load, every 30s" hx-target="this" hx-swap="outerHTML">
@@ -543,11 +484,14 @@
 
 {% block extra_css %}
 <style>
-/* Modern Activity Workspace Styles */
+/* Modern Activity Workspace - Using Tailwind-compatible styles */
 .todo-activity-workspace {
     min-height: calc(100vh - 120px);
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 2rem;
+    @apply bg-gradient-to-br from-gray-50 to-blue-100 p-8;
+}
+
+.activity-workspace-container {
+    @apply max-w-7xl mx-auto;
 }
 
 /* Enhanced Stats Cards */
@@ -999,6 +943,23 @@
     outline: 2px solid #3b82f6;
     outline-offset: 2px;
 }
+
+/* Activity-specific navbar additions */
+.activity-period-selector {
+    @apply flex items-center space-x-2;
+}
+
+.activity-period-selector .navbar-label {
+    @apply text-sm font-medium text-gray-700 whitespace-nowrap;
+}
+
+#activityExportDropdown .dropdown-item {
+    @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors;
+}
+
+#activityExportDropdown {
+    @apply min-w-max bg-white rounded-lg shadow-lg border border-gray-200 mt-2;
+}
 </style>
 {% endblock %}
 
@@ -1225,6 +1186,38 @@ function handleResponsiveChanges() {
         timeline.classList.remove('mobile-simplified');
     }
 }
+
+// Activity Navbar Export Dropdown
+window.toggleActivityExportDropdown = function() {
+    const dropdown = document.getElementById('activityExportDropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+};
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+    const exportDropdown = document.getElementById('activityExportDropdown');
+    const exportBtn = document.getElementById('activityExportBtn');
+    
+    if (exportDropdown && !exportDropdown.contains(e.target) && !exportBtn.contains(e.target)) {
+        exportDropdown.style.display = 'none';
+    }
+});
+
+// Time range change handler
+document.addEventListener('change', function(e) {
+    if (e.target.id === 'activityTimeRange') {
+        // Add loading state to content
+        const content = document.getElementById('activity-content');
+        if (content) {
+            content.style.opacity = '0.6';
+            setTimeout(() => {
+                content.style.opacity = '1';
+            }, 500);
+        }
+    }
+});
 
 window.addEventListener('resize', handleResponsiveChanges);
 handleResponsiveChanges(); // Call on load
