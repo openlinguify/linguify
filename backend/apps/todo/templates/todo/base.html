@@ -96,6 +96,20 @@
             padding: 0 !important;
         }
         
+        /* Task Modal Styles - Ensure highest z-index */
+        #task-modal {
+            z-index: 10000 !important;
+        }
+        
+        #task-modal-container {
+            z-index: 10000 !important;
+        }
+        
+        /* Prevent body scroll when modal is open */
+        body.modal-open {
+            overflow: hidden;
+        }
+        
     </style>
 </head>
 <body class="app-body-layout" style="height: 100vh; overflow: hidden;">
