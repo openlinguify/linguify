@@ -154,7 +154,7 @@
             
             <!-- Export (différent pour Activity) -->
             {% if active_view == 'activity' %}
-            <div class="dropdown" style="position: relative;" x-data="{ open: false }" @click.outside="open = false">
+            <div class="dropdown" style="position: relative;" x-data="{ open: false, exportUrl: '{% url 'todo:activity_export' %}' }" @click.outside="open = false">
                 <button @click="open = !open" class="btn-navbar btn-navbar-outline dropdown-toggle" title="{% trans 'Export Activity Data' %}">
                     <i class="bi bi-download"></i>
                     <span class="d-none d-xxl-inline">{% trans "Export" %}</span>
@@ -168,13 +168,19 @@
                      x-transition:leave-end="transform opacity-0 scale-95"
                      class="dropdown-menu" 
                      style="position: absolute; right: 0; top: 100%; z-index: 1000;">
-                    <a class="dropdown-item" href="{% url 'todo:activity_export' %}?format=json">
+                    <a class="dropdown-item" 
+                       :href="exportUrl + '?format=json&range=' + (document.querySelector('select[name=range]')?.value || '30')"
+                       @click="open = false">
                         <i class="bi bi-filetype-json me-2"></i>{% trans "Export JSON" %}
                     </a>
-                    <a class="dropdown-item" href="{% url 'todo:activity_export' %}?format=csv">
+                    <a class="dropdown-item" 
+                       :href="exportUrl + '?format=csv&range=' + (document.querySelector('select[name=range]')?.value || '30')"
+                       @click="open = false">
                         <i class="bi bi-filetype-csv me-2"></i>{% trans "Export CSV" %}
                     </a>
-                    <a class="dropdown-item" href="{% url 'todo:activity_export' %}?format=xlsx">
+                    <a class="dropdown-item" 
+                       :href="exportUrl + '?format=xlsx&range=' + (document.querySelector('select[name=range]')?.value || '30')"
+                       @click="open = false">
                         <i class="bi bi-file-earmark-excel me-2"></i>{% trans "Export Excel" %}
                     </a>
                 </div>

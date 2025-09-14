@@ -17,8 +17,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" 
              x-data="{ loaded: false }"
              x-init="setTimeout(() => loaded = true, 100)">
-            <!-- Tasks Created -->
-            <div class="form-card-linguify text-center">
+            
+            <!-- Tasks Created Today -->
+            <div class="form-card-linguify text-center"
+                 x-show="loaded"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <div style="padding: 1.5rem;">
                     <div class="flex items-center justify-center mb-3">
                         <div style="width: 3rem; height: 3rem; background: var(--linguify-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
@@ -31,11 +36,19 @@
                     <div style="font-size: 0.875rem; font-weight: 600; color: var(--linguify-gray); margin-bottom: 0.5rem;">
                         {% trans "Created Today" %}
                     </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-500" 
+                             style="width: {% widthratio activity_stats.tasks_created_today 10 100 %}%"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Tasks Completed -->
-            <div class="form-card-linguify text-center">
+            <!-- Tasks Completed Today -->
+            <div class="form-card-linguify text-center"
+                 x-show="loaded"
+                 x-transition:enter="transition ease-out duration-300 delay-100"
+                 x-transition:enter-start="opacity-0 transform translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <div style="padding: 1.5rem;">
                     <div class="flex items-center justify-center mb-3">
                         <div style="width: 3rem; height: 3rem; background: var(--linguify-success); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
@@ -48,11 +61,19 @@
                     <div style="font-size: 0.875rem; font-weight: 600; color: var(--linguify-gray); margin-bottom: 0.5rem;">
                         {% trans "Completed Today" %}
                     </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full transition-all duration-500" 
+                             style="width: {% if activity_stats.tasks_created_today > 0 %}{% widthratio activity_stats.tasks_completed_today activity_stats.tasks_created_today 100 %}{% else %}0{% endif %}%"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Created This Week -->
-            <div class="form-card-linguify text-center">
+            <div class="form-card-linguify text-center"
+                 x-show="loaded"
+                 x-transition:enter="transition ease-out duration-300 delay-200"
+                 x-transition:enter-start="opacity-0 transform translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <div style="padding: 1.5rem;">
                     <div class="flex items-center justify-center mb-3">
                         <div style="width: 3rem; height: 3rem; background: var(--linguify-secondary); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
@@ -65,11 +86,19 @@
                     <div style="font-size: 0.875rem; font-weight: 600; color: var(--linguify-gray); margin-bottom: 0.5rem;">
                         {% trans "Created This Week" %}
                     </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-purple-500 h-2 rounded-full transition-all duration-500" 
+                             style="width: {% widthratio activity_stats.tasks_created_this_week 30 100 %}%"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Completed This Week -->
-            <div class="form-card-linguify text-center">
+            <div class="form-card-linguify text-center"
+                 x-show="loaded"
+                 x-transition:enter="transition ease-out duration-300 delay-300"
+                 x-transition:enter-start="opacity-0 transform translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <div style="padding: 1.5rem;">
                     <div class="flex items-center justify-center mb-3">
                         <div style="width: 3rem; height: 3rem; background: var(--linguify-warning); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
@@ -82,113 +111,9 @@
                     <div style="font-size: 0.875rem; font-weight: 600; color: var(--linguify-gray); margin-bottom: 0.5rem;">
                         {% trans "Completed This Week" %}
                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Main Activity Content -->
-                     x-show="loaded"
-                     x-transition:enter="transition ease-out duration-300 delay-[0ms]"
-                     x-transition:enter-start="opacity-0 transform translate-y-4"
-                     x-transition:enter-end="opacity-100 transform translate-y-0">
-                    <div class="stat-card-header bg-gradient-to-br from-blue-500 to-blue-600">
-                        <div class="stat-icon-modern">
-                            <i class="bi bi-plus-circle text-white"></i>
-                        </div>
-                        <div class="stat-trend-modern">
-                            <span class="text-xs text-blue-100">vs {% trans "yesterday" %}</span>
-                        </div>
-                    </div>
-                    <div class="stat-card-body">
-                        <div class="stat-number-modern text-blue-600" data-count="{{ activity_stats.tasks_created_today }}">
-                            {{ activity_stats.tasks_created_today }}
-                        </div>
-                        <div class="stat-label-modern">{% trans "Created Today" %}</div>
-                        <div class="stat-progress-modern">
-                            <div class="bg-blue-100 rounded-full h-2">
-                                <div class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: {% widthratio activity_stats.tasks_created_today 10 100 %}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Completed Today -->
-                <div class="stat-card-modern group hover:scale-105 transition-all duration-300"
-                     x-show="loaded"
-                     x-transition:enter="transition ease-out duration-300 delay-[100ms]"
-                     x-transition:enter-start="opacity-0 transform translate-y-4"
-                     x-transition:enter-end="opacity-100 transform translate-y-0">
-                    <div class="stat-card-header bg-gradient-to-br from-green-500 to-green-600">
-                        <div class="stat-icon-modern">
-                            <i class="bi bi-check-circle text-white"></i>
-                        </div>
-                        <div class="stat-trend-modern">
-                            <span class="text-xs text-green-100">{% trans "completion rate" %}</span>
-                        </div>
-                    </div>
-                    <div class="stat-card-body">
-                        <div class="stat-number-modern text-green-600" data-count="{{ activity_stats.tasks_completed_today }}">
-                            {{ activity_stats.tasks_completed_today }}
-                        </div>
-                        <div class="stat-label-modern">{% trans "Completed Today" %}</div>
-                        <div class="stat-progress-modern">
-                            <div class="bg-green-100 rounded-full h-2">
-                                <div class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: {% if activity_stats.tasks_created_today > 0 %}{% widthratio activity_stats.tasks_completed_today activity_stats.tasks_created_today 100 %}{% else %}0{% endif %}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Created This Week -->
-                <div class="stat-card-modern group hover:scale-105 transition-all duration-300"
-                     x-show="loaded"
-                     x-transition:enter="transition ease-out duration-300 delay-[200ms]"
-                     x-transition:enter-start="opacity-0 transform translate-y-4"
-                     x-transition:enter-end="opacity-100 transform translate-y-0">
-                    <div class="stat-card-header bg-gradient-to-br from-purple-500 to-purple-600">
-                        <div class="stat-icon-modern">
-                            <i class="bi bi-calendar-week text-white"></i>
-                        </div>
-                        <div class="stat-trend-modern">
-                            <span class="text-xs text-purple-100">{% trans "this week" %}</span>
-                        </div>
-                    </div>
-                    <div class="stat-card-body">
-                        <div class="stat-number-modern text-purple-600" data-count="{{ activity_stats.tasks_created_this_week }}">
-                            {{ activity_stats.tasks_created_this_week }}
-                        </div>
-                        <div class="stat-label-modern">{% trans "Created This Week" %}</div>
-                        <div class="stat-progress-modern">
-                            <div class="bg-purple-100 rounded-full h-2">
-                                <div class="bg-purple-500 h-2 rounded-full transition-all duration-500" style="width: {% widthratio activity_stats.tasks_created_this_week 30 100 %}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Completed This Week -->
-                <div class="stat-card-modern group hover:scale-105 transition-all duration-300"
-                     x-show="loaded"
-                     x-transition:enter="transition ease-out duration-300 delay-[300ms]"
-                     x-transition:enter-start="opacity-0 transform translate-y-4"
-                     x-transition:enter-end="opacity-100 transform translate-y-0">
-                    <div class="stat-card-header bg-gradient-to-br from-amber-500 to-amber-600">
-                        <div class="stat-icon-modern">
-                            <i class="bi bi-trophy text-white"></i>
-                        </div>
-                        <div class="stat-trend-modern">
-                            <span class="text-xs text-amber-100">{% trans "productivity" %}</span>
-                        </div>
-                    </div>
-                    <div class="stat-card-body">
-                        <div class="stat-number-modern text-amber-600" data-count="{{ activity_stats.tasks_completed_this_week }}">
-                            {{ activity_stats.tasks_completed_this_week }}
-                        </div>
-                        <div class="stat-label-modern">{% trans "Completed This Week" %}</div>
-                        <div class="stat-progress-modern">
-                            <div class="bg-amber-100 rounded-full h-2">
-                                <div class="bg-amber-500 h-2 rounded-full transition-all duration-500" style="width: {% if activity_stats.tasks_created_this_week > 0 %}{% widthratio activity_stats.tasks_completed_this_week activity_stats.tasks_created_this_week 100 %}{% else %}0{% endif %}%"></div>
-                            </div>
-                        </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-amber-500 h-2 rounded-full transition-all duration-500" 
+                             style="width: {% if activity_stats.tasks_created_this_week > 0 %}{% widthratio activity_stats.tasks_completed_this_week activity_stats.tasks_created_this_week 100 %}{% else %}0{% endif %}%"></div>
                     </div>
                 </div>
             </div>
@@ -200,16 +125,16 @@
             <div class="lg:col-span-2 space-y-6">
                 <!-- Critical Alerts Section -->
                 {% if overdue_tasks %}
-                <div class="alert-section-modern overdue-alert" 
+                <div class="form-card-linguify overdue-alert" 
                      x-data="{ visible: true }" 
                      x-show="visible"
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0 transform scale-95"
                      x-transition:enter-end="opacity-100 transform scale-100">
-                    <div class="alert-header-modern">
+                    <div class="alert-header">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
-                                <div class="alert-icon-modern bg-red-100 text-red-600">
+                                <div class="alert-icon bg-red-100 text-red-600">
                                     <i class="bi bi-exclamation-triangle-fill"></i>
                                 </div>
                                 <div>
@@ -217,18 +142,18 @@
                                     <p class="text-sm text-red-600">{% trans "These tasks need immediate attention" %}</p>
                                 </div>
                             </div>
-                            <div class="badge-modern bg-red-100 text-red-800">{{ overdue_tasks.count }}</div>
+                            <div class="badge bg-red-100 text-red-800">{{ overdue_tasks.count }}</div>
                         </div>
                     </div>
-                    <div class="alert-content-modern">
+                    <div class="alert-content">
                         <div class="space-y-3">
                             {% for task in overdue_tasks|slice:":5" %}
-                            <div class="task-item-modern overdue-item group" 
+                            <div class="task-item overdue-item group" 
                                  data-task-id="{{ task.id }}"
                                  x-data="{ completing: false }"
                                  :class="{ 'opacity-50 scale-95': completing }">
                                 <div class="flex items-start space-x-3">
-                                    <button class="task-checkbox-modern overdue-checkbox" 
+                                    <button class="task-checkbox overdue-checkbox" 
                                             hx-post="{% url 'todo:task_toggle_htmx' task.id %}"
                                             hx-target="[data-task-id='{{ task.id }}']"
                                             hx-swap="outerHTML"
@@ -239,31 +164,31 @@
                                         <i class="bi bi-circle text-red-500"></i>
                                     </button>
                                     <div class="flex-1 min-w-0">
-                                        <div class="task-content-modern">
-                                            <h4 class="task-title-modern text-gray-900 hover:text-red-600 cursor-pointer transition-colors"
+                                        <div class="task-content">
+                                            <h4 class="task-title text-gray-900 hover:text-red-600 cursor-pointer transition-colors"
                                                 hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
                                                 hx-target="#task-modal-container"
                                                 hx-trigger="click">
                                                 {{ task.title }}
                                                 {% if task.priority == '1' %}
-                                                <span class="priority-star-modern">
+                                                <span class="priority-star">
                                                     <i class="bi bi-star-fill text-amber-500"></i>
                                                 </span>
                                                 {% endif %}
                                             </h4>
-                                            <div class="task-meta-modern text-red-600">
+                                            <div class="task-meta text-red-600">
                                                 <span class="flex items-center space-x-1">
                                                     <i class="bi bi-clock"></i>
                                                     <span class="font-medium">{{ task.due_date|timesince }} {% trans "overdue" %}</span>
                                                 </span>
                                                 {% if task.project %}
-                                                <span class="project-tag-modern">{{ task.project.name }}</span>
+                                                <span class="project-tag">{{ task.project.name }}</span>
                                                 {% endif %}
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="task-actions-modern opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button class="action-btn-modern" 
+                                    <div class="task-actions opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button class="action-btn" 
                                                 hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
                                                 hx-target="#task-modal-container"
                                                 title="{% trans 'Edit Task' %}">
@@ -275,8 +200,8 @@
                             {% endfor %}
                             
                             {% if overdue_tasks.count > 5 %}
-                            <div class="view-all-modern">
-                                <button class="view-all-btn-modern text-red-600 hover:text-red-800" 
+                            <div class="view-all">
+                                <button class="view-all-btn text-red-600 hover:text-red-800" 
                                         hx-get="{% url 'todo:activity' %}?filter=overdue"
                                         hx-target="#activity-content">
                                     {% trans "View all" %} {{ overdue_tasks.count }} {% trans "overdue tasks" %}
@@ -291,11 +216,11 @@
 
                 <!-- Due Today Section -->
                 {% if due_today_tasks %}
-                <div class="section-modern today-section">
-                    <div class="section-header-modern">
+                <div class="form-card-linguify today-section">
+                    <div class="section-header">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
-                                <div class="section-icon-modern bg-amber-100 text-amber-600">
+                                <div class="section-icon bg-amber-100 text-amber-600">
                                     <i class="bi bi-calendar-day"></i>
                                 </div>
                                 <div>
@@ -303,15 +228,15 @@
                                     <p class="text-sm text-gray-600">{% trans "Focus on these tasks today" %}</p>
                                 </div>
                             </div>
-                            <div class="badge-modern bg-amber-100 text-amber-800">{{ due_today_tasks.count }}</div>
+                            <div class="badge bg-amber-100 text-amber-800">{{ due_today_tasks.count }}</div>
                         </div>
                     </div>
-                    <div class="section-content-modern">
+                    <div class="section-content">
                         <div class="space-y-3">
                             {% for task in due_today_tasks %}
-                            <div class="task-item-modern today-item group" data-task-id="{{ task.id }}">
+                            <div class="task-item today-item group" data-task-id="{{ task.id }}">
                                 <div class="flex items-start space-x-3">
-                                    <button class="task-checkbox-modern {% if task.state == '1_done' %}completed-checkbox{% else %}today-checkbox{% endif %}" 
+                                    <button class="task-checkbox {% if task.state == '1_done' %}completed-checkbox{% else %}today-checkbox{% endif %}" 
                                             hx-post="{% url 'todo:task_toggle_htmx' task.id %}"
                                             hx-target="[data-task-id='{{ task.id }}']"
                                             hx-swap="outerHTML">
@@ -322,19 +247,19 @@
                                         {% endif %}
                                     </button>
                                     <div class="flex-1 min-w-0">
-                                        <div class="task-content-modern">
-                                            <h4 class="task-title-modern {% if task.state == '1_done' %}line-through text-gray-500{% else %}text-gray-900 hover:text-amber-600{% endif %} cursor-pointer transition-colors"
+                                        <div class="task-content">
+                                            <h4 class="task-title {% if task.state == '1_done' %}line-through text-gray-500{% else %}text-gray-900 hover:text-amber-600{% endif %} cursor-pointer transition-colors"
                                                 hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
                                                 hx-target="#task-modal-container"
                                                 hx-trigger="click">
                                                 {{ task.title }}
                                                 {% if task.priority == '1' %}
-                                                <span class="priority-star-modern">
+                                                <span class="priority-star">
                                                     <i class="bi bi-star-fill text-amber-500"></i>
                                                 </span>
                                                 {% endif %}
                                             </h4>
-                                            <div class="task-meta-modern text-amber-600">
+                                            <div class="task-meta text-amber-600">
                                                 <span class="flex items-center space-x-1">
                                                     <i class="bi bi-clock"></i>
                                                     <span>
@@ -346,13 +271,13 @@
                                                     </span>
                                                 </span>
                                                 {% if task.project %}
-                                                <span class="project-tag-modern">{{ task.project.name }}</span>
+                                                <span class="project-tag">{{ task.project.name }}</span>
                                                 {% endif %}
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="task-actions-modern opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button class="action-btn-modern" 
+                                    <div class="task-actions opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button class="action-btn" 
                                                 hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
                                                 hx-target="#task-modal-container"
                                                 title="{% trans 'Edit Task' %}">
@@ -369,11 +294,11 @@
 
                 <!-- Due This Week Section -->
                 {% if due_week_tasks %}
-                <div class="section-modern week-section">
-                    <div class="section-header-modern">
+                <div class="form-card-linguify week-section">
+                    <div class="section-header">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
-                                <div class="section-icon-modern bg-blue-100 text-blue-600">
+                                <div class="section-icon bg-blue-100 text-blue-600">
                                     <i class="bi bi-calendar-week"></i>
                                 </div>
                                 <div>
@@ -381,15 +306,15 @@
                                     <p class="text-sm text-gray-600">{% trans "Plan ahead for the week" %}</p>
                                 </div>
                             </div>
-                            <div class="badge-modern bg-blue-100 text-blue-800">{{ due_week_tasks.count }}</div>
+                            <div class="badge bg-blue-100 text-blue-800">{{ due_week_tasks.count }}</div>
                         </div>
                     </div>
-                    <div class="section-content-modern">
+                    <div class="section-content">
                         <div class="space-y-2">
                             {% for task in due_week_tasks|slice:":8" %}
-                            <div class="task-item-modern week-item group compact" data-task-id="{{ task.id }}">
+                            <div class="task-item week-item group compact" data-task-id="{{ task.id }}">
                                 <div class="flex items-center space-x-3">
-                                    <button class="task-checkbox-modern {% if task.state == '1_done' %}completed-checkbox{% else %}week-checkbox{% endif %}" 
+                                    <button class="task-checkbox {% if task.state == '1_done' %}completed-checkbox{% else %}week-checkbox{% endif %}" 
                                             hx-post="{% url 'todo:task_toggle_htmx' task.id %}"
                                             hx-target="[data-task-id='{{ task.id }}']"
                                             hx-swap="outerHTML">
@@ -401,23 +326,23 @@
                                     </button>
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center justify-between">
-                                            <h4 class="task-title-modern compact {% if task.state == '1_done' %}line-through text-gray-500{% else %}text-gray-900 hover:text-blue-600{% endif %} cursor-pointer transition-colors"
+                                            <h4 class="task-title compact {% if task.state == '1_done' %}line-through text-gray-500{% else %}text-gray-900 hover:text-blue-600{% endif %} cursor-pointer transition-colors"
                                                 hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
                                                 hx-target="#task-modal-container"
                                                 hx-trigger="click">
                                                 {{ task.title|truncatechars:40 }}
                                                 {% if task.priority == '1' %}
-                                                <span class="priority-star-modern small">
+                                                <span class="priority-star small">
                                                     <i class="bi bi-star-fill text-amber-500"></i>
                                                 </span>
                                                 {% endif %}
                                             </h4>
-                                            <div class="task-date-modern">
+                                            <div class="task-date">
                                                 <span class="text-xs text-blue-600 font-medium">{{ task.due_date|date:"M d" }}</span>
                                             </div>
                                         </div>
                                         {% if task.project %}
-                                        <div class="project-tag-modern small">{{ task.project.name }}</div>
+                                        <div class="project-tag small">{{ task.project.name }}</div>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -425,8 +350,8 @@
                             {% endfor %}
                             
                             {% if due_week_tasks.count > 8 %}
-                            <div class="view-all-modern">
-                                <button class="view-all-btn-modern text-blue-600 hover:text-blue-800" 
+                            <div class="view-all">
+                                <button class="view-all-btn text-blue-600 hover:text-blue-800" 
                                         hx-get="{% url 'todo:activity' %}?filter=week"
                                         hx-target="#activity-content">
                                     {% trans "View all" %} {{ due_week_tasks.count }} {% trans "tasks this week" %}
@@ -443,8 +368,8 @@
             <!-- Right Column - Activity Timeline -->
             <div class="space-y-6">
                 <!-- Activity Timeline -->
-                <div class="timeline-section-modern">
-                    <div class="timeline-header-modern">
+                <div class="form-card-linguify">
+                    <div class="timeline-header">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
                                 <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -465,9 +390,9 @@
                         </div>
                         
                         <!-- Timeline Filter Tabs -->
-                        <div class="timeline-tabs-modern mb-6" x-data="{ activeFilter: 'all' }">
+                        <div class="timeline-tabs mb-6" x-data="{ activeFilter: 'all' }">
                             <div class="inline-flex bg-gray-100 rounded-xl p-1 shadow-inner">
-                                <button class="tab-btn-modern" 
+                                <button class="tab-btn" 
                                         :class="{ 'active': activeFilter === 'all' }"
                                         @click="activeFilter = 'all'"
                                         hx-get="{% url 'todo:activity_timeline_htmx' %}?filter=all"
@@ -476,7 +401,7 @@
                                     <i class="bi bi-list-ul mr-2"></i>
                                     {% trans "All" %}
                                 </button>
-                                <button class="tab-btn-modern" 
+                                <button class="tab-btn" 
                                         :class="{ 'active': activeFilter === 'completed' }"
                                         @click="activeFilter = 'completed'"
                                         hx-get="{% url 'todo:activity_timeline_htmx' %}?filter=completed"
@@ -485,7 +410,7 @@
                                     <i class="bi bi-check-circle mr-2"></i>
                                     {% trans "Completed" %}
                                 </button>
-                                <button class="tab-btn-modern" 
+                                <button class="tab-btn" 
                                         :class="{ 'active': activeFilter === 'created' }"
                                         @click="activeFilter = 'created'"
                                         hx-get="{% url 'todo:activity_timeline_htmx' %}?filter=created"
@@ -498,106 +423,55 @@
                         </div>
                     </div>
 
-                    <div id="timeline-content" class="timeline-content-modern" 
+                    <div id="timeline-content" class="timeline-content" 
                          hx-get="{% url 'todo:activity_timeline_htmx' %}" 
                          hx-trigger="load"
                          hx-swap="innerHTML">
                         <!-- Timeline will be loaded here via HTMX -->
                         <div class="space-y-4">
-                            <!-- Completed Tasks Timeline -->
-                            {% for task in completed_tasks|slice:":6" %}
-                            <div class="timeline-item-modern completed-timeline-item">
-                                <div class="timeline-marker-modern bg-green-500">
-                                    <i class="bi bi-check text-white text-xs"></i>
-                                </div>
-                                <div class="timeline-content-wrapper-modern">
-                                    <div class="timeline-header-item-modern">
-                                        <span class="timeline-action-modern text-green-600 font-medium">{% trans "Completed" %}</span>
-                                        <span class="timeline-time-modern">{{ task.completed_at|timesince }} {% trans "ago" %}</span>
-                                    </div>
-                                    <div class="timeline-title-modern">{{ task.title }}</div>
-                                    {% if task.project %}
-                                    <div class="timeline-meta-modern">
-                                        <span class="project-badge-modern">{{ task.project.name }}</span>
-                                    </div>
-                                    {% endif %}
-                                </div>
+                            <!-- Loading placeholder -->
+                            <div class="text-center py-8">
+                                <i class="bi bi-arrow-repeat animate-spin text-gray-400 text-2xl"></i>
+                                <p class="text-gray-500 text-sm mt-2">{% trans "Loading activity..." %}</p>
                             </div>
-                            {% empty %}
-                            <div class="empty-timeline-modern">
-                                <i class="bi bi-check-circle text-gray-300 text-2xl"></i>
-                                <p class="text-gray-500 text-sm mt-2">{% trans "No completed tasks yet" %}</p>
-                            </div>
-                            {% endfor %}
-                            
-                            <!-- Created Tasks Timeline -->
-                            {% for task in recent_tasks|slice:":6" %}
-                            <div class="timeline-item-modern created-timeline-item">
-                                <div class="timeline-marker-modern bg-blue-500">
-                                    <i class="bi bi-plus text-white text-xs"></i>
-                                </div>
-                                <div class="timeline-content-wrapper-modern">
-                                    <div class="timeline-header-item-modern">
-                                        <span class="timeline-action-modern text-blue-600 font-medium">{% trans "Created" %}</span>
-                                        <span class="timeline-time-modern">{{ task.created_at|timesince }} {% trans "ago" %}</span>
-                                    </div>
-                                    <div class="timeline-title-modern cursor-pointer hover:text-blue-600 transition-colors"
-                                         hx-get="{% url 'todo:task_form_modal_edit_htmx' task.id %}"
-                                         hx-target="#task-modal-container"
-                                         hx-trigger="click">
-                                        {{ task.title }}
-                                        {% if task.priority == '1' %}
-                                        <span class="priority-star-modern small ml-1">
-                                            <i class="bi bi-star-fill text-amber-500"></i>
-                                        </span>
-                                        {% endif %}
-                                    </div>
-                                    {% if task.project %}
-                                    <div class="timeline-meta-modern">
-                                        <span class="project-badge-modern">{{ task.project.name }}</span>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% empty %}
-                            <div class="empty-timeline-modern">
-                                <i class="bi bi-plus-circle text-gray-300 text-2xl"></i>
-                                <p class="text-gray-500 text-sm mt-2">{% trans "No recent tasks" %}</p>
-                            </div>
-                            {% endfor %}
                         </div>
                     </div>
                 </div>
 
                 <!-- Productivity Insights -->
-                <div class="insights-section-modern">
-                    <div class="insights-header-modern">
+                <div class="form-card-linguify">
+                    <div class="insights-header">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">{% trans "Productivity Insights" %}</h3>
                     </div>
-                    <div class="insights-grid-modern">
-                        <div class="insight-card-modern">
-                            <div class="insight-icon-modern bg-purple-100 text-purple-600">
+                    <div class="insights-grid">
+                        <div class="insight-card">
+                            <div class="insight-icon bg-purple-100 text-purple-600">
                                 <i class="bi bi-graph-up"></i>
                             </div>
-                            <div class="insight-content-modern">
-                                <div class="insight-value-modern">
-                                    {% widthratio activity_stats.tasks_completed_today activity_stats.tasks_created_today 100 %}%
+                            <div class="insight-content">
+                                <div class="insight-value">
+                                    {% if activity_stats.tasks_created_today > 0 %}
+                                        {% widthratio activity_stats.tasks_completed_today activity_stats.tasks_created_today 100 %}%
+                                    {% else %}
+                                        0%
+                                    {% endif %}
                                 </div>
-                                <div class="insight-label-modern">{% trans "Today's completion rate" %}</div>
+                                <div class="insight-label">{% trans "Today's completion rate" %}</div>
                             </div>
                         </div>
                         
-                        <div class="insight-card-modern">
-                            <div class="insight-icon-modern bg-emerald-100 text-emerald-600">
+                        <div class="insight-card">
+                            <div class="insight-icon bg-emerald-100 text-emerald-600">
                                 <i class="bi bi-trophy"></i>
                             </div>
-                            <div class="insight-content-modern">
-                                <div class="insight-value-modern">{{ activity_stats.tasks_completed_this_week }}</div>
-                                <div class="insight-label-modern">{% trans "Week streak" %}</div>
+                            <div class="insight-content">
+                                <div class="insight-value">{{ activity_stats.tasks_completed_this_week|default:0 }}</div>
+                                <div class="insight-label">{% trans "Week streak" %}</div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
         </div>
     </div>
 </div>
@@ -605,107 +479,33 @@
 
 {% block extra_css %}
 <style>
-/* Modern Activity Workspace - Using Tailwind-compatible styles */
+/* Activity Workspace - Linguify Design System */
 .todo-activity-workspace {
     min-height: calc(100vh - 120px);
-    @apply bg-gradient-to-br from-gray-50 to-blue-100 p-8;
+    background: var(--linguify-bg-secondary);
+    padding: 2rem;
 }
 
 .activity-workspace-container {
-    @apply max-w-7xl mx-auto;
+    max-width: 1280px;
+    margin: 0 auto;
 }
 
-/* Enhanced Stats Cards */
-.stat-card-modern {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.stat-card-header {
-    padding: 1rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.stat-card-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: inherit;
-    opacity: 0.1;
-}
-
-.stat-icon-modern {
-    width: 3rem;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    font-size: 1.5rem;
-    position: relative;
-    z-index: 1;
-}
-
-.stat-card-body {
-    padding: 1.5rem;
-    padding-top: 0.5rem;
-}
-
-.stat-number-modern {
-    font-size: 2.5rem;
-    font-weight: 800;
-    line-height: 1;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, currentColor 0%, currentColor 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
-.stat-label-modern {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #6B7280;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.75rem;
-}
-
-.stat-progress-modern {
-    margin-top: 0.75rem;
-}
-
-/* Modern Sections */
-.section-modern, .alert-section-modern, .timeline-section-modern, .insights-section-modern {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.section-modern:hover, .alert-section-modern:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.section-header-modern, .alert-header-modern {
+/* Section Headers */
+.alert-header,
+.section-header {
     padding: 1.5rem;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--linguify-border);
 }
 
-.section-content-modern, .alert-content-modern {
+.alert-content,
+.section-content {
     padding: 1.5rem;
 }
 
-.section-icon-modern, .alert-icon-modern {
+.alert-icon,
+.section-icon {
     width: 3rem;
     height: 3rem;
     display: flex;
@@ -715,7 +515,7 @@
     font-size: 1.25rem;
 }
 
-.badge-modern {
+.badge {
     padding: 0.375rem 0.75rem;
     border-radius: 9999px;
     font-size: 0.75rem;
@@ -723,24 +523,24 @@
 }
 
 /* Task Items */
-.task-item-modern {
+.task-item {
     padding: 1rem;
     border-radius: 12px;
     transition: all 0.3s ease;
     border: 1px solid transparent;
 }
 
-.task-item-modern:hover {
-    background-color: #f8fafc;
-    border-color: #e5e7eb;
+.task-item:hover {
+    background-color: var(--linguify-bg-hover);
+    border-color: var(--linguify-border);
     transform: translateX(4px);
 }
 
-.task-item-modern.compact {
+.task-item.compact {
     padding: 0.75rem;
 }
 
-.task-checkbox-modern {
+.task-checkbox {
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
@@ -754,23 +554,23 @@
     cursor: pointer;
 }
 
-.task-checkbox-modern:hover {
+.task-checkbox:hover {
     transform: scale(1.1);
 }
 
-.task-title-modern {
+.task-title {
     font-size: 1rem;
     font-weight: 600;
     line-height: 1.5;
     margin-bottom: 0.25rem;
 }
 
-.task-title-modern.compact {
+.task-title.compact {
     font-size: 0.875rem;
     margin-bottom: 0;
 }
 
-.task-meta-modern {
+.task-meta {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -779,42 +579,42 @@
     margin-top: 0.25rem;
 }
 
-.project-tag-modern {
-    background: #e5e7eb;
-    color: #374151;
+.project-tag {
+    background: var(--linguify-bg-secondary);
+    color: var(--linguify-text-secondary);
     padding: 0.125rem 0.5rem;
     border-radius: 0.375rem;
     font-size: 0.625rem;
     font-weight: 600;
 }
 
-.project-tag-modern.small {
+.project-tag.small {
     font-size: 0.5rem;
     padding: 0.0625rem 0.375rem;
 }
 
-.priority-star-modern {
+.priority-star {
     display: inline-flex;
     align-items: center;
 }
 
-.priority-star-modern.small {
+.priority-star.small {
     font-size: 0.75rem;
 }
 
-.task-actions-modern {
+.task-actions {
     display: flex;
     align-items: center;
     gap: 0.25rem;
 }
 
-.action-btn-modern {
+.action-btn {
     width: 2rem;
     height: 2rem;
     border-radius: 0.5rem;
     border: none;
-    background: #f3f4f6;
-    color: #6b7280;
+    background: var(--linguify-bg-secondary);
+    color: var(--linguify-text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -822,19 +622,19 @@
     cursor: pointer;
 }
 
-.action-btn-modern:hover {
-    background: #e5e7eb;
-    color: #374151;
+.action-btn:hover {
+    background: var(--linguify-bg-hover);
+    color: var(--linguify-text-primary);
 }
 
-.view-all-modern {
+.view-all {
     text-align: center;
     padding-top: 1rem;
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid var(--linguify-border);
     margin-top: 1rem;
 }
 
-.view-all-btn-modern {
+.view-all-btn {
     background: none;
     border: none;
     font-size: 0.875rem;
@@ -844,16 +644,20 @@
 }
 
 /* Timeline Styles */
-.timeline-tabs-modern {
+.timeline-header {
+    padding: 1.5rem;
+}
+
+.timeline-tabs {
     display: flex;
 }
 
-.tab-btn-modern {
+.tab-btn {
     flex: 1;
     padding: 0.5rem 1rem;
     border: none;
     background: transparent;
-    color: #6b7280;
+    color: var(--linguify-text-secondary);
     font-size: 0.875rem;
     font-weight: 600;
     border-radius: 0.5rem;
@@ -861,32 +665,36 @@
     cursor: pointer;
 }
 
-.tab-btn-modern.active,
-.tab-btn-modern:hover,
-.tab-btn-modern[x-bind\:class*="active"] {
+.tab-btn.active,
+.tab-btn:hover {
     background: white;
-    color: #1f2937;
+    color: var(--linguify-text-primary);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.timeline-item-modern {
+.timeline-content {
+    padding: 1.5rem;
+}
+
+.timeline-item {
     display: flex;
     gap: 1rem;
     position: relative;
+    padding-bottom: 1rem;
 }
 
-.timeline-item-modern:not(:last-child)::after {
+.timeline-item:not(:last-child)::after {
     content: '';
     position: absolute;
     left: 1rem;
     top: 2.5rem;
-    bottom: -1rem;
+    bottom: 0;
     width: 2px;
-    background: #e5e7eb;
+    background: var(--linguify-border);
     transform: translateX(-50%);
 }
 
-.timeline-marker-modern {
+.timeline-marker {
     width: 2rem;
     height: 2rem;
     border-radius: 50%;
@@ -898,46 +706,44 @@
     z-index: 1;
 }
 
-.timeline-content-wrapper-modern {
+.timeline-content-wrapper {
     flex: 1;
     min-width: 0;
-    padding-bottom: 1rem;
 }
 
-.timeline-header-item-modern {
+.timeline-header-item {
     display: flex;
     align-items: center;
-    justify-content: between;
+    justify-content: space-between;
     gap: 0.5rem;
     margin-bottom: 0.25rem;
 }
 
-.timeline-action-modern {
+.timeline-action {
     font-size: 0.75rem;
     font-weight: 600;
 }
 
-.timeline-time-modern {
+.timeline-time {
     font-size: 0.625rem;
-    color: #9ca3af;
-    margin-left: auto;
+    color: var(--linguify-text-muted);
 }
 
-.timeline-title-modern {
+.timeline-title {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--linguify-text-primary);
     line-height: 1.4;
     margin-bottom: 0.25rem;
 }
 
-.timeline-meta-modern {
+.timeline-meta {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.project-badge-modern {
+.project-badge {
     background: #dbeafe;
     color: #1e40af;
     padding: 0.125rem 0.5rem;
@@ -946,21 +752,27 @@
     font-weight: 600;
 }
 
-.empty-timeline-modern {
+.empty-timeline {
     text-align: center;
     padding: 2rem;
-    color: #9ca3af;
+    color: var(--linguify-text-muted);
 }
 
 /* Insights */
-.insights-grid-modern {
+.insights-header {
+    padding: 1.5rem;
+    padding-bottom: 0;
+}
+
+.insights-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+    padding: 1rem 1.5rem 1.5rem;
 }
 
-.insight-card-modern {
-    background: #f8fafc;
+.insight-card {
+    background: var(--linguify-bg-secondary);
     border-radius: 12px;
     padding: 1rem;
     display: flex;
@@ -969,12 +781,12 @@
     transition: all 0.2s ease;
 }
 
-.insight-card-modern:hover {
-    background: #f1f5f9;
+.insight-card:hover {
+    background: var(--linguify-bg-hover);
     transform: translateY(-1px);
 }
 
-.insight-icon-modern {
+.insight-icon {
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 8px;
@@ -984,16 +796,16 @@
     font-size: 1.125rem;
 }
 
-.insight-value-modern {
+.insight-value {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--linguify-text-primary);
     line-height: 1;
 }
 
-.insight-label-modern {
+.insight-label {
     font-size: 0.75rem;
-    color: #6b7280;
+    color: var(--linguify-text-secondary);
     font-weight: 600;
     margin-top: 0.25rem;
 }
@@ -1004,21 +816,17 @@
         padding: 1rem;
     }
     
-    .insights-grid-modern {
+    .insights-grid {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 640px) {
-    .stat-card-modern {
-        margin-bottom: 1rem;
-    }
-    
-    .timeline-item-modern {
+    .timeline-item {
         gap: 0.75rem;
     }
     
-    .timeline-marker-modern {
+    .timeline-marker {
         width: 1.5rem;
         height: 1.5rem;
     }
@@ -1036,62 +844,38 @@
     }
 }
 
-.task-item-modern,
-.timeline-item-modern,
-.stat-card-modern {
+.task-item,
+.timeline-item {
     animation: slideInUp 0.3s ease-out;
 }
 
 /* Loading States */
-.loading-skeleton {
-    background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, transparent 63%, #f0f0f0 75%);
-    background-size: 400% 100%;
-    animation: shimmer 1.4s ease infinite;
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-@keyframes shimmer {
-    0% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+.animate-spin {
+    animation: spin 1s linear infinite;
 }
 
 /* Focus States */
-.task-checkbox-modern:focus,
-.action-btn-modern:focus,
-.tab-btn-modern:focus {
-    outline: 2px solid #3b82f6;
+.task-checkbox:focus,
+.action-btn:focus,
+.tab-btn:focus {
+    outline: 2px solid var(--linguify-primary);
     outline-offset: 2px;
-}
-
-/* Activity-specific navbar additions */
-.activity-period-selector {
-    @apply flex items-center space-x-2;
-}
-
-.activity-period-selector .navbar-label {
-    @apply text-sm font-medium text-gray-700 whitespace-nowrap;
-}
-
-#activityExportDropdown .dropdown-item {
-    @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors;
-}
-
-#activityExportDropdown {
-    @apply min-w-max bg-white rounded-lg shadow-lg border border-gray-200 mt-2;
 }
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Minimal HTMX enhancements for activity page
+// HTMX enhancements for activity page
 document.body.addEventListener('htmx:afterSwap', function(e) {
     // Show success notification for task updates
     if (e.detail.target.hasAttribute('data-task-id')) {
-        // Simple notification without Alpine (keeping it minimal)
+        // Simple notification
         const notification = document.createElement('div');
         notification.innerHTML = `
             <div class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-all duration-300">
@@ -1104,18 +888,5 @@ document.body.addEventListener('htmx:afterSwap', function(e) {
         }, 3000);
     }
 });
-
-// Add CSS animation for spin
-document.head.insertAdjacentHTML('beforeend', `
-    <style>
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-    </style>
-`);
 </script>
 {% endblock %}

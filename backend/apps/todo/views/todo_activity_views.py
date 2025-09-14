@@ -347,7 +347,7 @@ class ActivityStatsHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView)
 class ActivityExportView(LoginRequiredMixin, TemplateView):
     """Export activity data in various formats"""
     
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         user = request.user
         export_format = request.GET.get('format', 'json')  # json, csv, xlsx
         time_range = int(request.GET.get('range', 30))  # days
