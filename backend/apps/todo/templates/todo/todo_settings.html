@@ -362,20 +362,20 @@
                         Exporter vos données
                     </label>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <a href="{% url 'todo:activity_export' %}?format=csv" class="btn-export" style="display: inline-flex; align-items: center; padding: 10px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
+                        <a href="{% url 'todo:activity_export' %}?format=csv" class="btn-export btn-export-csv" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-green-500); color: var(--linguify-white); text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-filetype-csv" style="margin-right: 6px;"></i>
                             Exporter CSV
                         </a>
-                        <a href="{% url 'todo:activity_export' %}?format=json" class="btn-export" style="display: inline-flex; align-items: center; padding: 10px 16px; background: #17a2b8; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
+                        <a href="{% url 'todo:activity_export' %}?format=json" class="btn-export btn-export-json" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-blue-500); color: var(--linguify-white); text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-filetype-json" style="margin-right: 6px;"></i>
                             Exporter JSON
                         </a>
-                        <a href="{% url 'todo:activity_export' %}?format=xlsx" class="btn-export" style="display: inline-flex; align-items: center; padding: 10px 16px; background: #20c997; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
+                        <a href="{% url 'todo:activity_export' %}?format=xlsx" class="btn-export btn-export-excel" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-teal-500); color: var(--linguify-white); text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-file-earmark-excel" style="margin-right: 6px;"></i>
                             Exporter Excel
                         </a>
                     </div>
-                    <div style="font-size: 13px; color: #6c757d; margin-top: 4px;">Télécharger toutes vos tâches et projets</div>
+                    <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">Télécharger toutes vos tâches et projets</div>
                 </div>
 
                 <!-- Import Buttons -->
@@ -389,27 +389,27 @@
                                 hx-get="{% url 'todo:import_modal' %}" 
                                 hx-target="#import-modal-container" 
                                 hx-trigger="click"
-                                class="btn-import" style="display: inline-flex; align-items: center; padding: 10px 16px; background: #007bff; color: white; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
+                                class="btn-import" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-gradient); color: var(--linguify-white); border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-upload" style="margin-right: 6px;"></i>
                             Importer fichier
                         </button>
-                        <button type="button" onclick="downloadSampleCSV()" class="btn-sample" style="display: inline-flex; align-items: center; padding: 10px 16px; background: #6c757d; color: white; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
+                        <button type="button" onclick="downloadSampleCSV()" class="btn-sample" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-gray-600); color: var(--linguify-white); border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-download" style="margin-right: 6px;"></i>
                             Exemple CSV
                         </button>
                     </div>
-                    <div style="font-size: 13px; color: #6c757d; margin-top: 4px;">Importer des tâches depuis CSV ou JSON</div>
+                    <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">Importer des tâches depuis CSV ou JSON</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Global Save Button for Settings -->
-    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; border: 1px solid #e9ecef;">
-        <div style="margin-bottom: 10px; font-size: 14px; color: #6c757d;">
+    <div style="margin-top: 30px; padding: 20px; background: var(--linguify-gray-50); border-radius: 8px; text-align: center; border: 1px solid var(--linguify-gray-200);">
+        <div style="margin-bottom: 10px; font-size: 14px; color: var(--linguify-gray-500);">
             Sauvegarder tous les paramètres de configuration Todo
         </div>
-        <button type="button" onclick="saveAllTodoSettings()" class="btn-primary" style="padding: 12px 24px; font-size: 16px; min-width: 200px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <button type="button" onclick="saveAllTodoSettings()" class="btn-primary" style="padding: 12px 24px; font-size: 16px; min-width: 200px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: var(--linguify-gradient); border: none; color: var(--linguify-white);">
             <i class="bi bi-save"></i>
             Enregistrer tous les paramètres
         </button>
@@ -563,7 +563,7 @@ async function saveAllTodoSettings() {
     // Update button state
     button.innerHTML = '<i class="bi bi-hourglass-split"></i> Sauvegarde en cours...';
     button.disabled = true;
-    button.style.background = '#6c757d';
+    button.style.background = 'var(--linguify-gray-600)';
     statusDiv.innerHTML = '';
     
     try {
@@ -585,8 +585,8 @@ async function saveAllTodoSettings() {
             const result = await response.json();
             // Success
             button.innerHTML = '<i class="bi bi-check-circle"></i> Sauvegardé !';
-            button.style.background = '#28a745';
-            statusDiv.innerHTML = '<span style="color: #28a745; font-weight: 500;"><i class="bi bi-check-circle"></i> Paramètres sauvegardés avec succès</span>';
+            button.style.background = 'var(--linguify-green-500)';
+            statusDiv.innerHTML = '<span style="color: var(--linguify-green-500); font-weight: 500;"><i class="bi bi-check-circle"></i> Paramètres sauvegardés avec succès</span>';
             
             console.log('[TodoSettings] Settings saved successfully:', result);
             
@@ -605,8 +605,8 @@ async function saveAllTodoSettings() {
         console.error('[TodoSettings] Save error:', error);
         // Error
         button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Erreur';
-        button.style.background = '#dc3545';
-        statusDiv.innerHTML = '<span style="color: #dc3545; font-weight: 500;"><i class="bi bi-exclamation-triangle"></i> Erreur lors de la sauvegarde</span>';
+        button.style.background = 'var(--linguify-red-600)';
+        statusDiv.innerHTML = '<span style="color: var(--linguify-red-600); font-weight: 500;"><i class="bi bi-exclamation-triangle"></i> Erreur lors de la sauvegarde</span>';
         
         // Reset button after 3 seconds
         setTimeout(() => {
@@ -736,7 +736,7 @@ async function saveAllTodoSettings() {
                 
                 if (data.success) {
                     button.innerHTML = '<i class="bi bi-check"></i> Enregistré !';
-                    button.style.backgroundColor = '#28a745';
+                    button.style.backgroundColor = 'var(--linguify-green-500)';
                     setTimeout(() => {
                         button.innerHTML = originalText;
                         button.style.backgroundColor = '';
@@ -750,7 +750,7 @@ async function saveAllTodoSettings() {
                 console.error('[TodoSettings] Save error:', error);
                 const button = form.querySelector('button[type="submit"]');
                 button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Erreur';
-                button.style.backgroundColor = '#dc3545';
+                button.style.backgroundColor = 'var(--linguify-red-600)';
                 setTimeout(() => {
                     button.innerHTML = '<i class="bi bi-save"></i> Enregistrer';
                     button.style.backgroundColor = '';

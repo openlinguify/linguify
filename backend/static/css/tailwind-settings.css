@@ -82,7 +82,7 @@ body.settings-page {
 .settings-sidebar {
     width: 280px;
     flex-shrink: 0;
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-teal-500) 100%);
+    background: var(--linguify-gradient);
     color: var(--linguify-white);
     padding: 0;
     overflow-y: auto;
@@ -374,7 +374,7 @@ body.settings-page {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-purple-600) 100%);
+    background: var(--linguify-gradient);
     border: none;
     color: var(--linguify-white);
     padding: 12px 24px;
@@ -551,7 +551,7 @@ body.settings-page {
     bottom: 0;
     border-radius: 14px;
     padding: 2px;
-    background: linear-gradient(135deg, color-mix(in srgb, var(--linguify-primary) 10%, transparent) 0%, color-mix(in srgb, var(--linguify-teal-500) 10%, transparent) 100%);
+    background: color-mix(in srgb, var(--linguify-gradient) 10%, transparent);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
     opacity: 0;
@@ -576,7 +576,7 @@ body.settings-page {
 
 .background-option.active::before {
     opacity: 1;
-    background: linear-gradient(135deg, color-mix(in srgb, var(--linguify-primary) 20%, transparent) 0%, color-mix(in srgb, var(--linguify-teal-500) 20%, transparent) 100%);
+    background: color-mix(in srgb, var(--linguify-gradient) 20%, transparent);
 }
 
 .background-option.active::after {
