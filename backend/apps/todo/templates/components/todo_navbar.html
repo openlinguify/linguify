@@ -189,7 +189,7 @@
             <!-- Import (pas sur Activity) -->
             {% if active_view != 'activity' %}
             <button id="importTasks" class="btn-navbar btn-navbar-outline" 
-                    hx-get="/todo/import/" hx-target="#import-modal-container" hx-trigger="click">
+                    hx-get="{% url 'todo:import_modal' %}" hx-target="#import-modal-container" hx-trigger="click">
                 <i class="bi bi-upload"></i>
                 <span class="d-none d-xxl-inline">{% trans "Import" %}</span>
             </button>

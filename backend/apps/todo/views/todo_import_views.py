@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.db import models
 import csv
 import json
 import logging
@@ -28,7 +29,7 @@ class TaskImportModalHTMXView(LoginRequiredMixin, TemplateView):
         
         # Get user's projects and stages for mapping
         projects = Project.objects.filter(user=user).order_by('name')
-        stages = PersonalStageType.objects.filter(user=user).order_by('order')
+        stages = PersonalStageType.objects.filter(user=user).order_by('sequence')
         
         context.update({
             'projects': projects,
@@ -178,11 +179,13 @@ class TaskImportProcessHTMXView(LoginRequiredMixin, TemplateView):
                 stage = PersonalStageType.objects.get(user=user, name=stage_name)
             except PersonalStageType.DoesNotExist:
                 # Create new stage if it doesn't exist
-                last_order = PersonalStageType.objects.filter(user=user).count()
+                last_sequence = PersonalStageType.objects.filter(user=user).aggregate(
+                    models.Max('sequence')
+                )['sequence__max'] or 0
                 stage = PersonalStageType.objects.create(
                     user=user,
                     name=stage_name,
-                    order=last_order + 1,
+                    sequence=last_sequence + 10,
                     color='#6B7280'  # Default gray color
                 )
         
@@ -264,11 +267,13 @@ class TaskImportProcessHTMXView(LoginRequiredMixin, TemplateView):
             try:
                 stage = PersonalStageType.objects.get(user=user, name=stage_name)
             except PersonalStageType.DoesNotExist:
-                last_order = PersonalStageType.objects.filter(user=user).count()
+                last_sequence = PersonalStageType.objects.filter(user=user).aggregate(
+                    models.Max('sequence')
+                )['sequence__max'] or 0
                 stage = PersonalStageType.objects.create(
                     user=user,
                     name=stage_name,
-                    order=last_order + 1,
+                    sequence=last_sequence + 10,
                     color='#6B7280'
                 )
         
