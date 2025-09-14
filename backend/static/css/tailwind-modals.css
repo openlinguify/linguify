@@ -8092,7 +8092,6 @@ input#importDeckName:focus {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    padding: 20px;
     background: var(--linguify-white);
     min-height: 0; /* Important pour le flexbox */
 }
@@ -8120,4 +8119,40 @@ input#importDeckName:focus {
 .form-sidebar select,
 .sidebar-card-linguify {
     border-radius: 0 !important;
+}
+
+/* Fix sidebar inputs width to prevent horizontal scroll */
+.form-sidebar input,
+.form-sidebar textarea,
+.form-sidebar select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-size: 0.8rem;
+    padding: 6px;
+}
+
+/* Fix datetime-local inputs specifically */
+.form-sidebar input[type="datetime-local"] {
+    font-size: 0.75rem;
+    padding: 4px;
+}
+
+/* Fix tags input */
+.form-sidebar .tag-input-group-linguify input {
+    font-size: 0.8rem;
+    padding: 6px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure grid layout doesn't overflow */
+.form-sidebar .sidebar-content-linguify > div[style*="grid-template-columns"] {
+    overflow: hidden;
+}
+
+.form-sidebar .sidebar-content-linguify > div[style*="grid-template-columns"] > div {
+    min-width: 0;
+    overflow: hidden;
 }
