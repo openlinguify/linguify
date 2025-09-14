@@ -293,67 +293,44 @@
             </div>
         </div>
         <div class="section-content">
+            <!-- Settings Form -->
             <form id="todo-data-form" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="setting_type" value="data">
                 
+                <div class="form-group">
+                    <label class="form-label">Format d'export par defaut</label>
+                    <select name="default_export_format" class="form-control">
+                        <option value="csv">CSV</option>
+                        <option value="json" selected>JSON</option>
+                        <option value="xlsx">Excel</option>
+                    </select>
+                    <div class="form-help">Format utilise par defaut lors de l'export de vos donnees</div>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Frequence de sauvegarde</label>
-                        <select name="backup_frequency" class="form-control">
-                            <option value="never">Jamais</option>
-                            <option value="daily">Quotidienne</option>
-                            <option value="weekly">Hebdomadaire</option>
-                            <option value="monthly">Mensuelle</option>
-                        </select>
-                        <div class="form-help">Frequence des sauvegardes automatiques</div>
+                        <label class="form-label">
+                            <input type="checkbox" name="include_completed_in_exports" checked>
+                            Inclure les taches terminees dans les exports
+                        </label>
+                        <div class="form-help">Exporter aussi les taches marquees comme terminees</div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Format d'export</label>
-                        <select name="export_format" class="form-control">
-                            <option value="json">JSON</option>
-                            <option value="csv">CSV</option>
-                            <option value="pdf">PDF</option>
-                        </select>
-                        <div class="form-help">Format prefere pour l'export de donnees</div>
+                        <label class="form-label">
+                            <input type="checkbox" name="auto_delete_old_tasks">
+                            Suppression automatique des anciennes taches
+                        </label>
+                        <div class="form-help">Supprimer automatiquement les taches terminees apres 90 jours</div>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="allow_task_sharing" checked>
-                        Autoriser le partage de taches
-                    </label>
-                    <div class="form-help">Permettre le partage de taches avec d'autres utilisateurs</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="allow_project_sharing" checked>
-                        Autoriser le partage de projets
-                    </label>
-                    <div class="form-help">Permettre le partage de projets avec d'autres utilisateurs</div>
-                </div>
-
             </form>
-        </div>
-    </div>
 
-    <!-- Import/Export Actions Section (Separate from settings) -->
-    <div class="content-section">
-        <div class="section-header">
-            <h3 class="section-title">
-                <i class="bi bi-arrow-down-up"></i>
-                Actions de données
-            </h3>
-            <div class="section-actions">
-                <button class="section-toggle">
-                    <i class="bi bi-chevron-up"></i>
-                </button>
-            </div>
-        </div>
-        <div class="section-content">
+            <!-- Separator -->
+            <hr style="margin: 32px 0; border: none; border-top: 1px solid var(--linguify-gray-200);">
+
+            <!-- Import/Export Actions -->
             <div style="display: flex; gap: 24px; flex-wrap: wrap;">
                 <!-- Export Buttons -->
                 <div class="export-actions" style="display: flex; flex-direction: column; gap: 12px; flex: 1; min-width: 300px;">
