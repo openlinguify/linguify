@@ -142,6 +142,26 @@ class TodoKanbanView(LoginRequiredMixin, HTMXResponseMixin, TemplateView):
         # If HTMX request, return partial content
         if self.is_htmx():
             return self.render_htmx_response(self.get_context_data())
+        
+        # Check if we're accessing the main todo URL (not a specific view)
+        if request.resolver_match.url_name == 'main':
+            # Get user's default view preference
+            from ..models import TodoSettings
+            try:
+                settings = TodoSettings.objects.get(user=request.user)
+                default_view = settings.default_project_view
+            except TodoSettings.DoesNotExist:
+                default_view = 'kanban'  # Default to kanban if no settings
+            
+            # Redirect to the appropriate view based on preference
+            if default_view == 'list':
+                from django.shortcuts import redirect
+                return redirect('todo:list')
+            elif default_view == 'activity':
+                from django.shortcuts import redirect
+                return redirect('todo:activity')
+            # If kanban or unknown, stay on current page
+        
         return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):

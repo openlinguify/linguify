@@ -540,8 +540,8 @@ class TodoSettings(models.Model):
     # View preferences
     default_project_view = models.CharField(
         max_length=20, 
-        choices=[('list', 'List'), ('kanban', 'Kanban'), ('calendar', 'Calendar'), ('timeline', 'Timeline')],
-        default='list'
+        choices=[('list', 'List'), ('kanban', 'Kanban'), ('activity', 'Activity')],
+        default='kanban'
     )
     default_task_view = models.CharField(
         max_length=20,
