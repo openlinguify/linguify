@@ -93,6 +93,9 @@
                     <div id="{{ tab.id }}" class="tab-content{% if tab.active %} active{% endif %}">
                         {% include tab.template %}
                     </div>
+                {% elif tab.id == 'profile' and tab.active %}
+                    <!-- Profile & Account Settings -->
+                    {% include 'authentication/account_settings.html' %}
                 {% elif tab.id == 'revision' and tab.active %}
                     <!-- DEBUG: Revision tab active -->
                     {% include 'revision/revision_settings.html' %}

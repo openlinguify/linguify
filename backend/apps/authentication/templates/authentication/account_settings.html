@@ -1,6 +1,5 @@
 <!-- Profile & Account Tab -->
 {% load i18n %}
-{% load profile_helpers %}
 
 <!-- HTMX Success/Error Messages -->
 <div id="htmx-messages" style="position: fixed; top: 20px; right: 20px; z-index: 1001;"></div>
@@ -37,7 +36,7 @@
       </div>
 
       <form method="post" enctype="multipart/form-data" id="profile-picture-form"
-            hx-post="{% url 'authentication:settings' %}"
+            hx-post="/settings/"
             hx-target="#htmx-messages"
             hx-swap="innerHTML"
             hx-encoding="multipart/form-data">
@@ -67,7 +66,7 @@
       </div>
     </div>
     <div class="section-content">
-      <form hx-post="{% url 'authentication:settings' %}"
+      <form hx-post="/settings/"
             hx-trigger="change delay:500ms from:input,textarea"
             hx-target="#htmx-messages"
             hx-swap="innerHTML">
@@ -105,7 +104,7 @@
       <div class="form-group">
         <label class="form-label">{% trans "Interface Language" %}</label>
         <div class="form-help">{% trans "Choose the display language for the Linguify interface" %}</div>
-        <form hx-post="{% url 'authentication:settings' %}"
+        <form hx-post="/settings/"
               hx-trigger="change from:select"
               hx-target="#htmx-messages"
               hx-include="[name='interface_language']"
@@ -139,7 +138,7 @@
       </div>
     </div>
     <div class="section-content">
-      <form hx-post="{% url 'authentication:settings' %}"
+      <form hx-post="/settings/"
             hx-trigger="change from:input"
             hx-target="#htmx-messages"
             hx-swap="innerHTML">
@@ -177,7 +176,7 @@
       </div>
     </div>
     <div class="section-content">
-      <form hx-post="{% url 'authentication:settings' %}"
+      <form hx-post="/settings/"
             hx-trigger="change delay:500ms from:input,select"
             hx-target="#htmx-messages"
             hx-swap="innerHTML">
@@ -273,7 +272,7 @@
       </div>
     </div>
     <div class="section-content">
-      <form hx-post="{% url 'authentication:settings' %}"
+      <form hx-post="/settings/"
             hx-trigger="change delay:500ms from:input"
             hx-target="#htmx-messages"
             hx-swap="innerHTML">
