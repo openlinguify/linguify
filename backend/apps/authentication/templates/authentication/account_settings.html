@@ -161,6 +161,138 @@
     </div>
   </div>
 
+  <!-- Learning Preferences Section -->
+  <div class="content-section">
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="bi bi-book"></i>
+        {% trans "Learning Preferences" %}
+      </h3>
+      <div class="section-actions">
+        <button class="section-toggle">
+          <i class="bi bi-chevron-up"></i>
+        </button>
+      </div>
+    </div>
+    <div class="section-content">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">{% trans "Native Language" %}</label>
+          <select name="native_language" class="form-control settings-input" data-field="native_language">
+            <option value="fr" selected>🇫🇷 Français</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="nl">🇳🇱 Nederlands</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+          </select>
+          <div class="form-help">{% trans "Your native language for translations" %}</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{% trans "Target Language" %}</label>
+          <select name="target_language" class="form-control settings-input" data-field="target_language">
+            <option value="en" selected>🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="nl">🇳🇱 Nederlands</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ko">🇰🇷 한국어</option>
+          </select>
+          <div class="form-help">{% trans "Language you are currently learning" %}</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">{% trans "Learning Level" %}</label>
+          <select name="learning_level" class="form-control settings-input" data-field="learning_level">
+            <option value="beginner">{% trans "Beginner (A1-A2)" %}</option>
+            <option value="intermediate" selected>{% trans "Intermediate (B1-B2)" %}</option>
+            <option value="advanced">{% trans "Advanced (C1-C2)" %}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{% trans "Daily Goal" %}</label>
+          <select name="daily_goal" class="form-control settings-input" data-field="daily_goal">
+            <option value="5">{% trans "5 minutes (Casual)" %}</option>
+            <option value="10">{% trans "10 minutes (Regular)" %}</option>
+            <option value="15" selected>{% trans "15 minutes (Serious)" %}</option>
+            <option value="30">{% trans "30 minutes (Intense)" %}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">{% trans "Learning Methods" %}</label>
+        <div class="checkbox-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+          <label class="form-label">
+            <input type="checkbox" name="flashcards_enabled" class="settings-checkbox" data-field="flashcards_enabled" checked>
+            {% trans "Flashcards" %}
+          </label>
+          <label class="form-label">
+            <input type="checkbox" name="listening_enabled" class="settings-checkbox" data-field="listening_enabled" checked>
+            {% trans "Listening exercises" %}
+          </label>
+          <label class="form-label">
+            <input type="checkbox" name="speaking_enabled" class="settings-checkbox" data-field="speaking_enabled">
+            {% trans "Speaking practice" %}
+          </label>
+          <label class="form-label">
+            <input type="checkbox" name="grammar_enabled" class="settings-checkbox" data-field="grammar_enabled" checked>
+            {% trans "Grammar lessons" %}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications & Reminders Section -->
+  <div class="content-section">
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="bi bi-bell"></i>
+        {% trans "Notifications & Reminders" %}
+      </h3>
+      <div class="section-actions">
+        <button class="section-toggle">
+          <i class="bi bi-chevron-up"></i>
+        </button>
+      </div>
+    </div>
+    <div class="section-content">
+      <div class="form-group">
+        <label class="form-label">
+          <input type="checkbox" name="daily_reminder" class="settings-checkbox" data-field="daily_reminder" checked>
+          {% trans "Daily study reminder" %}
+        </label>
+        <div class="form-help">{% trans "Get reminded to practice every day" %}</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">
+          <input type="checkbox" name="streak_notifications" class="settings-checkbox" data-field="streak_notifications" checked>
+          {% trans "Streak notifications" %}
+        </label>
+        <div class="form-help">{% trans "Celebrate your learning streaks" %}</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">
+          <input type="checkbox" name="achievement_notifications" class="settings-checkbox" data-field="achievement_notifications" checked>
+          {% trans "Achievement notifications" %}
+        </label>
+        <div class="form-help">{% trans "Get notified when you reach milestones" %}</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">{% trans "Reminder Time" %}</label>
+        <input type="time" name="reminder_time" class="form-control settings-input" data-field="reminder_time" value="18:00">
+        <div class="form-help">{% trans "When to receive your daily reminder" %}</div>
+      </div>
+    </div>
+  </div>
+
 <!-- Unified Settings JavaScript -->
 <script>
 let settingsChanged = false;
