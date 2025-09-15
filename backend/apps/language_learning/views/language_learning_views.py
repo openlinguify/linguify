@@ -18,13 +18,7 @@ from rest_framework.response import Response
 
 from ..models import LanguagelearningItem, Language, UserLanguage, LANGUAGE_CHOICES, PROFICIENCY_LEVELS
 from ..forms import LanguagelearningItemForm
-from ..serializers.language_learning_serializers import (
-    LanguageSerializer,
-    UserLanguageSerializer,
-    LanguagelearningItemSerializer,
-    StartLanguageLearningSerializer,
-    LanguageLearningStatsSerializer
-)
+from ..serializers.language_learning_serializers import *
 
 import json
 import logging

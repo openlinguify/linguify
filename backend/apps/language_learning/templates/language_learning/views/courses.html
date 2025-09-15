@@ -1,0 +1,213 @@
+{% extends "language_learning/base.html" %}
+{% load static %}
+
+{% block title %}Cours - Linguify Learn{% endblock %}
+
+{% block learning_content %}
+<div class="courses-container" x-data="{ activeUnit: {{ active_unit_id|default:1 }} }">
+    {% if selected_language %}
+    <!-- Header de la section cours -->
+    <div class="courses-header">
+        <div class="course-info">
+            <h1 class="course-title">
+                <span class="course-flag">{{ selected_language.flag }}</span>
+                {{ selected_language_name|default:"Cours" }}
+            </h1>
+            <p class="course-description">
+                Progressez à travers les unités et modules pour maîtriser la langue
+            </p>
+        </div>
+
+        <!-- Informations de progression -->
+        <div class="progress-cards-grid">
+            <div class="progress-card progress-card-primary">
+                <div class="progress-card-content">
+                    <div class="progress-card-info">
+                        <h6 class="progress-card-label">Niveau actuel</h6>
+                        <p class="progress-card-value">{{ user_progress.level|default:1 }}</p>
+                    </div>
+                    <i class="bi bi-trophy-fill progress-card-icon"></i>
+                </div>
+            </div>
+
+            <div class="progress-card progress-card-success">
+                <div class="progress-card-content">
+                    <div class="progress-card-info">
+                        <h6 class="progress-card-label">XP Total</h6>
+                        <p class="progress-card-value">{{ user_progress.total_xp|default:0 }}</p>
+                    </div>
+                    <i class="bi bi-star-fill progress-card-icon"></i>
+                </div>
+            </div>
+
+            <div class="progress-card progress-card-info">
+                <div class="progress-card-content">
+                    <div class="progress-card-info">
+                        <h6 class="progress-card-label">Progression</h6>
+                        <p class="progress-card-value">{{ user_progress.completion_percentage|default:0 }}%</p>
+                    </div>
+                    <i class="bi bi-graph-up-arrow progress-card-icon"></i>
+                </div>
+            </div>
+
+            <div class="progress-card progress-card-warning">
+                <div class="progress-card-content">
+                    <div class="progress-card-info">
+                        <h6 class="progress-card-label">Streak</h6>
+                        <p class="progress-card-value">{{ user_streak|default:0 }} jours</p>
+                    </div>
+                    <i class="bi bi-fire progress-card-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des unités -->
+    <div class="units-section">
+        <h2 class="units-title">Unités de cours</h2>
+
+        <div class="units-grid">
+            {% for unit in course_units %}
+            <div
+                class="unit-card {% if unit.progress_percentage == 100 %}completed{% endif %}"
+                :class="{ 'active': activeUnit === {{ unit.id }} }"
+                @click="activeUnit = {{ unit.id }}"
+                hx-get="{% url 'language_learning:unit_modules' unit.id %}"
+                hx-target="#modules-content"
+                hx-trigger="click"
+            >
+                <div class="unit-header">
+                    <span class="unit-number">Unité {{ unit.unit_number }}</span>
+                    <span class="unit-modules-count">
+                        <i class="bi bi-layers-fill"></i>
+                        {{ unit.modules_count }} modules
+                    </span>
+                </div>
+
+                <h3 class="unit-title">{{ unit.title }}</h3>
+                <p class="unit-description">{{ unit.description }}</p>
+
+                <div class="unit-progress">
+                    <div class="unit-progress-bar" style="width: {{ unit.progress_percentage }}%"></div>
+                </div>
+
+                <div class="unit-footer">
+                    <span class="unit-progress-text">
+                        <i class="bi bi-check-circle-fill"></i>
+                        {{ unit.completed_modules }}/{{ unit.modules_count }} complétés
+                    </span>
+                    {% if unit.progress_percentage == 100 %}
+                    <span class="unit-completed-badge">
+                        <i class="bi bi-trophy-fill"></i>
+                        Terminé
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-inbox empty-state-icon"></i>
+                <h3 class="empty-state-title">Aucune unité disponible</h3>
+                <p class="empty-state-description">
+                    Les unités de cours pour cette langue seront bientôt disponibles.
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modules de l'unité sélectionnée -->
+    <div id="modules-content" class="modules-section">
+        {% if active_unit %}
+        <div class="modules-header">
+            <h2 class="modules-title">{{ active_unit.title }}</h2>
+            <p class="modules-description">{{ active_unit.description }}</p>
+        </div>
+
+        <div class="modules-grid">
+            {% for module in active_unit_modules %}
+            <div
+                class="module-card {% if module.is_completed %}completed{% endif %} {% if module.is_locked %}locked{% endif %}"
+                {% if not module.is_locked %}
+                hx-get="{% url 'language_learning:start_module' module.id %}"
+                hx-target="#module-modal"
+                hx-trigger="click"
+                {% endif %}
+            >
+                {% if module.is_completed %}
+                <div class="module-card-status completed">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                {% elif module.is_locked %}
+                <div class="module-card-status locked">
+                    <i class="bi bi-lock-fill"></i>
+                </div>
+                {% endif %}
+
+                <span class="module-type-badge type-{{ module.module_type }}">
+                    {% if module.module_type == 'vocabulary' %}
+                        <i class="bi bi-book"></i>
+                    {% elif module.module_type == 'grammar' %}
+                        <i class="bi bi-pencil"></i>
+                    {% elif module.module_type == 'listening' %}
+                        <i class="bi bi-headphones"></i>
+                    {% elif module.module_type == 'speaking' %}
+                        <i class="bi bi-mic"></i>
+                    {% elif module.module_type == 'reading' %}
+                        <i class="bi bi-book-half"></i>
+                    {% elif module.module_type == 'writing' %}
+                        <i class="bi bi-pen"></i>
+                    {% elif module.module_type == 'culture' %}
+                        <i class="bi bi-globe2"></i>
+                    {% else %}
+                        <i class="bi bi-arrow-repeat"></i>
+                    {% endif %}
+                    {{ module.get_module_type_display }}
+                </span>
+
+                <h4 class="module-title">{{ module.title }}</h4>
+                <p class="module-description">{{ module.description }}</p>
+
+                <div class="module-meta">
+                    <span class="module-meta-item">
+                        <i class="bi bi-clock"></i>
+                        {{ module.estimated_duration }} min
+                    </span>
+                    <span class="module-meta-item">
+                        <i class="bi bi-star"></i>
+                        {{ module.xp_reward }} XP
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-arrow-left-circle empty-state-icon"></i>
+            <h3 class="empty-state-title">Sélectionnez une unité</h3>
+            <p class="empty-state-description">
+                Choisissez une unité ci-dessus pour voir ses modules et commencer l'apprentissage.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% else %}
+    <!-- Message si aucune langue n'est sélectionnée -->
+    <div class="empty-state-large">
+        <i class="bi bi-translate empty-state-icon-large"></i>
+        <h2 class="empty-state-title-large">Bienvenue dans Linguify Learn!</h2>
+        <p class="empty-state-description-large">
+            Sélectionnez une langue dans le menu pour commencer votre apprentissage.
+        </p>
+        <a href="{% url 'saas_web:settings' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-gear me-2"></i>
+            Choisir une langue
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal pour les modules (sera rempli par HTMX) -->
+<div id="module-modal"></div>
+{% endblock %}

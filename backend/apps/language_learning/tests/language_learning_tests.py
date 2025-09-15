@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from .models import LanguagelearningItem
+from ..models import LanguagelearningItem
 
 User = get_user_model()
 

@@ -1,0 +1,97 @@
+<!-- Sidebar navigation pour language learning -->
+<div class="learning-app-wrapper" x-data="{ sidebarOpen: false, activeTab: 'courses' }">
+    <!-- Navbar spécifique à language learning -->
+    {% include 'components/navbar.html' %}
+
+    <!-- Sidebar -->
+    <aside class="sidebar-units" :class="{ 'open': sidebarOpen }">
+        <div class="sidebar-units-header">
+            <h5 class="sidebar-units-title">
+                <i class="bi bi-translate" style="color: var(--linguify-primary);"></i>
+                Linguify Learn
+            </h5>
+        </div>
+
+        <!-- Navigation tabs -->
+        <div class="sidebar-nav-tabs">
+            <button
+                @click="activeTab = 'courses'"
+                :class="{ 'active': activeTab === 'courses' }"
+                class="nav-tab-btn"
+            >
+                <i class="bi bi-book-fill"></i>
+                Cours
+            </button>
+            <button
+                @click="activeTab = 'progress'"
+                :class="{ 'active': activeTab === 'progress' }"
+                class="nav-tab-btn"
+            >
+                <i class="bi bi-graph-up-arrow"></i>
+                Progrès
+            </button>
+        </div>
+
+        <!-- Contenu de la sidebar selon l'onglet actif -->
+        <div class="sidebar-content">
+            <!-- Onglet Cours -->
+            <div x-show="activeTab === 'courses'" class="tab-content">
+                <div class="sidebar-section">
+                    <h6 class="sidebar-section-title">Langues disponibles</h6>
+                    <div class="language-list">
+                        {% for lang in user_languages %}
+                        <div class="language-item">
+                            <span class="language-flag">{{ lang.flag }}</span>
+                            <span class="language-name">{{ lang.name }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onglet Progrès -->
+            <div x-show="activeTab === 'progress'" class="tab-content">
+                <div class="sidebar-section">
+                    <h6 class="sidebar-section-title">Statistiques</h6>
+                    <div class="progress-stats">
+                        <div class="stat-item">
+                            <i class="bi bi-fire text-orange-500"></i>
+                            <span>Streak: {{ user_stats.streak_days|default:0 }} jours</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="bi bi-trophy text-yellow-500"></i>
+                            <span>Niveau: {{ user_stats.current_level|default:1 }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="bi bi-check-circle text-green-500"></i>
+                            <span>{{ user_stats.completed_lessons|default:0 }} leçons</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Bouton toggle pour mobile -->
+    <button
+        @click="sidebarOpen = !sidebarOpen"
+        class="sidebar-toggle md:hidden"
+        :class="{ 'active': sidebarOpen }"
+    >
+        <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Overlay pour mobile -->
+    <div
+        x-show="sidebarOpen"
+        @click="sidebarOpen = false"
+        class="sidebar-overlay md:hidden"
+        x-transition:enter="transition-opacity ease-linear duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition-opacity ease-linear duration-300"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        style="display: none;"
+    ></div>
+</div>

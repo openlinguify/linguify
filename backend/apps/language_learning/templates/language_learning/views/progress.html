@@ -1,0 +1,239 @@
+{% extends "language_learning/base.html" %}
+{% load static %}
+
+{% block title %}Progrès - Linguify Learn{% endblock %}
+
+{% block learning_content %}
+<div class="progress-container">
+    <!-- Header de la section progrès -->
+    <div class="progress-header">
+        <div class="progress-info">
+            <h1 class="progress-title">
+                <i class="bi bi-graph-up-arrow me-2"></i>
+                Votre progression
+            </h1>
+            <p class="progress-description">
+                Suivez vos statistiques d'apprentissage et vos accomplissements
+            </p>
+        </div>
+    </div>
+
+    <!-- Statistiques principales -->
+    <div class="stats-overview">
+        <div class="stats-grid">
+            <div class="stat-card stat-card-primary">
+                <div class="stat-card-content">
+                    <div class="stat-card-info">
+                        <h3 class="stat-value">{{ user_stats.current_level|default:1 }}</h3>
+                        <p class="stat-label">Niveau actuel</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-trophy-fill"></i>
+                    </div>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-progress-bar" style="width: {{ user_stats.level_progress|default:0 }}%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-card-success">
+                <div class="stat-card-content">
+                    <div class="stat-card-info">
+                        <h3 class="stat-value">{{ user_stats.total_xp|default:0 }}</h3>
+                        <p class="stat-label">Points XP</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-progress-bar" style="width: {{ user_stats.xp_progress|default:0 }}%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-card-warning">
+                <div class="stat-card-content">
+                    <div class="stat-card-info">
+                        <h3 class="stat-value">{{ user_stats.streak_days|default:0 }}</h3>
+                        <p class="stat-label">Jours consécutifs</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-fire"></i>
+                    </div>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-progress-bar" style="width: {{ user_stats.streak_progress|default:0 }}%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-card-info">
+                <div class="stat-card-content">
+                    <div class="stat-card-info">
+                        <h3 class="stat-value">{{ user_stats.total_time|default:"0h" }}</h3>
+                        <p class="stat-label">Temps d'étude</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-clock-fill"></i>
+                    </div>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-progress-bar" style="width: {{ user_stats.time_progress|default:0 }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progression par langue -->
+    <div class="languages-progress">
+        <h2 class="section-title">Progression par langue</h2>
+
+        <div class="languages-grid">
+            {% for lang_progress in user_languages_progress %}
+            <div class="language-progress-card">
+                <div class="language-header">
+                    <span class="language-flag">{{ lang_progress.flag }}</span>
+                    <div class="language-info">
+                        <h3 class="language-name">{{ lang_progress.name }}</h3>
+                        <p class="language-level">Niveau {{ lang_progress.level|default:1 }}</p>
+                    </div>
+                </div>
+
+                <div class="language-stats">
+                    <div class="language-stat">
+                        <span class="stat-label">Unités complétées</span>
+                        <span class="stat-value">{{ lang_progress.completed_units }}/{{ lang_progress.total_units }}</span>
+                    </div>
+                    <div class="language-stat">
+                        <span class="stat-label">Modules complétés</span>
+                        <span class="stat-value">{{ lang_progress.completed_modules }}/{{ lang_progress.total_modules }}</span>
+                    </div>
+                    <div class="language-stat">
+                        <span class="stat-label">XP gagnés</span>
+                        <span class="stat-value">{{ lang_progress.xp_earned }}</span>
+                    </div>
+                </div>
+
+                <div class="language-progress-bar">
+                    <div class="progress-fill" style="width: {{ lang_progress.completion_percentage }}%"></div>
+                </div>
+                <span class="progress-percentage">{{ lang_progress.completion_percentage }}% complété</span>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-translate empty-state-icon"></i>
+                <h3 class="empty-state-title">Aucune progression</h3>
+                <p class="empty-state-description">
+                    Commencez votre apprentissage pour voir vos statistiques ici.
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Accomplissements récents -->
+    <div class="achievements-section">
+        <h2 class="section-title">Accomplissements récents</h2>
+
+        <div class="achievements-grid">
+            {% for achievement in recent_achievements %}
+            <div class="achievement-card">
+                <div class="achievement-icon">
+                    <i class="bi {{ achievement.icon }}"></i>
+                </div>
+                <div class="achievement-info">
+                    <h4 class="achievement-title">{{ achievement.title }}</h4>
+                    <p class="achievement-description">{{ achievement.description }}</p>
+                    <span class="achievement-date">{{ achievement.earned_date|date:"d/m/Y" }}</span>
+                </div>
+                <div class="achievement-badge">
+                    <span class="achievement-xp">+{{ achievement.xp_reward }} XP</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-trophy empty-state-icon"></i>
+                <h3 class="empty-state-title">Aucun accomplissement</h3>
+                <p class="empty-state-description">
+                    Continuez votre apprentissage pour débloquer des accomplissements !
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Activité récente -->
+    <div class="activity-section">
+        <h2 class="section-title">Activité récente</h2>
+
+        <div class="activity-timeline">
+            {% for activity in recent_activities %}
+            <div class="activity-item">
+                <div class="activity-time">
+                    {{ activity.timestamp|date:"H:i" }}
+                </div>
+                <div class="activity-content">
+                    <div class="activity-icon">
+                        <i class="bi {{ activity.icon }}"></i>
+                    </div>
+                    <div class="activity-details">
+                        <h5 class="activity-title">{{ activity.title }}</h5>
+                        <p class="activity-description">{{ activity.description }}</p>
+                        {% if activity.xp_earned %}
+                        <span class="activity-xp">+{{ activity.xp_earned }} XP</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="activity-date">
+                    {{ activity.timestamp|date:"d/m" }}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-clock-history empty-state-icon"></i>
+                <h3 class="empty-state-title">Aucune activité récente</h3>
+                <p class="empty-state-description">
+                    Votre activité d'apprentissage apparaîtra ici.
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Objectifs -->
+    <div class="goals-section">
+        <h2 class="section-title">Objectifs quotidiens</h2>
+
+        <div class="goals-grid">
+            <div class="goal-card">
+                <div class="goal-header">
+                    <h4 class="goal-title">Minutes d'étude</h4>
+                    <span class="goal-progress">{{ daily_goals.study_minutes }}/{{ daily_goals.target_minutes }}</span>
+                </div>
+                <div class="goal-progress-bar">
+                    <div class="goal-fill" style="width: {{ daily_goals.study_progress }}%"></div>
+                </div>
+            </div>
+
+            <div class="goal-card">
+                <div class="goal-header">
+                    <h4 class="goal-title">Modules complétés</h4>
+                    <span class="goal-progress">{{ daily_goals.completed_modules }}/{{ daily_goals.target_modules }}</span>
+                </div>
+                <div class="goal-progress-bar">
+                    <div class="goal-fill" style="width: {{ daily_goals.modules_progress }}%"></div>
+                </div>
+            </div>
+
+            <div class="goal-card">
+                <div class="goal-header">
+                    <h4 class="goal-title">XP gagnés</h4>
+                    <span class="goal-progress">{{ daily_goals.earned_xp }}/{{ daily_goals.target_xp }}</span>
+                </div>
+                <div class="goal-progress-bar">
+                    <div class="goal-fill" style="width: {{ daily_goals.xp_progress }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

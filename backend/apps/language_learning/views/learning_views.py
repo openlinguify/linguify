@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.db.models import Count, Q
 
 from ..models import Language, UserLanguage
-from ..models_course import (
+from ..models.models_course import (
     CourseUnit, CourseModule, ModuleProgress, UserCourseProgress
 )
 
@@ -144,7 +144,7 @@ def learning_interface(request):
         return render(request, 'language_learning/partials/learning_content.html', context)
 
     # Sinon retourner la page complète avec navbar
-    return render(request, 'language_learning/learning_interface.html', context)
+    return render(request, 'language_learning/base.html', context)
 
 
 @login_required
@@ -244,32 +244,3 @@ def complete_module(request, module_id):
     })
 
 
-@login_required
-@require_http_methods(["GET"])
-def refresh_progress(request):
-    """Rafraîchit les informations de progression (pour HTMX)"""
-    selected_language = request.GET.get('lang', '')
-
-    if not selected_language:
-        return HttpResponse('')
-
-    language = Language.objects.filter(code=selected_language).first()
-    if not language:
-        return HttpResponse('')
-
-    user_progress = UserCourseProgress.objects.filter(
-        user=request.user,
-        language=language
-    ).first()
-
-    user_language = UserLanguage.objects.filter(
-        user=request.user,
-        language=language
-    ).first()
-
-    context = {
-        'user_progress': user_progress,
-        'user_streak': user_language.streak_count if user_language else 0,
-    }
-
-    return render(request, 'language_learning/partials/progress_info.html', context)
