@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
-from apps.language_learning.models import Language
-from backend.apps.language_learning.models.models_course import CourseUnit, CourseModule
+from apps.language_learning.models import Language, CourseUnit, CourseModule
 
 
 class Command(BaseCommand):

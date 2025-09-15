@@ -4,10 +4,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.db.models import Count, Q
 
-from ..models import Language, UserLanguage
-from ..models.models_course import (
-    CourseUnit, CourseModule, ModuleProgress, UserCourseProgress
-)
+from ..models import *
 
 
 @login_required

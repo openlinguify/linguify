@@ -21,7 +21,7 @@ urlpatterns = [
     path('unit/<int:unit_id>/modules/', learning_views.unit_modules, name='unit_modules'),
     path('module/<int:module_id>/start/', learning_views.start_module, name='start_module'),
     path('module/<int:module_id>/complete/', learning_views.complete_module, name='complete_module'),
-    path('refresh-progress/', learning_views.refresh_progress, name='refresh_progress'),
+    # path('refresh-progress/', learning_views.refresh_progress, name='refresh_progress'),  # Function not implemented yet
 
     # Legacy pages (kept for compatibility)
     path('old/', views.language_learning_home, name='old_home'),
