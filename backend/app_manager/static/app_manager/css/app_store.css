@@ -26,7 +26,6 @@
 /* Layout App Store */
 .app-store-container {
     display: flex;
-    max-width: 1400px;
     margin: 0 auto;
     gap: 2rem;
     padding: 2rem;

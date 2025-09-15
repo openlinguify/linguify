@@ -4860,8 +4860,9 @@ button.bg-linguify-gradient:hover,
   flex-direction: column;
 }
 
-/* Header positioning - consistent across apps */
-.app-header {
+/* Header positioning - consistent across apps - SPECIFIQUE POUR EVITER CONFLIT AVEC APP STORE */
+.app-body-layout .app-header,
+.app-container-layout .app-header {
   position: fixed;
   top: 0;
   left: 0;
@@ -4870,7 +4871,6 @@ button.bg-linguify-gradient:hover,
   height: 64px;
   background: white;
   border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* =================================================================

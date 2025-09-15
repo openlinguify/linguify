@@ -17,18 +17,6 @@
 <link rel="preload" href="/app-icons/teaching/icon.png" as="image">
 
 <link rel="stylesheet" href="{% static 'app_manager/css/app_store.css' %}">
-<style>
-/* Critical CSS inline pour ultra performance */
-.app-store-container{display:flex;max-width:1400px;margin:0 auto;gap:2rem;padding:2rem}
-.app-store-sidebar{width:250px;flex-shrink:0}
-.app-store-main{flex:1}
-.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
-.app-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:1.5rem;transition:all .3s ease;cursor:pointer;position:relative}
-.app-card:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(0,0,0,.08);border-color:#6366f1}
-.app-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem}
-.app-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#fff;flex-shrink:0}
-.app-icon img{will-change:transform;backface-visibility:hidden}
-</style>
 {% endblock %}
 
 {% block content %}
