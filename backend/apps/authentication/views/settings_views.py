@@ -194,6 +194,49 @@ class UserSettingsView(View):
             view = PrivacySettingsView()
             view.request = request
             return view.post(request)
+        elif setting_type == 'language':
+            logger.debug("Processing language settings")
+            # Handle language settings
+            try:
+                interface_language = request.POST.get('interface_language')
+                if interface_language:
+                    # Get or create user profile
+                    from ..models.models import UserProfile
+                    profile, created = UserProfile.objects.get_or_create(user=request.user)
+                    profile.interface_language = interface_language
+                    profile.save()
+
+                    # Set language in session for immediate effect
+                    from django.utils import translation
+                    request.session[translation.LANGUAGE_SESSION_KEY] = interface_language
+
+                    if is_ajax:
+                        return JsonResponse({
+                            'success': True,
+                            'message': 'Langue de l\'interface mise à jour avec succès'
+                        })
+                    else:
+                        messages.success(request, 'Langue de l\'interface mise à jour avec succès')
+                        return redirect('saas_web:settings')
+                else:
+                    if is_ajax:
+                        return JsonResponse({
+                            'success': False,
+                            'message': 'Aucune langue spécifiée'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        messages.error(request, 'Aucune langue spécifiée')
+                        return redirect('saas_web:settings')
+            except Exception as e:
+                logger.error(f"Error updating language settings: {e}")
+                if is_ajax:
+                    return JsonResponse({
+                        'success': False,
+                        'message': f'Erreur lors de la mise à jour: {str(e)}'
+                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                else:
+                    messages.error(request, 'Erreur lors de la mise à jour de la langue')
+                    return redirect('saas_web:settings')
         elif setting_type == 'audio':
             logger.debug("Delegating to revision audio settings")
             # Delegate to revision audio settings via API

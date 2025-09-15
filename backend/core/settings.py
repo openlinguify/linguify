@@ -246,6 +246,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'apps.authentication.middleware.middleware.JWTMiddleware',  # Disabled - using Django sessions
+    'apps.authentication.middleware.language_middleware.UserLanguageMiddleware',  # User language preference
     'apps.authentication.middleware.terms_middleware.TermsAcceptanceMiddleware',  # Check terms acceptance
     # 'core.jobs.middleware.JobsErrorHandlingMiddleware',  # Jobs error handling - moved to portal
     # SEO Optimization Middleware (simplified version)
