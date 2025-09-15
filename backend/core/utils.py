@@ -80,11 +80,13 @@ def get_installed_apps():
     
     # Apps to exclude from automatic discovery (commented out or problematic ones)
     exclude_from_discovery = [
-        'coaching',      # Commented out in original INSTALLED_APPS
-        'payments',      # Commented out in original INSTALLED_APPS
-        'task',          # Commented out in original INSTALLED_APPS
-        'screen',        # Not a complete app - no apps.py
-        'subscription',  # Commented out in original INSTALLED_APPS
+        'coaching',          # Commented out in original INSTALLED_APPS
+        'payments',          # Commented out in original INSTALLED_APPS
+        'task',              # Commented out in original INSTALLED_APPS
+        'screen',            # Not a complete app - no apps.py
+        'subscription',      # Commented out in original INSTALLED_APPS
+        'language_learning', # Temporarily hidden - work in progress
+        'teaching',          # Temporarily hidden - work in progress
     ]
     
     # Automatically discover project apps

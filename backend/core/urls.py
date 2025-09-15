@@ -118,9 +118,9 @@ urlpatterns = [
     # Marketplace apps
     path('chat/', include('apps.chat.urls', namespace='chat')),
     path('community/', include('apps.community.urls', namespace='community')),
-    path('teaching/', include('apps.teaching.urls', namespace='teaching')),  # App Teaching activée
+    # path('teaching/', include('apps.teaching.urls', namespace='teaching')),  # App temporarily hidden
     path('api/cms-sync/', include('apps.cms_sync.urls', namespace='cms_sync')),
-    path('language_learning/', include('apps.language_learning.urls', namespace='language_learning')),
+    # path('language_learning/', include('apps.language_learning.urls', namespace='language_learning')),  # App temporarily hidden
     # SEO URLs - Organized sitemap serving
     path('robots.txt', serve_robots_txt, name='robots_txt'),
     path('sitemap.xml', serve_sitemap, {'sitemap_name': 'sitemap'}, name='sitemap_main'),
