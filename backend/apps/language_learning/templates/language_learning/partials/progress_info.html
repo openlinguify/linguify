@@ -1,34 +1,41 @@
-<div class="row">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <h6>Niveau actuel</h6>
-                <h3>{{ user_progress.level|default:1 }}</h3>
+<div class="progress-grid">
+    <div class="progress-card progress-card-primary">
+        <div class="flex justify-between items-start">
+            <div>
+                <h6 class="progress-card-label">Niveau actuel</h6>
+                <p class="progress-card-value">{{ user_progress.level|default:1 }}</p>
             </div>
+            <i class="bi bi-trophy-fill progress-card-icon"></i>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <h6>XP Total</h6>
-                <h3>{{ user_progress.total_xp|default:0 }}</h3>
+
+    <div class="progress-card progress-card-success">
+        <div class="flex justify-between items-start">
+            <div>
+                <h6 class="progress-card-label">XP Total</h6>
+                <p class="progress-card-value">{{ user_progress.total_xp|default:0 }}</p>
             </div>
+            <i class="bi bi-star-fill progress-card-icon"></i>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-info text-white">
-            <div class="card-body">
-                <h6>Progression</h6>
-                <h3>{{ user_progress.get_completion_percentage|default:0 }}%</h3>
+
+    <div class="progress-card progress-card-info">
+        <div class="flex justify-between items-start">
+            <div>
+                <h6 class="progress-card-label">Progression</h6>
+                <p class="progress-card-value">{{ user_progress.get_completion_percentage|default:0 }}%</p>
             </div>
+            <i class="bi bi-graph-up-arrow progress-card-icon"></i>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-warning text-white">
-            <div class="card-body">
-                <h6>Streak</h6>
-                <h3>{{ user_streak|default:0 }} jours</h3>
+
+    <div class="progress-card progress-card-warning">
+        <div class="flex justify-between items-start">
+            <div>
+                <h6 class="progress-card-label">Streak</h6>
+                <p class="progress-card-value">{{ user_streak|default:0 }} jours</p>
             </div>
+            <i class="bi bi-fire progress-card-icon"></i>
         </div>
     </div>
 </div>

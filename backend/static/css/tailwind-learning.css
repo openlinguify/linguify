@@ -1,0 +1,634 @@
+/* Language Learning App - Linguify Design System Integration */
+
+/* ===== LANGUAGE LEARNING LAYOUT ===== */
+.learning-container {
+    display: flex;
+    height: calc(100vh - 60px);
+    background: var(--linguify-gray-50);
+    position: relative;
+}
+
+/* ===== SIDEBAR UNITS - LINGUIFY STYLE ===== */
+.sidebar-units {
+    background: var(--linguify-white);
+    border-right: 1px solid var(--linguify-gray-200);
+    transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar-units:not(.show) {
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    border-right: none;
+}
+
+.sidebar-units.show {
+    width: 350px;
+    min-width: 350px;
+}
+
+/* Sidebar Header moderne */
+.sidebar-units-header {
+    background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #f1f5f9 100%);
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--linguify-gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.sidebar-units-title {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--linguify-gray-800);
+}
+
+.sidebar-units-title i {
+    color: var(--linguify-primary);
+    font-size: 1.125rem;
+}
+
+/* Units List */
+.units-list {
+    padding: 1.25rem;
+    overflow-y: auto;
+}
+
+/* Unit Card - Linguify Style */
+.unit-card {
+    position: relative;
+    border-radius: 12px;
+    border: 1.5px solid var(--linguify-gray-200);
+    padding: 1.125rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    background: var(--linguify-white);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.unit-card:hover {
+    border-color: var(--linguify-primary);
+    background: rgba(45, 91, 186, 0.02);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.08);
+}
+
+.unit-card.active {
+    border-color: var(--linguify-primary);
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(1, 126, 132, 0.05) 100%);
+    box-shadow: 0 4px 16px rgba(45, 91, 186, 0.12);
+}
+
+.unit-card.completed {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+    border-color: var(--linguify-success);
+}
+
+.unit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.625rem;
+}
+
+.unit-number {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--linguify-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.unit-modules-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    background: var(--linguify-gradient);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.unit-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--linguify-gray-800);
+    margin-bottom: 0.375rem;
+}
+
+.unit-description {
+    font-size: 0.8125rem;
+    color: var(--linguify-gray-600);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.unit-progress {
+    margin-top: 0.875rem;
+    height: 6px;
+    background: var(--linguify-gray-200);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.unit-progress-bar {
+    height: 100%;
+    background: var(--linguify-gradient);
+    border-radius: 20px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.unit-progress-text {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--linguify-gray-600);
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.unit-progress-text i {
+    color: var(--linguify-success);
+    font-size: 0.875rem;
+}
+
+/* ===== NAVBAR LANGUAGE SELECTOR - LINGUIFY STYLE ===== */
+.navbar-language-selector {
+    background: var(--linguify-white);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--linguify-gray-200);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--linguify-gray-800);
+}
+
+.navbar-brand-icon {
+    color: var(--linguify-primary);
+    font-size: 1.25rem;
+}
+
+.language-dropdown {
+    min-width: 200px;
+    padding: 0.625rem 2.5rem 0.625rem 1rem;
+    border: 1.5px solid var(--linguify-gray-200);
+    border-radius: 10px;
+    background: var(--linguify-white);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--linguify-gray-700);
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.25rem;
+}
+
+.language-dropdown:hover {
+    border-color: var(--linguify-primary);
+    background-color: rgba(45, 91, 186, 0.02);
+}
+
+.language-dropdown:focus {
+    outline: none;
+    border-color: var(--linguify-primary);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
+}
+
+.language-active-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.875rem;
+    background: var(--linguify-gradient);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.navbar-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-refresh {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1.5px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    background: var(--linguify-white);
+    color: var(--linguify-gray-700);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-refresh:hover {
+    background: var(--linguify-gray-50);
+    border-color: var(--linguify-primary);
+    color: var(--linguify-primary);
+    transform: translateY(-1px);
+}
+
+/* ===== CONTENT AREA ===== */
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--linguify-gray-50);
+}
+
+.content-wrapper {
+    padding: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ===== PROGRESS CARDS - LINGUIFY STYLE ===== */
+.progress-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.progress-card {
+    background: var(--linguify-white);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid var(--linguify-gray-200);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.progress-card-primary {
+    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-primary-dark) 100%);
+    border: none;
+    color: white;
+}
+
+.progress-card-success {
+    background: linear-gradient(135deg, var(--linguify-success) 0%, #059669 100%);
+    border: none;
+    color: white;
+}
+
+.progress-card-info {
+    background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-accent-dark) 100%);
+    border: none;
+    color: white;
+}
+
+.progress-card-warning {
+    background: linear-gradient(135deg, var(--linguify-warning) 0%, #dc8b0b 100%);
+    border: none;
+    color: white;
+}
+
+.progress-card-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    opacity: 0.9;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.progress-card-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.progress-card-icon {
+    font-size: 2rem;
+    opacity: 0.3;
+}
+
+/* ===== MODULE CARDS - LINGUIFY STYLE ===== */
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+}
+
+.module-card {
+    position: relative;
+    background: var(--linguify-white);
+    border-radius: 12px;
+    border: 1.5px solid var(--linguify-gray-200);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.module-card:hover:not(.locked) {
+    border-color: var(--linguify-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(45, 91, 186, 0.12);
+}
+
+.module-card.completed {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+    border-color: var(--linguify-success);
+}
+
+.module-card.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--linguify-gray-50);
+}
+
+.module-card.locked:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.module-card-status {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--linguify-white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.module-card-status.completed {
+    color: var(--linguify-success);
+}
+
+.module-card-status.locked {
+    color: var(--linguify-gray-400);
+}
+
+/* Module Type Badges - Linguify Style */
+.module-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.type-vocabulary {
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(45, 91, 186, 0.05) 100%);
+    color: var(--linguify-primary);
+}
+
+.type-grammar {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+    color: var(--linguify-secondary);
+}
+
+.type-listening {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+    color: var(--linguify-warning);
+}
+
+.type-speaking {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+    color: var(--linguify-success);
+}
+
+.type-reading {
+    background: linear-gradient(135deg, rgba(1, 126, 132, 0.1) 0%, rgba(1, 126, 132, 0.05) 100%);
+    color: var(--linguify-accent);
+}
+
+.type-writing {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(236, 72, 153, 0.05) 100%);
+    color: #ec4899;
+}
+
+.type-culture {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+    color: var(--linguify-error);
+}
+
+.type-review {
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.1) 0%, rgba(107, 114, 128, 0.05) 100%);
+    color: var(--linguify-gray-600);
+}
+
+.module-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--linguify-gray-800);
+    margin-bottom: 0.5rem;
+}
+
+.module-description {
+    font-size: 0.8125rem;
+    color: var(--linguify-gray-600);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.module-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--linguify-gray-100);
+}
+
+.module-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: var(--linguify-gray-500);
+}
+
+.module-meta-item i {
+    font-size: 0.875rem;
+    color: var(--linguify-primary);
+}
+
+/* ===== EMPTY STATES ===== */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+    font-size: 3.5rem;
+    color: var(--linguify-gray-300);
+    margin-bottom: 1rem;
+}
+
+.empty-state-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--linguify-gray-700);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-description {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-500);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .sidebar-units {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-units.open {
+        transform: translateX(0);
+    }
+
+    .progress-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .module-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .content-wrapper {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .progress-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .navbar-language-selector {
+        padding: 0.75rem 1rem;
+    }
+
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .language-dropdown {
+        min-width: 140px;
+        font-size: 0.8125rem;
+    }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-1 {
+    gap: 0.25rem;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.gap-3 {
+    gap: 0.75rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.mb-6 {
+    margin-bottom: 1.5rem;
+}
+
+.text-xl {
+    font-size: 1.25rem;
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.text-gray-600 {
+    color: var(--linguify-gray-600);
+}
+
+.text-gray-800 {
+    color: var(--linguify-gray-800);
+}
