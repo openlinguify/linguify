@@ -753,7 +753,7 @@ STRUCTURED_DATA_ORGANIZATION = {
     'logo': f'{SEO_BASE_URL}/static/images/logo.png',
     'description': 'OpenLinguify is an open source educational platform dedicated to language learning with specialized apps for interactive education, AI-powered lessons, and personalized learning experiences.',
     'foundingDate': '2024',
-    'contactEmail': 'support@openlinguify.com',
+    'contactEmail': 'info@openlinguify.com',
     'educationalOrganization': True,
     'category': [
         'Educational Technology',

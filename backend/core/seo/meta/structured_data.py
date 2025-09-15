@@ -48,7 +48,7 @@ class StructuredDataGenerator:
                 {
                     "@type": "ContactPoint",
                     "contactType": "customer support",
-                    "email": "support@openlinguify.com",
+                    "email": "info@openlinguify.com",
                     "availableLanguage": ["English", "French", "Spanish", "Dutch"],
                     "areaServed": "Worldwide"
                 }

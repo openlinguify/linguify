@@ -20,7 +20,7 @@
 
 {% blocktrans with app_name=app_name|default:"Open Linguify" %}Important: Accepting these terms is necessary to continue using {{ app_name }}.{% endblocktrans %}
 
-{% trans "If you have any questions about these changes, feel free to contact us at support@openlinguify.com." %}
+{% trans "If you have any questions about these changes, feel free to contact us at info@openlinguify.com." %}
 
 {% trans "Thank you for being part of our learning community!" %}
 
