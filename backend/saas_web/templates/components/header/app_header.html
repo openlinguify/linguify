@@ -27,7 +27,7 @@
                 <!-- App-specific navigation items (can be extended by individual apps) -->
                 {% block app_navigation %}
                 <!-- Desktop Navigation -->
-                <div class="d-none d-lg-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2">
                     {% if request.resolver_match.url_name != 'dashboard' %}
                     <a href="{% url 'saas_web:dashboard' %}" 
                        class="btn btn-outline-secondary btn-sm header-btn"
@@ -37,13 +37,16 @@
                     </a>
                     {% endif %}
                     
+                    <!-- URL name: {{ request.resolver_match.url_name }} -->
                     {% if request.resolver_match.url_name != 'app_store' %}
-                    <a href="{% url 'saas_web:app_store' %}" 
+                    <a href="{% url 'saas_web:app_store' %}"
                        class="btn btn-outline-primary btn-sm header-btn"
                        aria-label="{% trans 'Browse app store' %}">
                         <i class="bi bi-shop me-1" aria-hidden="true"></i>
-                        <span class="d-none d-xl-inline">{% trans "App Store" %}</span>
+                        <span class="d-none d-md-inline">{% trans "App Store" %}</span>
                     </a>
+                    {% else %}
+                    <!-- Hidden because on app_store page -->
                     {% endif %}
                 </div>
                 {% endblock %}

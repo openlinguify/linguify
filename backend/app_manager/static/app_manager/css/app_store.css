@@ -2,12 +2,26 @@
 /* App Store Styles for Open Linguify */
 
 :root {
-    --primary-color: #6366f1;
-    --primary-dark: #4f46e5;
-    --secondary-color: #8b5cf6;
+    --primary-color: #2D5BBA;
+    --primary-dark: #1E3A8A;
+    --secondary-color: #8B5CF6;
+    --accent-color: #00D4AA;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
+
+    /* Couleurs Linguify */
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #00D4AA;
+    --linguify-gray-50: #f9fafb;
+    --linguify-gray-100: #f3f4f6;
+    --linguify-gray-200: #e5e7eb;
+    --linguify-gray-300: #d1d5db;
+    --linguify-gray-500: #6b7280;
+    --linguify-gray-600: #4b5563;
+    --linguify-gray-800: #1f2937;
+    --linguify-gray-900: #111827;
 }
 
 /* Layout App Store */
@@ -28,7 +42,7 @@
 .category-list {
     background: white;
     border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--linguify-gray-200);
     padding: 1rem;
 }
 
@@ -48,12 +62,12 @@
 }
 
 .category-item:hover {
-    background: #f1f5f9;
+    background: var(--linguify-gray-50);
 }
 
 .category-item.active {
-    background: #e0e7ff;
-    color: var(--primary-color);
+    background: linear-gradient(135deg, var(--linguify-primary), var(--linguify-accent));
+    color: white;
 }
 
 .category-icon {
@@ -61,12 +75,17 @@
 }
 
 .category-count {
-    background: #f3f4f6;
-    color: #6b7280;
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-500);
     padding: 0.125rem 0.5rem;
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 500;
+}
+
+.category-item.active .category-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 /* Main content */
@@ -76,13 +95,14 @@
 
 .search-bar {
     background: white;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--linguify-gray-200);
     border-radius: 12px;
     padding: 1rem;
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
     gap: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .search-bar input {
@@ -93,7 +113,7 @@
 }
 
 .search-bar i {
-    color: #6b7280;
+    color: var(--linguify-gray-500);
 }
 
 /* Apps grid */
@@ -106,17 +126,18 @@
 .app-card {
     background: white;
     border-radius: 16px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--linguify-gray-200);
     padding: 1.5rem;
     transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .app-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-    border-color: var(--primary-color);
+    box-shadow: 0 12px 24px rgba(45, 91, 186, 0.15);
+    border-color: var(--linguify-primary);
 }
 
 .app-header {
@@ -146,16 +167,16 @@
     font-size: 1.125rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
-    color: #1e293b;
+    color: var(--linguify-gray-900);
 }
 
 .app-category {
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--linguify-gray-500);
 }
 
 .app-description {
-    color: #64748b;
+    color: var(--linguify-gray-600);
     font-size: 0.875rem;
     line-height: 1.5;
     margin-bottom: 1rem;
@@ -184,7 +205,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #e5e7eb;
+    background-color: var(--linguify-gray-300);
     transition: 0.4s;
     border-radius: 26px;
 }
@@ -211,7 +232,7 @@
 
 .install-status {
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--linguify-gray-500);
 }
 
 .install-status.installed {
@@ -222,7 +243,7 @@
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    color: #6b7280;
+    color: var(--linguify-gray-500);
 }
 
 .empty-state i {
