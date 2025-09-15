@@ -2,10 +2,17 @@
 URLs configuration for language_learning app.
 """
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
 from .views import learning_views, settings_views
 
 app_name = 'language_learning'
+
+# Create router for DRF ViewSets
+router = DefaultRouter()
+router.register(r'languages', views.LanguageViewSet, basename='language')
+router.register(r'user-languages', views.UserLanguageViewSet, basename='user-language')
+router.register(r'items', views.LanguagelearningItemViewSet, basename='languagelearning-item')
 
 urlpatterns = [
     # Main pages
@@ -21,15 +28,16 @@ urlpatterns = [
     path('create/', views.create_item, name='create_item'),
     path('edit/<int:item_id>/', views.edit_item, name='edit_item'),
     path('delete/<int:item_id>/', views.delete_item, name='delete_item'),
-    
+
     # Settings pages
     path('settings/', settings_views.language_learning_settings, name='settings'),
-    
-    # API endpoints (legacy compatibility)
+
+    # API endpoints
     path('api/items/', views.api_items, name='api_items'),
     path('api/start_language/', views.start_language_learning, name='start_language'),
     path('api/user-settings/', views.get_user_language_learning_settings, name='user_settings'),
-    
-    # Include DRF ViewSets
-    path('api/v1/', include('apps.language_learning.urls_api')),
+    path('api/settings/', views.get_user_language_learning_settings, name='api_user_settings'),
+
+    # DRF ViewSets
+    path('api/v1/', include(router.urls)),
 ]
