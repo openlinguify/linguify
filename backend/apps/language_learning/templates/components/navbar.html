@@ -40,6 +40,15 @@
     
     <!-- Droite: Actions et filtres contextuels -->
     <div class="navbar-section-right">
+        <!-- Selecteur de langue global - Toujours visible -->
+        <select id="languageFilter" class="form-select-linguify" style="width: 160px; min-width: 140px; margin-right: 10px;">
+            <option value="">🌍 Toutes les langues</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="nl">🇳🇱 Nederlands</option>
+        </select>
+
         {% if view_type == 'progress' %}
         <!-- Filtres pour la page Progres -->
         <select id="progressTimeRange" class="form-select-linguify" style="width: 140px; min-width: 120px;">
@@ -49,22 +58,14 @@
             <option value="365">Cette annee</option>
             <option value="all">Toute la periode</option>
         </select>
-        
+
         <button id="exportProgress" class="btn-navbar btn-navbar-outline" title="Exporter le progres">
             <i class="bi bi-download"></i>
             <span class="d-none d-lg-inline">Exporter</span>
         </button>
-        
+
         {% elif view_type == 'lessons' %}
-        <!-- Filtres pour les lecons -->
-        <select id="languageFilter" class="form-select-linguify" style="width: 140px; min-width: 120px;">
-            <option value="">Toutes les langues</option>
-            {% if user_languages %}
-                {% for lang in user_languages %}
-                <option value="{{ lang.language.code }}">{{ lang.language.name }}</option>
-                {% endfor %}
-            {% endif %}
-        </select>
+        <!-- Filtres supplementaires pour les lecons -->
         
         <select id="levelFilter" class="form-select-linguify" style="width: 120px; min-width: 100px;">
             <option value="">Tous niveaux</option>
@@ -78,15 +79,7 @@
         
         {% else %}
         <!-- Filtres pour la page d'accueil -->
-        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher une langue..." style="width: 160px; min-width: 120px;">
-        
-        <!-- Selecteur de langue cible -->
-        <select id="targetLanguageFilter" class="form-select-linguify" style="width: 140px; min-width: 120px;">
-            <option value="">Toutes les langues</option>
-            {% for code, name in language_choices %}
-            <option value="{{ code }}" {% if user.target_language == code %}selected{% endif %}>{{ name }}</option>
-            {% endfor %}
-        </select>
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 160px; min-width: 120px;">
         
         <!-- Niveau de difficulte -->
         <div class="dropdown">
@@ -124,7 +117,31 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('refreshLanguageLearning')?.addEventListener('click', function() {
         location.reload();
     });
-    
+
+    // Gestionnaire du selecteur de langue
+    document.getElementById('languageFilter')?.addEventListener('change', function() {
+        const selectedLanguage = this.value;
+        const currentUrl = new URL(window.location.href);
+
+        if (selectedLanguage) {
+            currentUrl.searchParams.set('lang', selectedLanguage);
+        } else {
+            currentUrl.searchParams.delete('lang');
+        }
+
+        window.location.href = currentUrl.toString();
+    });
+
+    // Restaurer la selection de langue depuis l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const langParam = urlParams.get('lang');
+    if (langParam) {
+        const languageFilter = document.getElementById('languageFilter');
+        if (languageFilter) {
+            languageFilter.value = langParam;
+        }
+    }
+
     // Selecteur de difficulte
     window.selectDifficultyFilter = function(value, text) {
         document.getElementById('difficultyFilterText').textContent = text;

@@ -4,6 +4,11 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 import logging
 
+# Import des modèles de cours
+from .models_course import (
+    CourseUnit, CourseModule, ModuleProgress, UserCourseProgress
+)
+
 logger = logging.getLogger(__name__)
 User = get_user_model()
 

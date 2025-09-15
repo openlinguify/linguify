@@ -39,11 +39,25 @@ logger = logging.getLogger(__name__)
 @login_required
 def language_learning_home(request):
     """Page d'accueil de Language Learning - Personnalisé selon la langue cible de l'utilisateur"""
-    items = LanguagelearningItem.objects.filter(
+
+    # Récupérer le filtre de langue depuis l'URL
+    selected_language = request.GET.get('lang', '')
+
+    # Construire la requête de base
+    items_query = LanguagelearningItem.objects.filter(
         user=request.user,
         is_active=True
     )
-    
+
+    # Appliquer le filtre de langue si spécifié
+    if selected_language:
+        # Obtenir l'objet Language correspondant
+        language_obj = Language.objects.filter(code=selected_language).first()
+        if language_obj:
+            items_query = items_query.filter(language=language_obj)
+
+    items = items_query
+
     paginator = Paginator(items, 10)
     page_number = request.GET.get('page')
     page_items = paginator.get_page(page_number)
@@ -74,10 +88,10 @@ def language_learning_home(request):
     
     # Créer la liste des langues avec la langue cible en premier
     available_languages = []
-    
-    # Ajouter d'abord la langue cible de l'utilisateur
-    if user_target_internal in language_configs:
-        code = user_target_internal
+
+    # Si un filtre de langue est actif, ne montrer que cette langue
+    if selected_language and selected_language in language_configs:
+        code = selected_language
         name, description, flag = language_configs[code]
         lang, created = Language.objects.get_or_create(
             code=code,
@@ -94,31 +108,54 @@ def language_learning_home(request):
             'description': description,
             'flag': flag,
             'is_learning': UserLanguage.objects.filter(user=request.user, language=lang).exists(),
-            'is_target': True  # Marquer comme langue cible
+            'is_target': code == user_target_internal
         })
-    
-    # Ajouter les autres langues
-    for code, (name, description, flag) in language_configs.items():
-        if code == user_target_internal:
-            continue  # Déjà ajoutée
-            
-        lang, created = Language.objects.get_or_create(
-            code=code,
-            defaults={
+    else:
+        # Sinon, montrer toutes les langues disponibles
+        # Ajouter d'abord la langue cible de l'utilisateur
+        if user_target_internal in language_configs:
+            code = user_target_internal
+            name, description, flag = language_configs[code]
+            lang, created = Language.objects.get_or_create(
+                code=code,
+                defaults={
+                    'name': name,
+                    'native_name': name,
+                    'flag_emoji': flag,
+                    'is_active': True
+                }
+            )
+            available_languages.append({
+                'code': code,
                 'name': name,
-                'native_name': name,
-                'flag_emoji': flag,
-                'is_active': True
-            }
-        )
-        available_languages.append({
-            'code': code,
-            'name': name,
-            'description': description,
-            'flag': flag,
-            'is_learning': UserLanguage.objects.filter(user=request.user, language=lang).exists(),
-            'is_target': False
-        })
+                'description': description,
+                'flag': flag,
+                'is_learning': UserLanguage.objects.filter(user=request.user, language=lang).exists(),
+                'is_target': True  # Marquer comme langue cible
+            })
+
+        # Ajouter les autres langues
+        for code, (name, description, flag) in language_configs.items():
+            if code == user_target_internal:
+                continue  # Déjà ajoutée
+
+            lang, created = Language.objects.get_or_create(
+                code=code,
+                defaults={
+                    'name': name,
+                    'native_name': name,
+                    'flag_emoji': flag,
+                    'is_active': True
+                }
+            )
+            available_languages.append({
+                'code': code,
+                'name': name,
+                'description': description,
+                'flag': flag,
+                'is_learning': UserLanguage.objects.filter(user=request.user, language=lang).exists(),
+                'is_target': False
+            })
     
     # Obtenir les langues que l'utilisateur apprend
     user_languages = UserLanguage.objects.filter(user=request.user, is_active=True).select_related('language')
@@ -165,6 +202,8 @@ def language_learning_home(request):
         'user_stats': user_stats,
         'user_target_language': user_target_internal,
         'app_name': 'Language Learning',
+        'selected_language': selected_language,  # Pour maintenir la sélection dans le dropdown
+        'language_choices': [('en', 'English'), ('fr', 'Français'), ('es', 'Español'), ('nl', 'Nederlands')],
     }
     return render(request, 'language_learning/home.html', context)
 

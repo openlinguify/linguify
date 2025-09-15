@@ -1,0 +1,332 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+
+{% block app_title %}Linguify Learn - {{ selected_language_name|default:"Cours" }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .learning-container {
+        display: flex;
+        height: calc(100vh - 60px);
+        background: #f8f9fa;
+    }
+
+    .sidebar-units {
+        width: 280px;
+        background: white;
+        border-right: 1px solid #dee2e6;
+        overflow-y: auto;
+        padding: 1rem;
+    }
+
+    .unit-card {
+        margin-bottom: 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .unit-card:hover {
+        border-color: #10b981;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+    }
+
+    .unit-card.active {
+        border-color: #10b981;
+        background: linear-gradient(135deg, #10b98110 0%, #10b98105 100%);
+    }
+
+    .unit-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .unit-number {
+        font-size: 0.875rem;
+        color: #6c757d;
+        font-weight: 600;
+    }
+
+    .unit-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 0.25rem;
+    }
+
+    .unit-progress {
+        height: 4px;
+        background: #e9ecef;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 0.75rem;
+    }
+
+    .unit-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        transition: width 0.3s ease;
+    }
+
+    .content-area {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .module-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .module-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 2px solid #e9ecef;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .module-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .module-card.completed {
+        border-color: #10b981;
+        background: #f0fdf4;
+    }
+
+    .module-card.locked {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .module-type-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .type-vocabulary { background: #dbeafe; color: #1e40af; }
+    .type-grammar { background: #fce7f3; color: #a21caf; }
+    .type-listening { background: #fed7aa; color: #c2410c; }
+    .type-speaking { background: #d1fae5; color: #065f46; }
+    .type-reading { background: #e9d5ff; color: #6b21a8; }
+    .type-writing { background: #fef3c7; color: #b45309; }
+    .type-culture { background: #ffe4e6; color: #be123c; }
+    .type-review { background: #e0e7ff; color: #3730a3; }
+
+    .navbar-language-selector {
+        background: white;
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .language-dropdown {
+        min-width: 200px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Navbar avec sélecteur de langue HTMX -->
+<div class="navbar-language-selector">
+    <h1 class="h4 mb-0">
+        <i class="bi bi-translate me-2"></i>
+        Linguify Learn
+    </h1>
+
+    <select
+        class="form-select language-dropdown"
+        hx-get="{% url 'language_learning:learning_interface' %}"
+        hx-trigger="change"
+        hx-target="#learning-content"
+        hx-swap="outerHTML"
+        hx-push-url="true"
+        name="lang"
+        x-data
+        @change="htmx.process(htmx.find('.language-dropdown'))"
+    >
+        <option value="">🌍 Sélectionner une langue</option>
+        <option value="en" {% if selected_language == 'en' %}selected{% endif %}>🇬🇧 English</option>
+        <option value="fr" {% if selected_language == 'fr' %}selected{% endif %}>🇫🇷 Français</option>
+        <option value="es" {% if selected_language == 'es' %}selected{% endif %}>🇪🇸 Español</option>
+        <option value="nl" {% if selected_language == 'nl' %}selected{% endif %}>🇳🇱 Nederlands</option>
+    </select>
+
+    {% if selected_language %}
+    <span class="badge bg-success">
+        Cours actif: {{ selected_language_name }}
+    </span>
+    {% endif %}
+
+    <div class="ms-auto">
+        <button class="btn btn-outline-secondary" hx-get="{% url 'language_learning:refresh_progress' %}" hx-target="#progress-info">
+            <i class="bi bi-arrow-clockwise"></i> Actualiser
+        </button>
+    </div>
+</div>
+
+<div id="learning-content" class="learning-container">
+    {% if selected_language %}
+    <!-- Sidebar avec les unités -->
+    <aside class="sidebar-units" x-data="{ activeUnit: {{ active_unit_id|default:1 }} }">
+        <h5 class="mb-3">📚 Unités du cours</h5>
+
+        {% for unit in course_units %}
+        <div
+            class="unit-card"
+            :class="{ 'active': activeUnit === {{ unit.id }} }"
+            @click="activeUnit = {{ unit.id }}"
+            hx-get="{% url 'language_learning:unit_modules' unit.id %}"
+            hx-target="#modules-content"
+            hx-trigger="click"
+        >
+            <div class="unit-header">
+                <span class="unit-number">Unité {{ unit.unit_number }}</span>
+                <span class="badge bg-secondary">{{ unit.modules_count }} modules</span>
+            </div>
+            <div class="unit-title">{{ unit.title }}</div>
+            <div class="text-muted small">{{ unit.description|truncatewords:10 }}</div>
+            <div class="unit-progress">
+                <div class="unit-progress-bar" style="width: {{ unit.progress_percentage }}%"></div>
+            </div>
+            <div class="text-muted small mt-1">
+                {{ unit.completed_modules }}/{{ unit.modules_count }} complétés
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Aucune unité disponible pour cette langue.
+        </div>
+        {% endfor %}
+    </aside>
+
+    <!-- Zone de contenu principal -->
+    <main class="content-area">
+        <div id="progress-info" class="mb-4">
+            <!-- Informations de progression -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h6>Niveau actuel</h6>
+                            <h3>{{ user_progress.level|default:1 }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h6>XP Total</h6>
+                            <h3>{{ user_progress.total_xp|default:0 }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h6>Progression</h6>
+                            <h3>{{ user_progress.completion_percentage|default:0 }}%</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <h6>Streak</h6>
+                            <h3>{{ user_streak|default:0 }} jours</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modules de l'unité sélectionnée -->
+        <div id="modules-content">
+            {% if active_unit %}
+            <h3>{{ active_unit.title }}</h3>
+            <p class="text-muted">{{ active_unit.description }}</p>
+
+            <div class="module-grid">
+                {% for module in active_unit_modules %}
+                <div
+                    class="module-card {% if module.is_completed %}completed{% endif %} {% if module.is_locked %}locked{% endif %}"
+                    {% if not module.is_locked %}
+                    hx-get="{% url 'language_learning:start_module' module.id %}"
+                    hx-target="#module-modal"
+                    hx-trigger="click"
+                    {% endif %}
+                >
+                    <span class="module-type-badge type-{{ module.module_type }}">
+                        {{ module.get_module_type_display }}
+                    </span>
+                    <h5>{{ module.title }}</h5>
+                    <p class="text-muted small">{{ module.description }}</p>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="text-muted small">
+                            <i class="bi bi-clock"></i> {{ module.estimated_duration }} min
+                        </span>
+                        <span class="text-muted small">
+                            <i class="bi bi-star"></i> {{ module.xp_reward }} XP
+                        </span>
+                    </div>
+
+                    {% if module.is_completed %}
+                    <div class="position-absolute top-0 end-0 p-2">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 1.5rem;"></i>
+                    </div>
+                    {% elif module.is_locked %}
+                    <div class="position-absolute top-0 end-0 p-2">
+                        <i class="bi bi-lock-fill text-muted" style="font-size: 1.5rem;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-arrow-left-circle" style="font-size: 3rem; color: #6c757d;"></i>
+                <h4 class="mt-3 text-muted">Sélectionnez une unité pour commencer</h4>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+    {% else %}
+    <!-- Message si aucune langue n'est sélectionnée -->
+    <div class="d-flex align-items-center justify-content-center w-100">
+        <div class="text-center">
+            <i class="bi bi-translate" style="font-size: 4rem; color: #10b981;"></i>
+            <h3 class="mt-3">Bienvenue dans Linguify Learn!</h3>
+            <p class="text-muted">Sélectionnez une langue dans le menu déroulant pour commencer votre apprentissage.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal pour les modules (sera rempli par HTMX) -->
+<div id="module-modal"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+{% endblock %}
