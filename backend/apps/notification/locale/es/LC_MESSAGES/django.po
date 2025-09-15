@@ -54,3 +54,85 @@ msgstr "📚 Tiempo de estudio"
 
 msgid "You have flashcards ready for review"
 msgstr "Tienes tarjetas listas para revisar"
+
+# Email translations
+msgid "Action Required: Terms of Use"
+msgstr "Acción requerida: Aceptar los Términos de Uso"
+
+msgid "Hello %(name)s,"
+msgstr "Hola %(name)s,"
+
+msgid "We have updated our <strong>Terms of Use</strong> to improve your experience on %(app_name)s."
+msgstr "Hemos actualizado nuestros <strong>Términos de Uso</strong> para mejorar tu experiencia en %(app_name)s."
+
+msgid "To continue enjoying our language learning platform, we need your agreement on these new terms."
+msgstr "Para continuar disfrutando de nuestra plataforma de aprendizaje de idiomas, necesitamos tu acuerdo con estos nuevos términos."
+
+msgid "Key Updates:"
+msgstr "Actualizaciones principales:"
+
+msgid "Clarification of personal data usage"
+msgstr "Clarificación del uso de datos personales"
+
+msgid "New collaboration features"
+msgstr "Nuevas funciones de colaboración"
+
+msgid "Enhanced security and privacy"
+msgstr "Seguridad y privacidad mejoradas"
+
+msgid "Updated rights and responsibilities"
+msgstr "Derechos y responsabilidades actualizados"
+
+msgid "Review and Accept Terms"
+msgstr "Revisar y Aceptar Términos"
+
+msgid "You can also copy this link to your browser:"
+msgstr "También puedes copiar este enlace a tu navegador:"
+
+msgid "Important:"
+msgstr "Importante:"
+
+msgid "Accepting these terms is necessary to continue using %(app_name)s."
+msgstr "Aceptar estos términos es necesario para continuar usando %(app_name)s."
+
+msgid "If you have any questions about these changes, feel free to contact us at"
+msgstr "Si tienes alguna pregunta sobre estos cambios, no dudes en contactarnos en"
+
+msgid "Thank you for being part of our learning community!"
+msgstr "¡Gracias por ser parte de nuestra comunidad de aprendizaje!"
+
+msgid "Best regards,"
+msgstr "Saludos cordiales,"
+
+msgid "The %(app_name)s Team"
+msgstr "El equipo de %(app_name)s"
+
+msgid "Your language learning platform"
+msgstr "Tu plataforma de aprendizaje de idiomas"
+
+msgid "Terms of Use"
+msgstr "Términos de Uso"
+
+msgid "Privacy"
+msgstr "Privacidad"
+
+msgid "Contact"
+msgstr "Contacto"
+
+msgid "This email was sent to %(email)s"
+msgstr "Este email fue enviado a %(email)s"
+
+msgid "© %(year)s %(app_name)s. All rights reserved."
+msgstr "© %(year)s %(app_name)s. Todos los derechos reservados."
+
+msgid "To stop receiving these emails, log in to your account and modify your notification preferences."
+msgstr "Para dejar de recibir estos emails, inicia sesión en tu cuenta y modifica tus preferencias de notificación."
+
+msgid "KEY UPDATES:"
+msgstr "ACTUALIZACIONES PRINCIPALES:"
+
+msgid "REVIEW AND ACCEPT TERMS:"
+msgstr "REVISAR Y ACEPTAR TÉRMINOS:"
+
+msgid "All rights reserved."
+msgstr "Todos los derechos reservados."

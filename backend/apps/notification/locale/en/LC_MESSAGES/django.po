@@ -54,3 +54,85 @@ msgstr "📚 Study Time"
 
 msgid "You have flashcards ready for review"
 msgstr "You have flashcards ready for review"
+
+# Email translations
+msgid "Action Required: Terms of Use"
+msgstr "Action Required: Terms of Use"
+
+msgid "Hello %(name)s,"
+msgstr "Hello %(name)s,"
+
+msgid "We have updated our <strong>Terms of Use</strong> to improve your experience on %(app_name)s."
+msgstr "We have updated our <strong>Terms of Use</strong> to improve your experience on %(app_name)s."
+
+msgid "To continue enjoying our language learning platform, we need your agreement on these new terms."
+msgstr "To continue enjoying our language learning platform, we need your agreement on these new terms."
+
+msgid "Key Updates:"
+msgstr "Key Updates:"
+
+msgid "Clarification of personal data usage"
+msgstr "Clarification of personal data usage"
+
+msgid "New collaboration features"
+msgstr "New collaboration features"
+
+msgid "Enhanced security and privacy"
+msgstr "Enhanced security and privacy"
+
+msgid "Updated rights and responsibilities"
+msgstr "Updated rights and responsibilities"
+
+msgid "Review and Accept Terms"
+msgstr "Review and Accept Terms"
+
+msgid "You can also copy this link to your browser:"
+msgstr "You can also copy this link to your browser:"
+
+msgid "Important:"
+msgstr "Important:"
+
+msgid "Accepting these terms is necessary to continue using %(app_name)s."
+msgstr "Accepting these terms is necessary to continue using %(app_name)s."
+
+msgid "If you have any questions about these changes, feel free to contact us at"
+msgstr "If you have any questions about these changes, feel free to contact us at"
+
+msgid "Thank you for being part of our learning community!"
+msgstr "Thank you for being part of our learning community!"
+
+msgid "Best regards,"
+msgstr "Best regards,"
+
+msgid "The %(app_name)s Team"
+msgstr "The %(app_name)s Team"
+
+msgid "Your language learning platform"
+msgstr "Your language learning platform"
+
+msgid "Terms of Use"
+msgstr "Terms of Use"
+
+msgid "Privacy"
+msgstr "Privacy"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "This email was sent to %(email)s"
+msgstr "This email was sent to %(email)s"
+
+msgid "© %(year)s %(app_name)s. All rights reserved."
+msgstr "© %(year)s %(app_name)s. All rights reserved."
+
+msgid "To stop receiving these emails, log in to your account and modify your notification preferences."
+msgstr "To stop receiving these emails, log in to your account and modify your notification preferences."
+
+msgid "KEY UPDATES:"
+msgstr "KEY UPDATES:"
+
+msgid "REVIEW AND ACCEPT TERMS:"
+msgstr "REVIEW AND ACCEPT TERMS:"
+
+msgid "All rights reserved."
+msgstr "All rights reserved."

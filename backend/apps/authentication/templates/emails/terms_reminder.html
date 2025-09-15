@@ -1,17 +1,22 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Action requise : Accepter les Conditions d'Utilisation</title>
+    <title>{% trans "Action Required: Accept Terms of Use" %}</title>
     <style>
+        :root {
+            --linguify-primary: #2D5BBA;
+            --linguify-accent: #00D4AA;
+        }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             line-height: 1.6;
             color: #1f2937;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #f0f4ff 0%, #e0f2fe 100%);
+            background-color: #f8fafc !important;
             min-height: 100vh;
         }
         .wrapper {
@@ -26,23 +31,24 @@
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--linguify-primary), var(--linguify-accent)) !important;
+            background: linear-gradient(135deg, #2D5BBA, #00D4AA) !important;
+            color: white !important;
             padding: 40px;
             text-align: center;
         }
         .logo {
-            width: 60px;
-            height: 60px;
-            background: white;
+            background-color: white !important;
             border-radius: 12px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            display: inline-block;
+            padding: 10px 15px;
             margin-bottom: 20px;
-            font-size: 24px;
+            font-size: 16px;
             font-weight: bold;
-            color: #2D5BBA;
+            color: var(--linguify-primary) !important;
+            color: #2D5BBA !important;
+            border: 2px solid white;
+            white-space: nowrap;
         }
         .header h1 {
             margin: 0;
@@ -91,18 +97,19 @@
         .cta-button {
             display: inline-block;
             padding: 14px 32px;
-            background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
-            color: white;
-            text-decoration: none;
+            background: linear-gradient(135deg, var(--linguify-primary), var(--linguify-accent)) !important;
+            background: linear-gradient(135deg, #2D5BBA, #00D4AA) !important;
+            color: white !important;
+            text-decoration: none !important;
             border-radius: 8px;
             font-weight: 600;
             font-size: 16px;
-            box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);
-            transition: all 0.3s ease;
+            border: 2px solid #2D5BBA;
+            mso-hide: none;
         }
         .cta-button:hover {
-            box-shadow: 0 6px 20px rgba(45, 91, 186, 0.4);
-            transform: translateY(-1px);
+            background: linear-gradient(135deg, #1e4a9f, #00b89a) !important;
+            color: white !important;
         }
         .alternative-link {
             margin-top: 15px;
@@ -153,51 +160,51 @@
     <div class="wrapper">
         <div class="container">
             <div class="header">
-                <div class="logo">L</div>
-                <h1>Action requise : Conditions d'Utilisation</h1>
+                <div class="logo">Open Linguify</div>
+                <h1>{% trans "Action Required: Terms of Use" %}</h1>
             </div>
 
             <div class="content">
                 <div class="greeting">
-                    Bonjour {{ user.first_name|default:user.username }},
+                    {% blocktrans with name=user.first_name|default:user.username %}Hello {{ name }},{% endblocktrans %}
                 </div>
 
                 <div class="message">
-                    <p>Nous avons mis à jour nos <strong>Conditions d'Utilisation</strong> pour améliorer votre expérience sur {{ app_name|default:"Open Linguify" }}.</p>
+                    <p>{% blocktrans with app_name=app_name|default:"Open Linguify" %}We have updated our <strong>Terms of Use</strong> to improve your experience on {{ app_name }}.{% endblocktrans %}</p>
 
-                    <p>Pour continuer à profiter pleinement de notre plateforme d'apprentissage des langues, nous avons besoin de votre accord sur ces nouvelles conditions.</p>
+                    <p>{% trans "To continue enjoying our language learning platform, we need your agreement on these new terms." %}</p>
                 </div>
 
                 <div class="highlight-box">
-                    <h3>🔄 Principales mises à jour :</h3>
+                    <h3>🔄 {% trans "Key Updates:" %}</h3>
                     <ul>
-                        <li>Clarification de l'utilisation des données personnelles</li>
-                        <li>Nouvelles fonctionnalités de collaboration</li>
-                        <li>Amélioration de la sécurité et de la confidentialité</li>
-                        <li>Mise à jour des droits et responsabilités</li>
+                        <li>{% trans "Clarification of personal data usage" %}</li>
+                        <li>{% trans "New collaboration features" %}</li>
+                        <li>{% trans "Enhanced security and privacy" %}</li>
+                        <li>{% trans "Updated rights and responsibilities" %}</li>
                     </ul>
                 </div>
 
                 <div class="cta-section">
                     <a href="{{ terms_url }}" class="cta-button">
-                        ✓ Consulter et Accepter les Conditions
+                        ✓ {% trans "Review and Accept Terms" %}
                     </a>
                     <div class="alternative-link">
-                        Vous pouvez également copier ce lien dans votre navigateur :<br>
+                        {% trans "You can also copy this link to your browser:" %}<br>
                         <a href="{{ terms_url }}">{{ terms_url }}</a>
                     </div>
                 </div>
 
                 <div class="message">
-                    <p><strong>Important :</strong> L'acceptation de ces conditions est nécessaire pour continuer à utiliser {{ app_name|default:"Open Linguify" }}.</p>
+                    <p><strong>{% trans "Important:" %}</strong> {% blocktrans with app_name=app_name|default:"Open Linguify" %}Accepting these terms is necessary to continue using {{ app_name }}.{% endblocktrans %}</p>
 
-                    <p>Si vous avez des questions concernant ces modifications, n'hésitez pas à nous contacter à <a href="mailto:support@openlinguify.com" style="color: #2D5BBA;">support@openlinguify.com</a>.</p>
+                    <p>{% trans "If you have any questions about these changes, feel free to contact us at" %} <a href="mailto:support@openlinguify.com" style="color: #2D5BBA;">support@openlinguify.com</a>.</p>
 
-                    <p>Merci de faire partie de notre communauté d'apprentissage !</p>
+                    <p>{% trans "Thank you for being part of our learning community!" %}</p>
 
                     <p style="margin-top: 30px;">
-                        Cordialement,<br>
-                        <strong>L'équipe {{ app_name|default:"Open Linguify" }}</strong>
+                        {% trans "Best regards," %}<br>
+                        <strong>{% blocktrans with app_name=app_name|default:"Open Linguify" %}The {{ app_name }} Team{% endblocktrans %}</strong>
                     </p>
                 </div>
             </div>
@@ -205,21 +212,21 @@
             <div class="footer">
                 <div class="footer-logo">Open Linguify</div>
                 <div class="footer-text">
-                    Votre plateforme d'apprentissage des langues
+                    {% trans "Your language learning platform" %}
                 </div>
 
                 <div class="footer-links">
-                    <a href="{{ terms_url }}">Conditions d'Utilisation</a>
-                    <a href="{{ portal_url }}/privacy/">Confidentialité</a>
-                    <a href="{{ portal_url }}/contact/">Contact</a>
+                    <a href="{{ terms_url }}">{% trans "Terms of Use" %}</a>
+                    <a href="{{ portal_url }}/privacy/">{% trans "Privacy" %}</a>
+                    <a href="{{ portal_url }}/contact/">{% trans "Contact" %}</a>
                 </div>
 
                 <div class="footer-text">
-                    Cet email a été envoyé à {{ user.email }}
+                    {% blocktrans with email=user.email %}This email was sent to {{ email }}{% endblocktrans %}
                 </div>
 
                 <div class="copyright">
-                    © {% now "Y" %} {{ app_name|default:"Open Linguify" }}. Tous droits réservés.
+                    © {% now "Y" %} {{ app_name|default:"Open Linguify" }}. {% trans "All rights reserved." %}
                 </div>
             </div>
         </div>

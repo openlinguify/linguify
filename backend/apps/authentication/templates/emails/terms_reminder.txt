@@ -1,34 +1,34 @@
-Action requise : Accepter les Conditions d'Utilisation
+{% load i18n %}{% trans "Action Required: Accept Terms of Use" %}
 ========================================================
 
-Bonjour {{ user.first_name|default:user.username }},
+{% blocktrans with name=user.first_name|default:user.username %}Hello {{ name }},{% endblocktrans %}
 
-Nous avons mis à jour nos Conditions d'Utilisation pour améliorer votre expérience sur {{ app_name|default:"Open Linguify" }}.
+{% blocktrans with app_name=app_name|default:"Open Linguify" %}We have updated our Terms of Use to improve your experience on {{ app_name }}.{% endblocktrans %}
 
-Pour continuer à profiter pleinement de notre plateforme d'apprentissage des langues, nous avons besoin de votre accord sur ces nouvelles conditions.
+{% trans "To continue enjoying our language learning platform, we need your agreement on these new terms." %}
 
-PRINCIPALES MISES À JOUR :
+{% trans "KEY UPDATES:" %}
 ---------------------------
-• Clarification de l'utilisation des données personnelles
-• Nouvelles fonctionnalités de collaboration
-• Amélioration de la sécurité et de la confidentialité
-• Mise à jour des droits et responsabilités
+• {% trans "Clarification of personal data usage" %}
+• {% trans "New collaboration features" %}
+• {% trans "Enhanced security and privacy" %}
+• {% trans "Updated rights and responsibilities" %}
 
-CONSULTER ET ACCEPTER LES CONDITIONS :
+{% trans "REVIEW AND ACCEPT TERMS:" %}
 ---------------------------------------
 {{ terms_url }}
 
-Important : L'acceptation de ces conditions est nécessaire pour continuer à utiliser {{ app_name|default:"Open Linguify" }}.
+{% blocktrans with app_name=app_name|default:"Open Linguify" %}Important: Accepting these terms is necessary to continue using {{ app_name }}.{% endblocktrans %}
 
-Si vous avez des questions concernant ces modifications, n'hésitez pas à nous contacter à support@openlinguify.com.
+{% trans "If you have any questions about these changes, feel free to contact us at support@openlinguify.com." %}
 
-Merci de faire partie de notre communauté d'apprentissage !
+{% trans "Thank you for being part of our learning community!" %}
 
-Cordialement,
-L'équipe {{ app_name|default:"Open Linguify" }}
+{% trans "Best regards," %}
+{% blocktrans with app_name=app_name|default:"Open Linguify" %}The {{ app_name }} Team{% endblocktrans %}
 
 --
-Cet email a été envoyé à {{ user.email }}
-© {% now "Y" %} {{ app_name|default:"Open Linguify" }}. Tous droits réservés.
+{% blocktrans with email=user.email %}This email was sent to {{ email }}{% endblocktrans %}
+© {% now "Y" %} {{ app_name|default:"Open Linguify" }}. {% trans "All rights reserved." %}
 
-Pour ne plus recevoir ces emails, connectez-vous à votre compte et modifiez vos préférences de notification.
+{% trans "To stop receiving these emails, log in to your account and modify your notification preferences." %}

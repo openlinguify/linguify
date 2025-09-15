@@ -54,3 +54,85 @@ msgstr "📚 Studietijd"
 
 msgid "You have flashcards ready for review"
 msgstr "Je hebt flashcards klaar voor revisie"
+
+# Email translations
+msgid "Action Required: Terms of Use"
+msgstr "Actie vereist: Accepteer de Gebruiksvoorwaarden"
+
+msgid "Hello %(name)s,"
+msgstr "Hallo %(name)s,"
+
+msgid "We have updated our <strong>Terms of Use</strong> to improve your experience on %(app_name)s."
+msgstr "We hebben onze <strong>Gebruiksvoorwaarden</strong> bijgewerkt om je ervaring op %(app_name)s te verbeteren."
+
+msgid "To continue enjoying our language learning platform, we need your agreement on these new terms."
+msgstr "Om te blijven genieten van ons taallearplatform, hebben we je akkoord nodig met deze nieuwe voorwaarden."
+
+msgid "Key Updates:"
+msgstr "Belangrijkste updates:"
+
+msgid "Clarification of personal data usage"
+msgstr "Verduidelijking van persoonlijke gegevensgebruik"
+
+msgid "New collaboration features"
+msgstr "Nieuwe samenwerkingsfuncties"
+
+msgid "Enhanced security and privacy"
+msgstr "Verbeterde beveiliging en privacy"
+
+msgid "Updated rights and responsibilities"
+msgstr "Bijgewerkte rechten en verantwoordelijkheden"
+
+msgid "Review and Accept Terms"
+msgstr "Bekijk en Accepteer Voorwaarden"
+
+msgid "You can also copy this link to your browser:"
+msgstr "Je kunt deze link ook naar je browser kopiëren:"
+
+msgid "Important:"
+msgstr "Belangrijk:"
+
+msgid "Accepting these terms is necessary to continue using %(app_name)s."
+msgstr "Het accepteren van deze voorwaarden is noodzakelijk om %(app_name)s te blijven gebruiken."
+
+msgid "If you have any questions about these changes, feel free to contact us at"
+msgstr "Als je vragen hebt over deze wijzigingen, neem dan gerust contact met ons op via"
+
+msgid "Thank you for being part of our learning community!"
+msgstr "Bedankt dat je deel uitmaakt van onze leergemeenschap!"
+
+msgid "Best regards,"
+msgstr "Met vriendelijke groet,"
+
+msgid "The %(app_name)s Team"
+msgstr "Het %(app_name)s Team"
+
+msgid "Your language learning platform"
+msgstr "Jouw taallearplatform"
+
+msgid "Terms of Use"
+msgstr "Gebruiksvoorwaarden"
+
+msgid "Privacy"
+msgstr "Privacy"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "This email was sent to %(email)s"
+msgstr "Deze email werd verstuurd naar %(email)s"
+
+msgid "© %(year)s %(app_name)s. All rights reserved."
+msgstr "© %(year)s %(app_name)s. Alle rechten voorbehouden."
+
+msgid "To stop receiving these emails, log in to your account and modify your notification preferences."
+msgstr "Om deze emails niet meer te ontvangen, log in op je account en wijzig je notificatievoorkeuren."
+
+msgid "KEY UPDATES:"
+msgstr "BELANGRIJKSTE UPDATES:"
+
+msgid "REVIEW AND ACCEPT TERMS:"
+msgstr "BEKIJK EN ACCEPTEER VOORWAARDEN:"
+
+msgid "All rights reserved."
+msgstr "Alle rechten voorbehouden."

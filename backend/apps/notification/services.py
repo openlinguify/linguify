@@ -74,14 +74,17 @@ class NotificationDeliveryService:
         """
         try:
             # Create notification in database
+            notification_data = data or {}
+            if action_url:
+                notification_data['action_url'] = action_url
+
             notification = Notification.objects.create(
                 user=user,
                 title=title,
                 message=message,
                 type=notification_type,
                 priority=priority,
-                data=data or {},
-                action_url=action_url,
+                data=notification_data,
                 **kwargs
             )
 
@@ -121,18 +124,18 @@ class NotificationDeliveryService:
         try:
             setting = NotificationSetting.objects.get(user=user)
             settings = {
-                'push_notifications': setting.push_notifications,
-                'email_notifications': setting.email_notifications,
-                'sound_enabled': setting.sound_enabled,
-                'quiet_hours_start': setting.quiet_hours_start,
-                'quiet_hours_end': setting.quiet_hours_end,
+                'push_notifications': setting.push_enabled,
+                'email_notifications': setting.email_enabled,
+                'web_notifications': setting.web_enabled,
+                'quiet_hours_start': setting.quiet_hours_start if setting.quiet_hours_enabled else None,
+                'quiet_hours_end': setting.quiet_hours_end if setting.quiet_hours_enabled else None,
             }
         except NotificationSetting.DoesNotExist:
             # Return default settings
             settings = {
                 'push_notifications': True,
                 'email_notifications': True,
-                'sound_enabled': True,
+                'web_notifications': True,
                 'quiet_hours_start': None,
                 'quiet_hours_end': None,
             }
@@ -192,7 +195,7 @@ class NotificationDeliveryService:
                         'body': notification.message,
                         'icon': '/static/images/logo.png',
                         'badge': '/static/images/badge.png',
-                        'url': notification.action_url or '/',
+                        'url': notification.data.get('action_url') if notification.data else '/',
                         'tag': f'notification-{notification.id}',
                         'requireInteraction': notification.priority >= NotificationPriority.HIGH,
                     }
@@ -240,7 +243,7 @@ class NotificationDeliveryService:
             context = {
                 'user': notification.user,
                 'notification': notification,
-                'action_url': notification.action_url,
+                'action_url': notification.data.get('action_url') if notification.data else None,
                 'site_url': settings.SITE_URL if hasattr(settings, 'SITE_URL') else 'http://localhost:8000',
             }
 
