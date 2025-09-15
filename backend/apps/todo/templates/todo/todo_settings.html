@@ -1,3 +1,4 @@
+{% load i18n %}
 <!-- Todo Tab -->
 <div id="todo" class="tab-content active">
 
@@ -6,7 +7,7 @@
         <div class="section-header">
             <h3 class="section-title">
                 <i class="bi bi-list-task"></i>
-                Parametres des taches
+                {% trans "Task Settings" %}
             </h3>
             <div class="section-actions">
                 <button class="section-toggle">
@@ -21,61 +22,61 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Vue par defaut des projets</label>
+                        <label class="form-label">{% trans "Default project view" %}</label>
                         <select name="default_project_view" class="form-control">
-                            <option value="list">Liste</option>
-                            <option value="kanban">Kanban</option>
-                            <option value="activity">Activité</option>
+                            <option value="list">{% trans "List" %}</option>
+                            <option value="kanban">{% trans "Kanban" %}</option>
+                            <option value="activity">{% trans "Activity" %}</option>
                         </select>
-                        <div class="form-help">Affichage prefere pour vos projets</div>
+                        <div class="form-help">{% trans "Preferred display for your projects" %}</div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Vue par defaut des taches</label>
+                        <label class="form-label">{% trans "Default task view" %}</label>
                         <select name="default_task_view" class="form-control">
-                            <option value="list">Liste</option>
-                            <option value="priority">Par priorite</option>
-                            <option value="due_date">Par echeance</option>
-                            <option value="project">Par projet</option>
+                            <option value="list">{% trans "List" %}</option>
+                            <option value="priority">{% trans "By priority" %}</option>
+                            <option value="due_date">{% trans "By due date" %}</option>
+                            <option value="project">{% trans "By project" %}</option>
                         </select>
-                        <div class="form-help">Affichage prefere pour vos taches</div>
+                        <div class="form-help">{% trans "Preferred display for your tasks" %}</div>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Priorite par defaut</label>
+                        <label class="form-label">{% trans "Default priority" %}</label>
                         <select name="default_task_priority" class="form-control">
-                            <option value="low">Faible</option>
-                            <option value="medium">Moyenne</option>
-                            <option value="high">Elevee</option>
-                            <option value="urgent">Urgente</option>
+                            <option value="low">{% trans "Low" %}</option>
+                            <option value="medium">{% trans "Medium" %}</option>
+                            <option value="high">{% trans "High" %}</option>
+                            <option value="urgent">{% trans "Urgent" %}</option>
                         </select>
-                        <div class="form-help">Priorite assignee aux nouvelles taches</div>
+                        <div class="form-help">{% trans "Priority assigned to new tasks" %}</div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Heure de rappel par defaut</label>
+                        <label class="form-label">{% trans "Default reminder time" %}</label>
                         <input type="time" name="default_reminder_time" value="09:00" class="form-control">
-                        <div class="form-help">Heure par defaut pour les rappels</div>
+                        <div class="form-help">{% trans "Default time for reminders" %}</div>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">
                         <input type="checkbox" name="auto_archive_completed">
-                        Archivage automatique des taches terminees
+                        {% trans "Automatic archiving" %} of completed tasks
                     </label>
-                    <div class="form-help">Archiver automatiquement les taches apres completion</div>
+                    <div class="form-help">{% trans "Automatically archive tasks after completion" %}</div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Delai d'archivage automatique (jours)</label>
+                    <label class="form-label">{% trans "Automatic archiving delay (days)" %}</label>
                     <div class="range-input">
                         <input type="range" name="auto_archive_days" min="1" max="365" class="form-range">
                         <span class="range-value"></span>
                     </div>
-                    <div class="form-help">Nombre de jours avant archivage automatique</div>
+                    <div class="form-help">{% trans "Number of days before automatic archiving" %}</div>
                 </div>
 
             </form>
@@ -87,7 +88,7 @@
         <div class="section-header">
             <h3 class="section-title">
                 <i class="bi bi-bell"></i>
-                Rappels et notifications
+                {% trans "Reminders and notifications" %}
             </h3>
             <div class="section-actions">
                 <button class="section-toggle">
@@ -102,44 +103,44 @@
                 
                 <div class="form-group">
                     <label class="form-label">
-                        <input type="checkbox" name="enable_reminders" checked>
-                        Activer les rappels
+                        <input type="checkbox" name="enable_reminders"" checked>
+                        {% trans "Enable reminders" %}
                     </label>
-                    <div class="form-help">Recevoir des notifications pour les taches a echeance</div>
+                    <div class="form-help">{% trans "Receive notifications for due tasks" %}</div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Rappel avant echeance (minutes)</label>
+                        <label class="form-label">{% trans "Reminder before due date (minutes)" %}</label>
                         <div class="range-input">
                             <input type="range" name="reminder_minutes_before" min="1" max="1440" value="15" class="form-range">
                             <span class="range-value">15</span>
                         </div>
-                        <div class="form-help">Temps d'avance pour les rappels</div>
+                        <div class="form-help">{% trans "Lead time for reminders" %}</div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
                             <input type="checkbox" name="daily_digest" checked>
-                            Resume quotidien
+                            {% trans "Daily digest" %}
                         </label>
-                        <div class="form-help">Recevoir un resume de vos taches chaque jour</div>
+                        <div class="form-help">{% trans "Receive a daily summary of your tasks" %}</div>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Heure du resume quotidien</label>
+                        <label class="form-label">{% trans "Daily digest time" %}</label>
                         <input type="time" name="daily_digest_time" value="09:00" class="form-control">
-                        <div class="form-help">Heure d'envoi du resume quotidien</div>
+                        <div class="form-help">{% trans "Time to send daily digest" %}</div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
                             <input type="checkbox" name="overdue_notifications" checked>
-                            Notifications de retard
+                            {% trans "Overdue notifications" %}
                         </label>
-                        <div class="form-help">Etre notifie des taches en retard</div>
+                        <div class="form-help">{% trans "Be notified of overdue tasks" %}</div>
                     </div>
                 </div>
 
@@ -153,7 +154,7 @@
         <div class="section-header">
             <h3 class="section-title">
                 <i class="bi bi-database"></i>
-                Gestion des donnees
+                {% trans "Data management" %}
             </h3>
             <div class="section-actions">
                 <button class="section-toggle">
@@ -167,83 +168,83 @@
                 {% csrf_token %}
                 <input type="hidden" name="setting_type" value="data">
                 
-                <!-- Archivage automatique section -->
+                <!-- {% trans "Automatic archiving" %} section -->
                 <div style="background: var(--linguify-gray-50); padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--linguify-gray-200);">
                     <div style="display: flex; align-items: center; margin-bottom: 16px;">
                         <i class="bi bi-archive" style="font-size: 18px; color: var(--linguify-blue-500); margin-right: 8px;"></i>
-                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #495057;">Archivage automatique</h4>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #495057;">{% trans "Automatic archiving" %}</h4>
                     </div>
                     
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label class="form-label" style="display: flex; align-items: center; font-size: 14px; color: #495057; margin-bottom: 8px;">
                             <input type="checkbox" name="auto_archive_completed" style="margin-right: 8px;">
-                            <strong>Activer l'archivage automatique des tâches terminées</strong>
+                            <strong>{% trans "Enable automatic archiving of completed tasks" %}</strong>
                         </label>
                         <div style="font-size: 13px; color: var(--linguify-gray-500); margin-left: 24px;">
-                            Déplacer automatiquement les tâches de "Done" vers "Archives" après le délai configuré
+                            {% trans "Automatically move tasks from Done to Archives after configured delay" %}
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" style="font-size: 14px; color: #495057; margin-bottom: 8px; display: block;">
-                            Délai d'archivage automatique
+                            {% trans "Automatic archiving delay" %}
                         </label>
                         <div class="range-input" style="display: flex; align-items: center; gap: 12px;">
                             <input type="range" name="auto_archive_days" min="1" max="90" class="form-range" style="flex: 1;">
                             <span class="range-value" style="min-width: 40px; font-weight: 600; color: var(--linguify-blue-600);"></span>
-                            <span style="font-size: 13px; color: var(--linguify-gray-500);">jours</span>
+                            <span style="font-size: 13px; color: var(--linguify-gray-500);">{% trans "days" %}</span>
                         </div>
                         <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">
-                            Nombre de jours après completion avant déplacement vers Archives (maximum 90 jours)
+                            {% trans "Number of" %} {% trans "days" %} {% trans "after completion before moving to Archives (maximum 90 days)" %}
                         </div>
                     </div>
                 </div>
 
-                <!-- Suppression automatique section -->
+                <!-- {% trans "Automatic deletion" %} section -->
                 <div style="background: var(--linguify-red-50); padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--linguify-red-200);">
                     <div style="display: flex; align-items: center; margin-bottom: 16px;">
                         <i class="bi bi-trash" style="font-size: 18px; color: var(--linguify-red-500); margin-right: 8px;"></i>
-                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #495057;">Suppression automatique</h4>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #495057;">{% trans "Automatic deletion" %}</h4>
                     </div>
                     
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label class="form-label" style="display: flex; align-items: center; font-size: 14px; color: #495057; margin-bottom: 8px;">
                             <input type="checkbox" name="auto_delete_archived" style="margin-right: 8px;">
-                            <strong>Activer la suppression automatique des archives anciennes</strong>
+                            <strong>{% trans "Enable automatic deletion of old archives" %}</strong>
                         </label>
                         <div style="font-size: 13px; color: var(--linguify-gray-500); margin-left: 24px;">
-                            Supprimer définitivement les tâches des Archives après le délai configuré
+                            {% trans "Permanently delete tasks from Archives after configured delay" %}
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" style="font-size: 14px; color: #495057; margin-bottom: 8px; display: block;">
-                            Délai de suppression des archives
+                            {% trans "Archive deletion delay" %}
                         </label>
                         <div class="range-input" style="display: flex; align-items: center; gap: 12px;">
                             <input type="range" name="auto_delete_archive_days" min="1" max="90" class="form-range" style="flex: 1;">
                             <span class="range-value" style="min-width: 40px; font-weight: 600; color: var(--linguify-red-600);"></span>
-                            <span style="font-size: 13px; color: var(--linguify-gray-500);">jours</span>
+                            <span style="font-size: 13px; color: var(--linguify-gray-500);">{% trans "days" %}</span>
                         </div>
                         <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">
-                            Nombre de jours dans Archives avant suppression définitive (maximum 90 jours)
+                            {% trans "Number of" %} {% trans "days" %} {% trans "in Archives before permanent deletion (maximum 90 days)" %}
                         </div>
                     </div>
                 </div>
 
-                <!-- Action manuelle section -->
+                <!-- {% trans "Manual action" %} section -->
                 <div style="background: var(--linguify-purple-50); padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--linguify-purple-200);">
                     <div style="display: flex; align-items: center; margin-bottom: 16px;">
                         <i class="bi bi-play-circle" style="font-size: 18px; color: var(--linguify-purple-500); margin-right: 8px;"></i>
-                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #495057;">Action manuelle</h4>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #495057;">{% trans "Manual action" %}</h4>
                     </div>
                     
                     <button type="button" onclick="triggerManualArchive()" class="btn-archive" style="display: inline-flex; align-items: center; padding: 12px 20px; background: var(--linguify-purple-500); color: var(--linguify-white); border-radius: 8px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         <i class="bi bi-archive" style="margin-right: 8px;"></i>
-                        Déclencher l'archivage et nettoyage maintenant
+                        {% trans "Trigger archiving and cleanup now" %}
                     </button>
                     <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 8px;">
-                        Exécuter immédiatement l'archivage et la suppression selon vos paramètres actuels
+                        {% trans "Immediately execute archiving and deletion according to your current settings" %}
                     </div>
                     <div id="archive-status" style="margin-top: 12px; font-size: 14px;"></div>
                 </div>
@@ -258,7 +259,7 @@
                 <div class="export-actions" style="display: flex; flex-direction: column; gap: 12px; flex: 1; min-width: 300px;">
                     <label style="font-size: 16px; font-weight: 600; color: #495057; margin-bottom: 8px;">
                         <i class="bi bi-download" style="margin-right: 8px;"></i>
-                        Exporter vos données
+                        {% trans "Export your data" %}
                     </label>
                     
                     <!-- Export Options -->
@@ -267,24 +268,24 @@
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <a href="{% url 'todo:activity_export' %}?format=csv" class="btn-export btn-export-csv" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-green-500); color: var(--linguify-white); text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-filetype-csv" style="margin-right: 6px;"></i>
-                            Exporter CSV
+                            {% trans "Export CSV" %}
                         </a>
                         <a href="{% url 'todo:activity_export' %}?format=json" class="btn-export btn-export-json" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-blue-500); color: var(--linguify-white); text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-filetype-json" style="margin-right: 6px;"></i>
-                            Exporter JSON
+                            {% trans "Export JSON" %}
                         </a>
                         <a href="{% url 'todo:activity_export' %}?format=xlsx" class="btn-export btn-export-excel" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-teal-500); color: var(--linguify-white); text-decoration: none; border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-file-earmark-excel" style="margin-right: 6px;"></i>
-                            Exporter Excel
+                            {% trans "Export Excel" %}
                         </a>
                     </div>
-                    <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">Télécharger toutes vos tâches et projets</div>
+                    <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">{% trans "Download all your tasks and projects" %}</div>
                     <div style="margin-bottom: 12px;">
                         <label style="display: flex; align-items: center; font-size: 14px; color: #495057; margin-bottom: 8px;">
                             <input type="checkbox" name="include_completed_in_exports" checked style="margin-right: 8px;">
-                            Inclure les taches terminees dans les exports
+                            {% trans "Include completed tasks in exports" %}
                         </label>
-                        <div style="font-size: 13px; color: var(--linguify-gray-500); margin-left: 24px;">Exporter aussi les taches marquees comme terminees et archivees</div>
+                        <div style="font-size: 13px; color: var(--linguify-gray-500); margin-left: 24px;">{% trans "Also export tasks marked as completed and archived" %}</div>
                     </div>
                 </div>
 
@@ -292,7 +293,7 @@
                 <div class="import-actions" style="display: flex; flex-direction: column; gap: 12px; flex: 1; min-width: 300px;">
                     <label style="font-size: 16px; font-weight: 600; color: #495057; margin-bottom: 8px;">
                         <i class="bi bi-upload" style="margin-right: 8px;"></i>
-                        Importer des données
+                        {% trans "Import data" %}
                     </label>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <button type="button" 
@@ -301,14 +302,14 @@
                                 hx-trigger="click"
                                 class="btn-import" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-gradient); color: var(--linguify-white); border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-upload" style="margin-right: 6px;"></i>
-                            Importer fichier
+                            {% trans "Import file" %}
                         </button>
                         <button type="button" onclick="downloadSampleCSV()" class="btn-sample" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-gray-600); color: var(--linguify-white); border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;">
                             <i class="bi bi-download" style="margin-right: 6px;"></i>
-                            Exemple CSV
+                            {% trans "Sample CSV" %}
                         </button>
                     </div>
-                    <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">Importer des tâches depuis CSV ou JSON</div>
+                    <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">{% trans "Import tasks from CSV or JSON" %}</div>
                 </div>
             </div>
         </div>
@@ -317,11 +318,11 @@
     <!-- Global Save Button for Settings -->
     <div style="margin-top: 30px; padding: 20px; background: var(--linguify-gray-50); border-radius: 8px; text-align: center; border: 1px solid var(--linguify-gray-200);">
         <div style="margin-bottom: 10px; font-size: 14px; color: var(--linguify-gray-500);">
-            Sauvegarder tous les paramètres de configuration Todo
+            {% trans "Save all Todo configuration settings" %}
         </div>
         <button type="button" onclick="saveAllTodoSettings()" class="btn-primary" style="padding: 12px 24px; font-size: 16px; min-width: 200px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: var(--linguify-gradient); border: none; color: var(--linguify-white);">
             <i class="bi bi-save"></i>
-            Enregistrer tous les paramètres
+            {% trans "Save all settings" %}
         </button>
         <div id="save-status" style="margin-top: 10px; font-size: 14px;"></div>
     </div>
@@ -498,7 +499,7 @@ async function triggerManualArchive() {
     const statusDiv = document.getElementById('archive-status');
     
     // Update button state
-    button.innerHTML = '<i class="bi bi-hourglass-split"></i> Archivage en cours...';
+    button.innerHTML = '<i class="bi bi-hourglass-split"></i> {% trans "Archiving in progress..." %}';
     button.disabled = true;
     button.style.background = 'var(--linguify-gray-600)';
     statusDiv.innerHTML = '';
@@ -515,7 +516,7 @@ async function triggerManualArchive() {
         if (response.ok) {
             const result = await response.json();
             // Success
-            button.innerHTML = '<i class="bi bi-check-circle"></i> Archivage terminé !';
+            button.innerHTML = '<i class="bi bi-check-circle"></i> {% trans "Archiving completed!" %}';
             button.style.background = 'var(--linguify-green-500)';
             statusDiv.innerHTML = '<span style="color: var(--linguify-green-500); font-weight: 500;"><i class="bi bi-check-circle"></i> ' + result.message + '</span>';
             
@@ -528,13 +529,13 @@ async function triggerManualArchive() {
             }, 3000);
         } else {
             const error = await response.json();
-            throw new Error(error.error || 'Erreur lors de l\'archivage');
+            throw new Error(error.error || '{% trans "Error" %} lors de l\'archivage');
         }
         
     } catch (error) {
         console.error('[TodoArchive] Archive error:', error);
         // Error
-        button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Erreur';
+        button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> {% trans "Error" %}';
         button.style.background = 'var(--linguify-red-600)';
         statusDiv.innerHTML = '<span style="color: var(--linguify-red-600); font-weight: 500;"><i class="bi bi-exclamation-triangle"></i> ' + error.message + '</span>';
         
@@ -553,7 +554,7 @@ async function saveAllTodoSettings() {
     const statusDiv = document.getElementById('save-status');
     
     // Update button state
-    button.innerHTML = '<i class="bi bi-hourglass-split"></i> Sauvegarde en cours...';
+    button.innerHTML = '<i class="bi bi-hourglass-split"></i> {% trans "Saving in progress..." %}';
     button.disabled = true;
     button.style.background = 'var(--linguify-gray-600)';
     statusDiv.innerHTML = '';
@@ -584,33 +585,33 @@ async function saveAllTodoSettings() {
         if (response.ok) {
             const result = await response.json();
             // Success
-            button.innerHTML = '<i class="bi bi-check-circle"></i> Sauvegardé !';
+            button.innerHTML = '<i class="bi bi-check-circle"></i> {% trans "Saved!" %}';
             button.style.background = 'var(--linguify-green-500)';
-            statusDiv.innerHTML = '<span style="color: var(--linguify-green-500); font-weight: 500;"><i class="bi bi-check-circle"></i> Paramètres sauvegardés avec succès</span>';
+            statusDiv.innerHTML = '<span style="color: var(--linguify-green-500); font-weight: 500;"><i class="bi bi-check-circle"></i> {% trans "Settings saved successfully" %}</span>';
             
             console.log('[TodoSettings] Settings saved successfully:', result);
             
             // Reset button after 2 seconds
             setTimeout(() => {
-                button.innerHTML = '<i class="bi bi-save"></i> Enregistrer tous les paramètres';
+                button.innerHTML = '<i class="bi bi-save"></i> {% trans "Save all settings" %}';
                 button.style.background = '';
                 button.disabled = false;
             }, 2000);
         } else {
             const error = await response.json();
-            throw new Error(error.message || 'Erreur lors de la sauvegarde');
+            throw new Error(error.message || '{% trans "Error while saving" %}');
         }
         
     } catch (error) {
         console.error('[TodoSettings] Save error:', error);
         // Error
-        button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Erreur';
+        button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> {% trans "Error" %}';
         button.style.background = 'var(--linguify-red-600)';
-        statusDiv.innerHTML = '<span style="color: var(--linguify-red-600); font-weight: 500;"><i class="bi bi-exclamation-triangle"></i> Erreur lors de la sauvegarde</span>';
+        statusDiv.innerHTML = '<span style="color: var(--linguify-red-600); font-weight: 500;"><i class="bi bi-exclamation-triangle"></i> {% trans "Error while saving" %}</span>';
         
         // Reset button after 3 seconds
         setTimeout(() => {
-            button.innerHTML = '<i class="bi bi-save"></i> Enregistrer tous les paramètres';
+            button.innerHTML = '<i class="bi bi-save"></i> {% trans "Save all settings" %}';
             button.style.background = '';
             button.disabled = false;
         }, 3000);
@@ -710,9 +711,9 @@ async function saveAllTodoSettings() {
                 const minutes = value % 60;
                 valueSpan.textContent = hours + 'h' + (minutes > 0 ? minutes + 'm' : '');
             } else if (slider.name === 'auto_archive_days') {
-                valueSpan.textContent = value + ' jours';
+                valueSpan.textContent = value + ' {% trans "days" %}';
             } else if (slider.name === 'auto_delete_archive_days') {
-                valueSpan.textContent = value + ' jours';
+                valueSpan.textContent = value + ' {% trans "days" %}';
             } else {
                 valueSpan.textContent = value;
             }
@@ -724,7 +725,7 @@ async function saveAllTodoSettings() {
                 const button = form.querySelector('button[type="submit"]');
                 const originalText = button.innerHTML;
                 
-                button.innerHTML = '<i class="bi bi-hourglass"></i> Sauvegarde...';
+                button.innerHTML = '<i class="bi bi-hourglass"></i> {% trans "Saving..." %}';
                 button.disabled = true;
                 
                 const response = await fetch(window.location.pathname, {
@@ -738,7 +739,7 @@ async function saveAllTodoSettings() {
                 const data = await response.json();
                 
                 if (data.success) {
-                    button.innerHTML = '<i class="bi bi-check"></i> Enregistré !';
+                    button.innerHTML = '<i class="bi bi-check"></i> {% trans "Saved!" %}';
                     button.style.backgroundColor = 'var(--linguify-green-500)';
                     setTimeout(() => {
                         button.innerHTML = originalText;
@@ -746,16 +747,16 @@ async function saveAllTodoSettings() {
                         button.disabled = false;
                     }, 2000);
                 } else {
-                    throw new Error(data.message || 'Erreur de sauvegarde');
+                    throw new Error(data.message || '{% trans "Save error" %}');
                 }
                 
             } catch (error) {
                 console.error('[TodoSettings] Save error:', error);
                 const button = form.querySelector('button[type="submit"]');
-                button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Erreur';
+                button.innerHTML = '<i class="bi bi-exclamation-triangle"></i> {% trans "Error" %}';
                 button.style.backgroundColor = 'var(--linguify-red-600)';
                 setTimeout(() => {
-                    button.innerHTML = '<i class="bi bi-save"></i> Enregistrer';
+                    button.innerHTML = '<i class="bi bi-save"></i> {% trans "Save" %}';
                     button.style.backgroundColor = '';
                     button.disabled = false;
                 }, 2000);
