@@ -130,8 +130,8 @@
                 <div class="form-group">
                     <label class="form-label">Delai d'archivage automatique (jours)</label>
                     <div class="range-input">
-                        <input type="range" name="auto_archive_days" min="1" max="365" value="30" class="form-range">
-                        <span class="range-value">30</span>
+                        <input type="range" name="auto_archive_days" min="1" max="365" class="form-range">
+                        <span class="range-value"></span>
                     </div>
                     <div class="form-help">Nombre de jours avant archivage automatique</div>
                 </div>
@@ -205,79 +205,6 @@
         </div>
     </div>
 
-    <!-- Interface Settings Section -->
-    <div class="content-section">
-        <div class="section-header">
-            <h3 class="section-title">
-                <i class="bi bi-palette"></i>
-                Interface et experience
-            </h3>
-            <div class="section-actions">
-                <button class="section-toggle">
-                    <i class="bi bi-chevron-up"></i>
-                </button>
-            </div>
-        </div>
-        <div class="section-content">
-            <form id="todo-interface-form" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="setting_type" value="interface">
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Theme</label>
-                        <select name="theme" class="form-control">
-                            <option value="light">Clair</option>
-                            <option value="dark">Sombre</option>
-                            <option value="auto">Automatique</option>
-                        </select>
-                        <div class="form-help">Theme de l'interface utilisateur</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            <input type="checkbox" name="compact_mode">
-                            Mode compact
-                        </label>
-                        <div class="form-help">Interface plus dense avec moins d'espacement</div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="show_subtask_count" checked>
-                        Afficher le nombre de sous-taches
-                    </label>
-                    <div class="form-help">Montrer le decompte des sous-taches dans les projets</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="show_progress_bars" checked>
-                        Afficher les barres de progression
-                    </label>
-                    <div class="form-help">Afficher visuellement le progres des projets</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="show_completed_tasks" checked>
-                        Afficher les taches terminees
-                    </label>
-                    <div class="form-help">Inclure les taches completees dans la liste</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="quick_add_shortcut" checked>
-                        Raccourci d'ajout rapide
-                    </label>
-                    <div class="form-help">Activer le raccourci clavier pour ajouter rapidement des taches</div>
-                </div>
-
-            </form>
-        </div>
-    </div>
 
     <!-- Data Management Section -->
     <div class="content-section">
@@ -320,8 +247,8 @@
                             Délai d'archivage automatique
                         </label>
                         <div class="range-input" style="display: flex; align-items: center; gap: 12px;">
-                            <input type="range" name="auto_archive_days" min="1" max="90" value="30" class="form-range" style="flex: 1;">
-                            <span class="range-value" style="min-width: 40px; font-weight: 600; color: var(--linguify-blue-600);">30</span>
+                            <input type="range" name="auto_archive_days" min="1" max="90" class="form-range" style="flex: 1;">
+                            <span class="range-value" style="min-width: 40px; font-weight: 600; color: var(--linguify-blue-600);"></span>
                             <span style="font-size: 13px; color: var(--linguify-gray-500);">jours</span>
                         </div>
                         <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">
@@ -352,8 +279,8 @@
                             Délai de suppression des archives
                         </label>
                         <div class="range-input" style="display: flex; align-items: center; gap: 12px;">
-                            <input type="range" name="auto_delete_archive_days" min="1" max="90" value="30" class="form-range" style="flex: 1;">
-                            <span class="range-value" style="min-width: 40px; font-weight: 600; color: var(--linguify-red-600);">30</span>
+                            <input type="range" name="auto_delete_archive_days" min="1" max="90" class="form-range" style="flex: 1;">
+                            <span class="range-value" style="min-width: 40px; font-weight: 600; color: var(--linguify-red-600);"></span>
                             <span style="font-size: 13px; color: var(--linguify-gray-500);">jours</span>
                         </div>
                         <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">
@@ -512,7 +439,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to load Todo settings from API
 async function loadTodoSettings() {
+    console.log('[TodoSettings] Starting to load settings from API...');
+    
     try {
+        console.log('[TodoSettings] Making fetch request to /api/v1/todo/settings/');
         const response = await fetch('/api/v1/todo/settings/', {
             method: 'GET',
             headers: {
@@ -521,14 +451,19 @@ async function loadTodoSettings() {
             }
         });
         
+        console.log('[TodoSettings] Response status:', response.status);
+        console.log('[TodoSettings] Response ok:', response.ok);
+        
         if (response.ok) {
             const settings = await response.json();
-            console.log('[TodoSettings] Loaded settings:', settings);
+            console.log('[TodoSettings] Loaded settings from API:', settings);
             
             // Populate form fields with current settings
             populateFormFields(settings);
         } else {
-            console.warn('[TodoSettings] Could not load settings, using defaults');
+            console.warn('[TodoSettings] API response not ok, status:', response.status);
+            const errorText = await response.text();
+            console.warn('[TodoSettings] Error response:', errorText);
         }
     } catch (error) {
         console.error('[TodoSettings] Error loading settings:', error);
