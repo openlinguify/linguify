@@ -354,7 +354,9 @@
     </script>
     
     <!-- Include SaaS header -->
+    {% block header_content %}
     {% include 'components/header/app_header.html' %}
+    {% endblock %}
     
     <!-- Main content -->
     <main class="main-content">

@@ -7,12 +7,13 @@
 <link rel="stylesheet" href="{% static 'css/tailwind-learning.css' %}">
 {% endblock %}
 
-{% block header_content %}
-{% include 'language_learning/components/navbar.html' %}
-{% endblock %}
-
 {% block content %}
-<div id="learning-content" class="learning-container" x-data="{ sidebarOpen: false, activeUnit: {{ active_unit_id|default:1 }} }">
+<!-- Navbar spécifique à language learning -->
+<div class="learning-app-wrapper">
+    {% include 'components/navbar.html' %}
+
+    <!-- Contenu principal avec sidebar -->
+    <div id="learning-content" class="learning-container" x-data="{ sidebarOpen: false, activeUnit: {{ active_unit_id|default:1 }} }">
     {% if selected_language %}
     <!-- Sidebar avec les unités -->
     <aside class="sidebar-units" :class="{ 'open': sidebarOpen }">
@@ -197,10 +198,10 @@
         </div>
     </div>
     {% endif %}
-</div>
+    </div><!-- Fin learning-content -->
 
-<!-- Modal pour les modules (sera rempli par HTMX) -->
-<div id="module-modal"></div>
+    <!-- Modal pour les modules (sera rempli par HTMX) -->
+    <div id="module-modal"></div>
 
 <!-- Overlay pour mobile -->
 <div
@@ -215,6 +216,7 @@
     x-transition:leave-end="opacity-0"
     style="display: none;"
 ></div>
+</div><!-- Fin learning-app-wrapper -->
 
 {% endblock %}
 

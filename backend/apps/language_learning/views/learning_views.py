@@ -14,6 +14,8 @@ from ..models_course import (
 def learning_interface(request):
     """Interface principale d'apprentissage avec sidebar et modules"""
     selected_language = request.GET.get('lang', '')
+    view_type = request.GET.get('view', 'home')
+
     context = {
         'selected_language': selected_language,
         'selected_language_name': '',
@@ -22,6 +24,7 @@ def learning_interface(request):
         'active_unit_modules': [],
         'user_progress': None,
         'user_streak': 0,
+        'view_type': view_type,  # Pour la navbar
     }
 
     if selected_language:
