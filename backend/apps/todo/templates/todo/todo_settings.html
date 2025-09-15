@@ -1,62 +1,5 @@
 <!-- Todo Tab -->
 <div id="todo" class="tab-content active">
-    <!-- Productivity Settings Section -->
-    <div class="content-section">
-        <div class="section-header">
-            <h3 class="section-title">
-                <i class="bi bi-clock-history"></i>
-                Parametres de productivite
-            </h3>
-            <div class="section-actions">
-                <button class="section-toggle">
-                    <i class="bi bi-chevron-up"></i>
-                </button>
-            </div>
-        </div>
-        <div class="section-content">
-            <form id="todo-productivity-form" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="setting_type" value="productivity">
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="enable_time_tracking">
-                        Suivi du temps
-                    </label>
-                    <div class="form-help">Mesurer le temps passe sur chaque tache</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="pomodoro_timer">
-                        Timer Pomodoro
-                    </label>
-                    <div class="form-help">Utiliser la technique Pomodoro pour la concentration</div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Duree Pomodoro (minutes)</label>
-                        <div class="range-input">
-                            <input type="range" name="pomodoro_duration" min="5" max="60" value="25" class="form-range">
-                            <span class="range-value">25</span>
-                        </div>
-                        <div class="form-help">Duree des sessions de travail</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Duree des pauses (minutes)</label>
-                        <div class="range-input">
-                            <input type="range" name="break_duration" min="1" max="30" value="5" class="form-range">
-                            <span class="range-value">5</span>
-                        </div>
-                        <div class="form-help">Duree des pauses entre sessions</div>
-                    </div>
-                </div>
-
-            </form>
-        </div>
-    </div>
 
     <!-- Task Settings Section -->
     <div class="content-section">
@@ -442,8 +385,8 @@ async function loadTodoSettings() {
     console.log('[TodoSettings] Starting to load settings from API...');
     
     try {
-        console.log('[TodoSettings] Making fetch request to /api/v1/todo/settings/');
-        const response = await fetch('/api/v1/todo/settings/', {
+        console.log('[TodoSettings] Making fetch request to /todo/settings/');
+        const response = await fetch('/todo/settings/', {
             method: 'GET',
             headers: {
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
@@ -473,20 +416,27 @@ async function loadTodoSettings() {
 // Function to populate form fields with settings data
 function populateFormFields(settings) {
     console.log('[TodoSettings] Populating form fields with:', settings);
+    console.log('[TodoSettings] Archive days from API:', settings.auto_archive_days);
+    console.log('[TodoSettings] Delete days from API:', settings.auto_delete_archive_days);
     
     Object.keys(settings).forEach(key => {
-        const element = document.querySelector(`[name="${key}"]`);
+        const elements = document.querySelectorAll(`[name="${key}"]`);
+        elements.forEach(element => {
         if (element) {
             console.log(`[TodoSettings] Setting ${key} = ${settings[key]} (type: ${element.type})`);
             
             if (element.type === 'checkbox') {
                 element.checked = settings[key];
             } else if (element.type === 'range') {
+                console.log(`[TodoSettings] Updating range ${key}: ${element.value} → ${settings[key]}`);
                 element.value = settings[key];
-                // Update range display
+                // Update range display immediately
                 const valueDisplay = element.parentNode.querySelector('.range-value');
                 if (valueDisplay) {
+                    console.log(`[TodoSettings] Found display element for ${key}, updating text: "${valueDisplay.textContent}" → "${settings[key]}"`);
                     valueDisplay.textContent = settings[key];
+                } else {
+                    console.log(`[TodoSettings] No display element found for ${key} range`);
                 }
             } else if (element.tagName === 'SELECT') {
                 element.value = settings[key];
@@ -504,6 +454,7 @@ function populateFormFields(settings) {
         } else {
             console.log(`[TodoSettings] Element not found for key: ${key}`);
         }
+        });
     });
 }
 
@@ -622,7 +573,7 @@ async function saveAllTodoSettings() {
         });
         
         // Send to API
-        const response = await fetch('/api/v1/todo/settings/', {
+        const response = await fetch('/todo/settings/', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
@@ -675,9 +626,14 @@ async function saveAllTodoSettings() {
         'use strict';
         
         // Initialize when DOM is ready
+        console.log('[TodoSettings] Script loaded, readyState:', document.readyState);
+        console.log('[TodoSettings] Todo element exists:', !!document.getElementById('todo'));
+        
         if (document.readyState === 'loading') {
+            console.log('[TodoSettings] DOM still loading, adding event listener');
             document.addEventListener('DOMContentLoaded', initTodoSettingsPage);
         } else {
+            console.log('[TodoSettings] DOM already loaded, initializing immediately');
             initTodoSettingsPage();
         }
         
@@ -758,10 +714,6 @@ async function saveAllTodoSettings() {
                 valueSpan.textContent = value + ' jours';
             } else if (slider.name === 'auto_delete_archive_days') {
                 valueSpan.textContent = value + ' jours';
-            } else if (slider.name === 'pomodoro_duration') {
-                valueSpan.textContent = value + ' min';
-            } else if (slider.name === 'break_duration') {
-                valueSpan.textContent = value + ' min';
             } else {
                 valueSpan.textContent = value;
             }
