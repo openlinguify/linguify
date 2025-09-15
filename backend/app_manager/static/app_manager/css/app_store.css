@@ -378,3 +378,162 @@
 .app-card.installing {
     opacity: 0.7;
 }
+
+/* Styles pour les boutons avec couleurs Linguify */
+.app-store-container .btn {
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.app-store-container .btn-primary {
+    color: white !important;
+    background: linear-gradient(135deg, var(--linguify-primary), var(--linguify-accent)) !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(45, 91, 186, 0.2);
+}
+
+.app-store-container .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(45, 91, 186, 0.3);
+    color: white !important;
+}
+
+/* Amélioration de l'apparence générale */
+.app-store-container {
+    background: var(--linguify-gray-50);
+    min-height: 100vh;
+    padding-top: 2rem;
+}
+
+/* FORCE BRUTALE POUR TOUS LES ÉLÉMENTS */
+.app-store-container * {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.app-store-container .app-card * {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.app-store-container .app-header {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.app-store-container .app-icon {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    width: 48px !important;
+    height: 48px !important;
+    background: #2D5BBA !important;
+}
+
+.app-store-container .app-icon img {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    width: 40px !important;
+    height: 40px !important;
+}
+
+.app-store-container .app-info {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    flex: 1 !important;
+}
+
+.app-store-container .app-title {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.app-store-container .app-category {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-size: 0.875rem !important;
+    color: #6b7280 !important;
+}
+
+/* CONTRER LE JAVASCRIPT QUI CACHE LES CARTES */
+.app-store-container .app-card {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.app-store-container .app-card[style*="display: none"] {
+    display: block !important;
+}
+
+.app-store-container .app-card[style*="opacity: 0"] {
+    opacity: 1 !important;
+}
+
+/* FORCER L'AFFICHAGE PERMANENT - PAS SEULEMENT AU HOVER */
+.app-store-container .app-card .app-header,
+.app-store-container .app-card .app-header *,
+.app-store-container .app-card .app-icon,
+.app-store-container .app-card .app-icon *,
+.app-store-container .app-card .app-info,
+.app-store-container .app-card .app-info *,
+.app-store-container .app-card .app-title,
+.app-store-container .app-card .app-category {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+.app-store-container .app-card .app-header {
+    display: flex !important;
+}
+
+.app-store-container .app-card .app-icon {
+    display: flex !important;
+}
+
+.app-store-container .app-card .app-info {
+    display: block !important;
+    flex: 1 !important;
+}
+
+/* ANNULER TOUS LES EFFETS HOVER QUI POURRAIENT CACHER LES ÉLÉMENTS */
+.app-store-container .app-card:not(:hover) .app-title,
+.app-store-container .app-card:not(:hover) .app-category,
+.app-store-container .app-card:not(:hover) .app-icon,
+.app-store-container .app-card:not(:hover) .app-header,
+.app-store-container .app-card:not(:hover) .app-info {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+    transform: none !important;
+}
+
+.app-store-container .app-card:not(:hover) .app-title,
+.app-store-container .app-card:not(:hover) .app-category {
+    display: block !important;
+}
+
+/* DEBUG: Bordures pour voir les éléments */
+.app-store-container .app-title {
+    border: 2px solid red !important;
+    background: yellow !important;
+}
+
+.app-store-container .app-icon {
+    border: 2px solid blue !important;
+    background: lightblue !important;
+}
