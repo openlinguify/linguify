@@ -3,83 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Action Required: Accept Terms and Conditions</title>
+    <title>Action requise : Accepter les Conditions d'Utilisation</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: #1f2937;
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+        .wrapper {
+            padding: 40px 20px;
         }
         .container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
             background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            overflow: hidden;
         }
         .header {
+            background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+            color: white;
+            padding: 40px;
             text-align: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eaeaea;
         }
         .logo {
-            max-width: 120px;
-            margin-bottom: 15px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2D5BBA;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
         }
         .content {
-            padding: 20px 0;
+            padding: 40px;
+        }
+        .greeting {
+            font-size: 18px;
+            font-weight: 500;
+            color: #2D5BBA;
+            margin-bottom: 20px;
+        }
+        .message {
+            color: #4b5563;
+            margin-bottom: 30px;
+        }
+        .highlight-box {
+            background: #f0f9ff;
+            border-left: 4px solid #2D5BBA;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        .highlight-box h3 {
+            color: #2D5BBA;
+            margin-top: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .highlight-box ul {
+            margin: 10px 0 0 20px;
+            padding: 0;
+            color: #4b5563;
+        }
+        .highlight-box li {
+            margin-bottom: 8px;
+        }
+        .cta-section {
+            text-align: center;
+            margin: 40px 0;
         }
         .cta-button {
             display: inline-block;
-            padding: 12px 24px;
-            background-color: #4F46E5;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
             color: white;
             text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            box-shadow: 0 6px 20px rgba(45, 91, 186, 0.4);
+            transform: translateY(-1px);
+        }
+        .alternative-link {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .alternative-link a {
+            color: #2D5BBA;
+            text-decoration: underline;
         }
         .footer {
-            padding-top: 20px;
-            border-top: 1px solid #eaeaea;
+            background: #f9fafb;
+            padding: 30px 40px;
             text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer-logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2D5BBA;
+            margin-bottom: 10px;
+        }
+        .footer-text {
+            font-size: 13px;
+            color: #6b7280;
+            margin: 5px 0;
+        }
+        .footer-links {
+            margin: 20px 0;
+        }
+        .footer-links a {
+            color: #2D5BBA;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 13px;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        .copyright {
             font-size: 12px;
-            color: #888;
+            color: #9ca3af;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <img class="logo" src="https://linguify.com/logo.png" alt="{{ app_name }} Logo">
-            <h1>Action Required: Accept Terms and Conditions</h1>
-        </div>
-        
-        <div class="content">
-            <p>Dear {{ user.first_name|default:user.username }},</p>
-            
-            <p>We've updated our Terms and Conditions for {{ app_name }}, and we need your acceptance to continue using the platform with full functionality.</p>
-            
-            <p>Please take a moment to review and accept our updated terms:</p>
-            
-            <p style="text-align: center;">
-                <a href="{{ terms_url }}" class="cta-button">Review and Accept Terms</a>
-            </p>
-            
-            <p>If you have any questions about these changes, please contact our support team at support@linguify.com.</p>
-            
-            <p>Thank you for being part of our community!</p>
-            
-            <p>Best regards,<br>The {{ app_name }} Team</p>
-        </div>
-        
-        <div class="footer">
-            <p>This email was sent to {{ user.email }}.</p>
-            <p>&copy; {% now "Y" %} {{ app_name }}. All rights reserved.</p>
+    <div class="wrapper">
+        <div class="container">
+            <div class="header">
+                <div class="logo">L</div>
+                <h1>Action requise : Conditions d'Utilisation</h1>
+            </div>
+
+            <div class="content">
+                <div class="greeting">
+                    Bonjour {{ user.first_name|default:user.username }},
+                </div>
+
+                <div class="message">
+                    <p>Nous avons mis à jour nos <strong>Conditions d'Utilisation</strong> pour améliorer votre expérience sur {{ app_name|default:"Open Linguify" }}.</p>
+
+                    <p>Pour continuer à profiter pleinement de notre plateforme d'apprentissage des langues, nous avons besoin de votre accord sur ces nouvelles conditions.</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🔄 Principales mises à jour :</h3>
+                    <ul>
+                        <li>Clarification de l'utilisation des données personnelles</li>
+                        <li>Nouvelles fonctionnalités de collaboration</li>
+                        <li>Amélioration de la sécurité et de la confidentialité</li>
+                        <li>Mise à jour des droits et responsabilités</li>
+                    </ul>
+                </div>
+
+                <div class="cta-section">
+                    <a href="{{ terms_url }}" class="cta-button">
+                        ✓ Consulter et Accepter les Conditions
+                    </a>
+                    <div class="alternative-link">
+                        Vous pouvez également copier ce lien dans votre navigateur :<br>
+                        <a href="{{ terms_url }}">{{ terms_url }}</a>
+                    </div>
+                </div>
+
+                <div class="message">
+                    <p><strong>Important :</strong> L'acceptation de ces conditions est nécessaire pour continuer à utiliser {{ app_name|default:"Open Linguify" }}.</p>
+
+                    <p>Si vous avez des questions concernant ces modifications, n'hésitez pas à nous contacter à <a href="mailto:support@openlinguify.com" style="color: #2D5BBA;">support@openlinguify.com</a>.</p>
+
+                    <p>Merci de faire partie de notre communauté d'apprentissage !</p>
+
+                    <p style="margin-top: 30px;">
+                        Cordialement,<br>
+                        <strong>L'équipe {{ app_name|default:"Open Linguify" }}</strong>
+                    </p>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="footer-logo">Open Linguify</div>
+                <div class="footer-text">
+                    Votre plateforme d'apprentissage des langues
+                </div>
+
+                <div class="footer-links">
+                    <a href="{{ terms_url }}">Conditions d'Utilisation</a>
+                    <a href="{{ portal_url }}/privacy/">Confidentialité</a>
+                    <a href="{{ portal_url }}/contact/">Contact</a>
+                </div>
+
+                <div class="footer-text">
+                    Cet email a été envoyé à {{ user.email }}
+                </div>
+
+                <div class="copyright">
+                    © {% now "Y" %} {{ app_name|default:"Open Linguify" }}. Tous droits réservés.
+                </div>
+            </div>
         </div>
     </div>
 </body>

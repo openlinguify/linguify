@@ -11,12 +11,14 @@ class NotificationType(models.TextChoices):
     ERROR = 'error', 'Error'
     LESSON_REMINDER = 'lesson_reminder', 'Lesson Reminder'
     FLASHCARD = 'flashcard', 'Flashcard Reminder'
+    REVISION_REMINDER = 'revision_reminder', 'Revision Reminder'
     STREAK = 'streak', 'Streak'
     ACHIEVEMENT = 'achievement', 'Achievement'
     SYSTEM = 'system', 'System'
     PROGRESS = 'progress', 'Progress'
     TERMS = 'terms', 'Terms & Conditions'
-    
+    ACTION_REQUIRED = 'action_required', 'Action Required'
+
     # Calendar notification types
     CALENDAR_REMINDER = 'calendar_reminder', 'Event Reminder'
     CALENDAR_INVITATION = 'calendar_invitation', 'Event Invitation'

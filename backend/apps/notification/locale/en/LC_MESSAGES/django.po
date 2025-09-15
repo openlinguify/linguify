@@ -1,0 +1,56 @@
+# English translations for notification app (base file)
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-16 10:00+0000\n"
+"PO-Revision-Date: 2025-01-16 10:00+0000\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "🔥 REVISION REMINDER"
+msgstr "🔥 REVISION REMINDER"
+
+msgid "You have %(count)d cards to review today. Keep your streak going!"
+msgstr "You have %(count)d cards to review today. Keep your streak going!"
+
+msgid "🏆 Achievement Unlocked!"
+msgstr "🏆 Achievement Unlocked!"
+
+msgid "You earned: %(achievement)s"
+msgstr "You earned: %(achievement)s"
+
+msgid "🎉 Course Completed!"
+msgstr "🎉 Course Completed!"
+
+msgid "Congratulations! You completed %(course)s"
+msgstr "Congratulations! You completed %(course)s"
+
+msgid "System Update"
+msgstr "System Update"
+
+msgid "Action Required: Accept Terms of Use"
+msgstr "Action Required: Accept Terms of Use"
+
+msgid "Please accept our updated terms of use to continue using Linguify."
+msgstr "Please accept our updated terms of use to continue using Linguify."
+
+msgid "Welcome to Open Linguify!"
+msgstr "Welcome to Open Linguify!"
+
+msgid "Start your language learning journey today"
+msgstr "Start your language learning journey today"
+
+msgid "📚 Study Time"
+msgstr "📚 Study Time"
+
+msgid "You have flashcards ready for review"
+msgstr "You have flashcards ready for review"

@@ -31,7 +31,7 @@ def remind_users_to_accept_terms():
             # Prepare email content
             context = {
                 'user': user,
-                'terms_url': f"{settings.BASE_URL}/annexes/terms",
+                'terms_url': f"{getattr(settings, 'PORTAL_URL', 'http://localhost:8001')}/annexes/terms",
                 'app_name': "Linguify"
             }
             

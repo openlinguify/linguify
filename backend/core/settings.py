@@ -429,6 +429,7 @@ LANGUAGES = [
 LOCALE_PATHS = [
     # os.path.join(BASE_DIR, 'public_web/i18n'), # Moved to portal
     os.path.join(BASE_DIR, 'apps/authentication/locale'),
+    os.path.join(BASE_DIR, 'apps/notification/locale'),
     os.path.join(BASE_DIR, 'saas_web/i18n'),
     os.path.join(BASE_DIR, 'apps/course/i18n'),
     os.path.join(BASE_DIR, 'apps/revision/i18n'),

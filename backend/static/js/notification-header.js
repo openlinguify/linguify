@@ -272,7 +272,23 @@ class NotificationHeader {
         // Handle notification click actions based on notification type and data
         try {
             const data = notification.data || {};
-            
+
+            // Handle terms and conditions notifications
+            if (notification.type === 'terms_update' || notification.type === 'action_required') {
+                if (notification.message && notification.message.includes('Conditions d\'Utilisation')) {
+                    console.log('[NotificationHeader] Redirecting to terms of service...');
+                    // Extraire l'URL des données de notification si disponible
+                    if (data.terms_url) {
+                        window.location.href = data.terms_url;
+                    } else {
+                        // Fallback vers le portal
+                        const portalUrl = window.location.hostname === 'localhost' ? 'http://localhost:8001' : 'https://openlinguify.com';
+                        window.location.href = `${portalUrl}/annexes/terms/`;
+                    }
+                    return;
+                }
+            }
+
             // Handle revision reminder notifications
             if (data.action === 'start_revision' || data.reminder_type === 'daily_revision') {
                 console.log('[NotificationHeader] Redirecting to revision study...');
@@ -280,17 +296,17 @@ class NotificationHeader {
                 window.location.href = '/revision/study/';
                 return;
             }
-            
+
             // Handle flashcard notifications
             if (notification.type === 'flashcard') {
                 console.log('[NotificationHeader] Redirecting to revision...');
                 window.location.href = '/revision/';
                 return;
             }
-            
+
             // Add more notification types as needed
             console.log('[NotificationHeader] No specific action for notification type:', notification.type);
-            
+
         } catch (error) {
             console.error('[NotificationHeader] Error handling notification click:', error);
         }
