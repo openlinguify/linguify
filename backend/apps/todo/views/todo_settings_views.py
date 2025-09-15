@@ -133,27 +133,47 @@ class TodoSettingsAPI(APIView):
     def post(self, request):
         """Update todo settings"""
         user = request.user
+        
+        # Debug: Log what we receive
+        logger.info(f"Received settings data: {request.data}")
+        
         serializer = TodoSettingsSerializer(data=request.data)
         
         if serializer.is_valid():
             settings_data = serializer.validated_data
             
+            # Debug: Log validated data
+            logger.info(f"Validated settings data: {settings_data}")
+            
             # Get or create settings object
             settings = TodoSettings.get_or_create_for_user(user)
+            
+            # Debug: Log current settings before update
+            logger.info(f"Current auto_archive_completed: {settings.auto_archive_completed}")
+            logger.info(f"Current auto_delete_archived: {settings.auto_delete_archived}")
             
             # Update all fields
             for field, value in settings_data.items():
                 if hasattr(settings, field):
+                    old_value = getattr(settings, field)
                     setattr(settings, field, value)
+                    logger.info(f"Updated {field}: {old_value} -> {value}")
             
             # Save to database
             settings.save()
+            logger.info("Settings saved to database")
+            
+            # Verify save worked
+            settings.refresh_from_db()
+            logger.info(f"After save - auto_archive_completed: {settings.auto_archive_completed}")
+            logger.info(f"After save - auto_delete_archived: {settings.auto_delete_archived}")
             
             return Response({
                 'message': 'Settings updated successfully',
                 'settings': settings_data
             })
         else:
+            logger.error(f"Serializer errors: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

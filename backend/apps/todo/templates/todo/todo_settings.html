@@ -298,53 +298,86 @@
                 {% csrf_token %}
                 <input type="hidden" name="setting_type" value="data">
                 
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" name="auto_archive_completed">
-                        Archivage automatique des taches terminees
-                    </label>
-                    <div class="form-help">Deplacer automatiquement les taches vers Archives apres le delai configure</div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Delai d'archivage automatique (jours)</label>
-                        <div class="range-input">
-                            <input type="range" name="auto_archive_days" min="1" max="90" value="30" class="form-range">
-                            <span class="range-value">30</span>
-                        </div>
-                        <div class="form-help">Nombre de jours apres completion avant deplacement vers Archives (max 90 jours)</div>
+                <!-- Archivage automatique section -->
+                <div style="background: var(--linguify-gray-50); padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--linguify-gray-200);">
+                    <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                        <i class="bi bi-archive" style="font-size: 18px; color: var(--linguify-blue-500); margin-right: 8px;"></i>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #495057;">Archivage automatique</h4>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            <input type="checkbox" name="auto_delete_archived">
-                            Suppression automatique des archives anciennes
+                    
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label class="form-label" style="display: flex; align-items: center; font-size: 14px; color: #495057; margin-bottom: 8px;">
+                            <input type="checkbox" name="auto_archive_completed" style="margin-right: 8px;">
+                            <strong>Activer l'archivage automatique des tâches terminées</strong>
                         </label>
-                        <div class="form-help">Supprimer définitivement les tâches des Archives après le délai configuré</div>
+                        <div style="font-size: 13px; color: var(--linguify-gray-500); margin-left: 24px;">
+                            Déplacer automatiquement les tâches de "Done" vers "Archives" après le délai configuré
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" style="font-size: 14px; color: #495057; margin-bottom: 8px; display: block;">
+                            Délai d'archivage automatique
+                        </label>
+                        <div class="range-input" style="display: flex; align-items: center; gap: 12px;">
+                            <input type="range" name="auto_archive_days" min="1" max="90" value="30" class="form-range" style="flex: 1;">
+                            <span class="range-value" style="min-width: 40px; font-weight: 600; color: var(--linguify-blue-600);">30</span>
+                            <span style="font-size: 13px; color: var(--linguify-gray-500);">jours</span>
+                        </div>
+                        <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">
+                            Nombre de jours après completion avant déplacement vers Archives (maximum 90 jours)
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Delai de suppression des archives (jours)</label>
-                    <div class="range-input">
-                        <input type="range" name="auto_delete_archive_days" min="1" max="90" value="30" class="form-range">
-                        <span class="range-value">30</span>
+                <!-- Suppression automatique section -->
+                <div style="background: var(--linguify-red-50); padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--linguify-red-200);">
+                    <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                        <i class="bi bi-trash" style="font-size: 18px; color: var(--linguify-red-500); margin-right: 8px;"></i>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #495057;">Suppression automatique</h4>
                     </div>
-                    <div class="form-help">Nombre de jours dans Archives avant suppression définitive (max 90 jours)</div>
+                    
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label class="form-label" style="display: flex; align-items: center; font-size: 14px; color: #495057; margin-bottom: 8px;">
+                            <input type="checkbox" name="auto_delete_archived" style="margin-right: 8px;">
+                            <strong>Activer la suppression automatique des archives anciennes</strong>
+                        </label>
+                        <div style="font-size: 13px; color: var(--linguify-gray-500); margin-left: 24px;">
+                            Supprimer définitivement les tâches des Archives après le délai configuré
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" style="font-size: 14px; color: #495057; margin-bottom: 8px; display: block;">
+                            Délai de suppression des archives
+                        </label>
+                        <div class="range-input" style="display: flex; align-items: center; gap: 12px;">
+                            <input type="range" name="auto_delete_archive_days" min="1" max="90" value="30" class="form-range" style="flex: 1;">
+                            <span class="range-value" style="min-width: 40px; font-weight: 600; color: var(--linguify-red-600);">30</span>
+                            <span style="font-size: 13px; color: var(--linguify-gray-500);">jours</span>
+                        </div>
+                        <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">
+                            Nombre de jours dans Archives avant suppression définitive (maximum 90 jours)
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Manual Actions Buttons -->
-                <div class="form-group" style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 250px;">
-                        <button type="button" onclick="triggerManualArchive()" class="btn-archive" style="display: inline-flex; align-items: center; padding: 10px 16px; background: var(--linguify-purple-500); color: var(--linguify-white); border-radius: 6px; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; width: 100%;">
-                            <i class="bi bi-archive" style="margin-right: 6px;"></i>
-                            Déclencher l'archivage et nettoyage
-                        </button>
-                        <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 4px;">Exécuter immédiatement l'archivage et la suppression selon vos paramètres</div>
+                <!-- Action manuelle section -->
+                <div style="background: var(--linguify-purple-50); padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--linguify-purple-200);">
+                    <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                        <i class="bi bi-play-circle" style="font-size: 18px; color: var(--linguify-purple-500); margin-right: 8px;"></i>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #495057;">Action manuelle</h4>
                     </div>
+                    
+                    <button type="button" onclick="triggerManualArchive()" class="btn-archive" style="display: inline-flex; align-items: center; padding: 12px 20px; background: var(--linguify-purple-500); color: var(--linguify-white); border-radius: 8px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <i class="bi bi-archive" style="margin-right: 8px;"></i>
+                        Déclencher l'archivage et nettoyage maintenant
+                    </button>
+                    <div style="font-size: 13px; color: var(--linguify-gray-500); margin-top: 8px;">
+                        Exécuter immédiatement l'archivage et la suppression selon vos paramètres actuels
+                    </div>
+                    <div id="archive-status" style="margin-top: 12px; font-size: 14px;"></div>
                 </div>
-                <div id="archive-status" style="margin-top: 8px; font-size: 14px;"></div>
             </form>
 
             <!-- Separator -->
@@ -504,9 +537,13 @@ async function loadTodoSettings() {
 
 // Function to populate form fields with settings data
 function populateFormFields(settings) {
+    console.log('[TodoSettings] Populating form fields with:', settings);
+    
     Object.keys(settings).forEach(key => {
         const element = document.querySelector(`[name="${key}"]`);
         if (element) {
+            console.log(`[TodoSettings] Setting ${key} = ${settings[key]} (type: ${element.type})`);
+            
             if (element.type === 'checkbox') {
                 element.checked = settings[key];
             } else if (element.type === 'range') {
@@ -529,6 +566,8 @@ function populateFormFields(settings) {
             } else {
                 element.value = settings[key];
             }
+        } else {
+            console.log(`[TodoSettings] Element not found for key: ${key}`);
         }
     });
 }
@@ -539,25 +578,24 @@ function collectFormData() {
     const settings = {};
     
     forms.forEach(form => {
-        const formData = new FormData(form);
-        for (let [key, value] of formData.entries()) {
-            if (key !== 'setting_type' && key !== 'csrfmiddlewaretoken') {
-                // Handle different input types
-                const element = form.querySelector(`[name="${key}"]`);
-                if (element) {
-                    if (element.type === 'checkbox') {
-                        settings[key] = element.checked;
-                    } else if (element.type === 'range' || element.type === 'number') {
-                        settings[key] = parseInt(value);
-                    } else if (element.type === 'time') {
-                        // Ensure proper time format
-                        settings[key] = value.includes(':') ? value + ':00' : value;
-                    } else {
-                        settings[key] = value;
-                    }
+        // Get all inputs in the form, not just FormData (which skips unchecked checkboxes)
+        const inputs = form.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach(element => {
+            const key = element.name;
+            if (key && key !== 'setting_type' && key !== 'csrfmiddlewaretoken') {
+                if (element.type === 'checkbox') {
+                    settings[key] = element.checked;
+                } else if (element.type === 'range' || element.type === 'number') {
+                    settings[key] = parseInt(element.value) || 0;
+                } else if (element.type === 'time') {
+                    // Ensure proper time format
+                    settings[key] = element.value.includes(':') ? element.value + ':00' : element.value;
+                } else {
+                    settings[key] = element.value;
                 }
             }
-        }
+        });
     });
     
     // Also collect the export checkbox that's outside forms
@@ -638,7 +676,15 @@ async function saveAllTodoSettings() {
     try {
         // Collect all form data
         const settings = collectFormData();
-        console.log('[TodoSettings] Saving settings:', settings);
+        console.log('[TodoSettings] Collected settings for save:', settings);
+        
+        // Specific debug for archiving settings
+        console.log('[TodoSettings] Archive settings:', {
+            auto_archive_completed: settings.auto_archive_completed,
+            auto_archive_days: settings.auto_archive_days,
+            auto_delete_archived: settings.auto_delete_archived,
+            auto_delete_archive_days: settings.auto_delete_archive_days
+        });
         
         // Send to API
         const response = await fetch('/api/v1/todo/settings/', {

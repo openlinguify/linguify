@@ -28,14 +28,14 @@ urlpatterns = [
     path('task/new/', TodoFormView.as_view(), name='task_new'),
     path('task/<uuid:task_id>/', TodoFormView.as_view(), name='task_edit'),
 
-    # API endpoints (router includes all CRUD operations)
-    path('', include(router.urls)),
-    
-    # Settings endpoints
+    # Settings endpoints (MUST be before router to avoid conflicts)
     path('settings/', TodoSettingsAPI.as_view(), name='settings'),
     path('preferences/', TodoUserPreferencesAPI.as_view(), name='preferences'),
     path('dashboard/', TodoDashboardAPI.as_view(), name='dashboard'),
     path('archive/', TodoArchiveTasksAPIView.as_view(), name='archive_tasks'),
+    
+    # API endpoints (router includes all CRUD operations)
+    path('', include(router.urls)),
     
     # HTMX endpoints
     path('htmx/tasks/<uuid:task_id>/toggle/', TaskToggleHTMXView.as_view(), name='task_toggle_htmx'),
