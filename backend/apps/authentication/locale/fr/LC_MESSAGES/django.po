@@ -239,3 +239,135 @@ msgstr "votre@email.com ou nom_utilisateur"
 msgid "Enter your password"
 msgstr "Saisissez votre mot de passe"
 
+
+msgid "Profile picture"
+msgstr "Photo de profil"
+
+msgid "Current profile picture"
+msgstr "Photo de profil actuelle"
+
+msgid "Change profile picture"
+msgstr "Changer la photo de profil"
+
+msgid "Accepted formats: JPG, PNG, WEBP. Max size: 5MB"
+msgstr "Formats acceptés : JPG, PNG, WEBP. Taille max : 5MB"
+
+msgid "Personal Information"
+msgstr "Informations personnelles"
+
+msgid "Email cannot be changed"
+msgstr "L'email ne peut pas être modifié"
+
+msgid "Optional. Format: +32 123 456 789"
+msgstr "Optionnel. Format : +32 123 456 789"
+
+msgid "Biography"
+msgstr "Biographie"
+
+msgid "Tell us about yourself..."
+msgstr "Parlez-nous de vous..."
+
+msgid "Interface Language"
+msgstr "Langue de l'interface"
+
+msgid "Choose the display language for the Linguify interface"
+msgstr "Choisissez la langue d'affichage de l'interface Linguify"
+
+msgid "Privacy & Security"
+msgstr "Confidentialité et sécurité"
+
+msgid "Public profile"
+msgstr "Profil public"
+
+msgid "Allow other users to see your profile"
+msgstr "Permettre aux autres utilisateurs de voir votre profil"
+
+msgid "Share my progress"
+msgstr "Partager mes progrès"
+
+msgid "Display your learning stats on your profile"
+msgstr "Afficher vos statistiques d'apprentissage sur votre profil"
+
+msgid "Learning Preferences"
+msgstr "Préférences d'apprentissage"
+
+msgid "Native Language"
+msgstr "Langue maternelle"
+
+msgid "Your native language for translations"
+msgstr "Votre langue maternelle pour les traductions"
+
+msgid "Target Language"
+msgstr "Langue cible"
+
+msgid "Language you are currently learning"
+msgstr "Langue que vous apprenez actuellement"
+
+msgid "Learning Level"
+msgstr "Niveau d'apprentissage"
+
+msgid "Beginner (A1-A2)"
+msgstr "Débutant (A1-A2)"
+
+msgid "Intermediate (B1-B2)"
+msgstr "Intermédiaire (B1-B2)"
+
+msgid "Advanced (C1-C2)"
+msgstr "Avancé (C1-C2)"
+
+msgid "Daily Goal"
+msgstr "Objectif quotidien"
+
+msgid "5 minutes (Casual)"
+msgstr "5 minutes (Décontracté)"
+
+msgid "10 minutes (Regular)"
+msgstr "10 minutes (Régulier)"
+
+msgid "15 minutes (Serious)"
+msgstr "15 minutes (Sérieux)"
+
+msgid "30 minutes (Intense)"
+msgstr "30 minutes (Intensif)"
+
+msgid "Learning Methods"
+msgstr "Méthodes d'apprentissage"
+
+msgid "Flashcards"
+msgstr "Cartes mémoire"
+
+msgid "Listening exercises"
+msgstr "Exercices d'écoute"
+
+msgid "Speaking practice"
+msgstr "Pratique orale"
+
+msgid "Grammar lessons"
+msgstr "Leçons de grammaire"
+
+msgid "Notifications & Reminders"
+msgstr "Notifications et rappels"
+
+msgid "Daily study reminder"
+msgstr "Rappel d'étude quotidien"
+
+msgid "Get reminded to practice every day"
+msgstr "Recevez un rappel pour pratiquer chaque jour"
+
+msgid "Streak notifications"
+msgstr "Notifications de série"
+
+msgid "Celebrate your learning streaks"
+msgstr "Célébrez vos séries d'apprentissage"
+
+msgid "Achievement notifications"
+msgstr "Notifications de réussite"
+
+msgid "Get notified when you reach milestones"
+msgstr "Soyez notifié lorsque vous atteignez des jalons"
+
+msgid "Reminder Time"
+msgstr "Heure de rappel"
+
+msgid "When to receive your daily reminder"
+msgstr "Quand recevoir votre rappel quotidien"

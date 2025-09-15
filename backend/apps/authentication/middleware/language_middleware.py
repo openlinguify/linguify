@@ -2,6 +2,7 @@
 # Part of Linguify. See LICENSE file for full copyright and licensing details.
 
 from django.utils import translation
+from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.utils.deprecation import MiddlewareMixin
 import logging
 
@@ -17,28 +18,35 @@ class UserLanguageMiddleware(MiddlewareMixin):
         """
         Set the language for the request based on user preferences
         """
-        if request.user.is_authenticated:
+        # First check if user is authenticated
+        if hasattr(request, 'user') and request.user.is_authenticated:
             try:
-                # Get user's interface language preference
-                from ..models.models import UserProfile
-                profile = UserProfile.objects.filter(user=request.user).first()
+                # Get user's interface language preference directly from User model
+                user = request.user
 
-                if profile and profile.interface_language:
+                if hasattr(user, 'interface_language') and user.interface_language:
                     # Activate the user's preferred language
-                    translation.activate(profile.interface_language)
-                    request.session[translation.LANGUAGE_SESSION_KEY] = profile.interface_language
-                    logger.debug(f"Language set to {profile.interface_language} for user {request.user.username}")
+                    language = user.interface_language
+                    translation.activate(language)
+                    request.session[LANGUAGE_SESSION_KEY] = language
+                    request.LANGUAGE_CODE = language
+                    logger.info(f"Language activated: {language} for user {user.username}")
                 else:
-                    # Default to English if no preference is set
-                    translation.activate('en')
-                    request.session[translation.LANGUAGE_SESSION_KEY] = 'en'
+                    # Default to session or English if no preference is set
+                    language = request.session.get(LANGUAGE_SESSION_KEY, 'en')
+                    translation.activate(language)
+                    request.LANGUAGE_CODE = language
+                    logger.info(f"Using default language: {language}")
             except Exception as e:
-                logger.error(f"Error setting user language: {e}")
+                logger.error(f"Error setting user language: {e}", exc_info=True)
                 # Fall back to default language
                 translation.activate('en')
+                request.LANGUAGE_CODE = 'en'
         else:
             # For anonymous users, check session or use default
-            language = request.session.get(translation.LANGUAGE_SESSION_KEY, 'en')
+            language = request.session.get(LANGUAGE_SESSION_KEY, 'en')
             translation.activate(language)
+            request.LANGUAGE_CODE = language
+            logger.info(f"Anonymous user - language: {language}")
 
         return None

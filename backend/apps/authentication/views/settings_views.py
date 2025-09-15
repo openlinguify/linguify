@@ -271,7 +271,8 @@ class UserSettingsView(View):
 
                     # Set language in session for immediate effect
                     from django.utils import translation
-                    request.session[translation.LANGUAGE_SESSION_KEY] = interface_language
+                    from django.utils.translation import LANGUAGE_SESSION_KEY
+                    request.session[LANGUAGE_SESSION_KEY] = interface_language
 
                     if is_ajax:
                         # Check if it's an HTMX request

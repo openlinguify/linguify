@@ -239,3 +239,135 @@ msgstr "jouw@email.com of gebruikersnaam"
 msgid "Enter your password"
 msgstr "Voer je wachtwoord in"
 
+
+msgid "Profile picture"
+msgstr "Profielfoto"
+
+msgid "Current profile picture"
+msgstr "Huidige profielfoto"
+
+msgid "Change profile picture"
+msgstr "Profielfoto wijzigen"
+
+msgid "Accepted formats: JPG, PNG, WEBP. Max size: 5MB"
+msgstr "Geaccepteerde formaten: JPG, PNG, WEBP. Max grootte: 5MB"
+
+msgid "Personal Information"
+msgstr "Persoonlijke informatie"
+
+msgid "Email cannot be changed"
+msgstr "E-mail kan niet worden gewijzigd"
+
+msgid "Optional. Format: +32 123 456 789"
+msgstr "Optioneel. Formaat: +32 123 456 789"
+
+msgid "Biography"
+msgstr "Biografie"
+
+msgid "Tell us about yourself..."
+msgstr "Vertel iets over jezelf..."
+
+msgid "Interface Language"
+msgstr "Interface taal"
+
+msgid "Choose the display language for the Linguify interface"
+msgstr "Kies de weergavetaal voor de Linguify interface"
+
+msgid "Privacy & Security"
+msgstr "Privacy & Beveiliging"
+
+msgid "Public profile"
+msgstr "Openbaar profiel"
+
+msgid "Allow other users to see your profile"
+msgstr "Andere gebruikers toestaan je profiel te zien"
+
+msgid "Share my progress"
+msgstr "Mijn voortgang delen"
+
+msgid "Display your learning stats on your profile"
+msgstr "Toon je leerstatistieken op je profiel"
+
+msgid "Learning Preferences"
+msgstr "Leervoorkeuren"
+
+msgid "Native Language"
+msgstr "Moedertaal"
+
+msgid "Your native language for translations"
+msgstr "Je moedertaal voor vertalingen"
+
+msgid "Target Language"
+msgstr "Doeltaal"
+
+msgid "Language you are currently learning"
+msgstr "Taal die je momenteel leert"
+
+msgid "Learning Level"
+msgstr "Leerniveau"
+
+msgid "Beginner (A1-A2)"
+msgstr "Beginner (A1-A2)"
+
+msgid "Intermediate (B1-B2)"
+msgstr "Gemiddeld (B1-B2)"
+
+msgid "Advanced (C1-C2)"
+msgstr "Gevorderd (C1-C2)"
+
+msgid "Daily Goal"
+msgstr "Dagelijks doel"
+
+msgid "5 minutes (Casual)"
+msgstr "5 minuten (Casual)"
+
+msgid "10 minutes (Regular)"
+msgstr "10 minuten (Regelmatig)"
+
+msgid "15 minutes (Serious)"
+msgstr "15 minuten (Serieus)"
+
+msgid "30 minutes (Intense)"
+msgstr "30 minuten (Intensief)"
+
+msgid "Learning Methods"
+msgstr "Leermethoden"
+
+msgid "Flashcards"
+msgstr "Flashcards"
+
+msgid "Listening exercises"
+msgstr "Luisteroefeningen"
+
+msgid "Speaking practice"
+msgstr "Spreekoefeningen"
+
+msgid "Grammar lessons"
+msgstr "Grammaticalessen"
+
+msgid "Notifications & Reminders"
+msgstr "Meldingen & Herinneringen"
+
+msgid "Daily study reminder"
+msgstr "Dagelijkse studieherinnering"
+
+msgid "Get reminded to practice every day"
+msgstr "Krijg dagelijks een herinnering om te oefenen"
+
+msgid "Streak notifications"
+msgstr "Reeksmeldingen"
+
+msgid "Celebrate your learning streaks"
+msgstr "Vier je leerreeksen"
+
+msgid "Achievement notifications"
+msgstr "Prestatiemeldingen"
+
+msgid "Get notified when you reach milestones"
+msgstr "Ontvang meldingen wanneer je mijlpalen bereikt"
+
+msgid "Reminder Time"
+msgstr "Herinneringstijd"
+
+msgid "When to receive your daily reminder"
+msgstr "Wanneer je dagelijkse herinnering ontvangen"
