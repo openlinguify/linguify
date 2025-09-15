@@ -274,17 +274,29 @@ class NotificationHeader {
             const data = notification.data || {};
 
             // Handle terms and conditions notifications
-            if (notification.type === 'terms_update' || notification.type === 'action_required') {
-                if (notification.message && notification.message.includes('Conditions d\'Utilisation')) {
-                    console.log('[NotificationHeader] Redirecting to terms of service...');
-                    // Extraire l'URL des données de notification si disponible
-                    if (data.terms_url) {
-                        window.location.href = data.terms_url;
-                    } else {
-                        // Fallback vers le portal
-                        const portalUrl = window.location.hostname === 'localhost' ? 'http://localhost:8001' : 'https://openlinguify.com';
-                        window.location.href = `${portalUrl}/annexes/terms/`;
-                    }
+            if (notification.type === 'terms' || notification.type === 'terms_update' || notification.type === 'action_required') {
+                console.log('[NotificationHeader] Terms notification clicked:', notification);
+                console.log('[NotificationHeader] Notification data:', data);
+
+                // Vérifier l'URL d'action dans les données
+                if (data.action_url) {
+                    console.log('[NotificationHeader] Redirecting to:', data.action_url);
+                    window.location.href = data.action_url;
+                    return;
+                }
+
+                // Vérifier si le message contient "Terms" ou "Conditions"
+                const message = notification.message || '';
+                const title = notification.title || '';
+                if (message.toLowerCase().includes('terms') ||
+                    message.toLowerCase().includes('conditions') ||
+                    title.toLowerCase().includes('terms') ||
+                    title.toLowerCase().includes('conditions')) {
+                    // Fallback vers le portal avec le bon port
+                    const portalUrl = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://openlinguify.com';
+                    const termsUrl = `${portalUrl}/annexes/terms/`;
+                    console.log('[NotificationHeader] Fallback redirect to:', termsUrl);
+                    window.location.href = termsUrl;
                     return;
                 }
             }
