@@ -161,19 +161,26 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Core settings functionality -->
-<script src="{% static 'saas_web/js/settings-utils.js' %}?v=2025.2"></script>
-<script src="{% static 'saas_web/js/settings-core.js' %}?v=2025.2"></script>
+<!-- Conditionally load settings scripts based on active tab -->
+<script>
+  // Prevent multiple loads of settings scripts
+  if (typeof window.settingsScriptsLoaded === 'undefined') {
+    window.settingsScriptsLoaded = true;
 
-<!-- App-specific settings scripts (only load existing files) -->
-<script src="{% static 'authentication/js/settings.js' %}"></script>
-<script src="{% static 'chat/js/settings.js' %}"></script>
-<script src="{% static 'quizz/js/settings.js' %}"></script>
-<script src="{% static 'notebook/js/settings.js' %}"></script>
-<script src="{% static 'community/js/settings.js' %}"></script>
-<script src="{% static 'revision/js/settings.js' %}"></script>
-<script src="{% static 'notification/js/settings.js' %}"></script>
-<script src="{% static 'documents/js/documents_settings.js' %}"></script>
-<script src="{% static 'language_learning/js/settings.js' %}"></script>
-<script src="{% static 'todo/js/settings.js' %}"></script>
+    // Check if we're on the profile page
+    const isProfilePage = window.location.pathname.includes('/profile') ||
+                         document.querySelector('#profile.tab-content.active');
+
+    if (!isProfilePage) {
+      // Only load auto-save scripts for non-profile pages
+      const utilsScript = document.createElement('script');
+      utilsScript.src = '{% static "saas_web/js/settings-utils.js" %}?v=2025.2';
+      document.head.appendChild(utilsScript);
+
+      const coreScript = document.createElement('script');
+      coreScript.src = '{% static "saas_web/js/settings-core.js" %}?v=2025.2';
+      document.head.appendChild(coreScript);
+    }
+  }
+</script>
 {% endblock %}

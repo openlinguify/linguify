@@ -105,17 +105,16 @@
         <label class="form-label">{% trans "Interface Language" %}</label>
         <div class="form-help">{% trans "Choose the display language for the Linguify interface" %}</div>
         <form hx-post="/settings/"
-              hx-trigger="change from:select"
+              hx-trigger="change"
               hx-target="#htmx-messages"
-              hx-include="[name='interface_language']"
-              style="display: inline;">
+              hx-swap="innerHTML">
           {% csrf_token %}
           <input type="hidden" name="setting_type" value="language">
           <select name="interface_language" class="form-control" id="interface-language-select">
-            <option value="fr" {% if user.userprofile.interface_language == 'fr' %}selected{% endif %}>🇫🇷 Français</option>
-            <option value="en" {% if user.userprofile.interface_language == 'en' %}selected{% endif %}>🇬🇧 English</option>
-            <option value="nl" {% if user.userprofile.interface_language == 'nl' %}selected{% endif %}>🇳🇱 Nederlands</option>
-            <option value="es" {% if user.userprofile.interface_language == 'es' %}selected{% endif %}>🇪🇸 Español</option>
+            <option value="fr" {% if user.interface_language == 'fr' %}selected{% endif %}>🇫🇷 Français</option>
+            <option value="en" {% if user.interface_language == 'en' %}selected{% endif %}>🇬🇧 English</option>
+            <option value="nl" {% if user.interface_language == 'nl' %}selected{% endif %}>🇳🇱 Nederlands</option>
+            <option value="es" {% if user.interface_language == 'es' %}selected{% endif %}>🇪🇸 Español</option>
           </select>
         </form>
       </div>

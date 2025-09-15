@@ -166,12 +166,16 @@ class UserSettingsView(View):
     def post(self, request):
         """Handle settings updates with auto-save support"""
         setting_type = request.POST.get('setting_type')
-        
+
+        # Default to 'profile' if no setting_type specified but we're on profile URL
+        if not setting_type and 'profile' in request.path:
+            setting_type = 'profile'
+
         # Log only the setting type for debugging
-        logger.debug(f"UserSettingsView POST - setting_type: {setting_type}")
-        
+        logger.debug(f"UserSettingsView POST - setting_type: {setting_type}, path: {request.path}")
+
         # Check if it's an AJAX request for auto-save
-        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.headers.get('HX-Request')
         
         # Check if it's a profile-related request
         if (request.FILES.get('profile_picture') or 
@@ -254,16 +258,16 @@ class UserSettingsView(View):
                 view.request = request
                 return view.post(request)
         elif setting_type == 'language':
-            logger.debug("Processing language settings")
+            logger.debug(f"Processing language settings - interface_language: {request.POST.get('interface_language')}")
             # Handle language settings
             try:
                 interface_language = request.POST.get('interface_language')
                 if interface_language:
-                    # Get or create user profile
-                    from ..models.models import UserProfile
-                    profile, created = UserProfile.objects.get_or_create(user=request.user)
-                    profile.interface_language = interface_language
-                    profile.save()
+                    # Update interface_language directly on User model
+                    user = request.user
+                    user.interface_language = interface_language
+                    user.save()
+                    logger.debug(f"Saved language preference: {interface_language} for user {request.user.username}")
 
                     # Set language in session for immediate effect
                     from django.utils import translation
@@ -299,10 +303,19 @@ class UserSettingsView(View):
             except Exception as e:
                 logger.error(f"Error updating language settings: {e}")
                 if is_ajax:
-                    return JsonResponse({
-                        'success': False,
-                        'message': f'Erreur lors de la mise à jour: {str(e)}'
-                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    if request.headers.get('HX-Request'):
+                        # Return error HTML fragment for HTMX
+                        return HttpResponse(
+                            f'<div class="alert alert-danger" style="padding: 15px 20px; background: #dc3545; color: white; border-radius: 8px; margin-bottom: 10px;">'
+                            f'<i class="bi bi-exclamation-triangle"></i> '
+                            f'Erreur: {str(e)}'
+                            f'</div>'
+                        )
+                    else:
+                        return JsonResponse({
+                            'success': False,
+                            'message': f'Erreur lors de la mise à jour: {str(e)}'
+                        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 else:
                     messages.error(request, 'Erreur lors de la mise à jour de la langue')
                     return redirect('saas_web:settings')
@@ -371,7 +384,7 @@ class GeneralSettingsView(View):
         """Handle general settings update"""
         try:
             # Check if it's an AJAX request
-            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.headers.get('HX-Request')
             
             serializer = GeneralSettingsSerializer(instance=request.user, data=request.POST)
             if serializer.is_valid():
@@ -431,7 +444,7 @@ class ProfileSettingsView(View):
         """Handle profile settings update"""
         try:
             # Check if it's an AJAX request
-            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.headers.get('HX-Request')
             
             # Handle profile picture upload separately if present
             profile_picture = request.FILES.get('profile_picture')
@@ -529,7 +542,7 @@ class PrivacySettingsView(View):
         """Handle privacy settings update"""
         try:
             # Check if it's an AJAX request
-            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.headers.get('HX-Request')
             
             serializer = PrivacySettingsSerializer(instance=request.user, data=request.POST)
             if serializer.is_valid():
@@ -589,7 +602,7 @@ class AppearanceSettingsView(View):
         """Handle appearance settings update"""
         try:
             # Check if it's an AJAX request
-            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.headers.get('HX-Request')
             
             serializer = AppearanceSettingsSerializer(instance=request.user, data=request.POST)
             if serializer.is_valid():
