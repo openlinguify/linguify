@@ -271,7 +271,8 @@ class UserSettingsView(View):
 
                     # Set language in session for immediate effect
                     from django.utils import translation
-                    from django.utils.translation import LANGUAGE_SESSION_KEY
+                    from django.conf import settings
+                    LANGUAGE_SESSION_KEY = settings.LANGUAGE_COOKIE_NAME
                     request.session[LANGUAGE_SESSION_KEY] = interface_language
 
                     if is_ajax:

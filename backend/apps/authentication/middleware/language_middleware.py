@@ -2,9 +2,11 @@
 # Part of Linguify. See LICENSE file for full copyright and licensing details.
 
 from django.utils import translation
-from django.utils.translation import LANGUAGE_SESSION_KEY
+from django.conf import settings
 from django.utils.deprecation import MiddlewareMixin
 import logging
+
+LANGUAGE_SESSION_KEY = settings.LANGUAGE_COOKIE_NAME
 
 logger = logging.getLogger(__name__)
 
