@@ -44,8 +44,8 @@
             hx-swap="outerHTML"
             hx-push-url="true"
             name="lang"
+            id="language-selector"
         >
-            <option value="">🌍 Sélectionner une langue</option>
             <option value="en" {% if selected_language == 'en' %}selected{% endif %}>🇬🇧 English</option>
             <option value="fr" {% if selected_language == 'fr' %}selected{% endif %}>🇫🇷 Français</option>
             <option value="es" {% if selected_language == 'es' %}selected{% endif %}>🇪🇸 Español</option>

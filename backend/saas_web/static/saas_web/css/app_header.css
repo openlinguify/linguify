@@ -83,6 +83,13 @@
     border-color: var(--primary-color);
 }
 
+/* Force hide navbar-toggler on large screens */
+@media (min-width: 992px) {
+    .navbar-toggler {
+        display: none !important;
+    }
+}
+
 /* Mobile optimizations */
 @media (max-width: 991px) {
     .navbar-toggler {

@@ -2,6 +2,15 @@
 {% load static %}
 {% load i18n %}
 
+<style>
+    /* Force hide navbar-toggler on desktop */
+    @media (min-width: 992px) {
+        .navbar-toggler {
+            display: none !important;
+        }
+    }
+</style>
+
 <header class="fixed-header" id="mainHeader">
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -40,9 +49,9 @@
                 {% endblock %}
                 
                 <!-- Mobile menu toggle -->
-                <button class="navbar-toggler d-lg-none header-btn" 
-                        type="button" 
-                        data-bs-toggle="collapse" 
+                <button class="navbar-toggler d-lg-none header-btn"
+                        type="button"
+                        data-bs-toggle="collapse"
                         data-bs-target="#navbarNav"
                         aria-controls="navbarNav"
                         aria-expanded="false"

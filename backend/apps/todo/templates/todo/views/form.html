@@ -39,12 +39,14 @@
                     <label for="description" class="form-label-linguify">
                         {% trans "Description" %}
                     </label>
-                    <textarea id="description" name="description" 
-                              class="form-control flex-grow-1" 
-                              placeholder="{% trans 'Ecrivez votre description ici...' %}"
-                              style="border: 1px solid #ddd; border-radius: 4px; font-family: inherit; padding: 12px; resize: none; min-height: 400px; height: 100%;">{{ task.description|default:'' }}</textarea>
+                    <div id="task-description-editor" class="flex-grow-1" style="min-height: 400px;">
+                        <!-- Editor.js will be initialized here -->
+                    </div>
+                    <textarea id="description" name="description"
+                              class="form-control flex-grow-1"
+                              style="display: none;">{{ task.description|default:'' }}</textarea>
                     <div class="text-xs text-gray-500 mt-1">
-                        {% trans "Tip: You can use Markdown for formatting" %}
+                        {% trans "Tip: Type '/' to see available commands" %}
                     </div>
                 </div>
                 
@@ -221,12 +223,115 @@
 
 {% block extra_css %}
 <!-- All styles are centralized in tailwind-modals.css -->
+<style>
+/* Editor.js Custom Styles */
+.ce-block__content,
+.ce-toolbar__content {
+    max-width: 100% !important;
+}
 
+.ce-toolbar__plus {
+    display: none !important; /* Hide the plus button, we use slash commands */
+}
+
+.codex-editor {
+    padding: 0 !important;
+}
+
+.ce-block {
+    padding: 4px 0;
+}
+
+.ce-popover {
+    z-index: 9999 !important;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
+<!-- Load Editor.js Dependencies -->
+<script src="{% static 'js/commands-editor/editor-cdn.js' %}"></script>
+<script src="{% static 'js/commands-editor/linguify-editor.js' %}"></script>
+
 <script>
+// Initialize Editor.js for task description
+let descriptionEditor = null;
+
+async function initializeDescriptionEditor() {
+    try {
+        // Load EditorJS dependencies first
+        if (typeof window.EditorJSLoader !== 'undefined') {
+            const loader = new window.EditorJSLoader();
+            await loader.loadAll();
+            console.log('✅ Editor.js dependencies loaded');
+        }
+
+        // Get initial content from hidden textarea
+        const textarea = document.getElementById('description');
+        const initialContent = textarea ? textarea.value : '';
+
+        // Create the editor
+        if (typeof window.LinguifyEditor !== 'undefined') {
+            descriptionEditor = await window.LinguifyEditor.createFromContent(
+                'task-description-editor',
+                initialContent,
+                {
+                    placeholder: 'Tapez "/" pour voir les commandes disponibles...',
+                    autofocus: false
+                }
+            );
+
+            console.log('✅ Description editor initialized');
+
+            // Setup auto-save
+            const editorElement = document.getElementById('task-description-editor');
+            if (editorElement) {
+                let saveTimeout;
+
+                // Listen for changes in the editor
+                editorElement.addEventListener('input', async () => {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(async () => {
+                        const data = await descriptionEditor.save();
+                        if (data) {
+                            // Update hidden textarea with JSON data
+                            textarea.value = JSON.stringify(data);
+                            // Trigger HTMX autosave
+                            textarea.dispatchEvent(new Event('blur', { bubbles: true }));
+                        }
+                    }, 1500);
+                });
+
+                // Save on Enter key (new block)
+                editorElement.addEventListener('keyup', async (e) => {
+                    if (e.key === 'Enter') {
+                        clearTimeout(saveTimeout);
+                        saveTimeout = setTimeout(async () => {
+                            const data = await descriptionEditor.save();
+                            if (data) {
+                                textarea.value = JSON.stringify(data);
+                                textarea.dispatchEvent(new Event('blur', { bubbles: true }));
+                            }
+                        }, 800);
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Failed to initialize description editor:', error);
+        // Show fallback textarea
+        const textarea = document.getElementById('description');
+        if (textarea) {
+            textarea.style.display = 'block';
+        }
+    }
+}
+
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the description editor
+    initializeDescriptionEditor();
+
     // Apply colors to tags and badges using data attributes
     function applyColors() {
         document.querySelectorAll('[data-bg-color], [data-text-color]').forEach(element => {

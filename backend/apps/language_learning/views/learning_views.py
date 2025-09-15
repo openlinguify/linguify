@@ -16,6 +16,24 @@ def learning_interface(request):
     selected_language = request.GET.get('lang', '')
     view_type = request.GET.get('view', 'home')
 
+    # Si aucune langue n'est sélectionnée, utiliser la langue cible de l'utilisateur
+    if not selected_language:
+        # Récupérer la langue cible définie dans les paramètres utilisateur
+        if hasattr(request.user, 'target_language') and request.user.target_language:
+            selected_language = request.user.target_language
+        else:
+            # Sinon essayer de récupérer une langue en cours d'apprentissage
+            user_language = UserLanguage.objects.filter(
+                user=request.user,
+                is_learning=True
+            ).first()
+
+            if user_language:
+                selected_language = user_language.language.code
+            else:
+                # En dernier recours, prendre l'anglais par défaut
+                selected_language = 'en'
+
     context = {
         'selected_language': selected_language,
         'selected_language_name': '',
@@ -121,10 +139,11 @@ def learning_interface(request):
             if user_language:
                 context['user_streak'] = user_language.streak_count
 
-    # Si c'est une requête HTMX, retourner seulement le contenu
+    # Si c'est une requête HTMX, retourner seulement le contenu partiel
     if request.headers.get('HX-Request'):
-        return render(request, 'language_learning/learning_interface.html', context)
+        return render(request, 'language_learning/partials/learning_content.html', context)
 
+    # Sinon retourner la page complète avec navbar
     return render(request, 'language_learning/learning_interface.html', context)
 
 
