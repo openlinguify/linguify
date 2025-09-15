@@ -10,7 +10,7 @@ from rest_framework.authentication import TokenAuthentication
 from django.utils import timezone
 
 from apps.course.models.core import Unit, Chapter, Lesson, ContentLesson
-from apps.teaching.models import Teacher, TeacherLanguage, TeacherAvailability
+# from apps.teaching.models import Teacher, TeacherLanguage, TeacherAvailability  # Teaching app temporarily hidden
 from .serializers import (CMSUnitSerializer, CMSChapterSerializer, CMSLessonSerializer,
                          CMSTeacherSerializer)
 
