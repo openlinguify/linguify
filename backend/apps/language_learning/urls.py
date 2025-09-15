@@ -3,7 +3,7 @@ URLs configuration for language_learning app.
 """
 from django.urls import path, include
 from . import views
-from .views import learning_views
+from .views import learning_views, settings_views
 
 app_name = 'language_learning'
 
@@ -23,7 +23,7 @@ urlpatterns = [
     path('delete/<int:item_id>/', views.delete_item, name='delete_item'),
     
     # Settings pages
-    path('settings/', views.LanguageLearningSettingsView.as_view(), name='settings'),
+    path('settings/', settings_views.language_learning_settings, name='settings'),
     
     # API endpoints (legacy compatibility)
     path('api/items/', views.api_items, name='api_items'),
