@@ -66,14 +66,10 @@ def language_learning_home(request):
     
     # Configuration des langues avec priorité pour la langue cible de l'utilisateur
     language_configs = {
-        'en': ('English', 'Master English with interactive lessons', '🇺🇸'),
+        'en': ('English', 'Master English with interactive lessons', '🇬🇧'),
         'es': ('Spanish', 'Aprende español paso a paso', '🇪🇸'),
         'fr': ('French', 'Apprenez le français facilement', '🇫🇷'),
-        'de': ('German', 'Lernen Sie Deutsch effektiv', '🇩🇪'),
-        'it': ('Italian', 'Impara l\'italiano con facilità', '🇮🇹'),
-        'pt': ('Portuguese', 'Aprenda português facilmente', '🇵🇹'),
         'nl': ('Dutch', 'Leer Nederlands stap voor stap', '🇳🇱'),
-        'ja': ('Japanese', '日本語を簡単に学ぼう', '🇯🇵'),
     }
     
     # Créer la liste des langues avec la langue cible en premier

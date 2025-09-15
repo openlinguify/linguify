@@ -56,13 +56,7 @@ LANGUAGE_CHOICES = [
     ('en', 'English'),
     ('fr', 'French'),
     ('es', 'Spanish'),
-    ('de', 'German'),
-    ('it', 'Italian'),
-    ('pt', 'Portuguese'),
     ('nl', 'Dutch'),
-    ('ja', 'Japanese'),
-    ('ko', 'Korean'),
-    ('zh', 'Chinese'),
 ]
 
 PROFICIENCY_LEVELS = [

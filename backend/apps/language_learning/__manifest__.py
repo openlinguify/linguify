@@ -15,7 +15,7 @@ __manifest__ = {
     
     # App Configuration
     'application': True,  # This is a user application (visible in App Store)
-    'installable': False,  # Not ready for production use
+    'installable': True,  # Ready for development use
     'auto_install': False,  # Don't install automatically
     'sequence': 100,  # Display order
     
