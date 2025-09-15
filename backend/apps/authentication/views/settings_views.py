@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.generic import View, UpdateView
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from rest_framework import status
@@ -182,18 +182,77 @@ class UserSettingsView(View):
             view = ProfileSettingsView()
             view.request = request
             return view.post(request)
-        elif setting_type == 'general':
-            logger.debug("Delegating to GeneralSettingsView")
-            # Delegate to GeneralSettingsView
-            view = GeneralSettingsView()
-            view.request = request
-            return view.post(request)
+        elif setting_type == 'profile' or setting_type == 'general':
+            logger.debug("Processing profile/general settings")
+            # Check if it's an HTMX request
+            if request.headers.get('HX-Request'):
+                # Handle HTMX profile update
+                try:
+                    user = request.user
+                    if request.POST.get('first_name'):
+                        user.first_name = request.POST.get('first_name')
+                    if request.POST.get('last_name'):
+                        user.last_name = request.POST.get('last_name')
+                    if request.POST.get('username'):
+                        user.username = request.POST.get('username')
+                    if 'phone_number' in request.POST:
+                        user.phone_number = request.POST.get('phone_number', '')
+                    if 'bio' in request.POST:
+                        user.bio = request.POST.get('bio', '')
+                    user.save()
+
+                    # Handle profile picture if present
+                    if 'profile_picture' in request.FILES:
+                        profile_picture = request.FILES['profile_picture']
+                        user.profile_picture = profile_picture
+                        user.save()
+
+                    return HttpResponse(
+                        '<div class="alert alert-success" style="padding: 15px 20px; background: #28a745; color: white; border-radius: 8px; margin-bottom: 10px;">'
+                        '<i class="bi bi-check-circle"></i> '
+                        'Informations sauvegardées'
+                        '</div>'
+                    )
+                except Exception as e:
+                    return HttpResponse(
+                        '<div class="alert alert-danger" style="padding: 15px 20px; background: #dc3545; color: white; border-radius: 8px; margin-bottom: 10px;">'
+                        '<i class="bi bi-exclamation-triangle"></i> '
+                        f'Erreur: {str(e)}'
+                        '</div>'
+                    )
+            else:
+                # Delegate to GeneralSettingsView
+                view = GeneralSettingsView()
+                view.request = request
+                return view.post(request)
         elif setting_type == 'privacy':
-            logger.debug("Delegating to PrivacySettingsView")
-            # Delegate to PrivacySettingsView
-            view = PrivacySettingsView()
-            view.request = request
-            return view.post(request)
+            logger.debug("Processing privacy settings")
+            # Check if it's an HTMX request
+            if request.headers.get('HX-Request'):
+                try:
+                    user = request.user
+                    user.public_profile = request.POST.get('public_profile') == 'on'
+                    user.share_progress = request.POST.get('share_progress') == 'on'
+                    user.save()
+
+                    return HttpResponse(
+                        '<div class="alert alert-success" style="padding: 15px 20px; background: #28a745; color: white; border-radius: 8px; margin-bottom: 10px;">'
+                        '<i class="bi bi-check-circle"></i> '
+                        'Paramètres de confidentialité mis à jour'
+                        '</div>'
+                    )
+                except Exception as e:
+                    return HttpResponse(
+                        '<div class="alert alert-danger" style="padding: 15px 20px; background: #dc3545; color: white; border-radius: 8px; margin-bottom: 10px;">'
+                        '<i class="bi bi-exclamation-triangle"></i> '
+                        f'Erreur: {str(e)}'
+                        '</div>'
+                    )
+            else:
+                # Delegate to PrivacySettingsView
+                view = PrivacySettingsView()
+                view.request = request
+                return view.post(request)
         elif setting_type == 'language':
             logger.debug("Processing language settings")
             # Handle language settings
@@ -211,10 +270,20 @@ class UserSettingsView(View):
                     request.session[translation.LANGUAGE_SESSION_KEY] = interface_language
 
                     if is_ajax:
-                        return JsonResponse({
-                            'success': True,
-                            'message': 'Langue de l\'interface mise à jour avec succès'
-                        })
+                        # Check if it's an HTMX request
+                        if request.headers.get('HX-Request'):
+                            # Return HTML fragment for HTMX
+                            return HttpResponse(
+                                '<div class="alert alert-success language-changed" style="padding: 15px 20px; background: #28a745; color: white; border-radius: 8px; margin-bottom: 10px;">'
+                                '<i class="bi bi-check-circle"></i> '
+                                'Langue mise à jour ! Actualisation...'
+                                '</div>'
+                            )
+                        else:
+                            return JsonResponse({
+                                'success': True,
+                                'message': 'Langue de l\'interface mise à jour avec succès'
+                            })
                     else:
                         messages.success(request, 'Langue de l\'interface mise à jour avec succès')
                         return redirect('saas_web:settings')
