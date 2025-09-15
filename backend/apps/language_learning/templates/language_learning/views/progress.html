@@ -1,11 +1,11 @@
 {% extends "language_learning/base.html" %}
 {% load static %}
 
-{% block title %}Progrès - Linguify Learn{% endblock %}
+{% block title %}ProgrÃ¨s - Linguify Learn{% endblock %}
 
 {% block learning_content %}
 <div class="progress-container">
-    <!-- Header de la section progrès -->
+    <!-- Header de la section progrÃ¨s -->
     <div class="progress-header">
         <div class="progress-info">
             <h1 class="progress-title">
@@ -55,7 +55,7 @@
                 <div class="stat-card-content">
                     <div class="stat-card-info">
                         <h3 class="stat-value">{{ user_stats.streak_days|default:0 }}</h3>
-                        <p class="stat-label">Jours consécutifs</p>
+                        <p class="stat-label">Jours consÃ©cutifs</p>
                     </div>
                     <div class="stat-icon">
                         <i class="bi bi-fire"></i>
@@ -70,7 +70,7 @@
                 <div class="stat-card-content">
                     <div class="stat-card-info">
                         <h3 class="stat-value">{{ user_stats.total_time|default:"0h" }}</h3>
-                        <p class="stat-label">Temps d'étude</p>
+                        <p class="stat-label">Temps d'Ã©tude</p>
                     </div>
                     <div class="stat-icon">
                         <i class="bi bi-clock-fill"></i>
@@ -100,15 +100,15 @@
 
                 <div class="language-stats">
                     <div class="language-stat">
-                        <span class="stat-label">Unités complétées</span>
+                        <span class="stat-label">UnitÃ©s complÃ©tÃ©es</span>
                         <span class="stat-value">{{ lang_progress.completed_units }}/{{ lang_progress.total_units }}</span>
                     </div>
                     <div class="language-stat">
-                        <span class="stat-label">Modules complétés</span>
+                        <span class="stat-label">Modules complÃ©tÃ©s</span>
                         <span class="stat-value">{{ lang_progress.completed_modules }}/{{ lang_progress.total_modules }}</span>
                     </div>
                     <div class="language-stat">
-                        <span class="stat-label">XP gagnés</span>
+                        <span class="stat-label">XP gagnÃ©s</span>
                         <span class="stat-value">{{ lang_progress.xp_earned }}</span>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                 <div class="language-progress-bar">
                     <div class="progress-fill" style="width: {{ lang_progress.completion_percentage }}%"></div>
                 </div>
-                <span class="progress-percentage">{{ lang_progress.completion_percentage }}% complété</span>
+                <span class="progress-percentage">{{ lang_progress.completion_percentage }}% complÃ©tÃ©</span>
             </div>
             {% empty %}
             <div class="empty-state">
@@ -130,9 +130,9 @@
         </div>
     </div>
 
-    <!-- Accomplissements récents -->
+    <!-- Accomplissements rÃ©cents -->
     <div class="achievements-section">
-        <h2 class="section-title">Accomplissements récents</h2>
+        <h2 class="section-title">Accomplissements rÃ©cents</h2>
 
         <div class="achievements-grid">
             {% for achievement in recent_achievements %}
@@ -154,16 +154,16 @@
                 <i class="bi bi-trophy empty-state-icon"></i>
                 <h3 class="empty-state-title">Aucun accomplissement</h3>
                 <p class="empty-state-description">
-                    Continuez votre apprentissage pour débloquer des accomplissements !
+                    Continuez votre apprentissage pour dÃ©bloquer des accomplissements !
                 </p>
             </div>
             {% endfor %}
         </div>
     </div>
 
-    <!-- Activité récente -->
+    <!-- ActivitÃ© rÃ©cente -->
     <div class="activity-section">
-        <h2 class="section-title">Activité récente</h2>
+        <h2 class="section-title">ActivitÃ© rÃ©cente</h2>
 
         <div class="activity-timeline">
             {% for activity in recent_activities %}
@@ -190,9 +190,9 @@
             {% empty %}
             <div class="empty-state">
                 <i class="bi bi-clock-history empty-state-icon"></i>
-                <h3 class="empty-state-title">Aucune activité récente</h3>
+                <h3 class="empty-state-title">Aucune activitÃ© rÃ©cente</h3>
                 <p class="empty-state-description">
-                    Votre activité d'apprentissage apparaîtra ici.
+                    Votre activitÃ© d'apprentissage apparaÃ®tra ici.
                 </p>
             </div>
             {% endfor %}
@@ -206,7 +206,7 @@
         <div class="goals-grid">
             <div class="goal-card">
                 <div class="goal-header">
-                    <h4 class="goal-title">Minutes d'étude</h4>
+                    <h4 class="goal-title">Minutes d'Ã©tude</h4>
                     <span class="goal-progress">{{ daily_goals.study_minutes }}/{{ daily_goals.target_minutes }}</span>
                 </div>
                 <div class="goal-progress-bar">
@@ -216,7 +216,7 @@
 
             <div class="goal-card">
                 <div class="goal-header">
-                    <h4 class="goal-title">Modules complétés</h4>
+                    <h4 class="goal-title">Modules complÃ©tÃ©s</h4>
                     <span class="goal-progress">{{ daily_goals.completed_modules }}/{{ daily_goals.target_modules }}</span>
                 </div>
                 <div class="goal-progress-bar">
@@ -226,7 +226,7 @@
 
             <div class="goal-card">
                 <div class="goal-header">
-                    <h4 class="goal-title">XP gagnés</h4>
+                    <h4 class="goal-title">XP gagnÃ©s</h4>
                     <span class="goal-progress">{{ daily_goals.earned_xp }}/{{ daily_goals.target_xp }}</span>
                 </div>
                 <div class="goal-progress-bar">
