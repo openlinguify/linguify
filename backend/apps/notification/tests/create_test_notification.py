@@ -36,8 +36,8 @@ def create_test_notification():
     print("=" * 70)
 
     # Créer une nouvelle notification
-    portal_url = getattr(settings, 'PORTAL_URL', 'http://localhost:8080')
-    terms_url = f"{portal_url}/annexes/terms"
+    backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+    terms_url = f"{backend_url}/authentication/terms/accept/"
 
     # Déterminer le message selon la langue
     lang = user.interface_language

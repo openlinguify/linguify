@@ -30,8 +30,8 @@ def fix_existing_notifications():
         type__in=['terms', 'terms_update', 'action_required']
     )
 
-    portal_url = getattr(settings, 'PORTAL_URL', 'http://localhost:8080')
-    terms_url = f"{portal_url}/annexes/terms"
+    backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+    terms_url = f"{backend_url}/authentication/terms/accept/"
 
     fixed_count = 0
     already_ok = 0

@@ -535,7 +535,7 @@ def send_terms_acceptance_email_and_notification(user):
             notification_type=NotificationType.ACTION_REQUIRED,
             priority=NotificationPriority.HIGH,
             data={'action': 'accept_terms'},
-            action_url=f"{getattr(settings, 'PORTAL_URL', 'http://localhost:8080')}/annexes/terms"
+            action_url=f"{getattr(settings, 'SITE_URL', 'http://localhost:8000')}/authentication/terms/accept/"
         )
 
         # Envoyer l'email localisé

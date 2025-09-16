@@ -1,0 +1,319 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Terms of Use Acceptance" %} - {{ app_name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    .terms-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .terms-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    .terms-title {
+        background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .terms-subtitle {
+        color: #64748b;
+        font-size: 1.1rem;
+    }
+
+    .terms-content {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        border-left: 4px solid #2D5BBA;
+    }
+
+    .terms-summary {
+        line-height: 1.6;
+        color: #475569;
+        margin-bottom: 1.5rem;
+    }
+
+    .terms-link {
+        display: inline-flex;
+        align-items: center;
+        background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: transform 0.2s;
+    }
+
+    .terms-link:hover {
+        transform: translateY(-1px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .terms-link svg {
+        margin-left: 0.5rem;
+        width: 16px;
+        height: 16px;
+    }
+
+    .acceptance-section {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .acceptance-checkbox {
+        margin: 1.5rem 0;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        margin: 1rem 0;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #2D5BBA;
+    }
+
+    .checkbox-label {
+        font-size: 1.1rem;
+        color: #374151;
+        cursor: pointer;
+    }
+
+    .accept-button {
+        background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .accept-button:enabled {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .accept-button:enabled:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(45, 91, 186, 0.3);
+    }
+
+    .loading-state {
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ffffff;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .user-info {
+        background: #f1f5f9;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+    }
+
+    .user-info strong {
+        color: #2D5BBA;
+    }
+
+    .alert {
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+    }
+
+    .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .alert-error {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="terms-container">
+    <div class="terms-header">
+        <h1 class="terms-title">{% trans "Terms of Use Acceptance" %}</h1>
+        <p class="terms-subtitle">{{ app_name }}</p>
+    </div>
+
+    <div class="user-info">
+        <p><strong>{% trans "User" %}:</strong> {{ user.get_full_name|default:user.username }} ({{ user.email }})</p>
+        <p><strong>{% trans "Version" %}:</strong> {{ current_version }}</p>
+    </div>
+
+    <div class="terms-content">
+        <div class="terms-summary">
+            <h3>{% trans "Terms of Use Summary" %}</h3>
+            <p>{% trans "To continue using Open Linguify, you must accept our updated Terms of Use. These terms govern your use of our educational platform and services." %}</p>
+
+            <p>{% trans "Key points covered in our terms include:" %}</p>
+            <ul>
+                <li>{% trans "Use of our educational applications and services" %}</li>
+                <li>{% trans "Your rights and responsibilities as a user" %}</li>
+                <li>{% trans "Privacy and data protection policies" %}</li>
+                <li>{% trans "Subscription terms and billing" %}</li>
+                <li>{% trans "Intellectual property and open source commitments" %}</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 2rem 0;">
+            <a href="{{ full_terms_url }}" target="_blank" class="terms-link">
+                {% trans "Read Full Terms of Use" %}
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <div class="acceptance-section">
+        <h3>{% trans "Acceptance Required" %}</h3>
+        <p>{% trans "By checking the box below and clicking Accept, you acknowledge that you have read, understood, and agree to be bound by these Terms of Use." %}</p>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="terms-checkbox" required>
+            <label for="terms-checkbox" class="checkbox-label">
+                {% trans "I have read and accept the Terms of Use" %}
+            </label>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <button id="accept-button" class="accept-button" disabled>
+            <span id="button-text">{% trans "Accept Terms of Use" %}</span>
+            <span id="loading-state" class="loading-state">
+                <div class="spinner"></div>
+                {% trans "Processing..." %}
+            </span>
+        </button>
+
+        <p style="margin-top: 1rem; color: #64748b; font-size: 0.9rem;">
+            {% trans "This action cannot be undone. Once accepted, these terms will govern your use of our services." %}
+        </p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('terms-checkbox');
+    const acceptButton = document.getElementById('accept-button');
+    const buttonText = document.getElementById('button-text');
+    const loadingState = document.getElementById('loading-state');
+    const alertContainer = document.getElementById('alert-container');
+
+    // Enable/disable button based on checkbox
+    checkbox.addEventListener('change', function() {
+        acceptButton.disabled = !this.checked;
+    });
+
+    // Handle form submission
+    acceptButton.addEventListener('click', function() {
+        if (!checkbox.checked) {
+            showAlert('{% trans "Please check the box to accept the terms" %}', 'error');
+            return;
+        }
+
+        // Show loading state
+        buttonText.style.display = 'none';
+        loadingState.style.display = 'flex';
+        acceptButton.disabled = true;
+
+        // Make AJAX request
+        fetch('{% url "authentication:accept_terms_ajax" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+
+                // Redirect after a short delay
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1500);
+            } else {
+                showAlert(data.message, 'error');
+                resetButton();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('{% trans "An error occurred. Please try again." %}', 'error');
+            resetButton();
+        });
+    });
+
+    function showAlert(message, type) {
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type}">
+                ${message}
+            </div>
+        `;
+    }
+
+    function resetButton() {
+        buttonText.style.display = 'inline';
+        loadingState.style.display = 'none';
+        acceptButton.disabled = !checkbox.checked;
+    }
+});
+</script>
+{% endblock %}

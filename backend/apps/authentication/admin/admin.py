@@ -60,7 +60,7 @@ class NewUsersFilter(admin.SimpleListFilter):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'username', 'full_name', 'online_status', 'new_user_badge', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'last_login', 'created_at')
+    list_display = ('email', 'username', 'full_name', 'online_status', 'new_user_badge', 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'last_login', 'created_at')
     list_filter = (NewUsersFilter, 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'native_language', 'target_language', 'created_at')
     search_fields = ('email', 'username', 'first_name', 'last_name', 'public_id')
     readonly_fields = ('public_id', 'created_at', 'updated_at', 'last_login')
