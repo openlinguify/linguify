@@ -19,14 +19,13 @@ class DashboardView(View):
     
     def get(self, request):
         # Optimisation: Use service with caching
-        from django.core.cache import cache
-        
-        cache_key = f"user_installed_apps_{request.user.id}"
-        installed_apps = cache.get(cache_key)
-        
+        from app_manager.services.cache_service import UserAppCacheService
+
+        installed_apps = UserAppCacheService.get_user_apps_cache(request.user.id)
+
         if installed_apps is None:
             installed_apps = UserAppService.get_user_installed_apps(request.user)
-            cache.set(cache_key, installed_apps, 300)  # Cache for 5 minutes
+            UserAppCacheService.set_user_apps_cache(request.user.id, installed_apps, 300)  # Cache for 5 minutes
         
         context = {
             'title': _('Dashboard - Open Linguify'),
@@ -77,9 +76,8 @@ def save_app_order(request):
         
         if success:
             # Clear cache for this user
-            from django.core.cache import cache
-            cache_key = f"user_installed_apps_{request.user.id}"
-            cache.delete(cache_key)
+            from app_manager.services.cache_service import UserAppCacheService
+            UserAppCacheService.clear_user_apps_cache_for_user(request.user)
             
             return JsonResponse({
                 'success': True,

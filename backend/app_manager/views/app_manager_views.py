@@ -103,7 +103,10 @@ class AppToggleAPI(View):
                 is_enabled = True
                 message = f"{app.display_name} a été installée avec succès"
                 logger.info(f"User {request.user.id} installed app {app.code}")
-            
+            # Clear the dashboard cache for this user
+            from ..services.cache_service import UserAppCacheService
+            UserAppCacheService.clear_user_apps_cache_for_user(request.user)
+
             return JsonResponse({
                 'success': True,
                 'is_enabled': is_enabled,

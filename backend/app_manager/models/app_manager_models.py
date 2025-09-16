@@ -306,7 +306,11 @@ class UserAppSettings(models.Model):
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.warning(f"Failed to delete AppDataRetention records: {e}")
-            
+
+            # Clear the dashboard cache for this user
+            from ..services.cache_service import UserAppCacheService
+            UserAppCacheService.clear_user_apps_cache_for_user(self.user)
+
             return True
         except App.DoesNotExist:
             return False
@@ -330,7 +334,11 @@ class UserAppSettings(models.Model):
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.warning(f"Failed to create AppDataRetention record: {e}")
-            
+
+            # Clear the dashboard cache for this user
+            from ..services.cache_service import UserAppCacheService
+            UserAppCacheService.clear_user_apps_cache_for_user(self.user)
+
             return True
         except App.DoesNotExist:
             return False
@@ -358,7 +366,12 @@ class UserAppSettings(models.Model):
             
             self.app_order = final_order
             self.save(update_fields=['app_order', 'updated_at'])
-            
+
+            # Clear the dashboard cache for this user since order changed
+            from django.core.cache import cache
+            cache_key = f"user_installed_apps_{self.user.id}"
+            cache.delete(cache_key)
+
             return True
         except Exception as e:
             import logging
