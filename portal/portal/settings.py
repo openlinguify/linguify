@@ -141,8 +141,12 @@ STATICFILES_FINDERS = [
 
 # WhiteNoise configuration for production
 if is_production:
-    # Use the default WhiteNoise storage backend
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # Use StaticFilesStorage to avoid compression issues causing 0-byte files
+    STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
+
+    # WhiteNoise settings to ensure proper file serving
+    WHITENOISE_USE_FINDERS = True
+    WHITENOISE_AUTOREFRESH = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
