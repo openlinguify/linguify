@@ -114,7 +114,10 @@ urlpatterns = [
     
     # Compatibility redirect for old /course/ URL
     path('course/', RedirectView.as_view(url='/learning/', permanent=True)),
-    
+
+    # Terms page - redirect to portal terms
+    path('terms/', RedirectView.as_view(url='http://127.0.0.1:8080/terms/', permanent=False), name='terms'),
+
     # Marketplace apps
     path('chat/', include('apps.chat.urls', namespace='chat')),
     path('community/', include('apps.community.urls', namespace='community')),
