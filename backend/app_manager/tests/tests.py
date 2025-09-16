@@ -4,7 +4,7 @@ Tests pour le module app_manager
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from .models import App, UserAppSettings
+from ..models import App, UserAppSettings
 
 User = get_user_model()
 
@@ -107,10 +107,17 @@ class AppSystemIntegrationTest(TestCase):
         user_count_after = User.objects.count()
         self.assertEqual(user_count_after, user_count_before + 1)
 
-class InstallApp():
-    """Tests d'intégration du système d'applications"""
-    
+class InstallApp(TestCase):
+    """Tests d'intégration d'installation d'applications"""
+
+    def test_install_placeholder(self):
+        """Test placeholder pour l'installation"""
+        self.assertTrue(True)
 
 
-class UninstallApp():
+class UninstallApp(TestCase):
+    """Tests d'intégration de désinstallation d'applications"""
 
+    def test_uninstall_placeholder(self):
+        """Test placeholder pour la désinstallation"""
+        self.assertTrue(True)

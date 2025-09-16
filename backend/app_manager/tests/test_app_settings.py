@@ -13,8 +13,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
 
 from django.contrib.auth import get_user_model
-from app_manager.models import App, UserAppSettings
-from saas_web.services.app_settings_service import AppSettingsService
+from ..models import App, UserAppSettings
 
 User = get_user_model()
 

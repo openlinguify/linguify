@@ -181,8 +181,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Update toggle state
-                toggleInput.checked = isInstalling;
+                // Update toggle state based on actual server response
+                toggleInput.checked = data.is_enabled;
                 
                 // Update status
                 statusDiv.className = `install-status ${data.is_enabled ? 'installed' : ''}`;
