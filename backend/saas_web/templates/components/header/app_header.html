@@ -23,7 +23,7 @@
                 {% endif %}
             </a>
             
-            <div class="ms-auto d-flex align-items-center gap-2">
+            <div class="ms-auto d-flex align-items-center gap-2 ps-3 pe-2">
                 <!-- App-specific navigation items (can be extended by individual apps) -->
                 {% block app_navigation %}
                 <!-- Desktop Navigation -->
@@ -37,7 +37,7 @@
                     <a href="{% url 'saas_web:app_store' %}"
                        class="btn btn-outline-primary btn-sm header-btn d-flex justify-content-center align-items-center"
                        aria-label="{% trans 'Browse app store' %}">
-                        <i class="bi bi-grid-3x2-gap" aria-hidden="true"></i>
+                        <i class="bi bi-shop-window" aria-hidden="true"></i>
                     </a>
                 </div>
                 {% endblock %}
@@ -191,7 +191,7 @@
                     {% trans "Home" %}
                 </a>
                 <a class="nav-link mobile-nav-item" href="{% url 'saas_web:app_store' %}">
-                    <i class="bi bi-grid-3x2-gap me-2" aria-hidden="true"></i>
+                    <i class="bi bi-shop me-2" aria-hidden="true"></i>
                     {% trans "Store" %}
                 </a>
             </div>
