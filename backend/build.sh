@@ -1,39 +1,46 @@
 #!/bin/bash
-# Build script for Render deployment
+set -e
 
-echo "🚀 Starting Render build process..."
+echo "==> Backend Build Script Starting..."
+echo "==> Python version: $(python3 --version)"
+echo "==> Current directory: $(pwd)"
 
-# Set Django settings module for production
+# Upgrade pip first
+echo "==> Upgrading pip..."
+python3 -m pip install --upgrade pip
+
+# Install dependencies directly from requirements.txt
+echo "==> Installing dependencies from requirements.txt..."
+python3 -m pip install -r requirements.txt
+
+# Set Django settings module
 export DJANGO_SETTINGS_MODULE=core.settings
 
-# Skip Poetry completely and use requirements.txt directly
-echo "📦 Installing dependencies from requirements.txt..."
-pip install -r requirements.txt
+# Verify Django installation
+echo "==> Verifying Django installation..."
+python3 -c "import django; print(f'Django {django.get_version()} imported successfully')"
 
-# Double-check critical dependencies
-echo "🔧 Ensuring critical dependencies are installed..."
-pip install --upgrade stripe==11.1.0 gunicorn==23.0.0 Django==5.1.10
+# Verify critical dependencies
+echo "==> Verifying critical dependencies..."
+python3 -c "import stripe; print('✅ Stripe installed')"
+python3 -c "import environ; print('✅ django-environ installed')"
+python3 -c "import gunicorn; print('✅ Gunicorn installed')"
 
-# Verify key dependencies are installed
-echo "🔍 Verifying critical dependencies..."
-python -c "import django; print(f'✅ Django {django.get_version()} installed successfully')"
-python -c "import stripe; print(f'✅ Stripe {stripe.__version__} installed successfully')"
-python -c "import gunicorn; print(f'✅ Gunicorn installed successfully')"
+# Check Django configuration
+echo "==> Checking Django configuration..."
+python3 manage.py check --verbosity=2
 
-# Compile translations
-echo "🌍 Compiling translations..."
-python manage.py compilemessages
+# Compile translation messages
+echo "==> Compiling translation messages..."
+python3 manage.py compilemessages --verbosity=1
 
 # Collect static files
-echo "📁 Collecting static files..."
-python manage.py collectstatic --noinput
+echo "==> Collecting static files..."
+rm -rf staticfiles/*
+python3 manage.py collectstatic --noinput --verbosity=1
 
-# Make migrations (don't assume they exist)
-echo "🗂️ Making migrations..."
-python manage.py makemigrations
+# Run migrations
+echo "==> Running database migrations..."
+python3 manage.py migrate --fake-initial
 
-# Run migrations with fake-initial for first deploy
-echo "🗄️ Running migrations..."
-python manage.py migrate --fake-initial
-
-echo "✅ Build complete!"
+echo "==> Backend build completed successfully!"
