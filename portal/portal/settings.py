@@ -130,12 +130,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    # BASE_DIR / 'static',  # This directory doesn't exist, removed to fix warnings
 ]
 
 # WhiteNoise configuration for production
 if is_production:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # Temporarily use StaticFilesStorage instead of CompressedManifestStaticFilesStorage to fix CSS issue
+    STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
