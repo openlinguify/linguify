@@ -539,10 +539,12 @@ def send_terms_acceptance_email_and_notification(user):
         )
 
         # Envoyer l'email localisé
+        backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+        terms_acceptance_url = f"{backend_url}/api/auth/terms/accept-page/"
         portal_url = getattr(settings, 'PORTAL_URL', 'http://localhost:8080')
         context = {
             'user': user,
-            'terms_url': f"{portal_url}/annexes/terms",
+            'terms_url': terms_acceptance_url,
             'portal_url': portal_url,
             'app_name': "Open Linguify"
         }
