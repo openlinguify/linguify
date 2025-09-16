@@ -41,6 +41,7 @@
     
     <style>
         :root {
+            --header-height: 64px;
             --linguify-primary: #2D5BBA;
             --linguify-secondary: #8B5CF6;
             --linguify-accent: #00D4AA;
@@ -55,7 +56,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background: #f8fafc;
-            padding-top: 70px; /* Pour le header fixe */
+            padding-top: var(--header-height, 64px); /* Pour le header fixe - utilise la variable CSS */
             min-height: 100vh;
         }
         
@@ -212,7 +213,7 @@
         }
         
         .main-content {
-            min-height: calc(100vh - 70px);
+            min-height: calc(100vh - var(--header-height, 64px));
         }
         
         .btn-primary {

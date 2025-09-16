@@ -109,11 +109,11 @@ else:
     print("📊 Using local PostgreSQL (Portal)")
 
 # Internationalization
-LANGUAGE_CODE = 'fr'
+LANGUAGE_CODE = 'en'
 
 LANGUAGES = [
-    ('fr', 'Français'),
     ('en', 'English'),
+    ('fr', 'Français'),
     ('es', 'Español'),
     ('nl', 'Nederlands'),
 ]

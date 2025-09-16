@@ -192,13 +192,18 @@
     }
 }
 
-/* Add space for fixed header */
-body {
+/* Add space for fixed header - Only apply if not already set */
+body:not(.app-body-layout) {
     padding-top: var(--header-height);
 }
 
 /* Unified button styles - prevent app-specific CSS from overriding */
-.header-btn, .btn.header-btn {
+.fixed-header .header-btn,
+.fixed-header .btn.header-btn,
+header .header-btn,
+header .btn.header-btn,
+#mainHeader .header-btn,
+#mainHeader .btn.header-btn {
     border-radius: 8px !important;
     transition: all var(--transition-fast) !important;
     font-weight: 500 !important;
@@ -209,31 +214,53 @@ body {
     padding: 0.25rem 0.5rem !important;
     font-size: 0.875rem !important;
     line-height: 1.5 !important;
+    min-height: 31px !important;
+    box-sizing: border-box !important;
 }
 
-.header-btn:hover, .btn.header-btn:hover {
+.fixed-header .header-btn:hover,
+.fixed-header .btn.header-btn:hover,
+header .header-btn:hover,
+header .btn.header-btn:hover,
+#mainHeader .header-btn:hover,
+#mainHeader .btn.header-btn:hover {
     transform: translateY(-1px) !important;
     color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
 }
 
 /* Specific button variants */
-.btn-outline-primary.header-btn {
+.fixed-header .btn-outline-primary.header-btn,
+header .btn-outline-primary.header-btn,
+#mainHeader .btn-outline-primary.header-btn {
     color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
 }
 
-.btn-outline-primary.header-btn:hover {
+.fixed-header .btn-outline-primary.header-btn:hover,
+header .btn-outline-primary.header-btn:hover,
+#mainHeader .btn-outline-primary.header-btn:hover {
     background: var(--primary-color) !important;
     color: white !important;
 }
 
 /* Override any btn-sm or other size variations */
-.header-btn.btn-sm, .btn.header-btn.btn-sm, 
-.header-btn.btn-lg, .btn.header-btn.btn-lg {
+.fixed-header .header-btn.btn-sm,
+.fixed-header .btn.header-btn.btn-sm,
+.fixed-header .header-btn.btn-lg,
+.fixed-header .btn.header-btn.btn-lg,
+header .header-btn.btn-sm,
+header .btn.header-btn.btn-sm,
+header .header-btn.btn-lg,
+header .btn.header-btn.btn-lg,
+#mainHeader .header-btn.btn-sm,
+#mainHeader .btn.header-btn.btn-sm,
+#mainHeader .header-btn.btn-lg,
+#mainHeader .btn.header-btn.btn-lg {
     padding: 0.25rem 0.5rem !important;
     font-size: 0.875rem !important;
     line-height: 1.5 !important;
+    min-height: 31px !important;
 }
 
 /* App brand gradient styling */
@@ -338,9 +365,16 @@ body {
 }
 
 /* Fix dropdown toggle alignment */
-.dropdown-toggle {
+.fixed-header .dropdown-toggle,
+header .dropdown-toggle,
+#mainHeader .dropdown-toggle {
     display: inline-flex !important;
     align-items: center !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    min-height: 31px !important;
+    box-sizing: border-box !important;
 }
 
 /* Profile picture and user menu alignment */
