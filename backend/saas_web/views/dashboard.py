@@ -25,7 +25,7 @@ class DashboardView(View):
 
         if installed_apps is None:
             installed_apps = UserAppService.get_user_installed_apps(request.user)
-            UserAppCacheService.set_user_apps_cache(request.user.id, installed_apps, 300)  # Cache for 5 minutes
+            UserAppCacheService.set_user_apps_cache(request.user.id, installed_apps)  # Use default timeout
         
         context = {
             'title': _('Dashboard - Open Linguify'),

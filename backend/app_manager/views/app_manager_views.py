@@ -23,10 +23,28 @@ class AppStoreView(View):
         from collections import Counter
         from ..services.app_icon_service import AppIconService
         from ..services.manifest_loader import manifest_loader
-        
-        # Get all available apps with required fields only
-        required_fields = manifest_loader.get_required_database_fields()
-        apps = App.objects.filter(is_enabled=True).only(*required_fields)
+        from ..services.cache_service import UserAppCacheService
+
+        # Check if we have cached App Store data
+        cached_store_data = UserAppCacheService.get_app_store_cache()
+        if cached_store_data:
+            # Only get user-specific data
+            user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
+            enabled_app_ids = set(user_settings.enabled_apps.values_list('id', flat=True))
+
+            # Update installation status in cached data
+            for app in cached_store_data['apps']:
+                app['is_installed'] = app['id'] in enabled_app_ids
+
+            cached_store_data['enabled_app_ids'] = list(enabled_app_ids)
+            return render(request, 'app_manager/app_store.html', cached_store_data)
+
+        # Generate fresh data if not cached
+        # Get all available apps with optimized query
+        apps = App.objects.filter(is_enabled=True).only(
+            'id', 'code', 'display_name', 'description', 'icon_name',
+            'color', 'route_path', 'installable'
+        )
         
         # Get or create user settings
         user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
@@ -79,6 +97,17 @@ class AppStoreView(View):
             'category_definitions': category_definitions,
             'total_apps': len(available_apps),
         }
+
+        # Cache the App Store data (without user-specific info)
+        cache_data = {
+            'title': context['title'],
+            'apps': available_apps,
+            'category_counts': context['category_counts'],
+            'category_definitions': context['category_definitions'],
+            'total_apps': context['total_apps'],
+        }
+        UserAppCacheService.set_app_store_cache(cache_data)
+
         return render(request, 'app_manager/app_store.html', context)
 
 @method_decorator(login_required, name='dispatch')

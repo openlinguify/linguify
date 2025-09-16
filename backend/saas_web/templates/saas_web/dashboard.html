@@ -5,6 +5,14 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'saas_web/css/dashboard.css' %}">
+<!-- Preload critical app icons for better performance -->
+{% if installed_apps %}
+    {% for app in installed_apps|slice:":3" %}
+        {% if app.static_icon %}
+        <link rel="preload" as="image" href="{{ app.static_icon }}">
+        {% endif %}
+    {% endfor %}
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -25,7 +33,8 @@
                     {% if app.static_icon %}
                     <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon"
                         style="width: 48px; height: 48px; object-fit: cover"
-                        class="app-static-icon" data-fallback-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)' }}" data-fallback-icon="{{ app.icon|default:'bi-app' }}">
+                        class="app-static-icon" loading="lazy" decoding="async"
+                        data-fallback-gradient="{{ app.color_gradient|default:'linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%)' }}" data-fallback-icon="{{ app.icon|default:'bi-app' }}">
                     <i class="bi {{ app.icon|default:'bi-app' }}" style="display: none; color: white;"></i>
                     {% else %}
                     <i class="bi {{ app.icon|default:'bi-app' }}" style="color: white;"></i>

@@ -382,11 +382,14 @@ class UserAppSettings(models.Model):
     def get_ordered_enabled_apps(self):
         """
         Returns enabled apps in the user's custom order
-        
+
         Returns:
             QuerySet: Ordered enabled apps
         """
-        enabled_apps = self.enabled_apps.filter(is_enabled=True)
+        # Optimized query with only needed fields
+        enabled_apps = self.enabled_apps.filter(is_enabled=True).only(
+            'id', 'code', 'display_name', 'icon_name', 'route_path', 'color', 'order'
+        )
         
         if not self.app_order:
             # Return apps in default order (by order field, then name)
