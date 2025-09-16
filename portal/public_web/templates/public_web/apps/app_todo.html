@@ -145,106 +145,166 @@
     </div>
 </section>
 
-<section class="py-5 bg-white">
+<!-- Description Section -->
+<section class="py-5">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="h1 mb-3">{% trans "Tout ce dont vous avez besoin pour être productif" %}</h2>
-            <p class="lead text-muted">{% trans "Un espace de travail complet pour organiser vos tâches, projets et idées" %}</p>
-        </div>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo" style="width: 50px; height: 50px;">
+                            </div>
+                            <h2 class="h3 mb-3" style="color: var(--linguify-primary);">{% trans "Smart Productivity System" %}</h2>
+                        </div>
 
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-list-task fs-4"></i>
+                        <div class="description-content">
+                            <p class="lead text-center mb-4" style="color: #6b7280;">Notre système de productivité utilise des principes avancés d'organisation pour optimiser votre workflow. Créez vos projets et tâches et laissez l'algorithme vous guider vers une productivité maximale.</p>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-kanban text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Kanban boards</h6>
+                                            <small class="text-muted">Visual workflow</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-list-task text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Task management</h6>
+                                            <small class="text-muted">Organized priorities</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-calendar-check text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Smart scheduling</h6>
+                                            <small class="text-muted">Optimized deadlines</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-graph-up text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Progress tracking</h6>
+                                            <small class="text-muted">Detailed analytics</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-folder text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Project organization</h6>
+                                            <small class="text-muted">Structured workspace</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-journal-text text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Note integration</h6>
+                                            <small class="text-muted">Rich markdown support</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%);">
+                                                <i class="bi bi-bell text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Smart reminders</h6>
+                                            <small class="text-muted">Never miss deadlines</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);">
+                                                <i class="bi bi-people text-white" style="font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Team collaboration</h6>
+                                            <small class="text-muted">Shared workspaces</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert border-0 mt-4" style="background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%); border-left: 4px solid var(--linguify-primary) !important;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-star me-3" style="color: var(--linguify-primary); font-size: 1.2rem;"></i>
+                                    <div>
+                                        <strong style="color: var(--linguify-primary);">Productivity:</strong>
+                                        <span class="text-muted">Organized workflow can increase your productivity up to 300%!</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <h3 class="h5 mb-3">{% trans "Gestion Intelligente des Tâches" %}</h3>
-                        <p class="text-muted">{% trans "Créez, organisez et suivez les tâches avec des priorités, des dates d'échéance, des étiquettes et un suivi des progrès. Tout ce dont vous avez besoin pour rester productif." %}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-kanban fs-4"></i>
+
+                        <hr class="my-4" style="border-color: rgba(45, 91, 186, 0.1);">
+
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-tag text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Category" %}</h6>
+                                <p class="text-muted small">Productivity & Organization</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-accent) 0%, var(--linguify-primary) 100%); box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);">
+                                    <i class="bi bi-code-slash text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Version" %}</h6>
+                                <p class="text-muted small">1.5.0</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%); box-shadow: 0 4px 15px rgba(45, 91, 186, 0.2);">
+                                    <i class="bi bi-person text-white"></i>
+                                </div>
+                                <h6 class="fw-bold" style="color: var(--linguify-primary);">{% trans "Author" %}</h6>
+                                <p class="text-muted small">Linguify Team</p>
+                            </div>
                         </div>
-                        <h3 class="h5 mb-3">{% trans "Tableaux Kanban" %}</h3>
-                        <p class="text-muted">{% trans "Visualisez votre flux de travail avec des tableaux kanban personnalisables. Glissez-déposez les tâches entre les colonnes pour suivre les progrès." %}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-folder fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Organisation de Projets" %}</h3>
-                        <p class="text-muted">{% trans "Regroupez les tâches liées en projets avec suivi des progrès, échéances et fonctionnalités de collaboration d'équipe." %}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-journal-text fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Prise de Notes Enrichie" %}</h3>
-                        <p class="text-muted">{% trans "Prenez des notes avec support markdown, attachez-les aux tâches ou projets, et organisez avec des étiquettes et catégories." %}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-bell fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Rappels Intelligents" %}</h3>
-                        <p class="text-muted">{% trans "Définissez des rappels personnalisés pour les tâches et échéances. Recevez des notifications au bon moment pour rester sur la bonne voie." %}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-tags fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Tags & Categories" %}</h3>
-                        <p class="text-muted">{% trans "Organize tasks and notes with flexible tagging system and categories for better organization and filtering." %}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-activity fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Activity Tracking" %}</h3>
-                        <p class="text-muted">{% trans "Monitor your task activity and progress with a detailed activity feed showing all your recent actions." %}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-ui-checks fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Multiple Views" %}</h3>
-                        <p class="text-muted">{% trans "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer." %}</p>
                     </div>
                 </div>
             </div>
@@ -252,233 +312,97 @@
     </div>
 </section>
 
-<section class="py-5 bg-light">
+<!-- Features Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="h1 mb-3">{% trans "Prochainement" %}</h2>
-            <p class="lead text-muted">{% trans "Exciting features in active development" %}</p>
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold" style="color: var(--linguify-primary);">Why Organized Productivity?</h2>
+                <p class="lead text-muted">A systematic approach to getting things done</p>
+            </div>
         </div>
-
         <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-2 border-dashed">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary text-white mb-3" style="width: 60px; height: 60px; opacity: 0.7;">
-                            <i class="bi bi-calendar3 fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Calendar Integration" %}</h3>
-                        <p class="text-muted mb-3">{% trans "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines." %}</p>
-                        <span class="badge bg-warning text-dark">{% trans "In Development" %}</span>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-kanban"></i>
                     </div>
+                    <h5 class="fw-bold mb-3">Visual Workflow</h5>
+                    <p class="text-muted">Kanban boards that adapt to your process</p>
                 </div>
             </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-2 border-dashed">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary text-white mb-3" style="width: 60px; height: 60px; opacity: 0.7;">
-                            <i class="bi bi-speedometer2 fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Analytics Dashboard" %}</h3>
-                        <p class="text-muted mb-3">{% trans "Track your productivity with detailed analytics, completion rates, and progress insights." %}</p>
-                        <span class="badge bg-warning text-dark">{% trans "In Development" %}</span>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-clock"></i>
                     </div>
+                    <h5 class="fw-bold mb-3">Smart Scheduling</h5>
+                    <p class="text-muted">Deadline management with intelligent reminders</p>
                 </div>
             </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-2 border-dashed">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary text-white mb-3" style="width: 60px; height: 60px; opacity: 0.7;">
-                            <i class="bi bi-people fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Advanced Team Collaboration" %}</h3>
-                        <p class="text-muted mb-3">{% trans "Enhanced team features with real-time collaboration, task assignment, and team analytics." %}</p>
-                        <span class="badge bg-warning text-dark">{% trans "In Development" %}</span>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-folder-check"></i>
                     </div>
+                    <h5 class="fw-bold mb-3">Project Organization</h5>
+                    <p class="text-muted">Hierarchical structure for complex projects</p>
                 </div>
             </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-2 border-dashed">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary text-white mb-3" style="width: 60px; height: 60px; opacity: 0.7;">
-                            <i class="bi bi-clock-history fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Time Tracking" %}</h3>
-                        <p class="text-muted mb-3">{% trans "Track time spent on tasks with built-in timer and detailed time analytics." %}</p>
-                        <span class="badge bg-warning text-dark">{% trans "In Development" %}</span>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mx-auto mb-3">
+                        <i class="bi bi-graph-up"></i>
                     </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-2 border-dashed">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary text-white mb-3" style="width: 60px; height: 60px; opacity: 0.7;">
-                            <i class="bi bi-file-earmark fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "File Attachments" %}</h3>
-                        <p class="text-muted mb-3">{% trans "Attach files and documents to your tasks and projects for better organization." %}</p>
-                        <span class="badge bg-warning text-dark">{% trans "In Development" %}</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-2 border-dashed">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary text-white mb-3" style="width: 60px; height: 60px; opacity: 0.7;">
-                            <i class="bi bi-arrow-repeat fs-4"></i>
-                        </div>
-                        <h3 class="h5 mb-3">{% trans "Recurring Tasks" %}</h3>
-                        <p class="text-muted mb-3">{% trans "Set up tasks that repeat automatically on a schedule you define." %}</p>
-                        <span class="badge bg-warning text-dark">{% trans "In Development" %}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-5">
-            <p class="text-muted">{% trans "These features will be available soon. Stay tuned for the latest updates!" %}</p>
-        </div>
-    </div>
-</section>
-
-<section class="py-5 bg-white">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="h1 mb-3">{% trans "Perfect For Every Use Case" %}</h2>
-            <p class="lead text-muted">{% trans "Whether you're a student, professional, or team leader" %}</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-mortarboard fs-4"></i>
-                        </div>
-                        <h4 class="h5 mb-3">{% trans "Students" %}</h4>
-                        <p class="text-muted mb-3">{% trans "Organize assignments, track study progress, manage course projects, and plan your academic schedule." %}</p>
-                        <ul class="list-unstyled">
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Assignment tracking" %}</li>
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Study planning" %}</li>
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Course organization" %}</li>
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Research notes" %}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-briefcase fs-4"></i>
-                        </div>
-                        <h4 class="h5 mb-3">{% trans "Professionals" %}</h4>
-                        <p class="text-muted mb-3">{% trans "Manage work projects, track deadlines, organize meeting notes, and boost your productivity." %}</p>
-                        <ul class="list-unstyled">
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Project management" %}</li>
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Deadline tracking" %}</li>
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Meeting notes" %}</li>
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Goal setting" %}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-people fs-4"></i>
-                        </div>
-                        <h4 class="h5 mb-3">{% trans "Teams" %}</h4>
-                        <p class="text-muted mb-3">{% trans "Collaborate on shared projects, assign tasks to team members, and track collective progress." %}</p>
-                        <ul class="list-unstyled">
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Shared workspaces" %}</li>
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Task assignment" %}</li>
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Progress tracking" %}</li>
-                            <li class="d-flex align-items-center mb-2"><i class="bi bi-check text-success me-2"></i>{% trans "Team analytics" %}</li>
-                        </ul>
-                    </div>
+                    <h5 class="fw-bold mb-3">Progress Analytics</h5>
+                    <p class="text-muted">Detailed insights into your productivity</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="py-5 bg-light">
+<!-- Task Management Modes Section -->
+<section class="py-5">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="h1 mb-3">{% trans "Commencez en Minutes" %}</h2>
-            <p class="lead text-muted">{% trans "Simple setup process to get you organized right away" %}</p>
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold">Task Management Modes</h2>
+                <p class="lead text-muted">Choose the view that fits your workflow</p>
+            </div>
         </div>
-
         <div class="row g-4">
-            <div class="col-lg-4 text-center">
-                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                    <span class="fs-4 fw-bold">1</span>
-                </div>
-                <h4 class="h5 mb-3">{% trans "Créer un Compte" %}</h4>
-                <p class="text-muted">{% trans "Sign up for free and access the todo app from your dashboard." %}</p>
-            </div>
-            <div class="col-lg-4 text-center">
-                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                    <span class="fs-4 fw-bold">2</span>
-                </div>
-                <h4 class="h5 mb-3">{% trans "Set Up Projects" %}</h4>
-                <p class="text-muted">{% trans "Create your first project and organize tasks by categories and priorities." %}</p>
-            </div>
-            <div class="col-lg-4 text-center">
-                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
-                    <span class="fs-4 fw-bold">3</span>
-                </div>
-                <h4 class="h5 mb-3">{% trans "Commencer à Organiser" %}</h4>
-                <p class="text-muted">{% trans "Add tasks, set deadlines, take notes, and watch your productivity soar." %}</p>
-            </div>
-        </div>
-
-        <div class="text-center mt-5">
-            <a href="{% backend_url '/todo/' %}" class="btn btn-primary btn-lg px-4 py-3">
-                <i class="bi bi-rocket me-2"></i>{% trans "Launch Todo App" %}
-            </a>
-        </div>
-    </div>
-</section>
-
-<section class="py-5 bg-white">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="h1 mb-3">{% trans "Seamless Integration" %}</h2>
-            <p class="lead text-muted">{% trans "Works perfectly with other Open Linguify apps" %}</p>
-        </div>
-
-        <div class="row g-4 justify-content-center">
             <div class="col-md-6">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4 d-flex align-items-center">
-                        <img src="{% static 'img/app_icon/memory.png' %}" alt="Revision" class="me-3" style="width: 40px; height: 40px; object-fit: contain; flex-shrink: 0;">
-                        <div>
-                            <h5 class="h6 mb-1">{% trans "Revision" %}</h5>
-                            <p class="text-primary small fw-medium mb-1">{% trans "Révision" %}</p>
-                            <p class="text-muted small mb-0">{% trans "Create study tasks for flashcard reviews" %}</p>
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-kanban text-warning me-3" style="font-size: 2rem;"></i>
+                            <h5 class="mb-0">Kanban Board</h5>
                         </div>
+                        <p class="text-muted">Visual workflow with drag-and-drop cards for intuitive task management.</p>
                     </div>
                 </div>
             </div>
-            
             <div class="col-md-6">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body p-4 d-flex align-items-center">
-                        <img src="{% static 'img/app_icon/notebook.png' %}" alt="Notebook" class="me-3" style="width: 40px; height: 40px; object-fit: contain; flex-shrink: 0;">
-                        <div>
-                            <h5 class="h6 mb-1">{% trans "Notebook" %}</h5>
-                            <p class="text-primary small fw-medium mb-1">{% trans "Carnet" %}</p>
-                            <p class="text-muted small mb-0">{% trans "Link notes to tasks and projects" %}</p>
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-list-ul text-primary me-3" style="font-size: 2rem;"></i>
+                            <h5 class="mb-0">List View</h5>
                         </div>
+                        <p class="text-muted">Traditional list format with detailed task information and quick actions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-activity text-info me-3" style="font-size: 2rem;"></i>
+                            <h5 class="mb-0">Activity Feed</h5>
+                        </div>
+                        <p class="text-muted">Real-time updates and history of all task-related activities.</p>
                     </div>
                 </div>
             </div>
@@ -486,14 +410,17 @@
     </div>
 </section>
 
-<section class="hero-gradient py-5">
-    <div class="container text-center text-white">
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container text-center position-relative" style="z-index: 2;">
         <div class="mb-4">
-            <i class="bi bi-rocket-takeoff-fill" style="font-size: 4rem; opacity: 0.9;"></i>
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white mb-3" style="width: 80px; height: 80px; box-shadow: 0 8px 30px rgba(255,255,255,0.3);">
+                <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo" style="width: 50px; height: 50px;">
+            </div>
         </div>
 
-        <h2 class="display-5 fw-bold mb-3">{% trans "Prêt à vous Organiser ?" %}</h2>
-        <p class="lead mb-4" style="opacity: 0.9;">{% trans "Join thousands of users who have transformed their productivity with our todo app." %}</p>
+        <h2 class="display-5 fw-bold text-white mb-3">{% trans "Prêt à vous Organiser ?" %}</h2>
+        <p class="lead text-white mb-4" style="opacity: 0.9;">{% trans "Join thousands of users who have transformed their productivity with our todo app." %}</p>
 
         <div class="d-flex gap-3 justify-content-center flex-wrap">
             <a href="{% backend_url '/todo/' %}" class="btn btn-light btn-lg px-4 py-3">
