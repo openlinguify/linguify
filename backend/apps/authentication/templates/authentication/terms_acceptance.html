@@ -5,6 +5,7 @@
 {% block title %}{% trans "Terms of Use Acceptance" %} - {{ app_name }}{% endblock %}
 
 {% block extra_head %}
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 <style>
     .terms-container {
         max-width: 800px;
@@ -135,6 +136,21 @@
         display: none;
         align-items: center;
         gap: 0.5rem;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .htmx-indicator {
+        display: none;
+    }
+
+    .htmx-request .htmx-indicator {
+        display: flex;
+    }
+
+    .htmx-request #accept-button {
+        opacity: 0.5;
+        pointer-events: none;
     }
 
     .spinner {
@@ -232,13 +248,20 @@
 
         <div id="alert-container"></div>
 
-        <button id="accept-button" class="accept-button" disabled>
-            <span id="button-text">{% trans "Accept Terms of Use" %}</span>
-            <span id="loading-state" class="loading-state">
+        <form id="terms-form"
+              hx-post="/api/auth/terms/accept-ajax/"
+              hx-target="#alert-container"
+              hx-indicator="#loading-indicator"
+              hx-swap="innerHTML">
+            {% csrf_token %}
+            <button id="accept-button" type="submit" class="accept-button" disabled>
+                <span id="button-text">{% trans "Accept Terms of Use" %}</span>
+            </button>
+            <div id="loading-indicator" class="loading-state htmx-indicator">
                 <div class="spinner"></div>
                 {% trans "Processing..." %}
-            </span>
-        </button>
+            </div>
+        </form>
 
         <p style="margin-top: 1rem; color: #64748b; font-size: 0.9rem;">
             {% trans "This action cannot be undone. Once accepted, these terms will govern your use of our services." %}
@@ -250,69 +273,49 @@
 document.addEventListener('DOMContentLoaded', function() {
     const checkbox = document.getElementById('terms-checkbox');
     const acceptButton = document.getElementById('accept-button');
-    const buttonText = document.getElementById('button-text');
-    const loadingState = document.getElementById('loading-state');
-    const alertContainer = document.getElementById('alert-container');
 
     // Enable/disable button based on checkbox
     checkbox.addEventListener('change', function() {
         acceptButton.disabled = !this.checked;
     });
 
-    // Handle form submission
-    acceptButton.addEventListener('click', function() {
+    // Prevent form submission if checkbox not checked
+    document.getElementById('terms-form').addEventListener('submit', function(e) {
         if (!checkbox.checked) {
-            showAlert('{% trans "Please check the box to accept the terms" %}', 'error');
-            return;
+            e.preventDefault();
+            document.getElementById('alert-container').innerHTML = `
+                <div class="alert alert-error">
+                    {% trans "Please check the box to accept the terms" %}
+                </div>
+            `;
         }
-
-        // Show loading state
-        buttonText.style.display = 'none';
-        loadingState.style.display = 'flex';
-        acceptButton.disabled = true;
-
-        // Make AJAX request
-        fetch('/api/auth/terms/accept-ajax/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showAlert(data.message, 'success');
-
-                // Redirect after a short delay
-                setTimeout(() => {
-                    window.location.href = data.redirect;
-                }, 1500);
-            } else {
-                showAlert(data.message, 'error');
-                resetButton();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('{% trans "An error occurred. Please try again." %}', 'error');
-            resetButton();
-        });
     });
+});
 
-    function showAlert(message, type) {
-        alertContainer.innerHTML = `
-            <div class="alert alert-${type}">
-                ${message}
-            </div>
-        `;
-    }
+// Handle HTMX success response
+document.body.addEventListener('htmx:afterRequest', function(event) {
+    if (event.detail.target.id === 'alert-container') {
+        const response = JSON.parse(event.detail.xhr.responseText);
+        if (response.success) {
+            // Show success message
+            event.detail.target.innerHTML = `
+                <div class="alert alert-success">
+                    ${response.message}
+                </div>
+            `;
 
-    function resetButton() {
-        buttonText.style.display = 'inline';
-        loadingState.style.display = 'none';
-        acceptButton.disabled = !checkbox.checked;
+            // Redirect after delay
+            setTimeout(() => {
+                window.location.href = response.redirect;
+            }, 1500);
+        } else {
+            // Show error message
+            event.detail.target.innerHTML = `
+                <div class="alert alert-error">
+                    ${response.message}
+                </div>
+            `;
+        }
     }
 });
 </script>
