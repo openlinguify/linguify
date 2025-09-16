@@ -56,6 +56,10 @@ if [ "$DJANGO_ENV" = "production" ]; then
     python3 manage.py check --deploy --verbosity=1
 fi
 
+# Compile translation messages
+echo "==> Compiling translation messages..."
+python3 manage.py compilemessages --verbosity=1
+
 # Collect static files
 echo "==> Collecting static files..."
 python3 manage.py collectstatic --noinput --verbosity=1
