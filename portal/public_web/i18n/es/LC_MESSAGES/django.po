@@ -1,4 +1,6 @@
 
+msgid ""
+msgstr ""
 "Project-Id-Version: Open Linguify Public Web\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-08-30 23:55+0200\n"
@@ -2050,12 +2052,6 @@ msgstr ""
 
 
 # ENGLISH TRANSLATION FOR PUBLIC_WEB
-# Copyright (C) 2025 Open Linguify
-# This file is distributed under the same license as the Open Linguify package.
-#
-msgid ""
-msgstr ""
-
 # Dynamic system translations
 #: public_web/templates/components/dynamic_apps_dropdown.html:8
 msgid "No apps available"
@@ -3224,143 +3220,3 @@ msgstr "Por Hacer"
 #: public_web/templates/public_web/apps/app_todo.html:93
 msgid "Review course materials"
 msgstr "Revisar materiales del curso"
-
-# Todo App Long Descriptions
-msgid "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive."
-msgstr "Crea, organiza y rastrea tareas con prioridades, fechas límite, etiquetas y seguimiento de progreso. Todo lo que necesitas para mantenerte productivo."
-
-msgid "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress."
-msgstr "Visualiza tu flujo de trabajo con tableros kanban personalizables. Arrastra y suelta tareas entre columnas para rastrear el progreso."
-
-msgid "Group related tasks into projects with progress tracking, deadlines, and team collaboration features."
-msgstr "Agrupa tareas relacionadas en proyectos con seguimiento de progreso, fechas límite y funciones de colaboración en equipo."
-
-msgid "Take notes with markdown support, attach them to tasks or projects, and organize with tags and categories."
-msgstr "Toma notas con soporte markdown, adjúntalas a tareas o proyectos, y organiza con etiquetas y categorías."
-
-msgid "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track."
-msgstr "Establece recordatorios personalizados para tareas y fechas límite. Recibe notificaciones en el momento adecuado para mantenerte en el camino."
-
-msgid "Organize tasks and notes with flexible tagging system and categories for better organization and filtering."
-msgstr "Organiza tareas y notas con un sistema de etiquetado flexible y categorías para mejor organización y filtrado."
-
-msgid "Monitor your task activity and progress with a detailed activity feed showing all your recent actions."
-msgstr "Monitorea la actividad y progreso de tus tareas con un feed de actividad detallado que muestra todas tus acciones recientes."
-
-msgid "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer."
-msgstr "Cambia entre vista de lista, tablero Kanban y feed de actividad para visualizar tus tareas de la forma que prefieras."
-
-msgid "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines."
-msgstr "Ve tareas y fechas límite en formato de calendario. Planifica tu horario y nunca te pierdas fechas límite importantes."
-
-msgid "Track your productivity with detailed analytics, completion rates, and progress insights."
-msgstr "Rastrea tu productividad con análisis detallados, tasas de finalización e insights de progreso."
-
-msgid "Enhanced team features with real-time collaboration, task assignment, and team analytics."
-msgstr "Funciones de equipo mejoradas con colaboración en tiempo real, asignación de tareas y análisis de equipo."
-
-msgid "Track time spent on tasks with built-in timer and detailed time analytics."
-msgstr "Rastrea el tiempo dedicado a tareas con temporizador incorporado y análisis de tiempo detallados."
-
-msgid "Attach files and documents to your tasks and projects for better organization."
-msgstr "Adjunta archivos y documentos a tus tareas y proyectos para mejor organización."
-
-msgid "Exciting features in active development"
-msgstr "Funciones emocionantes en desarrollo activo"
-
-msgid "Organize assignments, track study progress, manage course projects, and plan your academic schedule."
-msgstr "Organiza tareas, rastrea el progreso de estudio, gestiona proyectos del curso y planifica tu horario académico."
-
-msgid "Manage work projects, track deadlines, organize meeting notes, and boost your productivity."
-msgstr "Gestiona proyectos de trabajo, rastrea fechas límite, organiza notas de reuniones y mejora tu productividad."
-
-msgid "Collaborate on shared projects, assign tasks to team members, and track collective progress."
-msgstr "Colabora en proyectos compartidos, asigna tareas a miembros del equipo y rastrea el progreso colectivo."
-
-msgid "Create your first project and organize tasks by categories and priorities."
-msgstr "Crea tu primer proyecto y organiza las tareas por categorías y prioridades."
-
-msgid "Join thousands of users who have transformed their productivity with our todo app."
-msgstr "Únete a miles de usuarios que han transformado su productividad con nuestra app de tareas."
-
-msgid "These features will be available soon. Stay tuned for the latest updates!"
-msgstr "¡Estas funciones estarán disponibles pronto. Mantente atento a las últimas actualizaciones!"
-
-msgid "Open Source Education Apps"
-msgstr "Aplicaciones Educativas Open Source"
-
-msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, to-do and much more."
-msgstr "Una suite completa de aplicaciones educativas open source: memorización, flashcards, toma de notas, tareas y mucho más."
-
-msgid "Choose your Linguify product:"
-msgstr "Elige tu producto Linguify:"
-
-msgid "For all students"
-msgstr "Para todos los estudiantes"
-
-msgid "Discover our apps"
-msgstr "Descubre nuestras aplicaciones"
-
-msgid "View Source Code"
-msgstr "Ver Código Fuente"
-
-msgid "Access all your apps from a unified dashboard"
-msgstr "Accede a todas tus aplicaciones desde un panel unificado"
-
-msgid "Educational Useful Apps for the students"
-msgstr "Aplicaciones Educativas Útiles para los estudiantes"
-
-msgid "Open Source"
-msgstr "Open Source"
-
-msgid "Our Educational Apps"
-msgstr "Nuestras Aplicaciones Educativas"
-
-msgid "Community"
-msgstr "Comunidad"
-
-msgid "Documents"
-msgstr "Documentos"
-
-msgid "Language AI"
-msgstr "IA de Idiomas"
-
-msgid "Productivity"
-msgstr "Productividad"
-
-msgid "Spaced Learning"
-msgstr "Aprendizaje Espaciado"
-
-msgid "Note Taking"
-msgstr "Toma de Notas"
-
-msgid "Structured Learning"
-msgstr "Aprendizaje Estructurado"
-
-msgid "Assessment"
-msgstr "Evaluación"
-
-msgid "Collaboration"
-msgstr "Colaboración"
-
-# Sponsorship section
-msgid "Sponsor"
-msgstr "Patrocinar"
-
-msgid "Help Keep Education Free"
-msgstr "Ayuda a Mantener la Educación Gratuita"
-
-msgid ""
-"Open Linguify is 100% free and open source. Your support enables us to "
-"maintain servers, develop new features, and keep education accessible to "
-"everyone, everywhere."
-msgstr ""
-"Open Linguify es 100% gratuito y código abierto. Tu apoyo nos permite "
-"mantener servidores, desarrollar nuevas características y mantener la "
-"educación accesible para todos, en todas partes."
-
-msgid "Become a Sponsor"
-msgstr "Conviértete en Patrocinador"
-
-msgid "Open Source Education Apps"
-msgstr "Aplicaciones Educativas de Código Abierto"
