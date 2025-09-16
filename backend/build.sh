@@ -6,22 +6,19 @@ echo "🚀 Starting Render build process..."
 # Set Django settings module for production
 export DJANGO_SETTINGS_MODULE=core.settings
 
-# Install Poetry if not available
-echo "📝 Setting up Poetry..."
-pip install poetry
+# Skip Poetry completely and use requirements.txt directly
+echo "📦 Installing dependencies from requirements.txt..."
+pip install -r requirements.txt
 
-# Configure Poetry for Render
-echo "⚙️ Configuring Poetry..."
-poetry config virtualenvs.create false
-poetry config virtualenvs.in-project false
+# Double-check critical dependencies
+echo "🔧 Ensuring critical dependencies are installed..."
+pip install --upgrade stripe==11.1.0 gunicorn==23.0.0 Django==5.1.10
 
-# Install dependencies with Poetry
-echo "📦 Installing dependencies with Poetry..."
-poetry install --only=main --no-root
-
-# Verify Django is installed
-echo "🔍 Verifying Django installation..."
-python -c "import django; print(f'Django {django.get_version()} installed successfully')"
+# Verify key dependencies are installed
+echo "🔍 Verifying critical dependencies..."
+python -c "import django; print(f'✅ Django {django.get_version()} installed successfully')"
+python -c "import stripe; print(f'✅ Stripe {stripe.__version__} installed successfully')"
+python -c "import gunicorn; print(f'✅ Gunicorn installed successfully')"
 
 # Compile translations
 echo "🌍 Compiling translations..."
