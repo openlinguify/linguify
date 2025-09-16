@@ -62,7 +62,17 @@ python3 manage.py compilemessages --verbosity=1
 
 # Collect static files
 echo "==> Collecting static files..."
+# Clear previous static files to avoid conflicts
+rm -rf staticfiles/*
 python3 manage.py collectstatic --noinput --verbosity=1
+
+# Verify static files were collected properly
+echo "==> Verifying static file collection..."
+if [ -f "staticfiles/public_web/css/main.css" ]; then
+    echo "✅ main.css found - size: $(wc -c < staticfiles/public_web/css/main.css) bytes"
+else
+    echo "❌ main.css not found in staticfiles"
+fi
 
 # Skip migrations - database is managed by backend service
 echo "==> Skipping database migrations (managed by backend service)..."

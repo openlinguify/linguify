@@ -133,10 +133,16 @@ STATICFILES_DIRS = [
     # BASE_DIR / 'static',  # This directory doesn't exist, removed to fix warnings
 ]
 
+# Static files finders (ensure app static files are found)
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
 # WhiteNoise configuration for production
 if is_production:
-    # Temporarily use StaticFilesStorage instead of CompressedManifestStaticFilesStorage to fix CSS issue
-    STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
+    # Use the default WhiteNoise storage backend
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
