@@ -29,15 +29,15 @@
                 <!-- Desktop Navigation -->
                 <div class="d-flex align-items-center gap-2">
                     <a href="{% url 'saas_web:dashboard' %}"
-                       class="btn btn-outline-secondary btn-sm header-btn"
+                       class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
                        aria-label="{% trans 'Go to dashboard' %}">
-                        <i class="bi bi-house me-1" aria-hidden="true"></i>
+                        <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i>
                     </a>
 
                     <a href="{% url 'saas_web:app_store' %}"
-                       class="btn btn-outline-primary btn-sm header-btn"
+                       class="btn btn-outline-primary btn-sm header-btn d-flex justify-content-center align-items-center"
                        aria-label="{% trans 'Browse app store' %}">
-                        <i class="bi bi-shop me-1" aria-hidden="true"></i>
+                        <i class="bi bi-grid-3x2-gap" aria-hidden="true"></i>
                     </a>
                 </div>
                 {% endblock %}
@@ -187,11 +187,11 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="navbar-nav ms-auto d-lg-none">
                 <a class="nav-link mobile-nav-item" href="{% url 'saas_web:dashboard' %}">
-                    <i class="bi bi-house me-2" aria-hidden="true"></i>
+                    <i class="bi bi-grid-3x3-gap me-2" aria-hidden="true"></i>
                     {% trans "Home" %}
                 </a>
                 <a class="nav-link mobile-nav-item" href="{% url 'saas_web:app_store' %}">
-                    <i class="bi bi-shop me-2" aria-hidden="true"></i>
+                    <i class="bi bi-grid-3x2-gap me-2" aria-hidden="true"></i>
                     {% trans "Store" %}
                 </a>
             </div>
