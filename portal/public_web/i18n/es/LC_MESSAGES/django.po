@@ -3380,3 +3380,25 @@ msgstr "Evaluación"
 
 msgid "Collaboration"
 msgstr "Colaboración"
+
+# Sponsorship section
+msgid "Sponsor"
+msgstr "Patrocinar"
+
+msgid "Help Keep Education Free"
+msgstr "Ayuda a Mantener la Educación Gratuita"
+
+msgid ""
+"Open Linguify is 100% free and open source. Your support enables us to "
+"maintain servers, develop new features, and keep education accessible to "
+"everyone, everywhere."
+msgstr ""
+"Open Linguify es 100% gratuito y código abierto. Tu apoyo nos permite "
+"mantener servidores, desarrollar nuevas características y mantener la "
+"educación accesible para todos, en todas partes."
+
+msgid "Become a Sponsor"
+msgstr "Conviértete en Patrocinador"
+
+msgid "Open Source Education Apps"
+msgstr "Aplicaciones Educativas de Código Abierto"

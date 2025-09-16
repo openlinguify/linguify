@@ -9,8 +9,8 @@ msgstr ""
 "POT-Creation-Date: 2025-08-30 23:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
-"Language-Team: English\n"
-"Language: en\n"
+"Language-Team: Nl\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,14 +21,20 @@ msgstr ""
 msgid "No apps available"
 msgstr "No apps available"
 
+# #-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#
 # Footer content
 #: public_web/templates/components/public_footer.html:9
+#, fuzzy
 msgid ""
 "Open source educational apps platform: memorization, flashcards, notes, "
 "quizzes and collaborative chat."
 msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
 "Open source educational apps platform: memorization, flashcards, notes, "
-"quizzes and collaborative chat."
+"quizzes and collaborative chat.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Open source educatieve apps platform: memorisatie, flashcards, notities, "
+"quizzen en collaboratieve chat."
 
 #: public_web/templates/components/public_footer.html:34
 msgid "Product"
@@ -37,7 +43,7 @@ msgstr "Product"
 # Header navigation
 #: public_web/templates/components/public_footer.html:36
 msgid "Features"
-msgstr "Features"
+msgstr "Functies"
 
 #: public_web/templates/components/public_footer.html:37
 #: public_web/templates/components/public_header.html:23
@@ -46,38 +52,7 @@ msgstr "Apps"
 
 #: public_web/templates/components/public_footer.html:42
 msgid "Resources"
-msgstr "Resources"
-
-# Sponsorship section
-#: public_web/templates/components/public_footer.html:47
-#: public_web/templates/public_web/landing.html:185
-msgid "Sponsor"
-msgstr "Sponsor"
-
-#: public_web/templates/public_web/landing.html:587
-msgid "Help Keep Education Free"
-msgstr "Help Keep Education Free"
-
-#: public_web/templates/public_web/landing.html:590
-msgid ""
-"Open Linguify is 100% free and open source. Your support enables us to "
-"maintain servers, develop new features, and keep education accessible to "
-"everyone, everywhere."
-msgstr ""
-"Open Linguify is 100% free and open source. Your support enables us to "
-"maintain servers, develop new features, and keep education accessible to "
-"everyone, everywhere."
-
-#: public_web/templates/public_web/landing.html:596
-msgid "Become a Sponsor"
-msgstr "Become a Sponsor"
-
-# #-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#
-# Landing page content
-#: public_web/templates/components/public_footer.html:9
-#: public_web/templates/public_web/landing.html:144
-msgid "Open Source Education Apps"
-msgstr "Open Source Education Apps"
+msgstr "Bronnen"
 
 #: public_web/templates/components/public_footer.html:44
 #: public_web/templates/components/public_header.html:44
@@ -86,28 +61,28 @@ msgstr "Blog"
 
 #: public_web/templates/components/public_footer.html:45
 msgid "Contribute"
-msgstr ""
+msgstr "Bijdragen"
 
 #: public_web/templates/components/public_footer.html:50
 msgid "Company"
-msgstr "Company"
+msgstr "Bedrijf"
 
 #: public_web/templates/components/public_footer.html:52
 #: public_web/templates/components/public_header.html:54
 #: public_web/templates/public_web/apps/app_detail.html:59
 msgid "About"
-msgstr "About"
+msgstr "Over"
 
 msgid "Requests"
-msgstr "Requests"
+msgstr "Verzoeken"
 
 #: public_web/templates/components/public_footer.html:53
 msgid "Brand"
-msgstr "Brand"
+msgstr "Merk"
 
 #: public_web/templates/components/public_footer.html:54
 msgid "Careers"
-msgstr "Careers"
+msgstr "Carrières"
 
 #: public_web/templates/components/public_footer.html:55
 #: public_web/templates/components/public_header.html:59
@@ -128,11 +103,11 @@ msgstr "Contact"
 
 #: public_web/templates/components/public_footer.html:60
 msgid "Support"
-msgstr "Support"
+msgstr "Ondersteuning"
 
 #: public_web/templates/components/public_footer.html:62
 msgid "Report a bug"
-msgstr "Report a bug"
+msgstr "Rapporteer een bug"
 
 #: public_web/templates/components/public_footer.html:63
 #: public_web/templates/public_web/apps/app_community.html:40
@@ -145,11 +120,11 @@ msgstr "Report a bug"
 #: public_web/templates/public_web/apps/app_language_ai.html:391
 #: public_web/templates/public_web/apps/apps_list.html:146
 msgid "Contact us"
-msgstr "Contact us"
+msgstr "Neem contact op"
 
 #: public_web/templates/components/public_footer.html:73
 msgid "© 2025 Open Linguify. All rights reserved."
-msgstr "© 2025 Open Linguify. All rights reserved."
+msgstr "© 2025 Open Linguify. Alle rechten voorbehouden."
 
 #: public_web/templates/components/public_footer.html:79
 msgid "Privacy"
@@ -157,7 +132,7 @@ msgstr "Privacy"
 
 #: public_web/templates/components/public_footer.html:82
 msgid "Terms"
-msgstr "Terms"
+msgstr "Voorwaarden"
 
 #: public_web/templates/components/public_footer.html:85
 msgid "Cookies"
@@ -167,23 +142,23 @@ msgstr "Cookies"
 #: public_web/templates/public_web/apps/app_todo.html:28
 #: public_web/templates/public_web/landing.html:402
 msgid "Todo"
-msgstr ""
+msgstr "Taken"
 
 #: public_web/templates/components/public_header.html:30
 #: public_web/templates/public_web/apps/app_todo.html:456
 #: public_web/templates/public_web/landing.html:419
 msgid "Revision"
-msgstr "Revision"
+msgstr "Herhaling"
 
 #: public_web/templates/components/public_header.html:33
 #: public_web/templates/public_web/apps/app_todo.html:468
 #: public_web/templates/public_web/landing.html:436
 msgid "Notebook"
-msgstr "Notebook"
+msgstr "Notitieboek"
 
 #: public_web/templates/components/public_header.html:37
 msgid "View all apps"
-msgstr ""
+msgstr "Alle apps bekijken"
 
 #: public_web/templates/components/public_header.html:49
 msgid "Documentation"
@@ -193,18 +168,18 @@ msgstr "Documentation"
 #, fuzzy
 #| msgid "Language AI"
 msgid "Language"
-msgstr "Language AI"
+msgstr "Taal AI"
 
 # Auth buttons
 #: public_web/templates/components/public_header.html:164
 #: public_web/templates/components/public_header.html:209
 msgid "Log In"
-msgstr "Log In"
+msgstr "Inloggen"
 
 #: public_web/templates/components/public_header.html:167
 #: public_web/templates/components/public_header.html:212
 msgid "Sign Up"
-msgstr "Sign Up"
+msgstr "Registreren"
 
 #: public_web/templates/public_web/about.html:6
 #, fuzzy
@@ -232,7 +207,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Discover our apps"
 msgid "Discover Our Story"
-msgstr "Discover our apps"
+msgstr "Ontdek onze apps"
 
 #: public_web/templates/public_web/about.html:27
 #: public_web/templates/public_web/landing.html:591
@@ -269,7 +244,7 @@ msgstr "Open Source"
 #, fuzzy
 #| msgid "Support"
 msgid "AI Support"
-msgstr "Support"
+msgstr "Ondersteuning"
 
 #: public_web/templates/public_web/about.html:77
 msgid "Our Story"
@@ -285,7 +260,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Revision"
 msgid "The Vision"
-msgstr "Revision"
+msgstr "Herhaling"
 
 #: public_web/templates/public_web/about.html:94
 msgid ""
@@ -500,9 +475,9 @@ msgstr ""
 
 #: public_web/templates/public_web/about.html:376
 #, fuzzy
-#| msgid "Community support"
+#| msgid "Growing community of contributors"
 msgid "Community Contributors"
-msgstr "Community support"
+msgstr "Groeiende gemeenschap van bijdragers"
 
 #: public_web/templates/public_web/about.html:377
 msgid "Passionate volunteers from around the world"
@@ -530,8 +505,10 @@ msgid "User Rating"
 msgstr "User Satisfaction"
 
 #: public_web/templates/public_web/about.html:408
+#, fuzzy
+#| msgid "Contribute"
 msgid "Countries"
-msgstr ""
+msgstr "Bijdragen"
 
 #: public_web/templates/public_web/about.html:414
 msgid "AI Tutoring"
@@ -570,7 +547,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Start for free"
 msgid "Start Learning Free"
-msgstr "Start for free"
+msgstr "Gratis beginnen"
 
 #: public_web/templates/public_web/about.html:467
 #: public_web/templates/public_web/brand.html:30
@@ -580,7 +557,7 @@ msgstr "Explore Our Apps"
 #: public_web/templates/public_web/about.html:471
 #: public_web/templates/public_web/landing.html:203
 msgid "View Source Code"
-msgstr ""
+msgstr "Bekijk broncode"
 
 #: public_web/templates/public_web/about.html:480
 #, fuzzy
@@ -626,7 +603,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Revision"
 msgid "Version"
-msgstr "Revision"
+msgstr "Herhaling"
 
 #: public_web/templates/public_web/apps/app_chat.html:199
 #: public_web/templates/public_web/apps/app_community.html:186
@@ -638,7 +615,7 @@ msgstr "Revision"
 #: public_web/templates/public_web/apps/app_quizz.html:212
 #: public_web/templates/public_web/apps/app_revision.html:314
 msgid "Author"
-msgstr ""
+msgstr "Auteur"
 
 #: public_web/templates/public_web/apps/app_chat.html:270
 msgid "Prêt à rejoindre la communauté ?"
@@ -656,6 +633,8 @@ msgid ""
 "Connect with other learners, share progress and discover content created by "
 "the community."
 msgstr ""
+"Verbind met andere leerlingen, deel voortgang en ontdek inhoud gemaakt door "
+"de gemeenschap."
 
 #: public_web/templates/public_web/apps/app_community.html:25
 msgid "Connect with fellow learners worldwide"
@@ -682,7 +661,7 @@ msgstr "Community"
 #: public_web/templates/public_web/apps/apps_list.html:150
 #: public_web/templates/public_web/landing.html:339
 msgid "Go to Dashboard"
-msgstr "Go to Dashboard"
+msgstr "Ga naar Dashboard"
 
 #: public_web/templates/public_web/apps/app_community.html:67
 msgid "Connect and Learn Together"
@@ -712,7 +691,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Flashcards Created"
 msgid "Flashcards, notes & materials"
-msgstr "Flashcards Created"
+msgstr "Flashcards Gemaakt"
 
 #: public_web/templates/public_web/apps/app_community.html:108
 msgid "Progress Sharing"
@@ -726,7 +705,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Discover our apps"
 msgid "Discover Resources"
-msgstr "Discover our apps"
+msgstr "Ontdek onze apps"
 
 #: public_web/templates/public_web/apps/app_community.html:122
 msgid "Quality community content"
@@ -751,7 +730,7 @@ msgstr ""
 #: public_web/templates/public_web/apps/app_community.html:158
 #: public_web/templates/public_web/apps/app_documents.html:158
 msgid "Tip"
-msgstr ""
+msgstr "Tip"
 
 #: public_web/templates/public_web/apps/app_community.html:159
 msgid ""
@@ -799,7 +778,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Support"
 msgid "Q&A Support"
-msgstr "Support"
+msgstr "Ondersteuning"
 
 #: public_web/templates/public_web/apps/app_community.html:240
 msgid "Get help from experienced community members"
@@ -861,7 +840,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Ready to revolutionize your learning?"
 msgid "Ready to join our learning community?"
-msgstr "Ready to revolutionize your learning?"
+msgstr "Klaar om je leren te revolutioneren?"
 
 #: public_web/templates/public_web/apps/app_community.html:326
 msgid ""
@@ -873,19 +852,20 @@ msgstr ""
 #: public_web/templates/public_web/apps/app_course.html:23
 #: public_web/templates/public_web/landing.html:462
 msgid "Courses"
-msgstr "Courses"
+msgstr "Cursussen"
 
 #: public_web/templates/public_web/apps/app_course.html:8
 #, fuzzy
-#| msgid ""
-#| "Structured courses with progressive lessons, interactive exercises and "
-#| "personalized assessments."
 msgid ""
 "Structured courses with progressive lessons, interactive exercises and "
 "personalized assessments for effective learning."
 msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
 "Structured courses with progressive lessons, interactive exercises and "
-"personalized assessments."
+"personalized assessments.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Gestructureerde cursussen met progressieve lessen, interactieve oefeningen "
+"en gepersonaliseerde beoordelingen."
 
 #: public_web/templates/public_web/apps/app_course.html:25
 msgid "Structured learning with progressive lessons"
@@ -905,7 +885,7 @@ msgstr ""
 #: public_web/templates/public_web/apps/apps_list.html:25
 #: public_web/templates/public_web/apps/apps_list.html:143
 msgid "Start for free"
-msgstr "Start for free"
+msgstr "Gratis beginnen"
 
 #: public_web/templates/public_web/apps/app_course.html:67
 msgid "Structured Learning Experience"
@@ -913,15 +893,16 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_course.html:71
 #, fuzzy
-#| msgid ""
-#| "Structured courses with progressive lessons, interactive exercises and "
-#| "personalized assessments."
 msgid ""
 "Progressive courses with interactive exercises and personalized assessments "
 "to guide your learning journey step by step."
 msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
 "Structured courses with progressive lessons, interactive exercises and "
-"personalized assessments."
+"personalized assessments.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Gestructureerde cursussen met progressieve lessen, interactieve oefeningen "
+"en gepersonaliseerde beoordelingen."
 
 #: public_web/templates/public_web/apps/app_course.html:82
 msgid "Progressive Lessons"
@@ -1183,7 +1164,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Courses"
 msgid "Course Materials"
-msgstr "Courses"
+msgstr "Cursussen"
 
 #: public_web/templates/public_web/apps/app_documents.html:266
 msgid ""
@@ -1237,18 +1218,19 @@ msgstr ""
 #: public_web/templates/public_web/apps/app_language_ai.html:23
 #: public_web/templates/public_web/landing.html:537
 msgid "Language AI"
-msgstr "Language AI"
+msgstr "Taal AI"
 
 #: public_web/templates/public_web/apps/app_language_ai.html:8
 #, fuzzy
-#| msgid ""
-#| "AI assistant for natural conversations and intelligent real-time "
-#| "corrections."
 msgid ""
 "AI assistant for natural conversations and intelligent real-time corrections "
 "to improve your language skills."
 msgstr ""
-"AI assistant for natural conversations and intelligent real-time corrections."
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"AI assistant for natural conversations and intelligent real-time "
+"corrections.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"AI-assistent voor natuurlijke gesprekken en intelligente realtime correcties."
 
 #: public_web/templates/public_web/apps/app_language_ai.html:25
 msgid "Your AI-powered language learning companion"
@@ -1345,7 +1327,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Features"
 msgid "AI Features"
-msgstr "Features"
+msgstr "Functies"
 
 #: public_web/templates/public_web/apps/app_language_ai.html:203
 msgid "Cutting-edge AI technology for effective language learning"
@@ -1456,7 +1438,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Educational Apps"
 msgid "Education"
-msgstr "Educational Apps"
+msgstr "Educatieve Apps"
 
 #: public_web/templates/public_web/apps/app_language_ai.html:349
 msgid "Arts & Entertainment"
@@ -1484,10 +1466,8 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_notebook.html:36
 #: public_web/templates/public_web/apps/app_notebook.html:453
-#, fuzzy
-#| msgid "Create an account"
 msgid "Create my notes"
-msgstr "Create an account"
+msgstr "Mijn notities maken"
 
 #: public_web/templates/public_web/apps/app_notebook.html:158
 msgid "Smart Note Organization"
@@ -1498,7 +1478,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Ready to revolutionize your learning?"
 msgid "Ready to organize your learning?"
-msgstr "Ready to revolutionize your learning?"
+msgstr "Klaar om je leren te revolutioneren?"
 
 #: public_web/templates/public_web/apps/app_notebook.html:443
 msgid "Start taking smart notes and keep track of your progress."
@@ -1531,7 +1511,7 @@ msgstr ""
 #: public_web/templates/public_web/apps/app_revision.html:36
 #: public_web/templates/public_web/apps/app_revision.html:456
 msgid "Start studying"
-msgstr ""
+msgstr "Beginnen met studeren"
 
 #: public_web/templates/public_web/apps/app_revision.html:68
 #, fuzzy
@@ -1560,7 +1540,7 @@ msgstr "Smart Flashcards"
 #, fuzzy
 #| msgid "Ready to revolutionize your learning?"
 msgid "Ready to optimize your memorization?"
-msgstr "Ready to revolutionize your learning?"
+msgstr "Klaar om je leren te revolutioneren?"
 
 #: public_web/templates/public_web/apps/app_revision.html:446
 msgid ""
@@ -1595,61 +1575,59 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:30
 msgid "Advanced productivity workspace"
-msgstr ""
+msgstr "Geavanceerde productiviteitsruimte"
 
 #: public_web/templates/public_web/apps/app_todo.html:41
-#, fuzzy
-#| msgid "Collaborative Learning"
 msgid "Start organizing"
-msgstr "Collaborative Learning"
+msgstr "Beginnen met organiseren"
 
 #: public_web/templates/public_web/apps/app_todo.html:73
 msgid "Kanban"
-msgstr ""
+msgstr "Kanban"
 
 #: public_web/templates/public_web/apps/app_todo.html:76
 msgid "List"
-msgstr ""
+msgstr "Lijst"
 
 #: public_web/templates/public_web/apps/app_todo.html:79
 msgid "Activity"
-msgstr ""
+msgstr "Activiteit"
 
 #: public_web/templates/public_web/apps/app_todo.html:89
 msgid "To Do"
-msgstr ""
+msgstr "Te Doen"
 
 #: public_web/templates/public_web/apps/app_todo.html:93
 msgid "Review course materials"
-msgstr ""
+msgstr "Cursusmateriaal doornemen"
 
 #: public_web/templates/public_web/apps/app_todo.html:95
 msgid "Today"
-msgstr ""
+msgstr "Vandaag"
 
 #: public_web/templates/public_web/apps/app_todo.html:96
 msgid "Study"
-msgstr ""
+msgstr "Studie"
 
 #: public_web/templates/public_web/apps/app_todo.html:100
 msgid "Complete assignment"
-msgstr ""
+msgstr "Opdracht voltooien"
 
 #: public_web/templates/public_web/apps/app_todo.html:102
 msgid "Priority"
-msgstr ""
+msgstr "Prioriteit"
 
 #: public_web/templates/public_web/apps/app_todo.html:103
 msgid "Urgent"
-msgstr ""
+msgstr "Dringend"
 
 #: public_web/templates/public_web/apps/app_todo.html:107
 msgid "Plan project timeline"
-msgstr ""
+msgstr "Projecttijdlijn plannen"
 
 #: public_web/templates/public_web/apps/app_todo.html:109
 msgid "Work"
-msgstr ""
+msgstr "Werk"
 
 #: public_web/templates/public_web/apps/app_todo.html:117
 #, fuzzy
@@ -1659,11 +1637,11 @@ msgstr "Press"
 
 #: public_web/templates/public_web/apps/app_todo.html:121
 msgid "Research presentation"
-msgstr ""
+msgstr "Onderzoek voor presentatie"
 
 #: public_web/templates/public_web/apps/app_todo.html:126
 msgid "Research"
-msgstr ""
+msgstr "Onderzoek"
 
 #: public_web/templates/public_web/apps/app_todo.html:130
 #, fuzzy
@@ -1679,32 +1657,32 @@ msgstr "My Notes"
 
 #: public_web/templates/public_web/apps/app_todo.html:140
 msgid "Done"
-msgstr ""
+msgstr "Klaar"
 
 #: public_web/templates/public_web/apps/app_todo.html:144
 msgid "Setup development environment"
-msgstr ""
+msgstr "Ontwikkelomgeving instellen"
 
 #: public_web/templates/public_web/apps/app_todo.html:146
 #: public_web/templates/public_web/apps/app_todo.html:152
 msgid "Completed"
-msgstr ""
+msgstr "Voltooid"
 
 #: public_web/templates/public_web/apps/app_todo.html:150
 msgid "Review team feedback"
-msgstr ""
+msgstr "Team feedback bekijken"
 
 #: public_web/templates/public_web/apps/app_todo.html:171
 msgid "Everything You Need for Productivity"
-msgstr ""
+msgstr "Alles wat je Nodig hebt voor Productiviteit"
 
 #: public_web/templates/public_web/apps/app_todo.html:172
 msgid "A complete workspace to organize your tasks, projects, and ideas"
-msgstr ""
+msgstr "Een complete werkruimte om je taken, projecten en ideeën te organiseren"
 
 #: public_web/templates/public_web/apps/app_todo.html:181
 msgid "Smart Task Management"
-msgstr ""
+msgstr "Slimme Taakbeheer"
 
 #: public_web/templates/public_web/apps/app_todo.html:182
 msgid ""
@@ -1714,7 +1692,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:191
 msgid "Kanban Boards"
-msgstr ""
+msgstr "Kanban Borden"
 
 #: public_web/templates/public_web/apps/app_todo.html:192
 msgid ""
@@ -1724,7 +1702,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:201
 msgid "Project Organization"
-msgstr ""
+msgstr "Project Organisatie"
 
 #: public_web/templates/public_web/apps/app_todo.html:202
 msgid ""
@@ -1734,7 +1712,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:211
 msgid "Rich Note-Taking"
-msgstr ""
+msgstr "Uitgebreide Notitiemaking"
 
 #: public_web/templates/public_web/apps/app_todo.html:212
 msgid ""
@@ -1744,7 +1722,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:222
 msgid "Smart Reminders"
-msgstr ""
+msgstr "Slimme Herinneringen"
 
 #: public_web/templates/public_web/apps/app_todo.html:223
 msgid ""
@@ -1754,7 +1732,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:232
 msgid "Tags & Categories"
-msgstr ""
+msgstr "Tags en Categorieën"
 
 #: public_web/templates/public_web/apps/app_todo.html:233
 msgid ""
@@ -1764,7 +1742,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:242
 msgid "Activity Tracking"
-msgstr ""
+msgstr "Activiteit Bijhouden"
 
 #: public_web/templates/public_web/apps/app_todo.html:243
 msgid ""
@@ -1774,7 +1752,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:252
 msgid "Multiple Views"
-msgstr ""
+msgstr "Meerdere Weergaven"
 
 #: public_web/templates/public_web/apps/app_todo.html:253
 msgid ""
@@ -1786,17 +1764,17 @@ msgstr ""
 #: public_web/templates/public_web/apps/apps_list.html:85
 #: public_web/templates/public_web/landing.html:451
 msgid "Coming Soon"
-msgstr "Coming Soon"
+msgstr "Binnenkort Beschikbaar"
 
 #: public_web/templates/public_web/apps/app_todo.html:265
 #, fuzzy
 #| msgid "These exciting apps are in active development"
 msgid "Exciting features in active development"
-msgstr "These exciting apps are in active development"
+msgstr "Deze spannende apps zijn in actieve ontwikkeling"
 
 #: public_web/templates/public_web/apps/app_todo.html:274
 msgid "Calendar Integration"
-msgstr ""
+msgstr "Agenda Integratie"
 
 #: public_web/templates/public_web/apps/app_todo.html:275
 msgid ""
@@ -1811,7 +1789,7 @@ msgstr ""
 #: public_web/templates/public_web/apps/app_todo.html:320
 #: public_web/templates/public_web/apps/app_todo.html:331
 msgid "In Development"
-msgstr ""
+msgstr "In Ontwikkeling"
 
 #: public_web/templates/public_web/apps/app_todo.html:285
 #, fuzzy
@@ -1827,7 +1805,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:296
 msgid "Advanced Team Collaboration"
-msgstr ""
+msgstr "Geavanceerde Teamsamenwerking"
 
 #: public_web/templates/public_web/apps/app_todo.html:297
 msgid ""
@@ -1837,7 +1815,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:307
 msgid "Time Tracking"
-msgstr ""
+msgstr "Tijdsregistratie"
 
 #: public_web/templates/public_web/apps/app_todo.html:308
 msgid ""
@@ -1846,7 +1824,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:318
 msgid "File Attachments"
-msgstr ""
+msgstr "Bestandsbijlagen"
 
 #: public_web/templates/public_web/apps/app_todo.html:319
 msgid ""
@@ -1856,11 +1834,11 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:329
 msgid "Recurring Tasks"
-msgstr ""
+msgstr "Terugkerende Taken"
 
 #: public_web/templates/public_web/apps/app_todo.html:330
 msgid "Set up tasks that repeat automatically on a schedule you define."
-msgstr ""
+msgstr "Stel taken in die automatisch herhalen volgens een schema dat je definieert."
 
 #: public_web/templates/public_web/apps/app_todo.html:337
 msgid ""
@@ -1869,15 +1847,15 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:346
 msgid "Perfect For Every Use Case"
-msgstr ""
+msgstr "Perfect voor Elke Toepassing"
 
 #: public_web/templates/public_web/apps/app_todo.html:347
 msgid "Whether you're a student, professional, or team leader"
-msgstr ""
+msgstr "Of je nu student, professional of teamleider bent"
 
 #: public_web/templates/public_web/apps/app_todo.html:356
 msgid "Students"
-msgstr ""
+msgstr "Studenten"
 
 #: public_web/templates/public_web/apps/app_todo.html:357
 msgid ""
@@ -1887,23 +1865,23 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:359
 msgid "Assignment tracking"
-msgstr ""
+msgstr "Opdracht bijhouden"
 
 #: public_web/templates/public_web/apps/app_todo.html:360
 msgid "Study planning"
-msgstr ""
+msgstr "Studie planning"
 
 #: public_web/templates/public_web/apps/app_todo.html:361
 msgid "Course organization"
-msgstr ""
+msgstr "Cursus organisatie"
 
 #: public_web/templates/public_web/apps/app_todo.html:362
 msgid "Research notes"
-msgstr ""
+msgstr "Onderzoeksnotities"
 
 #: public_web/templates/public_web/apps/app_todo.html:372
 msgid "Professionals"
-msgstr ""
+msgstr "Professionals"
 
 #: public_web/templates/public_web/apps/app_todo.html:373
 msgid ""
@@ -1913,23 +1891,23 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:375
 msgid "Project management"
-msgstr ""
+msgstr "Projectbeheer"
 
 #: public_web/templates/public_web/apps/app_todo.html:376
 msgid "Deadline tracking"
-msgstr ""
+msgstr "Deadline bijhouden"
 
 #: public_web/templates/public_web/apps/app_todo.html:377
 msgid "Meeting notes"
-msgstr ""
+msgstr "Vergadernotities"
 
 #: public_web/templates/public_web/apps/app_todo.html:378
 msgid "Goal setting"
-msgstr ""
+msgstr "Doelen stellen"
 
 #: public_web/templates/public_web/apps/app_todo.html:388
 msgid "Teams"
-msgstr ""
+msgstr "Teams"
 
 #: public_web/templates/public_web/apps/app_todo.html:389
 msgid ""
@@ -1939,11 +1917,11 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:391
 msgid "Shared workspaces"
-msgstr ""
+msgstr "Gedeelde werkruimtes"
 
 #: public_web/templates/public_web/apps/app_todo.html:392
 msgid "Task assignment"
-msgstr ""
+msgstr "Taaktoewijzing"
 
 #: public_web/templates/public_web/apps/app_todo.html:393
 #: public_web/templates/public_web/landing.html:43
@@ -1952,7 +1930,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:394
 msgid "Team analytics"
-msgstr ""
+msgstr "Team analyses"
 
 #: public_web/templates/public_web/apps/app_todo.html:406
 #, fuzzy
@@ -1962,7 +1940,7 @@ msgstr "Get Started Free"
 
 #: public_web/templates/public_web/apps/app_todo.html:407
 msgid "Simple setup process to get you organized right away"
-msgstr ""
+msgstr "Eenvoudig installatieproces om je meteen georganiseerd te krijgen"
 
 #: public_web/templates/public_web/apps/app_todo.html:414
 #, fuzzy
@@ -1972,11 +1950,11 @@ msgstr "Create an account"
 
 #: public_web/templates/public_web/apps/app_todo.html:415
 msgid "Sign up for free and access the todo app from your dashboard."
-msgstr ""
+msgstr "Meld je gratis aan en krijg toegang tot de taken-app vanaf je dashboard."
 
 #: public_web/templates/public_web/apps/app_todo.html:421
 msgid "Set Up Projects"
-msgstr ""
+msgstr "Projecten Instellen"
 
 #: public_web/templates/public_web/apps/app_todo.html:422
 msgid ""
@@ -1989,7 +1967,7 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:429
 msgid "Add tasks, set deadlines, take notes, and watch your productivity soar."
-msgstr ""
+msgstr "Voeg taken toe, stel deadlines in, maak notities en zie je productiviteit stijgen."
 
 #: public_web/templates/public_web/apps/app_todo.html:436
 msgid "Launch Todo App"
@@ -1997,19 +1975,19 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:446
 msgid "Seamless Integration"
-msgstr ""
+msgstr "Naadloze Integratie"
 
 #: public_web/templates/public_web/apps/app_todo.html:447
 msgid "Works perfectly with other Open Linguify apps"
-msgstr ""
+msgstr "Werkt perfect met andere Open Linguify apps"
 
 #: public_web/templates/public_web/apps/app_todo.html:457
 msgid "Create study tasks for flashcard reviews"
-msgstr ""
+msgstr "Maak studietaken voor flashcard beoordelingen"
 
 #: public_web/templates/public_web/apps/app_todo.html:469
 msgid "Link notes to tasks and projects"
-msgstr ""
+msgstr "Koppel notities aan taken en projecten"
 
 #: public_web/templates/public_web/apps/app_todo.html:481
 #, fuzzy
@@ -2033,7 +2011,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Start for free"
 msgid "Start Now - It's Free"
-msgstr "Start for free"
+msgstr "Gratis beginnen"
 
 #: public_web/templates/public_web/apps/app_todo.html:488
 #, fuzzy
@@ -2067,14 +2045,14 @@ msgstr ""
 #: public_web/templates/public_web/apps/apps_list.html:49
 #: public_web/templates/public_web/landing.html:391
 msgid "Available Now"
-msgstr "Available Now"
+msgstr "Nu Beschikbaar"
 
 #: public_web/templates/public_web/apps/apps_list.html:70
 #: public_web/templates/public_web/landing.html:407
 #: public_web/templates/public_web/landing.html:424
 #: public_web/templates/public_web/landing.html:441
 msgid "Ready"
-msgstr "Ready"
+msgstr "Klaar"
 
 #: public_web/templates/public_web/apps/apps_list.html:73
 msgid "Use now"
@@ -2083,7 +2061,7 @@ msgstr ""
 #: public_web/templates/public_web/apps/apps_list.html:87
 #: public_web/templates/public_web/landing.html:453
 msgid "These exciting apps are in active development"
-msgstr "These exciting apps are in active development"
+msgstr "Deze spannende apps zijn in actieve ontwikkeling"
 
 #: public_web/templates/public_web/apps/apps_list.html:107
 #: public_web/templates/public_web/landing.html:467
@@ -2093,13 +2071,13 @@ msgstr "These exciting apps are in active development"
 #: public_web/templates/public_web/landing.html:527
 #: public_web/templates/public_web/landing.html:542
 msgid "Soon"
-msgstr "Soon"
+msgstr "Binnenkort"
 
 #: public_web/templates/public_web/apps/apps_list.html:110
 #, fuzzy
 #| msgid "Coming Soon"
 msgid "Coming soon"
-msgstr "Coming Soon"
+msgstr "Binnenkort Beschikbaar"
 
 #: public_web/templates/public_web/apps/apps_list.html:124
 msgid "No applications available"
@@ -2128,7 +2106,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Open Linguify - Open source educational apps platform"
 msgid "OpenLinguify - Open source educational apps platform"
-msgstr "Open Linguify - Open source educational apps platform"
+msgstr "Open Linguify - Open source educatieve apps platform"
 
 #: public_web/templates/public_web/brand.html:7
 msgid ""
@@ -2239,7 +2217,7 @@ msgstr "Trusted by Learners Worldwide"
 
 #: public_web/templates/public_web/brand.html:148
 msgid "Flashcards Created"
-msgstr "Flashcards Created"
+msgstr "Flashcards Gemaakt"
 
 #: public_web/templates/public_web/brand.html:160
 msgid "User Satisfaction"
@@ -2333,7 +2311,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Support"
 msgid "Email Support"
-msgstr "Support"
+msgstr "Ondersteuning"
 
 #: public_web/templates/public_web/contact.html:29
 msgid "General inquiries and support"
@@ -2345,9 +2323,9 @@ msgstr ""
 
 #: public_web/templates/public_web/contact.html:42
 #, fuzzy
-#| msgid "Open Source"
+#| msgid "Open Source Stats"
 msgid "Open source repository"
-msgstr "Open Source"
+msgstr "Open Source Statistieken"
 
 #: public_web/templates/public_web/contact.html:54
 msgid "LinkedIn"
@@ -2372,7 +2350,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Report a bug"
 msgid "Report a Bug"
-msgstr "Report a bug"
+msgstr "Rapporteer een bug"
 
 #: public_web/templates/public_web/contact.html:81
 msgid "Send us a Message"
@@ -2438,7 +2416,7 @@ msgstr ""
 #: public_web/templates/public_web/contact.html:131
 #: public_web/templates/public_web/landing.html:647
 msgid "Frequently Asked Questions"
-msgstr ""
+msgstr "Veelgestelde Vragen"
 
 #: public_web/templates/public_web/contact.html:137
 msgid "How can I contribute to Open Linguify?"
@@ -2479,9 +2457,9 @@ msgstr ""
 #: public_web/templates/public_web/public_base.html:18
 #, fuzzy
 #| msgid ""
-#| "Open Linguify is an open : memorization system, flashcards, note-taking, "
-#| "quizzes, collaborative chat, classrooms and much more. Discover our tools "
-#| "to revolutionize learning."
+#| "Open Linguify is an open source educational apps platform: memorization "
+#| "system, flashcards, note-taking, quizzes, collaborative chat, classrooms "
+#| "and much more. Discover our tools to revolutionize learning."
 msgid ""
 "OpenLinguify is an open source educational apps platform: memorization "
 "system, flashcards, note-taking, quizzes, collaborative chat, classrooms and "
@@ -2592,61 +2570,67 @@ msgstr "Full access to all applications"
 msgid "Currently free - business model may evolve for sustainability"
 msgstr ""
 
+# Landing page content
+#: public_web/templates/public_web/landing.html:144
+msgid "Open Source Education Apps"
+msgstr "Open Source Educatieve Apps"
+
 #: public_web/templates/public_web/landing.html:147
 #, fuzzy
-#| msgid ""
-#| "A complete suite of open source educational apps: memorization, "
-#| "flashcards, note-taking, quizzes, collaborative chat and much more."
 msgid ""
 "A complete suite of open source educational apps: memorization, flashcards, "
 "note-taking, to-do and much more."
 msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
 "A complete suite of open source educational apps: memorization, flashcards, "
-"note-taking, quizzes, collaborative chat and much more."
+"note-taking, quizzes, collaborative chat and much more.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Een complete suite van open source educatieve apps: memorisatie, flashcards, "
+"notities maken, quizzen, collaboratieve chat en veel meer."
 
-# Free badge messages  
+# Free badge messages
 #: public_web/templates/public_web/landing.html:157
 #, fuzzy, python-format
 #| msgid "100% FREE FOREVER"
 msgid "100%% FREE FOREVER"
-msgstr "100% FREE FOREVER"
+msgstr "100% GRATIS VOOR ALTIJD"
 
 #: public_web/templates/public_web/landing.html:160
 msgid "No credit card • No hidden fees • Always free"
-msgstr "No credit card • No hidden fees • Always free"
+msgstr "Geen creditcard • Geen verborgen kosten • Altijd gratis"
 
 #: public_web/templates/public_web/landing.html:170
 msgid "Choose your Linguify product:"
-msgstr ""
+msgstr "Kies je Linguify product:"
 
 #: public_web/templates/public_web/landing.html:199
 msgid "Discover our apps"
-msgstr "Discover our apps"
+msgstr "Ontdek onze apps"
 
 #: public_web/templates/public_web/landing.html:334
 msgid "Access all your apps from a unified dashboard"
-msgstr ""
+msgstr "Toegang tot al je apps vanaf een uniform dashboard"
 
 #: public_web/templates/public_web/landing.html:357
 msgid "Educational Useful Apps for the students"
-msgstr ""
+msgstr "Educatieve Nuttige Apps voor studenten"
 
 # Features section
 #: public_web/templates/public_web/landing.html:376
 msgid "Our Educational Apps"
-msgstr "Our Educational Apps"
+msgstr "Onze Educatieve Apps"
 
 #: public_web/templates/public_web/landing.html:378
 #, fuzzy
 #| msgid ""
-#| "Discover our complete suite of educational applications designed to "
-#| "enhance your learning experience."
+#| "Discover our complete suite of educational apps designed to transform "
+#| "your learning experience. Choose one for free or access all with Premium."
 msgid ""
 "Discover our complete suite of educational apps designed to transform your "
 "learning experience. Currently all apps are completely free to use."
 msgstr ""
-"Discover our complete suite of educational applications designed to enhance "
-"your learning experience."
+"Ontdek onze complete suite van educatieve apps ontworpen om je leerervaring "
+"te transformeren. Kies er één gratis of krijg toegang tot alle met Premium."
 
 #: public_web/templates/public_web/landing.html:383
 msgid ""
@@ -2661,24 +2645,37 @@ msgid ""
 msgstr ""
 
 #: public_web/templates/public_web/landing.html:421
+#, fuzzy
 msgid ""
 "Spaced repetition system with smart flashcards for optimal memorization."
 msgstr ""
-"Spaced repetition system with smart flashcards for optimal memorization."
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Spaced repetition system with smart flashcards for optimal memorization.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Herhalingssysteem met slimme flashcards voor optimale memorisatie."
 
 #: public_web/templates/public_web/landing.html:438
+#, fuzzy
 msgid ""
 "Centralized note-taking with intelligent organization and advanced search."
 msgstr ""
-"Centralized note-taking with intelligent organization and advanced search."
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Centralized note-taking with intelligent organization and advanced search.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Gecentraliseerde notities met intelligente organisatie en geavanceerd zoeken."
 
 #: public_web/templates/public_web/landing.html:464
+#, fuzzy
 msgid ""
 "Structured courses with progressive lessons, interactive exercises and "
 "personalized assessments."
 msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
 "Structured courses with progressive lessons, interactive exercises and "
-"personalized assessments."
+"personalized assessments.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Gestructureerde cursussen met progressieve lessen, interactieve oefeningen "
+"en gepersonaliseerde beoordelingen."
 
 #: public_web/templates/public_web/landing.html:477
 msgid "Quiz"
@@ -2690,80 +2687,88 @@ msgstr "Adaptive quiz system to test your knowledge and identify weak points."
 
 #: public_web/templates/public_web/landing.html:507
 msgid "Chat"
-msgstr ""
+msgstr "Chat"
 
 #: public_web/templates/public_web/landing.html:509
 msgid ""
 "Real-time collaborative chat for study groups and language exchange with "
 "other learners."
 msgstr ""
+"Real-time collaboratieve chat voor studiegroepen en taaluitwisseling met "
+"andere leerlingen."
 
 #: public_web/templates/public_web/landing.html:539
+#, fuzzy
 msgid ""
 "AI assistant for natural conversations and intelligent real-time corrections."
 msgstr ""
-"AI assistant for natural conversations and intelligent real-time corrections."
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"AI assistant for natural conversations and intelligent real-time "
+"corrections.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"AI-assistent voor natuurlijke gesprekken en intelligente realtime correcties."
 
 #: public_web/templates/public_web/landing.html:559
 msgid "Join the Open Source Revolution"
-msgstr ""
+msgstr "Sluit je aan bij de Open Source Revolutie"
 
 #: public_web/templates/public_web/landing.html:562
 msgid ""
 "Open Linguify is built by the community, for the community. Help us create "
 "the future of education by contributing to our open source project."
 msgstr ""
+"Open Linguify is gebouwd door de gemeenschap, voor de gemeenschap. Help ons "
+"de toekomst van onderwijs te creëren door bij te dragen aan ons open source "
+"project."
 
 #: public_web/templates/public_web/landing.html:570
 msgid "Contribute code and new features"
-msgstr ""
+msgstr "Draag code en nieuwe functies bij"
 
 #: public_web/templates/public_web/landing.html:576
 msgid "Report bugs and suggest improvements"
-msgstr ""
+msgstr "Rapporteer bugs en stel verbeteringen voor"
 
 #: public_web/templates/public_web/landing.html:582
 msgid "Help with translations and documentation"
-msgstr ""
+msgstr "Help met vertalingen en documentatie"
 
 #: public_web/templates/public_web/landing.html:588
+#, fuzzy
+#| msgid "Contribute"
 msgid "Start Contributing"
-msgstr ""
+msgstr "Bijdragen"
 
 #: public_web/templates/public_web/landing.html:594
 #: public_web/templates/public_web/landing.html:703
 #, fuzzy
 #| msgid "Report a bug"
 msgid "Report Issues"
-msgstr "Report a bug"
+msgstr "Rapporteer een bug"
 
 #: public_web/templates/public_web/landing.html:605
-#, fuzzy
-#| msgid "Open Source"
 msgid "Open Source Stats"
-msgstr "Open Source"
+msgstr "Open Source Statistieken"
 
 #: public_web/templates/public_web/landing.html:606
 msgid "Growing community of contributors"
-msgstr ""
+msgstr "Groeiende gemeenschap van bijdragers"
 
 #: public_web/templates/public_web/landing.html:613
 msgid "Contributors"
-msgstr ""
+msgstr "Bijdragers"
 
 #: public_web/templates/public_web/landing.html:619
-#, fuzzy
-#| msgid "Community"
 msgid "Commits"
-msgstr "Community"
+msgstr "Commits"
 
 #: public_web/templates/public_web/landing.html:625
 msgid "License"
-msgstr ""
+msgstr "Licentie"
 
 #: public_web/templates/public_web/landing.html:632
 msgid "Latest Release"
-msgstr ""
+msgstr "Laatste Release"
 
 # SEO Meta Tags
 #: public_web/templates/public_web/landing.html:649
@@ -2771,7 +2776,7 @@ msgstr ""
 #| msgid "Open Linguify - Open source educational apps platform"
 msgid ""
 "Everything you need to know about OpenLinguify and our educational platform."
-msgstr "Open Linguify - Open source educational apps platform"
+msgstr "Open Linguify - Open source educatieve apps platform"
 
 #: public_web/templates/public_web/landing.html:659
 msgid ""
@@ -2824,15 +2829,20 @@ msgstr ""
 # CTA section
 #: public_web/templates/public_web/landing.html:722
 msgid "Ready to revolutionize your learning?"
-msgstr "Ready to revolutionize your learning?"
+msgstr "Klaar om je leren te revolutioneren?"
 
 #: public_web/templates/public_web/landing.html:725
+#, fuzzy
 msgid ""
 "Join our community and access a complete suite of open source educational "
 "apps."
 msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
 "Join our community and access a complete suite of open source educational "
-"apps."
+"apps.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Sluit je aan bij onze gemeenschap en krijg toegang tot een complete suite "
+"van open source educatieve apps."
 
 #: public_web/templates/public_web/landing.html:728
 #, python-format
@@ -2843,7 +2853,7 @@ msgstr ""
 
 #: public_web/templates/public_web/landing.html:734
 msgid "Start Your Learning Journey"
-msgstr ""
+msgstr "Begin je Leerreis"
 
 #: public_web/templates/public_web/public_base.html:62
 #, fuzzy
@@ -2863,19 +2873,21 @@ msgstr ""
 "Complete suite of open source educational apps: memorization, flashcards, "
 "notes, quizzes, collaborative chat and much more."
 
+# #-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#
 # Footer content
 #: public_web/templates/public_web/public_base.html:122
 #, fuzzy
-#| msgid ""
-#| "Open source educational apps platform: memorization, flashcards, notes, "
-#| "quizzes and collaborative chat."
 msgid ""
 "OpenLinguify is an open source educational platform offering AI-powered "
 "language learning tools, flashcards, quizzes, and collaborative learning "
 "features."
 msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
 "Open source educational apps platform: memorization, flashcards, notes, "
-"quizzes and collaborative chat."
+"quizzes and collaborative chat.\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Open source educatieve apps platform: memorisatie, flashcards, notities, "
+"quizzen en collaboratieve chat."
 
 #: public_web/templates/public_web/public_base.html:144
 #, fuzzy
@@ -3025,7 +3037,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Educational Apps"
 msgid "Educational applications"
-msgstr "Educational Apps"
+msgstr "Educatieve Apps"
 
 #: public_web/views.py:457 public_web/views.py:476
 msgid "Application not found"
@@ -3042,7 +3054,7 @@ msgstr ""
 #~ msgstr "Product"
 
 #~ msgid "Quizzes Generated"
-#~ msgstr "Quizzes Generated"
+#~ msgstr "Quizzen Gegenereerd"
 
 #~ msgid ""
 #~ "Discover our suite of 5 apps designed to transform your learning "
@@ -3089,6 +3101,124 @@ msgstr ""
 #~ msgid "Plans adapted to your needs"
 #~ msgstr "Plans adapted to your needs"
 
+# Todo App Long Descriptions
+msgid "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive."
+msgstr "Maak, organiseer en volg taken met prioriteiten, vervaldatums, tags en voortgangsregistratie. Alles wat je nodig hebt om productief te blijven."
+
+msgid "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress."
+msgstr "Visualiseer je workflow met aanpasbare kanban borden. Sleep taken tussen kolommen om voortgang bij te houden."
+
+msgid "Group related tasks into projects with progress tracking, deadlines, and team collaboration features."
+msgstr "Groepeer gerelateerde taken in projecten met voortgangsregistratie, deadlines en teamsamenwerkingsfuncties."
+
+msgid "Take notes with markdown support, attach them to tasks or projects, and organize with tags and categories."
+msgstr "Maak notities met markdown ondersteuning, koppel ze aan taken of projecten, en organiseer met tags en categorieën."
+
+msgid "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track."
+msgstr "Stel aangepaste herinneringen in voor taken en deadlines. Ontvang meldingen op het juiste moment om op koers te blijven."
+
+msgid "Organize tasks and notes with flexible tagging system and categories for better organization and filtering."
+msgstr "Organiseer taken en notities met flexibel tagsysteem en categorieën voor betere organisatie en filtering."
+
+msgid "Monitor your task activity and progress with a detailed activity feed showing all your recent actions."
+msgstr "Houd je taakactiviteit en voortgang in de gaten met een gedetailleerde activiteitenfeed die al je recente acties toont."
+
+msgid "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer."
+msgstr "Wissel tussen lijstweergave, Kanban bord en activiteitenfeed om je taken te visualiseren zoals je dat wilt."
+
+msgid "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines."
+msgstr "Bekijk taken en deadlines in agendaformaat. Plan je schema en mis nooit belangrijke deadlines."
+
+msgid "Track your productivity with detailed analytics, completion rates, and progress insights."
+msgstr "Volg je productiviteit met gedetailleerde analyses, voltooiingspercentages en voortgangsinzichten."
+
+msgid "Enhanced team features with real-time collaboration, task assignment, and team analytics."
+msgstr "Verbeterde teamfuncties met real-time samenwerking, taaktoewijzing en teamanalyses."
+
+msgid "Track time spent on tasks with built-in timer and detailed time analytics."
+msgstr "Houd tijd bij die besteed wordt aan taken met ingebouwde timer en gedetailleerde tijdsanalyses."
+
+msgid "Attach files and documents to your tasks and projects for better organization."
+msgstr "Voeg bestanden en documenten toe aan je taken en projecten voor betere organisatie."
+
+msgid "Exciting features in active development"
+msgstr "Spannende functies in actieve ontwikkeling"
+
+msgid "Organize assignments, track study progress, manage course projects, and plan your academic schedule."
+msgstr "Organiseer opdrachten, volg studievoortgang, beheer cursusprojecten en plan je academische schema."
+
+msgid "Manage work projects, track deadlines, organize meeting notes, and boost your productivity."
+msgstr "Beheer werkprojecten, volg deadlines, organiseer vergadernotities en verhoog je productiviteit."
+
+msgid "Collaborate on shared projects, assign tasks to team members, and track collective progress."
+msgstr "Werk samen aan gedeelde projecten, wijs taken toe aan teamleden en volg collectieve voortgang."
+
+msgid "Create your first project and organize tasks by categories and priorities."
+msgstr "Maak je eerste project aan en organiseer taken op categorieën en prioriteiten."
+
+msgid "Join thousands of users who have transformed their productivity with our todo app."
+msgstr "Sluit je aan bij duizenden gebruikers die hun productiviteit hebben getransformeerd met onze taken-app."
+
+msgid "These features will be available soon. Stay tuned for the latest updates!"
+msgstr "Deze functies zijn binnenkort beschikbaar. Blijf op de hoogte van de laatste updates!"
+
+msgid "Open Source Education Apps"
+msgstr "Open Source Educatieve Apps"
+
+msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, to-do and much more."
+msgstr "Een complete suite van open source educatieve apps: memorisatie, flashcards, notities maken, to-do en veel meer."
+
+msgid "Choose your Linguify product:"
+msgstr "Kies uw Linguify product:"
+
+msgid "For all students"
+msgstr "Voor alle studenten"
+
+msgid "Discover our apps"
+msgstr "Ontdek onze apps"
+
+msgid "View Source Code"
+msgstr "Bekijk Broncode"
+
+msgid "Access all your apps from a unified dashboard"
+msgstr "Toegang tot al uw apps vanuit een uniform dashboard"
+
+msgid "Educational Useful Apps for the students"
+msgstr "Educatieve Nuttige Apps voor de studenten"
+
+msgid "Open Source"
+msgstr "Open Source"
+
+msgid "Our Educational Apps"
+msgstr "Onze Educatieve Apps"
+
+msgid "Community"
+msgstr "Gemeenschap"
+
+msgid "Documents"
+msgstr "Documenten"
+
+msgid "Language AI"
+msgstr "Taal AI"
+
+msgid "Productivity"
+msgstr "Productiviteit"
+
+msgid "Spaced Learning"
+msgstr "Gespreide Leerprocessen"
+
+msgid "Note Taking"
+msgstr "Notities Maken"
+
+msgid "Structured Learning"
+msgstr "Gestructureerd Leren"
+
+msgid "Assessment"
+msgstr "Beoordeling"
+
+msgid "Collaboration"
+msgstr "Samenwerking"
+
 #~ msgid "Choose the offer that matches your goals and learning pace."
 #~ msgstr "Choose the offer that matches your goals and learning pace."
 
@@ -3106,6 +3236,9 @@ msgstr ""
 
 #~ msgid "Full use of the chosen app"
 #~ msgstr "Full use of the chosen app"
+
+#~ msgid "Community support"
+#~ msgstr "Community support"
 
 #~ msgid "Most popular"
 #~ msgstr "Most popular"
@@ -3165,7 +3298,7 @@ msgstr ""
 #~ msgstr "Welcome, %(username)s!"
 
 #~ msgid "Pricing"
-#~ msgstr "Pricing"
+#~ msgstr "Prijzen"
 
 #~ msgid "Roadmap"
 #~ msgstr "Roadmap"
@@ -3178,3 +3311,25 @@ msgstr ""
 
 #~ msgid "Status"
 #~ msgstr "Status"
+
+# Sponsorship section
+msgid "Sponsor"
+msgstr "Sponsor"
+
+msgid "Help Keep Education Free"
+msgstr "Help Onderwijs Gratis te Houden"
+
+msgid ""
+"Open Linguify is 100% free and open source. Your support enables us to "
+"maintain servers, develop new features, and keep education accessible to "
+"everyone, everywhere."
+msgstr ""
+"Open Linguify is 100% gratis en open source. Uw steun stelt ons in staat om "
+"servers te onderhouden, nieuwe functies te ontwikkelen en onderwijs "
+"toegankelijk te houden voor iedereen, overal."
+
+msgid "Become a Sponsor"
+msgstr "Word een Sponsor"
+
+msgid "Open Source Education Apps"
+msgstr "Open Source Onderwijs Apps"

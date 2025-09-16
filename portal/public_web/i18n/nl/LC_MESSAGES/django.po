@@ -349,8 +349,13 @@ msgstr ""
 #: public_web/templates/public_web/apps/app_community.html:23
 #: public_web/templates/public_web/apps/app_course.html:213
 #: public_web/templates/public_web/landing.html:492
+#, fuzzy
 msgid "Community"
-msgstr "Community"
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Community\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Gemeenschap"
 
 #: public_web/templates/public_web/about.html:213
 msgid ""
@@ -556,8 +561,13 @@ msgstr "Explore Our Apps"
 
 #: public_web/templates/public_web/about.html:471
 #: public_web/templates/public_web/landing.html:203
+#, fuzzy
 msgid "View Source Code"
-msgstr "Bekijk broncode"
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Bekijk broncode\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Bekijk Broncode"
 
 #: public_web/templates/public_web/about.html:480
 #, fuzzy
@@ -1019,13 +1029,8 @@ msgstr ""
 msgid "Explore App Store"
 msgstr "Explore App Store"
 
-#: public_web/templates/public_web/apps/app_documents.html:6
-#: public_web/templates/public_web/apps/app_documents.html:23
-#: public_web/templates/public_web/landing.html:522
-#, fuzzy
-#| msgid "Documentation"
 msgid "Documents"
-msgstr "Documentation"
+msgstr "Documenten"
 
 #: public_web/templates/public_web/apps/app_documents.html:8
 #: public_web/templates/public_web/landing.html:524
@@ -1678,87 +1683,97 @@ msgstr "Alles wat je Nodig hebt voor Productiviteit"
 
 #: public_web/templates/public_web/apps/app_todo.html:172
 msgid "A complete workspace to organize your tasks, projects, and ideas"
-msgstr "Een complete werkruimte om je taken, projecten en ideeën te organiseren"
+msgstr ""
+"Een complete werkruimte om je taken, projecten en ideeën te organiseren"
 
 #: public_web/templates/public_web/apps/app_todo.html:181
 msgid "Smart Task Management"
 msgstr "Slimme Taakbeheer"
 
-#: public_web/templates/public_web/apps/app_todo.html:182
+# Todo App Long Descriptions
 msgid ""
 "Create, organize, and track tasks with priorities, due dates, tags, and "
 "progress tracking. Everything you need to stay productive."
 msgstr ""
+"Maak, organiseer en volg taken met prioriteiten, vervaldatums, tags en "
+"voortgangsregistratie. Alles wat je nodig hebt om productief te blijven."
 
 #: public_web/templates/public_web/apps/app_todo.html:191
 msgid "Kanban Boards"
 msgstr "Kanban Borden"
 
-#: public_web/templates/public_web/apps/app_todo.html:192
 msgid ""
 "Visualize your workflow with customizable kanban boards. Drag and drop tasks "
 "between columns to track progress."
 msgstr ""
+"Visualiseer je workflow met aanpasbare kanban borden. Sleep taken tussen "
+"kolommen om voortgang bij te houden."
 
 #: public_web/templates/public_web/apps/app_todo.html:201
 msgid "Project Organization"
 msgstr "Project Organisatie"
 
-#: public_web/templates/public_web/apps/app_todo.html:202
 msgid ""
 "Group related tasks into projects with progress tracking, deadlines, and "
 "team collaboration features."
 msgstr ""
+"Groepeer gerelateerde taken in projecten met voortgangsregistratie, "
+"deadlines en teamsamenwerkingsfuncties."
 
 #: public_web/templates/public_web/apps/app_todo.html:211
 msgid "Rich Note-Taking"
 msgstr "Uitgebreide Notitiemaking"
 
-#: public_web/templates/public_web/apps/app_todo.html:212
 msgid ""
 "Take notes with markdown support, attach them to tasks or projects, and "
 "organize with tags and categories."
 msgstr ""
+"Maak notities met markdown ondersteuning, koppel ze aan taken of projecten, "
+"en organiseer met tags en categorieën."
 
 #: public_web/templates/public_web/apps/app_todo.html:222
 msgid "Smart Reminders"
 msgstr "Slimme Herinneringen"
 
-#: public_web/templates/public_web/apps/app_todo.html:223
 msgid ""
 "Set custom reminders for tasks and deadlines. Get notified at the right time "
 "to stay on track."
 msgstr ""
+"Stel aangepaste herinneringen in voor taken en deadlines. Ontvang meldingen "
+"op het juiste moment om op koers te blijven."
 
 #: public_web/templates/public_web/apps/app_todo.html:232
 msgid "Tags & Categories"
 msgstr "Tags en Categorieën"
 
-#: public_web/templates/public_web/apps/app_todo.html:233
 msgid ""
 "Organize tasks and notes with flexible tagging system and categories for "
 "better organization and filtering."
 msgstr ""
+"Organiseer taken en notities met flexibel tagsysteem en categorieën voor "
+"betere organisatie en filtering."
 
 #: public_web/templates/public_web/apps/app_todo.html:242
 msgid "Activity Tracking"
 msgstr "Activiteit Bijhouden"
 
-#: public_web/templates/public_web/apps/app_todo.html:243
 msgid ""
 "Monitor your task activity and progress with a detailed activity feed "
 "showing all your recent actions."
 msgstr ""
+"Houd je taakactiviteit en voortgang in de gaten met een gedetailleerde "
+"activiteitenfeed die al je recente acties toont."
 
 #: public_web/templates/public_web/apps/app_todo.html:252
 msgid "Multiple Views"
 msgstr "Meerdere Weergaven"
 
-#: public_web/templates/public_web/apps/app_todo.html:253
 msgid ""
 "Switch between list view, Kanban board, and activity feed to visualize your "
 "tasks the way you prefer."
 msgstr ""
+"Wissel tussen lijstweergave, Kanban bord en activiteitenfeed om je taken te "
+"visualiseren zoals je dat wilt."
 
 #: public_web/templates/public_web/apps/app_todo.html:264
 #: public_web/templates/public_web/apps/apps_list.html:85
@@ -1766,21 +1781,19 @@ msgstr ""
 msgid "Coming Soon"
 msgstr "Binnenkort Beschikbaar"
 
-#: public_web/templates/public_web/apps/app_todo.html:265
-#, fuzzy
-#| msgid "These exciting apps are in active development"
 msgid "Exciting features in active development"
-msgstr "Deze spannende apps zijn in actieve ontwikkeling"
+msgstr "Spannende functies in actieve ontwikkeling"
 
 #: public_web/templates/public_web/apps/app_todo.html:274
 msgid "Calendar Integration"
 msgstr "Agenda Integratie"
 
-#: public_web/templates/public_web/apps/app_todo.html:275
 msgid ""
 "View tasks and deadlines in calendar format. Plan your schedule and never "
 "miss important deadlines."
 msgstr ""
+"Bekijk taken en deadlines in agendaformaat. Plan je schema en mis nooit "
+"belangrijke deadlines."
 
 #: public_web/templates/public_web/apps/app_todo.html:276
 #: public_web/templates/public_web/apps/app_todo.html:287
@@ -1797,40 +1810,44 @@ msgstr "In Ontwikkeling"
 msgid "Analytics Dashboard"
 msgstr "Access Dashboard"
 
-#: public_web/templates/public_web/apps/app_todo.html:286
 msgid ""
 "Track your productivity with detailed analytics, completion rates, and "
 "progress insights."
 msgstr ""
+"Volg je productiviteit met gedetailleerde analyses, voltooiingspercentages "
+"en voortgangsinzichten."
 
 #: public_web/templates/public_web/apps/app_todo.html:296
 msgid "Advanced Team Collaboration"
 msgstr "Geavanceerde Teamsamenwerking"
 
-#: public_web/templates/public_web/apps/app_todo.html:297
 msgid ""
 "Enhanced team features with real-time collaboration, task assignment, and "
 "team analytics."
 msgstr ""
+"Verbeterde teamfuncties met real-time samenwerking, taaktoewijzing en "
+"teamanalyses."
 
 #: public_web/templates/public_web/apps/app_todo.html:307
 msgid "Time Tracking"
 msgstr "Tijdsregistratie"
 
-#: public_web/templates/public_web/apps/app_todo.html:308
 msgid ""
 "Track time spent on tasks with built-in timer and detailed time analytics."
 msgstr ""
+"Houd tijd bij die besteed wordt aan taken met ingebouwde timer en "
+"gedetailleerde tijdsanalyses."
 
 #: public_web/templates/public_web/apps/app_todo.html:318
 msgid "File Attachments"
 msgstr "Bestandsbijlagen"
 
-#: public_web/templates/public_web/apps/app_todo.html:319
 msgid ""
 "Attach files and documents to your tasks and projects for better "
 "organization."
 msgstr ""
+"Voeg bestanden en documenten toe aan je taken en projecten voor betere "
+"organisatie."
 
 #: public_web/templates/public_web/apps/app_todo.html:329
 msgid "Recurring Tasks"
@@ -1838,12 +1855,14 @@ msgstr "Terugkerende Taken"
 
 #: public_web/templates/public_web/apps/app_todo.html:330
 msgid "Set up tasks that repeat automatically on a schedule you define."
-msgstr "Stel taken in die automatisch herhalen volgens een schema dat je definieert."
+msgstr ""
+"Stel taken in die automatisch herhalen volgens een schema dat je definieert."
 
-#: public_web/templates/public_web/apps/app_todo.html:337
 msgid ""
 "These features will be available soon. Stay tuned for the latest updates!"
 msgstr ""
+"Deze functies zijn binnenkort beschikbaar. Blijf op de hoogte van de laatste "
+"updates!"
 
 #: public_web/templates/public_web/apps/app_todo.html:346
 msgid "Perfect For Every Use Case"
@@ -1857,11 +1876,12 @@ msgstr "Of je nu student, professional of teamleider bent"
 msgid "Students"
 msgstr "Studenten"
 
-#: public_web/templates/public_web/apps/app_todo.html:357
 msgid ""
 "Organize assignments, track study progress, manage course projects, and plan "
 "your academic schedule."
 msgstr ""
+"Organiseer opdrachten, volg studievoortgang, beheer cursusprojecten en plan "
+"je academische schema."
 
 #: public_web/templates/public_web/apps/app_todo.html:359
 msgid "Assignment tracking"
@@ -1883,11 +1903,12 @@ msgstr "Onderzoeksnotities"
 msgid "Professionals"
 msgstr "Professionals"
 
-#: public_web/templates/public_web/apps/app_todo.html:373
 msgid ""
 "Manage work projects, track deadlines, organize meeting notes, and boost "
 "your productivity."
 msgstr ""
+"Beheer werkprojecten, volg deadlines, organiseer vergadernotities en verhoog "
+"je productiviteit."
 
 #: public_web/templates/public_web/apps/app_todo.html:375
 msgid "Project management"
@@ -1909,11 +1930,12 @@ msgstr "Doelen stellen"
 msgid "Teams"
 msgstr "Teams"
 
-#: public_web/templates/public_web/apps/app_todo.html:389
 msgid ""
 "Collaborate on shared projects, assign tasks to team members, and track "
 "collective progress."
 msgstr ""
+"Werk samen aan gedeelde projecten, wijs taken toe aan teamleden en volg "
+"collectieve voortgang."
 
 #: public_web/templates/public_web/apps/app_todo.html:391
 msgid "Shared workspaces"
@@ -1950,16 +1972,18 @@ msgstr "Create an account"
 
 #: public_web/templates/public_web/apps/app_todo.html:415
 msgid "Sign up for free and access the todo app from your dashboard."
-msgstr "Meld je gratis aan en krijg toegang tot de taken-app vanaf je dashboard."
+msgstr ""
+"Meld je gratis aan en krijg toegang tot de taken-app vanaf je dashboard."
 
 #: public_web/templates/public_web/apps/app_todo.html:421
 msgid "Set Up Projects"
 msgstr "Projecten Instellen"
 
-#: public_web/templates/public_web/apps/app_todo.html:422
 msgid ""
 "Create your first project and organize tasks by categories and priorities."
 msgstr ""
+"Maak je eerste project aan en organiseer taken op categorieën en "
+"prioriteiten."
 
 #: public_web/templates/public_web/apps/app_todo.html:428
 msgid "Start Organizing"
@@ -1967,7 +1991,9 @@ msgstr ""
 
 #: public_web/templates/public_web/apps/app_todo.html:429
 msgid "Add tasks, set deadlines, take notes, and watch your productivity soar."
-msgstr "Voeg taken toe, stel deadlines in, maak notities en zie je productiviteit stijgen."
+msgstr ""
+"Voeg taken toe, stel deadlines in, maak notities en zie je productiviteit "
+"stijgen."
 
 #: public_web/templates/public_web/apps/app_todo.html:436
 msgid "Launch Todo App"
@@ -1995,17 +2021,12 @@ msgstr "Koppel notities aan taken en projecten"
 msgid "Ready to Get Organized?"
 msgstr "Ready to start learning?"
 
-#: public_web/templates/public_web/apps/app_todo.html:482
-#, fuzzy
-#| msgid ""
-#| "Join thousands of learners who have already discovered the power of "
-#| "OpenLinguify's educational tools"
 msgid ""
 "Join thousands of users who have transformed their productivity with our "
 "todo app."
 msgstr ""
-"Join thousands of learners who have already discovered the power of "
-"OpenLinguify's educational tools"
+"Sluit je aan bij duizenden gebruikers die hun productiviteit hebben "
+"getransformeerd met onze taken-app."
 
 #: public_web/templates/public_web/apps/app_todo.html:485
 #, fuzzy
@@ -2570,23 +2591,25 @@ msgstr "Full access to all applications"
 msgid "Currently free - business model may evolve for sustainability"
 msgstr ""
 
+# #-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#
 # Landing page content
 #: public_web/templates/public_web/landing.html:144
-msgid "Open Source Education Apps"
-msgstr "Open Source Educatieve Apps"
-
-#: public_web/templates/public_web/landing.html:147
 #, fuzzy
+msgid "Open Source Education Apps"
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Open Source Educatieve Apps\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Open Source Educatieve Apps\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Open Source Onderwijs Apps"
+
 msgid ""
 "A complete suite of open source educational apps: memorization, flashcards, "
 "note-taking, to-do and much more."
 msgstr ""
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
-"A complete suite of open source educational apps: memorization, flashcards, "
-"note-taking, quizzes, collaborative chat and much more.\n"
-"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
 "Een complete suite van open source educatieve apps: memorisatie, flashcards, "
-"notities maken, quizzen, collaboratieve chat en veel meer."
+"notities maken, to-do en veel meer."
 
 # Free badge messages
 #: public_web/templates/public_web/landing.html:157
@@ -2600,21 +2623,37 @@ msgid "No credit card • No hidden fees • Always free"
 msgstr "Geen creditcard • Geen verborgen kosten • Altijd gratis"
 
 #: public_web/templates/public_web/landing.html:170
+#, fuzzy
 msgid "Choose your Linguify product:"
-msgstr "Kies je Linguify product:"
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Kies je Linguify product:\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Kies uw Linguify product:"
 
 #: public_web/templates/public_web/landing.html:199
 msgid "Discover our apps"
 msgstr "Ontdek onze apps"
 
 #: public_web/templates/public_web/landing.html:334
+#, fuzzy
 msgid "Access all your apps from a unified dashboard"
-msgstr "Toegang tot al je apps vanaf een uniform dashboard"
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Toegang tot al je apps vanaf een uniform dashboard\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Toegang tot al uw apps vanuit een uniform dashboard"
 
 #: public_web/templates/public_web/landing.html:357
+#, fuzzy
 msgid "Educational Useful Apps for the students"
-msgstr "Educatieve Nuttige Apps voor studenten"
+msgstr ""
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Educatieve Nuttige Apps voor studenten\n"
+"#-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#\n"
+"Educatieve Nuttige Apps voor de studenten"
 
+# #-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#
 # Features section
 #: public_web/templates/public_web/landing.html:376
 msgid "Our Educational Apps"
@@ -3043,6 +3082,46 @@ msgstr "Educatieve Apps"
 msgid "Application not found"
 msgstr ""
 
+msgid "For all students"
+msgstr "Voor alle studenten"
+
+msgid "Productivity"
+msgstr "Productiviteit"
+
+msgid "Spaced Learning"
+msgstr "Gespreide Leerprocessen"
+
+msgid "Note Taking"
+msgstr "Notities Maken"
+
+msgid "Structured Learning"
+msgstr "Gestructureerd Leren"
+
+msgid "Assessment"
+msgstr "Beoordeling"
+
+msgid "Collaboration"
+msgstr "Samenwerking"
+
+# Sponsorship section
+msgid "Sponsor"
+msgstr "Sponsor"
+
+msgid "Help Keep Education Free"
+msgstr "Help Onderwijs Gratis te Houden"
+
+msgid ""
+"Open Linguify is 100% free and open source. Your support enables us to "
+"maintain servers, develop new features, and keep education accessible to "
+"everyone, everywhere."
+msgstr ""
+"Open Linguify is 100% gratis en open source. Uw steun stelt ons in staat om "
+"servers te onderhouden, nieuwe functies te ontwikkelen en onderwijs "
+"toegankelijk te houden voor iedereen, overal."
+
+msgid "Become a Sponsor"
+msgstr "Word een Sponsor"
+
 #, fuzzy
 #~| msgid "Sign Up"
 #~ msgid "Sign Up Free"
@@ -3100,124 +3179,6 @@ msgstr ""
 # Pricing section
 #~ msgid "Plans adapted to your needs"
 #~ msgstr "Plans adapted to your needs"
-
-# Todo App Long Descriptions
-msgid "Create, organize, and track tasks with priorities, due dates, tags, and progress tracking. Everything you need to stay productive."
-msgstr "Maak, organiseer en volg taken met prioriteiten, vervaldatums, tags en voortgangsregistratie. Alles wat je nodig hebt om productief te blijven."
-
-msgid "Visualize your workflow with customizable kanban boards. Drag and drop tasks between columns to track progress."
-msgstr "Visualiseer je workflow met aanpasbare kanban borden. Sleep taken tussen kolommen om voortgang bij te houden."
-
-msgid "Group related tasks into projects with progress tracking, deadlines, and team collaboration features."
-msgstr "Groepeer gerelateerde taken in projecten met voortgangsregistratie, deadlines en teamsamenwerkingsfuncties."
-
-msgid "Take notes with markdown support, attach them to tasks or projects, and organize with tags and categories."
-msgstr "Maak notities met markdown ondersteuning, koppel ze aan taken of projecten, en organiseer met tags en categorieën."
-
-msgid "Set custom reminders for tasks and deadlines. Get notified at the right time to stay on track."
-msgstr "Stel aangepaste herinneringen in voor taken en deadlines. Ontvang meldingen op het juiste moment om op koers te blijven."
-
-msgid "Organize tasks and notes with flexible tagging system and categories for better organization and filtering."
-msgstr "Organiseer taken en notities met flexibel tagsysteem en categorieën voor betere organisatie en filtering."
-
-msgid "Monitor your task activity and progress with a detailed activity feed showing all your recent actions."
-msgstr "Houd je taakactiviteit en voortgang in de gaten met een gedetailleerde activiteitenfeed die al je recente acties toont."
-
-msgid "Switch between list view, Kanban board, and activity feed to visualize your tasks the way you prefer."
-msgstr "Wissel tussen lijstweergave, Kanban bord en activiteitenfeed om je taken te visualiseren zoals je dat wilt."
-
-msgid "View tasks and deadlines in calendar format. Plan your schedule and never miss important deadlines."
-msgstr "Bekijk taken en deadlines in agendaformaat. Plan je schema en mis nooit belangrijke deadlines."
-
-msgid "Track your productivity with detailed analytics, completion rates, and progress insights."
-msgstr "Volg je productiviteit met gedetailleerde analyses, voltooiingspercentages en voortgangsinzichten."
-
-msgid "Enhanced team features with real-time collaboration, task assignment, and team analytics."
-msgstr "Verbeterde teamfuncties met real-time samenwerking, taaktoewijzing en teamanalyses."
-
-msgid "Track time spent on tasks with built-in timer and detailed time analytics."
-msgstr "Houd tijd bij die besteed wordt aan taken met ingebouwde timer en gedetailleerde tijdsanalyses."
-
-msgid "Attach files and documents to your tasks and projects for better organization."
-msgstr "Voeg bestanden en documenten toe aan je taken en projecten voor betere organisatie."
-
-msgid "Exciting features in active development"
-msgstr "Spannende functies in actieve ontwikkeling"
-
-msgid "Organize assignments, track study progress, manage course projects, and plan your academic schedule."
-msgstr "Organiseer opdrachten, volg studievoortgang, beheer cursusprojecten en plan je academische schema."
-
-msgid "Manage work projects, track deadlines, organize meeting notes, and boost your productivity."
-msgstr "Beheer werkprojecten, volg deadlines, organiseer vergadernotities en verhoog je productiviteit."
-
-msgid "Collaborate on shared projects, assign tasks to team members, and track collective progress."
-msgstr "Werk samen aan gedeelde projecten, wijs taken toe aan teamleden en volg collectieve voortgang."
-
-msgid "Create your first project and organize tasks by categories and priorities."
-msgstr "Maak je eerste project aan en organiseer taken op categorieën en prioriteiten."
-
-msgid "Join thousands of users who have transformed their productivity with our todo app."
-msgstr "Sluit je aan bij duizenden gebruikers die hun productiviteit hebben getransformeerd met onze taken-app."
-
-msgid "These features will be available soon. Stay tuned for the latest updates!"
-msgstr "Deze functies zijn binnenkort beschikbaar. Blijf op de hoogte van de laatste updates!"
-
-msgid "Open Source Education Apps"
-msgstr "Open Source Educatieve Apps"
-
-msgid "A complete suite of open source educational apps: memorization, flashcards, note-taking, to-do and much more."
-msgstr "Een complete suite van open source educatieve apps: memorisatie, flashcards, notities maken, to-do en veel meer."
-
-msgid "Choose your Linguify product:"
-msgstr "Kies uw Linguify product:"
-
-msgid "For all students"
-msgstr "Voor alle studenten"
-
-msgid "Discover our apps"
-msgstr "Ontdek onze apps"
-
-msgid "View Source Code"
-msgstr "Bekijk Broncode"
-
-msgid "Access all your apps from a unified dashboard"
-msgstr "Toegang tot al uw apps vanuit een uniform dashboard"
-
-msgid "Educational Useful Apps for the students"
-msgstr "Educatieve Nuttige Apps voor de studenten"
-
-msgid "Open Source"
-msgstr "Open Source"
-
-msgid "Our Educational Apps"
-msgstr "Onze Educatieve Apps"
-
-msgid "Community"
-msgstr "Gemeenschap"
-
-msgid "Documents"
-msgstr "Documenten"
-
-msgid "Language AI"
-msgstr "Taal AI"
-
-msgid "Productivity"
-msgstr "Productiviteit"
-
-msgid "Spaced Learning"
-msgstr "Gespreide Leerprocessen"
-
-msgid "Note Taking"
-msgstr "Notities Maken"
-
-msgid "Structured Learning"
-msgstr "Gestructureerd Leren"
-
-msgid "Assessment"
-msgstr "Beoordeling"
-
-msgid "Collaboration"
-msgstr "Samenwerking"
 
 #~ msgid "Choose the offer that matches your goals and learning pace."
 #~ msgstr "Choose the offer that matches your goals and learning pace."

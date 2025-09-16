@@ -14,132 +14,124 @@
 {% block og_description %}{% trans "Complete productivity workspace with task management, note-taking, hierarchical projects, Kanban boards and team collaboration." %}{% endblock %}
 
 {% block content %}
-<section class="todo-hero">
-    <div class="container">
-        <div class="todo-hero-content">
-            <div class="todo-hero-text">
-                <div class="todo-hero-header">
-                    <div class="todo-app-icon">
-                        <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo">
-                    </div>
-                    <div class="todo-app-info">
-                        <h1 class="section-heading">{% trans "Todo" %}</h1>
-                        <p class="todo-app-tagline">{% trans "Tâches" %}</p>
-                        <p class="section-subtitle">{% trans "Espace de travail de productivité avancé" %}</p>
-                    </div>
-                </div>
-                
-                <div class="todo-hero-actions">
-                    {% if not user.is_authenticated %}
-                        <a href="{% backend_url_with_lang '/auth/register/' %}" class="btn-hero primary">
-                            <i class="bi bi-person-plus"></i>{% trans "Start for free" %}
-                        </a>
-                    {% else %}
-                        <a href="{% backend_url '/todo/' %}" class="btn-hero primary">
-                            <i class="bi bi-check2-square"></i>{% trans "Start organizing" %}
-                        </a>
-                    {% endif %}
-                    <a href="{% url 'public_web:contact' %}" class="btn-hero secondary">
-                        <i class="bi bi-chat-dots"></i>{% trans "Contact" %}
-                    </a>
-                </div>
-            </div>
-            <div class="todo-hero-preview">
-                <div class="todo-dashboard-mockup">
-                    <div class="todo-browser">
-                        <div class="todo-browser-header">
-                            <div class="todo-browser-dots">
-                                <span class="dot red"></span>
-                                <span class="dot yellow"></span>
-                                <span class="dot green"></span>
-                            </div>
-                            <div class="todo-browser-title">Todo & Productivity - Open Linguify</div>
+<!-- Hero Section -->
+<section class="hero-gradient">
+    <div class="hero-section">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle bg-white me-4" style="width: 80px; height: 80px; box-shadow: 0 8px 25px rgba(255,255,255,0.3);">
+                            <img src="{% static 'img/app_icon/todo.png' %}" alt="Todo" style="width: 50px; height: 50px;">
                         </div>
-                        <div class="todo-browser-content">
-                            <div class="todo-dashboard">
-                                <div class="todo-nav">
-                                    <div class="todo-nav-brand">
-                                        <i class="bi bi-check2-square"></i>
-                                        <span>Todo</span>
+                        <div>
+                            <h1 class="display-4 fw-bold mb-2 text-white">
+                                Todo
+                            </h1>
+                            <p class="lead mb-0 text-white" style="opacity: 0.9;">{% trans "Espace de travail de productivité avancé" %}</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if not user.is_authenticated %}
+                            <a href="{% backend_url_with_lang '/auth/register/' %}" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-person-plus me-2"></i>{% trans "Start for free" %}
+                            </a>
+                        {% else %}
+                            <a href="{% backend_url '/todo/' %}" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="bi bi-check2-square me-2"></i>{% trans "Start organizing" %}
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'public_web:contact' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="bi bi-chat-dots me-2"></i>{% trans "Contact" %}
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image">
+                        <div class="app-preview">
+                            <!-- Todo App Preview -->
+                            <div class="mock-browser">
+                                <div class="browser-header">
+                                    <div class="browser-dots">
+                                        <span class="dot red"></span>
+                                        <span class="dot yellow"></span>
+                                        <span class="dot green"></span>
                                     </div>
-                                    <div class="todo-nav-actions">
-                                        <span class="todo-btn active">
-                                            <i class="bi bi-kanban"></i> {% trans "Kanban" %}
-                                        </span>
-                                        <span class="todo-btn">
-                                            <i class="bi bi-list-ul"></i> {% trans "List" %}
-                                        </span>
-                                        <span class="todo-btn">
-                                            <i class="bi bi-activity"></i> {% trans "Activity" %}
-                                        </span>
-                                    </div>
+                                    <div class="browser-title">Todo & Productivity - Open Linguify</div>
                                 </div>
-                                
-                                <div class="todo-kanban">
-                                    <div class="todo-column">
-                                        <div class="todo-column-header">
-                                            <span class="todo-column-title">{% trans "To Do" %}</span>
-                                            <span class="todo-task-count">3</span>
-                                        </div>
-                                        <div class="todo-task-card">
-                                            <div class="todo-task-title">{% trans "Review course materials" %}</div>
-                                            <div class="todo-task-meta">
-                                                <i class="bi bi-calendar"></i> {% trans "Today" %}
-                                                <span class="todo-task-tag study">{% trans "Study" %}</span>
+                                <div class="browser-content p-0">
+                                    <!-- Todo Interface Preview -->
+                                    <div class="todo-preview">
+                                        <!-- Top Navigation -->
+                                        <div class="nav-preview">
+                                            <div class="nav-brand">
+                                                <i class="bi bi-check2-square"></i>
+                                                <span>Todo</span>
+                                            </div>
+                                            <div class="nav-actions">
+                                                <span class="btn-preview active">
+                                                    <i class="bi bi-kanban"></i> {% trans "Kanban" %}
+                                                </span>
+                                                <span class="btn-preview">
+                                                    <i class="bi bi-list-ul"></i> {% trans "List" %}
+                                                </span>
+                                                <span class="btn-preview">
+                                                    <i class="bi bi-activity"></i> {% trans "Activity" %}
+                                                </span>
                                             </div>
                                         </div>
-                                        <div class="todo-task-card priority">
-                                            <div class="todo-task-title">{% trans "Complete assignment" %}</div>
-                                            <div class="todo-task-meta">
-                                                <i class="bi bi-star-fill"></i> {% trans "Priority" %}
-                                                <span class="todo-task-tag urgent">{% trans "Urgent" %}</span>
+
+                                        <!-- Kanban Board -->
+                                        <div class="kanban-preview">
+                                            <div class="kanban-column">
+                                                <div class="column-header">
+                                                    <span class="column-title">{% trans "To Do" %}</span>
+                                                    <span class="task-count">3</span>
+                                                </div>
+                                                <div class="task-card">
+                                                    <div class="task-title">{% trans "Review course materials" %}</div>
+                                                    <div class="task-meta">
+                                                        <i class="bi bi-calendar"></i> {% trans "Today" %}
+                                                        <span class="task-tag study">{% trans "Study" %}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="task-card priority">
+                                                    <div class="task-title">{% trans "Complete assignment" %}</div>
+                                                    <div class="task-meta">
+                                                        <i class="bi bi-star-fill"></i> {% trans "Priority" %}
+                                                        <span class="task-tag urgent">{% trans "Urgent" %}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="todo-task-card">
-                                            <div class="todo-task-title">{% trans "Plan project timeline" %}</div>
-                                            <div class="todo-task-meta">
-                                                <i class="bi bi-folder"></i> {% trans "Work" %}
+
+                                            <div class="kanban-column">
+                                                <div class="column-header">
+                                                    <span class="column-title">{% trans "In Progress" %}</span>
+                                                    <span class="task-count">2</span>
+                                                </div>
+                                                <div class="task-card progress">
+                                                    <div class="task-title">{% trans "Research presentation" %}</div>
+                                                    <div class="progress-bar-preview">
+                                                        <div class="progress-fill" style="width: 60%"></div>
+                                                    </div>
+                                                    <div class="task-meta">
+                                                        <span class="task-tag research">{% trans "Research" %}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="todo-column">
-                                        <div class="todo-column-header">
-                                            <span class="todo-column-title">{% trans "In Progress" %}</span>
-                                            <span class="todo-task-count">2</span>
-                                        </div>
-                                        <div class="todo-task-card progress">
-                                            <div class="todo-task-title">{% trans "Research presentation" %}</div>
-                                            <div class="todo-progress-bar">
-                                                <div class="todo-progress-fill"></div>
-                                            </div>
-                                            <div class="todo-task-meta">
-                                                <span class="todo-task-tag research">{% trans "Research" %}</span>
-                                            </div>
-                                        </div>
-                                        <div class="todo-task-card">
-                                            <div class="todo-task-title">{% trans "Write documentation" %}</div>
-                                            <div class="todo-task-meta">
-                                                <i class="bi bi-file-text"></i> {% trans "Notes" %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="todo-column">
-                                        <div class="todo-column-header">
-                                            <span class="todo-column-title">{% trans "Done" %}</span>
-                                            <span class="todo-task-count">4</span>
-                                        </div>
-                                        <div class="todo-task-card completed">
-                                            <div class="todo-task-title">{% trans "Setup development environment" %}</div>
-                                            <div class="todo-task-meta">
-                                                <i class="bi bi-check-circle-fill"></i> {% trans "Completed" %}
-                                            </div>
-                                        </div>
-                                        <div class="todo-task-card completed">
-                                            <div class="todo-task-title">{% trans "Review team feedback" %}</div>
-                                            <div class="todo-task-meta">
-                                                <i class="bi bi-check-circle-fill"></i> {% trans "Completed" %}
+
+                                            <div class="kanban-column">
+                                                <div class="column-header">
+                                                    <span class="column-title">{% trans "Done" %}</span>
+                                                    <span class="task-count">4</span>
+                                                </div>
+                                                <div class="task-card completed">
+                                                    <div class="task-title">{% trans "Setup development environment" %}</div>
+                                                    <div class="task-meta">
+                                                        <i class="bi bi-check-circle-fill"></i> {% trans "Completed" %}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

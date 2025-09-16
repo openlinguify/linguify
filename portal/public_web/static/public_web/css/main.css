@@ -4017,7 +4017,6 @@ section {
     margin-bottom: 1.5rem;
     font-size: 1.75rem;
     color: white;
-    background: linear-gradient(135deg, var(--linguify-primary) 0%, var(--linguify-accent) 100%);
 }
 
 .app-icon.productivity {

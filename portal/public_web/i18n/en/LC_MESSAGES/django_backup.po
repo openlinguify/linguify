@@ -72,10 +72,7 @@ msgstr ""
 msgid "Become a Sponsor"
 msgstr "Become a Sponsor"
 
-# #-#-#-#-#  django.po (Open Linguify Public Web)  #-#-#-#-#
-# Landing page content
 #: public_web/templates/components/public_footer.html:9
-#: public_web/templates/public_web/landing.html:144
 msgid "Open Source Education Apps"
 msgstr "Open Source Education Apps"
 
@@ -2591,6 +2588,11 @@ msgstr "Full access to all applications"
 #: public_web/templates/public_web/landing.html:98
 msgid "Currently free - business model may evolve for sustainability"
 msgstr ""
+
+# Landing page content
+#: public_web/templates/public_web/landing.html:144
+msgid "Open Source Education Apps"
+msgstr "Open Source Education Apps"
 
 #: public_web/templates/public_web/landing.html:147
 #, fuzzy
