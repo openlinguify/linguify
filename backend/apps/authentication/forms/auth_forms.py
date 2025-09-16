@@ -170,6 +170,9 @@ class RegisterForm(UserCreationForm):
         return cleaned_data
     
     def save(self, commit=True):
+        from django.utils import timezone
+        from django.conf import settings
+
         user = super().save(commit=False)
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
@@ -181,7 +184,13 @@ class RegisterForm(UserCreationForm):
         user.target_language = self.cleaned_data['target_language']
         user.language_level = self.cleaned_data['language_level']
         user.objectives = self.cleaned_data['objectives']
-        
+
+        # Enregistrer l'acceptation des termes si cochée
+        if self.cleaned_data.get('terms'):
+            user.terms_accepted = True
+            user.terms_accepted_at = timezone.now()
+            user.terms_version = getattr(settings, 'TERMS_VERSION', '1.0')
+
         if commit:
             user.save()
         return user

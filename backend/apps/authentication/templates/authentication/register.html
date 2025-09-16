@@ -202,9 +202,9 @@
                     <div class="checkbox-group">
                         {{ form.terms }}
                         <label class="checkbox-label" for="{{ form.terms.id_for_label }}">
-                            {% trans "I accept the" %} 
-                            <a href="{% portal_url_with_lang 'terms/' %}" target="_blank" style="color: var(--primary); font-weight: 600;">{% trans 'Terms and Conditions' %}</a> 
-                            {% trans "and the" %} 
+                            {% trans "I accept the" %}
+                            <a href="/api/auth/terms/accept-page/" target="_blank" style="color: var(--primary); font-weight: 600;">{% trans 'Terms and Conditions' %}</a>
+                            {% trans "and the" %}
                             <a href="{% portal_url_with_lang 'privacy/' %}" target="_blank" style="color: var(--primary); font-weight: 600;">{% trans 'Privacy Policy' %}</a>
                         </label>
                         {% if form.terms.errors %}
