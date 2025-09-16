@@ -2815,12 +2815,13 @@ msgstr "Laatste Release"
 #| msgid "Open Linguify - Open source educational apps platform"
 msgid ""
 "Everything you need to know about OpenLinguify and our educational platform."
-msgstr "Open Linguify - Open source educatieve apps platform"
+msgstr "Alles wat je moet weten over OpenLinguify en ons educatief platform."
 
 #: public_web/templates/public_web/landing.html:659
 msgid ""
 "What makes OpenLinguify different from other language learning platforms?"
 msgstr ""
+"Wat maakt OpenLinguify anders dan andere taallearplatforms?"
 
 #: public_web/templates/public_web/landing.html:664
 msgid ""
@@ -2829,10 +2830,15 @@ msgid ""
 "educational apps including spaced repetition, AI conversations, "
 "collaborative tools, and more - all designed to work together seamlessly."
 msgstr ""
+"OpenLinguify is volledig open source, wat betekent dat onze code "
+"transparant is en voortdurend wordt verbeterd door de gemeenschap. We "
+"bieden een complete suite van educatieve apps inclusief gespreide "
+"herhaling, AI-gesprekken, samenwerkingstools, en meer - allemaal ontworpen "
+"om naadloos samen te werken."
 
 #: public_web/templates/public_web/landing.html:672
 msgid "Is OpenLinguify really free to use?"
-msgstr ""
+msgstr "Is OpenLinguify echt gratis te gebruiken?"
 
 #: public_web/templates/public_web/landing.html:677
 msgid ""
@@ -2842,10 +2848,15 @@ msgid ""
 "free, our business model may evolve in the future to ensure the "
 "sustainability and continued development of the platform."
 msgstr ""
+"Ja! OpenLinguify is momenteel volledig gratis te gebruiken. Alle educatieve "
+"apps zijn gratis beschikbaar. Als open source project kunt u ook het hele "
+"platform zelf hosten. Hoewel we ons inzetten om onze kernfuncties gratis "
+"te houden, kan ons bedrijfsmodel in de toekomst evolueren om de "
+"duurzaamheid en voortdurende ontwikkeling van het platform te waarborgen."
 
 #: public_web/templates/public_web/landing.html:685
 msgid "Can I contribute to the OpenLinguify project?"
-msgstr ""
+msgstr "Kan ik bijdragen aan het OpenLinguify project?"
 
 #: public_web/templates/public_web/landing.html:690
 msgid ""
@@ -2854,6 +2865,10 @@ msgid ""
 "report bugs, suggest features, help with translations, or create educational "
 "content."
 msgstr ""
+"Absoluut! Als open source project verwelkomen we bijdragen van "
+"ontwikkelaars, vertalers, leraren en gebruikers. U kunt code bijdragen, "
+"bugs rapporteren, functies voorstellen, helpen met vertalingen, of "
+"educatieve inhoud creëren."
 
 #: public_web/templates/public_web/landing.html:695
 #, fuzzy
