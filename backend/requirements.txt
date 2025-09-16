@@ -25,3 +25,4 @@ whitenoise==6.9.0
 channels-redis==4.3.0
 dj-database-url==3.0.0
 pywebpush==2.0.3
+stripe==11.1.0
