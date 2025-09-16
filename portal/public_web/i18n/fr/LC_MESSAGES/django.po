@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify Portal 1.0\n"
-"Report-Msgid-Bugs-To: bugs@openlinguify.com\n"
-"POT-Creation-Date: 2025-08-31 02:05+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-16 17:52+0200\n"
 "PO-Revision-Date: 2025-08-31 02:05+0200\n"
 "Last-Translator: Open Linguify Team <team@openlinguify.com>\n"
 "Language-Team: French <fr@openlinguify.com>\n"
@@ -17,149 +17,2357 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-# Basic UI elements
-msgid "Log In"
-msgstr "Se connecter"
+#: public_web/templates/components/dynamic_apps_dropdown.html:8
+msgid "No apps available"
+msgstr ""
 
-msgid "Sign Up"
-msgstr "S'inscrire"
+#: public_web/templates/components/public_footer.html:9
+#: public_web/templates/public_web/landing.html:142
+msgid "Open Source Education Apps"
+msgstr "Applications Éducatives Open Source"
 
-msgid "Language"
-msgstr "Langue"
+#: public_web/templates/components/public_footer.html:34
+msgid "Product"
+msgstr "Produit"
 
+#: public_web/templates/components/public_footer.html:36
+msgid "Features"
+msgstr "Fonctionnalités"
+
+#: public_web/templates/components/public_footer.html:37
+#: public_web/templates/components/public_header.html:23
 msgid "Apps"
 msgstr "Applications"
 
+#: public_web/templates/components/public_footer.html:42
+msgid "Resources"
+msgstr "Ressources"
+
+#: public_web/templates/components/public_footer.html:44
+#: public_web/templates/components/public_header.html:44
 msgid "Blog"
 msgstr "Blog"
 
-msgid "Documentation"
-msgstr "Documentation"
+#: public_web/templates/components/public_footer.html:45
+msgid "Contribute"
+msgstr "Contribuer"
 
-msgid "Contact"
-msgstr "Contact"
+# Sponsorship section
+#: public_web/templates/components/public_footer.html:47
+#: public_web/templates/public_web/landing.html:186
+msgid "Sponsor"
+msgstr "Sponsoriser"
 
+#: public_web/templates/components/public_footer.html:53
+msgid "Company"
+msgstr "Entreprise"
+
+#: public_web/templates/components/public_footer.html:55
+#: public_web/templates/components/public_header.html:54
+#: public_web/templates/public_web/apps/app_detail.html:59
 msgid "About"
 msgstr "À propos"
 
-msgid "Requests"
-msgstr "Demandes"
+#: public_web/templates/components/public_footer.html:56
+msgid "Brand"
+msgstr "Marque"
 
+#: public_web/templates/components/public_footer.html:57
+msgid "Careers"
+msgstr "Carrières"
+
+#: public_web/templates/components/public_footer.html:58
+#: public_web/templates/components/public_header.html:59
+#: public_web/templates/public_web/apps/app_chat.html:40
+#: public_web/templates/public_web/apps/app_chat.html:287
+#: public_web/templates/public_web/apps/app_course.html:40
+#: public_web/templates/public_web/apps/app_course.html:248
+#: public_web/templates/public_web/apps/app_notebook.html:40
+#: public_web/templates/public_web/apps/app_notebook.html:465
+#: public_web/templates/public_web/apps/app_quizz.html:40
+#: public_web/templates/public_web/apps/app_quizz.html:358
+#: public_web/templates/public_web/apps/app_revision.html:40
+#: public_web/templates/public_web/apps/app_revision.html:468
+#: public_web/templates/public_web/apps/app_todo.html:46
+#: public_web/templates/public_web/contact.html:10
+msgid "Contact"
+msgstr "Contact"
+
+#: public_web/templates/components/public_footer.html:63
+msgid "Support"
+msgstr "Support"
+
+#: public_web/templates/components/public_footer.html:65
+msgid "Report a bug"
+msgstr "Signaler un bug"
+
+#: public_web/templates/components/public_footer.html:66
+#: public_web/templates/public_web/apps/app_community.html:40
+#: public_web/templates/public_web/apps/app_community.html:340
+#: public_web/templates/public_web/apps/app_detail.html:39
+#: public_web/templates/public_web/apps/app_detail.html:114
+#: public_web/templates/public_web/apps/app_documents.html:40
+#: public_web/templates/public_web/apps/app_documents.html:340
+#: public_web/templates/public_web/apps/app_language_ai.html:40
+#: public_web/templates/public_web/apps/app_language_ai.html:391
+#: public_web/templates/public_web/apps/apps_list.html:146
+msgid "Contact us"
+msgstr "Nous contacter"
+
+#: public_web/templates/components/public_footer.html:76
+msgid "© 2025 Open Linguify. All rights reserved."
+msgstr ""
+
+#: public_web/templates/components/public_footer.html:82
 msgid "Privacy"
 msgstr "Confidentialité"
 
+#: public_web/templates/components/public_footer.html:85
 msgid "Terms"
 msgstr "Conditions"
 
+#: public_web/templates/components/public_footer.html:88
 msgid "Cookies"
 msgstr "Cookies"
 
 # Todo App
+#: public_web/templates/components/public_header.html:27
+#: public_web/templates/public_web/apps/app_todo.html:70
+#: public_web/templates/public_web/landing.html:217
+#: public_web/templates/public_web/landing.html:348
 msgid "Todo"
 msgstr "Tâches"
 
-msgid "Todo & Productivity"
-msgstr "Tâches et Productivité"
-
-msgid "Everything You Need for Productivity"
-msgstr "Tout ce dont vous avez besoin pour être productif"
-
-msgid "A complete workspace to organize your tasks, projects, and ideas"
-msgstr ""
-"Un espace de travail complet pour organiser vos tâches, projets et idées"
-
-msgid "Smart Task Management"
-msgstr "Gestion Intelligente des Tâches"
-
-msgid ""
-"Create, organize, and track tasks with priorities, due dates, tags, and "
-"progress tracking. Everything you need to stay productive."
-msgstr ""
-"Créez, organisez et suivez les tâches avec des priorités, des dates "
-"d'échéance, des étiquettes et un suivi des progrès. Tout ce dont vous avez "
-"besoin pour rester productif."
-
-msgid "Kanban Boards"
-msgstr "Tableaux Kanban"
-
-msgid ""
-"Visualize your workflow with customizable kanban boards. Drag and drop tasks "
-"between columns to track progress."
-msgstr ""
-"Visualisez votre flux de travail avec des tableaux kanban personnalisables. "
-"Glissez-déposez les tâches entre les colonnes pour suivre les progrès."
-
-msgid "Project Organization"
-msgstr "Organisation de Projets"
-
-msgid ""
-"Group related tasks into projects with progress tracking, deadlines, and "
-"team collaboration features."
-msgstr ""
-"Regroupez les tâches liées en projets avec suivi des progrès, échéances et "
-"fonctionnalités de collaboration d'équipe."
-
-msgid "Rich Note-Taking"
-msgstr "Prise de Notes Enrichie"
-
-msgid ""
-"Take notes with markdown support, attach them to tasks or projects, and "
-"organize with tags and categories."
-msgstr ""
-"Prenez des notes avec support markdown, attachez-les aux tâches ou projets, "
-"et organisez avec des étiquettes et catégories."
-
-msgid "Smart Reminders"
-msgstr "Rappels Intelligents"
-
-msgid ""
-"Set custom reminders for tasks and deadlines. Get notified at the right time "
-"to stay on track."
-msgstr ""
-"Définissez des rappels personnalisés pour les tâches et échéances. Recevez "
-"des notifications au bon moment pour rester sur la bonne voie."
-
-msgid "Ready to Get Organized?"
-msgstr "Prêt à vous Organiser ?"
-
-msgid "Get Started in Minutes"
-msgstr "Commencez en Minutes"
-
-msgid "Create Account"
-msgstr "Créer un Compte"
-
-msgid "Start Organizing"
-msgstr "Commencer à Organiser"
-
-msgid "Start Now - It's Free"
-msgstr "Commencer Maintenant - C'est Gratuit"
-
 # App navigation
+#: public_web/templates/components/public_header.html:30
+#: public_web/templates/public_web/apps/app_revision.html:64
+#: public_web/templates/public_web/landing.html:230
+#: public_web/templates/public_web/landing.html:365
 msgid "Revision"
 msgstr "Révision"
 
+#: public_web/templates/components/public_header.html:33
+#: public_web/templates/public_web/landing.html:243
+#: public_web/templates/public_web/landing.html:382
 msgid "Notebook"
 msgstr "Carnet"
 
-# Additional common phrases
-msgid "Coming Soon"
-msgstr "Prochainement"
+#: public_web/templates/components/public_header.html:37
+msgid "View all apps"
+msgstr ""
 
+#: public_web/templates/components/public_header.html:49
+msgid "Documentation"
+msgstr "Documentation"
+
+#: public_web/templates/components/public_header.html:64
+msgid "Requests"
+msgstr "Demandes"
+
+#: public_web/templates/components/public_header.html:111
+msgid "Language"
+msgstr "Langue"
+
+# Basic UI elements
+#: public_web/templates/components/public_header.html:169
+#: public_web/templates/components/public_header.html:214
+msgid "Log In"
+msgstr "Se connecter"
+
+#: public_web/templates/components/public_header.html:172
+#: public_web/templates/components/public_header.html:217
+msgid "Sign Up"
+msgstr "S'inscrire"
+
+#: public_web/templates/public_web/about.html:6
+msgid "About Open Linguify"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:7
+msgid ""
+"Discover Open Linguify's mission to democratize language learning through AI "
+"technology, open-source education, and innovative learning tools."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:16
+msgid "Democratizing Language Learning"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:18
+msgid ""
+"Open Linguify is on a mission to break down language barriers worldwide "
+"through innovative AI technology and open-source education."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:22
+#, fuzzy
+#| msgid "Discover our apps"
+msgid "Discover Our Story"
+msgstr "Découvrir nos applications"
+
+#: public_web/templates/public_web/about.html:25
+#: public_web/templates/public_web/landing.html:538
+msgid "View on GitHub"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:40
+msgid "Trusted by learners worldwide"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:45
+#: public_web/templates/public_web/brand.html:142
+msgid "Active Learners"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:49
+#: public_web/templates/public_web/brand.html:154
+#, fuzzy
+#| msgid "Language AI"
+msgid "Languages Supported"
+msgstr "IA Linguistique"
+
+#: public_web/templates/public_web/about.html:53
+#: public_web/templates/public_web/about.html:214
+#: public_web/templates/public_web/about.html:396
+#: public_web/templates/public_web/brand.html:119
+#: public_web/templates/public_web/landing.html:312
+#: public_web/templates/public_web/landing.html:692
+msgid "Open Source"
+msgstr "Open Source"
+
+#: public_web/templates/public_web/about.html:57
+#: public_web/templates/public_web/about.html:404
+#, fuzzy
+#| msgid "Support"
+msgid "AI Support"
+msgstr "Support"
+
+#: public_web/templates/public_web/about.html:66
+msgid "Our Story"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:68
+msgid ""
+"From a simple idea to a global movement - discover how Open Linguify is "
+"revolutionizing language education."
+msgstr ""
+
+# App navigation
+#: public_web/templates/public_web/about.html:81
+#, fuzzy
+#| msgid "Revision"
+msgid "The Vision"
+msgstr "Révision"
+
+#: public_web/templates/public_web/about.html:83
+msgid ""
+"Open Linguify was born from a simple observation: traditional language "
+"learning methods weren't keeping up with the digital age."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:86
+msgid ""
+"We envisioned a world where AI could make personalized language learning "
+"accessible to everyone, regardless of their background or resources."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:101
+msgid "The Launch"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:103
+msgid ""
+"Founded in 2024, we launched with a commitment to open-source development "
+"and community-driven innovation."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:106
+msgid ""
+"Our platform combines cutting-edge AI technology with proven pedagogical "
+"methods to create an effective learning experience."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:121
+msgid "The Growth"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:123
+msgid ""
+"Today, we support multiple languages and serve thousands of learners "
+"worldwide, with our community growing every day."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:126
+msgid ""
+"Our open-source approach has attracted contributors from around the globe, "
+"making language learning truly collaborative."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:139
+msgid "Our Core Values"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:141
+msgid "The principles that guide everything we do at Open Linguify."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:149
+msgid "Accessibility"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:151
+msgid ""
+"Quality language education should be available to everyone, regardless of "
+"economic background or geographic location."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:158
+msgid "Innovation"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:160
+msgid ""
+"We constantly push the boundaries of what's possible in language learning "
+"through AI and modern technology."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:167
+#: public_web/templates/public_web/apps/app_community.html:6
+#: public_web/templates/public_web/apps/app_community.html:23
+#: public_web/templates/public_web/apps/app_course.html:213
+#: public_web/templates/public_web/landing.html:439
+msgid "Community"
+msgstr "Communauté"
+
+#: public_web/templates/public_web/about.html:169
+msgid ""
+"Language learning is a social experience. We foster connections between "
+"learners worldwide."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:179
+msgid "Powered by Modern Technology"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:181
+msgid ""
+"Built with cutting-edge technologies to deliver the best learning experience."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:191
+msgid "Robust backend framework for scalable applications"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:199
+msgid "Modern frontend framework for fast, interactive experiences"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:206
+msgid "AI Models"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:207
+msgid "Advanced language processing for personalized learning"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:215
+msgid "Transparent development, community-driven innovation"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:224
+msgid "What Makes Us Different"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:226
+#, fuzzy
+#| msgid ""
+#| "What makes OpenLinguify different from other language learning platforms?"
+msgid ""
+"Discover the innovative features that set Open Linguify apart from "
+"traditional language learning platforms."
+msgstr ""
+"Qu'est-ce qui rend OpenLinguify différent des autres plateformes "
+"d'apprentissage des langues ?"
+
+#: public_web/templates/public_web/about.html:235
+msgid "AI-Powered Personalization"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:237
+msgid ""
+"Our AI adapts to your learning style, pace, and preferences to create a "
+"truly personalized experience that evolves with you."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:246
+msgid "Expert-Designed Curriculum"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:248
+msgid ""
+"Our courses are designed by language experts and linguists using proven "
+"pedagogical methods for effective learning outcomes."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:257
+msgid "Advanced Progress Tracking"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:259
+msgid ""
+"Detailed analytics and insights help you understand your learning progress "
+"and identify areas for improvement with precision."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:268
+msgid "Cross-Platform Learning"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:270
+msgid ""
+"Seamlessly learn anywhere with our responsive web platform that works "
+"perfectly on desktop, tablet, and mobile devices."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:281
+msgid "Built by Language Enthusiasts"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:283
+msgid ""
+"Our diverse team combines expertise in linguistics, technology, and "
+"education to create the ultimate learning experience."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:291
+msgid "Linguists & Educators"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:292
+msgid "Language experts who understand how people learn"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:298
+msgid "Developers & Engineers"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:299
+msgid "Tech experts building scalable, user-friendly platforms"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:305
+#, fuzzy
+#| msgid "Growing community of contributors"
+msgid "Community Contributors"
+msgstr "Communauté croissante de contributeurs"
+
+#: public_web/templates/public_web/about.html:306
+msgid "Passionate volunteers from around the world"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:316
+msgid "Making a Real Impact"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:318
+msgid ""
+"Every day, thousands of learners use Open Linguify to break down language "
+"barriers and connect with the world."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:323
+msgid "Completion Rate"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:327
+#: public_web/templates/public_web/about.html:400
+msgid "User Rating"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:331
+#, fuzzy
+#| msgid "Contribute"
+msgid "Countries"
+msgstr "Contribuer"
+
+#: public_web/templates/public_web/about.html:335
+msgid "AI Tutoring"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:346
+msgid ""
+"Open Linguify has transformed how I learn languages. The AI personalization "
+"is incredible, and being open-source means I can trust the platform "
+"completely."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:349
+msgid "Maria, Language Learner from Spain"
+msgstr ""
+
+#: public_web/templates/public_web/about.html:366
+#, fuzzy
+#| msgid "Start Your Learning Journey"
+msgid "Ready to Start Your Language Journey?"
+msgstr "Commencez Votre Parcours d'Apprentissage"
+
+#: public_web/templates/public_web/about.html:369
+msgid ""
+"Join thousands of learners worldwide and experience the future of language "
+"education with Open Linguify."
+msgstr ""
+
+#: public_web/templates/public_web/about.html:376
+#, fuzzy
+#| msgid "Start Your Learning Journey"
+msgid "Start Learning Free"
+msgstr "Commencez Votre Parcours d'Apprentissage"
+
+#: public_web/templates/public_web/about.html:381
+#: public_web/templates/public_web/brand.html:30
+#, fuzzy
+#| msgid "Explore All Apps"
+msgid "Explore Our Apps"
+msgstr "Explorer Toutes les Applications"
+
+#: public_web/templates/public_web/about.html:385
+#: public_web/templates/public_web/landing.html:179
+msgid "View Source Code"
+msgstr "Voir le Code Source"
+
+#: public_web/templates/public_web/about.html:392
+msgid "Active Users"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_chat.html:32
+#: public_web/templates/public_web/apps/app_chat.html:279
+msgid "Rejoindre gratuitement"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_chat.html:36
+#: public_web/templates/public_web/apps/app_chat.html:283
+msgid "Commencer à discuter"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_chat.html:67
+msgid "Communication en Temps Réel"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_chat.html:185
+#: public_web/templates/public_web/apps/app_community.html:172
+#: public_web/templates/public_web/apps/app_course.html:146
+#: public_web/templates/public_web/apps/app_detail.html:75
+#: public_web/templates/public_web/apps/app_documents.html:172
+#: public_web/templates/public_web/apps/app_language_ai.html:172
+#: public_web/templates/public_web/apps/app_notebook.html:289
+#: public_web/templates/public_web/apps/app_quizz.html:198
+#: public_web/templates/public_web/apps/app_revision.html:300
+#: public_web/templates/public_web/apps/app_todo.html:286
+msgid "Category"
+msgstr ""
+
+# App navigation
+#: public_web/templates/public_web/apps/app_chat.html:192
+#: public_web/templates/public_web/apps/app_community.html:179
+#: public_web/templates/public_web/apps/app_course.html:153
+#: public_web/templates/public_web/apps/app_detail.html:82
+#: public_web/templates/public_web/apps/app_documents.html:179
+#: public_web/templates/public_web/apps/app_language_ai.html:179
+#: public_web/templates/public_web/apps/app_notebook.html:296
+#: public_web/templates/public_web/apps/app_quizz.html:205
+#: public_web/templates/public_web/apps/app_revision.html:307
+#: public_web/templates/public_web/apps/app_todo.html:293
+#, fuzzy
+#| msgid "Revision"
+msgid "Version"
+msgstr "Révision"
+
+#: public_web/templates/public_web/apps/app_chat.html:199
+#: public_web/templates/public_web/apps/app_community.html:186
+#: public_web/templates/public_web/apps/app_course.html:160
+#: public_web/templates/public_web/apps/app_detail.html:89
+#: public_web/templates/public_web/apps/app_documents.html:186
+#: public_web/templates/public_web/apps/app_language_ai.html:186
+#: public_web/templates/public_web/apps/app_notebook.html:303
+#: public_web/templates/public_web/apps/app_quizz.html:212
+#: public_web/templates/public_web/apps/app_revision.html:314
+#: public_web/templates/public_web/apps/app_todo.html:300
+msgid "Author"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_chat.html:270
+msgid "Prêt à rejoindre la communauté ?"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_chat.html:273
+msgid ""
+"Commencez à discuter et collaborer avec des milliers d'apprenants dès "
+"maintenant."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:8
+#: public_web/templates/public_web/landing.html:441
+msgid ""
+"Connect with other learners, share progress and discover content created by "
+"the community."
+msgstr ""
+"Connectez-vous avec d'autres apprenants, partagez vos progrès et découvrez "
+"le contenu créé par la communauté."
+
+#: public_web/templates/public_web/apps/app_community.html:25
+msgid "Connect with fellow learners worldwide"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:32
+#: public_web/templates/public_web/apps/app_community.html:332
 msgid "Join Community"
 msgstr "Rejoindre la Communauté"
 
-msgid "Explore All Apps"
-msgstr "Explorer Toutes les Applications"
+#: public_web/templates/public_web/apps/app_community.html:36
+#: public_web/templates/public_web/apps/app_community.html:336
+#: public_web/templates/public_web/apps/app_course.html:36
+#: public_web/templates/public_web/apps/app_course.html:244
+#: public_web/templates/public_web/apps/app_detail.html:35
+#: public_web/templates/public_web/apps/app_detail.html:118
+#: public_web/templates/public_web/apps/app_documents.html:36
+#: public_web/templates/public_web/apps/app_documents.html:336
+#: public_web/templates/public_web/apps/app_language_ai.html:36
+#: public_web/templates/public_web/apps/app_language_ai.html:387
+#: public_web/templates/public_web/apps/apps_list.html:29
+#: public_web/templates/public_web/apps/apps_list.html:150
+msgid "Go to Dashboard"
+msgstr ""
 
-msgid "Advanced productivity workspace"
-msgstr "Espace de travail de productivité avancé"
+#: public_web/templates/public_web/apps/app_community.html:67
+msgid "Connect and Learn Together"
+msgstr ""
 
+#: public_web/templates/public_web/apps/app_community.html:71
+msgid ""
+"Join a vibrant community of learners, share your progress, and discover "
+"amazing content created by fellow students. Connect with people who share "
+"your passion for learning."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:82
+#: public_web/templates/public_web/apps/app_community.html:212
+msgid "Study Groups"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:83
+msgid "Join learners with shared goals"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:95
+msgid "Share Content"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:96
+msgid "Flashcards, notes & materials"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:108
+msgid "Progress Sharing"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:109
+msgid "Showcase achievements"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:121
+#, fuzzy
+#| msgid "Discover our apps"
+msgid "Discover Resources"
+msgstr "Découvrir nos applications"
+
+#: public_web/templates/public_web/apps/app_community.html:122
+msgid "Quality community content"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:134
+#, fuzzy
+#| msgid "Frequently Asked Questions"
+msgid "Ask Questions"
+msgstr "Questions Fréquemment Posées"
+
+#: public_web/templates/public_web/apps/app_community.html:135
+msgid "Get help from experts"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:147
+msgid "Rate & Review"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:148
+msgid "Help others find quality"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:158
+#: public_web/templates/public_web/apps/app_documents.html:158
+msgid "Tip"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:159
+msgid ""
+"Join study groups based on your learning level and goals to maximize your "
+"progress!"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:173
+#, fuzzy
+#| msgid "Spaced Learning"
+msgid "Social Learning"
+msgstr "Apprentissage Espacé"
+
+#: public_web/templates/public_web/apps/app_community.html:202
+#, fuzzy
+#| msgid "Community"
+msgid "Community Features"
+msgstr "Communauté"
+
+#: public_web/templates/public_web/apps/app_community.html:203
+#, fuzzy
+#| msgid ""
+#| "Everything you need to know about OpenLinguify and our educational "
+#| "platform."
+msgid "Everything you need to connect and learn together"
+msgstr ""
+"Tout ce que vous devez savoir sur OpenLinguify et notre plateforme éducative."
+
+#: public_web/templates/public_web/apps/app_community.html:213
+msgid "Join focused study groups with shared learning goals"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:221
+msgid "Content Sharing"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:222
+msgid "Share and discover quality learning materials"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:230
+#: public_web/templates/public_web/apps/app_course.html:108
+#: public_web/templates/public_web/apps/app_language_ai.html:147
+#, fuzzy
+#| msgid "Note Taking"
+msgid "Progress Tracking"
+msgstr "Prise de Notes"
+
+#: public_web/templates/public_web/apps/app_community.html:231
+msgid "Showcase achievements and motivate others"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:239
+#, fuzzy
+#| msgid "Support"
+msgid "Q&A Support"
+msgstr "Support"
+
+#: public_web/templates/public_web/apps/app_community.html:240
+msgid "Get help from experienced community members"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:252
+#, fuzzy
+#| msgid "Join Community"
+msgid "Why Join Our Community?"
+msgstr "Rejoindre la Communauté"
+
+#: public_web/templates/public_web/apps/app_community.html:253
+msgid ""
+"Experience the power of collaborative learning with thousands of motivated "
+"learners"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:264
+#, fuzzy
+#| msgid "Spaced Learning"
+msgid "Accelerated Learning"
+msgstr "Apprentissage Espacé"
+
+#: public_web/templates/public_web/apps/app_community.html:266
+msgid ""
+"Learn faster by leveraging the collective knowledge and experience of the "
+"community."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:277
+msgid "Motivation & Support"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:279
+msgid ""
+"Stay motivated with encouragement and support from fellow learners on "
+"similar journeys."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:290
+msgid "Global Perspectives"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:292
+msgid ""
+"Connect with learners from around the world and gain diverse perspectives on "
+"learning."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:303
+msgid "Quality Content"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:305
+msgid ""
+"Access high-quality learning materials curated and verified by the community."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_community.html:323
+#, fuzzy
+#| msgid "Ready to revolutionize your learning?"
+msgid "Ready to join our learning community?"
+msgstr "Prêt à révolutionner votre apprentissage ?"
+
+#: public_web/templates/public_web/apps/app_community.html:326
+msgid ""
+"Connect with thousands of learners and accelerate your learning journey "
+"together."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:6
+#: public_web/templates/public_web/apps/app_course.html:23
+#: public_web/templates/public_web/landing.html:256
+#: public_web/templates/public_web/landing.html:409
+msgid "Courses"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:8
+#, fuzzy
+#| msgid ""
+#| "Structured courses with progressive lessons, interactive exercises and "
+#| "personalized assessments."
+msgid ""
+"Structured courses with progressive lessons, interactive exercises and "
+"personalized assessments for effective learning."
+msgstr ""
+"Cours structurés avec leçons progressives, exercices interactifs et "
+"évaluations personnalisées."
+
+#: public_web/templates/public_web/apps/app_course.html:25
+msgid "Structured learning with progressive lessons"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:32
+#: public_web/templates/public_web/apps/app_course.html:240
+#: public_web/templates/public_web/apps/app_detail.html:31
+#: public_web/templates/public_web/apps/app_detail.html:111
+#: public_web/templates/public_web/apps/app_documents.html:32
+#: public_web/templates/public_web/apps/app_documents.html:332
+#: public_web/templates/public_web/apps/app_notebook.html:32
+#: public_web/templates/public_web/apps/app_notebook.html:457
+#: public_web/templates/public_web/apps/app_revision.html:32
+#: public_web/templates/public_web/apps/app_revision.html:460
+#: public_web/templates/public_web/apps/app_todo.html:38
+#: public_web/templates/public_web/apps/apps_list.html:25
+#: public_web/templates/public_web/apps/apps_list.html:143
+#, fuzzy
+#| msgid "Start Now - It's Free"
+msgid "Start for free"
+msgstr "Commencer Maintenant - C'est Gratuit"
+
+#: public_web/templates/public_web/apps/app_course.html:67
+#, fuzzy
+#| msgid "Structured Learning"
+msgid "Structured Learning Experience"
+msgstr "Apprentissage Structuré"
+
+#: public_web/templates/public_web/apps/app_course.html:71
+#, fuzzy
+#| msgid ""
+#| "Structured courses with progressive lessons, interactive exercises and "
+#| "personalized assessments."
+msgid ""
+"Progressive courses with interactive exercises and personalized assessments "
+"to guide your learning journey step by step."
+msgstr ""
+"Cours structurés avec leçons progressives, exercices interactifs et "
+"évaluations personnalisées."
+
+#: public_web/templates/public_web/apps/app_course.html:82
+msgid "Progressive Lessons"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:83
+#, fuzzy
+#| msgid "Spaced Learning"
+msgid "Step-by-step learning"
+msgstr "Apprentissage Espacé"
+
+#: public_web/templates/public_web/apps/app_course.html:95
+msgid "Interactive Exercises"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:96
+msgid "Engaging practice"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:109
+msgid "Monitor your advancement"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:121
+msgid "Personalized Assessments"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:122
+msgid "Adaptive evaluation"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:132
+msgid "Tip:"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:133
+msgid ""
+"Complete lessons in order to unlock advanced topics and build a solid "
+"foundation!"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:147
+#, fuzzy
+#| msgid "Spaced Learning"
+msgid "Learning"
+msgstr "Apprentissage Espacé"
+
+#: public_web/templates/public_web/apps/app_course.html:176
+msgid "Why Choose Our Courses?"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:177
+#, fuzzy
+#| msgid "Everything You Need for Productivity"
+msgid "Everything you need for effective structured learning"
+msgstr "Tout ce dont vous avez besoin pour être productif"
+
+#: public_web/templates/public_web/apps/app_course.html:186
+#, fuzzy
+#| msgid "Structured Learning"
+msgid "Structured Content"
+msgstr "Apprentissage Structuré"
+
+#: public_web/templates/public_web/apps/app_course.html:187
+msgid "Carefully organized lessons for optimal learning progression"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:195
+msgid "Personal Progress"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:196
+msgid "Track your advancement and see your improvement over time"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:204
+msgid "Certifications"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:205
+msgid "Earn certificates as you complete courses and milestones"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:214
+msgid "Learn alongside other students and share experiences"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_course.html:231
+#, fuzzy
+#| msgid "Start Your Learning Journey"
+msgid "Ready to start your learning journey?"
+msgstr "Commencez Votre Parcours d'Apprentissage"
+
+#: public_web/templates/public_web/apps/app_course.html:234
+msgid ""
+"Join thousands of learners and discover structured courses designed for your "
+"success."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_detail.html:64
 msgid "This application is part of the Open Linguify educational suite."
 msgstr "Cette application fait partie de la suite éducative Open Linguify."
 
-msgid "Open Source Education Apps"
+#: public_web/templates/public_web/apps/app_detail.html:104
+#, fuzzy
+#| msgid "Ready to Get Organized?"
+msgid "Ready to try"
+msgstr "Prêt à vous Organiser ?"
+
+#: public_web/templates/public_web/apps/app_detail.html:107
+msgid ""
+"Start using this application now and discover how it can enhance your "
+"learning experience."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_detail.html:121
+#: public_web/templates/public_web/apps/apps_list.html:153
+#, fuzzy
+#| msgid "Explore All Apps"
+msgid "Explore App Store"
+msgstr "Explorer Toutes les Applications"
+
+#: public_web/templates/public_web/apps/app_documents.html:6
+#: public_web/templates/public_web/apps/app_documents.html:23
+#: public_web/templates/public_web/landing.html:469
+msgid "Documents"
+msgstr "Documents"
+
+#: public_web/templates/public_web/apps/app_documents.html:8
+#: public_web/templates/public_web/landing.html:471
+msgid ""
+"Real-time collaborative documents with rich text editing, version control, "
+"and sharing capabilities for educational content."
+msgstr ""
+"Documents collaboratifs en temps réel avec édition de texte riche, contrôle "
+"de version et fonctionnalités de partage pour le contenu éducatif."
+
+#: public_web/templates/public_web/apps/app_documents.html:25
+#, fuzzy
+#| msgid ""
+#| "Real-time collaborative documents with rich text editing, version "
+#| "control, and sharing capabilities for educational content."
+msgid "Real-time collaborative documents with rich text editing"
+msgstr ""
+"Documents collaboratifs en temps réel avec édition de texte riche, contrôle "
+"de version et fonctionnalités de partage pour le contenu éducatif."
+
+#: public_web/templates/public_web/apps/app_documents.html:67
+msgid "Collaborative Document Creation"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:71
+msgid ""
+"Create, edit, and share educational documents with real-time collaboration "
+"features. Perfect for team projects, research papers, and educational "
+"content creation."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:82
+#: public_web/templates/public_web/apps/app_documents.html:212
+msgid "Rich Text Editor"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:83
+msgid "Advanced formatting options"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:95
+#, fuzzy
+#| msgid "Collaboration"
+msgid "Real-time Collaboration"
+msgstr "Collaboration"
+
+#: public_web/templates/public_web/apps/app_documents.html:96
+msgid "Live editing with team"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:108
+msgid "Version Control"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:109
+msgid "Track changes & history"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:121
+#, fuzzy
+#| msgid "Start Organizing"
+msgid "Smart Sharing"
+msgstr "Commencer à Organiser"
+
+#: public_web/templates/public_web/apps/app_documents.html:122
+msgid "Customizable permissions"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:134
+#, fuzzy
+#| msgid "Project Organization"
+msgid "Organization"
+msgstr "Organisation de Projets"
+
+#: public_web/templates/public_web/apps/app_documents.html:135
+msgid "Folders, tags & categories"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:147
+msgid "Export Options"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:148
+msgid "PDF, Word & more"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:159
+msgid ""
+"Use collaborative comments and suggestions to provide feedback on documents "
+"in real-time!"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:173
+#, fuzzy
+#| msgid "Collaboration"
+msgid "Productivity & Collaboration"
+msgstr "Collaboration"
+
+#: public_web/templates/public_web/apps/app_documents.html:202
+msgid "Powerful Document Features"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:203
+msgid ""
+"Everything you need for professional document creation and collaboration"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:213
+msgid "Advanced formatting with images, tables, and more"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:221
+#, fuzzy
+#| msgid "Collaboration"
+msgid "Live Collaboration"
+msgstr "Collaboration"
+
+#: public_web/templates/public_web/apps/app_documents.html:222
+msgid "Work together with real-time synchronization"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:230
+msgid "Version History"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:231
+msgid "Track changes and restore previous versions"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:239
+msgid "Export Formats"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:240
+msgid "Export to PDF, Word, and other formats"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:252
+msgid "Perfect for Education"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:253
+msgid ""
+"Designed specifically for educational content creation and collaboration"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:264
+msgid "Course Materials"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:266
+msgid ""
+"Create and share lesson plans, course notes, and educational resources with "
+"students and colleagues."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:277
+msgid "Group Projects"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:279
+msgid ""
+"Enable students to collaborate on assignments and projects with real-time "
+"editing and feedback."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:290
+msgid "Research Papers"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:292
+msgid ""
+"Write and collaborate on research papers with citation management and "
+"academic formatting."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:303
+msgid "Study Guides"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:305
+msgid ""
+"Create comprehensive study guides and share them with classmates for "
+"collaborative learning."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_documents.html:323
+#, fuzzy
+#| msgid "Ready to revolutionize your learning?"
+msgid "Ready to start collaborating?"
+msgstr "Prêt à révolutionner votre apprentissage ?"
+
+#: public_web/templates/public_web/apps/app_documents.html:326
+msgid ""
+"Join thousands of educators and students using our collaborative document "
+"platform."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:6
+#: public_web/templates/public_web/apps/app_language_ai.html:23
+#: public_web/templates/public_web/landing.html:484
+msgid "Language AI"
+msgstr "IA Linguistique"
+
+#: public_web/templates/public_web/apps/app_language_ai.html:8
+#, fuzzy
+#| msgid ""
+#| "AI assistant for natural conversations and intelligent real-time "
+#| "corrections."
+msgid ""
+"AI assistant for natural conversations and intelligent real-time corrections "
+"to improve your language skills."
+msgstr ""
+"Assistant IA pour des conversations naturelles et des corrections "
+"intelligentes en temps réel."
+
+#: public_web/templates/public_web/apps/app_language_ai.html:25
+msgid "Your AI-powered language learning companion"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:32
+#: public_web/templates/public_web/landing.html:161
+#, fuzzy
+#| msgid "Structured Learning"
+msgid "Start Learning"
+msgstr "Apprentissage Structuré"
+
+#: public_web/templates/public_web/apps/app_language_ai.html:67
+msgid "AI-Powered Language Learning"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:71
+msgid ""
+"Experience the future of language learning with our intelligent AI assistant "
+"that adapts to your learning style. Practice natural conversations and get "
+"real-time feedback."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:82
+#: public_web/templates/public_web/apps/app_language_ai.html:212
+msgid "Natural Conversations"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:83
+msgid "Authentic & engaging dialogue"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:95
+#: public_web/templates/public_web/apps/app_language_ai.html:221
+msgid "Speech Recognition"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:96
+msgid "Advanced pronunciation analysis"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:108
+msgid "Real-time Corrections"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:109
+msgid "Instant grammar & vocabulary feedback"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:121
+msgid "Multi-language Support"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:122
+msgid "Native-level AI assistants"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:134
+#, fuzzy
+#| msgid "Spaced Learning"
+msgid "Personalized Learning"
+msgstr "Apprentissage Espacé"
+
+#: public_web/templates/public_web/apps/app_language_ai.html:135
+msgid "Adapts to your pace & goals"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:148
+msgid "Detailed analytics & reports"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:158
+msgid "AI Tip"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:159
+msgid ""
+"Practice daily conversations with your AI tutor to see dramatic improvements "
+"in just weeks!"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:173
+msgid "AI & Language Learning"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:202
+#, fuzzy
+#| msgid "Features"
+msgid "AI Features"
+msgstr "Fonctionnalités"
+
+#: public_web/templates/public_web/apps/app_language_ai.html:203
+msgid "Cutting-edge AI technology for effective language learning"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:213
+msgid "Practice with AI that feels authentic and engaging"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:222
+msgid "Advanced technology for pronunciation improvement"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:230
+msgid "Real-time Feedback"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:231
+msgid "Instant corrections for faster improvement"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:239
+msgid "Personalized"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:240
+msgid "Adapts to your unique learning style"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:253
+msgid "Advanced AI Capabilities"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:254
+msgid ""
+"Powered by cutting-edge AI technology to provide the most effective language "
+"learning experience."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:264
+msgid "Contextual Understanding"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:265
+msgid ""
+"AI understands context and nuance, providing relevant responses and "
+"corrections based on the conversation flow."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:276
+msgid "Pronunciation Analysis"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:277
+msgid ""
+"Advanced phonetic analysis helps you perfect your pronunciation with "
+"detailed feedback on accent and intonation."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:288
+msgid "Grammar Coaching"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:289
+msgid ""
+"Intelligent grammar correction with explanations to help you understand and "
+"remember the rules."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:300
+msgid "Vocabulary Building"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:301
+msgid ""
+"Smart vocabulary suggestions and contextual learning to expand your word "
+"knowledge naturally."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:317
+msgid "Diverse Conversation Topics"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:318
+msgid ""
+"Practice speaking about topics that interest you with our variety of "
+"conversation scenarios."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:325
+msgid "Business & Career"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:331
+msgid "Travel & Culture"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:337
+msgid "Daily Life"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:343
+#, fuzzy
+#| msgid "Our Educational Apps"
+msgid "Education"
+msgstr "Nos Applications Éducatives"
+
+#: public_web/templates/public_web/apps/app_language_ai.html:349
+msgid "Arts & Entertainment"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:355
+msgid "Nature & Environment"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:374
+msgid "Ready to start conversing with AI?"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:377
+msgid ""
+"Join thousands of learners who are improving their language skills with our "
+"AI-powered conversations."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_language_ai.html:383
+msgid "Start AI Conversation"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:25
+msgid "Organize your learning intelligently"
+msgstr "Organisez votre apprentissage intelligemment"
+
+#: public_web/templates/public_web/apps/app_notebook.html:36
+#: public_web/templates/public_web/apps/app_notebook.html:461
+#, fuzzy
+#| msgid "Create Account"
+msgid "Create my notes"
+msgstr "Créer un Compte"
+
+#: public_web/templates/public_web/apps/app_notebook.html:55
+msgid "Notebook - Open Linguify"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:65
+#, fuzzy
+#| msgid "Notebook"
+msgid "Notes"
+msgstr "Carnet"
+
+#: public_web/templates/public_web/apps/app_notebook.html:73
+#: public_web/templates/public_web/apps/app_notebook.html:108
+msgid "French Grammar"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:74
+msgid "French verb tenses and conjugations..."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:76
+#: public_web/templates/public_web/apps/app_todo.html:95
+msgid "Today"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:78
+msgid "Grammar"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:83
+msgid "Spanish Vocabulary"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:84
+msgid "New words from chapter 5..."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:86
+msgid "Yesterday"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:88
+msgid "Vocabulary"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:93
+msgid "Research Project"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:94
+msgid "Ideas and references..."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:98
+msgid "Research"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_notebook.html:158
+#, fuzzy
+#| msgid "Project Organization"
+msgid "Smart Note Organization"
+msgstr "Organisation de Projets"
+
+#: public_web/templates/public_web/apps/app_notebook.html:448
+#, fuzzy
+#| msgid "Ready to revolutionize your learning?"
+msgid "Ready to organize your learning?"
+msgstr "Prêt à révolutionner votre apprentissage ?"
+
+#: public_web/templates/public_web/apps/app_notebook.html:451
+msgid "Start taking smart notes and keep track of your progress."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_quizz.html:32
+#: public_web/templates/public_web/apps/app_quizz.html:350
+msgid "Commencer gratuitement"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_quizz.html:36
+#: public_web/templates/public_web/apps/app_quizz.html:354
+msgid "Créer un quiz"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_quizz.html:67
+msgid "Système de Quiz Interactif"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_quizz.html:341
+msgid "Prêt à tester vos connaissances ?"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_quizz.html:344
+msgid ""
+"Créez votre premier quiz et découvrez une nouvelle façon d'apprendre et de "
+"réviser."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:25
+msgid "Spaced repetition flashcard system"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:36
+#: public_web/templates/public_web/apps/app_revision.html:464
+#, fuzzy
+#| msgid "Start Organizing"
+msgid "Start studying"
+msgstr "Commencer à Organiser"
+
+#: public_web/templates/public_web/apps/app_revision.html:55
+msgid "Revision - Open Linguify"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:68
+msgid "Flashcards"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:71
+msgid "Progress"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:81
+msgid "English Vocabulary"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:93
+msgid "Mastered"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:97
+msgid "Review"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:101
+msgid "New"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:112
+msgid "Beautiful"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:121
+msgid "Beautiful, magnificent"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:123
+msgid "She has beautiful eyes"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:169
+msgid "Smart Flashcard System"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:173
+msgid ""
+"Our revision system uses scientific principles of spaced repetition to "
+"optimize your memorization. Create your flashcard decks and let the "
+"algorithm guide you toward lasting memorization."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:184
+msgid "Spaced repetition algorithm"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:185
+msgid "Optimal memorization"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:197
+msgid "Custom decks"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_revision.html:198
+#, fuzzy
+#| msgid "Create Account"
+msgid "Create your content"
+msgstr "Créer un Compte"
+
+#: public_web/templates/public_web/apps/app_revision.html:341
+#: public_web/templates/public_web/brand.html:71
+msgid "Smart Flashcards"
+msgstr "Cartes Flash Intelligentes"
+
+#: public_web/templates/public_web/apps/app_revision.html:342
+msgid "Adaptive cards that adjust to your pace"
+msgstr "Cartes adaptatives qui s'ajustent à votre rythme"
+
+#: public_web/templates/public_web/apps/app_revision.html:352
+msgid "Optimal Timing"
+msgstr "Timing Optimal"
+
+#: public_web/templates/public_web/apps/app_revision.html:353
+msgid "Review at the perfect moment for memorization"
+msgstr "Révisez au moment parfait pour la mémorisation"
+
+#: public_web/templates/public_web/apps/app_revision.html:363
+msgid "Long-lasting Memorization"
+msgstr "Mémorisation Durable"
+
+#: public_web/templates/public_web/apps/app_revision.html:451
+#, fuzzy
+#| msgid "Ready to revolutionize your learning?"
+msgid "Ready to optimize your memorization?"
+msgstr "Prêt à révolutionner votre apprentissage ?"
+
+#: public_web/templates/public_web/apps/app_revision.html:454
+msgid ""
+"Discover the power of spaced repetition and transform the way you learn."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:6
+msgid "Todo & Productivity"
+msgstr "Tâches et Productivité"
+
+#: public_web/templates/public_web/apps/app_todo.html:8
+msgid ""
+"Advanced productivity workspace with task management, note-taking, projects, "
+"Kanban boards and collaboration. Intuitive interface with multiple views."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:10
+msgid ""
+"todo app, task management, productivity, project management, note taking, "
+"kanban board, workspace, open source"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:12
+#, fuzzy
+#| msgid "Advanced productivity workspace"
+msgid "Todo & Productivity - Advanced Productivity Workspace"
+msgstr "Espace de travail de productivité avancé"
+
+#: public_web/templates/public_web/apps/app_todo.html:14
+msgid ""
+"Complete productivity workspace with task management, note-taking, "
+"hierarchical projects, Kanban boards and team collaboration."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:31
+msgid "Advanced productivity workspace"
+msgstr "Espace de travail de productivité avancé"
+
+#: public_web/templates/public_web/apps/app_todo.html:42
+#, fuzzy
+#| msgid "Start Organizing"
+msgid "Start organizing"
+msgstr "Commencer à Organiser"
+
+#: public_web/templates/public_web/apps/app_todo.html:61
+#, fuzzy
+#| msgid "Todo & Productivity"
+msgid "Todo & Productivity - Open Linguify"
+msgstr "Tâches et Productivité"
+
+#: public_web/templates/public_web/apps/app_todo.html:74
+#, fuzzy
+#| msgid "Kanban Boards"
+msgid "Kanban"
+msgstr "Tableaux Kanban"
+
+#: public_web/templates/public_web/apps/app_todo.html:77
+msgid "List"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:80
+#, fuzzy
+#| msgid "Productivity"
+msgid "Activity"
+msgstr "Productivité"
+
+#: public_web/templates/public_web/apps/app_todo.html:89
+msgid "To Do"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:93
+msgid "Review course"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:99
+#, fuzzy
+#| msgid "Assessment"
+msgid "Assignment"
+msgstr "Évaluation"
+
+#: public_web/templates/public_web/apps/app_todo.html:101
+msgid "Urgent"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:108
+msgid "In Progress"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:112
+msgid "Essay"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:122
+#: public_web/templates/public_web/apps/app_todo.html:128
+msgid "Done"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:126
+msgid "Setup"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:155
+#, fuzzy
+#| msgid "Productivity"
+msgid "Smart Productivity System"
+msgstr "Productivité"
+
+#: public_web/templates/public_web/apps/app_todo.html:159
+msgid ""
+"Our productivity system uses advanced organizational principles to optimize "
+"your workflow. Create your projects and tasks and let the algorithm guide "
+"you towards maximum productivity."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:170
+#, fuzzy
+#| msgid "Kanban Boards"
+msgid "Kanban boards"
+msgstr "Tableaux Kanban"
+
+#: public_web/templates/public_web/apps/app_todo.html:171
+msgid "Visual workflow"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:183
+#, fuzzy
+#| msgid "Smart Task Management"
+msgid "Task management"
+msgstr "Gestion Intelligente des Tâches"
+
+#: public_web/templates/public_web/apps/app_todo.html:327
+msgid "Visual Workflow"
+msgstr "Flux de Travail Visuel"
+
+#: public_web/templates/public_web/apps/app_todo.html:328
+msgid "Kanban boards that adapt to your process"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:338
+msgid "Smart Scheduling"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:339
+msgid "Deadline management with intelligent reminders"
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:349
+msgid "Project Organization"
+msgstr "Organisation de Projets"
+
+#: public_web/templates/public_web/apps/app_todo.html:426
+#, fuzzy
+#| msgid "Ready to Get Organized?"
+msgid "Ready to get organized?"
+msgstr "Prêt à vous Organiser ?"
+
+#: public_web/templates/public_web/apps/app_todo.html:427
+msgid ""
+"Join thousands of users who have transformed their productivity with our "
+"todo app."
+msgstr ""
+
+#: public_web/templates/public_web/apps/app_todo.html:431
+msgid "Start Now - It's Free"
+msgstr "Commencer Maintenant - C'est Gratuit"
+
+#: public_web/templates/public_web/apps/app_todo.html:434
+msgid "Explore All Apps"
+msgstr "Explorer Toutes les Applications"
+
+#: public_web/templates/public_web/apps/apps_list.html:6
+msgid "Applications"
+msgstr ""
+
+#: public_web/templates/public_web/apps/apps_list.html:8
+msgid "Discover all Open Linguify applications"
+msgstr ""
+
+#: public_web/templates/public_web/apps/apps_list.html:17
+#, fuzzy
+#| msgid "Our Educational Apps"
+msgid "Our Applications"
+msgstr "Nos Applications Éducatives"
+
+#: public_web/templates/public_web/apps/apps_list.html:20
+#, fuzzy
+#| msgid ""
+#| "Discover our complete suite of educational apps designed to transform "
+#| "your learning experience. Currently all apps are completely free to use."
+msgid ""
+"Discover our complete suite of educational applications designed to enhance "
+"your learning experience."
+msgstr ""
+"Découvrez notre suite complète d'applications éducatives conçues pour "
+"transformer votre expérience d'apprentissage. Actuellement, toutes les "
+"applications sont entièrement gratuites."
+
+#: public_web/templates/public_web/apps/apps_list.html:49
+#: public_web/templates/public_web/landing.html:337
+msgid "Available Now"
+msgstr "Disponible Maintenant"
+
+#: public_web/templates/public_web/apps/apps_list.html:70
+#: public_web/templates/public_web/landing.html:353
+#: public_web/templates/public_web/landing.html:370
+#: public_web/templates/public_web/landing.html:387
+msgid "Ready"
+msgstr "Prêt"
+
+#: public_web/templates/public_web/apps/apps_list.html:73
+msgid "Use now"
+msgstr ""
+
+# Additional common phrases
+#: public_web/templates/public_web/apps/apps_list.html:85
+#: public_web/templates/public_web/landing.html:398
+msgid "Coming Soon"
+msgstr "Prochainement"
+
+#: public_web/templates/public_web/apps/apps_list.html:87
+#: public_web/templates/public_web/landing.html:400
+msgid "These exciting apps are in active development"
+msgstr "Ces applications passionnantes sont en développement actif"
+
+#: public_web/templates/public_web/apps/apps_list.html:107
+#: public_web/templates/public_web/landing.html:414
+#: public_web/templates/public_web/landing.html:429
+#: public_web/templates/public_web/landing.html:444
+#: public_web/templates/public_web/landing.html:459
+#: public_web/templates/public_web/landing.html:474
+#: public_web/templates/public_web/landing.html:489
+msgid "Soon"
+msgstr "Bientôt"
+
+# Additional common phrases
+#: public_web/templates/public_web/apps/apps_list.html:110
+#, fuzzy
+#| msgid "Coming Soon"
+msgid "Coming soon"
+msgstr "Prochainement"
+
+#: public_web/templates/public_web/apps/apps_list.html:124
+msgid "No applications available"
+msgstr ""
+
+#: public_web/templates/public_web/apps/apps_list.html:125
+msgid "Applications will appear here once they are configured."
+msgstr ""
+
+#: public_web/templates/public_web/apps/apps_list.html:136
+#, fuzzy
+#| msgid "Ready to revolutionize your learning?"
+msgid "Ready to start learning?"
+msgstr "Prêt à révolutionner votre apprentissage ?"
+
+#: public_web/templates/public_web/apps/apps_list.html:139
+#, fuzzy
+#| msgid ""
+#| "Join our community and access a complete suite of open source educational "
+#| "apps."
+msgid ""
+"Join our community and access all these amazing educational applications."
+msgstr ""
+"Rejoignez notre communauté et accédez à une suite complète d'applications "
+"éducatives open source."
+
+#: public_web/templates/public_web/brand.html:5
+#: public_web/templates/public_web/landing.html:12
+#: public_web/templates/public_web/public_base.html:52
+#, fuzzy
+#| msgid ""
+#| "Everything you need to know about OpenLinguify and our educational "
+#| "platform."
+msgid "OpenLinguify - Open source educational apps platform"
+msgstr ""
+"Tout ce que vous devez savoir sur OpenLinguify et notre plateforme éducative."
+
+#: public_web/templates/public_web/brand.html:7
+msgid ""
+"OpenLinguify is an open source educational apps platform. Discover our "
+"complete suite of learning tools and educational applications."
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:9
+msgid ""
+"openlinguify, OpenLinguify, Open Linguify, openlinguify.com, linguify "
+"platform, linguify educational apps, linguify open source, brand "
+"information, educational platform, learning tools"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:26
+msgid "Revolutionizing education through open source technology"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:33
+#: public_web/templates/public_web/landing.html:163
+msgid "Learn More"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:46
+msgid "Why Choose OpenLinguify?"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:48
+msgid ""
+"Our comprehensive platform offers cutting-edge educational tools designed "
+"for modern learners"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:59
+#, fuzzy
+#| msgid "Spaced Learning"
+msgid "AI-Powered Learning"
+msgstr "Apprentissage Espacé"
+
+#: public_web/templates/public_web/brand.html:61
+msgid ""
+"Advanced artificial intelligence adapts to your learning style and pace for "
+"personalized education"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:73
+msgid ""
+"Spaced repetition algorithms optimize your memory retention with intelligent "
+"review scheduling"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:83
+#, fuzzy
+#| msgid "Notebook"
+msgid "Digital Notebooks"
+msgstr "Carnet"
+
+#: public_web/templates/public_web/brand.html:85
+msgid ""
+"Organize your thoughts and knowledge with our comprehensive note-taking "
+"system"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:95
+msgid "Adaptive Quizzes"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:97
+msgid ""
+"Interactive assessments that adjust difficulty based on your progress and "
+"understanding"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:107
+#, fuzzy
+#| msgid "Collaboration"
+msgid "Collaborative Learning"
+msgstr "Collaboration"
+
+#: public_web/templates/public_web/brand.html:109
+msgid ""
+"Connect with learners worldwide through our social learning features and "
+"study groups"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:121
+msgid ""
+"Transparent, community-driven development ensuring privacy and continuous "
+"innovation"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:134
+msgid "Trusted by Learners Worldwide"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:148
+msgid "Flashcards Created"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:160
+msgid "User Satisfaction"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:171
+msgid "Our Mission"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:173
+msgid ""
+"We believe education should be accessible to everyone, everywhere. "
+"OpenLinguify democratizes learning through innovative open source "
+"technology, providing powerful educational tools that help millions of "
+"learners worldwide achieve their goals and unlock their potential."
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:182
+msgid "Accessibility First"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:183
+msgid ""
+"Free, open source tools available to learners regardless of their background "
+"or location"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:193
+msgid "Innovation Driven"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:194
+msgid ""
+"Cutting-edge AI and learning science research integrated into practical tools"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:204
+#, fuzzy
+#| msgid "Community"
+msgid "Community Powered"
+msgstr "Communauté"
+
+#: public_web/templates/public_web/brand.html:205
+msgid "Built by educators and learners, for educators and learners worldwide"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:215
+#, fuzzy
+#| msgid "Privacy"
+msgid "Privacy Focused"
+msgstr "Confidentialité"
+
+#: public_web/templates/public_web/brand.html:216
+msgid ""
+"Your data belongs to you - transparent, secure, and privacy-first approach"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:230
+#, fuzzy
+#| msgid "Ready to revolutionize your learning?"
+msgid "Ready to Transform Your Learning?"
+msgstr "Prêt à révolutionner votre apprentissage ?"
+
+#: public_web/templates/public_web/brand.html:232
+msgid ""
+"Join thousands of learners who have already discovered the power of "
+"OpenLinguify's educational tools"
+msgstr ""
+
+#: public_web/templates/public_web/brand.html:236
+#, fuzzy
+#| msgid "Get Started in Minutes"
+msgid "Get Started Free"
+msgstr "Commencez en Minutes"
+
+#: public_web/templates/public_web/brand.html:239
+#, fuzzy
+#| msgid "Contact us"
+msgid "Contact Us"
+msgstr "Nous contacter"
+
+#: public_web/templates/public_web/contact.html:11
+msgid "Get in touch with our support team"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:21
+#, fuzzy
+#| msgid "Collaboration"
+msgid "Contact Information"
+msgstr "Collaboration"
+
+#: public_web/templates/public_web/contact.html:24
+#, fuzzy
+#| msgid "Support"
+msgid "Email Support"
+msgstr "Support"
+
+#: public_web/templates/public_web/contact.html:25
+msgid "General inquiries and support"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:30
+msgid "GitHub"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:31
+#, fuzzy
+#| msgid "Open Source Stats"
+msgid "Open source repository"
+msgstr "Statistiques Open Source"
+
+#: public_web/templates/public_web/contact.html:36
+msgid "LinkedIn"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:37
+msgid "Professional updates"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:45
+msgid "Send us a Message"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:58
+msgid "Name"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:63
+msgid "Email"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:68
+msgid "Subject"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:70
+msgid "Select a topic"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:71
+msgid "General Inquiry"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:72
+msgid "Technical Support"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:73
+msgid "Bug Report"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:74
+msgid "Partnership"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:75
+msgid "Feedback"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:76
+msgid "Other"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:81
+msgid "Message"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:82
+msgid "Tell us more about your inquiry..."
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:85
+msgid "Send Message"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:99
+#: public_web/templates/public_web/landing.html:607
+msgid "Frequently Asked Questions"
+msgstr "Questions Fréquemment Posées"
+
+#: public_web/templates/public_web/contact.html:106
+#, fuzzy
+#| msgid "Can I contribute to the OpenLinguify project?"
+msgid "How can I contribute to Open Linguify?"
+msgstr "Puis-je contribuer au projet OpenLinguify ?"
+
+#: public_web/templates/public_web/contact.html:111
+msgid ""
+"You can contribute by visiting our GitHub repository, reporting bugs, "
+"suggesting features, or submitting pull requests. We welcome all forms of "
+"contribution!"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:119
+msgid "What is the typical response time for support?"
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:124
+msgid ""
+"We aim to respond to all inquiries within 24-48 hours during business days. "
+"Complex technical issues may require additional time for proper "
+"investigation."
+msgstr ""
+
+#: public_web/templates/public_web/contact.html:132
+#, fuzzy
+#| msgid "Is OpenLinguify really free to use?"
+msgid "Is Open Linguify really free?"
+msgstr "OpenLinguify est-il vraiment gratuit à utiliser ?"
+
+#: public_web/templates/public_web/contact.html:137
+msgid ""
+"Yes! Open Linguify is completely open source and free to use. You can access "
+"all features without any cost, and even host your own instance."
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:6
+#: public_web/templates/public_web/public_base.html:9
+#, fuzzy
+#| msgid "Open Source Education Apps"
+msgid "Open Linguify | Open Source Education Apps"
 msgstr "Applications Éducatives Open Source"
 
+#: public_web/templates/public_web/landing.html:8
+#: public_web/templates/public_web/public_base.html:19
+msgid ""
+"OpenLinguify is an open source educational apps platform: memorization "
+"system, flashcards, note-taking, quizzes, collaborative chat, classrooms and "
+"much more. Discover our tools to revolutionize learning."
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:10
+msgid ""
+"openlinguify, open linguify, OpenLinguify, Open Linguify, openlinguify.com, "
+"linguify apprendre langues, linguify AI, linguify, educational apps, "
+"flashcards, memorization, note-taking, quizzes, collaborative chat, "
+"classrooms, open source, education, learning, apprentissage"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:14
+#: public_web/templates/public_web/public_base.html:54
+#, fuzzy
+#| msgid ""
+#| "A complete suite of open source educational apps: memorization, "
+#| "flashcards, note-taking, to-do and much more."
+msgid ""
+"Discover OpenLinguify, a complete suite of open source educational apps: "
+"smart memorization, flashcards, note-taking, interactive quizzes, "
+"collaborative chat, virtual classrooms and much more. Revolutionize the way "
+"you learn."
+msgstr ""
+"Une suite complète d'applications éducatives open source : mémorisation, "
+"flashcards, prise de notes, to-do et bien plus encore."
+
+#: public_web/templates/public_web/landing.html:40
+msgid "AI-powered lessons"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:41
+msgid "Interactive flashcards"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:42
+msgid "Speech recognition"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:43
+msgid "Progress tracking"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:44
+msgid "Multi-language support"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:45
+msgid "Offline mode"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:57
+msgid "What is OpenLinguify?"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:60
+msgid ""
+"OpenLinguify is an open source educational platform offering AI-powered "
+"language learning tools including flashcards, quizzes, note-taking, and "
+"interactive courses."
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:65
+#, fuzzy
+#| msgid "Is OpenLinguify really free to use?"
+msgid "Is OpenLinguify really free?"
+msgstr "OpenLinguify est-il vraiment gratuit à utiliser ?"
+
+#: public_web/templates/public_web/landing.html:68
+msgid ""
+"Yes! OpenLinguify is currently completely free to use. All educational apps "
+"are available at no cost. Our business model may evolve in the future to "
+"ensure platform sustainability."
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:73
+msgid "Which languages can I learn with OpenLinguify?"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:76
+msgid ""
+"OpenLinguify supports learning multiple languages including English, French, "
+"Spanish, Dutch, and many more. Our AI adapts to your target language."
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:88
+#, fuzzy
+#| msgid "This application is part of the Open Linguify educational suite."
+msgid "Full access to all OpenLinguify educational apps"
+msgstr "Cette application fait partie de la suite éducative Open Linguify."
+
+#: public_web/templates/public_web/landing.html:98
+#, fuzzy
+#| msgid ""
+#| "Currently 100% free • Open Source • Future business model under "
+#| "development for platform sustainability"
+msgid "Currently free - business model may evolve for sustainability"
+msgstr ""
+"Actuellement 100% gratuit • Open Source • Futur modèle économique en "
+"développement pour la durabilité de la plateforme"
+
+#: public_web/templates/public_web/landing.html:145
 msgid ""
 "A complete suite of open source educational apps: memorization, flashcards, "
 "note-taking, to-do and much more."
@@ -167,30 +2375,61 @@ msgstr ""
 "Une suite complète d'applications éducatives open source : mémorisation, "
 "flashcards, prise de notes, to-do et bien plus encore."
 
+#: public_web/templates/public_web/landing.html:150
 msgid "Choose your Linguify product:"
 msgstr "Choisissez votre produit Linguify :"
 
-msgid "For all students"
-msgstr "Pour tous les étudiants"
-
+#: public_web/templates/public_web/landing.html:175
 msgid "Discover our apps"
 msgstr "Découvrir nos applications"
 
-msgid "View Source Code"
-msgstr "Voir le Code Source"
+#: public_web/templates/public_web/landing.html:218
+msgid "Productivity"
+msgstr "Productivité"
 
+#: public_web/templates/public_web/landing.html:231
+msgid "Spaced Learning"
+msgstr "Apprentissage Espacé"
+
+#: public_web/templates/public_web/landing.html:244
+msgid "Note Taking"
+msgstr "Prise de Notes"
+
+#: public_web/templates/public_web/landing.html:257
+msgid "Structured Learning"
+msgstr "Apprentissage Structuré"
+
+#: public_web/templates/public_web/landing.html:269
+#: public_web/templates/public_web/landing.html:424
+msgid "Quiz"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:270
+msgid "Assessment"
+msgstr "Évaluation"
+
+#: public_web/templates/public_web/landing.html:282
+#: public_web/templates/public_web/landing.html:454
+msgid "Chat"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:283
+msgid "Collaboration"
+msgstr "Collaboration"
+
+#: public_web/templates/public_web/landing.html:291
 msgid "Access all your apps from a unified dashboard"
 msgstr "Accédez à toutes vos applications depuis un tableau de bord unifié"
 
+#: public_web/templates/public_web/landing.html:306
 msgid "Educational Useful Apps for the students"
 msgstr "Applications Éducatives Utiles pour les étudiants"
 
-msgid "Open Source"
-msgstr "Open Source"
-
+#: public_web/templates/public_web/landing.html:324
 msgid "Our Educational Apps"
 msgstr "Nos Applications Éducatives"
 
+#: public_web/templates/public_web/landing.html:326
 msgid ""
 "Discover our complete suite of educational apps designed to transform your "
 "learning experience. Currently all apps are completely free to use."
@@ -199,29 +2438,20 @@ msgstr ""
 "transformer votre expérience d'apprentissage. Actuellement, toutes les "
 "applications sont entièrement gratuites."
 
+#: public_web/templates/public_web/landing.html:330
+#, fuzzy
+#| msgid ""
+#| "All features are currently free • We're exploring sustainable business "
+#| "models for long-term platform development"
 msgid ""
-"All features are currently free • We're exploring sustainable business "
+"🎉 All features are currently free • We're exploring sustainable business "
 "models for long-term platform development"
 msgstr ""
 "Toutes les fonctionnalités sont actuellement gratuites • Nous explorons des "
 "modèles économiques durables pour le développement à long terme de la "
 "plateforme"
 
-msgid "Available Now"
-msgstr "Disponible Maintenant"
-
-msgid "Ready"
-msgstr "Prêt"
-
-msgid "These exciting apps are in active development"
-msgstr "Ces applications passionnantes sont en développement actif"
-
-msgid "Soon"
-msgstr "Bientôt"
-
-msgid "Join the Open Source Revolution"
-msgstr "Rejoignez la Révolution Open Source"
-
+#: public_web/templates/public_web/landing.html:350
 msgid ""
 "Organize your tasks and boost your productivity with intelligent task "
 "management."
@@ -229,18 +2459,21 @@ msgstr ""
 "Organisez vos tâches et boostez votre productivité avec une gestion "
 "intelligente des tâches."
 
+#: public_web/templates/public_web/landing.html:367
 msgid ""
 "Spaced repetition system with smart flashcards for optimal memorization."
 msgstr ""
 "Système de répétition espacée avec des flashcards intelligentes pour une "
 "mémorisation optimale."
 
+#: public_web/templates/public_web/landing.html:384
 msgid ""
 "Centralized note-taking with intelligent organization and advanced search."
 msgstr ""
 "Prise de notes centralisée avec organisation intelligente et recherche "
 "avancée."
 
+#: public_web/templates/public_web/landing.html:411
 msgid ""
 "Structured courses with progressive lessons, interactive exercises and "
 "personalized assessments."
@@ -248,18 +2481,13 @@ msgstr ""
 "Cours structurés avec leçons progressives, exercices interactifs et "
 "évaluations personnalisées."
 
+#: public_web/templates/public_web/landing.html:426
 msgid "Adaptive quiz system to test your knowledge and identify weak points."
 msgstr ""
 "Système de quiz adaptatif pour tester vos connaissances et identifier les "
 "points faibles."
 
-msgid ""
-"Connect with other learners, share progress and discover content created by "
-"the community."
-msgstr ""
-"Connectez-vous avec d'autres apprenants, partagez vos progrès et découvrez "
-"le contenu créé par la communauté."
-
+#: public_web/templates/public_web/landing.html:456
 msgid ""
 "Real-time collaborative chat for study groups and language exchange with "
 "other learners."
@@ -267,46 +2495,18 @@ msgstr ""
 "Chat collaboratif en temps réel pour les groupes d'étude et l'échange "
 "linguistique avec d'autres apprenants."
 
-msgid "Productivity"
-msgstr "Productivité"
-
-msgid "Spaced Learning"
-msgstr "Apprentissage Espacé"
-
-msgid "Note Taking"
-msgstr "Prise de Notes"
-
-msgid "Structured Learning"
-msgstr "Apprentissage Structuré"
-
-msgid "Assessment"
-msgstr "Évaluation"
-
-msgid "Collaboration"
-msgstr "Collaboration"
-
-msgid "Community"
-msgstr "Communauté"
-
-msgid "Documents"
-msgstr "Documents"
-
-msgid "Language AI"
-msgstr "IA Linguistique"
-
-msgid ""
-"Real-time collaborative documents with rich text editing, version control, "
-"and sharing capabilities for educational content."
-msgstr ""
-"Documents collaboratifs en temps réel avec édition de texte riche, contrôle "
-"de version et fonctionnalités de partage pour le contenu éducatif."
-
+#: public_web/templates/public_web/landing.html:486
 msgid ""
 "AI assistant for natural conversations and intelligent real-time corrections."
 msgstr ""
 "Assistant IA pour des conversations naturelles et des corrections "
 "intelligentes en temps réel."
 
+#: public_web/templates/public_web/landing.html:506
+msgid "Join the Open Source Revolution"
+msgstr "Rejoignez la Révolution Open Source"
+
+#: public_web/templates/public_web/landing.html:509
 msgid ""
 "Open Linguify is built by the community, for the community. Help us create "
 "the future of education by contributing to our open source project."
@@ -314,47 +2514,92 @@ msgstr ""
 "Open Linguify est conçu par la communauté, pour la communauté. Aidez-nous à "
 "créer l'avenir de l'éducation en contribuant à notre projet open source."
 
+#: public_web/templates/public_web/landing.html:517
 msgid "Contribute code and new features"
 msgstr "Contribuer au code et aux nouvelles fonctionnalités"
 
+#: public_web/templates/public_web/landing.html:523
 msgid "Report bugs and suggest improvements"
 msgstr "Signaler des bugs et suggérer des améliorations"
 
+#: public_web/templates/public_web/landing.html:529
 msgid "Help with translations and documentation"
 msgstr "Aider avec les traductions et la documentation"
 
+#: public_web/templates/public_web/landing.html:535
+#, fuzzy
+#| msgid "Start Organizing"
+msgid "Start Contributing"
+msgstr "Commencer à Organiser"
+
+#: public_web/templates/public_web/landing.html:541
+#: public_web/templates/public_web/landing.html:662
+#, fuzzy
+#| msgid "Report a bug"
+msgid "Report Issues"
+msgstr "Signaler un bug"
+
+#: public_web/templates/public_web/landing.html:551
 msgid "Open Source Stats"
 msgstr "Statistiques Open Source"
 
+#: public_web/templates/public_web/landing.html:552
 msgid "Growing community of contributors"
 msgstr "Communauté croissante de contributeurs"
 
+#: public_web/templates/public_web/landing.html:558
 msgid "Contributors"
 msgstr "Contributeurs"
 
+#: public_web/templates/public_web/landing.html:562
 msgid "Commits"
 msgstr "Commits"
 
+#: public_web/templates/public_web/landing.html:566
 msgid "License"
 msgstr "Licence"
 
+#: public_web/templates/public_web/landing.html:571
 msgid "Latest Release"
 msgstr "Dernière Version"
 
-msgid "Frequently Asked Questions"
-msgstr "Questions Fréquemment Posées"
+#: public_web/templates/public_web/landing.html:586
+msgid "Help Keep Education Free"
+msgstr "Aidez à Maintenir l'Éducation Gratuite"
 
+#: public_web/templates/public_web/landing.html:589
+#, fuzzy, python-format
+#| msgid ""
+#| "Open Linguify is 100% free and open source. Your support enables us to "
+#| "maintain servers, develop new features, and keep education accessible to "
+#| "everyone, everywhere."
+msgid ""
+"Open Linguify is 100%% free and open source. Your support enables us to "
+"maintain servers, develop new features, and keep education accessible to "
+"everyone, everywhere."
+msgstr ""
+"Open Linguify est 100% gratuit et open source. Votre soutien nous permet de "
+"maintenir les serveurs, développer de nouvelles fonctionnalités et garder "
+"l'éducation accessible à tous, partout."
+
+#: public_web/templates/public_web/landing.html:596
+msgid "Become a Sponsor"
+msgstr "Devenir Sponsor"
+
+#: public_web/templates/public_web/landing.html:609
 msgid ""
 "Everything you need to know about OpenLinguify and our educational platform."
 msgstr ""
 "Tout ce que vous devez savoir sur OpenLinguify et notre plateforme éducative."
 
+#: public_web/templates/public_web/landing.html:618
 msgid ""
 "What makes OpenLinguify different from other language learning platforms?"
 msgstr ""
 "Qu'est-ce qui rend OpenLinguify différent des autres plateformes "
 "d'apprentissage des langues ?"
 
+#: public_web/templates/public_web/landing.html:623
 msgid ""
 "OpenLinguify is completely open source, meaning our code is transparent and "
 "constantly improved by the community. We offer a complete suite of "
@@ -367,15 +2612,46 @@ msgstr ""
 "conversations IA, les outils collaboratifs, et plus encore - tout conçu pour "
 "fonctionner ensemble de manière transparente."
 
+#: public_web/templates/public_web/landing.html:631
 msgid "Is OpenLinguify really free to use?"
 msgstr "OpenLinguify est-il vraiment gratuit à utiliser ?"
 
+#: public_web/templates/public_web/landing.html:636
+msgid ""
+"Yes! OpenLinguify is currently completely free to use. All educational apps "
+"are available at no cost. As an open source project, you can also self-host "
+"the entire platform. While we're committed to keeping our core features "
+"free, our business model may evolve in the future to ensure the "
+"sustainability and continued development of the platform."
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:644
 msgid "Can I contribute to the OpenLinguify project?"
 msgstr "Puis-je contribuer au projet OpenLinguify ?"
 
+#: public_web/templates/public_web/landing.html:649
+msgid ""
+"Absolutely! As an open source project, we welcome contributions from "
+"developers, translators, educators, and users. You can contribute code, "
+"report bugs, suggest features, help with translations, or create educational "
+"content."
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:654
+#, fuzzy
+#| msgid "Open Source"
+msgid "Open Source Guide"
+msgstr "Open Source"
+
+#: public_web/templates/public_web/landing.html:658
+msgid "GitHub Repository"
+msgstr ""
+
+#: public_web/templates/public_web/landing.html:677
 msgid "Ready to revolutionize your learning?"
 msgstr "Prêt à révolutionner votre apprentissage ?"
 
+#: public_web/templates/public_web/landing.html:680
 msgid ""
 "Join our community and access a complete suite of open source educational "
 "apps."
@@ -383,68 +2659,1437 @@ msgstr ""
 "Rejoignez notre communauté et accédez à une suite complète d'applications "
 "éducatives open source."
 
+#: public_web/templates/public_web/landing.html:683
+#, fuzzy, python-format
+#| msgid ""
+#| "Currently 100% free • Open Source • Future business model under "
+#| "development for platform sustainability"
 msgid ""
-"Currently 100% free • Open Source • Future business model under development "
-"for platform sustainability"
+"✨ Currently 100%% free • Open Source • Future business model under "
+"development for platform sustainability"
 msgstr ""
 "Actuellement 100% gratuit • Open Source • Futur modèle économique en "
 "développement pour la durabilité de la plateforme"
 
+#: public_web/templates/public_web/landing.html:688
 msgid "Start Your Learning Journey"
 msgstr "Commencez Votre Parcours d'Apprentissage"
 
-msgid "Product"
-msgstr "Produit"
+#: public_web/templates/public_web/public_base.html:63
+msgid "OpenLinguify - Open source platform for modern education"
+msgstr ""
 
-msgid "Features"
-msgstr "Fonctionnalités"
-
-msgid "Resources"
-msgstr "Ressources"
-
-msgid "Contribute"
-msgstr "Contribuer"
-
-msgid "Company"
-msgstr "Entreprise"
-
-msgid "Brand"
-msgstr "Marque"
-
-msgid "Careers"
-msgstr "Carrières"
-
-msgid "Support"
-msgstr "Support"
-
-msgid "Report a bug"
-msgstr "Signaler un bug"
-
-msgid "Contact us"
-msgstr "Nous contacter"
-
+#: public_web/templates/public_web/public_base.html:65
+#, fuzzy
+#| msgid ""
+#| "A complete suite of open source educational apps: memorization, "
+#| "flashcards, note-taking, to-do and much more."
 msgid ""
-"Open Linguify | Open Source Education Apps: Memorization, Flashcards, Notes, "
-"Quizzes And Collaborative Chat."
+"OpenLinguify: Complete suite of open source educational apps: memorization, "
+"flashcards, notes, quizzes, collaborative chat and much more."
+msgstr ""
+"Une suite complète d'applications éducatives open source : mémorisation, "
+"flashcards, prise de notes, to-do et bien plus encore."
+
+#: public_web/templates/public_web/public_base.html:113
+#, fuzzy
+#| msgid ""
+#| "Open Linguify | Open Source Education Apps: Memorization, Flashcards, "
+#| "Notes, Quizzes And Collaborative Chat."
+msgid ""
+"OpenLinguify is an open source educational platform offering AI-powered "
+"language learning tools, flashcards, quizzes, and collaborative learning "
+"features."
 msgstr ""
 "Open Linguify | Applications Éducatives Open Source : Mémorisation, "
 "Flashcards, Notes, Quiz et Chat Collaboratif."
 
-# Sponsorship section
-msgid "Sponsor"
-msgstr "Sponsoriser"
-
-msgid "Help Keep Education Free"
-msgstr "Aidez à Maintenir l'Éducation Gratuite"
-
-msgid ""
-"Open Linguify is 100% free and open source. Your support enables us to "
-"maintain servers, develop new features, and keep education accessible to "
-"everyone, everywhere."
+#: public_web/templates/public_web/public_base.html:135
+msgid "Open source educational platform for language learning"
 msgstr ""
-"Open Linguify est 100% gratuit et open source. Votre soutien nous permet de "
-"maintenir les serveurs, développer de nouvelles fonctionnalités et garder "
-"l'éducation accessible à tous, partout."
 
-msgid "Become a Sponsor"
-msgstr "Devenir Sponsor"
+#: public_web/views.py:181 public_web/views.py:195 public_web/views.py:239
+msgid "Contact - Open Linguify Support & Information"
+msgstr ""
+
+#: public_web/views.py:182
+msgid ""
+"Contact the Open Linguify team for support, partnerships, or questions about "
+"our educational platform."
+msgstr ""
+
+#: public_web/views.py:183
+msgid "contact, support, partnerships, help, customer service"
+msgstr ""
+
+#: public_web/views.py:196
+msgid "Please fill in all required fields."
+msgstr ""
+
+#: public_web/views.py:231
+msgid "Message Sent - Open Linguify"
+msgstr ""
+
+#: public_web/views.py:232
+msgid "Thank you for your message. We will get back to you soon."
+msgstr ""
+
+#: public_web/views.py:240
+msgid "An error occurred while sending your message. Please try again later."
+msgstr ""
+
+#: public_web/views.py:418
+#, fuzzy
+#| msgid "This application is part of the Open Linguify educational suite."
+msgid "Applications - Open Linguify Educational Tools"
+msgstr "Cette application fait partie de la suite éducative Open Linguify."
+
+#: public_web/views.py:419
+msgid ""
+"Discover all Open Linguify applications: AI tutors, flashcards, quizzes, "
+"note-taking and more educational tools."
+msgstr ""
+
+#: public_web/views.py:420
+msgid ""
+"applications, educational tools, AI tutors, flashcards, quizzes, learning "
+"apps"
+msgstr ""
+
+#: public_web/views.py:427
+msgid "Applications - Open Linguify"
+msgstr ""
+
+#: public_web/views.py:428
+#, fuzzy
+#| msgid "Our Educational Apps"
+msgid "Educational applications"
+msgstr "Nos Applications Éducatives"
+
+#: public_web/views.py:449 public_web/views.py:468
+msgid "Application not found"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16
+msgid "Messages"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/contrib/sitemaps/apps.py:8
+msgid "Site Maps"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/contrib/staticfiles/apps.py:9
+msgid "Static Files"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/contrib/syndication/apps.py:7
+msgid "Syndication"
+msgstr ""
+
+#. Translators: String used to replace omitted page numbers in elided page
+#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:30
+msgid "…"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:32
+msgid "That page number is not an integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:33
+msgid "That page number is less than 1"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:34
+msgid "That page contains no results"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:22
+msgid "Enter a valid value."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:70
+msgid "Enter a valid domain name."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:153
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:775
+msgid "Enter a valid URL."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:200
+msgid "Enter a valid integer."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:211
+msgid "Enter a valid email address."
+msgstr ""
+
+#. Translators: "letters" means latin letters: a-z and A-Z.
+#: venv/lib/python3.12/site-packages/django/core/validators.py:289
+msgid ""
+"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:297
+msgid ""
+"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:309
+#: venv/lib/python3.12/site-packages/django/core/validators.py:318
+#: venv/lib/python3.12/site-packages/django/core/validators.py:332
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2220
+#, python-format
+msgid "Enter a valid %(protocol)s address."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:311
+msgid "IPv4"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:320
+#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:43
+msgid "IPv6"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:334
+msgid "IPv4 or IPv6"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:375
+msgid "Enter only digits separated by commas."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:381
+#, python-format
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:416
+#, python-format
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:425
+#, python-format
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:434
+#, python-format
+msgid "Ensure this value is a multiple of step size %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:441
+#, python-format
+msgid ""
+"Ensure this value is a multiple of step size %(limit_value)s, starting from "
+"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:473
+#, python-format
+msgid ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:491
+#, python-format
+msgid ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:514
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:366
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:405
+msgid "Enter a number."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:516
+#, python-format
+msgid "Ensure that there are no more than %(max)s digit in total."
+msgid_plural "Ensure that there are no more than %(max)s digits in total."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:521
+#, python-format
+msgid "Ensure that there are no more than %(max)s decimal place."
+msgid_plural "Ensure that there are no more than %(max)s decimal places."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:526
+#, python-format
+msgid ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:597
+#, python-format
+msgid ""
+"File extension “%(extension)s” is not allowed. Allowed extensions are: "
+"%(allowed_extensions)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:659
+msgid "Null characters are not allowed."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/base.py:1600
+#: venv/lib/python3.12/site-packages/django/forms/models.py:908
+#, fuzzy
+#| msgid "Brand"
+msgid "and"
+msgstr "Marque"
+
+#: venv/lib/python3.12/site-packages/django/db/models/base.py:1602
+#, python-format
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/constraints.py:22
+#, python-format
+msgid "Constraint “%(name)s” is violated."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:134
+#, python-format
+msgid "Value %(value)r is not a valid choice."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:135
+msgid "This field cannot be null."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:136
+msgid "This field cannot be blank."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:137
+#, python-format
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr ""
+
+#. Translators: The 'lookup_type' is one of 'date', 'year' or
+#. 'month'. Eg: "Title must be unique for pub_date year"
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:141
+#, python-format
+msgid ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:180
+#, python-format
+msgid "Field of type: %(field_type)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1162
+#, python-format
+msgid "“%(value)s” value must be either True or False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1163
+#, python-format
+msgid "“%(value)s” value must be either True, False, or None."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1165
+msgid "Boolean (Either True or False)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1215
+#, python-format
+msgid "String (up to %(max_length)s)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1217
+msgid "String (unlimited)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1326
+msgid "Comma-separated integers"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1427
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1431
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1566
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1435
+msgid "Date (without time)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1562
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD HH:MM[:ss[."
+"uuuuuu]][TZ] format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1570
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1575
+msgid "Date (with time)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1702
+#, python-format
+msgid "“%(value)s” value must be a decimal number."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1704
+msgid "Decimal number"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1864
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in [DD] [[HH:]MM:]ss[."
+"uuuuuu] format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1868
+#, fuzzy
+#| msgid "Documentation"
+msgid "Duration"
+msgstr "Documentation"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1920
+msgid "Email address"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1945
+msgid "File path"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2023
+#, python-format
+msgid "“%(value)s” value must be a float."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2025
+msgid "Floating point number"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2065
+#, python-format
+msgid "“%(value)s” value must be an integer."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2067
+msgid "Integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2163
+msgid "Big (8 byte) integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2180
+msgid "Small integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2188
+msgid "IPv4 address"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2219
+msgid "IP address"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2310
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2311
+#, python-format
+msgid "“%(value)s” value must be either None, True or False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2313
+msgid "Boolean (Either True, False or None)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2364
+msgid "Positive big integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2379
+msgid "Positive integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2394
+msgid "Positive small integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2410
+#, python-format
+msgid "Slug (up to %(max_length)s)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2446
+msgid "Text"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2526
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2530
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2534
+msgid "Time"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2642
+msgid "URL"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2666
+msgid "Raw binary data"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2731
+#, python-format
+msgid "“%(value)s” is not a valid UUID."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2733
+msgid "Universally unique identifier"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:244
+msgid "File"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:420
+msgid "Image"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:24
+msgid "A JSON object"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:26
+msgid "Value must be valid JSON."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:979
+#, python-format
+msgid "%(model)s instance with %(field)s %(value)r is not a valid choice."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:982
+msgid "Foreign Key (type determined by related field)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1276
+msgid "One-to-one relationship"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1333
+#, python-format
+msgid "%(from)s-%(to)s relationship"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1335
+#, python-format
+msgid "%(from)s-%(to)s relationships"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1383
+msgid "Many-to-many relationship"
+msgstr ""
+
+#. Translators: If found as last label character, these punctuation
+#. characters will prevent the default label_suffix to be appended to the label
+#: venv/lib/python3.12/site-packages/django/forms/boundfield.py:185
+msgid ":?.!"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:95
+msgid "This field is required."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:315
+msgid "Enter a whole number."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:486
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1267
+msgid "Enter a valid date."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:509
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1268
+msgid "Enter a valid time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:536
+msgid "Enter a valid date/time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:570
+msgid "Enter a valid duration."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:571
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:640
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:641
+msgid "No file was submitted."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:642
+msgid "The submitted file is empty."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:644
+#, python-format
+msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgid_plural ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:649
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:717
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:889
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:975
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1592
+#, python-format
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:977
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1096
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1590
+msgid "Enter a list of values."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1097
+msgid "Enter a complete value."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1339
+msgid "Enter a valid UUID."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1369
+msgid "Enter a valid JSON."
+msgstr ""
+
+#. Translators: This is the default suffix added to form field labels
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:97
+msgid ":"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:239
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:61
+#, python-format
+msgid ""
+"ManagementForm data is missing or has been tampered with. Missing fields: "
+"%(field_names)s. You may need to file a bug report if the issue persists."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:65
+#, python-format
+msgid "Please submit at most %(num)d form."
+msgid_plural "Please submit at most %(num)d forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:70
+#, python-format
+msgid "Please submit at least %(num)d form."
+msgid_plural "Please submit at least %(num)d forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:484
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:491
+msgid "Order"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
+msgid "Delete"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:901
+#, python-format
+msgid "Please correct the duplicate data for %(field)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:906
+#, python-format
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:913
+#, python-format
+msgid ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:922
+msgid "Please correct the duplicate values below."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1359
+msgid "The inline value did not match the parent instance."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1450
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1594
+#, python-format
+msgid "“%(pk)s” is not a valid value."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/utils.py:229
+#, python-format
+msgid ""
+"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:527
+msgid "Clear"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:528
+msgid "Currently"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:529
+msgid "Change"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:866
+msgid "Unknown"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:867
+msgid "Yes"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:868
+msgid "No"
+msgstr ""
+
+#. Translators: Please do not add spaces around commas.
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:873
+msgid "yes,no,maybe"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:903
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:920
+#, python-format
+msgid "%(size)d byte"
+msgid_plural "%(size)d bytes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:922
+#, python-format
+msgid "%s KB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:924
+#, python-format
+msgid "%s MB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:926
+#, python-format
+msgid "%s GB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:928
+#, python-format
+msgid "%s TB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:930
+#, python-format
+msgid "%s PB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:74
+msgid "p.m."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:75
+msgid "a.m."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:80
+msgid "PM"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:81
+msgid "AM"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:153
+msgid "midnight"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:155
+msgid "noon"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:7
+msgid "Monday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:8
+msgid "Tuesday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:9
+msgid "Wednesday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:10
+msgid "Thursday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:11
+msgid "Friday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:12
+msgid "Saturday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:13
+msgid "Sunday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:16
+msgid "Mon"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:17
+msgid "Tue"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:18
+msgid "Wed"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:19
+msgid "Thu"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:20
+msgid "Fri"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:21
+msgid "Sat"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:22
+msgid "Sun"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:25
+msgid "January"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:26
+msgid "February"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:27
+msgid "March"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:28
+msgid "April"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:29
+msgid "May"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:30
+msgid "June"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:31
+msgid "July"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:32
+msgid "August"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:33
+msgid "September"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:34
+msgid "October"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:35
+msgid "November"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:36
+msgid "December"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:39
+msgid "jan"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:40
+msgid "feb"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:41
+msgid "mar"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:42
+msgid "apr"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:43
+#, fuzzy
+#| msgid "Company"
+msgid "may"
+msgstr "Entreprise"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:44
+msgid "jun"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:45
+msgid "jul"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:46
+msgid "aug"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:47
+msgid "sep"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:48
+#, fuzzy
+#| msgid "Contact"
+msgid "oct"
+msgstr "Contact"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:49
+msgid "nov"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:50
+msgid "dec"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:53
+msgctxt "abbrev. month"
+msgid "Jan."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:54
+msgctxt "abbrev. month"
+msgid "Feb."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:55
+msgctxt "abbrev. month"
+msgid "March"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:56
+msgctxt "abbrev. month"
+msgid "April"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:57
+msgctxt "abbrev. month"
+msgid "May"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:58
+msgctxt "abbrev. month"
+msgid "June"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:59
+msgctxt "abbrev. month"
+msgid "July"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:60
+msgctxt "abbrev. month"
+msgid "Aug."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:61
+msgctxt "abbrev. month"
+msgid "Sept."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:62
+msgctxt "abbrev. month"
+msgid "Oct."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:63
+msgctxt "abbrev. month"
+msgid "Nov."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:64
+msgctxt "abbrev. month"
+msgid "Dec."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:67
+msgctxt "alt. month"
+msgid "January"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:68
+msgctxt "alt. month"
+msgid "February"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:69
+msgctxt "alt. month"
+msgid "March"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:70
+msgctxt "alt. month"
+msgid "April"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:71
+msgctxt "alt. month"
+msgid "May"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:72
+msgctxt "alt. month"
+msgid "June"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:73
+msgctxt "alt. month"
+msgid "July"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:74
+msgctxt "alt. month"
+msgid "August"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:75
+msgctxt "alt. month"
+msgid "September"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:76
+msgctxt "alt. month"
+msgid "October"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:77
+msgctxt "alt. month"
+msgid "November"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:78
+msgctxt "alt. month"
+msgid "December"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:20
+msgid "This is not a valid IPv6 address."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/text.py:76
+#, python-format
+msgctxt "String to return when truncating text"
+msgid "%(truncated_text)s…"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/text.py:287
+msgid "or"
+msgstr ""
+
+#. Translators: This string is used as a separator between list elements
+#: venv/lib/python3.12/site-packages/django/utils/text.py:306
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:135
+msgid ", "
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:8
+#, python-format
+msgid "%(num)d year"
+msgid_plural "%(num)d years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:9
+#, python-format
+msgid "%(num)d month"
+msgid_plural "%(num)d months"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:10
+#, python-format
+msgid "%(num)d week"
+msgid_plural "%(num)d weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:11
+#, python-format
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:12
+#, python-format
+msgid "%(num)d hour"
+msgid_plural "%(num)d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:13
+#, python-format
+msgid "%(num)d minute"
+msgid_plural "%(num)d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:29
+msgid "Forbidden"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:30
+msgid "CSRF verification failed. Request aborted."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:34
+msgid ""
+"You are seeing this message because this HTTPS site requires a “Referer "
+"header” to be sent by your web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:40
+msgid ""
+"If you have configured your browser to disable “Referer” headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for “same-"
+"origin” requests."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:45
+msgid ""
+"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
+"including the “Referrer-Policy: no-referrer” header, please remove them. The "
+"CSRF protection requires the “Referer” header to do strict referer checking. "
+"If you’re concerned about privacy, use alternatives like <a "
+"rel=\"noreferrer\" …> for links to third-party sites."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:54
+msgid ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:60
+msgid ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for “same-origin” requests."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:66
+msgid "More information is available with DEBUG=True."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:44
+msgid "No year specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:64
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:115
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:214
+msgid "Date out of range"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:94
+msgid "No month specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:147
+msgid "No day specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:194
+msgid "No week specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:353
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:384
+#, python-format
+msgid "No %(verbose_name_plural)s available"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:680
+#, python-format
+msgid ""
+"Future %(verbose_name_plural)s not available because %(class_name)s."
+"allow_future is False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:720
+#, python-format
+msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/detail.py:56
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:70
+msgid "Page is not “last”, nor can it be converted to an int."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:77
+#, python-format
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:173
+#, python-format
+msgid "Empty list and “%(class_name)s.allow_empty” is False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:49
+msgid "Directory indexes are not allowed here."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:51
+#, python-format
+msgid "“%(path)s” does not exist"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:68
+#: venv/lib/python3.12/site-packages/django/views/templates/directory_index.html:8
+#: venv/lib/python3.12/site-packages/django/views/templates/directory_index.html:11
+#, python-format
+msgid "Index of %(directory)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:7
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:204
+msgid "The install worked successfully! Congratulations!"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:206
+#, python-format
+msgid ""
+"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
+"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:208
+#, python-format
+msgid ""
+"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
+"%(version)s/ref/settings/#debug\" target=\"_blank\" "
+"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
+"configured any URLs."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:217
+#, fuzzy
+#| msgid "Documentation"
+msgid "Django Documentation"
+msgstr "Documentation"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:218
+msgid "Topics, references, &amp; how-to’s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:226
+msgid "Tutorial: A Polling App"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:227
+#, fuzzy
+#| msgid "Get Started in Minutes"
+msgid "Get started with Django"
+msgstr "Commencez en Minutes"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:235
+#, fuzzy
+#| msgid "Join Community"
+msgid "Django Community"
+msgstr "Rejoindre la Communauté"
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
+msgid "Connect, get help, or contribute"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/packageurl/contrib/django/models.py:88
+msgid ""
+"A short code to identify the type of this package. For example: gem for a "
+"Rubygem, docker for a container, pypi for a Python Wheel or Egg, maven for a "
+"Maven Jar, deb for a Debian package, etc."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/packageurl/contrib/django/models.py:99
+msgid ""
+"Package name prefix, such as Maven groupid, Docker image owner, GitHub user "
+"or organization, etc."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/packageurl/contrib/django/models.py:107
+msgid "Name of the package."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/packageurl/contrib/django/models.py:113
+msgid "Version of the package."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/packageurl/contrib/django/models.py:120
+msgid ""
+"Extra qualifying data for a package such as the name of an OS, architecture, "
+"distro, etc."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/packageurl/contrib/django/models.py:128
+msgid "Extra subpath within a package, relative to the package root."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/packageurl/contrib/django/models.py:177
+#, python-brace-format
+msgid "Value too long for field \"{field_name}\"."
+msgstr ""
+
+#~ msgid "A complete workspace to organize your tasks, projects, and ideas"
+#~ msgstr ""
+#~ "Un espace de travail complet pour organiser vos tâches, projets et idées"
+
+#~ msgid ""
+#~ "Create, organize, and track tasks with priorities, due dates, tags, and "
+#~ "progress tracking. Everything you need to stay productive."
+#~ msgstr ""
+#~ "Créez, organisez et suivez les tâches avec des priorités, des dates "
+#~ "d'échéance, des étiquettes et un suivi des progrès. Tout ce dont vous "
+#~ "avez besoin pour rester productif."
+
+#~ msgid ""
+#~ "Visualize your workflow with customizable kanban boards. Drag and drop "
+#~ "tasks between columns to track progress."
+#~ msgstr ""
+#~ "Visualisez votre flux de travail avec des tableaux kanban "
+#~ "personnalisables. Glissez-déposez les tâches entre les colonnes pour "
+#~ "suivre les progrès."
+
+#~ msgid ""
+#~ "Group related tasks into projects with progress tracking, deadlines, and "
+#~ "team collaboration features."
+#~ msgstr ""
+#~ "Regroupez les tâches liées en projets avec suivi des progrès, échéances "
+#~ "et fonctionnalités de collaboration d'équipe."
+
+#~ msgid "Rich Note-Taking"
+#~ msgstr "Prise de Notes Enrichie"
+
+#~ msgid ""
+#~ "Take notes with markdown support, attach them to tasks or projects, and "
+#~ "organize with tags and categories."
+#~ msgstr ""
+#~ "Prenez des notes avec support markdown, attachez-les aux tâches ou "
+#~ "projets, et organisez avec des étiquettes et catégories."
+
+#~ msgid "Smart Reminders"
+#~ msgstr "Rappels Intelligents"
+
+#~ msgid ""
+#~ "Set custom reminders for tasks and deadlines. Get notified at the right "
+#~ "time to stay on track."
+#~ msgstr ""
+#~ "Définissez des rappels personnalisés pour les tâches et échéances. "
+#~ "Recevez des notifications au bon moment pour rester sur la bonne voie."
+
+#~ msgid "For all students"
+#~ msgstr "Pour tous les étudiants"
