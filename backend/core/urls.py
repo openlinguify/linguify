@@ -111,6 +111,9 @@ urlpatterns = [
     
     # API Tags globaux (système cross-apps)
     path('api/v1/core/', include(tags_router.urls)),
+
+    # Subscription/Payment URLs
+    path('subscription/', include('core.subscription.urls')),
     
     # Compatibility redirect for old /course/ URL
     path('course/', RedirectView.as_view(url='/learning/', permanent=True)),

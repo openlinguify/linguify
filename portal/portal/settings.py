@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # For static files in production
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',  # Temporarily disabled to debug static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -139,14 +139,14 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
-# WhiteNoise configuration for production
-if is_production:
-    # Use StaticFilesStorage to avoid compression issues causing 0-byte files
-    STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
-
-    # WhiteNoise settings to ensure proper file serving
-    WHITENOISE_USE_FINDERS = True
-    WHITENOISE_AUTOREFRESH = True
+# WhiteNoise configuration for production (DISABLED FOR DEBUGGING)
+# if is_production:
+#     # Use StaticFilesStorage to avoid compression issues causing 0-byte files
+#     STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
+#
+#     # WhiteNoise settings to ensure proper file serving
+#     WHITENOISE_USE_FINDERS = True
+#     WHITENOISE_AUTOREFRESH = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

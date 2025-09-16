@@ -773,3 +773,15 @@ STRUCTURED_DATA_ORGANIZATION = {
         'https://github.com/openlinguify'
     ]
 }
+
+# =====================================================================
+# STRIPE CONFIGURATION SETTINGS
+# =====================================================================
+
+# Stripe keys (à ajouter dans .env)
+STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY', default='')
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY', default='')
+STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET', default='')
+
+# Configuration Stripe
+STRIPE_LIVE_MODE = env.bool('STRIPE_LIVE_MODE', default=False)  # False = test mode

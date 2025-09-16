@@ -1,0 +1,1 @@
+# backend/core/subscription - Module de gestion des abonnements Stripe
