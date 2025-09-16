@@ -19,8 +19,8 @@ if command -v poetry &> /dev/null; then
     poetry config virtualenvs.create false
     poetry config virtualenvs.in-project false
     
-    # Install dependencies with Poetry
-    poetry install --only=main --no-interaction --no-ansi
+    # Install dependencies with Poetry (no-root to avoid installing project itself)
+    poetry install --only=main --no-root --no-interaction --no-ansi
 else
     echo "==> Poetry not found, installing via pip..."
     python3 -m pip install poetry
@@ -30,7 +30,7 @@ else
     poetry config virtualenvs.in-project false
     
     # Try Poetry install, fallback to requirements.txt
-    if ! poetry install --only=main --no-interaction --no-ansi; then
+    if ! poetry install --only=main --no-root --no-interaction --no-ansi; then
         echo "==> Poetry install failed, falling back to requirements.txt..."
         python3 -m pip install -r requirements.txt
     fi
