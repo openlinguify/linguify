@@ -4947,3 +4947,122 @@ section {
         align-items: center;
     }
 }
+
+/* Hero Sponsor Wrapper */
+.hero-sponsor-wrapper {
+    margin-top: 2rem;
+    text-align: center;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.hero-sponsor-wrapper:hover {
+    opacity: 1;
+}
+
+/* Sponsorship Section Styles */
+.landing-sponsorship {
+    padding: 7rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #f1f5f9 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.landing-sponsorship::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, rgba(45, 91, 186, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.sponsorship-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+
+.sponsorship-main {
+    display: flex;
+    justify-content: center;
+    margin: 3rem 0;
+}
+
+.sponsorship-card-simple {
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sponsorship-card-simple:hover {
+    transform: translateY(-3px);
+}
+
+.sponsorship-card-simple iframe {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.sponsorship-card-simple:hover iframe {
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+}
+
+
+.sponsorship-card-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sponsorship-card-wrapper:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
+
+.sponsorship-card-wrapper iframe {
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.sponsorship-card-wrapper:hover iframe {
+    transform: scale(1.02);
+}
+
+
+/* Responsive Sponsorship Section */
+@media (max-width: 968px) {
+    .hero-sponsor-wrapper {
+        margin-top: 1.5rem;
+    }
+
+    .hero-sponsor-wrapper iframe {
+        width: 150px;
+        height: 38px;
+    }
+
+    .landing-sponsorship {
+        padding: 5rem 0;
+    }
+
+    .sponsorship-main {
+        margin: 2rem 0;
+    }
+
+    .sponsorship-card-simple iframe {
+        max-width: 100%;
+        height: auto;
+        width: 90vw;
+        max-width: 500px;
+    }
+}
