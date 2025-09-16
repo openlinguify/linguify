@@ -159,14 +159,35 @@ class RegisterForm(UserCreationForm):
                 raise forms.ValidationError(result['message'])
         return username
     
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            # Vérifier les domaines temporaires/jetables communs
+            disposable_domains = ['tempmail.com', '10minutemail.com', 'guerrillamail.com', 'mailinator.com']
+            domain = email.split('@')[-1].lower()
+            if domain in disposable_domains:
+                raise forms.ValidationError(_("Please use a permanent email address"))
+
+            # Vérifier les emails existants
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            if User.objects.filter(email=email).exists():
+                raise forms.ValidationError(_("An account with this email already exists"))
+        return email
+
     def clean(self):
         cleaned_data = super().clean()
         native_language = cleaned_data.get('native_language')
         target_language = cleaned_data.get('target_language')
-        
+
         if native_language and target_language and native_language == target_language:
             raise forms.ValidationError(_("Native language and target language cannot be the same"))
-        
+
+        # Validation des termes avec message explicite
+        terms_accepted = cleaned_data.get('terms')
+        if not terms_accepted:
+            raise forms.ValidationError(_("You must accept the terms and conditions to create an account"))
+
         return cleaned_data
     
     def save(self, commit=True):

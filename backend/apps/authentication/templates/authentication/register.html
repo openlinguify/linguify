@@ -202,10 +202,18 @@
                     <div class="checkbox-group">
                         {{ form.terms }}
                         <label class="checkbox-label" for="{{ form.terms.id_for_label }}">
-                            {% trans "I accept the" %}
-                            <a href="/api/auth/terms/accept-page/" target="_blank" style="color: var(--primary); font-weight: 600;">{% trans 'Terms and Conditions' %}</a>
-                            {% trans "and the" %}
-                            <a href="{% portal_url_with_lang 'privacy/' %}" target="_blank" style="color: var(--primary); font-weight: 600;">{% trans 'Privacy Policy' %}</a>
+                            <span class="terms-text">
+                                {% trans "I accept the" %}
+                                <a href="/terms/" target="_blank" style="color: var(--primary); font-weight: 600;">{% trans 'Terms and Conditions' %}</a>
+                                {% trans "and the" %}
+                                <a href="{% portal_url_with_lang 'privacy/' %}" target="_blank" style="color: var(--primary); font-weight: 600;">{% trans 'Privacy Policy' %}</a>
+                            </span>
+                            <div class="terms-status mt-2" id="termsStatus">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    {% trans "Required to create your account" %}
+                                </small>
+                            </div>
                         </label>
                         {% if form.terms.errors %}
                             <div class="error-message">
@@ -250,7 +258,9 @@
             'checkingAvailability': "{% trans 'Checking availability...' %}",
             'verificationError': "{% trans 'Error during verification' %}",
             'usernameTaken': "{% trans 'This username is already taken' %}",
-            'usernameAvailable': "{% trans 'This username is available' %}"
+            'usernameAvailable': "{% trans 'This username is available' %}",
+            'termsRequired': "{% trans 'You must accept the terms and conditions' %}",
+            'accountCreated': "{% trans 'Account created successfully!' %}"
         };
         console.log('🌐 Translations loaded:', window.TRANSLATIONS);
     </script>

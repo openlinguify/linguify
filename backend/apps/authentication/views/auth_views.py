@@ -68,23 +68,32 @@ class RegisterView(View):
                 
                 user.interface_language = interface_lang
                 user.save()
-                
+
+                # Log successful registration with terms acceptance
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.info(f'User {user.email} registered successfully with terms accepted: {user.terms_accepted}')
+
                 # Send verification email
                 try:
                     token = EmailVerificationService.create_verification_token(user)
                     email_sent = EmailVerificationService.send_verification_email(user, token, request)
-                    
+
                     if email_sent:
                         SecurityAuditLogger.log_email_verification_sent(user, token.id, client_ip)
-                    
-                    messages.success(request, _('Account created successfully! Please check your email to verify your account.'))
+                        logger.info(f'Verification email sent to {user.email}')
+
+                    # Success message with terms confirmation
+                    success_message = _('Account created successfully! Terms accepted and verification email sent. Please check your email.')
+                    messages.success(request, success_message)
                     return redirect(f'/auth/email-verification-waiting/?email={user.email}')
-                        
+
                 except Exception as email_error:
+                    logger.error(f'Failed to send verification email to {user.email}: {str(email_error)}')
                     SecurityAuditLogger.log_suspicious_activity(
-                        user.email, 
-                        f'Email sending failed: {str(email_error)}', 
-                        client_ip, 
+                        user.email,
+                        f'Email sending failed: {str(email_error)}',
+                        client_ip,
                         'ERROR'
                     )
                     messages.error(request, _('Account created but failed to send verification email. Please contact support.'))
