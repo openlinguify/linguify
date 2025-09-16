@@ -278,8 +278,12 @@ class NotificationHeader {
                 console.log('[NotificationHeader] Terms notification clicked:', notification);
                 console.log('[NotificationHeader] Notification data:', data);
 
+                // Debug: afficher toutes les données de la notification
+                console.log('[NotificationHeader] Notification data:', data);
+                console.log('[NotificationHeader] Action URL:', data.action_url);
+
                 // Vérifier l'URL d'action dans les données
-                if (data.action_url) {
+                if (data && data.action_url) {
                     console.log('[NotificationHeader] Redirecting to:', data.action_url);
                     window.location.href = data.action_url;
                     return;
@@ -292,10 +296,10 @@ class NotificationHeader {
                     message.toLowerCase().includes('conditions') ||
                     title.toLowerCase().includes('terms') ||
                     title.toLowerCase().includes('conditions')) {
-                    // Fallback vers le portal avec le bon port
-                    const portalUrl = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://openlinguify.com';
-                    const termsUrl = `${portalUrl}/annexes/terms/`;
-                    console.log('[NotificationHeader] Fallback redirect to:', termsUrl);
+                    // Fallback vers la page d'acceptation dans le backend
+                    const backendUrl = window.location.protocol + '//' + window.location.host;
+                    const termsUrl = `${backendUrl}/authentication/terms/accept/`;
+                    console.log('[NotificationHeader] Fallback redirect to terms acceptance page:', termsUrl);
                     window.location.href = termsUrl;
                     return;
                 }

@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
         acceptButton.disabled = true;
 
         // Make AJAX request
-        fetch('{% url "authentication:accept_terms_ajax" %}', {
+        fetch('/api/auth/terms/accept-ajax/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
