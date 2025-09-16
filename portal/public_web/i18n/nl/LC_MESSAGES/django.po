@@ -1839,11 +1839,11 @@ msgstr "Slimme Taakbeheer"
 
 #: public_web/templates/public_web/apps/app_todo.html:327
 msgid "Visual Workflow"
-msgstr ""
+msgstr "Visuele Workflow"
 
 #: public_web/templates/public_web/apps/app_todo.html:328
 msgid "Kanban boards that adapt to your process"
-msgstr ""
+msgstr "Kanban-borden die zich aanpassen aan uw proces"
 
 #: public_web/templates/public_web/apps/app_todo.html:338
 #, fuzzy
