@@ -146,14 +146,8 @@ urlpatterns = [
 # URLs with language prefix (for public website and authentication)
 urlpatterns += i18n_patterns(
     # Authentication (login/register pages) - with language prefix
-    path('auth/', include('apps.authentication.urls.auth')),
-    
-    # Careers/Jobs pages moved to portal
-    # path('careers/', include('core.jobs.urls_web', namespace='jobs_web')),
-    
-    # Blog moved to portal
-    # path('blog/', include('core.blog.urls', namespace='blog')),
-    
+    path('auth/', include('apps.authentication.urls.auth', namespace='auth')),
+
     # Redirect to dashboard for authenticated users, or to portal for others
     path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
     prefix_default_language=True,  # Add language prefix even for default language

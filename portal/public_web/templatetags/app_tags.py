@@ -187,24 +187,28 @@ def backend_url_with_lang(context, path=""):
     # Get current language from request context (more efficient)
     request = context.get('request')
     current_lang = getattr(request, 'LANGUAGE_CODE', 'en')
-    
+
     # Cache environment detection
     if not hasattr(backend_url_with_lang, '_is_production'):
         django_env = getattr(settings, 'DJANGO_ENV', 'development')
         backend_url_with_lang._is_production = (django_env == 'production' or not getattr(settings, 'DEBUG', True))
-    
+
     # Cache base URL
     if not hasattr(backend_url_with_lang, '_base_url'):
         if backend_url_with_lang._is_production:
             backend_url_with_lang._base_url = "https://app.openlinguify.com"
         else:
             backend_url_with_lang._base_url = "http://127.0.0.1:8000"
-    
+
     # Clean path and add language prefix
     if path and not path.startswith('/'):
         path = '/' + path
-    
-    # Add language prefix for internationalized URLs
+
+    # Special case: auth URLs include language parameter for middleware detection
+    if path.startswith('/auth/'):
+        return f"{backend_url_with_lang._base_url}/{current_lang}{path}?lang={current_lang}"
+
+    # Add language prefix for other internationalized URLs
     return f"{backend_url_with_lang._base_url}/{current_lang}{path}"
 
 

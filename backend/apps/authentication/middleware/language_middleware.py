@@ -45,10 +45,44 @@ class UserLanguageMiddleware(MiddlewareMixin):
                 translation.activate('en')
                 request.LANGUAGE_CODE = 'en'
         else:
-            # For anonymous users, check session or use default
-            language = request.session.get(LANGUAGE_SESSION_KEY, 'en')
+            # For anonymous users, detect language from multiple sources
+            language = None
+
+            # 1. Check URL parameter (from portal links)
+            if 'lang' in request.GET:
+                lang_param = request.GET.get('lang')
+                if lang_param in ['en', 'fr', 'es', 'nl']:
+                    language = lang_param
+                    logger.info(f"Language from URL parameter: {language}")
+
+            # 2. Check session
+            if not language:
+                language = request.session.get(LANGUAGE_SESSION_KEY)
+                if language:
+                    logger.info(f"Language from session: {language}")
+
+            # 3. Check Accept-Language header
+            if not language:
+                accept_language = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
+                if 'fr' in accept_language:
+                    language = 'fr'
+                elif 'es' in accept_language:
+                    language = 'es'
+                elif 'nl' in accept_language:
+                    language = 'nl'
+                else:
+                    language = 'en'
+                logger.info(f"Language from Accept-Language header: {language}")
+
+            # 4. Default fallback
+            if not language:
+                language = 'en'
+                logger.info(f"Using default language: {language}")
+
+            # Apply the detected language
             translation.activate(language)
+            request.session[LANGUAGE_SESSION_KEY] = language
             request.LANGUAGE_CODE = language
-            logger.info(f"Anonymous user - language: {language}")
+            logger.info(f"Anonymous user - final language: {language}")
 
         return None
