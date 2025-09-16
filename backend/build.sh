@@ -12,20 +12,18 @@ pip install -r requirements.txt
 
 # Compile translations
 echo "🌍 Compiling translations..."
-python manage.py compilemessages --settings=core.settings
+python manage.py compilemessages
 
 # Collect static files
 echo "📁 Collecting static files..."
-python manage.py collectstatic --noinput --settings=core.settings
+python manage.py collectstatic --noinput
 
-# Run migrations
+# Make migrations (don't assume they exist)
+echo "🗂️ Making migrations..."
+python manage.py makemigrations
+
+# Run migrations with fake-initial for first deploy
 echo "🗄️ Running migrations..."
-python manage.py migrate --settings=core.settings
-
-# Create superuser if environment variables are set
-echo "👤 Ensuring superuser exists..."
-echo "DEBUG: DJANGO_SUPERUSER_USERNAME=$DJANGO_SUPERUSER_USERNAME"
-echo "DEBUG: DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL" 
-python manage.py ensure_superuser --settings=core.settings
+python manage.py migrate --fake-initial
 
 echo "✅ Build complete!"

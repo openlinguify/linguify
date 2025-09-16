@@ -132,23 +132,14 @@ msgstr "Les mots de passe ne correspondent pas"
 msgid "Create your free account"
 msgstr "Créez votre compte gratuit"
 
-msgid "First name"
-msgstr "Prénom"
-
 msgid "Your first name"
 msgstr "Votre prénom"
-
-msgid "Last name"
-msgstr "Nom"
 
 msgid "Your last name"
 msgstr "Votre nom"
 
-msgid "Username"
-msgstr "Nom d'utilisateur"
-
 msgid "username"
-msgstr "nom_utilisateur"
+msgstr "Nom d'utilisateur"
 
 msgid "Email address"
 msgstr "Adresse email"
@@ -183,9 +174,6 @@ msgstr "Autre"
 msgid "Prefer not to say"
 msgstr "Préfère ne pas dire"
 
-msgid "Password"
-msgstr "Mot de passe"
-
 msgid "Confirm password"
 msgstr "Confirmer le mot de passe"
 
@@ -219,11 +207,6 @@ msgstr "J'accepte les conditions d'utilisation et la politique de confidentialit
 msgid "Create my account"
 msgstr "Créer mon compte"
 
-msgid "Already have an account?"
-msgstr "Déjà un compte ?"
-
-msgid "Log in"
-msgstr "Se connecter"
 
 msgid "By registering, you accept our"
 msgstr "En vous inscrivant, vous acceptez notre"

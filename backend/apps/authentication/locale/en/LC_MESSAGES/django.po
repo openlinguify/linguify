@@ -1,0 +1,129 @@
+# ENGLISH TRANSLATION FOR AUTHENTICATION
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify Authentication\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Login page
+msgid "Login"
+msgstr "Login"
+
+msgid "Email or username"
+msgstr "Email or username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Remember me"
+msgstr "Remember me"
+
+msgid "Forgot password?"
+msgstr "Forgot password?"
+
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
+msgid "Create an account"
+msgstr "Create an account"
+
+# Login messages
+msgid "Welcome, %(username)s!"
+msgstr "Welcome, %(username)s!"
+
+msgid "Invalid username or password."
+msgstr "Invalid username or password."
+
+msgid "Sign in to your account"
+msgstr "Sign in to your account"
+
+msgid "or"
+msgstr "or"
+
+msgid "Back to home"
+msgstr "Back to home"
+
+# Register page
+msgid "Sign up"
+msgstr "Sign up"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "First name"
+msgstr "First name"
+
+msgid "Last name"
+msgstr "Last name"
+
+msgid "Native language"
+msgstr "Native language"
+
+msgid "Target language"
+msgstr "Target language"
+
+msgid "I agree to the"
+msgstr "I agree to the"
+
+msgid "Terms and Conditions"
+msgstr "Terms and Conditions"
+
+msgid "Privacy Policy"
+msgstr "Privacy Policy"
+
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
+# Error messages
+msgid "Invalid username or password"
+msgstr "Invalid username or password"
+
+msgid "This email is already registered"
+msgstr "This email is already registered"
+
+msgid "This username is already taken"
+msgstr "This username is already taken"
+
+msgid "Username cannot be empty"
+msgstr "Username cannot be empty"
+
+msgid "Username must contain at least 3 characters"
+msgstr "Username must contain at least 3 characters"
+
+msgid "Username cannot exceed 30 characters"
+msgstr "Username cannot exceed 30 characters"
+
+msgid "Username can only contain letters, numbers, _ and -"
+msgstr "Username can only contain letters, numbers, _ and -"
+
+msgid "Username must contain at least one letter or number"
+msgstr "Username must contain at least one letter or number"
+
+msgid "This username is available"
+msgstr "This username is available"
+
+msgid "Native language and target language cannot be the same"
+msgstr "Native language and target language cannot be the same"
+
+msgid "Checking availability..."
+msgstr "Checking availability..."
+
+msgid "Error during verification"
+msgstr "Error during verification"
+
+msgid "Passwords do not match"
+msgstr "Passwords do not match"
