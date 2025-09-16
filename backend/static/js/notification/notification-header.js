@@ -298,7 +298,7 @@ class NotificationHeader {
                     title.toLowerCase().includes('conditions')) {
                     // Fallback vers la page d'acceptation dans le backend
                     const backendUrl = window.location.protocol + '//' + window.location.host;
-                    const termsUrl = `${backendUrl}/authentication/terms/accept/`;
+                    const termsUrl = `${backendUrl}/api/auth/terms/accept-page/`;
                     console.log('[NotificationHeader] Fallback redirect to terms acceptance page:', termsUrl);
                     window.location.href = termsUrl;
                     return;
