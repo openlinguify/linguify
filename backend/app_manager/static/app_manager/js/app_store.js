@@ -123,13 +123,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mettre à jour le contenu de la modal
         modalAppName.textContent = appName;
         
-        // Afficher l'icône appropriée dans la modal
+        // Afficher l'icône appropriée dans la modal (SÉCURISÉ)
         if (appIconImg) {
-            // Nouvelle structure avec images
-            modalAppIcon.innerHTML = `<img src="${appIcon}" alt="${appName} icon" style="width: 40px; height: 40px; object-fit: contain;">`;
+            // Nouvelle structure avec images - sanitize URL
+            const sanitizedIcon = appIcon.replace(/[<>"']/g, '');
+            const sanitizedName = appName.replace(/[<>"']/g, '');
+            modalAppIcon.innerHTML = `<img src="${sanitizedIcon}" alt="${sanitizedName} icon" style="width: 40px; height: 40px; object-fit: contain;">`;
         } else if (appIconI) {
-            // Ancienne structure avec icônes Bootstrap
-            modalAppIcon.innerHTML = `<i class="${appIcon}"></i>`;
+            // Ancienne structure avec icônes Bootstrap - sanitize class
+            const sanitizedClass = appIcon.replace(/[<>"']/g, '').replace(/[^a-zA-Z0-9\-_\s]/g, '');
+            modalAppIcon.innerHTML = `<i class="${sanitizedClass}"></i>`;
         } else {
             // Fallback
             modalAppIcon.innerHTML = `<i class="bi bi-app"></i>`;
@@ -239,15 +242,22 @@ document.addEventListener('DOMContentLoaded', function() {
     function showToast(message, type) {
         const toastContainer = document.querySelector('.toast-container');
         const isSuccess = type === 'success';
-        
+
         const toast = document.createElement('div');
         toast.className = `toast ${isSuccess ? 'bg-success' : 'bg-danger'} text-white`;
-        toast.innerHTML = `
-            <div class="toast-body d-flex align-items-center">
-                <i class="bi ${isSuccess ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'} me-2"></i>
-                ${message}
-            </div>
-        `;
+
+        // SÉCURISÉ: Créer les éléments DOM au lieu d'innerHTML
+        const toastBody = document.createElement('div');
+        toastBody.className = 'toast-body d-flex align-items-center';
+
+        const icon = document.createElement('i');
+        icon.className = `bi ${isSuccess ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'} me-2`;
+
+        const messageText = document.createTextNode(message);
+
+        toastBody.appendChild(icon);
+        toastBody.appendChild(messageText);
+        toast.appendChild(toastBody);
         
         toastContainer.appendChild(toast);
         
