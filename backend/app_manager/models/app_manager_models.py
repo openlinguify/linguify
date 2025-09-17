@@ -195,7 +195,10 @@ class App(models.Model):
                         frontend_components = manifest_data.get('frontend_components', {})
                         icon_name = frontend_components.get('icon', 'Package')
                         route_path = frontend_components.get('route', f'/{app_code}')
-                        
+
+                        # Use the existing installable flag from manifest to determine if app should be enabled
+                        is_enabled = installable  # Apps are enabled only if installable is True in manifest
+
                         # Create or update the App record
                         app_obj, created = cls.objects.update_or_create(
                             code=app_code,
@@ -207,6 +210,7 @@ class App(models.Model):
                                 'category': category,
                                 'version': version,
                                 'installable': installable,
+                                'is_enabled': is_enabled,  # Enable only ready apps
                                 'manifest_data': manifest_data,
                             }
                         )
