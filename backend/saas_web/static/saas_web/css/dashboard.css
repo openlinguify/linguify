@@ -370,53 +370,21 @@ body.bg-dark-blue .empty-state .linguify-gradient-btn * {
     cursor: grab;
 }
 
-/* Subtle draggable indicator on hover */
+/* Subtle hover effect only */
 .app-link[draggable="true"]:hover .app-icon-simple {
-    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3);
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
 }
 
-.app-link[draggable="true"]:hover .app-icon-simple::after {
-    content: '⋮⋮';
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: rgba(45, 91, 186, 0.9);
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    opacity: 0.8;
-}
-
-/* Beautiful dragging state */
+/* Simple dragging state */
 .app-card-simple.dragging {
-    opacity: 0.9;
-    transform: rotate(5deg) scale(1.1);
+    opacity: 0.7;
+    transform: scale(0.95);
     z-index: 1000;
     cursor: grabbing !important;
-    filter: drop-shadow(0 20px 40px rgba(45, 91, 186, 0.4));
 }
 
-.app-card-simple.dragging .app-icon-simple {
-    box-shadow: 0 15px 40px rgba(45, 91, 186, 0.5);
-    transform: scale(1.1);
-    filter: brightness(1.1);
-    border: 2px solid rgba(45, 91, 186, 0.3) !important;
-}
-
-.app-card-simple.dragging .app-name-simple {
-    color: #2D5BBA;
-    font-weight: 700;
-    text-shadow: 0 2px 8px rgba(45, 91, 186, 0.3);
-}
-
-/* Drop zone highlighting */
+/* Simple drop zone highlighting */
 .app-link.drag-over {
     position: relative;
 }
@@ -424,38 +392,17 @@ body.bg-dark-blue .empty-state .linguify-gradient-btn * {
 .app-link.drag-over::before {
     content: '';
     position: absolute;
-    top: -15px;
-    left: -15px;
-    right: -15px;
-    bottom: -15px;
-    border: 3px dashed #26E4B8;
-    border-radius: 20px;
-    background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(38, 228, 184, 0.1) 100%);
-    animation: dragPulse 1s ease-in-out infinite alternate;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border: 2px solid #26E4B8;
+    border-radius: 12px;
     z-index: 1;
+    transition: all 0.2s ease;
 }
 
-@keyframes dragPulse {
-    0% {
-        background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(38, 228, 184, 0.05) 100%);
-        border-color: rgba(38, 228, 184, 0.5);
-        transform: scale(0.98);
-    }
-    100% {
-        background: linear-gradient(135deg, rgba(45, 91, 186, 0.15) 0%, rgba(38, 228, 184, 0.15) 100%);
-        border-color: rgba(38, 228, 184, 0.8);
-        transform: scale(1.02);
-    }
-}
-
-/* Grid container during drag */
-.apps-grid-container.drag-active {
-    background: linear-gradient(135deg, rgba(45, 91, 186, 0.02) 0%, rgba(38, 228, 184, 0.02) 100%);
-    border-radius: 20px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
-    border: 1px dashed rgba(45, 91, 186, 0.1);
-}
+/* Grid container during drag - removed for cleaner look */
 
 /* Smooth reordering animations */
 .app-link {
