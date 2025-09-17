@@ -1,0 +1,120 @@
+# DUTCH TRANSLATION FOR SAAS_WEB
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify SaaS Web\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Dashboard
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Welcome back"
+msgstr "Welkom terug"
+
+msgid "Your Apps"
+msgstr "Jouw apps"
+
+msgid "Recent Activity"
+msgstr "Recente activiteit"
+
+msgid "Statistics"
+msgstr "Statistieken"
+
+msgid "No applications installed"
+msgstr "Geen applicaties geïnstalleerd"
+
+msgid "Explore the App Store to discover and install learning applications."
+msgstr "Verken de App Store om leerapplicaties te ontdekken en te installeren."
+
+msgid "Explore App Store"
+msgstr "Verken App Store"
+
+# App Store
+msgid "App Store"
+msgstr "App Store"
+
+msgid "All Apps"
+msgstr "Alle apps"
+
+msgid "Installed"
+msgstr "Geïnstalleerd"
+
+msgid "Install"
+msgstr "Installeren"
+
+msgid "Uninstall"
+msgstr "Verwijderen"
+
+msgid "Free"
+msgstr "Gratis"
+
+msgid "Premium"
+msgstr "Premium"
+
+# Settings
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "Profile"
+msgstr "Profiel"
+
+msgid "Account"
+msgstr "Account"
+
+msgid "Preferences"
+msgstr "Voorkeuren"
+
+msgid "Language"
+msgstr "Taal"
+
+msgid "Theme"
+msgstr "Thema"
+
+msgid "Save changes"
+msgstr "Wijzigingen opslaan"
+
+msgid "Customize your Linguify experience"
+msgstr "Pas je Linguify-ervaring aan"
+
+msgid "Search settings..."
+msgstr "Zoek instellingen..."
+
+msgid "App Manager"
+msgstr "App-beheer"
+
+msgid "Profile & Account"
+msgstr "Profiel & Account"
+
+msgid "Manage your personal information and account settings"
+msgstr "Beheer je persoonlijke informatie en accountinstellingen"
+
+# Common
+msgid "Search"
+msgstr "Zoeken"
+
+msgid "Logout"
+msgstr "Uitloggen"
+
+msgid "Help"
+msgstr "Hulp"
+
+msgid "Support"
+msgstr "Ondersteuning"
+
+msgid "An error occurred. Please try again."
+msgstr "Er is een fout opgetreden. Probeer het opnieuw."
+
+msgid "Open chat"
+msgstr "Chat openen"

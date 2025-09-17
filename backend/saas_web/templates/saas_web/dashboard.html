@@ -1,7 +1,8 @@
 {% extends 'saas_web/base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Dashboard - Open Linguify{% endblock %}
+{% block title %}{% trans "Dashboard" %} - Open Linguify{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'saas_web/css/dashboard.css' %}">
@@ -48,11 +49,11 @@
     {% else %}
     <div class="empty-state mb-5">
         <i class="bi bi-app-indicator"></i>
-        <h5 class="mb-3">Aucune application installée</h5>
-        <p class="mb-4">Explorez l'App Store pour découvrir et installer des applications d'apprentissage.</p>
+        <h5 class="mb-3">{% trans "No applications installed" %}</h5>
+        <p class="mb-4">{% trans "Explore the App Store to discover and install learning applications." %}</p>
         <a href="{% url 'saas_web:app_store' %}" class="app-store-btn">
             <i class="bi bi-shop"></i>
-            Explorer l'App Store
+            {% trans "Explore App Store" %}
         </a>
     </div>
     {% endif %}

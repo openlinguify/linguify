@@ -427,16 +427,15 @@ LANGUAGES = [
 
 # Locale paths - for internationalization
 LOCALE_PATHS = [
-    # os.path.join(BASE_DIR, 'public_web/i18n'), # Moved to portal
     os.path.join(BASE_DIR, 'apps/authentication/locale'),
     os.path.join(BASE_DIR, 'apps/notification/locale'),
-    os.path.join(BASE_DIR, 'saas_web/i18n'),
+    os.path.join(BASE_DIR, 'saas_web/locale'),
     os.path.join(BASE_DIR, 'apps/course/i18n'),
     os.path.join(BASE_DIR, 'apps/revision/i18n'),
     os.path.join(BASE_DIR, 'apps/notebook/i18n'),
     os.path.join(BASE_DIR, 'apps/quizz/i18n'),
     os.path.join(BASE_DIR, 'apps/language_ai/i18n'),
-    # os.path.join(BASE_DIR, 'locale'),  # Deprecated global translations
+    # os.path.join(BASE_DIR, 'locale'),
 ]
 
 # Translation middleware already added in MIDDLEWARE list

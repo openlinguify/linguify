@@ -1,0 +1,120 @@
+# FRENCH TRANSLATION FOR SAAS_WEB
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify SaaS Web\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# Dashboard
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+msgid "Welcome back"
+msgstr "Bon retour"
+
+msgid "Your Apps"
+msgstr "Vos Applications"
+
+msgid "Recent Activity"
+msgstr "Activité récente"
+
+msgid "Statistics"
+msgstr "Statistiques"
+
+msgid "No applications installed"
+msgstr "Aucune application installée"
+
+msgid "Explore the App Store to discover and install learning applications."
+msgstr "Explorez l'App Store pour découvrir et installer des applications d'apprentissage."
+
+msgid "Explore App Store"
+msgstr "Explorer l'App Store"
+
+# App Store
+msgid "App Store"
+msgstr "Magasin"
+
+msgid "All Apps"
+msgstr "Toutes les Apps"
+
+msgid "Installed"
+msgstr "Installées"
+
+msgid "Install"
+msgstr "Installer"
+
+msgid "Uninstall"
+msgstr "Désinstaller"
+
+msgid "Free"
+msgstr "Gratuit"
+
+msgid "Premium"
+msgstr "Premium"
+
+# Settings
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Account"
+msgstr "Compte"
+
+msgid "Preferences"
+msgstr "Préférences"
+
+msgid "Language"
+msgstr "Langue"
+
+msgid "Theme"
+msgstr "Thème"
+
+msgid "Save changes"
+msgstr "Enregistrer les modifications"
+
+msgid "Customize your Linguify experience"
+msgstr "Personnalisez votre expérience Linguify"
+
+msgid "Search settings..."
+msgstr "Rechercher des paramètres..."
+
+msgid "App Manager"
+msgstr "Gestionnaire d'Apps"
+
+msgid "Profile & Account"
+msgstr "Profil & Compte"
+
+msgid "Manage your personal information and account settings"
+msgstr "Gérez vos informations personnelles et paramètres de compte"
+
+# Common
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Logout"
+msgstr "Déconnexion"
+
+msgid "Help"
+msgstr "Aide"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "An error occurred. Please try again."
+msgstr "Une erreur s'est produite. Veuillez réessayer."
+
+msgid "Open chat"
+msgstr "Ouvrir le chat"
