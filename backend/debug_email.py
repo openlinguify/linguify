@@ -135,7 +135,7 @@ def main():
         return
     
     # Test 3: Email simple
-    test_email = "linguify.info@gmail.com"  # Changé pour utiliser linguify.info@gmail.com
+    test_email = os.getenv('TEST_EMAIL')  # Email de test depuis variable d'environnement
     simple_ok = test_simple_email(test_email)
     print()
     

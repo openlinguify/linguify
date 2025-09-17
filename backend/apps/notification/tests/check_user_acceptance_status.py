@@ -12,7 +12,7 @@ User = get_user_model()
 
 def check_acceptance():
     try:
-        user = User.objects.get(email='linguify.info@gmail.com')
+        user = User.objects.get(email=os.getenv('TEST_EMAIL'))
         print("📊 STATUT APRÈS ACCEPTATION")
         print("=" * 50)
         print(f"Email: {user.email}")

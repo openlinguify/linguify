@@ -103,7 +103,7 @@ def reset_unread_terms_notifications():
 
     # Pour l'utilisateur de test
     try:
-        user = User.objects.get(email='linguify.info@gmail.com')
+        user = User.objects.get(email=os.getenv('TEST_EMAIL'))
 
         # Marquer les dernières notifications terms comme non lues
         notifications = Notification.objects.filter(
@@ -125,7 +125,7 @@ def reset_unread_terms_notifications():
             print("ℹ️ Toutes les notifications sont déjà non lues")
 
     except User.DoesNotExist:
-        print("⚠️ Utilisateur linguify.info@gmail.com non trouvé")
+        print(f"⚠️ Utilisateur {os.getenv("TEST_EMAIL")} non trouvé")
 
 if __name__ == "__main__":
     print("🚀 Open Linguify - Correction des Notifications")
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     print("✨ TERMINÉ")
     print("=" * 70)
     print("\n📱 Pour tester:")
-    print("1. Connectez-vous avec linguify.info@gmail.com")
+    print(f"1. Connectez-vous avec {os.getenv("TEST_EMAIL")}")
     print("2. Cliquez sur une notification de conditions d'utilisation")
     print("3. Vous devriez être redirigé vers les terms")
 

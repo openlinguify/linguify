@@ -22,11 +22,12 @@ def test_multilingual_notifications():
 
     # Récupérer l'utilisateur test
     try:
-        user = User.objects.get(email='louisphilippelalou@outlook.com')
+        test_email = os.getenv('TEST_EMAIL')
+        user = User.objects.get(email=test_email)
         print(f"✓ Utilisateur trouvé : {user.username} ({user.email})")
         print(f"  Langue d'interface actuelle : {user.interface_language}")
     except User.DoesNotExist:
-        print("❌ Utilisateur louisphilippelalou@outlook.com non trouvé")
+        print(f"❌ Utilisateur {test_email} non trouvé")
         return False
 
     # Tester les notifications dans différentes langues

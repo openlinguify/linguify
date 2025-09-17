@@ -70,9 +70,9 @@ Les templates email sont testés et compatibles avec :
 
 ## Configuration
 
-Les emails de test sont envoyés à : `linguify.info@gmail.com`
+Les emails de test sont envoyés à l'adresse configurée dans la variable d'environnement `TEST_EMAIL`.
 
-L'utilisateur de test est : `louisphilippelalou@outlook.com`
+L'utilisateur de test est configuré via la variable `TEST_EMAIL` dans le fichier `.env`
 
 ## Traductions
 

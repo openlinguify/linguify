@@ -20,11 +20,12 @@ def test_multilingual_emails():
 
     # Récupérer l'utilisateur test
     try:
-        user = User.objects.get(email='louisphilippelalou@outlook.com')
+        test_email = os.getenv('TEST_EMAIL')
+        user = User.objects.get(email=test_email)
         print(f"✓ Utilisateur trouvé : {user.username} ({user.email})")
         print(f"  Langue d'interface actuelle : {user.interface_language}")
     except User.DoesNotExist:
-        print("❌ Utilisateur louisphilippelalou@outlook.com non trouvé")
+        print(f"❌ Utilisateur {test_email} non trouvé")
         return False
 
     # Tester les emails dans différentes langues
@@ -52,7 +53,7 @@ def test_multilingual_emails():
 
         if success:
             print(f"  ✅ Email envoyé avec succès en {lang_name}")
-            print(f"  📧 Email destiné à: linguify.info@gmail.com")
+            print(f"  📧 Email destiné à: {test_email}")
             print(f"  📍 Langue utilisée: {lang_code}")
         else:
             print(f"  ❌ Échec de l'envoi de l'email en {lang_name}")
@@ -69,7 +70,8 @@ if __name__ == "__main__":
     print("TEST DES EMAILS MULTILINGUES - CONDITIONS D'UTILISATION")
     print("=" * 70)
     print("Ce script va envoyer des emails de test dans 4 langues différentes")
-    print("Les emails seront envoyés à: linguify.info@gmail.com")
+    test_email = os.getenv('TEST_EMAIL')
+    print(f"Les emails seront envoyés à: {test_email}")
     print()
 
     success = test_multilingual_emails()
@@ -79,7 +81,7 @@ if __name__ == "__main__":
         print("\n📋 RÉSUMÉ:")
         print("• 4 emails envoyés (EN, FR, NL, ES)")
         print("• Chaque email traduit selon interface_language de l'utilisateur")
-        print("• Vérifiez linguify.info@gmail.com pour voir les emails")
+        print(f"• Vérifiez {test_email} pour voir les emails")
         print("\n💡 Les templates utilisent maintenant Django i18n avec:")
         print("  - Templates de base en anglais")
         print("  - Traductions automatiques selon la langue utilisateur")

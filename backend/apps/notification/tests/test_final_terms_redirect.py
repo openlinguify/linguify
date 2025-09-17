@@ -28,7 +28,7 @@ def test_final_redirect():
 
     # Utiliser l'utilisateur de test
     try:
-        user = User.objects.get(email='linguify.info@gmail.com')
+        user = User.objects.get(email=os.getenv('TEST_EMAIL'))
         print(f"✓ Utilisateur: {user.username} ({user.email})")
         print(f"  Langue: {user.interface_language}")
     except User.DoesNotExist:

@@ -48,10 +48,10 @@ def test_real_terms_acceptance():
 
     # 1. Récupérer l'utilisateur
     try:
-        user = User.objects.get(email='linguify.info@gmail.com')
+        user = User.objects.get(email=os.getenv('TEST_EMAIL'))
         print(f"✓ Utilisateur trouvé: {user.username} ({user.email})")
     except User.DoesNotExist:
-        print("❌ Utilisateur linguify.info@gmail.com non trouvé")
+        print(f"❌ Utilisateur {os.getenv("TEST_EMAIL")} non trouvé")
         return False
 
     # 2. Vérifier le statut AVANT
@@ -154,7 +154,7 @@ User = get_user_model()
 
 def check_acceptance():
     try:
-        user = User.objects.get(email='linguify.info@gmail.com')
+        user = User.objects.get(email=os.getenv('TEST_EMAIL'))
         print("📊 STATUT APRÈS ACCEPTATION")
         print("=" * 50)
         print(f"Email: {{user.email}}")

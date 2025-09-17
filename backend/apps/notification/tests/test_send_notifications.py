@@ -23,17 +23,17 @@ User = get_user_model()
 def send_test_notifications():
     """Envoie des notifications de test dans toutes les langues"""
 
-    # Utiliser l'utilisateur linguify.info@gmail.com
+    # Utiliser l'utilisateur de test depuis TEST_EMAIL
     try:
-        user = User.objects.get(email='linguify.info@gmail.com')
+        user = User.objects.get(email=os.getenv('TEST_EMAIL'))
         print(f"✓ Utilisateur trouvé : {user.username} ({user.email})")
         original_language = user.interface_language
     except User.DoesNotExist:
         # Créer l'utilisateur s'il n'existe pas
-        print("⚠️ Utilisateur linguify.info@gmail.com non trouvé, création...")
+        print(f"⚠️ Utilisateur {os.getenv("TEST_EMAIL")} non trouvé, création...")
         user = User.objects.create_user(
             username='linguify_test',
-            email='linguify.info@gmail.com',
+            email=os.getenv('TEST_EMAIL'),
             password='TestPassword123!',
             first_name='Test',
             last_name='Linguify',
@@ -205,7 +205,7 @@ if __name__ == "__main__":
 
     if count > 0:
         print(f"\n✨ {count} notifications créées avec succès!")
-        print("📧 Connectez-vous avec linguify.info@gmail.com pour les voir")
+        print(f"📧 Connectez-vous avec {os.getenv("TEST_EMAIL")} pour les voir")
     else:
         print("\n⚠️ Aucune notification n'a pu être créée")
         sys.exit(1)

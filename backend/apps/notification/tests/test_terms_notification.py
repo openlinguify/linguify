@@ -23,13 +23,13 @@ User = get_user_model()
 def send_terms_notification():
     """Envoie une notification et email de conditions d'utilisation"""
 
-    # Utiliser l'utilisateur linguify.info@gmail.com
+    # Utiliser l'utilisateur de test depuis TEST_EMAIL
     try:
-        user = User.objects.get(email='linguify.info@gmail.com')
+        user = User.objects.get(email=os.getenv('TEST_EMAIL'))
         print(f"✓ Utilisateur trouvé : {user.username} ({user.email})")
         print(f"  Langue d'interface : {user.interface_language}")
     except User.DoesNotExist:
-        print("❌ Utilisateur linguify.info@gmail.com non trouvé")
+        print(f"❌ Utilisateur {os.getenv("TEST_EMAIL")} non trouvé")
         return False
 
     print("\n" + "=" * 70)
