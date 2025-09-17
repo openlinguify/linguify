@@ -38,7 +38,7 @@
 }
 
 .app-card {
-    background: white;
+    background: rgb(253, 12, 12);
     border-radius: 16px;
     border: 1px solid #0b70f5;
     transition: all 0.3s ease;
@@ -49,7 +49,6 @@
 
 .app-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     border-color: var(--primary-color);
 }
 
@@ -229,7 +228,6 @@
     transform: translateY(-2px);
     background: transparent !important;
     border: none !important;
-    box-shadow: none !important;
 }
 
 /* 🎯 Force transparent background for all app card states */
@@ -239,7 +237,6 @@
 .app-card-simple:active {
     background: transparent !important;
     border: none !important;
-    box-shadow: none !important;
 }
 
 .app-icon-simple {
@@ -252,7 +249,6 @@
     font-size: 1.8rem;
     color: white;
     margin: 0 auto 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .app-name-simple {
@@ -335,7 +331,6 @@ body.bg-gray-light .app-card-simple,
 body.bg-gray .app-card-simple {
     background: rgba(255, 255, 255, 0.4) !important;
     border: 1px solid rgba(0, 0, 0, 0.03);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     backdrop-filter: blur(3px);
 }
 
@@ -346,7 +341,6 @@ body.bg-white .app-card-simple:focus,
 body.bg-white .app-card-simple:active {
     background: transparent !important;
     border: none !important;
-    box-shadow: none !important;
     backdrop-filter: none !important;
 }
 
@@ -359,7 +353,6 @@ body.bg-cool .app-card-simple,
 body.bg-nature .app-card-simple {
     background: rgba(255, 255, 255, 0.95) !important;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
 }
 
@@ -368,14 +361,7 @@ body.bg-dark .app-card-simple,
 body.bg-dark-blue .app-card-simple {
     background: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(15px);
-}
-
-/* Enhanced text contrast on app icons */
-body.bg-dark .app-icon-simple,
-body.bg-dark-blue .app-icon-simple {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 /* Better section titles visibility */
@@ -417,7 +403,6 @@ body.bg-linguify-light .welcome-banner,
 body.bg-linguify-accent .welcome-banner,
 body.bg-linguify-purple .welcome-banner {
     background: linear-gradient(135deg, rgba(45, 91, 186, 0.95) 0%, rgba(0, 212, 170, 0.95) 100%) !important;
-    box-shadow: 0 8px 32px rgba(45, 91, 186, 0.2);
 }
 
 /* 🎯 Drag & Drop Styles */
@@ -446,7 +431,6 @@ body.bg-linguify-purple .welcome-banner {
 
 /* Subtle indicator that the item is draggable */
 .app-link[draggable="true"]:hover .app-card-simple {
-    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.2);
     border: 1px solid rgba(45, 91, 186, 0.2);
 }
 
@@ -467,7 +451,6 @@ body.bg-linguify-purple .welcome-banner {
     transform: rotate(2deg) scale(0.95);
     z-index: 1000;
     cursor: grabbing !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
     background: rgba(255, 255, 255, 0.9) !important;
     border: 2px dashed #2D5BBA !important;
     border-radius: 12px !important;
@@ -526,11 +509,6 @@ body.bg-dark-blue .app-link.drag-over::before {
     animation: dragHighlightDark 0.5s ease-in-out infinite alternate;
 }
 
-/* Drag preview ghost image styling */
-.app-card-simple.dragging .app-icon-simple {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-}
-
 .app-card-simple.dragging .app-name-simple {
     color: #64748b;
 }
@@ -568,9 +546,76 @@ body.bg-dark-blue .app-link.drag-over::before {
     .app-card-simple[draggable="true"] {
         cursor: default;
     }
-    
+
     .app-link.drag-over::before {
         border-width: 3px;
         animation-duration: 0.3s;
     }
+}
+
+/* 🎨 Linguify Empty State Styling - FORCE OVERRIDE */
+.empty-state h5,
+.empty-state .mb-3,
+div.empty-state h5,
+div.empty-state .mb-3,
+.content-area .empty-state h5,
+.content-area .empty-state .mb-3 {
+    color: #6b7280 !important;
+    font-weight: 600 !important;
+}
+
+.empty-state p,
+.empty-state .mb-4,
+div.empty-state p,
+div.empty-state .mb-4,
+.content-area .empty-state p,
+.content-area .empty-state .mb-4 {
+    color: #6b7280 !important;
+}
+
+/* Nuclear option - override ANY text in empty state */
+.empty-state * {
+    color: #6b7280 !important;
+}
+
+/* But preserve button and icon colors */
+.empty-state .linguify-gradient-btn,
+.empty-state .linguify-gradient-btn *,
+.empty-state .linguify-gradient-icon i {
+    color: #ffffff !important;
+}
+
+.empty-state .linguify-gradient-icon {
+    background: linear-gradient(135deg, #2D5BBA 0%, #26E4B8 100%);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.empty-state .linguify-gradient-icon i {
+    font-size: 2.5rem;
+    color: #ffffff;
+}
+
+.empty-state .linguify-gradient-btn {
+    background: linear-gradient(135deg, #2D5BBA 0%, #26E4B8 100%);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.empty-state .linguify-gradient-btn:hover {
+    transform: translateY(-2px);
+    color: #ffffff;
+    text-decoration: none;
 }
