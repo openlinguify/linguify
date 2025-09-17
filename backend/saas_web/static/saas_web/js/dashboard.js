@@ -374,13 +374,21 @@ function saveAppOrder(appOrder) {
         if (data.success) {
             console.log('App order saved successfully');
             // Show notification only in development mode
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '8000') {
+            const isDevelopment = window.location.hostname === 'localhost' ||
+                                window.location.hostname === '127.0.0.1' ||
+                                window.location.port === '8000' ||
+                                window.location.port === '8001';
+            if (isDevelopment) {
                 showNotification('Ordre des applications sauvegardé', 'success');
             }
         } else {
             console.error('Failed to save app order:', data.error);
             // Show error notification only in development mode
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '8000') {
+            const isDevelopment = window.location.hostname === 'localhost' ||
+                                window.location.hostname === '127.0.0.1' ||
+                                window.location.port === '8000' ||
+                                window.location.port === '8001';
+            if (isDevelopment) {
                 showNotification('Erreur lors de la sauvegarde', 'error');
             }
         }
@@ -388,7 +396,11 @@ function saveAppOrder(appOrder) {
     .catch(error => {
         console.error('Error saving app order:', error);
         // Show error notification only in development mode
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '8000') {
+        const isDevelopment = window.location.hostname === 'localhost' ||
+                            window.location.hostname === '127.0.0.1' ||
+                            window.location.port === '8000' ||
+                            window.location.port === '8001';
+        if (isDevelopment) {
             showNotification('Erreur de connexion', 'error');
         }
     });
