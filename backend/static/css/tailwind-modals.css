@@ -3986,7 +3986,8 @@ button.bg-linguify-gradient:hover,
   box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
   padding: 0.5rem 0 !important;
   margin-top: 0.25rem !important;
-  z-index: 10001 !important; /* Ensure dropdown appears above all deck content */
+  z-index: 99999 !important; /* Ensure dropdown appears above table header and all content */
+  position: absolute !important; /* Float above, don't push content */
 }
 
 .dropdown-item {
@@ -4037,6 +4038,31 @@ button.bg-linguify-gradient:hover,
 .dropdown-divider {
   margin: 0.5rem 0 !important;
   border-color: var(--linguify-gray-200, #e5e7eb) !important;
+}
+
+/* Specific task dropdown overrides */
+.task-row-linguify .dropdown-menu,
+.col-actions .dropdown-menu,
+[id^="dropdown-container-"] .dropdown-menu {
+  z-index: 99999 !important;
+  position: fixed !important; /* Use fixed to escape stacking context */
+}
+
+/* Ensure parent containers don't create stacking context */
+.col-actions {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.task-row-linguify .col-actions > div {
+  position: relative !important;
+  z-index: 999 !important;
+}
+
+/* Force dropdown menus to appear above sticky header */
+.dropdown-menu.show {
+  z-index: 99999 !important;
+  position: fixed !important;
 }
 
 /* Remove mobile overrides entirely */
@@ -5885,8 +5911,6 @@ button.bg-linguify-gradient:hover,
     background: linear-gradient(135deg, var(--linguify-gray-50) 0%, #ffffff 100%);
     position: sticky;
     top: 0;
-    z-index: 100; /* Higher z-index to ensure it stays on top */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow when sticky */
 }
 
 .table-header-sticky th {
@@ -6096,15 +6120,39 @@ thead .col-selector .form-check {
 .status-btn-table {
     background: none;
     border: none;
-    padding: 4px;
+    padding: 8px;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    min-height: 32px;
 }
 
 .priority-btn-table:hover,
 .status-btn-table:hover {
     background-color: rgba(45, 91, 186, 0.1);
+    transform: scale(1.1);
+}
+
+/* Make priority stars more visible */
+.priority-btn-table i {
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+}
+
+.priority-btn-table i.bi-star-fill {
+    color: #fbbf24 !important; /* Yellow star */
+}
+
+.priority-btn-table i.bi-star {
+    color: #9ca3af !important; /* Gray star */
+}
+
+.priority-btn-table:hover i.bi-star {
+    color: #fbbf24 !important; /* Show yellow on hover */
 }
 
 /* Task Title Container - Single Line */

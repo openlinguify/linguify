@@ -1260,6 +1260,10 @@ class TaskListTableHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView)
         filter_stage = request.GET.get('stage', '')
         filter_project = request.GET.get('project', '')
         filter_priority = request.GET.get('priority', '')
+
+        # Debug logging
+        print(f"DEBUG TaskListTableHTMXView: GET parameters = {dict(request.GET)}")
+        print(f"DEBUG TaskListTableHTMXView: user = {user}")
         
         # Base queryset
         tasks = Task.objects.filter(user=user, active=True)
@@ -1279,16 +1283,65 @@ class TaskListTableHTMXView(LoginRequiredMixin, HTMXResponseMixin, TemplateView)
             
         if filter_priority:
             tasks = tasks.filter(priority=filter_priority)
-        
-        tasks = tasks.order_by('-created_at')
-        
+
+        # Order by with direction support - handle Django QueryDict
+        order_by = request.GET.get('order_by', 'state')
+        order_dir = request.GET.get('order_dir', 'asc')
+
+        # Extract from list if needed (Django QueryDict returns lists)
+        if isinstance(order_by, list):
+            order_by = order_by[0] if order_by else 'state'
+        if isinstance(order_dir, list):
+            order_dir = order_dir[0] if order_dir else 'asc'
+
+        # Debug logging
+        print(f"DEBUG TaskListTableHTMXView: order_by = {order_by}, order_dir = {order_dir}")
+
+        # Determine direction prefix
+        dir_prefix = '' if order_dir == 'asc' else '-'
+
+        # Apply sorting based on field and direction
+        if order_by == 'due_date':
+            if order_dir == 'asc':
+                tasks = tasks.order_by('due_date', 'created_at')
+            else:
+                tasks = tasks.order_by('-due_date', '-created_at')
+        elif order_by == 'priority':
+            if order_dir == 'asc':
+                tasks = tasks.order_by('priority', 'due_date')  # 0 first, then 1
+            else:
+                tasks = tasks.order_by('-priority', 'due_date')  # 1 first, then 0
+        elif order_by == 'title':
+            tasks = tasks.order_by(f'{dir_prefix}title')
+        elif order_by == 'state':
+            tasks = tasks.order_by(f'{dir_prefix}state', '-priority', 'due_date')
+        elif order_by == 'personal_stage_type__name':
+            tasks = tasks.order_by(f'{dir_prefix}personal_stage_type__name', 'title')
+        elif order_by == 'project__name':
+            # Handle null projects properly - nulls always go to end
+            from django.db.models import F
+            if order_dir == 'asc':
+                tasks = tasks.order_by(F('project__name').asc(nulls_last=True), 'title')
+            else:
+                tasks = tasks.order_by(F('project__name').desc(nulls_last=True), 'title')
+        elif order_by == 'created':
+            tasks = tasks.order_by(f'{dir_prefix}created_at')
+        else:  # default: state
+            tasks = tasks.order_by('state', '-priority', 'due_date')
+
+        # Debug: Print first few task titles to verify sorting
+        task_titles = [task.title for task in tasks[:5]]
+        print(f"DEBUG TaskListTableHTMXView: First 5 task titles after sorting: {task_titles}")
+
         context = {
             'tasks': tasks,
             'search_query': search_query,
-            'filters': {
+            'current_filters': {
                 'stage': filter_stage,
                 'project': filter_project,
                 'priority': filter_priority,
+                'order_by': order_by,
+                'order_dir': order_dir,
             }
         }
         return self.render_htmx_response(context)

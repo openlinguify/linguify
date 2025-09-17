@@ -23,70 +23,66 @@
                                     <label class="form-check-label" for="selectAll"></label>
                                 </div>
                             </th>
-                            <th class="col-priority sortable" data-column="priority"
-                                hx-get="{% url 'todo:task_list_table_htmx' %}"
-                                hx-vals='{"order_by": "priority", "order_dir": "{% if current_filters.order_by == 'priority' and current_filters.order_dir == 'asc' %}desc{% else %}asc{% endif %}"}'
-                                hx-target="#task-table-container"
-                                hx-swap="innerHTML"
-                                style="cursor: pointer;">
+                            <th class="col-priority sortable" data-column="priority" style="cursor: pointer;">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <i class="bi bi-star" title="{% trans 'Priority' %}"></i>
                                     {% if current_filters.order_by == 'priority' %}
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
+                                    {% else %}
+                                    <i class="bi bi-chevron-expand ms-1 text-muted" style="font-size: 0.7rem;"></i>
                                     {% endif %}
                                 </div>
                             </th>
-                            <th class="col-status sortable" data-column="status"
-                                hx-get="{% url 'todo:task_list_table_htmx' %}"
-                                hx-vals='{"order_by": "state", "order_dir": "{% if current_filters.order_by == 'state' and current_filters.order_dir == 'asc' %}desc{% else %}asc{% endif %}"}'
-                                hx-target="#task-table-container"
-                                hx-swap="innerHTML"
-                                style="cursor: pointer;">
+                            <th class="col-status sortable" data-column="status" style="cursor: pointer;">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <i class="bi bi-check-circle" title="{% trans 'Status' %}"></i>
                                     {% if current_filters.order_by == 'state' %}
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
+                                    {% else %}
+                                    <i class="bi bi-chevron-expand ms-1 text-muted" style="font-size: 0.7rem;"></i>
                                     {% endif %}
                                 </div>
                             </th>
-                            <th class="col-title sortable"
-                                data-column="title"
-                                hx-get="{% url 'todo:task_list_table_htmx' %}"
-                                hx-vals='{"order_by": "title", "order_dir": "{% if current_filters.order_by == 'title' and current_filters.order_dir == 'asc' %}desc{% else %}asc{% endif %}"}'
-                                hx-target="#task-table-container"
-                                hx-swap="innerHTML"
-                                style="cursor: pointer;">
+                            <th class="col-title sortable" data-column="title" style="cursor: pointer;">
                                 <div class="d-flex align-items-center">
                                     <span>{% trans "Title" %}</span>
                                     {% if current_filters.order_by == 'title' %}
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
+                                    {% else %}
+                                    <i class="bi bi-chevron-expand ms-1 text-muted" style="font-size: 0.7rem;"></i>
                                     {% endif %}
                                 </div>
                             </th>
-                            <th class="col-stage sortable" data-column="stage" data-sort="personal_stage_type__name">
+                            <th class="col-stage sortable" data-column="stage" style="cursor: pointer;">
                                 <div class="d-flex align-items-center">
                                     <span>{% trans "Stage" %}</span>
                                     {% if current_filters.order_by == 'personal_stage_type__name' %}
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
+                                    {% else %}
+                                    <i class="bi bi-chevron-expand ms-1 text-muted" style="font-size: 0.7rem;"></i>
                                     {% endif %}
                                 </div>
                             </th>
-                            <th class="col-project sortable" data-column="project" data-sort="project__name">
+                            <th class="col-project sortable" data-column="project" style="cursor: pointer;">
                                 <div class="d-flex align-items-center">
                                     <span>{% trans "Project" %}</span>
                                     {% if current_filters.order_by == 'project__name' %}
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
+                                    {% else %}
+                                    <i class="bi bi-chevron-expand ms-1 text-muted" style="font-size: 0.7rem;"></i>
                                     {% endif %}
                                 </div>
                             </th>
                             <th class="col-tags" data-column="tags">
                                 {% trans "Tags" %}
                             </th>
-                            <th class="col-due-date sortable" data-column="due-date" data-sort="due_date">
+                            <th class="col-due-date sortable" data-column="due-date" style="cursor: pointer;">
                                 <div class="d-flex align-items-center">
                                     <span>{% trans "Due Date" %}</span>
                                     {% if current_filters.order_by == 'due_date' %}
                                     <i class="bi bi-chevron-{% if current_filters.order_dir == 'desc' %}down{% else %}up{% endif %} ms-1"></i>
+                                    {% else %}
+                                    <i class="bi bi-chevron-expand ms-1 text-muted" style="font-size: 0.7rem;"></i>
                                     {% endif %}
                                 </div>
                             </th>
@@ -354,76 +350,91 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Prevent double-click on table headers from causing layout shifts
-    let isProcessing = false;
+    console.log('Page loaded, sorting functionality ready');
 
-    // Track click timing to detect double clicks
-    let lastClickTime = 0;
-    const DOUBLE_CLICK_THRESHOLD = 300; // milliseconds
+    // Track current sort state
+    let currentSort = { column: null, direction: 'asc' };
 
+    // Handle sorting clicks
     document.querySelectorAll('.table-header-sticky th.sortable').forEach(function(header) {
         header.addEventListener('click', function(e) {
-            const currentTime = Date.now();
-            const timeDiff = currentTime - lastClickTime;
+            e.preventDefault();
 
-            // If this is a double-click (quick successive clicks)
-            if (timeDiff < DOUBLE_CLICK_THRESHOLD) {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
+            const column = this.getAttribute('data-column');
+            const orderByMap = {
+                'priority': 'priority',
+                'status': 'state',
+                'title': 'title',
+                'stage': 'personal_stage_type__name',
+                'project': 'project__name',
+                'due-date': 'due_date'
+            };
+
+            const orderBy = orderByMap[column];
+            if (!orderBy) return;
+
+            // Determine direction
+            let direction = 'asc';
+            if (currentSort.column === column) {
+                // Same column clicked - toggle direction
+                direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
             }
 
-            // If already processing a request, prevent additional clicks
-            if (isProcessing) {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            }
+            // Update current sort state
+            currentSort = { column: column, direction: direction };
 
-            lastClickTime = currentTime;
+            // Build URL
+            const url = `/todo/htmx/tasks/table/?order_by=${orderBy}&order_dir=${direction}`;
+
+            console.log(`Sorting by ${orderBy} ${direction}`);
+
+            // Make HTMX request using fetch
+            console.log(`Making request to: ${url}`);
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'HX-Request': 'true',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(html => {
+                console.log('HTMX request completed successfully, updating content');
+                document.getElementById('task-table-container').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('HTMX request failed:', error);
+            });
+
+            // Update visual indicators
+            updateSortIndicators(column, direction);
         });
     });
 
-    // Listen for HTMX events to track request state
-    document.body.addEventListener('htmx:beforeRequest', function(evt) {
-        if (evt.target.matches('.table-header-sticky th.sortable')) {
-            isProcessing = true;
-            // Add visual feedback
-            evt.target.style.opacity = '0.7';
-        }
-    });
-
-    document.body.addEventListener('htmx:afterRequest', function(evt) {
-        if (evt.target.matches('.table-header-sticky th.sortable')) {
-            isProcessing = false;
-            // Remove visual feedback
-            evt.target.style.opacity = '1';
-        }
-    });
-
-    // Prevent column width changes during HTMX swaps
-    document.body.addEventListener('htmx:beforeSwap', function(evt) {
-        if (evt.detail.target.id === 'task-table-container') {
-            // Store current table width
-            const table = document.getElementById('tasksTable');
-            if (table) {
-                const computedWidth = window.getComputedStyle(table).width;
-                table.style.width = computedWidth;
-            }
-        }
-    });
-
-    document.body.addEventListener('htmx:afterSwap', function(evt) {
-        if (evt.detail.target.id === 'task-table-container') {
-            // Restore natural table width after a brief delay
-            setTimeout(function() {
-                const table = document.getElementById('tasksTable');
-                if (table) {
-                    table.style.width = '';
+    function updateSortIndicators(activeColumn, direction) {
+        // Reset all indicators
+        document.querySelectorAll('.table-header-sticky th.sortable').forEach(function(th) {
+            const icon = th.querySelector('i.bi-chevron-up, i.bi-chevron-down, i.bi-chevron-expand');
+            if (icon) {
+                const column = th.getAttribute('data-column');
+                if (column === activeColumn) {
+                    // Active column - show direction
+                    icon.className = direction === 'asc' ? 'bi bi-chevron-up ms-1' : 'bi bi-chevron-down ms-1';
+                    icon.classList.remove('text-muted');
+                } else {
+                    // Inactive column - show neutral
+                    icon.className = 'bi bi-chevron-expand ms-1 text-muted';
+                    icon.style.fontSize = '0.7rem';
                 }
-            }, 100);
-        }
-    });
+            }
+        });
+    }
 });
 </script>
 {% endblock %}
