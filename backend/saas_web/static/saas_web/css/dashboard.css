@@ -138,6 +138,18 @@
     background: transparent !important;
 }
 
+/* System apps icons - override the transparent background */
+.app-icon-simple[style*="linear-gradient"] {
+    background: initial !important;
+}
+
+/* System app specific styling */
+.system-app .app-icon-simple {
+    background: initial !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
 .app-name-simple {
     font-size: 0.85rem;
     font-weight: 600;

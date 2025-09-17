@@ -22,7 +22,6 @@
 <div class="content-area" {% if user.is_authenticated %}data-user-id="{{ user.id|default:'null' }}" data-username="{{ user.username|default:'' }}" data-csrf-token="{{ csrf_token }}"{% endif %}>
     <!-- Quick Actions Banner -->
 
-
     <!-- Installed Apps Section -->
 
     {% if installed_apps %}
@@ -45,14 +44,48 @@
             </div>
         </a>
         {% endfor %}
+
+        <!-- App Store System App -->
+        <a href="{% url 'saas_web:app_store' %}" class="text-decoration-none app-link system-app">
+            <div class="app-card-simple">
+                <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
+                    <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 48px; height: 48px; object-fit: contain;">
+                </div>
+                <h6 class="app-name-simple">{% trans "App Store" %}</h6>
+            </div>
+        </a>
+
+        <!-- Settings System App -->
+        <a href="{% url 'saas_web:settings' %}" class="text-decoration-none app-link system-app">
+            <div class="app-card-simple">
+                <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
+                    <img src="{% static 'img/settings.png' %}" alt="{% trans 'Settings' %}" style="width: 48px; height: 48px; object-fit: contain;">
+                </div>
+                <h6 class="app-name-simple">{% trans "Settings" %}</h6>
+            </div>
+        </a>
     </div>
     {% else %}
-    <div class="empty-state mb-5 text-center p-5">
-        <h5 class="mb-3">{% trans "No applications installed" %}</h5>
-        <p class="mb-4 mx-auto" style="max-width: 400px;">{% trans "Explore the App Store to discover and install learning applications." %}</p>
-        <a href="{% url 'saas_web:app_store' %}" class="linguify-gradient-btn">
-            <i class="bi bi-shop-window me-2"></i>
-            {% trans "Explore App Store" %}
+    <!-- Show system apps when no user apps are installed -->
+    <div class="apps-grid-container" id="systemApps">
+        <!-- App Store System App -->
+        <a href="{% url 'saas_web:app_store' %}" class="text-decoration-none app-link system-app">
+            <div class="app-card-simple">
+                <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
+                    <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 48px; height: 48px; object-fit: contain;">
+                </div>
+                <h6 class="app-name-simple">{% trans "App Store" %}</h6>
+            </div>
+        </a>
+
+        <!-- Settings System App -->
+        <a href="{% url 'saas_web:settings' %}" class="text-decoration-none app-link system-app">
+            <div class="app-card-simple">
+                <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
+                    <img src="{% static 'img/settings.png' %}" alt="{% trans 'Settings' %}" style="width: 48px; height: 48px; object-fit: contain;">
+                </div>
+                <h6 class="app-name-simple">{% trans "Settings" %}</h6>
+            </div>
         </a>
     </div>
     {% endif %}
