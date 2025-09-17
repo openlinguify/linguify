@@ -163,3 +163,133 @@ class UserAppService:
             'static_icon': AppIconService.get_static_icon_url(app.code),
             'color_gradient': AppIconService.get_color_gradient(app.color),
         }
+
+    @classmethod
+    def toggle_app(cls, user, app_id):
+        """
+        Toggle an app for a user (enable/disable).
+
+        Args:
+            user: The user instance
+            app_id: ID of the app to toggle
+
+        Returns:
+            dict: Result of the toggle operation
+        """
+        try:
+            app = App.objects.get(id=app_id, is_enabled=True)
+            user_settings = cls.get_or_create_user_settings(user)
+
+            if user_settings.enabled_apps.filter(id=app_id).exists():
+                # Disable app
+                user_settings.enabled_apps.remove(app)
+                is_enabled = False
+                action = 'disabled'
+            else:
+                # Enable app
+                user_settings.enabled_apps.add(app)
+                is_enabled = True
+                action = 'enabled'
+
+            # Clear cache
+            from .cache_service import UserAppCacheService
+            UserAppCacheService.clear_user_apps_cache_for_user(user)
+
+            return {
+                'success': True,
+                'is_enabled': is_enabled,
+                'action': action,
+                'app_name': app.display_name
+            }
+
+        except App.DoesNotExist:
+            return {
+                'success': False,
+                'error': 'App not found or disabled'
+            }
+        except Exception as e:
+            logger.error(f"Error toggling app {app_id} for user {user.id}: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+
+    @classmethod
+    def get_user_enabled_apps(cls, user):
+        """
+        Get user's enabled apps (alias for compatibility).
+
+        Args:
+            user: The user instance
+
+        Returns:
+            list: List of enabled apps
+        """
+        return cls.get_user_installed_apps(user)
+
+    @classmethod
+    def bulk_toggle_apps(cls, user, app_configs):
+        """
+        Toggle multiple apps at once.
+
+        Args:
+            user: The user instance
+            app_configs: List of app configurations
+
+        Returns:
+            dict: Results of bulk toggle operation
+        """
+        results = []
+        user_settings = cls.get_or_create_user_settings(user)
+
+        for config in app_configs:
+            app_id = config.get('app_id')
+            action = config.get('action', 'toggle')
+
+            try:
+                app = App.objects.get(id=app_id, is_enabled=True)
+                is_currently_enabled = user_settings.enabled_apps.filter(id=app_id).exists()
+
+                if action == 'enable' and not is_currently_enabled:
+                    user_settings.enabled_apps.add(app)
+                    results.append({'app_id': app_id, 'action': 'enabled', 'success': True})
+                elif action == 'disable' and is_currently_enabled:
+                    user_settings.enabled_apps.remove(app)
+                    results.append({'app_id': app_id, 'action': 'disabled', 'success': True})
+                elif action == 'toggle':
+                    if is_currently_enabled:
+                        user_settings.enabled_apps.remove(app)
+                        results.append({'app_id': app_id, 'action': 'disabled', 'success': True})
+                    else:
+                        user_settings.enabled_apps.add(app)
+                        results.append({'app_id': app_id, 'action': 'enabled', 'success': True})
+                else:
+                    results.append({'app_id': app_id, 'action': 'no_change', 'success': True})
+
+            except App.DoesNotExist:
+                results.append({'app_id': app_id, 'error': 'App not found', 'success': False})
+            except Exception as e:
+                results.append({'app_id': app_id, 'error': str(e), 'success': False})
+
+        # Clear cache once for all changes
+        from .cache_service import UserAppCacheService
+        UserAppCacheService.clear_user_apps_cache_for_user(user)
+
+        return {
+            'success': True,
+            'results': results,
+            'total_processed': len(app_configs)
+        }
+
+    @classmethod
+    def get_user_app_settings(cls, user):
+        """
+        Get user app settings (alias for compatibility).
+
+        Args:
+            user: The user instance
+
+        Returns:
+            UserAppSettings: The user's app settings
+        """
+        return cls.get_or_create_user_settings(user)

@@ -1,3 +1,4 @@
+import os
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -26,7 +27,7 @@ def contact_view(request):
     email = data.get('email')
     subject = data.get('subject')
     message = data.get('message')
-    recipient = data.get('recipient', 'linguify.info@gmail.com')
+    recipient = data.get('recipient', os.getenv('DEFAULT_CONTACT_EMAIL', settings.DEFAULT_FROM_EMAIL))
 
     # Validation des données
     if not all([name, email, subject, message]):

@@ -1,12 +1,6 @@
 # app_manager/urls.py
 from django.urls import path
 from .views import *
-from .views.app_manager_api_views import (
-    user_apps_fast_api,
-    app_store_categories_api,
-    bulk_app_toggle_api,
-    app_installation_status_api
-)
 
 app_name = 'app_manager'
 

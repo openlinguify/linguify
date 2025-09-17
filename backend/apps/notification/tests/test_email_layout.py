@@ -19,7 +19,8 @@ def test_email_layout():
     """Test l'email avec le layout corrigé"""
 
     try:
-        user = User.objects.get(email='louisphilippelalou@outlook.com')
+        test_email = os.getenv('TEST_EMAIL')
+        user = User.objects.get(email=test_email)
         print(f"✓ Utilisateur trouvé : {user.username}")
     except User.DoesNotExist:
         print("❌ Utilisateur non trouvé")
@@ -40,7 +41,7 @@ def test_email_layout():
         print("  • Header : fond bleu solide (pas de gradient)")
         print("  • Logo : amélioré avec inline-block et line-height")
         print("  • Body : fond uni (pas de gradient)")
-        print("\n📧 Vérifiez linguify.info@gmail.com pour voir les améliorations")
+        print(f"\n📧 Vérifiez {test_email} pour voir les améliorations")
     else:
         print("❌ Échec de l'envoi")
 

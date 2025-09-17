@@ -204,34 +204,46 @@ function handleDragStart(e) {
     draggedElement = this; // this is now the app-link
     draggedIndex = parseInt(this.getAttribute('data-app-index'));
     const appName = this.getAttribute('data-app-name');
-    
+
     // Set drag state
     isDragging = true;
     dragStartTime = Date.now();
-    
+
     console.log(`🚁 Drag started for: ${appName} at index ${draggedIndex}`);
-    
+
     // Don't prevent default here - let the drag system work
-    // e.preventDefault(); 
-    
+    // e.preventDefault();
+
+    // Add drag-active class to container to show drag indicators
+    const appsContainer = document.querySelector('.apps-grid-container');
+    if (appsContainer) {
+        appsContainer.classList.add('drag-active');
+    }
+
     // Add dragging class for visual feedback to the card inside
     const appCard = this.querySelector('.app-card-simple');
     if (appCard) {
         appCard.classList.add('dragging');
         appCard.style.cursor = 'grabbing';
     }
-    
+
     // Set drag data - include app name for easier tracking
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', appName);
     e.dataTransfer.setData('application/app-index', draggedIndex.toString());
-    
+
     console.log(`📦 Drag data set: ${appName}`);
 }
 
 function handleDragEnd(e) {
     console.log('🏁 Drag ended');
-    
+
+    // Remove drag-active class from container to hide drag indicators
+    const appsContainer = document.querySelector('.apps-grid-container');
+    if (appsContainer) {
+        appsContainer.classList.remove('drag-active');
+    }
+
     // Reset visual state for the card inside
     const appCard = this.querySelector('.app-card-simple');
     if (appCard) {
@@ -240,17 +252,17 @@ function handleDragEnd(e) {
         appCard.style.transform = '';
         appCard.style.cursor = 'grab';
     }
-    
+
     // Reset drag state with a small delay to prevent immediate click
     setTimeout(() => {
         isDragging = false;
     }, 100);
-    
+
     // Remove all drop zone highlights
     document.querySelectorAll('.app-link').forEach(link => {
         link.classList.remove('drag-over');
     });
-    
+
     draggedElement = null;
     draggedIndex = null;
 }
@@ -361,16 +373,24 @@ function saveAppOrder(appOrder) {
     .then(data => {
         if (data.success) {
             console.log('App order saved successfully');
-            // Optional: Show success notification
-            showNotification('Ordre des applications sauvegardé', 'success');
+            // Show notification only in development mode
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '8000') {
+                showNotification('Ordre des applications sauvegardé', 'success');
+            }
         } else {
             console.error('Failed to save app order:', data.error);
-            showNotification('Erreur lors de la sauvegarde', 'error');
+            // Show error notification only in development mode
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '8000') {
+                showNotification('Erreur lors de la sauvegarde', 'error');
+            }
         }
     })
     .catch(error => {
         console.error('Error saving app order:', error);
-        showNotification('Erreur de connexion', 'error');
+        // Show error notification only in development mode
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '8000') {
+            showNotification('Erreur de connexion', 'error');
+        }
     });
 }
 

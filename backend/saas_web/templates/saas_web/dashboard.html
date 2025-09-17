@@ -1,7 +1,8 @@
 {% extends 'saas_web/base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Dashboard - Open Linguify{% endblock %}
+{% block title %}{% trans "Dashboard" %} - Open Linguify{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'saas_web/css/dashboard.css' %}">
@@ -20,7 +21,6 @@
 <!-- Content Area -->
 <div class="content-area" {% if user.is_authenticated %}data-user-id="{{ user.id|default:'null' }}" data-username="{{ user.username|default:'' }}" data-csrf-token="{{ csrf_token }}"{% endif %}>
     <!-- Quick Actions Banner -->
-
 
     <!-- Installed Apps Section -->
 
@@ -44,19 +44,51 @@
             </div>
         </a>
         {% endfor %}
+
+        <!-- App Store System App -->
+        <a href="{% url 'saas_web:app_store' %}" class="text-decoration-none app-link system-app">
+            <div class="app-card-simple">
+                <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
+                    <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 48px; height: 48px; object-fit: contain;">
+                </div>
+                <h6 class="app-name-simple">{% trans "App Store" %}</h6>
+            </div>
+        </a>
+
+        <!-- Settings System App -->
+        <a href="{% url 'saas_web:settings' %}" class="text-decoration-none app-link system-app">
+            <div class="app-card-simple">
+                <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
+                    <img src="{% static 'img/settings.png' %}" alt="{% trans 'Settings' %}" style="width: 48px; height: 48px; object-fit: contain;">
+                </div>
+                <h6 class="app-name-simple">{% trans "Settings" %}</h6>
+            </div>
+        </a>
     </div>
     {% else %}
-    <div class="empty-state mb-5">
-        <i class="bi bi-app-indicator"></i>
-        <h5 class="mb-3">Aucune application installée</h5>
-        <p class="mb-4">Explorez l'App Store pour découvrir et installer des applications d'apprentissage.</p>
-        <a href="{% url 'saas_web:app_store' %}" class="app-store-btn">
-            <i class="bi bi-shop"></i>
-            Explorer l'App Store
+    <!-- Show system apps when no user apps are installed -->
+    <div class="apps-grid-container" id="systemApps">
+        <!-- App Store System App -->
+        <a href="{% url 'saas_web:app_store' %}" class="text-decoration-none app-link system-app">
+            <div class="app-card-simple">
+                <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
+                    <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 48px; height: 48px; object-fit: contain;">
+                </div>
+                <h6 class="app-name-simple">{% trans "App Store" %}</h6>
+            </div>
+        </a>
+
+        <!-- Settings System App -->
+        <a href="{% url 'saas_web:settings' %}" class="text-decoration-none app-link system-app">
+            <div class="app-card-simple">
+                <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
+                    <img src="{% static 'img/settings.png' %}" alt="{% trans 'Settings' %}" style="width: 48px; height: 48px; object-fit: contain;">
+                </div>
+                <h6 class="app-name-simple">{% trans "Settings" %}</h6>
+            </div>
         </a>
     </div>
     {% endif %}
-
 </div>
 
 <!-- Chat géré par le bouton global -->

@@ -9,10 +9,14 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 from ..models.app_manager_models import App, UserAppSettings
 from ..serializers.app_manager_serializers import AppSerializer
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +147,7 @@ class AppToggleAPI(View):
                 'app_name': app.display_name
             })
             
-        except App.DoesNotExist:
+        except (App.DoesNotExist, Http404):
             logger.warning(f"User {request.user.id} tried to toggle non-existent app {app_id}")
             return JsonResponse({
                 'success': False,
@@ -477,4 +481,201 @@ def debug_apps(request):
         'user_created': created,
         'can_add_apps': request.user.is_staff
     })
+
+
+# ===== OPTIMIZED API ENDPOINTS =====
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_apps_fast_api(request):
+    """
+    Ultra-fast API to get user's installed apps.
+    Uses aggressive caching and minimal data transfer.
+    """
+    try:
+        from ..services.cache_service import UserAppCacheService
+        from ..services.user_app_service import UserAppService
+
+        # Try cache first
+        cached_apps = UserAppCacheService.get_user_apps_cache(request.user.id)
+
+        if cached_apps is not None:
+            return Response({
+                'success': True,
+                'apps': cached_apps,
+                'cached': True,
+                'count': len(cached_apps)
+            })
+
+        # Fallback to service if cache miss
+        apps = UserAppService.get_user_installed_apps(request.user)
+        UserAppCacheService.set_user_apps_cache(request.user.id, apps)
+
+        return Response({
+            'success': True,
+            'apps': apps,
+            'cached': False,
+            'count': len(apps)
+        })
+
+    except Exception as e:
+        logger.error(f"Error in user_apps_fast_api for user {request.user.id}: {e}")
+        return Response({
+            'success': False,
+            'error': 'Internal server error'
+        }, status=500)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@cache_page(60 * 15)  # Cache for 15 minutes
+def app_store_categories_api(request):
+    """
+    Fast API for app store categories.
+    Heavily cached since categories don't change often.
+    """
+    try:
+        from ..services.manifest_loader import manifest_loader
+        from collections import Counter
+
+        category_mapping = manifest_loader.get_category_mapping()
+        category_counts = Counter()
+        category_definitions = {}
+
+        for app_code, mapping in category_mapping.items():
+            category = mapping['category']
+            category_counts[category] += 1
+            category_definitions[category] = {
+                'label': mapping['label'],
+                'icon': mapping['icon']
+            }
+
+        return Response({
+            'success': True,
+            'categories': dict(category_counts),
+            'definitions': category_definitions,
+        })
+
+    except Exception as e:
+        logger.error(f"Error in app_store_categories_api: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': 'Internal server error'
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def bulk_app_toggle_api(request):
+    """
+    Fast API for bulk app enable/disable operations.
+    Optimized for mobile and SPA frontends.
+    """
+    try:
+        data = json.loads(request.body)
+        app_codes = data.get('app_codes', [])
+        action = data.get('action', 'toggle')  # 'enable', 'disable', 'toggle'
+
+        if not app_codes:
+            return JsonResponse({
+                'success': False,
+                'error': 'No app codes provided'
+            }, status=400)
+
+        user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
+        results = []
+
+        for app_code in app_codes:
+            try:
+                app = App.objects.get(code=app_code, is_enabled=True)
+
+                if action == 'enable':
+                    success = user_settings.enable_app(app_code)
+                    new_status = 'enabled' if success else 'failed'
+                elif action == 'disable':
+                    success = user_settings.disable_app(app_code)
+                    new_status = 'disabled' if success else 'failed'
+                else:  # toggle
+                    if user_settings.is_app_enabled(app_code):
+                        success = user_settings.disable_app(app_code)
+                        new_status = 'disabled' if success else 'failed'
+                    else:
+                        success = user_settings.enable_app(app_code)
+                        new_status = 'enabled' if success else 'failed'
+
+                results.append({
+                    'app_code': app_code,
+                    'status': new_status,
+                    'success': success
+                })
+
+            except App.DoesNotExist:
+                results.append({
+                    'app_code': app_code,
+                    'status': 'not_found',
+                    'success': False
+                })
+
+        # Clear user cache after bulk operations
+        from ..services.cache_service import UserAppCacheService
+        UserAppCacheService.clear_user_apps_cache_for_user(request.user)
+
+        return JsonResponse({
+            'success': True,
+            'results': results,
+            'processed': len(results)
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid JSON data'
+        }, status=400)
+    except Exception as e:
+        logger.error(f"Error in bulk_app_toggle_api for user {request.user.id}: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def app_installation_status_api(request):
+    """
+    Fast API to get installation status for multiple apps.
+    Used by frontend to quickly check which apps are installed.
+    """
+    try:
+        app_codes = request.GET.get('codes', '').split(',')
+        app_codes = [code.strip() for code in app_codes if code.strip()]
+
+        if not app_codes:
+            return JsonResponse({
+                'success': False,
+                'error': 'No app codes provided'
+            }, status=400)
+
+        user_settings, created = UserAppSettings.objects.get_or_create(user=request.user)
+        enabled_app_ids = set(user_settings.enabled_apps.values_list('id', flat=True))
+
+        # Get app info for requested codes
+        apps = App.objects.filter(code__in=app_codes, is_enabled=True).only('id', 'code')
+        status_map = {}
+
+        for app in apps:
+            status_map[app.code] = app.id in enabled_app_ids
+
+        return JsonResponse({
+            'success': True,
+            'status': status_map,
+            'count': len(enabled_app_ids)
+        })
+
+    except Exception as e:
+        logger.error(f"Error in app_installation_status_api for user {request.user.id}: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
 

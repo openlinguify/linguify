@@ -117,7 +117,7 @@ def reset_user_terms_status():
     print("=" * 70)
 
     try:
-        user = User.objects.get(email='linguify.info@gmail.com')
+        user = User.objects.get(email=os.getenv('TEST_EMAIL'))
 
         # Sauvegarder l'état actuel
         original_accepted = user.terms_accepted
@@ -136,7 +136,7 @@ def reset_user_terms_status():
         return True
 
     except User.DoesNotExist:
-        print("⚠️ Utilisateur linguify.info@gmail.com non trouvé")
+        print(f"⚠️ Utilisateur {os.getenv("TEST_EMAIL")} non trouvé")
         return False
 
 if __name__ == "__main__":
@@ -153,7 +153,7 @@ if __name__ == "__main__":
     print("✨ SYSTÈME PRÊT POUR TEST")
     print("=" * 70)
     print("\n🎯 Instructions de test:")
-    print("1. Connectez-vous avec linguify.info@gmail.com")
+    print(f"1. Connectez-vous avec {os.getenv("TEST_EMAIL")}")
     print("2. Cliquez sur une notification de conditions")
     print("3. Vous devriez voir la nouvelle page d'acceptation")
     print("4. Cochez la case et cliquez sur 'Accepter'")

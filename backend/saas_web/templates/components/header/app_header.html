@@ -31,13 +31,13 @@
                     <a href="{% url 'saas_web:dashboard' %}"
                        class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
                        aria-label="{% trans 'Go to dashboard' %}">
-                        <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i>
+                        <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
                     </a>
 
                     <a href="{% url 'saas_web:app_store' %}"
-                       class="btn btn-outline-primary btn-sm header-btn d-flex justify-content-center align-items-center"
+                       class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
                        aria-label="{% trans 'Browse app store' %}">
-                        <i class="bi bi-shop-window" aria-hidden="true"></i>
+                        <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
                     </a>
                 </div>
                 {% endblock %}
@@ -187,11 +187,11 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="navbar-nav ms-auto d-lg-none">
                 <a class="nav-link mobile-nav-item" href="{% url 'saas_web:dashboard' %}">
-                    <i class="bi bi-grid-3x3-gap me-2" aria-hidden="true"></i>
+                    <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
                     {% trans "Home" %}
                 </a>
                 <a class="nav-link mobile-nav-item" href="{% url 'saas_web:app_store' %}">
-                    <i class="bi bi-shop me-2" aria-hidden="true"></i>
+                    <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
                     {% trans "Store" %}
                 </a>
             </div>

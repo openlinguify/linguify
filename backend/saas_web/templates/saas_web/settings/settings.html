@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load dict_filters %}
 
-{% block title %}Paramètres - Linguify{% endblock %}
+{% block title %}{% trans "Settings" %} - Open Linguify{% endblock %}
 
 {% block body_class %}settings-page{% endblock %}
 
@@ -13,13 +13,13 @@
     <!-- Enhanced Sidebar -->
     <div class="settings-sidebar">
         <div class="sidebar-header">
-            <h3>Paramètres</h3>
-            <div class="subtitle">Personnalisez votre expérience Linguify</div>
+            <h3>{% trans "Settings" %}</h3>
+            <div class="subtitle">{% trans "Customize your Linguify experience" %}</div>
         </div>
         
         <!-- Search -->
         <div class="settings-search">
-            <input type="text" class="search-input" placeholder="Rechercher des paramètres...">
+            <input type="text" class="search-input" placeholder="{% trans 'Search settings...' %}">
         </div>
         
         <!-- Navigation Categories -->
@@ -63,7 +63,7 @@
                 <a href="{% url 'saas_web:app_manager_settings' %}" class="nav-item" data-tab="app_manager">
                     <div class="nav-item-text">
                         <i class="bi bi-grid-3x3-gap"></i>
-                        Gestionnaire d'Apps
+                        {% trans "App Manager" %}
                     </div>
                 </a>
                 {% endif %}
@@ -79,10 +79,10 @@
             <div class="breadcrumb-nav">
                 <span>Linguify</span>
                 <i class="bi bi-chevron-right"></i>
-                <span class="active">{{ breadcrumb_active|default:"Profil & Compte" }}</span>
+                <span class="active">{{ breadcrumb_active|default:_('Profile & Account') }}</span>
             </div>
-            <h1 class="page-title">{{ page_title|default:"Profil & Compte" }}</h1>
-            <p class="page-subtitle">{{ page_subtitle|default:"Gérez vos informations personnelles et paramètres de compte" }}</p>
+            <h1 class="page-title">{{ page_title|default:_('Profile & Account') }}</h1>
+            <p class="page-subtitle">{{ page_subtitle|default:_('Manage your personal information and account settings') }}</p>
         </div>
         
         <!-- Content Body -->
@@ -140,7 +140,7 @@
                                 </h3>
                             </div>
                             <div class="section-content">
-                                <p>Paramètres de {{ tab.name|lower }} disponibles bientôt...</p>
+                                <p>{% blocktrans with name=tab.name %}{{ name }} settings coming soon...{% endblocktrans %}</p>
                             </div>
                         </div>
                     </div>

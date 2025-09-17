@@ -24,10 +24,11 @@ def test_terms_notification_and_email():
 
     # Récupérer l'utilisateur
     try:
-        user = User.objects.get(email='louisphilippelalou@outlook.com')
+        test_email = os.getenv('TEST_EMAIL')
+        user = User.objects.get(email=test_email)
         print(f"✓ Utilisateur trouvé : {user.username} ({user.email})")
     except User.DoesNotExist:
-        print("❌ Utilisateur louisphilippelalou@outlook.com non trouvé")
+        print(f"❌ Utilisateur {test_email} non trouvé")
         return False
 
     # 1. Créer la notification via la fonction combinée
@@ -41,7 +42,7 @@ def test_terms_notification_and_email():
     except Exception as e:
         print(f"❌ Erreur lors de la création de la notification : {e}")
 
-    # 2. Envoyer l'email de test à linguify.info@gmail.com
+    # 2. Envoyer l'email de test à l'adresse configurée
     print("\n📧 Envoi de l'email de test...")
     try:
         # Préparer le contexte
@@ -63,13 +64,13 @@ def test_terms_notification_and_email():
             subject=subject,
             message=plain_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=['linguify.info@gmail.com'],
+            recipient_list=[os.getenv('TEST_EMAIL')],
             html_message=html_message,
             fail_silently=False
         )
 
         if result:
-            print(f"✓ Email envoyé avec succès à linguify.info@gmail.com")
+            print(f"✓ Email envoyé avec succès à {os.getenv('TEST_EMAIL')}")
             print(f"  - Sujet: {subject}")
             print(f"  - De: {settings.DEFAULT_FROM_EMAIL}")
             print(f"  - URL des conditions: {context['terms_url']}")

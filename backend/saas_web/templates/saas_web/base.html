@@ -183,14 +183,6 @@
             border-radius: 12px;
         }
         
-        /* Neutral backgrounds */
-        body.bg-default .app-card-simple,
-        body.bg-gray-light .app-card-simple,
-        body.bg-gray .app-card-simple {
-            background: rgba(255, 255, 255, 0.4) !important;
-            border-radius: 12px;
-            backdrop-filter: blur(5px);
-        }
         
         /* Colored backgrounds */
         body.bg-linguify-light .app-card-simple,
@@ -310,27 +302,27 @@
     (function() {
         const savedBackground = localStorage.getItem('dashboard_background') || 'default';
         const backgroundColors = {
-            // Couleurs neutres
+            // Neutral colors
             'default': '#f8fafc',
             'white': '#ffffff',
             'gray-light': '#f9fafb',
             'gray': '#f3f4f6',
             
-            // Couleurs Linguify
+            // Linguify colors
             'linguify-light': 'linear-gradient(135deg, #f0f4ff 0%, #e0f2fe 100%)',
             'linguify-accent': 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
             'linguify-purple': 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)',
             
-            // Couleurs premium
+            // Premium colors
             'warm': 'linear-gradient(135deg, #fefbf3 0%, #fef7ed 100%)',
             'cool': 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
             'nature': 'linear-gradient(135deg, #f7fee7 0%, #ecfccb 100%)',
             
-            // Mode sombre
+            // Dark mode
             'dark': '#1f2937',
             'dark-blue': 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
             
-            // Compatibilité ancienne version
+            // Old version compatibility
             'blue': '#eff6ff',
             'green': '#f0fdf4',
             'purple': '#faf5ff'
@@ -433,9 +425,9 @@
                 
                 // Show user-friendly error message
                 if (window.notificationService) {
-                    window.notificationService.error('Une erreur s\'est produite. Veuillez réessayer.');
+                    window.notificationService.error('{% trans "An error occurred. Please try again." %}');
                 } else {
-                    alert('Une erreur s\'est produite. Veuillez réessayer.');
+                    alert('{% trans "An error occurred. Please try again." %}');
                 }
             });
             
@@ -566,7 +558,7 @@
             }
         </style>
         
-        <button class="global-chat-btn" id="global-chat-toggle" title="Ouvrir le chat">
+        <button class="global-chat-btn" id="global-chat-toggle" title="{% trans 'Open chat' %}">
             <i class="bi bi-chat-dots-fill"></i>
             <span class="chat-badge" id="global-chat-badge">0</span>
         </button>

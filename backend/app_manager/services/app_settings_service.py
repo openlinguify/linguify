@@ -49,6 +49,7 @@ from django.apps import apps
 from django.conf import settings
 from django.template.loader import get_template
 from django.core.exceptions import ImproperlyConfigured
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -670,3 +671,152 @@ class AppSettingsService:
             
         except Exception:
             return None
+
+    @classmethod
+    def get_app_settings_for_user(cls, user):
+        """
+        Get app settings for a user (compatibility method).
+
+        Args:
+            user: The user instance
+
+        Returns:
+            dict: User's app settings data
+        """
+        try:
+            from ..models import UserAppSettings
+
+            user_settings, created = UserAppSettings.objects.get_or_create(user=user)
+            enabled_apps = user_settings.enabled_apps.all()
+
+            return {
+                'enabled_apps': list(enabled_apps.values('id', 'code', 'display_name')),
+                'app_order': list(enabled_apps.values_list('code', flat=True)),
+                'total_enabled': enabled_apps.count()
+            }
+
+        except Exception as e:
+            logger.error(f"Error getting app settings for user {user.id}: {e}")
+            return {
+                'enabled_apps': [],
+                'app_order': [],
+                'total_enabled': 0
+            }
+
+    @classmethod
+    def update_user_app_settings(cls, user, new_settings):
+        """
+        Update user app settings (compatibility method).
+
+        Args:
+            user: The user instance
+            new_settings: Dictionary with new settings
+
+        Returns:
+            dict: Result of the update operation
+        """
+        try:
+            from ..models import UserAppSettings, App
+
+            user_settings, created = UserAppSettings.objects.get_or_create(user=user)
+
+            # Handle enabled_apps update
+            if 'enabled_apps' in new_settings:
+                app_ids = new_settings['enabled_apps']
+                if isinstance(app_ids, list):
+                    apps = App.objects.filter(id__in=app_ids, is_enabled=True)
+                    user_settings.enabled_apps.set(apps)
+
+            # Handle app_order update (if needed)
+            if 'app_order' in new_settings:
+                # For now, just log it as ordering might be implemented later
+                logger.info(f"App order update requested: {new_settings['app_order']}")
+
+            # Clear cache
+            from .cache_service import UserAppCacheService
+            UserAppCacheService.clear_user_apps_cache_for_user(user)
+
+            return {
+                'success': True,
+                'message': 'Settings updated successfully',
+                'enabled_apps_count': user_settings.enabled_apps.count()
+            }
+
+        except Exception as e:
+            logger.error(f"Error updating app settings for user {user.id}: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+
+    @classmethod
+    def export_user_settings(cls, user):
+        """
+        Export user app settings to a portable format.
+
+        Args:
+            user: The user instance
+
+        Returns:
+            dict: Exported settings data
+        """
+        try:
+            settings_data = cls.get_app_settings_for_user(user)
+
+            return {
+                'format_version': '1.0',
+                'user_id': user.id,
+                'username': user.username,
+                'exported_at': timezone.now().isoformat(),
+                'settings': settings_data
+            }
+
+        except Exception as e:
+            logger.error(f"Error exporting settings for user {user.id}: {e}")
+            return {
+                'format_version': '1.0',
+                'error': str(e),
+                'settings': {}
+            }
+
+    @classmethod
+    def import_user_settings(cls, user, settings_data):
+        """
+        Import user app settings from exported data.
+
+        Args:
+            user: The user instance
+            settings_data: Dictionary with settings to import
+
+        Returns:
+            dict: Result of the import operation
+        """
+        try:
+            # Validate format
+            if not isinstance(settings_data, dict) or 'settings' not in settings_data:
+                return {
+                    'success': False,
+                    'error': 'Invalid settings data format'
+                }
+
+            # Extract settings
+            imported_settings = settings_data['settings']
+
+            # Update user settings
+            result = cls.update_user_app_settings(user, imported_settings)
+
+            if result.get('success'):
+                return {
+                    'success': True,
+                    'message': 'Settings imported successfully',
+                    'imported_apps_count': len(imported_settings.get('enabled_apps', []))
+                }
+            else:
+                return result
+
+        except Exception as e:
+            logger.error(f"Error importing settings for user {user.id}: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }

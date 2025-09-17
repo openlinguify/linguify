@@ -99,3 +99,69 @@ class AppIconService:
             return 'linear-gradient(135deg, #6366f1 0%, #6366f180 100%)'  # Default
             
         return f'linear-gradient(135deg, {color} 0%, {color}80 100%)'
+
+    @classmethod
+    def get_app_icon_url(cls, app):
+        """
+        Get the icon URL for an app (alias for compatibility).
+
+        Args:
+            app: The app instance
+
+        Returns:
+            str: Icon URL or None
+        """
+        return cls.get_static_icon_url(app.code)
+
+    @classmethod
+    def get_default_icon_for_category(cls, category):
+        """
+        Get default icon for a category.
+
+        Args:
+            category (str): The category name
+
+        Returns:
+            str: Bootstrap icon class
+        """
+        category_icons = {
+            'productivity': 'bi-briefcase',
+            'education': 'bi-book',
+            'communication': 'bi-chat-dots',
+            'entertainment': 'bi-controller',
+            'utility': 'bi-tools',
+            'social': 'bi-people',
+        }
+        return category_icons.get(category, 'bi-app')
+
+    @classmethod
+    def get_icon_variants(cls, app):
+        """
+        Get different variants of an app's icon.
+
+        Args:
+            app: The app instance
+
+        Returns:
+            dict: Dictionary with different icon variants
+        """
+        return {
+            'small': cls.get_static_icon_url(app.code),
+            'medium': cls.get_static_icon_url(app.code),
+            'large': cls.get_static_icon_url(app.code),
+            'vector': cls.get_icon_class(app.icon_name)
+        }
+
+    @classmethod
+    def icon_exists(cls, app):
+        """
+        Check if an icon exists for an app.
+
+        Args:
+            app: The app instance
+
+        Returns:
+            bool: True if icon exists, False otherwise
+        """
+        static_icon_url = cls.get_static_icon_url(app.code)
+        return static_icon_url is not None

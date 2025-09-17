@@ -22,11 +22,12 @@ def send_all_language_emails():
     """Envoie les emails dans toutes les langues supportées"""
 
     try:
-        user = User.objects.get(email='louisphilippelalou@outlook.com')
+        test_email = os.getenv('TEST_EMAIL')
+        user = User.objects.get(email=test_email)
         print(f"✓ Utilisateur trouvé : {user.username} ({user.email})")
         original_language = user.interface_language
     except User.DoesNotExist:
-        print("❌ Utilisateur louisphilippelalou@outlook.com non trouvé")
+        print(f"❌ Utilisateur {test_email} non trouvé")
         return False
 
     languages = [
@@ -39,7 +40,8 @@ def send_all_language_emails():
     print("\n" + "=" * 70)
     print("📧 ENVOI DES EMAILS DANS TOUTES LES LANGUES")
     print("=" * 70)
-    print(f"Destination: linguify.info@gmail.com")
+    test_email = os.getenv('TEST_EMAIL')
+    print(f"Destination: {test_email}")
     print(f"Template: Nouveau design Linguify avec gradient et compatibilité email")
     print()
 
@@ -92,7 +94,7 @@ def send_all_language_emails():
     print("  • Logo: Badge 'Open Linguify' sur fond blanc")
     print("  • Bouton: Fond bleu avec fallback solide pour Outlook")
     print("  • Layout: Table-based pour compatibilité maximale")
-    print("\n📧 Vérifiez linguify.info@gmail.com pour voir les 4 versions")
+    print(f"\n📧 Vérifiez {test_email} pour voir les 4 versions")
 
     return success_count == 4
 
