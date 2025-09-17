@@ -361,16 +361,24 @@ function saveAppOrder(appOrder) {
     .then(data => {
         if (data.success) {
             console.log('App order saved successfully');
-            // Optional: Show success notification
-            showNotification('Ordre des applications sauvegardé', 'success');
+            // Show notification only in development mode
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '8000') {
+                showNotification('Ordre des applications sauvegardé', 'success');
+            }
         } else {
             console.error('Failed to save app order:', data.error);
-            showNotification('Erreur lors de la sauvegarde', 'error');
+            // Show error notification only in development mode
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '8000') {
+                showNotification('Erreur lors de la sauvegarde', 'error');
+            }
         }
     })
     .catch(error => {
         console.error('Error saving app order:', error);
-        showNotification('Erreur de connexion', 'error');
+        // Show error notification only in development mode
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '8000') {
+            showNotification('Erreur de connexion', 'error');
+        }
     });
 }
 

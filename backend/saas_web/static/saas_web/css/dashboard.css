@@ -1,22 +1,6 @@
-/* 🎨 Force Linguify colors for dashboard */
-.welcome-banner {
-    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important;
-}
+/* 🎨 Linguify Dashboard Styles - Clean Version */
 
-.btn-primary {
-    background: #2D5BBA !important;
-    border-color: #2D5BBA !important;
-}
-
-.btn-primary:hover {
-    background: #1E3A8A !important;
-    border-color: #1E3A8A !important;
-}
-
-.text-primary {
-    color: #2D5BBA !important;
-}
-
+/* === GLOBAL DASHBOARD STYLES === */
 .content-area {
     padding: 2rem;
     max-width: 1400px;
@@ -37,86 +21,24 @@
     margin: 0;
 }
 
-.app-card {
-    background: rgb(253, 12, 12);
-    border-radius: 16px;
-    border: 1px solid #0b70f5;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    height: 100%;
-    cursor: pointer;
+/* === LINGUIFY COLOR OVERRIDES === */
+.btn-primary {
+    background: #2D5BBA !important;
+    border-color: #2D5BBA !important;
 }
 
-.app-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--primary-color);
+.btn-primary:hover {
+    background: #1E3A8A !important;
+    border-color: #1E3A8A !important;
 }
 
-.app-card-header {
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
+.text-primary {
+    color: #2D5BBA !important;
 }
 
-.app-card-body {
-    padding: 0 1.5rem 1.5rem;
-}
-
-.app-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
-    margin-bottom: 1rem;
-}
-
-.app-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #1e293b;
-}
-
-.app-description {
-    color: #64748b;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: 1rem;
-}
-
-.app-status {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-installed {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.status-not-installed {
-    background: #f3f4f6;
-    color: #6b7280;
-}
-
-.app-card-footer {
-    padding: 1rem 1.5rem;
-    background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-}
-
+/* === WELCOME BANNER === */
 .welcome-banner {
-    background: #007ACC;
+    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important;
     border-radius: 16px;
     color: white;
     padding: 2rem;
@@ -137,67 +59,7 @@
     transform: translate(50px, -50px);
 }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-}
-
-.stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    border: 1px solid #e2e8f0;
-    text-align: center;
-}
-
-.stat-number {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    display: block;
-}
-
-.stat-label {
-    color: #64748b;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-}
-
-.app-store-btn {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.5rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.app-store-btn:hover {
-    background: var(--primary-dark);
-    color: white;
-    transform: translateY(-1px);
-}
-
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: #64748b;
-}
-
-.empty-state i {
-    font-size: 4rem;
-    opacity: 0.3;
-    margin-bottom: 1rem;
-}
-
-/* 🎯 Grille d'applications parfaitement alignée */
+/* === APP GRID LAYOUT === */
 .apps-grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -208,10 +70,13 @@
     justify-items: center;
 }
 
-
+/* === APP CARDS === */
 .app-card-simple {
-    background: transparent;
-    border: none;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    border-radius: 0 !important;
     transition: all 0.2s ease;
     padding: 1rem;
     text-align: center;
@@ -224,19 +89,32 @@
     min-height: 100px;
 }
 
-.app-card-simple:hover {
-    transform: translateY(-2px);
+/* ULTIMATE OVERRIDE - Remove any background whatsoever */
+.app-card-simple,
+.app-card-simple * {
     background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
     border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    border-radius: 0 !important;
 }
 
-/* 🎯 Force transparent background for all app card states */
-.app-card-simple, 
-.app-card-simple:hover, 
-.app-card-simple:focus, 
-.app-card-simple:active {
-    background: transparent !important;
+.app-card-simple:hover {
+    transform: translateY(-3px);
+    background: none !important;
     border: none !important;
+    box-shadow: none !important;
+}
+
+.app-card-simple,
+.app-card-simple:hover,
+.app-card-simple:focus,
+.app-card-simple:active {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .app-icon-simple {
@@ -249,6 +127,15 @@
     font-size: 1.8rem;
     color: white;
     margin: 0 auto 1rem;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Force remove any inline borders on app icons */
+.app-icon-simple[style*="border"] {
+    border: none !important;
+    background: transparent !important;
 }
 
 .app-name-simple {
@@ -262,6 +149,59 @@
     word-wrap: break-word;
 }
 
+/* === EMPTY STATE === */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+/* Force gray color for empty state text */
+.empty-state h5,
+.empty-state .mb-3,
+div.empty-state h5,
+div.empty-state .mb-3,
+.content-area .empty-state h5,
+.content-area .empty-state .mb-3 {
+    color: #6b7280 !important;
+    font-weight: 600 !important;
+}
+
+.empty-state p,
+.empty-state .mb-4,
+div.empty-state p,
+div.empty-state .mb-4,
+.content-area .empty-state p,
+.content-area .empty-state .mb-4 {
+    color: #6b7280 !important;
+}
+
+/* Nuclear option - override ANY text in empty state */
+.empty-state * {
+    color: #6b7280 !important;
+}
+
+/* Linguify gradient button for empty state */
+.empty-state .linguify-gradient-btn {
+    background: linear-gradient(135deg, #2D5BBA 0%, #26E4B8 100%);
+    color: #ffffff !important;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.empty-state .linguify-gradient-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3);
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+/* === RESPONSIVE DESIGN === */
 @media (max-width: 768px) {
     .content-area {
         padding: 1rem;
@@ -321,50 +261,48 @@
     }
 }
 
-/* Specific improvements for background text contrast */
+/* === BACKGROUND ADAPTATIONS === */
 
-/* Enhanced app card visibility on ALL backgrounds */
-
-/* Neutral backgrounds - Minimal card distinction for consistency */
-body.bg-default .app-card-simple,
-body.bg-gray-light .app-card-simple,
-body.bg-gray .app-card-simple {
-    background: rgba(255, 255, 255, 0.4) !important;
-    border: 1px solid rgba(0, 0, 0, 0.03);
-    backdrop-filter: blur(3px);
-}
-
-/* Pure white background - Completely transparent cards for perfect blend */
+/* All backgrounds - NO card backgrounds EVER - NUCLEAR OPTION */
 body.bg-white .app-card-simple,
 body.bg-white .app-card-simple:hover,
 body.bg-white .app-card-simple:focus,
-body.bg-white .app-card-simple:active {
-    background: transparent !important;
-    border: none !important;
-    backdrop-filter: none !important;
-}
-
-/* Colored backgrounds - Higher contrast cards */
+body.bg-white .app-card-simple:active,
+body.bg-default .app-card-simple,
+body.bg-default .app-card-simple:hover,
+body.bg-default .app-card-simple:focus,
+body.bg-default .app-card-simple:active,
+body.bg-gray-light .app-card-simple,
+body.bg-gray-light .app-card-simple:hover,
+body.bg-gray-light .app-card-simple:focus,
+body.bg-gray-light .app-card-simple:active,
+body.bg-gray .app-card-simple,
+body.bg-gray .app-card-simple:hover,
+body.bg-gray .app-card-simple:focus,
+body.bg-gray .app-card-simple:active,
 body.bg-linguify-light .app-card-simple,
 body.bg-linguify-accent .app-card-simple,
 body.bg-linguify-purple .app-card-simple,
 body.bg-warm .app-card-simple,
 body.bg-cool .app-card-simple,
-body.bg-nature .app-card-simple {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-}
-
-/* Dark backgrounds - Translucent cards */
+body.bg-nature .app-card-simple,
 body.bg-dark .app-card-simple,
 body.bg-dark-blue .app-card-simple {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    border-radius: 0 !important;
 }
 
-/* Better section titles visibility */
+/* Text adaptations for different backgrounds */
+body.bg-dark .section-title,
+body.bg-dark-blue .section-title {
+    color: #f1f5f9 !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
 body.bg-linguify-light .section-title,
 body.bg-linguify-accent .section-title,
 body.bg-linguify-purple .section-title,
@@ -375,24 +313,7 @@ body.bg-nature .section-title {
     font-weight: 700;
 }
 
-body.bg-dark .section-title,
-body.bg-dark-blue .section-title {
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-    font-weight: 600;
-}
-
-/* Empty state improvements */
-body.bg-dark .empty-state,
-body.bg-dark-blue .empty-state {
-    color: #e2e8f0;
-}
-
-body.bg-dark .empty-state i,
-body.bg-dark-blue .empty-state i {
-    opacity: 0.5;
-}
-
-/* Welcome banner adjustments for different backgrounds */
+/* Welcome banner adaptations */
 body.bg-dark .welcome-banner,
 body.bg-dark-blue .welcome-banner {
     background: linear-gradient(135deg, rgba(45, 91, 186, 0.9) 0%, rgba(0, 212, 170, 0.9) 100%) !important;
@@ -403,15 +324,35 @@ body.bg-linguify-light .welcome-banner,
 body.bg-linguify-accent .welcome-banner,
 body.bg-linguify-purple .welcome-banner {
     background: linear-gradient(135deg, rgba(45, 91, 186, 0.95) 0%, rgba(0, 212, 170, 0.95) 100%) !important;
+    box-shadow: 0 8px 32px rgba(45, 91, 186, 0.2);
 }
 
-/* 🎯 Drag & Drop Styles */
+/* Empty state text adaptations */
+body.bg-dark .empty-state,
+body.bg-dark-blue .empty-state {
+    color: #e2e8f0;
+}
+
+body.bg-dark .empty-state *,
+body.bg-dark-blue .empty-state * {
+    color: #e2e8f0 !important;
+}
+
+/* But preserve button colors in empty state */
+body.bg-dark .empty-state .linguify-gradient-btn,
+body.bg-dark .empty-state .linguify-gradient-btn *,
+body.bg-dark-blue .empty-state .linguify-gradient-btn,
+body.bg-dark-blue .empty-state .linguify-gradient-btn * {
+    color: #ffffff !important;
+}
+
+/* === BEAUTIFUL DRAG & DROP EFFECTS === */
 
 /* Draggable cursor and initial state */
 .app-link[draggable="true"] {
     cursor: grab;
     user-select: none;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     position: relative;
 }
 
@@ -424,36 +365,55 @@ body.bg-linguify-purple .welcome-banner {
 }
 
 .app-link[draggable="true"] .app-card-simple {
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
     cursor: grab;
 }
 
-/* Subtle indicator that the item is draggable */
-.app-link[draggable="true"]:hover .app-card-simple {
-    border: 1px solid rgba(45, 91, 186, 0.2);
+/* Subtle draggable indicator on hover */
+.app-link[draggable="true"]:hover .app-icon-simple {
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3);
+    transform: scale(1.05);
 }
 
-.app-link[draggable="true"]:hover .app-card-simple::after {
+.app-link[draggable="true"]:hover .app-icon-simple::after {
     content: '⋮⋮';
     position: absolute;
-    top: 4px;
-    right: 4px;
-    color: rgba(45, 91, 186, 0.4);
-    font-size: 12px;
-    line-height: 1;
+    top: -5px;
+    right: -5px;
+    background: rgba(45, 91, 186, 0.9);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: bold;
+    opacity: 0.8;
 }
 
-/* Dragging state */
+/* Beautiful dragging state */
 .app-card-simple.dragging {
-    opacity: 0.6;
-    transform: rotate(2deg) scale(0.95);
+    opacity: 0.9;
+    transform: rotate(5deg) scale(1.1);
     z-index: 1000;
     cursor: grabbing !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 2px dashed #2D5BBA !important;
-    border-radius: 12px !important;
+    filter: drop-shadow(0 20px 40px rgba(45, 91, 186, 0.4));
+}
+
+.app-card-simple.dragging .app-icon-simple {
+    box-shadow: 0 15px 40px rgba(45, 91, 186, 0.5);
+    transform: scale(1.1);
+    filter: brightness(1.1);
+    border: 2px solid rgba(45, 91, 186, 0.3) !important;
+}
+
+.app-card-simple.dragging .app-name-simple {
+    color: #2D5BBA;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(45, 91, 186, 0.3);
 }
 
 /* Drop zone highlighting */
@@ -464,158 +424,83 @@ body.bg-linguify-purple .welcome-banner {
 .app-link.drag-over::before {
     content: '';
     position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    border: 2px dashed #2D5BBA;
-    border-radius: 16px;
-    background: rgba(45, 91, 186, 0.1);
-    animation: dragHighlight 0.5s ease-in-out infinite alternate;
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
+    border: 3px dashed #26E4B8;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.1) 0%, rgba(38, 228, 184, 0.1) 100%);
+    animation: dragPulse 1s ease-in-out infinite alternate;
     z-index: 1;
 }
 
-@keyframes dragHighlight {
+@keyframes dragPulse {
     0% {
-        background: rgba(45, 91, 186, 0.05);
-        border-color: rgba(45, 91, 186, 0.3);
+        background: linear-gradient(135deg, rgba(45, 91, 186, 0.05) 0%, rgba(38, 228, 184, 0.05) 100%);
+        border-color: rgba(38, 228, 184, 0.5);
+        transform: scale(0.98);
     }
     100% {
-        background: rgba(45, 91, 186, 0.15);
-        border-color: rgba(45, 91, 186, 0.6);
+        background: linear-gradient(135deg, rgba(45, 91, 186, 0.15) 0%, rgba(38, 228, 184, 0.15) 100%);
+        border-color: rgba(38, 228, 184, 0.8);
+        transform: scale(1.02);
     }
 }
 
-/* Different background adaptations for drag highlights */
-body.bg-dark .app-link.drag-over::before,
-body.bg-dark-blue .app-link.drag-over::before {
-    border-color: #00D4AA;
-    background: rgba(0, 212, 170, 0.1);
+/* Grid container during drag */
+.apps-grid-container.drag-active {
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.02) 0%, rgba(38, 228, 184, 0.02) 100%);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px dashed rgba(45, 91, 186, 0.1);
 }
 
-@keyframes dragHighlightDark {
-    0% {
-        background: rgba(0, 212, 170, 0.05);
-        border-color: rgba(0, 212, 170, 0.3);
-    }
-    100% {
-        background: rgba(0, 212, 170, 0.15);
-        border-color: rgba(0, 212, 170, 0.6);
-    }
-}
-
-body.bg-dark .app-link.drag-over::before,
-body.bg-dark-blue .app-link.drag-over::before {
-    animation: dragHighlightDark 0.5s ease-in-out infinite alternate;
-}
-
-.app-card-simple.dragging .app-name-simple {
-    color: #64748b;
-}
-
-/* Smooth transitions for reordering */
+/* Smooth reordering animations */
 .app-link {
-    transition: transform 0.2s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Visual feedback for drag start */
-.apps-grid-container.drag-active {
-    background: rgba(45, 91, 186, 0.02);
-    border-radius: 16px;
-    padding: 1rem;
-    transition: all 0.3s ease;
+.app-link[draggable="true"]:active .app-icon-simple {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
 }
 
-/* Mobile drag adjustments */
+/* Mobile and touch improvements */
 @media (max-width: 768px) {
     .app-link.drag-over::before {
-        top: -8px;
-        left: -8px;
-        right: -8px;
-        bottom: -8px;
+        top: -12px;
+        left: -12px;
+        right: -12px;
+        bottom: -12px;
         border-width: 2px;
     }
-    
+
     .app-card-simple.dragging {
-        transform: rotate(3deg) scale(0.9);
+        transform: rotate(3deg) scale(1.05);
+    }
+
+    .app-link[draggable="true"]:hover .app-icon-simple::after {
+        width: 16px;
+        height: 16px;
+        font-size: 8px;
     }
 }
 
-/* Touch device drag improvements */
+/* Touch device adaptations */
 @media (pointer: coarse) {
     .app-card-simple[draggable="true"] {
         cursor: default;
     }
 
     .app-link.drag-over::before {
-        border-width: 3px;
-        animation-duration: 0.3s;
+        border-width: 4px;
+        animation-duration: 0.8s;
     }
-}
 
-/* 🎨 Linguify Empty State Styling - FORCE OVERRIDE */
-.empty-state h5,
-.empty-state .mb-3,
-div.empty-state h5,
-div.empty-state .mb-3,
-.content-area .empty-state h5,
-.content-area .empty-state .mb-3 {
-    color: #6b7280 !important;
-    font-weight: 600 !important;
-}
-
-.empty-state p,
-.empty-state .mb-4,
-div.empty-state p,
-div.empty-state .mb-4,
-.content-area .empty-state p,
-.content-area .empty-state .mb-4 {
-    color: #6b7280 !important;
-}
-
-/* Nuclear option - override ANY text in empty state */
-.empty-state * {
-    color: #6b7280 !important;
-}
-
-/* But preserve button and icon colors */
-.empty-state .linguify-gradient-btn,
-.empty-state .linguify-gradient-btn *,
-.empty-state .linguify-gradient-icon i {
-    color: #ffffff !important;
-}
-
-.empty-state .linguify-gradient-icon {
-    background: linear-gradient(135deg, #2D5BBA 0%, #26E4B8 100%);
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-}
-
-.empty-state .linguify-gradient-icon i {
-    font-size: 2.5rem;
-    color: #ffffff;
-}
-
-.empty-state .linguify-gradient-btn {
-    background: linear-gradient(135deg, #2D5BBA 0%, #26E4B8 100%);
-    color: #ffffff;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 500;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    transition: all 0.3s ease;
-}
-
-.empty-state .linguify-gradient-btn:hover {
-    transform: translateY(-2px);
-    color: #ffffff;
-    text-decoration: none;
+    .app-card-simple.dragging {
+        transform: rotate(2deg) scale(1.08);
+    }
 }
