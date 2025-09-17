@@ -94,7 +94,9 @@
                                 {% trans "Actions" %}
                             </th>
                             <th class="col-custom" data-column="custom">
-                                {% trans "Custom" %}
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <span>{% trans "Custom" %}</span>
+                                </div>
                             </th>
                         </tr>
                     </thead>
@@ -230,7 +232,7 @@
                             
                             <!-- Custom Column -->
                             <td class="col-custom">
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center justify-content-center">
                                     <i class="bi bi-star text-warning me-1"></i>
                                     <span class="text-muted small">Custom</span>
                                 </div>
@@ -347,4 +349,81 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Prevent double-click on table headers from causing layout shifts
+    let isProcessing = false;
+
+    // Track click timing to detect double clicks
+    let lastClickTime = 0;
+    const DOUBLE_CLICK_THRESHOLD = 300; // milliseconds
+
+    document.querySelectorAll('.table-header-sticky th.sortable').forEach(function(header) {
+        header.addEventListener('click', function(e) {
+            const currentTime = Date.now();
+            const timeDiff = currentTime - lastClickTime;
+
+            // If this is a double-click (quick successive clicks)
+            if (timeDiff < DOUBLE_CLICK_THRESHOLD) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+
+            // If already processing a request, prevent additional clicks
+            if (isProcessing) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+
+            lastClickTime = currentTime;
+        });
+    });
+
+    // Listen for HTMX events to track request state
+    document.body.addEventListener('htmx:beforeRequest', function(evt) {
+        if (evt.target.matches('.table-header-sticky th.sortable')) {
+            isProcessing = true;
+            // Add visual feedback
+            evt.target.style.opacity = '0.7';
+        }
+    });
+
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.target.matches('.table-header-sticky th.sortable')) {
+            isProcessing = false;
+            // Remove visual feedback
+            evt.target.style.opacity = '1';
+        }
+    });
+
+    // Prevent column width changes during HTMX swaps
+    document.body.addEventListener('htmx:beforeSwap', function(evt) {
+        if (evt.detail.target.id === 'task-table-container') {
+            // Store current table width
+            const table = document.getElementById('tasksTable');
+            if (table) {
+                const computedWidth = window.getComputedStyle(table).width;
+                table.style.width = computedWidth;
+            }
+        }
+    });
+
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'task-table-container') {
+            // Restore natural table width after a brief delay
+            setTimeout(function() {
+                const table = document.getElementById('tasksTable');
+                if (table) {
+                    table.style.width = '';
+                }
+            }, 100);
+        }
+    });
+});
+</script>
 {% endblock %}

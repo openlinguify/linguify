@@ -5914,7 +5914,6 @@ button.bg-linguify-gradient:hover,
 
 .table-header-sticky th.sortable:active {
     background-color: rgba(45, 91, 186, 0.2);
-    transform: translateY(1px);
 }
 
 .table-header-sticky th i {
@@ -5963,7 +5962,9 @@ thead .col-selector .form-check {
 }
 
 .col-title {
-    min-width: 250px;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
 }
 
 .col-stage {
@@ -6009,6 +6010,18 @@ thead .col-selector .form-check {
     table-layout: fixed;
     width: 100%;
     transition: opacity 0.3s ease;
+}
+
+/* Prevent column resizing on click events */
+#tasksTable th {
+    box-sizing: border-box;
+}
+
+/* Ensure header widths match body columns exactly */
+#tasksTable th.col-title {
+    width: 300px !important;
+    min-width: 300px !important;
+    max-width: 300px !important;
 }
 
 /* Sorting state */

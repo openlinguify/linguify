@@ -2,7 +2,6 @@
 {% load i18n %}
 
 <!-- Task List Table Body (HTMX Partial) -->
-<tbody id="tasksTableBody">
     {% for task in tasks %}
     <tr class="task-row-linguify {% if task.state == '1_done' %}task-completed{% endif %}" 
         id="task-row-{{ task.id }}" data-task-id="{{ task.id }}">
@@ -136,7 +135,7 @@
         
         <!-- Custom Column -->
         <td class="col-custom">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center justify-content-center">
                 <i class="bi bi-star text-warning me-1"></i>
                 <span class="text-muted small">Custom</span>
             </div>
@@ -159,4 +158,3 @@
         </td>
     </tr>
     {% endfor %}
-</tbody>
