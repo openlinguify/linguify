@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from ..models.app_manager_models import App, UserAppSettings
 from ..serializers.app_manager_serializers import AppSerializer
 import logging
@@ -143,7 +143,7 @@ class AppToggleAPI(View):
                 'app_name': app.display_name
             })
             
-        except App.DoesNotExist:
+        except (App.DoesNotExist, Http404):
             logger.warning(f"User {request.user.id} tried to toggle non-existent app {app_id}")
             return JsonResponse({
                 'success': False,

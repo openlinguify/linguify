@@ -28,6 +28,9 @@ class AppStoreViewTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
+        # Ensure user is active
+        self.user.is_active = True
+        self.user.save()
 
         # Créer quelques apps de test
         self.app1 = App.objects.create(
@@ -62,7 +65,7 @@ class AppStoreViewTest(TestCase):
 
     def test_app_store_view_authenticated(self):
         """Test l'affichage du store pour un utilisateur connecté"""
-        self.client.login(username='testuser', password='testpass123')
+        self.client.force_login(self.user)
         response = self.client.get(reverse('app_manager:app_store'))
 
         self.assertEqual(response.status_code, 200)
@@ -77,7 +80,7 @@ class AppStoreViewTest(TestCase):
 
     def test_app_store_filtering_by_category(self):
         """Test le filtrage par catégorie"""
-        self.client.login(username='testuser', password='testpass123')
+        self.client.force_login(self.user)
         response = self.client.get(reverse('app_manager:app_store'))
 
         # Vérifier que les catégories sont présentes
@@ -86,7 +89,7 @@ class AppStoreViewTest(TestCase):
 
     def test_app_store_with_user_settings(self):
         """Test l'affichage avec paramètres utilisateur"""
-        self.client.login(username='testuser', password='testpass123')
+        self.client.force_login(self.user)
 
         # Créer des paramètres utilisateur
         user_settings = UserAppSettings.objects.create(user=self.user)
@@ -107,6 +110,9 @@ class AppToggleAPITest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
+        # Ensure user is active
+        self.user.is_active = True
+        self.user.save()
 
         self.app = App.objects.create(
             code='test_app',
@@ -118,14 +124,14 @@ class AppToggleAPITest(TestCase):
             is_enabled=True
         )
 
-        self.user_settings = UserAppSettings.objects.create(user=self.user)
+        self.user_settings, _ = UserAppSettings.objects.get_or_create(user=self.user)
 
     def test_toggle_app_enable(self):
         """Test l'activation d'une app"""
         self.client.force_login(self.user)
 
         url = reverse('app_manager:api_app_toggle', kwargs={'app_id': self.app.id})
-        response = self.client.post(url, content_type='application/json')
+        response = self.client.post(url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -220,7 +226,7 @@ class AppManagerSettingsViewTest(TestCase):
 
     def test_settings_view_authenticated(self):
         """Test l'affichage des paramètres pour un utilisateur connecté"""
-        self.client.login(username='testuser', password='testpass123')
+        self.client.force_login(self.user)
         response = self.client.get(reverse('app_manager:app_settings'))
 
         self.assertEqual(response.status_code, 200)
@@ -264,7 +270,7 @@ class UserAppSettingsViewTest(APITestCase):
             is_enabled=True
         )
 
-        self.user_settings = UserAppSettings.objects.create(user=self.user)
+        self.user_settings, _ = UserAppSettings.objects.get_or_create(user=self.user)
         self.user_settings.enable_app('test_app_1')
 
     def test_get_user_settings(self):
@@ -322,12 +328,11 @@ class UserAppSettingsViewTest(APITestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class FastAPITest(TestCase):
+class FastAPITest(APITestCase):
     """Tests pour les APIs de performance"""
 
     def setUp(self):
         """Configuration des tests"""
-        self.client = Client()
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
@@ -344,12 +349,12 @@ class FastAPITest(TestCase):
             is_enabled=True
         )
 
-        self.user_settings = UserAppSettings.objects.create(user=self.user)
+        self.user_settings, _ = UserAppSettings.objects.get_or_create(user=self.user)
         self.user_settings.enable_app('test_app')
 
     def test_user_apps_fast_api(self):
         """Test l'API rapide des apps utilisateur"""
-        self.client.force_login(self.user)
+        self.client.force_authenticate(user=self.user)
 
         response = self.client.get(reverse('app_manager:api_user_apps_fast'))
 
@@ -361,7 +366,7 @@ class FastAPITest(TestCase):
 
     def test_categories_fast_api(self):
         """Test l'API rapide des catégories"""
-        self.client.force_login(self.user)
+        self.client.force_authenticate(user=self.user)
 
         response = self.client.get(reverse('app_manager:api_categories'))
 
@@ -373,7 +378,7 @@ class FastAPITest(TestCase):
 
     def test_installation_status_api(self):
         """Test l'API de statut d'installation"""
-        self.client.force_login(self.user)
+        self.client.force_authenticate(user=self.user)
 
         response = self.client.get(reverse('app_manager:api_installation_status'), {'app_ids': [self.app.id]})
 
