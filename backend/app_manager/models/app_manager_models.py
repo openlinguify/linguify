@@ -240,6 +240,16 @@ class App(models.Model):
         
         return summary
 
+    @classmethod
+    def get_ordered_enabled_apps(cls):
+        """
+        Get all enabled apps ordered by their order field.
+
+        Returns:
+            QuerySet: Enabled apps ordered by their order field
+        """
+        return cls.objects.filter(is_enabled=True).order_by('order', 'display_name')
+
 
 class UserAppSettings(models.Model):
     """
