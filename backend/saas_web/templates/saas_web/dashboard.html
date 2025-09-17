@@ -47,12 +47,11 @@
         {% endfor %}
     </div>
     {% else %}
-    <div class="empty-state mb-5">
-        <i class="bi bi-app-indicator"></i>
-        <h5 class="mb-3">{% trans "No applications installed" %}</h5>
-        <p class="mb-4">{% trans "Explore the App Store to discover and install learning applications." %}</p>
-        <a href="{% url 'saas_web:app_store' %}" class="app-store-btn">
-            <i class="bi bi-shop"></i>
+    <div class="empty-state mb-5 text-center p-5">
+        <h5 class="mb-3 text-muted fw-semibold">{% trans "No applications installed" %}</h5>
+        <p class="mb-4" style="color: #6b7280; max-width: 400px; margin: 0 auto;">{% trans "Explore the App Store to discover and install learning applications." %}</p>
+        <a href="{% url 'saas_web:app_store' %}" class="btn" style="background: linear-gradient(135deg, #2D5BBA 0%, #26E4B8 100%); color: #ffffff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; transition: all 0.3s ease;">
+            <i class="bi bi-shop-window me-2"></i>
             {% trans "Explore App Store" %}
         </a>
     </div>
