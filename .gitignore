@@ -131,10 +131,18 @@ dist/
 backend/.env
 backend/.env.*
 !backend/.env.example
+backend/.env.production
 frontend/.env
 frontend/.env.*
 !frontend/.env.example
 !frontend/.env.local.example
+
+# === TEST FILES WITH CREDENTIALS ===
+backend/test_prod_*.py
+backend/test_simple_*.py
+backend/test_*_db.py
+backend/scripts/*.local.py
+backend/scripts/.env
 
 # === TEMPORARY FILES ===
 *.tmp
