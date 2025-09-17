@@ -5,6 +5,9 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from django.core.cache import cache
 import json
 import logging
@@ -16,8 +19,8 @@ from ..services.user_app_service import UserAppService
 logger = logging.getLogger(__name__)
 
 
-@login_required
-@require_http_methods(["GET"])
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def user_apps_fast_api(request):
     """
     Ultra-fast API to get user's installed apps.
@@ -28,7 +31,7 @@ def user_apps_fast_api(request):
         cached_apps = UserAppCacheService.get_user_apps_cache(request.user.id)
 
         if cached_apps is not None:
-            return JsonResponse({
+            return Response({
                 'success': True,
                 'apps': cached_apps,
                 'cached': True,
@@ -39,7 +42,7 @@ def user_apps_fast_api(request):
         apps = UserAppService.get_user_installed_apps(request.user)
         UserAppCacheService.set_user_apps_cache(request.user.id, apps)
 
-        return JsonResponse({
+        return Response({
             'success': True,
             'apps': apps,
             'cached': False,
@@ -48,14 +51,14 @@ def user_apps_fast_api(request):
 
     except Exception as e:
         logger.error(f"Error in user_apps_fast_api for user {request.user.id}: {e}")
-        return JsonResponse({
+        return Response({
             'success': False,
             'error': 'Internal server error'
         }, status=500)
 
 
-@login_required
-@require_http_methods(["GET"])
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 @cache_page(60 * 15)  # Cache for 15 minutes
 def app_store_categories_api(request):
     """
@@ -78,7 +81,7 @@ def app_store_categories_api(request):
                 'icon': mapping['icon']
             }
 
-        return JsonResponse({
+        return Response({
             'success': True,
             'categories': dict(category_counts),
             'definitions': category_definitions,
@@ -156,8 +159,8 @@ def bulk_app_toggle_api(request):
         }, status=500)
 
 
-@login_required
-@require_http_methods(["GET"])
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def app_installation_status_api(request):
     """
     Fast API to check installation status of specific apps.
@@ -182,7 +185,7 @@ def app_installation_status_api(request):
             except ValueError:
                 status_map[app_id] = False
 
-        return JsonResponse({
+        return Response({
             'success': True,
             'status': status_map,
             'count': len(enabled_app_ids)

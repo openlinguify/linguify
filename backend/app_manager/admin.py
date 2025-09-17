@@ -5,7 +5,7 @@ from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from django.utils.html import format_html
 from django.contrib import messages
-from .models import App, UserAppSettings
+from .models import App, UserAppSettings, AppDataRetention
 
 @admin.register(App)
 class AppAdmin(admin.ModelAdmin):

@@ -92,7 +92,7 @@ class AppStoreViewTest(TestCase):
         self.client.force_login(self.user)
 
         # Créer des paramètres utilisateur
-        user_settings = UserAppSettings.objects.create(user=self.user)
+        user_settings, _ = UserAppSettings.objects.get_or_create(user=self.user)
         user_settings.enable_app('test_app_1')
 
         response = self.client.get(reverse('app_manager:app_store'))
