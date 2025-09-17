@@ -536,7 +536,13 @@ test-app:
 		exit 1; \
 	fi
 	@echo "🧪 Testing app: $(APP)"
-	@DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.$(APP) --verbosity=2
+	@if [ "$(APP)" = "app_manager" ]; then \
+		echo "Using PostgreSQL for testing"; \
+		poetry run python manage.py test app_manager.tests --keepdb --verbosity=2; \
+	else \
+		echo "Using PostgreSQL for testing"; \
+		DJANGO_SETTINGS_MODULE=core.settings_test poetry run python manage.py test apps.$(APP) --verbosity=2; \
+	fi
 
 test-revision:
 	@echo "🧪 Running revision tests"
