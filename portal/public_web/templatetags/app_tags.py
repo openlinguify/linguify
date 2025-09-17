@@ -206,13 +206,8 @@ def backend_url_with_lang(context, path=""):
 
     # Special case: auth URLs include language parameter for middleware detection
     if path.startswith('/auth/'):
-        # Backend might not support all language prefixes, use fallback for unsupported languages
-        # Only use language prefix if backend definitely supports it (fr works, others may not)
-        if current_lang == 'fr':
-            return f"{backend_url_with_lang._base_url}/{current_lang}{path}?lang={current_lang}"
-        else:
-            # Fallback: no language prefix but keep lang parameter for backend detection
-            return f"{backend_url_with_lang._base_url}{path}?lang={current_lang}"
+        # Backend supports all languages (fr, en, es, nl), use language prefix without query param
+        return f"{backend_url_with_lang._base_url}/{current_lang}{path}"
 
     # Add language prefix for other internationalized URLs
     return f"{backend_url_with_lang._base_url}/{current_lang}{path}"
