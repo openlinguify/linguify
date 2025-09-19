@@ -574,7 +574,7 @@ class PersonalStageTypeViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def toggle_fold(self, request, pk=None):
-        """Toggle stage fold state - Odoo kanban style"""
+        """Toggle stage fold state - hopla kanban style"""
         stage = self.get_object()
         fold_state = request.data.get('fold', not stage.fold)
         

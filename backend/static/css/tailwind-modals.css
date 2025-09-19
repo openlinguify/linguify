@@ -7818,7 +7818,7 @@ input#importDeckName:focus {
     transform: scale(1.02);
 }
 
-/* CLEAN ODOO STYLE KANBAN COLUMNS */
+/* CLEAN hopla STYLE KANBAN COLUMNS */
 .kanban-columns {
     display: flex !important;
     gap: 0 !important;
@@ -7857,7 +7857,7 @@ input#importDeckName:focus {
     overflow: hidden !important;
 }
 
-/* CLEAN ODOO STYLE FOLDED COLUMN - MAXIMUM SPECIFICITY */
+/* CLEAN hopla STYLE FOLDED COLUMN - MAXIMUM SPECIFICITY */
 .kanban-columns .kanban-column.o_column_folded {
     flex: 0 0 36px !important;
     min-width: 36px !important;
