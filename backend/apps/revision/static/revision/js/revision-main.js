@@ -475,7 +475,7 @@ function updateNavbarActions(showGeneralActions = true) {
 async function selectDeck(deckId) {
     try {
         // Check authentication first
-        const authCheck = await window.apiService.request('/api/v1/revision/api/debug/auth/');
+        const authCheck = await window.apiService.request('/api/v1/revision/debug/auth/');
         console.log('🔐 Auth check:', authCheck);
         
         if (!authCheck.authenticated) {
