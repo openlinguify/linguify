@@ -388,7 +388,7 @@ class FlashcardStudyMode {
     async getUserSettings() {
         try {
             console.log('[FlashcardStudy] Fetching user settings...');
-            const response = await fetch('/api/v1/revision/user-settings/');
+            const response = await fetch('/api/v1/revision/api/user-settings/');
             
             if (!response.ok) {
                 console.warn('[FlashcardStudy] Could not fetch user settings, using defaults');
@@ -708,7 +708,7 @@ class FlashcardStudyMode {
         
         // Fallback vers l'API si les paramètres serveur ne sont pas disponibles
         try {
-            const response = await fetch('/api/v1/revision/user-settings/');
+            const response = await fetch('/api/v1/revision/api/user-settings/');
             console.log('🔍 API Response status:', response.status);
             
             if (response.ok) {

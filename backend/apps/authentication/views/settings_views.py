@@ -341,7 +341,7 @@ class UserSettingsView(View):
                 # Create a temporary request for the revision viewset
                 from django.test import RequestFactory
                 factory = RequestFactory()
-                revision_request = factory.post('/api/v1/revision/user-settings/', data=audio_data)
+                revision_request = factory.post('/api/v1/revision/api/user-settings/', data=audio_data)
                 revision_request.user = request.user
                 revision_request.META = request.META
                 

@@ -300,7 +300,7 @@ window.flipCard = async function(cardId) {
             await new Promise(resolve => setTimeout(resolve, 200));
         } else {
             // Pour les vraies cartes, appeler l'API
-            const response = await fetch(`/api/v1/revision/flashcards/${cardId}/flip_card/`, {
+            const response = await fetch(`/api/v1/revision/api/flashcards/${cardId}/flip_card/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

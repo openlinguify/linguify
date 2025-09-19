@@ -29,7 +29,7 @@ const revisionAPI = {
             ...filters
         });
         
-        const url = `/api/v1/revision/decks/?${params}`;
+        const url = `/api/v1/revision/api/decks/?${params}`;
         console.log('🌐 API request URL:', url);
         console.log('🌐 Filters being sent:', filters);
         
@@ -38,7 +38,7 @@ const revisionAPI = {
     
     async getDeck(id) {
         console.log(`🔍 Requesting deck with ID: ${id}`);
-        const url = `/api/v1/revision/decks/${id}/`;
+        const url = `/api/v1/revision/api/decks/${id}/`;
         console.log(`🔍 Full URL: ${url}`);
         try {
             const result = await window.apiService.request(url);
@@ -51,33 +51,33 @@ const revisionAPI = {
     },
     
     async createDeck(data) {
-        return await window.apiService.request('/api/v1/revision/decks/', {
+        return await window.apiService.request('/api/v1/revision/api/decks/', {
             method: 'POST',
             body: JSON.stringify(data)
         });
     },
     
     async updateDeck(id, data) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/decks/${id}/`, {
             method: 'PATCH',
             body: JSON.stringify(data)
         });
     },
     
     async deleteDeck(id) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/decks/${id}/`, {
             method: 'DELETE'
         });
     },
     
     async getStats() {
-        return await window.apiService.request('/api/v1/revision/decks/stats/');
+        return await window.apiService.request('/api/v1/revision/api/decks/stats/');
     },
     
     async previewImport(deckId, formData) {
         // Pour FormData, on doit gérer les headers différemment
         const csrfToken = window.apiService.getCSRFToken();
-        return await fetch(`/api/v1/revision/decks/${deckId}/import/`, {
+        return await fetch(`/api/v1/revision/api/decks/${deckId}/import/`, {
             method: 'POST',
             body: formData,
             headers: {
@@ -101,7 +101,7 @@ const revisionAPI = {
     async importDeck(deckId, formData) {
         // Pour FormData, on doit gérer les headers différemment
         const csrfToken = window.apiService.getCSRFToken();
-        return await fetch(`/api/v1/revision/decks/${deckId}/import/`, {
+        return await fetch(`/api/v1/revision/api/decks/${deckId}/import/`, {
             method: 'POST',
             body: formData,
             headers: {
@@ -124,7 +124,7 @@ const revisionAPI = {
     },
     
     async createCard(deckId, cardData) {
-        return await window.apiService.request('/api/v1/revision/flashcards/', {
+        return await window.apiService.request('/api/v1/revision/api/flashcards/', {
             method: 'POST',
             body: JSON.stringify({
                 deck: deckId,
@@ -154,47 +154,47 @@ const revisionAPI = {
             if (options.mixedOrder !== undefined) params.append('mixed_order', options.mixedOrder);
             
             // Use the deck cards endpoint for smart mode
-            return await window.apiService.request(`/api/v1/revision/decks/${deckId}/cards/?${params}`);
+            return await window.apiService.request(`/api/v1/revision/api/decks/${deckId}/cards/?${params}`);
         } else {
             // Normal mode - use flashcards endpoint
             params.append('deck', deckId);
-            return await window.apiService.request(`/api/v1/revision/flashcards/?${params}`);
+            return await window.apiService.request(`/api/v1/revision/api/flashcards/?${params}`);
         }
     },
     
     async updateCard(cardId, cardData) {
-        return await window.apiService.request(`/api/v1/revision/flashcards/${cardId}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/flashcards/${cardId}/`, {
             method: 'PATCH',
             body: JSON.stringify(cardData)
         });
     },
     
     async deleteCard(cardId) {
-        return await window.apiService.request(`/api/v1/revision/flashcards/${cardId}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/flashcards/${cardId}/`, {
             method: 'DELETE'
         });
     },
     
     async getLearningSettings(deckId) {
-        return await window.apiService.request(`/api/v1/revision/decks/${deckId}/learning_settings/`);
+        return await window.apiService.request(`/api/v1/revision/api/decks/${deckId}/learning_settings/`);
     },
     
     async updateLearningSettings(deckId, settings) {
-        return await window.apiService.request(`/api/v1/revision/decks/${deckId}/learning_settings/`, {
+        return await window.apiService.request(`/api/v1/revision/api/decks/${deckId}/learning_settings/`, {
             method: 'PATCH',
             body: JSON.stringify(settings)
         });
     },
     
     async applyPreset(deckId, presetName) {
-        return await window.apiService.request(`/api/v1/revision/decks/${deckId}/apply_preset/`, {
+        return await window.apiService.request(`/api/v1/revision/api/decks/${deckId}/apply_preset/`, {
             method: 'POST',
             body: JSON.stringify({ preset_name: presetName })
         });
     },
     
     async updateCardProgress(cardId, isCorrect) {
-        return await window.apiService.request(`/api/v1/revision/flashcards/${cardId}/update_review_progress/`, {
+        return await window.apiService.request(`/api/v1/revision/api/flashcards/${cardId}/update_review_progress/`, {
             method: 'POST',
             body: JSON.stringify({ is_correct: isCorrect })
         });
@@ -475,7 +475,7 @@ function updateNavbarActions(showGeneralActions = true) {
 async function selectDeck(deckId) {
     try {
         // Check authentication first
-        const authCheck = await window.apiService.request('/api/v1/revision/debug/auth/');
+        const authCheck = await window.apiService.request('/api/v1/revision/api/debug/auth/');
         console.log('🔐 Auth check:', authCheck);
         
         if (!authCheck.authenticated) {
@@ -3165,7 +3165,7 @@ async function confirmResetProgress() {
                          document.querySelector('meta[name="csrf-token"]')?.content;
         
         // Appeler l'API
-        const response = await fetch(`/api/v1/revision/decks/${appState.selectedDeck.id}/reset_progress/`, {
+        const response = await fetch(`/api/v1/revision/api/decks/${appState.selectedDeck.id}/reset_progress/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -3750,7 +3750,7 @@ function updateQuickTagsDisplay(deckId) {
 
 async function loadQuickTagSuggestions() {
     try {
-        const response = await window.apiService.request('/api/v1/revision/tags/');
+        const response = await window.apiService.request('/api/v1/revision/api/tags/');
         const tags = response.tags || [];
         
         const container = document.getElementById('quickSuggestedTags');

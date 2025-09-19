@@ -72,7 +72,7 @@ function setupEventListeners() {
 function loadCollectionOverview() {
     console.log('📊 Loading collection overview...');
     
-    fetch('/api/v1/revision/decks/stats/')
+    fetch('/api/v1/revision/api/decks/stats/')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -142,7 +142,7 @@ function loadCollectionOverview() {
 function loadStatistics() {
     console.log(`📊 Loading statistics for ${currentPeriod} days...`);
     
-    fetch(`/api/v1/revision/stats/?period=${currentPeriod}`)
+    fetch(`/api/v1/revision/api/stats/?period=${currentPeriod}`)
         .then(response => response.json())
         .then(data => {
             console.log('Statistics data:', data);
@@ -204,7 +204,7 @@ function loadStatistics() {
 function loadDeckStats() {
     console.log('📊 Loading deck statistics...');
     
-    fetch('/api/v1/revision/decks/performance/')
+    fetch('/api/v1/revision/api/decks/performance/')
         .then(response => response.json())
         .then(data => {
             const tbody = document.getElementById('deckStatsTable');
@@ -271,7 +271,7 @@ function loadDeckStats() {
 function loadRecentActivity() {
     console.log('📊 Loading recent activity...');
     
-    fetch('/api/v1/revision/sessions/recent/')
+    fetch('/api/v1/revision/api/sessions/recent/')
         .then(response => response.json())
         .then(data => {
             const container = document.getElementById('recentActivity');
@@ -320,7 +320,7 @@ function loadRecentActivity() {
 function loadStudyGoals() {
     console.log('📊 Loading study goals...');
     
-    fetch('/api/v1/revision/goals/')
+    fetch('/api/v1/revision/api/goals/')
         .then(response => response.json())
         .then(data => {
             // Update daily goal
@@ -484,7 +484,7 @@ function updatePerformanceChart(data) {
 function exportStats() {
     console.log('📥 Exporting statistics...');
     
-    fetch(`/api/v1/revision/stats/export/?period=${currentPeriod}`)
+    fetch(`/api/v1/revision/api/stats/export/?period=${currentPeriod}`)
         .then(response => response.blob())
         .then(blob => {
             const url = window.URL.createObjectURL(blob);

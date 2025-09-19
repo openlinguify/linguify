@@ -109,7 +109,7 @@ class TagsManager {
 
         // 3. Validation finale via l'API (double sécurité)
         try {
-            const response = await window.apiService.request('/api/v1/revision/tags/', {
+            const response = await window.apiService.request('/api/v1/revision/api/tags/', {
                 method: 'POST',
                 body: JSON.stringify({ tag: normalizedTag })
             });
@@ -373,7 +373,7 @@ class TagsManager {
 
     async loadAvailableTags() {
         try {
-            const response = await window.apiService.request('/api/v1/revision/tags/');
+            const response = await window.apiService.request('/api/v1/revision/api/tags/');
             if (response && response.tags) {
                 this.availableTags = new Set(response.tags);
                 console.log(`🔄 Tags disponibles rechargés: ${response.tags.length} tags`);
@@ -528,7 +528,7 @@ function createTagsFilter(containerSelector, onTagsChange) {
 // Fonction pour charger tous les tags disponibles
 async function loadAllTags() {
     try {
-        const response = await window.apiService.request('/api/v1/revision/tags/');
+        const response = await window.apiService.request('/api/v1/revision/api/tags/');
         return response.tags || [];
     } catch (error) {
         console.error('Erreur lors du chargement des tags:', error);

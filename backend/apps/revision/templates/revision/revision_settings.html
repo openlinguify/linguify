@@ -1021,8 +1021,8 @@
         console.log('[RevisionSettings] Loading revision statistics from API');
         
         try {
-            console.log('[RevisionSettings] Fetching from /api/v1/revision/settings/api/settings/stats/');
-            const response = await fetch('/api/v1/revision/settings/api/settings/stats/');
+            console.log('[RevisionSettings] Fetching from /api/v1/revision/api/settings/api/settings/stats/');
+            const response = await fetch('/api/v1/revision/api/settings/api/settings/stats/');
             console.log('[RevisionSettings] Response status:', response.status);
             
             if (!response.ok) {
@@ -1060,7 +1060,7 @@
     async function testStatsAPI() {
         console.log('[TEST] Testing stats API...');
         try {
-            const response = await fetch('/api/v1/revision/settings/api/settings/test_stats/');
+            const response = await fetch('/api/v1/revision/api/settings/api/settings/test_stats/');
             const data = await response.json();
             console.log('[TEST] Test API response:', data);
             alert(`Test API: ${data.message}\nCartes: ${data.total_cards}\nApprises: ${data.cards_learned}`);
@@ -1135,7 +1135,7 @@
     function loadWordStats(type) {
         console.log(`[WordStats] Loading ${type} word statistics`);
         
-        const apiUrl = '/api/v1/revision/word-stats/';
+        const apiUrl = '/api/v1/revision/api/word-stats/';
         const params = new URLSearchParams();
         
         if (type === 'known') {
@@ -1278,7 +1278,7 @@
         console.log('[VoiceSettings] 🔄 Loading current voice preferences from server...');
         
         try {
-            const response = await fetch('/api/v1/revision/user-settings/', {
+            const response = await fetch('/api/v1/revision/api/user-settings/', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

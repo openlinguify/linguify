@@ -475,7 +475,7 @@ class WriteStudyMode {
          */
         try {
             const response = await window.apiService.request(
-                `/api/v1/revision/flashcards/${cardId}/update_review_progress/`,
+                `/api/v1/revision/api/flashcards/${cardId}/update_review_progress/`,
                 {
                     method: 'POST',
                     body: JSON.stringify({
