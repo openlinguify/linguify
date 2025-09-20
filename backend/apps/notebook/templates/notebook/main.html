@@ -17,6 +17,39 @@
 
 <!-- Styles pour l'interface Owl -->
 <style>
+/* Application avec header existant */
+.o_webclient {
+    width: 100% !important;
+    height: calc(100vh - 80px) !important; /* Laisser place au header */
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+}
+
+/* Point de montage pleine largeur */
+#owl-navbar-mount {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Workspace pleine largeur */
+.notebook-workspace {
+    width: 100% !important;
+    height: calc(100vh - 140px) !important; /* Espace pour header + navbar Owl */
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Navbar pleine largeur */
+.navbar-linguify {
+    width: 100% !important;
+    height: 60px !important;
+    margin: 0 !important;
+    padding: 0 15px !important;
+    box-sizing: border-box !important;
+}
+
 /* Hover effects pour les notes */
 .note-item:hover {
     background-color: #f8f9fa !important;
@@ -41,13 +74,21 @@
     min-width: 300px;
     background: white;
     border-right: 1px solid #dee2e6;
-    height: 100vh;
+    height: 100% !important;
     overflow-y: auto;
+    transition: margin-left 0.3s ease;
 }
 
-/* Notebook workspace */
-.notebook-workspace {
-    height: calc(100vh - 140px);
+/* Sidebar cachée */
+.sidebar-linguify.sidebar-hidden {
+    margin-left: -300px;
+}
+
+/* Editor zone */
+.notebook-editor {
+    flex: 1 !important;
+    height: 100% !important;
+    overflow: hidden !important;
 }
 
 /* Editor responsivity */

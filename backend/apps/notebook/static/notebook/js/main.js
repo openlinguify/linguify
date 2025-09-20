@@ -14,11 +14,11 @@ class Navbar extends Component {
 
         <!-- Navigation tabs -->
         <div class="nav-tabs-group">
-          <a href="#" class="nav-tab" t-att-class="{ active: state.currentView === 'notes' }" t-on-click="() => this.switchView('notes')">
+          <a href="#" class="nav-tab" t-att-class="{ active: store.state.currentView === 'notes' }" t-on-click="() => this.switchView('notes')">
             <i class="bi bi-journal-text"></i>
             Mes notes
           </a>
-          <a href="#" class="nav-tab" t-att-class="{ active: state.currentView === 'archives' }" t-on-click="() => this.switchView('archives')">
+          <a href="#" class="nav-tab" t-att-class="{ active: store.state.currentView === 'archives' }" t-on-click="() => this.switchView('archives')">
             <i class="bi bi-archive"></i>
             Archives
           </a>
@@ -36,7 +36,7 @@ class Navbar extends Component {
       <!-- Droite: Actions et filtres -->
       <div class="navbar-section-right" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
         <input type="text" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px;"
-               t-model="state.searchQuery" t-on-input="onSearchInput" />
+               t-att-value="store.state.searchQuery" t-on-input="onSearchInput" />
 
         <!-- Bouton nouvelle note -->
         <button class="btn-navbar btn-navbar-primary" t-on-click="createNewNote">
@@ -48,29 +48,23 @@ class Navbar extends Component {
   `;
 
   setup() {
-    // Utiliser le store passé en props
     this.store = this.props.store;
-    this.state = this.store.state;
   }
 
   toggleSidebar() {
     this.store.toggleSidebar();
-    console.log('Toggle sidebar:', this.state.sidebarVisible);
-    // Appeler la fonction existante si elle existe
-    if (typeof window.toggleSidebar === 'function') {
-      window.toggleSidebar();
-    }
+    console.log('Toggle sidebar:', this.store.state.sidebarVisible);
   }
 
   switchView(view) {
     this.store.switchView(view);
     console.log('Switched to view:', view);
 
-    // Appeler les fonctions existantes
-    if (view === 'notes' && typeof window.showNotesView === 'function') {
-      window.showNotesView();
-    } else if (view === 'archives' && typeof window.showArchivedView === 'function') {
-      window.showArchivedView();
+    // Recharger les notes selon la vue
+    if (view === 'archives') {
+      this.store.loadArchivedNotes();
+    } else {
+      this.store.loadNotes();
     }
   }
 
@@ -88,13 +82,11 @@ class Navbar extends Component {
     }
   }
 
-  onSearchInput() {
-    this.store.setSearchQuery(this.state.searchQuery);
-    console.log('Search query:', this.state.searchQuery);
-    // Implémenter la recherche avec debounce
-    if (typeof window.debounceSearch === 'function') {
-      window.debounceSearch();
-    }
+  onSearchInput(event) {
+    const query = event.target.value;
+    this.store.setSearchQuery(query);
+    console.log('Search query:', query);
+    // TODO: Implémenter la recherche avec debounce
   }
 
   async createNewNote() {
@@ -128,7 +120,7 @@ class Navbar extends Component {
 // Composant Sidebar
 class Sidebar extends Component {
   static template = xml`
-    <div class="sidebar-linguify" t-att-class="{ show: store.state.sidebarVisible }">
+    <div class="sidebar-linguify" t-att-class="{ 'sidebar-hidden': !props.sidebarVisible }">
       <div class="sidebar-content">
         <!-- Notes list -->
         <div style="padding: 10px; background: #fffacd; margin-bottom: 10px; font-size: 12px;">
@@ -376,6 +368,8 @@ class NotebookStore {
 
   toggleSidebar() {
     this.state.sidebarVisible = !this.state.sidebarVisible;
+    this.state.lastUpdate = Date.now(); // Forcer la réactivité
+    console.log('Sidebar toggled:', this.state.sidebarVisible);
   }
 
   setCurrentNote(note) {
@@ -411,6 +405,29 @@ class NotebookStore {
       }
     } catch (error) {
       console.error('Erreur lors du chargement des notes:', error);
+    } finally {
+      this.state.loading = false;
+    }
+  }
+
+  async loadArchivedNotes() {
+    this.state.loading = true;
+    try {
+      const response = await window.apiService.request('/notebook/ajax/notes/?page=1&archive_status=archived');
+      console.log('Notes archivées chargées depuis l\'API:', response);
+
+      if (response.results) {
+        const formattedNotes = response.results.map(note => ({
+          ...note,
+          updated_at: this.formatDate(note.updated_at)
+        }));
+
+        this.state.notes = [...formattedNotes];
+        this.state.lastUpdate = Date.now();
+        console.log('Notes archivées ajoutées au state:', this.state.notes.length, 'notes');
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des notes archivées:', error);
     } finally {
       this.state.loading = false;
     }
@@ -497,7 +514,7 @@ class WebClient extends Component {
     <div class="o_webclient">
       <Navbar store="store" notes="state.notes" currentNote="state.currentNote" />
       <div class="notebook-workspace d-flex h-100">
-        <Sidebar store="store" notes="state.notes" currentNote="state.currentNote" lastUpdate="state.lastUpdate" />
+        <Sidebar store="store" notes="state.notes" currentNote="state.currentNote" lastUpdate="state.lastUpdate" sidebarVisible="state.sidebarVisible" />
 
         <!-- Zone d'édition principale -->
         <div class="notebook-editor flex-grow-1">
