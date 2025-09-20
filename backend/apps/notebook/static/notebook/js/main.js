@@ -98,24 +98,36 @@ class Navbar extends Component {
   }
 
   createNewNote() {
-    console.log('Creating new note...');
-    if (typeof window.createNewNote === 'function') {
-      window.createNewNote();
-    }
+    console.log('Navbar: Creating new note...');
+
+    const newNote = {
+      id: Date.now(),
+      title: "Nouvelle note",
+      content: "",
+      language: "FR",
+      updated_at: "À l'instant"
+    };
+
+    console.log('Nouvelle note créée:', newNote);
+    this.store.addNote(newNote);
+    this.store.setCurrentNote(newNote);
+
+    console.log('Notes totales:', this.store.state.notes.length);
+    console.log('Note actuelle:', this.store.state.currentNote);
   }
 }
 
 // Composant Sidebar
 class Sidebar extends Component {
   static template = xml`
-    <div class="sidebar-linguify" t-att-class="{ show: props.store.state.sidebarVisible }">
+    <div class="sidebar-linguify" t-att-class="{ show: this.store.state.sidebarVisible }">
       <div class="sidebar-content">
         <!-- Notes list -->
         <ul class="note-list" style="list-style: none; padding: 0; margin: 0;">
-          <li t-foreach="props.store.state.notes" t-as="note" t-key="note.id"
+          <li t-foreach="this.store.state.notes" t-as="note" t-key="note.id"
               class="note-item"
-              t-att-class="{ 'selected': props.store.state.currentNote?.id === note.id }"
-              t-on-click="() => this.selectNoteById(note.id)"
+              t-att-class="{ 'selected': this.store.state.currentNote?.id === note.id }"
+              t-on-click="() => this.selectNote(note)"
               style="padding: 12px 16px; margin: 4px 8px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s;">
             <div class="note-title" style="font-weight: 600; font-size: 14px; color: #333; margin-bottom: 4px;" t-esc="note.title || 'Sans titre'"></div>
             <div class="note-preview" style="font-size: 12px; color: #666; margin-bottom: 8px; line-height: 1.3;" t-esc="(note.content || '...').substring(0, 60) + (note.content?.length > 60 ? '...' : '')"></div>
@@ -127,7 +139,7 @@ class Sidebar extends Component {
         </ul>
 
         <!-- Empty state -->
-        <div class="empty-state" t-if="props.store.state.notes.length === 0">
+        <div class="empty-state" t-if="this.store.state.notes.length === 0">
           <i class="bi bi-journal-text empty-state-icon"></i>
           <div class="empty-state-title">Aucune note</div>
           <div class="empty-state-description">Créez votre première note pour commencer à organiser vos idées</div>
@@ -138,7 +150,7 @@ class Sidebar extends Component {
         </div>
 
         <!-- Load more -->
-        <div class="text-center load-more-container" t-if="props.store.state.notes.length > 0">
+        <div class="text-center load-more-container" t-if="this.store.state.notes.length > 0">
           <button class="btn-linguify-secondary" t-on-click="loadMore">
             <i class="bi bi-arrow-down-circle mr-2"></i>
             Charger plus
@@ -152,17 +164,10 @@ class Sidebar extends Component {
     this.store = this.props.store;
   }
 
-  selectNote(event) {
-    const noteId = parseInt(event.currentTarget.dataset.noteId);
-    console.log('Clic sur note ID:', noteId);
-
-    const note = this.store.state.notes.find(n => n.id === noteId);
-    console.log('Note trouvée:', note);
-
-    if (note) {
-      this.store.setCurrentNote(note);
-      console.log('Note actuelle dans le store:', this.store.state.currentNote);
-    }
+  selectNote(note) {
+    console.log('Sélection de la note:', note);
+    this.store.setCurrentNote(note);
+    console.log('Note actuelle dans le store:', this.store.state.currentNote);
   }
 
   createNewNote() {
@@ -183,7 +188,7 @@ class NoteEditor extends Component {
   static template = xml`
     <div class="note-editor-panel h-100 d-flex flex-column" style="background: white; border-left: 1px solid #ddd;">
       <!-- État: Aucune note sélectionnée -->
-      <div t-if="!props.store.state.currentNote" class="no-note-selected d-flex align-items-center justify-content-center h-100" style="background: #f8f9fa;">
+      <div t-if="!this.store.state.currentNote" class="no-note-selected d-flex align-items-center justify-content-center h-100" style="background: #f8f9fa;">
         <div class="text-center text-muted p-4">
           <i class="bi bi-journal-text" style="font-size: 4rem; color: #6c757d; margin-bottom: 1rem;"></i>
           <h3 style="color: #495057; margin-bottom: 1rem;">Aucune note sélectionnée</h3>
@@ -196,13 +201,13 @@ class NoteEditor extends Component {
       </div>
 
       <!-- État: Note sélectionnée -->
-      <div t-if="props.store.state.currentNote" class="editor-container h-100 d-flex flex-column">
+      <div t-if="this.store.state.currentNote" class="editor-container h-100 d-flex flex-column">
         <!-- En-tête de l'éditeur avec titre -->
         <div class="editor-header p-4 border-bottom" style="background: #fff; border-bottom: 2px solid #e9ecef;">
           <input type="text"
                  class="form-control form-control-lg border-0 fw-bold"
                  placeholder="Titre de la note..."
-                 t-att-value="props.store.state.currentNote.title"
+                 t-att-value="this.store.state.currentNote.title"
                  t-on-input="updateTitle"
                  t-on-blur="saveNote"
                  style="font-size: 1.5rem; background: transparent; outline: none; box-shadow: none;" />
@@ -212,7 +217,7 @@ class NoteEditor extends Component {
         <div class="editor-content flex-grow-1 p-4">
           <textarea class="form-control h-100 border-0 resize-none"
                     placeholder="Écrivez votre note ici..."
-                    t-att-value="props.store.state.currentNote.content"
+                    t-att-value="this.store.state.currentNote.content"
                     t-on-input="updateContent"
                     t-on-blur="saveNote"
                     style="font-size: 1rem; line-height: 1.6; outline: none; box-shadow: none; background: transparent;"></textarea>
@@ -223,7 +228,7 @@ class NoteEditor extends Component {
           <div class="row align-items-center">
             <div class="col-md-3">
               <label class="form-label small text-muted mb-1">Langue</label>
-              <select class="form-select form-select-sm" t-att-value="props.store.state.currentNote.language" t-on-change="updateLanguage">
+              <select class="form-select form-select-sm" t-att-value="this.store.state.currentNote.language" t-on-change="updateLanguage">
                 <option value="FR">Français</option>
                 <option value="EN">Anglais</option>
                 <option value="ES">Espagnol</option>
@@ -232,7 +237,7 @@ class NoteEditor extends Component {
             </div>
             <div class="col-md-4">
               <label class="form-label small text-muted mb-1">Dernière modification</label>
-              <div class="small text-muted" t-esc="props.store.state.currentNote.updated_at"></div>
+              <div class="small text-muted" t-esc="this.store.state.currentNote.updated_at"></div>
             </div>
             <div class="col-md-5 text-end">
               <button class="btn btn-sm btn-outline-primary me-2" t-on-click="saveNote">
@@ -274,6 +279,8 @@ class NoteEditor extends Component {
   }
 
   createNewNote() {
+    console.log('Editor: Creating new note...');
+
     const newNote = {
       id: Date.now(),
       title: "Nouvelle note",
@@ -281,8 +288,13 @@ class NoteEditor extends Component {
       language: "FR",
       updated_at: "À l'instant"
     };
+
+    console.log('Editor: Nouvelle note créée:', newNote);
     this.store.addNote(newNote);
     this.store.setCurrentNote(newNote);
+
+    console.log('Editor: Notes totales:', this.store.state.notes.length);
+    console.log('Editor: Note actuelle:', this.store.state.currentNote);
 
     // Focus sur le titre après création
     setTimeout(() => {
@@ -341,7 +353,8 @@ class NotebookStore {
   }
 
   addNote(note) {
-    this.state.notes.unshift(note);
+    // Créer un nouveau tableau pour déclencher la réactivité
+    this.state.notes = [note, ...this.state.notes];
   }
 }
 
