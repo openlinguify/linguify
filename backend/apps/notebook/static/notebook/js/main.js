@@ -152,8 +152,7 @@ class Sidebar extends Component {
               t-att-class="{ 'selected': props.currentNote?.id === note.id, 'multi-selected': props.selectedNotes.includes(note.id) }"
               t-on-click="(event) => this.selectNote(note, event)"
               style="padding: 12px 16px; margin: 4px 8px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s;">
-            <div class="note-title" style="font-weight: 600; font-size: 14px; color: #333; margin-bottom: 4px;" t-esc="note.title || 'Sans titre'"></div>
-            <div class="note-preview" style="font-size: 12px; color: #666; margin-bottom: 8px; line-height: 1.3;" t-esc="(note.content || '...').substring(0, 60) + (note.content?.length > 60 ? '...' : '')"></div>
+            <div class="note-title" style="font-weight: 600; font-size: 14px; color: #333; margin-bottom: 8px;" t-esc="note.title || 'Sans titre'"></div>
             <div class="note-meta" style="display: flex; justify-content: space-between; align-items: center;">
               <span class="note-language" style="background: #e9ecef; padding: 2px 6px; border-radius: 12px; font-size: 10px; color: #495057;" t-esc="note.language"></span>
               <span class="note-date" style="font-size: 11px; color: #6c757d;" t-esc="note.updated_at"></span>
