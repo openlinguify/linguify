@@ -20,10 +20,12 @@
 /* Application avec header existant */
 .o_webclient {
     width: 100% !important;
-    height: calc(100vh - 80px) !important; /* Laisser place au header */
+    height: calc(100vh - 60px) !important; /* Laisser place au header Django */
     margin: 0 !important;
     padding: 0 !important;
     background: white !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
 
 /* Point de montage pleine largeur */
@@ -36,18 +38,21 @@
 /* Workspace pleine largeur */
 .notebook-workspace {
     width: 100% !important;
-    height: calc(100vh - 140px) !important; /* Espace pour header + navbar Owl */
+    flex: 1 !important; /* Prendre tout l'espace restant après la navbar */
     margin: 0 !important;
     padding: 0 !important;
+    display: flex !important;
 }
 
 /* Navbar pleine largeur */
 .navbar-linguify {
     width: 100% !important;
     height: 60px !important;
+    min-height: 60px !important;
     margin: 0 !important;
     padding: 0 15px !important;
     box-sizing: border-box !important;
+    flex-shrink: 0 !important; /* Ne pas rétrécir */
 }
 
 /* Hover effects pour les notes */
