@@ -122,15 +122,35 @@ class Sidebar extends Component {
   static template = xml`
     <div class="sidebar-linguify" t-att-class="{ 'sidebar-hidden': !props.sidebarVisible }">
       <div class="sidebar-content">
-        <!-- Notes list -->
+        <!-- Barre d'actions sélection multiple -->
+        <div t-if="props.selectedNotes.length > 0" class="selection-actions-bar" style="padding: 10px; background: #e3f2fd; border-bottom: 1px solid #bbdefb; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 12px; color: #1976d2; font-weight: 600;">
+              <t t-esc="props.selectedNotes.length"/> note(s) sélectionnée(s)
+            </span>
+            <div style="display: flex; gap: 5px;">
+              <button class="btn btn-sm btn-outline-warning" t-on-click="archiveSelectedNotes" title="Archiver les notes sélectionnées">
+                <i class="bi bi-archive"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" t-on-click="deleteSelectedNotes" title="Supprimer les notes sélectionnées">
+                <i class="bi bi-trash"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary" t-on-click="clearSelection" title="Désélectionner tout">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Debug info -->
         <div style="padding: 10px; background: #fffacd; margin-bottom: 10px; font-size: 12px;">
           Debug: <t t-esc="props.notes.length"/> notes dans le store (maj: <t t-esc="props.lastUpdate"/>)
         </div>
         <ul class="note-list" style="list-style: none; padding: 0; margin: 0;">
           <li t-foreach="props.notes" t-as="note" t-key="note.id"
               class="note-item"
-              t-att-class="{ 'selected': props.currentNote?.id === note.id }"
-              t-on-click="() => this.selectNote(note)"
+              t-att-class="{ 'selected': props.currentNote?.id === note.id, 'multi-selected': props.selectedNotes.includes(note.id) }"
+              t-on-click="(event) => this.selectNote(note, event)"
               style="padding: 12px 16px; margin: 4px 8px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s;">
             <div class="note-title" style="font-weight: 600; font-size: 14px; color: #333; margin-bottom: 4px;" t-esc="note.title || 'Sans titre'"></div>
             <div class="note-preview" style="font-size: 12px; color: #666; margin-bottom: 8px; line-height: 1.3;" t-esc="(note.content || '...').substring(0, 60) + (note.content?.length > 60 ? '...' : '')"></div>
@@ -167,10 +187,61 @@ class Sidebar extends Component {
     this.store = this.props.store;
   }
 
-  selectNote(note) {
-    console.log('Sélection de la note:', note);
-    this.store.setCurrentNote(note);
-    console.log('Note actuelle dans le store:', this.store.state.currentNote);
+  selectNote(note, event) {
+    console.log('Sélection de la note:', note, 'Event:', event);
+    this.store.toggleNoteSelection(note, event);
+  }
+
+  clearSelection() {
+    this.store.clearSelection();
+  }
+
+  async archiveSelectedNotes() {
+    const selectedCount = this.props.selectedNotes.length;
+    if (selectedCount === 0) return;
+
+    if (confirm(`Voulez-vous vraiment archiver ${selectedCount} note(s) ?`)) {
+      try {
+        for (const noteId of this.props.selectedNotes) {
+          const note = this.props.notes.find(n => n.id === noteId);
+          if (note) {
+            await this.store.updateNote(noteId, {
+              ...note,
+              is_archived: true
+            });
+            this.store.removeNoteFromList(noteId);
+          }
+        }
+        this.store.clearSelection();
+        console.log(`${selectedCount} notes archivées`);
+      } catch (error) {
+        console.error('Erreur lors de l\'archivage en lot:', error);
+        alert('Erreur lors de l\'archivage des notes');
+      }
+    }
+  }
+
+  async deleteSelectedNotes() {
+    const selectedCount = this.props.selectedNotes.length;
+    if (selectedCount === 0) return;
+
+    if (confirm(`Voulez-vous vraiment supprimer définitivement ${selectedCount} note(s) ? Cette action est irréversible.`)) {
+      try {
+        for (const noteId of this.props.selectedNotes) {
+          await this.store.deleteNote(noteId);
+          this.store.removeNoteFromList(noteId);
+        }
+        this.store.clearSelection();
+        // Déselectionner la note courante si elle était supprimée
+        if (this.props.selectedNotes.includes(this.props.currentNote?.id)) {
+          this.store.setCurrentNote(null);
+        }
+        console.log(`${selectedCount} notes supprimées`);
+      } catch (error) {
+        console.error('Erreur lors de la suppression en lot:', error);
+        alert('Erreur lors de la suppression des notes');
+      }
+    }
   }
 
   createNewNote() {
@@ -246,6 +317,14 @@ class NoteEditor extends Component {
               <button class="btn btn-sm btn-outline-primary me-2" t-on-click="saveNote">
                 <i class="bi bi-save me-1"></i>
                 Sauvegarder
+              </button>
+              <button class="btn btn-sm btn-outline-warning me-2" t-on-click="archiveNote" title="Archiver cette note">
+                <i class="bi bi-archive me-1"></i>
+                Archiver
+              </button>
+              <button class="btn btn-sm btn-outline-danger me-2" t-on-click="deleteNote" title="Supprimer cette note">
+                <i class="bi bi-trash me-1"></i>
+                Supprimer
               </button>
               <button class="btn btn-sm btn-outline-secondary" t-on-click="createNewNote">
                 <i class="bi bi-plus me-1"></i>
@@ -336,6 +415,45 @@ class NoteEditor extends Component {
       }
     }
   }
+
+  async archiveNote() {
+    if (this.store.state.currentNote && this.store.state.currentNote.id) {
+      if (confirm('Voulez-vous vraiment archiver cette note ?')) {
+        try {
+          await this.store.updateNote(this.store.state.currentNote.id, {
+            ...this.store.state.currentNote,
+            is_archived: true
+          });
+          console.log('Note archivée:', this.store.state.currentNote);
+
+          // Retirer de la liste locale et déselectionner
+          this.store.removeNoteFromList(this.store.state.currentNote.id);
+          this.store.setCurrentNote(null);
+        } catch (error) {
+          console.error('Erreur lors de l\'archivage:', error);
+          alert('Erreur lors de l\'archivage de la note');
+        }
+      }
+    }
+  }
+
+  async deleteNote() {
+    if (this.store.state.currentNote && this.store.state.currentNote.id) {
+      if (confirm('Voulez-vous vraiment supprimer définitivement cette note ? Cette action est irréversible.')) {
+        try {
+          await this.store.deleteNote(this.store.state.currentNote.id);
+          console.log('Note supprimée:', this.store.state.currentNote);
+
+          // Retirer de la liste locale et déselectionner
+          this.store.removeNoteFromList(this.store.state.currentNote.id);
+          this.store.setCurrentNote(null);
+        } catch (error) {
+          console.error('Erreur lors de la suppression:', error);
+          alert('Erreur lors de la suppression de la note');
+        }
+      }
+    }
+  }
 }
 
 // Store global pour l'application
@@ -346,6 +464,8 @@ class NotebookStore {
       notes: [],
       archivedNotes: [],
       currentNote: null,
+      selectedNotes: [],
+      lastSelectedIndex: -1,
       searchQuery: '',
       filters: {
         language: '',
@@ -495,6 +615,72 @@ class NotebookStore {
     }
   }
 
+  async deleteNote(noteId) {
+    try {
+      const response = await window.apiService.request(`/notebook/ajax/notes/${noteId}/delete/`, {
+        method: 'POST'
+      });
+
+      console.log('Note supprimée via API:', response);
+      return response;
+    } catch (error) {
+      console.error('Erreur lors de la suppression de la note:', error);
+      throw error;
+    }
+  }
+
+  removeNoteFromList(noteId) {
+    // Retirer la note de la liste locale
+    this.state.notes = this.state.notes.filter(note => note.id !== noteId);
+    this.state.lastUpdate = Date.now();
+    console.log('Note retirée de la liste locale:', noteId);
+  }
+
+  toggleNoteSelection(note, event) {
+    const noteIndex = this.state.notes.findIndex(n => n.id === note.id);
+    const isSelected = this.state.selectedNotes.includes(note.id);
+
+    if (event.ctrlKey || event.metaKey) {
+      // Ctrl/Cmd : Toggle sélection individuelle
+      if (isSelected) {
+        this.state.selectedNotes = this.state.selectedNotes.filter(id => id !== note.id);
+      } else {
+        this.state.selectedNotes = [...this.state.selectedNotes, note.id];
+      }
+      this.state.lastSelectedIndex = noteIndex;
+      // Ne pas changer la note courante en mode Ctrl
+    } else if (event.shiftKey && this.state.lastSelectedIndex !== -1) {
+      // Shift : Sélection en plage
+      const start = Math.min(this.state.lastSelectedIndex, noteIndex);
+      const end = Math.max(this.state.lastSelectedIndex, noteIndex);
+      const rangeIds = this.state.notes.slice(start, end + 1).map(n => n.id);
+
+      // Merge avec les sélections existantes
+      const allSelected = new Set([...this.state.selectedNotes, ...rangeIds]);
+      this.state.selectedNotes = Array.from(allSelected);
+      // Ne pas changer la note courante en mode Shift
+    } else {
+      // Clic simple : Effacer la sélection multiple et sélectionner uniquement cette note
+      this.state.selectedNotes = [];
+      this.state.lastSelectedIndex = noteIndex;
+      this.setCurrentNote(note);
+    }
+
+    this.state.lastUpdate = Date.now();
+    console.log('Notes sélectionnées:', this.state.selectedNotes);
+  }
+
+  clearSelection() {
+    this.state.selectedNotes = [];
+    this.state.lastSelectedIndex = -1;
+    this.state.lastUpdate = Date.now();
+  }
+
+  selectAllNotes() {
+    this.state.selectedNotes = this.state.notes.map(note => note.id);
+    this.state.lastUpdate = Date.now();
+  }
+
   formatDate(dateString) {
     const date = new Date(dateString);
     const now = new Date();
@@ -514,7 +700,7 @@ class WebClient extends Component {
     <div class="o_webclient">
       <Navbar store="store" notes="state.notes" currentNote="state.currentNote" />
       <div class="notebook-workspace d-flex h-100">
-        <Sidebar store="store" notes="state.notes" currentNote="state.currentNote" lastUpdate="state.lastUpdate" sidebarVisible="state.sidebarVisible" />
+        <Sidebar store="store" notes="state.notes" currentNote="state.currentNote" lastUpdate="state.lastUpdate" sidebarVisible="state.sidebarVisible" selectedNotes="state.selectedNotes" />
 
         <!-- Zone d'édition principale -->
         <div class="notebook-editor flex-grow-1">
