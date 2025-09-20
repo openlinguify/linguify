@@ -97,36 +97,47 @@ class Navbar extends Component {
     }
   }
 
-  createNewNote() {
+  async createNewNote() {
     console.log('Navbar: Creating new note...');
 
-    const newNote = {
-      id: Date.now(),
-      title: "Nouvelle note",
-      content: "",
-      language: "FR",
-      updated_at: "À l'instant"
-    };
+    try {
+      const noteData = {
+        title: "Nouvelle note",
+        content: "",
+        language: "FR"
+      };
 
-    console.log('Nouvelle note créée:', newNote);
-    this.store.addNote(newNote);
-    this.store.setCurrentNote(newNote);
-
-    console.log('Notes totales:', this.store.state.notes.length);
-    console.log('Note actuelle:', this.store.state.currentNote);
+      await this.store.createNote(noteData);
+      console.log('Note créée avec succès via API');
+    } catch (error) {
+      console.error('Erreur lors de la création de la note:', error);
+      // Fallback: créer en local seulement
+      const newNote = {
+        id: Date.now(),
+        title: "Nouvelle note",
+        content: "",
+        language: "FR",
+        updated_at: "À l'instant"
+      };
+      this.store.addNote(newNote);
+      this.store.setCurrentNote(newNote);
+    }
   }
 }
 
 // Composant Sidebar
 class Sidebar extends Component {
   static template = xml`
-    <div class="sidebar-linguify" t-att-class="{ show: this.store.state.sidebarVisible }">
+    <div class="sidebar-linguify" t-att-class="{ show: state.sidebarVisible }">
       <div class="sidebar-content">
         <!-- Notes list -->
+        <div style="padding: 10px; background: #fffacd; margin-bottom: 10px; font-size: 12px;">
+          Debug: <t t-esc="state.notes.length"/> notes dans le store (maj: <t t-esc="state.lastUpdate"/>)
+        </div>
         <ul class="note-list" style="list-style: none; padding: 0; margin: 0;">
-          <li t-foreach="this.store.state.notes" t-as="note" t-key="note.id"
+          <li t-foreach="state.notes" t-as="note" t-key="note.id"
               class="note-item"
-              t-att-class="{ 'selected': this.store.state.currentNote?.id === note.id }"
+              t-att-class="{ 'selected': state.currentNote?.id === note.id }"
               t-on-click="() => this.selectNote(note)"
               style="padding: 12px 16px; margin: 4px 8px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s;">
             <div class="note-title" style="font-weight: 600; font-size: 14px; color: #333; margin-bottom: 4px;" t-esc="note.title || 'Sans titre'"></div>
@@ -139,7 +150,7 @@ class Sidebar extends Component {
         </ul>
 
         <!-- Empty state -->
-        <div class="empty-state" t-if="this.store.state.notes.length === 0">
+        <div class="empty-state" t-if="state.notes.length === 0">
           <i class="bi bi-journal-text empty-state-icon"></i>
           <div class="empty-state-title">Aucune note</div>
           <div class="empty-state-description">Créez votre première note pour commencer à organiser vos idées</div>
@@ -150,7 +161,7 @@ class Sidebar extends Component {
         </div>
 
         <!-- Load more -->
-        <div class="text-center load-more-container" t-if="this.store.state.notes.length > 0">
+        <div class="text-center load-more-container" t-if="state.notes.length > 0">
           <button class="btn-linguify-secondary" t-on-click="loadMore">
             <i class="bi bi-arrow-down-circle mr-2"></i>
             Charger plus
@@ -162,6 +173,8 @@ class Sidebar extends Component {
 
   setup() {
     this.store = this.props.store;
+    // Exposer directement le state pour la réactivité
+    this.state = this.store.state;
   }
 
   selectNote(note) {
@@ -188,7 +201,7 @@ class NoteEditor extends Component {
   static template = xml`
     <div class="note-editor-panel h-100 d-flex flex-column" style="background: white; border-left: 1px solid #ddd;">
       <!-- État: Aucune note sélectionnée -->
-      <div t-if="!this.store.state.currentNote" class="no-note-selected d-flex align-items-center justify-content-center h-100" style="background: #f8f9fa;">
+      <div t-if="!state.currentNote" class="no-note-selected d-flex align-items-center justify-content-center h-100" style="background: #f8f9fa;">
         <div class="text-center text-muted p-4">
           <i class="bi bi-journal-text" style="font-size: 4rem; color: #6c757d; margin-bottom: 1rem;"></i>
           <h3 style="color: #495057; margin-bottom: 1rem;">Aucune note sélectionnée</h3>
@@ -201,13 +214,13 @@ class NoteEditor extends Component {
       </div>
 
       <!-- État: Note sélectionnée -->
-      <div t-if="this.store.state.currentNote" class="editor-container h-100 d-flex flex-column">
+      <div t-if="state.currentNote" class="editor-container h-100 d-flex flex-column">
         <!-- En-tête de l'éditeur avec titre -->
         <div class="editor-header p-4 border-bottom" style="background: #fff; border-bottom: 2px solid #e9ecef;">
           <input type="text"
                  class="form-control form-control-lg border-0 fw-bold"
                  placeholder="Titre de la note..."
-                 t-att-value="this.store.state.currentNote.title"
+                 t-att-value="state.currentNote.title"
                  t-on-input="updateTitle"
                  t-on-blur="saveNote"
                  style="font-size: 1.5rem; background: transparent; outline: none; box-shadow: none;" />
@@ -217,7 +230,7 @@ class NoteEditor extends Component {
         <div class="editor-content flex-grow-1 p-4">
           <textarea class="form-control h-100 border-0 resize-none"
                     placeholder="Écrivez votre note ici..."
-                    t-att-value="this.store.state.currentNote.content"
+                    t-att-value="state.currentNote.content"
                     t-on-input="updateContent"
                     t-on-blur="saveNote"
                     style="font-size: 1rem; line-height: 1.6; outline: none; box-shadow: none; background: transparent;"></textarea>
@@ -228,7 +241,7 @@ class NoteEditor extends Component {
           <div class="row align-items-center">
             <div class="col-md-3">
               <label class="form-label small text-muted mb-1">Langue</label>
-              <select class="form-select form-select-sm" t-att-value="this.store.state.currentNote.language" t-on-change="updateLanguage">
+              <select class="form-select form-select-sm" t-att-value="state.currentNote.language" t-on-change="updateLanguage">
                 <option value="FR">Français</option>
                 <option value="EN">Anglais</option>
                 <option value="ES">Espagnol</option>
@@ -237,7 +250,7 @@ class NoteEditor extends Component {
             </div>
             <div class="col-md-4">
               <label class="form-label small text-muted mb-1">Dernière modification</label>
-              <div class="small text-muted" t-esc="this.store.state.currentNote.updated_at"></div>
+              <div class="small text-muted" t-esc="state.currentNote.updated_at"></div>
             </div>
             <div class="col-md-5 text-end">
               <button class="btn btn-sm btn-outline-primary me-2" t-on-click="saveNote">
@@ -257,60 +270,82 @@ class NoteEditor extends Component {
 
   setup() {
     this.store = this.props.store;
+    // Exposer directement le state pour la réactivité
+    this.state = this.store.state;
+
+    // Debounce pour la sauvegarde automatique
+    this.saveTimeout = null;
+    this.debouncedSave = () => {
+      if (this.saveTimeout) {
+        clearTimeout(this.saveTimeout);
+      }
+      this.saveTimeout = setTimeout(() => {
+        this.saveNote();
+      }, 1000); // Sauvegarde 1 seconde après la dernière modification
+    };
   }
 
   updateTitle(event) {
-    if (this.store.state.currentNote) {
-      this.store.state.currentNote.title = event.target.value;
+    if (this.state.currentNote) {
+      this.state.currentNote.title = event.target.value;
+      // Sauvegarde automatique avec debounce
+      this.debouncedSave();
     }
   }
 
   updateContent(event) {
-    if (this.store.state.currentNote) {
-      this.store.state.currentNote.content = event.target.value;
+    if (this.state.currentNote) {
+      this.state.currentNote.content = event.target.value;
+      // Sauvegarde automatique avec debounce
+      this.debouncedSave();
     }
   }
 
   updateLanguage(event) {
-    if (this.store.state.currentNote) {
-      this.store.state.currentNote.language = event.target.value;
+    if (this.state.currentNote) {
+      this.state.currentNote.language = event.target.value;
       this.saveNote();
     }
   }
 
-  createNewNote() {
+  async createNewNote() {
     console.log('Editor: Creating new note...');
 
-    const newNote = {
-      id: Date.now(),
-      title: "Nouvelle note",
-      content: "",
-      language: "FR",
-      updated_at: "À l'instant"
-    };
+    try {
+      const noteData = {
+        title: "Nouvelle note",
+        content: "",
+        language: "FR"
+      };
 
-    console.log('Editor: Nouvelle note créée:', newNote);
-    this.store.addNote(newNote);
-    this.store.setCurrentNote(newNote);
+      await this.store.createNote(noteData);
+      console.log('Note créée avec succès via API');
 
-    console.log('Editor: Notes totales:', this.store.state.notes.length);
-    console.log('Editor: Note actuelle:', this.store.state.currentNote);
-
-    // Focus sur le titre après création
-    setTimeout(() => {
-      const titleInput = document.querySelector('input[placeholder="Titre de la note..."]');
-      if (titleInput) {
-        titleInput.focus();
-        titleInput.select();
-      }
-    }, 100);
+      // Focus sur le titre après création
+      setTimeout(() => {
+        const titleInput = document.querySelector('input[placeholder="Titre de la note..."]');
+        if (titleInput) {
+          titleInput.focus();
+          titleInput.select();
+        }
+      }, 100);
+    } catch (error) {
+      console.error('Erreur lors de la création de la note:', error);
+    }
   }
 
-  saveNote() {
-    if (this.store.state.currentNote) {
-      this.store.state.currentNote.updated_at = "À l'instant";
-      console.log('Note sauvegardée:', this.store.state.currentNote);
-      // Ici vous pourriez appeler l'API pour sauvegarder
+  async saveNote() {
+    if (this.state.currentNote && this.state.currentNote.id) {
+      try {
+        await this.store.updateNote(this.state.currentNote.id, {
+          title: this.state.currentNote.title,
+          content: this.state.currentNote.content,
+          language: this.state.currentNote.language
+        });
+        console.log('Note sauvegardée via API:', this.state.currentNote);
+      } catch (error) {
+        console.error('Erreur lors de la sauvegarde:', error);
+      }
     }
   }
 }
@@ -330,7 +365,8 @@ class NotebookStore {
         tags: ''
       },
       loading: false,
-      sidebarVisible: true
+      sidebarVisible: true,
+      lastUpdate: Date.now()
     });
   }
 
@@ -355,6 +391,107 @@ class NotebookStore {
   addNote(note) {
     // Créer un nouveau tableau pour déclencher la réactivité
     this.state.notes = [note, ...this.state.notes];
+
+    // Forcer le re-render de tous les composants
+    this.state.lastUpdate = Date.now();
+  }
+
+  async loadNotes() {
+    this.state.loading = true;
+    try {
+      const response = await window.apiService.request('/notebook/ajax/notes/?page=1');
+      console.log('Notes chargées depuis l\'API:', response);
+
+      if (response.results) {
+        // Formater les dates pour l'affichage
+        const formattedNotes = response.results.map(note => ({
+          ...note,
+          updated_at: this.formatDate(note.updated_at)
+        }));
+
+        this.state.notes = formattedNotes;
+        this.state.lastUpdate = Date.now();
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des notes:', error);
+    } finally {
+      this.state.loading = false;
+    }
+  }
+
+  async createNote(noteData) {
+    try {
+      const response = await window.apiService.request('/notebook/ajax/create/', {
+        method: 'POST',
+        body: JSON.stringify(noteData)
+      });
+
+      console.log('Note créée via API:', response);
+
+      // Formater la date et ajouter à la liste
+      const formattedNote = {
+        ...response,
+        updated_at: this.formatDate(response.updated_at)
+      };
+
+      this.addNote(formattedNote);
+      this.setCurrentNote(formattedNote);
+
+      return formattedNote;
+    } catch (error) {
+      console.error('Erreur lors de la création de la note:', error);
+      throw error;
+    }
+  }
+
+  async updateNote(noteId, noteData) {
+    try {
+      const response = await window.apiService.request(`/notebook/ajax/update/${noteId}/`, {
+        method: 'POST',
+        body: JSON.stringify(noteData)
+      });
+
+      console.log('Note mise à jour via API:', response);
+
+      // Mettre à jour dans la liste locale
+      const formattedNote = {
+        ...response,
+        updated_at: this.formatDate(response.updated_at)
+      };
+
+      const index = this.state.notes.findIndex(n => n.id === noteId);
+      if (index !== -1) {
+        this.state.notes = [
+          ...this.state.notes.slice(0, index),
+          formattedNote,
+          ...this.state.notes.slice(index + 1)
+        ];
+        this.state.lastUpdate = Date.now();
+      }
+
+      // Mettre à jour la note courante si c'est celle-ci
+      if (this.state.currentNote?.id === noteId) {
+        this.state.currentNote = formattedNote;
+      }
+
+      return formattedNote;
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la note:', error);
+      throw error;
+    }
+  }
+
+  formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "Aujourd'hui";
+    if (diffDays === 1) return "Hier";
+    if (diffDays < 7) return `Il y a ${diffDays} jours`;
+
+    return date.toLocaleDateString('fr-FR');
   }
 }
 
@@ -377,30 +514,8 @@ class WebClient extends Component {
   setup() {
     this.store = new NotebookStore();
 
-    // Ajouter quelques notes de test
-    this.store.state.notes = [
-      {
-        id: 1,
-        title: "Ma première note",
-        content: "Ceci est le contenu de ma première note pour tester le système Owl...",
-        language: "FR",
-        updated_at: "Aujourd'hui"
-      },
-      {
-        id: 2,
-        title: "English Note",
-        content: "This is an English note to test the multilingual support...",
-        language: "EN",
-        updated_at: "Hier"
-      },
-      {
-        id: 3,
-        title: "Note technique",
-        content: "Documentation technique sur l'implémentation du framework Owl dans l'application notebook...",
-        language: "FR",
-        updated_at: "Il y a 2 jours"
-      }
-    ];
+    // Charger les vraies notes depuis l'API
+    this.store.loadNotes();
   }
 }
 
