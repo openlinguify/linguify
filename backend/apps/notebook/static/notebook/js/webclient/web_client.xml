@@ -1,0 +1,10 @@
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="Notebook.WebClient">
+  <Navbar apps="apps" currentApp="state.currentApp.id" selectApp.bind="selectApp"/>
+  <t t-component="state.currentApp.Component"/>
+</t>
+
+</templates>

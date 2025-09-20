@@ -2,40 +2,68 @@
 {% load static %}
 
 {% block header_content %}
-{% include 'notebook/components/navbar.html' %}
+<!-- Div où Owl montera la navbar -->
+<div id="owl-navbar-mount"></div>
 {% endblock %}
 
 {% block content %}
-<div class="notebook-workspace d-flex h-100">
-    {% include 'notebook/components/sidebar.html' %}
+<!-- Contenu principal géré par Owl WebClient -->
 
-    <!-- Zone d'edition principale -->
-    <div class="notebook-editor flex-grow-1">
-        <!-- Editeur de note -->
-        <div id="noteEditor" class="h-100 d-flex flex-column">
-            {% include 'notebook/components/editor-header.html' %}
-            
-            <!-- Contenu de l'editeur avec onglets -->
-            <div class="editor-content flex-grow-1 d-flex flex-column">
-                {% include 'notebook/components/editor-tabs.html' %}
-                
-                <!-- Contenu des onglets -->
-                <div class="tab-content flex-grow-1" id="noteEditorContent">
-                    {% include 'notebook/components/content-panel.html' %}
-                    {% include 'notebook/components/metadata-panel.html' %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+<!-- Modals et éléments persistants -->
 {% include 'notebook/components/tags-management-modal.html' %}
 
-<!-- CSRF Token hidden input -->
+<!-- CSRF Token pour les API calls -->
 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+<!-- Styles pour l'interface Owl -->
+<style>
+/* Hover effects pour les notes */
+.note-item:hover {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+    transform: translateY(-1px);
+}
+
+/* Note sélectionnée */
+.note-item.selected {
+    background-color: #e3f2fd !important;
+    border-color: #2196f3 !important;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.1);
+}
+
+.note-item.selected .note-title {
+    color: #1976d2 !important;
+}
+
+/* Sidebar */
+.sidebar-linguify {
+    width: 300px;
+    min-width: 300px;
+    background: white;
+    border-right: 1px solid #dee2e6;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* Notebook workspace */
+.notebook-workspace {
+    height: calc(100vh - 140px);
+}
+
+/* Editor responsivity */
+@media (max-width: 768px) {
+    .sidebar-linguify {
+        width: 250px;
+        min-width: 250px;
+    }
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
+<!-- Owl Framework -->
+<script src="https://unpkg.com/@odoo/owl@2/dist/owl.iife.js"></script>
+<script src="{% static 'notebook/js/main.js' %}"></script>
 <script src="{% static 'notebook/js/notebook.js' %}"></script>
 <script src="{% static 'notebook/js/notebook-tags-management.js' %}"></script>
 {% endblock %}
