@@ -1,0 +1,244 @@
+/* Language Learning Interface Styles */
+
+.language-learning-app {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+/* Navbar Styles */
+.learning-navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+}
+
+.learning-navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+}
+
+.navbar-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.language-selector select {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.streak-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+}
+
+/* Unit Card Styles */
+.unit-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.unit-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #007bff;
+}
+
+.unit-card.active {
+    border-color: #007bff;
+    background-color: #f8f9ff;
+}
+
+.unit-progress {
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.unit-progress .progress-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.unit-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background-color: #28a745;
+    color: white;
+    border-radius: 15px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Module Card Styles */
+.module-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.module-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.module-card.completed {
+    background-color: #f8fff8;
+    border-color: #28a745;
+}
+
+.module-card.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.module-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.module-badge.vocabulary { background-color: #28a745; color: white; }
+.module-badge.grammar { background-color: #007bff; color: white; }
+.module-badge.listening { background-color: #17a2b8; color: white; }
+.module-badge.speaking { background-color: #ffc107; color: black; }
+.module-badge.reading { background-color: #6c757d; color: white; }
+.module-badge.writing { background-color: #343a40; color: white; }
+.module-badge.culture { background-color: #e83e8c; color: white; }
+.module-badge.review { background-color: #dc3545; color: white; }
+
+/* Progress Panel Styles */
+.progress-panel {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.progress-stat {
+    text-align: center;
+    padding: 1rem;
+}
+
+.progress-stat .number {
+    font-size: 2rem;
+    font-weight: bold;
+    display: block;
+}
+
+.progress-stat .label {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* Back Button */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+    text-decoration: none;
+}
+
+/* Loading States */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .learning-navbar .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .navbar-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .unit-card,
+    .module-card {
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Animation for content transitions */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* HTMX loading indicators */
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 500ms ease-in;
+}
+
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+
+.htmx-request.htmx-indicator {
+    opacity: 1;
+}

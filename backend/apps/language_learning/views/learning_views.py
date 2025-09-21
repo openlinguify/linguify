@@ -17,13 +17,17 @@ def learning_interface(request):
     # Si aucune langue n'est sélectionnée, utiliser la langue cible de l'utilisateur
     if not selected_language:
         # Récupérer la langue cible définie dans le profil d'apprentissage
-        try:
-            learning_profile = request.user.learning_profile
-            selected_language = learning_profile.target_language
-        except AttributeError:
-            # Si pas de profil d'apprentissage, créer un profil par défaut
-            learning_profile = UserLearningProfile.objects.create(user=request.user)
-            selected_language = learning_profile.target_language
+        if request.user.is_authenticated:
+            try:
+                learning_profile = request.user.learning_profile
+                selected_language = learning_profile.target_language
+            except AttributeError:
+                # Si pas de profil d'apprentissage, créer un profil par défaut
+                learning_profile = UserLearningProfile.objects.create(user=request.user)
+                selected_language = learning_profile.target_language
+        else:
+            # Utilisateur anonyme - utiliser une langue par défaut
+            selected_language = 'EN'
 
         # En dernier recours, utiliser une langue par défaut si nécessaire
         if not selected_language:
@@ -47,10 +51,13 @@ def learning_interface(request):
             context['selected_language_name'] = language.name
 
             # Obtenir ou créer la progression de l'utilisateur
-            user_progress, created = UserCourseProgress.objects.get_or_create(
-                user=request.user,
-                language=language
-            )
+            if request.user.is_authenticated:
+                user_progress, created = UserCourseProgress.objects.get_or_create(
+                    user=request.user,
+                    language=language
+                )
+            else:
+                user_progress = None
             context['user_progress'] = user_progress
 
             # Obtenir les unités du cours pour cette langue
@@ -63,11 +70,14 @@ def learning_interface(request):
             units_with_progress = []
             for unit in units:
                 modules_count = unit.modules.count()
-                completed_modules = ModuleProgress.objects.filter(
-                    user=request.user,
-                    module__unit=unit,
-                    is_completed=True
-                ).count()
+                if request.user.is_authenticated:
+                    completed_modules = ModuleProgress.objects.filter(
+                        user=request.user,
+                        module__unit=unit,
+                        is_completed=True
+                    ).count()
+                else:
+                    completed_modules = 0
 
                 progress_percentage = 0
                 if modules_count > 0:
@@ -84,6 +94,7 @@ def learning_interface(request):
                 })
 
             context['course_units'] = json.dumps(units_with_progress)
+            context['course_units_raw'] = units_with_progress
 
             # Si une unité est active ou prendre la première
             active_unit_id = request.GET.get('unit')
@@ -111,10 +122,13 @@ def learning_interface(request):
 
                 modules_with_status = []
                 for module in modules:
-                    progress = ModuleProgress.objects.filter(
-                        user=request.user,
-                        module=module
-                    ).first()
+                    if request.user.is_authenticated:
+                        progress = ModuleProgress.objects.filter(
+                            user=request.user,
+                            module=module
+                        ).first()
+                    else:
+                        progress = None
 
                     modules_with_status.append({
                         'id': module.id,
@@ -126,26 +140,27 @@ def learning_interface(request):
                         'estimated_duration': module.estimated_duration,
                         'xp_reward': module.xp_reward,
                         'is_completed': progress.is_completed if progress else False,
-                        'is_locked': not module.is_available_for_user(request.user),
+                        'is_unlocked': module.is_available_for_user(request.user) if request.user.is_authenticated else True,
                     })
 
                 context['active_unit_modules'] = json.dumps(modules_with_status)
+                context['active_unit_modules_raw'] = modules_with_status
 
             # Calculer le streak (simplifié pour l'exemple)
-            user_language = UserLanguage.objects.filter(
-                user=request.user,
-                language=language
-            ).first()
-            if user_language:
-                context['user_streak'] = user_language.streak_count
+            if request.user.is_authenticated:
+                user_language = UserLanguage.objects.filter(
+                    user=request.user,
+                    language=language
+                ).first()
+                if user_language:
+                    context['user_streak'] = user_language.streak_count
 
     # Si c'est une requête HTMX, retourner seulement le contenu partiel
     if request.headers.get('HX-Request'):
         return render(request, 'language_learning/partials/learning_content.html', context)
 
-    # Sinon retourner la page complète avec OWL
+    # Sinon retourner la page complète avec HTMX + Alpine.js
     return render(request, 'language_learning/main.html', context)
-
 
 @login_required
 def refresh_progress(request):
@@ -321,5 +336,3 @@ def complete_module(request, module_id):
         'total_xp': user_progress.total_xp if user_progress else 0,
         'level': user_progress.level if user_progress else 1,
     })
-
-
