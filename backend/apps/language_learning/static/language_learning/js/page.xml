@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<linguify xml:space="preserve">
+
+<t t-name="oxp.Page">
+  <div class="p-3">
+    HELLO WORLD owl
+
+  </div>
+</t>
+
+</linguify>
