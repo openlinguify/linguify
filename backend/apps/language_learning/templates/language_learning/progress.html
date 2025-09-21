@@ -1,0 +1,212 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Progress" %} - Language Learning - OpenLinguify{% endblock %}
+
+{% block content %}
+<!-- Language Learning Progress Page -->
+<div id="language-learning-app" class="language-learning-app">
+
+    <!-- Learning Navbar -->
+    <div id="navbar-container">
+        {% include 'language_learning/partials/navbar.html' %}
+    </div>
+
+    <!-- Progress Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Main Progress Section -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-trophy text-warning me-2"></i>
+                            {% trans "Your Learning Progress" %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- User Stats Overview -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="h3 text-primary">{{ user_stats.current_level }}</div>
+                                    <small class="text-muted">{% trans "Current Level" %}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="h3 text-success">{{ user_stats.total_xp }}</div>
+                                    <small class="text-muted">{% trans "Total XP" %}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="h3 text-warning">{{ user_stats.streak_days }}</div>
+                                    <small class="text-muted">{% trans "Day Streak" %}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="h3 text-info">{{ user_stats.total_time }}</div>
+                                    <small class="text-muted">{% trans "Study Time" %}</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Daily Goals -->
+                        <div class="mb-4">
+                            <h6>{% trans "Daily Goals" %}</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="progress-goal">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <small>{% trans "Study Minutes" %}</small>
+                                            <small>{{ daily_goals.study_minutes }}/{{ daily_goals.target_minutes }}</small>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar" style="width: {{ daily_goals.study_progress }}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="progress-goal">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <small>{% trans "Modules" %}</small>
+                                            <small>{{ daily_goals.completed_modules }}/{{ daily_goals.target_modules }}</small>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" style="width: {{ daily_goals.modules_progress }}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="progress-goal">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <small>{% trans "XP Earned" %}</small>
+                                            <small>{{ daily_goals.earned_xp }}/{{ daily_goals.target_xp }}</small>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-warning" style="width: {{ daily_goals.xp_progress }}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Language Progress -->
+                        {% if user_languages_progress %}
+                        <div class="mb-4">
+                            <h6>{% trans "Languages Progress" %}</h6>
+                            {% for lang_progress in user_languages_progress %}
+                            <div class="language-progress-item mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-medium">{{ lang_progress.language_name }}</span>
+                                    <span class="badge bg-primary">{{ lang_progress.level }}</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: {{ lang_progress.progress_percentage }}%"></div>
+                                </div>
+                                <small class="text-muted">{{ lang_progress.completed_modules }}/{{ lang_progress.total_modules }} {% trans "modules completed" %}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Recent Achievements -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="bi bi-award text-warning me-2"></i>
+                            {% trans "Recent Achievements" %}
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_achievements %}
+                            {% for achievement in recent_achievements %}
+                            <div class="achievement-item d-flex align-items-center mb-2">
+                                <div class="achievement-icon me-3">
+                                    <i class="bi {{ achievement.icon }} text-{{ achievement.color }}"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-medium">{{ achievement.title }}</div>
+                                    <small class="text-muted">{{ achievement.date }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0">{% trans "No achievements yet. Keep learning!" %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="bi bi-clock-history text-info me-2"></i>
+                            {% trans "Recent Activities" %}
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_activities %}
+                            {% for activity in recent_activities %}
+                            <div class="activity-item d-flex align-items-center mb-2">
+                                <div class="activity-icon me-3">
+                                    <i class="bi {{ activity.icon }} text-{{ activity.color }}"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-medium">{{ activity.title }}</div>
+                                    <small class="text-muted">{{ activity.description }}</small>
+                                    <br>
+                                    <small class="text-muted">{{ activity.date }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0">{% trans "No recent activities. Start a lesson!" %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Learning styles -->
+<link rel="stylesheet" href="{% static 'language_learning/css/learning.css' %}">
+<style>
+.progress-goal .progress {
+    height: 8px;
+}
+.language-progress-item {
+    padding: 12px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+.achievement-item, .activity-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+.achievement-item:last-child, .activity-item:last-child {
+    border-bottom: none;
+}
+.achievement-icon, .activity-icon {
+    width: 24px;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Learning JavaScript -->
+<script src="{% static 'language_learning/js/learning.js' %}"></script>
+{% endblock %}

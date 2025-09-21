@@ -60,7 +60,7 @@ def progress_view(request):
         'view_type': 'progress',
     }
 
-    return render(request, 'language_learning/views/progress.html', context)
+    return render(request, 'language_learning/progress.html', context)
 
 
 @login_required
