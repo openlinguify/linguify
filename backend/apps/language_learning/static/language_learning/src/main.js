@@ -2,70 +2,17 @@
 
 import { Component, mount, useState, onWillStart, whenReady } from "@odoo/owl";
 import { templates } from "./assets";
+import { UnitCard } from "./components/unit_card";
+import { ModuleCard } from "./components/module_card";
 
 console.log('🚀 Language Learning OWL App Starting (NPM version)...');
 
 // Import styles
 import './scss/learning.scss';
 
-// Unit Card Component
-class UnitCard extends Component {
-  static template = templates["language_learning.UnitCard"];
-
-  static props = {
-    unit: Object,
-    isActive: { type: Boolean, optional: true },
-    onUnitClick: { type: Function, optional: true }
-  };
-
-  onClick() {
-    if (this.props.onUnitClick) {
-      this.props.onUnitClick(this.props.unit.id);
-    }
-  }
-
-  get progressWidth() {
-    return `${this.props.unit.progress_percentage || 0}%`;
-  }
-
-  get progressClass() {
-    const percentage = this.props.unit.progress_percentage || 0;
-    if (percentage === 100) return 'bg-success';
-    if (percentage >= 50) return 'bg-primary';
-    if (percentage > 0) return 'bg-warning';
-    return 'bg-secondary';
-  }
-}
-
-// Module Card Component
-class ModuleCard extends Component {
-  static template = templates["language_learning.ModuleCard"];
-
-  static props = {
-    module: Object,
-    onModuleClick: { type: Function, optional: true }
-  };
-
-  onClick() {
-    if (this.props.onModuleClick) {
-      this.props.onModuleClick(this.props.module.id);
-    }
-  }
-
-  get difficultyBadgeClass() {
-    const difficulty = this.props.module.difficulty;
-    switch (difficulty) {
-      case 'beginner': return 'bg-success';
-      case 'intermediate': return 'bg-warning';
-      case 'advanced': return 'bg-danger';
-      default: return 'bg-secondary';
-    }
-  }
-}
-
 // Unit View Component
 class UnitView extends Component {
-  static template = templates["language_learning.UnitView"];
+  static template = "language_learning.UnitView";
   static components = { ModuleCard };
 
   static props = {
@@ -102,7 +49,7 @@ class UnitView extends Component {
 
 // Progress Panel Component
 class ProgressPanel extends Component {
-  static template = templates["language_learning.ProgressPanel"];
+  static template = "language_learning.ProgressPanel";
 
   static props = {
     userStreak: Number,
@@ -124,7 +71,7 @@ class ProgressPanel extends Component {
 
 // Language Learning Navbar Component - Linguify Style
 class LanguageLearningNavbar extends Component {
-  static template = templates["language_learning.Navbar"];
+  static template = "language_learning.Navbar";
 
   static props = {
     selectedLanguage: String,
@@ -191,7 +138,7 @@ class LanguageLearningNavbar extends Component {
 
 // Main Dashboard Component
 class LearningDashboard extends Component {
-  static template = templates["language_learning.Dashboard"];
+  static template = "language_learning.Dashboard";
   static components = { UnitCard, ProgressPanel, LanguageLearningNavbar, UnitView };
 
   setup() {

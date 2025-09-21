@@ -91,7 +91,7 @@ export const templates = {
               <i class="bi bi-clock me-1"/><t t-esc="props.module.estimated_duration"/> min
             </span>
             <span class="badge" t-att-class="difficultyBadgeClass">
-              <t t-esc="props.module.difficulty_display"/>
+              <t t-esc="props.module.module_type_display"/>
             </span>
           </div>
         </div>

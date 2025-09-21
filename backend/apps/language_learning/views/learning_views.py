@@ -234,8 +234,7 @@ def api_unit_modules(request, unit_id):
             'title': module.title,
             'description': module.description,
             'module_type': module.module_type,
-            'difficulty': module.difficulty,
-            'difficulty_display': module.get_difficulty_display(),
+            'module_type_display': module.get_module_type_display(),
             'estimated_duration': module.estimated_duration,
             'xp_reward': module.xp_reward,
             'is_completed': progress.is_completed if progress else False,
@@ -244,13 +243,16 @@ def api_unit_modules(request, unit_id):
             'attempts': progress.attempts if progress else 0,
         })
 
+    # Calculer la durée totale estimée à partir des modules
+    total_duration = sum(module.estimated_duration for module in modules)
+
     return JsonResponse({
         'unit': {
             'id': unit.id,
             'title': unit.title,
             'description': unit.description,
             'unit_number': unit.unit_number,
-            'estimated_duration': unit.estimated_duration,
+            'estimated_duration': total_duration,
         },
         'modules': modules_data
     })
