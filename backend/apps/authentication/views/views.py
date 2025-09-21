@@ -200,10 +200,7 @@ def get_me(request):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'picture': user.get_profile_picture_absolute_url(request) if user.profile_picture else None,
-                'language_level': user.language_level,
-                'native_language': user.native_language,
-                'target_language': user.target_language,
-                'objectives': user.objectives,
+                'interface_language': user.interface_language,
                 'bio': user.bio,
                 'is_coach': user.is_coach,
                 'is_subscribed': user.is_subscribed,
@@ -226,15 +223,9 @@ def get_me(request):
             if 'bio' in data:
                 user.bio = data['bio']
             
-            # Update language settings
-            if 'native_language' in data:
-                user.native_language = data['native_language']
-            if 'target_language' in data:
-                user.target_language = data['target_language']
-            if 'language_level' in data:
-                user.language_level = data['language_level']
-            if 'objectives' in data:
-                user.objectives = data['objectives']
+            # Update interface language
+            if 'interface_language' in data:
+                user.interface_language = data['interface_language']
             
             # Gender and birthday
             if 'gender' in data:
@@ -253,10 +244,7 @@ def get_me(request):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'picture': user.get_profile_picture_absolute_url(request) if user.profile_picture else None,
-                'language_level': user.language_level,
-                'native_language': user.native_language,
-                'target_language': user.target_language,
-                'objectives': user.objectives,
+                'interface_language': user.interface_language,
                 'bio': user.bio,
                 'gender': user.gender,
                 'birthday': user.birthday,
@@ -1123,17 +1111,9 @@ def settings_stats(request):
             avg_goal=Avg('daily_goal')
         )['avg_goal'] or 0
         
-        # Most common languages and levels
-        most_common_native = User.objects.values('native_language').annotate(
-            count=Count('native_language')
-        ).order_by('-count').first()
-        
-        most_common_target = User.objects.values('target_language').annotate(
-            count=Count('target_language')
-        ).order_by('-count').first()
-        
-        most_common_level = User.objects.values('language_level').annotate(
-            count=Count('language_level')
+        # Most common interface language
+        most_common_interface = User.objects.values('interface_language').annotate(
+            count=Count('interface_language')
         ).order_by('-count').first()
         
         stats_data = {
@@ -1141,9 +1121,7 @@ def settings_stats(request):
             'notification_enabled_users': notification_enabled,
             'public_profile_users': public_profiles,
             'daily_goal_average': round(avg_daily_goal, 1),
-            'most_common_native_language': most_common_native['native_language'] if most_common_native else 'EN',
-            'most_common_target_language': most_common_target['target_language'] if most_common_target else 'FR',
-            'most_common_level': most_common_level['language_level'] if most_common_level else 'A1'
+            'most_common_interface_language': most_common_interface['interface_language'] if most_common_interface else 'en'
         }
         
         return JsonResponse(stats_data)
@@ -1233,9 +1211,7 @@ def export_user_data(request):
                 'bio': getattr(user, 'bio', ''),
                 'date_joined': user.date_joined.isoformat(),
                 'last_login': user.last_login.isoformat() if user.last_login else None,
-                'native_language': getattr(user, 'native_language', ''),
-                'target_language': getattr(user, 'target_language', ''),
-                'language_level': getattr(user, 'language_level', ''),
+                'interface_language': getattr(user, 'interface_language', 'en'),
                 'daily_goal': getattr(user, 'daily_goal', 0),
                 'theme': getattr(user, 'theme', 'light'),
             },
@@ -1484,12 +1460,18 @@ class UserProfileView(View):
         # Progression simulée pour l'instant
         progress = []
         
-        if user.target_language:
-            progress.append({
-                'name': user.get_target_language_display(),
-                'level': 'B1',
-                'percentage': 65,
-            })
+        # Language learning progress now comes from UserLearningProfile
+        try:
+            learning_profile = user.learning_profile
+            if learning_profile.target_language:
+                progress.append({
+                    'name': learning_profile.get_target_language_display(),
+                    'level': learning_profile.language_level or 'A1',
+                    'percentage': 65,
+                })
+        except AttributeError:
+            # No learning profile yet
+            pass
         
         # Ajouter d'autres langues si disponibles
         if hasattr(user, 'secondary_languages'):
