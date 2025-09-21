@@ -1,0 +1,51 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+
+{% block title %}Language Learning - OpenLinguify{% endblock %}
+
+{% block content %}
+<!-- Données pour l'application Language Learning -->
+<script id="language-learning-data" type="application/json">
+{
+    "selectedLanguage": "{{ selected_language }}",
+    "selectedLanguageName": "{{ selected_language_name }}",
+    "courseUnits": {{ course_units|safe }},
+    "activeUnit": {{ active_unit|safe }},
+    "activeUnitModules": {{ active_unit_modules|safe }},
+    "userStreak": {{ user_streak }},
+    "viewType": "{{ view_type }}"
+}
+</script>
+
+<!-- Conteneur pour l'application Language Learning -->
+<div id="language-learning-app">
+    <!-- Loading state pendant que l'app se charge -->
+    <div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
+        <div class="text-center">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+            <p class="text-muted">Chargement de l'interface d'apprentissage...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'language_learning/src/scss/learning.scss' %}">
+{% endblock %}
+
+{% block extra_js %}
+<!-- OWL Framework depuis CDN -->
+<script src="https://unpkg.com/@odoo/owl@2.2.0/dist/owl.iife.js"></script>
+
+<!-- Templates OWL (inline pour simplifier) -->
+<script type="text/xml" id="owl-templates">
+    <templates>
+        <!-- Templates seront chargés ici -->
+    </templates>
+</script>
+
+<!-- Chargement de l'application OWL Language Learning -->
+<script src="{% static 'language_learning/src/main_standalone.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="language_learning.LearningDashboard">
+    <div class="language-learning-app">
+        <t t-if="!state.isReady">
+            <!-- Loading state -->
+            <div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
+                <div class="text-center">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="text-muted">Chargement de l'interface d'apprentissage...</p>
+                </div>
+            </div>
+        </t>
+
+        <t t-else="">
+            <!-- Navbar -->
+            <Navbar
+                selectedLanguage="learningState.selectedLanguage"
+                selectedLanguageName="learningState.selectedLanguageName"
+                userStreak="learningState.userStreak"
+            />
+
+            <!-- Main content -->
+            <div class="learning-content container-fluid mt-4">
+                <div class="row">
+                    <!-- Left column: Course units -->
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-book-half me-2"></i>
+                                    Unités de cours - <t t-esc="learningState.selectedLanguageName"/>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div t-if="learningState.courseUnits.length === 0" class="text-center text-muted py-4">
+                                    <i class="bi bi-journal-x display-4 mb-3"></i>
+                                    <p>Aucune unité de cours disponible pour cette langue.</p>
+                                </div>
+
+                                <div t-else="" class="units-list">
+                                    <t t-foreach="learningState.courseUnits" t-as="unit" t-key="unit.id">
+                                        <UnitCard
+                                            unit="unit"
+                                            isActive="learningState.activeUnit and learningState.activeUnit.id === unit.id"
+                                            onUnitClick.bind="onUnitClick"
+                                        />
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right column: Progress panel -->
+                    <div class="col-md-4">
+                        <ProgressPanel
+                            userStreak="learningState.userStreak"
+                            unitsCount="learningState.courseUnits.length"
+                            completedUnitsCount="learningState.courseUnits.filter(u => u.progress_percentage === 100).length"
+                        />
+                    </div>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+</templates>

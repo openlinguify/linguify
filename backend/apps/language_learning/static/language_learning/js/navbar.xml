@@ -1,8 +1,8 @@
 
 <?xml version="1.0" encoding="UTF-8" ?>
-<lingguify xml:space="preserve">
+<templates xml:space="preserve">
 
-<t t-name="notebook.navbar">
+<t t-name="language_learning.Navbar">
   <div class="navbar-linguify">
     <!-- Gauche: Navigation + Actions principales -->
     <div class="navbar-section">
@@ -45,4 +45,4 @@
   </div>
 </t>
 
-</linguify>
+</templates>
