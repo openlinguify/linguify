@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 def home(request):
     """Vue principale de l'application Language Learning"""
     selected_language = request.GET.get('lang', '')
+    unit_id = request.GET.get('unit', '')
 
     # Si aucune langue n'est sélectionnée, utiliser la langue cible de l'utilisateur
     if not selected_language:
@@ -107,6 +108,51 @@ def home(request):
         if user_language:
             context['user_streak'] = user_language.streak_count
             context['current_level'] = user_language.language_level
+
+    # Si un unit_id est fourni, retourner le détail de l'unité (pour HTMX)
+    if unit_id:
+        try:
+            unit = CourseUnit.objects.get(id=unit_id, language=language, is_active=True)
+
+            # Récupérer les modules de l'unité
+            modules = CourseModule.objects.filter(unit=unit).order_by('order', 'module_number')
+
+            modules_with_progress = []
+            for module in modules:
+                progress = ModuleProgress.objects.filter(
+                    user=request.user,
+                    module=module
+                ).first()
+
+                modules_with_progress.append({
+                    'id': module.id,
+                    'title': module.title,
+                    'description': module.description,
+                    'module_type': module.module_type,
+                    'estimated_duration': module.estimated_duration,
+                    'xp_reward': module.xp_reward,
+                    'is_completed': progress.is_completed if progress else False,
+                    'is_unlocked': module.is_available_for_user(request.user),
+                    'score': progress.score if progress else None,
+                })
+
+            context.update({
+                'active_unit_id': unit.id,
+                'active_unit': {
+                    'id': unit.id,
+                    'title': unit.title,
+                    'description': unit.description,
+                    'unit_number': unit.unit_number,
+                },
+                'active_unit_modules': modules_with_progress,
+            })
+
+            # Retourner seulement le détail de l'unité (pour HTMX)
+            return render(request, 'language_learning/partials/unit_detail.html', context)
+
+        except CourseUnit.DoesNotExist:
+            # Si l'unité n'existe pas, retourner à la vue principale
+            pass
 
     return render(request, 'language_learning/main.html', context)
 

@@ -2,8 +2,8 @@
 <div x-data="unitView({{ active_unit|safe }}, {{ active_unit_modules|safe }})" class="fade-in">
     <!-- Back to Units Button -->
     <div class="mb-4">
-        <a href="{% url 'language_learning:learning_interface' %}?lang={{ selected_language }}"
-           hx-get="{% url 'language_learning:learning_interface' %}?lang={{ selected_language }}"
+        <a href="{% url 'language_learning:home' %}?lang={{ selected_language }}"
+           hx-get="{% url 'language_learning:home' %}?lang={{ selected_language }}"
            hx-target="#main-content"
            class="back-button">
             <i class="bi bi-arrow-left"></i>
@@ -48,8 +48,8 @@
                 Modules de cours
             </h5>
 
-            {% if active_unit_modules_raw %}
-                {% for module in active_unit_modules_raw %}
+            {% if active_unit_modules %}
+                {% for module in active_unit_modules %}
                 <div x-data="moduleCard({{ module|safe }})"
                      class="module-card card"
                      :class="{ 'completed': module.is_completed, 'locked': !module.is_unlocked }">
