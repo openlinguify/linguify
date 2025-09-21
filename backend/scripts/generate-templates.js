@@ -56,8 +56,22 @@ const assetsContent = `/** @odoo-module **/
 
 import { xml } from "@odoo/owl";
 
-// Templates générés automatiquement à partir des fichiers XML
-// Pour maintenir les templates, éditez les fichiers dans ./templates/ et exécutez: node scripts/generate-templates.js
+/*
+ * ⚠️  CE FICHIER EST GÉNÉRÉ AUTOMATIQUEMENT - NE PAS ÉDITER MANUELLEMENT ⚠️
+ *
+ * Les templates ci-dessous sont générés à partir des fichiers XML dans ./templates/
+ *
+ * Pour modifier un template :
+ * 1. Éditez le fichier XML correspondant dans ./templates/
+ * 2. Lancez: npm run build:language-learning
+ * 3. Ce fichier sera automatiquement regénéré
+ *
+ * Fichiers source XML :
+ * - ./templates/UnitCard.xml → language_learning.UnitCard
+ * - ./templates/ProgressPanel.xml → language_learning.ProgressPanel
+ * - ./templates/Navbar.xml → language_learning.Navbar
+ * - ./templates/Dashboard.xml → language_learning.Dashboard
+ */
 
 export const templates = {
 ${Object.entries(allTemplates).map(([name, content]) =>
