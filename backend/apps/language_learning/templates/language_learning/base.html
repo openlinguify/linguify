@@ -139,7 +139,17 @@
     {% include 'components/header/app_header.html' %}
 
     <div class="app-container-layout">
-        {% block content %}{% endblock %}
+        <!-- App-specific header section (below main header) -->
+        <div class="app-header-layout">
+            <div class="header-content">
+                {% block header_content %}{% endblock %}
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="app-main-layout">
+            {% block content %}{% endblock %}
+        </div>
     </div>
 
     <!-- Bootstrap JS -->

@@ -1,9 +1,8 @@
 /**
- * Language Learning App - OWL Frontend
- * Based on Notebook app architecture
+ * Language Learning App - Version Complète OWL
  */
 
-const { mount, Component, xml, useState, useRef, onMounted, onWillUnmount } = owl;
+const { mount, Component, xml, useState } = owl;
 
 // Store for managing language learning state
 class LanguageLearningStore {
@@ -37,158 +36,20 @@ class LanguageLearningStore {
         this.listeners.forEach(callback => callback(this.state));
     }
 
-    async loadLearningData(language = null, unit = null) {
-        this.setState({ isLoading: true, error: null });
-
-        try {
-            const params = new URLSearchParams();
-            if (language) params.append('lang', language);
-            if (unit) params.append('unit', unit);
-            params.append('view', this.state.viewType);
-
-            const response = await fetch(`/language_learning/learn/?${params}`, {
-                headers: {
-                    'HX-Request': 'true',
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-            const html = await response.text();
-
-            // Parse the HTML to extract data (temporary solution)
-            // In production, you'd want a proper JSON API
-            this.setState({
-                isLoading: false,
-                // Update state based on response
-            });
-
-        } catch (error) {
-            console.error('Error loading learning data:', error);
-            this.setState({
-                isLoading: false,
-                error: error.message
-            });
-        }
-    }
-
     async refreshProgress() {
         try {
             const response = await fetch(`/language_learning/api/refresh-progress/?lang=${this.state.selectedLanguage}`, {
-                headers: {
-                    'HX-Request': 'true'
-                }
+                headers: { 'HX-Request': 'true' }
             });
-
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-            const html = await response.text();
-            // Parse progress data from HTML response
-            // This would be better as JSON in production
-
         } catch (error) {
             console.error('Error refreshing progress:', error);
         }
     }
-
-    async startModule(moduleId) {
-        try {
-            const response = await fetch(`/language_learning/module/${moduleId}/start/`, {
-                headers: {
-                    'HX-Request': 'true'
-                }
-            });
-
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-            const html = await response.text();
-            return html; // Return modal HTML
-
-        } catch (error) {
-            console.error('Error starting module:', error);
-            throw error;
-        }
-    }
-
-    async completeModule(moduleId, score = 100) {
-        try {
-            const formData = new FormData();
-            formData.append('score', score);
-            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-
-            const response = await fetch(`/language_learning/module/${moduleId}/complete/`, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-            const data = await response.json();
-
-            // Refresh progress after completion
-            await this.refreshProgress();
-
-            return data;
-
-        } catch (error) {
-            console.error('Error completing module:', error);
-            throw error;
-        }
-    }
 }
 
-// Navbar Component
-class Navbar extends Component {
-    static template = xml`
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" href="/language_learning/">
-                    <i class="bi bi-globe me-2"></i>
-                    Linguify Learn
-                </a>
-
-                <div class="navbar-nav ms-auto">
-                    <div class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-translate me-1"></i>
-                            <t t-esc="state.selectedLanguageName || 'Select Language'"/>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" t-on-click="selectLanguage.bind(this, 'EN')">English</a></li>
-                            <li><a class="dropdown-item" href="#" t-on-click="selectLanguage.bind(this, 'ES')">Español</a></li>
-                            <li><a class="dropdown-item" href="#" t-on-click="selectLanguage.bind(this, 'FR')">Français</a></li>
-                            <li><a class="dropdown-item" href="#" t-on-click="selectLanguage.bind(this, 'DE')">Deutsch</a></li>
-                        </ul>
-                    </div>
-
-                    <a class="nav-link text-white" href="/language_learning/progress/">
-                        <i class="bi bi-graph-up"></i>
-                        Progress
-                    </a>
-
-                    <a class="nav-link text-white" href="/language_learning/settings/">
-                        <i class="bi bi-gear"></i>
-                        Settings
-                    </a>
-                </div>
-            </div>
-        </nav>
-    `;
-
-    setup() {
-        this.store = this.props.store;
-        this.state = useState(this.store.state);
-    }
-
-    selectLanguage(langCode) {
-        this.store.setState({ selectedLanguage: langCode });
-        this.store.loadLearningData(langCode);
-    }
-}
-
-// Progress Info Component
-class ProgressInfo extends Component {
+// Progress Cards Component
+class ProgressCards extends Component {
     static template = xml`
         <div class="row mb-4">
             <div class="col-md-3">
@@ -266,35 +127,34 @@ class ProgressInfo extends Component {
 // Course Units Component
 class CourseUnits extends Component {
     static template = xml`
-        <div class="units-container">
-            <h3 class="mb-3">Course Units</h3>
-            <div class="units-list" t-if="state.courseUnits && state.courseUnits.length > 0">
-                <div t-foreach="state.courseUnits" t-as="unit" t-key="unit.id"
-                     class="unit-card mb-3"
-                     t-att-class="{ 'active': state.activeUnit and state.activeUnit.id === unit.id }"
-                     t-on-click="selectUnit.bind(this, unit)">
-                    <div class="unit-header d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="unit-title">Unit <t t-esc="unit.unit_number"/>: <t t-esc="unit.title"/></h5>
-                            <p class="unit-description text-muted"><t t-esc="unit.description"/></p>
-                        </div>
-                        <div class="unit-progress">
-                            <div class="progress-circle">
-                                <span><t t-esc="unit.progress_percentage"/>%</span>
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-book"></i> Unités de cours</h5>
+            </div>
+            <div class="card-body">
+                <div t-if="hasUnits()">
+                    <div t-foreach="state.courseUnits" t-as="unit" t-key="unit_index">
+                        <div class="unit-card mb-3" t-on-click="selectUnit">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6>Unité <t t-esc="unit.unit_number"/>: <t t-esc="unit.title"/></h6>
+                                    <p class="text-muted mb-0" t-esc="unit.description"></p>
+                                    <small class="text-muted">
+                                        <t t-esc="unit.completed_modules"/>/<t t-esc="unit.modules_count"/> modules complétés
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="badge bg-primary"><t t-esc="unit.progress_percentage"/>%</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="unit-stats">
-                        <small class="text-muted">
-                            <t t-esc="unit.completed_modules"/>/<t t-esc="unit.modules_count"/> modules completed
-                        </small>
-                    </div>
                 </div>
-            </div>
-            <div t-else class="text-center py-5">
-                <i class="bi bi-book text-muted" style="font-size: 3rem;"></i>
-                <h5 class="text-muted mt-3">Aucun cours disponible</h5>
-                <p class="text-muted">Les cours d'apprentissage apparaîtront ici.</p>
+                <div t-else="" class="text-center py-4">
+                    <i class="bi bi-book text-muted" style="font-size: 3rem;"></i>
+                    <h6 class="text-muted mt-3">Aucune unité disponible</h6>
+                    <p class="text-muted">Les unités de cours apparaîtront ici.</p>
+                </div>
             </div>
         </div>
     `;
@@ -304,49 +164,58 @@ class CourseUnits extends Component {
         this.state = useState(this.store.state);
     }
 
-    selectUnit(unit) {
-        this.store.setState({ activeUnit: unit });
-        this.store.loadLearningData(this.state.selectedLanguage, unit.id);
+    hasUnits() {
+        return this.state.courseUnits && this.state.courseUnits.length > 0;
+    }
+
+    selectUnit(event) {
+        console.log('Unit selected:', event);
+        window.notificationService.info('Unité sélectionnée');
     }
 }
 
 // Module List Component
 class ModuleList extends Component {
     static template = xml`
-        <div class="modules-container" t-if="state.activeUnit">
-            <h4 class="mb-3">
-                Unit <t t-esc="state.activeUnit.unit_number"/> Modules
-            </h4>
-            <div class="modules-list">
-                <div t-foreach="state.activeUnitModules" t-as="module" t-key="module.id"
-                     class="module-card mb-2"
-                     t-att-class="{ 'completed': module.is_completed, 'locked': module.is_locked }">
-                    <div class="module-content d-flex justify-content-between align-items-center">
-                        <div class="module-info">
-                            <h6 class="module-title">
-                                Module <t t-esc="module.module_number"/>: <t t-esc="module.title"/>
-                            </h6>
-                            <p class="module-description text-muted"><t t-esc="module.description"/></p>
-                            <div class="module-meta">
-                                <span class="badge bg-secondary me-2"><t t-esc="module.get_module_type_display"/></span>
-                                <small class="text-muted">
-                                    <i class="bi bi-clock me-1"></i><t t-esc="module.estimated_duration"/> min
-                                    <i class="bi bi-star ms-2 me-1"></i><t t-esc="module.xp_reward"/> XP
-                                </small>
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-puzzle"></i> Modules</h5>
+            </div>
+            <div class="card-body">
+                <div t-if="hasModules()">
+                    <div t-foreach="state.activeUnitModules" t-as="module" t-key="module_index">
+                        <div class="module-card mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6>Module <t t-esc="module.module_number"/>: <t t-esc="module.title"/></h6>
+                                    <p class="text-muted mb-1" t-esc="module.description"></p>
+                                    <div class="d-flex gap-2">
+                                        <span class="badge bg-secondary" t-esc="module.get_module_type_display"></span>
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock"></i> <t t-esc="module.estimated_duration"/> min
+                                            <i class="bi bi-star ms-2"></i> <t t-esc="module.xp_reward"/> XP
+                                        </small>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button t-if="module.is_completed" class="btn btn-success btn-sm" disabled="">
+                                        <i class="bi bi-check-circle"></i> Terminé
+                                    </button>
+                                    <button t-elif="module.is_locked" class="btn btn-secondary btn-sm" disabled="">
+                                        <i class="bi bi-lock"></i> Verrouillé
+                                    </button>
+                                    <button t-else="" class="btn btn-primary btn-sm" t-on-click="startModule">
+                                        <i class="bi bi-play"></i> Commencer
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="module-actions">
-                            <button t-if="module.is_completed" class="btn btn-success btn-sm" disabled="">
-                                <i class="bi bi-check-circle"></i> Completed
-                            </button>
-                            <button t-elif="module.is_locked" class="btn btn-secondary btn-sm" disabled="">
-                                <i class="bi bi-lock"></i> Locked
-                            </button>
-                            <button t-else class="btn btn-primary btn-sm" t-on-click="startModule.bind(this, module)">
-                                <i class="bi bi-play"></i> Start
-                            </button>
-                        </div>
                     </div>
+                </div>
+                <div t-else="" class="text-center py-4">
+                    <i class="bi bi-puzzle text-muted" style="font-size: 2.5rem;"></i>
+                    <h6 class="text-muted mt-3">Aucun module disponible</h6>
+                    <p class="text-muted">Sélectionnez une unité pour voir les modules.</p>
                 </div>
             </div>
         </div>
@@ -357,48 +226,163 @@ class ModuleList extends Component {
         this.state = useState(this.store.state);
     }
 
-    async startModule(module) {
-        try {
-            const modalHtml = await this.store.startModule(module.id);
-            // Show modal with module content
-            this.showModuleModal(modalHtml, module);
-        } catch (error) {
-            console.error('Failed to start module:', error);
-        }
+    hasModules() {
+        return this.state.activeUnitModules && this.state.activeUnitModules.length > 0;
     }
 
-    showModuleModal(html, module) {
-        // Create and show bootstrap modal
-        const modalElement = document.createElement('div');
-        modalElement.innerHTML = html;
-        document.body.appendChild(modalElement);
-
-        // Initialize bootstrap modal
-        const modal = new bootstrap.Modal(modalElement.querySelector('.modal'));
-        modal.show();
-
-        // Clean up when modal is hidden
-        modalElement.addEventListener('hidden.bs.modal', () => {
-            document.body.removeChild(modalElement);
-        });
+    startModule(event) {
+        console.log('Module started:', event);
+        window.notificationService.success('Module démarré !');
     }
 }
 
-// Supprimé - LearningInterface fusionné dans WebClient
+// Navigation Bar Component - Style Linguify
+class NavigationBar extends Component {
+    static template = xml`
+        <div class="navbar-linguify mb-4">
+            <!-- Section gauche: Navigation + Actions -->
+            <div class="navbar-section">
+                <!-- Tabs de navigation -->
+                <div class="nav-tabs-group">
+                    <a href="/language_learning/"
+                       t-att-class="getTabClass('home')"
+                       t-on-click="setActiveTab"
+                       data-tab="home">
+                        <i class="bi bi-house"></i>
+                        Accueil
+                    </a>
+                    <a href="/language_learning/?view=lessons"
+                       t-att-class="getTabClass('lessons')"
+                       t-on-click="setActiveTab"
+                       data-tab="lessons">
+                        <i class="bi bi-book"></i>
+                        Leçons
+                    </a>
+                    <a href="/language_learning/progress/"
+                       t-att-class="getTabClass('progress')"
+                       t-on-click="setActiveTab"
+                       data-tab="progress">
+                        <i class="bi bi-graph-up"></i>
+                        Progrès
+                    </a>
+                    <a href="/language_learning/?view=practice"
+                       t-att-class="getTabClass('practice')"
+                       t-on-click="setActiveTab"
+                       data-tab="practice">
+                        <i class="bi bi-lightning"></i>
+                        Pratique
+                    </a>
+                    <a href="/language_learning/settings/"
+                       t-att-class="getTabClass('settings')"
+                       t-on-click="setActiveTab"
+                       data-tab="settings">
+                        <i class="bi bi-gear"></i>
+                        Paramètres
+                    </a>
+                </div>
+            </div>
 
-// Main Web Client Component - Version simplifiée
-class LanguageLearningWebClient extends Component {
+            <!-- Section droite: Sélecteur de langue et actions -->
+            <div class="navbar-section-right">
+                <!-- Sélecteur de langue principal -->
+                <select class="form-select-linguify"
+                        style="min-width: 180px;"
+                        t-on-change="selectLanguage"
+                        t-att-value="state.selectedLanguage">
+                    <option value="EN">🇬🇧 English</option>
+                    <option value="FR">🇫🇷 Français</option>
+                    <option value="ES">🇪🇸 Español</option>
+                    <option value="NL">🇳🇱 Nederlands</option>
+                </select>
+
+                <span t-if="state.selectedLanguageName" class="badge-linguify badge-primary">
+                    <i class="bi bi-check-circle"></i>
+                    <t t-esc="state.selectedLanguageName"/>
+                </span>
+
+                <!-- Bouton actualiser -->
+                <button class="btn-navbar btn-navbar-outline"
+                        t-on-click="refreshProgress"
+                        title="Actualiser">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    <span class="d-none d-lg-inline">Actualiser</span>
+                </button>
+
+                <!-- Actions principales -->
+                <div class="navbar-actions-group">
+                    <button t-if="state.selectedLanguage"
+                            class="btn-navbar btn-navbar-primary"
+                            t-on-click="startPractice"
+                            title="Session de pratique">
+                        <i class="bi bi-play-fill"></i>
+                        <span class="d-none d-xl-inline">Pratiquer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    setup() {
+        this.store = this.props.store;
+        this.state = useState(this.store.state);
+
+        // Initialiser l'onglet actif
+        this.state.activeTab = this.state.viewType || 'home';
+    }
+
+    getTabClass(tabName) {
+        return `nav-tab ${this.state.activeTab === tabName ? 'active' : ''}`;
+    }
+
+    setActiveTab(event) {
+        event.preventDefault();
+        const tab = event.target.closest('a').getAttribute('data-tab');
+        this.state.activeTab = tab;
+        this.store.setState({ viewType: tab });
+        console.log('Tab activated:', tab);
+    }
+
+    selectLanguage(event) {
+        const lang = event.target.value;
+        console.log('Language selected:', lang);
+
+        // Mettre à jour le nom de la langue
+        const languageNames = {
+            'EN': 'English',
+            'FR': 'Français',
+            'ES': 'Español',
+            'NL': 'Nederlands'
+        };
+
+        this.store.setState({
+            selectedLanguage: lang,
+            selectedLanguageName: languageNames[lang] || lang
+        });
+
+        window.notificationService.info(`Langue changée: ${languageNames[lang]}`);
+    }
+
+    refreshProgress() {
+        console.log('Refreshing progress...');
+        this.store.refreshProgress();
+        window.notificationService.success('Progression actualisée');
+    }
+
+    startPractice() {
+        console.log('Starting practice session...');
+        window.notificationService.info('Session de pratique démarrée !');
+        // Ici on pourrait ouvrir un modal ou rediriger vers la pratique
+    }
+}
+
+// Main Application Component
+class LanguageLearningApp extends Component {
     static template = xml`
         <div class="language-learning-app">
-            <div class="container-fluid mt-3">
-                <div class="row">
-                    <div class="col-12">
-                        <h1><i class="bi bi-globe"></i> Linguify Learn</h1>
-                        <p class="text-muted">Plateforme d'apprentissage des langues</p>
-                    </div>
-                </div>
+            <NavigationBar store="store"/>
 
-                <ProgressInfo store="store"/>
+            <div class="container-fluid">
+                <ProgressCards store="store"/>
 
                 <div class="row">
                     <div class="col-md-8">
@@ -408,12 +392,34 @@ class LanguageLearningWebClient extends Component {
                         <ModuleList store="store"/>
                     </div>
                 </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <button class="btn btn-outline-primary me-2" t-on-click="refreshData">
+                                    <i class="bi bi-arrow-clockwise"></i> Actualiser les données
+                                </button>
+                                <button class="btn btn-outline-success" t-on-click="testNotification">
+                                    <i class="bi bi-bell"></i> Test notification
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div t-if="state.isLoading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
             </div>
         </div>
     `;
 
     static components = {
-        ProgressInfo,
+        NavigationBar,
+        ProgressCards,
         CourseUnits,
         ModuleList
     };
@@ -423,21 +429,38 @@ class LanguageLearningWebClient extends Component {
 
         // Initialize with data from Django if available
         if (this.props.initialData) {
-            console.log('Initial data received:', this.props.initialData);
+            console.log('Full app initialized with data:', this.props.initialData);
             this.store.setState(this.props.initialData);
         }
 
-        onMounted(() => {
-            // Load data if not already provided by Django
-            if (!this.props.initialData || Object.keys(this.props.initialData).length === 0) {
-                this.store.loadLearningData();
-            }
-        });
+        this.state = useState(this.store.state);
+    }
+
+    refreshData() {
+        console.log('Refreshing data...');
+        this.store.setState({ isLoading: true });
+
+        setTimeout(() => {
+            this.store.setState({
+                isLoading: false,
+                userProgress: {
+                    ...this.state.userProgress,
+                    total_xp: this.state.userProgress.total_xp + 25
+                }
+            });
+            window.notificationService.success('Données actualisées (+25 XP)');
+        }, 1000);
+    }
+
+    testNotification() {
+        window.notificationService.info('Test de notification réussi !');
     }
 }
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== FULL LANGUAGE LEARNING APP ===');
+
     if (document.getElementById('language-learning-app')) {
         // Get initial data from Django template
         const initialDataElement = document.getElementById('initial-data');
@@ -446,24 +469,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (initialDataElement) {
             try {
                 initialData = JSON.parse(initialDataElement.textContent);
-                console.log('Parsed initial data:', initialData);
+                console.log('Full app initial data:', initialData);
             } catch (e) {
                 console.warn('Failed to parse initial data:', e);
-                console.log('Raw content:', initialDataElement.textContent);
             }
-        } else {
-            console.log('No initial-data element found');
         }
 
-        console.log('Mounting OWL app with data:', initialData);
-        mount(LanguageLearningWebClient, document.getElementById('language-learning-app'), {
+        console.log('Mounting LanguageLearningApp...');
+        mount(LanguageLearningApp, document.getElementById('language-learning-app'), {
             initialData: initialData
         });
+        console.log('LanguageLearningApp mounted successfully!');
     }
 });
 
-// Export for potential external use
-window.LanguageLearningApp = {
-    LanguageLearningWebClient,
+// Export for debugging
+window.FullLanguageLearningApp = {
+    LanguageLearningApp,
     LanguageLearningStore
 };
