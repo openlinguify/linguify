@@ -5,7 +5,7 @@
   <div class="unit-card border rounded p-3 mb-3 cursor-pointer" t-on-click="onClick">
     <div class="d-flex justify-content-between align-items-start mb-2">
       <h6 class="unit-title mb-1">
-        <span class="badge bg-primary me-2">Unité <t t-esc="props.unit.unit_number"/></span>
+        <span class="badge bg-success me-2">📚 Leçon <t t-esc="props.unit.unit_number"/></span>
         <t t-esc="props.unit.title"/>
       </h6>
       <t t-if="props.unit.progress_percentage === 100">

@@ -6,8 +6,9 @@
     "build": "webpack --mode production",
     "dev": "webpack --mode development --watch",
     "serve": "webpack serve --mode development",
-    "build:language-learning": "webpack --config webpack.config.language-learning.js --mode production",
-    "dev:language-learning": "webpack --config webpack.config.language-learning.js --mode development --watch"
+    "generate-templates": "node scripts/generate-templates.js",
+    "build:language-learning": "npm run generate-templates && webpack --config webpack.config.language-learning.js --mode production",
+    "dev:language-learning": "npm run generate-templates && webpack --config webpack.config.language-learning.js --mode development --watch"
   },
   "keywords": [
     "owl",
@@ -33,7 +34,8 @@
     "style-loader": "^3.3.0",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.0",
-    "webpack-dev-server": "^4.15.0"
+    "webpack-dev-server": "^4.15.0",
+    "xmldom": "^0.6.0"
   },
   "babel": {
     "presets": [
