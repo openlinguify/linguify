@@ -7,6 +7,7 @@ from .models import (
     Lesson,
     UserLessonProgress,
     LanguageLearningSettings,
+    UserLearningProfile,  # Nouveau modèle pour le profil d'apprentissage
     # Modèles de cours
     CourseUnit,
     CourseModule,
@@ -14,6 +15,8 @@ from .models import (
     UserCourseProgress,
     # Constantes
     LANGUAGE_CHOICES,
+    LEVEL_CHOICES,
+    OBJECTIVES_CHOICES,
     PROFICIENCY_LEVELS,
 )
 
@@ -26,6 +29,7 @@ __all__ = [
     'Lesson',
     'UserLessonProgress',
     'LanguageLearningSettings',
+    'UserLearningProfile',  # Nouveau modèle
     # Modèles de cours
     'CourseUnit',
     'CourseModule',
@@ -33,5 +37,7 @@ __all__ = [
     'UserCourseProgress',
     # Constantes
     'LANGUAGE_CHOICES',
+    'LEVEL_CHOICES',
+    'OBJECTIVES_CHOICES',
     'PROFICIENCY_LEVELS',
 ]

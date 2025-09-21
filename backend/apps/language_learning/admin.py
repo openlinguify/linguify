@@ -1,11 +1,12 @@
 from django.contrib import admin
 from .models import (
-    LanguagelearningItem, 
-    Language, 
-    UserLanguage, 
-    Lesson, 
-    UserLessonProgress, 
-    LanguageLearningSettings
+    LanguagelearningItem,
+    Language,
+    UserLanguage,
+    Lesson,
+    UserLessonProgress,
+    LanguageLearningSettings,
+    UserLearningProfile
 )
 
 
@@ -58,15 +59,15 @@ class LanguageAdmin(admin.ModelAdmin):
 class UserLanguageAdmin(admin.ModelAdmin):
     """Administration des langues utilisateur"""
     
-    list_display = ['user', 'language', 'proficiency_level', 'target_level', 'progress_percentage', 'is_active']
-    list_filter = ['proficiency_level', 'target_level', 'is_active', 'started_at']
+    list_display = ['user', 'language', 'language_level', 'target_level', 'progress_percentage', 'is_active']
+    list_filter = ['language_level', 'target_level', 'is_active', 'started_at']
     search_fields = ['user__username', 'language__name']
     readonly_fields = ['started_at', 'last_activity']
     date_hierarchy = 'started_at'
     
     fieldsets = (
         (None, {
-            'fields': ('user', 'language', 'proficiency_level', 'target_level', 'is_active')
+            'fields': ('user', 'language', 'language_level', 'target_level', 'is_active')
         }),
         ('Objectifs', {
             'fields': ('daily_goal', 'progress_percentage')
@@ -83,6 +84,45 @@ class UserLanguageAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('user', 'language')
+
+
+@admin.register(UserLearningProfile)
+class UserLearningProfileAdmin(admin.ModelAdmin):
+    """Administration des profils d'apprentissage"""
+
+    list_display = ['user', 'native_language', 'target_language', 'language_level', 'objectives', 'daily_goal', 'updated_at']
+    list_filter = ['native_language', 'target_language', 'language_level', 'objectives', 'speaking_exercises', 'listening_exercises']
+    search_fields = ['user__username', 'user__email']
+    readonly_fields = ['created_at', 'updated_at', 'last_activity']
+    date_hierarchy = 'created_at'
+
+    fieldsets = (
+        ('Utilisateur', {
+            'fields': ('user',)
+        }),
+        ('Langues et Objectifs', {
+            'fields': ('native_language', 'target_language', 'language_level', 'objectives')
+        }),
+        ('Préférences d\'Exercices', {
+            'fields': ('speaking_exercises', 'listening_exercises', 'reading_exercises', 'writing_exercises'),
+            'classes': ('collapse',)
+        }),
+        ('Objectifs et Rappels', {
+            'fields': ('daily_goal', 'weekday_reminders', 'weekend_reminders', 'reminder_time'),
+            'classes': ('collapse',)
+        }),
+        ('Statistiques', {
+            'fields': ('streak_count', 'total_time_spent', 'lessons_completed', 'last_activity'),
+            'classes': ('collapse',)
+        }),
+        ('Dates', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')
 
 
 @admin.register(Lesson)
