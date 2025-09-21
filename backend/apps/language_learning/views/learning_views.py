@@ -15,21 +15,18 @@ def learning_interface(request):
 
     # Si aucune langue n'est sélectionnée, utiliser la langue cible de l'utilisateur
     if not selected_language:
-        # Récupérer la langue cible définie dans les paramètres utilisateur
-        if hasattr(request.user, 'target_language') and request.user.target_language:
-            selected_language = request.user.target_language
-        else:
-            # Sinon essayer de récupérer une langue en cours d'apprentissage
-            user_language = UserLanguage.objects.filter(
-                user=request.user,
-                is_learning=True
-            ).first()
+        # Récupérer la langue cible définie dans le profil d'apprentissage
+        try:
+            learning_profile = request.user.learning_profile
+            selected_language = learning_profile.target_language
+        except AttributeError:
+            # Si pas de profil d'apprentissage, créer un profil par défaut
+            learning_profile = UserLearningProfile.objects.create(user=request.user)
+            selected_language = learning_profile.target_language
 
-            if user_language:
-                selected_language = user_language.language.code
-            else:
-                # En dernier recours, prendre l'anglais par défaut
-                selected_language = 'en'
+        # En dernier recours, utiliser une langue par défaut si nécessaire
+        if not selected_language:
+            selected_language = 'EN'  # Utiliser le format du LANGUAGE_CHOICES
 
     context = {
         'selected_language': selected_language,
@@ -142,6 +139,37 @@ def learning_interface(request):
 
     # Sinon retourner la page complète avec navbar
     return render(request, 'language_learning/base.html', context)
+
+
+@login_required
+def refresh_progress(request):
+    """API endpoint to refresh user progress data via HTMX"""
+    selected_language = request.GET.get('lang', 'EN')
+
+    # For now, return basic progress info
+    # TODO: Calculate real progress from UserLearningProfile and lessons
+    context = {
+        'progress_percentage': 0,
+        'lessons_completed': 0,
+        'streak_count': 0,
+        'total_time_spent': 0,
+        'selected_language': selected_language,
+    }
+
+    try:
+        # Get user's learning profile
+        learning_profile = request.user.learning_profile
+        context.update({
+            'progress_percentage': getattr(learning_profile, 'progress_percentage', 0),
+            'lessons_completed': getattr(learning_profile, 'lessons_completed', 0),
+            'streak_count': getattr(learning_profile, 'streak_count', 0),
+            'total_time_spent': getattr(learning_profile, 'total_time_spent', 0),
+        })
+    except AttributeError:
+        # No learning profile yet
+        pass
+
+    return render(request, 'language_learning/partials/progress_info.html', context)
 
 
 @login_required

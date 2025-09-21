@@ -24,6 +24,7 @@ urlpatterns = [
     path('', learning_views.learning_interface, name='home'),
     path('learn/', learning_views.learning_interface, name='learning_interface'),
     path('progress/', language_learning_progress_views.progress_view, name='progress'),
+    path('api/refresh-progress/', learning_views.refresh_progress, name='refresh_progress'),
     path('unit/<int:unit_id>/modules/', learning_views.unit_modules, name='unit_modules'),
     path('module/<int:module_id>/start/', learning_views.start_module, name='start_module'),
     path('module/<int:module_id>/complete/', learning_views.complete_module, name='complete_module'),
