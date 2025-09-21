@@ -1,21 +1,16 @@
-import { Component, mount, xml, useState, onWillStart } from "@odoo/owl";
+/** @odoo-module **/
+
+import { Component, mount, useState, onWillStart, whenReady } from "@odoo/owl";
+import { templates } from "./assets";
 
 console.log('🚀 Language Learning OWL App Starting (NPM version)...');
 
 // Import styles
 import './scss/learning.scss';
 
-// Import templates from separate file
-import {
-  UnitCardTemplate,
-  ProgressPanelTemplate,
-  LanguageLearningNavbarTemplate,
-  LearningDashboardTemplate
-} from './templates.js';
-
 // Unit Card Component
 class UnitCard extends Component {
-  static template = UnitCardTemplate;
+  static template = templates["language_learning.UnitCard"];
 
   static props = {
     unit: Object,
@@ -44,7 +39,7 @@ class UnitCard extends Component {
 
 // Progress Panel Component
 class ProgressPanel extends Component {
-  static template = ProgressPanelTemplate;
+  static template = templates["language_learning.ProgressPanel"];
 
   static props = {
     userStreak: Number,
@@ -66,7 +61,7 @@ class ProgressPanel extends Component {
 
 // Language Learning Navbar Component - Linguify Style
 class LanguageLearningNavbar extends Component {
-  static template = LanguageLearningNavbarTemplate;
+  static template = templates["language_learning.Navbar"];
 
   static props = {
     selectedLanguage: String,
@@ -133,7 +128,7 @@ class LanguageLearningNavbar extends Component {
 
 // Main Dashboard Component
 class LearningDashboard extends Component {
-  static template = LearningDashboardTemplate;
+  static template = templates["language_learning.Dashboard"];
   static components = { UnitCard, ProgressPanel, LanguageLearningNavbar };
 
   setup() {
@@ -219,8 +214,8 @@ class LearningDashboard extends Component {
   }
 }
 
-// Start the app when DOM is ready
-async function startApp() {
+// Mount the Language Learning component when the container is ready
+whenReady(() => {
   try {
     console.log('🎯 Mounting OWL app...');
 
@@ -233,8 +228,12 @@ async function startApp() {
     // Clear any existing content before mounting
     appContainer.innerHTML = '';
 
-    const app = await mount(LearningDashboard, appContainer);
-    console.log('✅ OWL app mounted successfully!', app);
+    mount(LearningDashboard, appContainer, {
+      dev: true,
+      name: "Language Learning App",
+    });
+
+    console.log('✅ OWL app mounted successfully!');
 
   } catch (error) {
     console.error('❌ Error starting app:', error);
@@ -251,11 +250,4 @@ async function startApp() {
       `;
     }
   }
-}
-
-// Start when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', startApp);
-} else {
-  startApp();
-}
+});

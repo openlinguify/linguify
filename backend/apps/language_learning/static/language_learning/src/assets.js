@@ -1,7 +1,11 @@
-import { xml } from "@odoo/owl";
+/** @odoo-module **/
 
-// Templates séparés pour une meilleure maintenance
-export const UnitCardTemplate = xml`
+import { xml } from "@odoo/owl";
+import templatesXML from 'raw-loader!./templates.xml';
+
+// Simple template registry - just define templates directly
+export const templates = {
+  "language_learning.UnitCard": xml`
 <div class="unit-card border rounded p-3 mb-3 cursor-pointer" t-on-click="onClick">
   <div class="d-flex justify-content-between align-items-start mb-2">
     <h6 class="unit-title mb-1">
@@ -20,9 +24,9 @@ export const UnitCardTemplate = xml`
   <small class="text-muted">
     <t t-esc="props.unit.completed_modules"/>/<t t-esc="props.unit.modules_count"/> modules
   </small>
-</div>`;
+</div>`,
 
-export const ProgressPanelTemplate = xml`
+  "language_learning.ProgressPanel": xml`
 <div class="card">
   <div class="card-header">
     <h6 class="card-title mb-0">
@@ -48,9 +52,9 @@ export const ProgressPanelTemplate = xml`
       <i class="bi bi-play-circle me-2"></i>Continuer
     </button>
   </div>
-</div>`;
+</div>`,
 
-export const LanguageLearningNavbarTemplate = xml`
+  "language_learning.Navbar": xml`
 <div class="navbar-linguify">
   <!-- Gauche: Navigation + Actions principales -->
   <div class="navbar-section">
@@ -132,9 +136,9 @@ export const LanguageLearningNavbarTemplate = xml`
       </button>
     </div>
   </div>
-</div>`;
+</div>`,
 
-export const LearningDashboardTemplate = xml`
+  "language_learning.Dashboard": xml`
 <div class="language-learning-app">
   <t t-if="!state.isReady">
     <div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
@@ -183,4 +187,7 @@ export const LearningDashboardTemplate = xml`
       </div>
     </div>
   </t>
-</div>`;
+</div>`
+};
+
+console.log('🎯 Templates loaded:', Object.keys(templates));
