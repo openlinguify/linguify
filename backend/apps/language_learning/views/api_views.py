@@ -1,21 +1,167 @@
 """
 API Views utilisant Django REST Framework pour l'application Language Learning
 """
+from django.shortcuts import render, get_object_or_404, redirect
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Q
 import json
+import logging
 
 from ..models import *
-from ..serializers import (
-    LanguageSerializer, UserLearningProfileSerializer, CourseUnitSerializer,
-    CourseModuleSerializer, ModuleProgressSerializer, UserCourseProgressSerializer,
-    UserLanguageSerializer, LearningInterfaceSerializer, ModuleStartSerializer,
-    ModuleCompleteSerializer, ProgressRefreshSerializer
-)
+from ..serializers import *
+
+logger = logging.getLogger(__name__)
+
+
+@login_required
+def home(request):
+    """Vue principale de l'application Language Learning"""
+    selected_language = request.GET.get('lang', '')
+
+    # Si aucune langue n'est sélectionnée, utiliser la langue cible de l'utilisateur
+    if not selected_language:
+        try:
+            learning_profile = request.user.learning_profile
+            selected_language = learning_profile.target_language
+        except AttributeError:
+            # Si pas de profil d'apprentissage, créer un profil par défaut
+            learning_profile = UserLearningProfile.objects.create(user=request.user)
+            selected_language = learning_profile.target_language
+
+    # En dernier recours, utiliser une langue par défaut
+    if not selected_language:
+        selected_language = 'ES'
+
+    context = {
+        'selected_language': selected_language,
+        'selected_language_name': '',
+        'course_units': [],
+        'user_progress': None,
+        'user_streak': 0,
+        'view_type': 'home',
+    }
+
+    # Obtenir la langue sélectionnée
+    language = Language.objects.filter(code=selected_language).first()
+    if language:
+        context['selected_language_name'] = language.name
+
+        # Obtenir ou créer la progression de l'utilisateur
+        user_progress, created = UserCourseProgress.objects.get_or_create(
+            user=request.user,
+            language=language,
+            defaults={
+                'total_xp': 0,
+                'level': 1
+            }
+        )
+        context['user_progress'] = {
+            'level': user_progress.level,
+            'total_xp': user_progress.total_xp,
+            'get_completion_percentage': user_progress.get_completion_percentage()
+        }
+
+        # Obtenir les unités avec progression
+        units = CourseUnit.objects.filter(
+            language=language,
+            is_active=True
+        ).order_by('order', 'unit_number')
+
+        units_with_progress = []
+        for unit in units:
+            modules_count = unit.modules.count()
+            completed_modules = ModuleProgress.objects.filter(
+                user=request.user,
+                module__unit=unit,
+                is_completed=True
+            ).count()
+
+            progress_percentage = 0
+            if modules_count > 0:
+                progress_percentage = int((completed_modules / modules_count) * 100)
+
+            units_with_progress.append({
+                'id': unit.id,
+                'unit_number': unit.unit_number,
+                'title': unit.title,
+                'description': unit.description,
+                'modules_count': modules_count,
+                'completed_modules': completed_modules,
+                'progress_percentage': progress_percentage,
+                'icon': unit.icon,
+                'color': unit.color,
+            })
+
+        context['course_units'] = units_with_progress
+
+        # Calculer le streak
+        user_language = UserLanguage.objects.filter(
+            user=request.user,
+            language=language
+        ).first()
+        if user_language:
+            context['user_streak'] = user_language.streak_count
+
+    return render(request, 'language_learning/main.html', context)
+
+
+@login_required
+def learning_interface(request):
+    """Interface d'apprentissage chargée par HTMX"""
+    selected_language = request.GET.get('lang', 'ES')
+
+    # Obtenir la langue
+    language = Language.objects.filter(code=selected_language).first()
+    if not language:
+        return render(request, 'language_learning/partials/learning_content.html', {
+            'course_units': [],
+            'selected_language': selected_language,
+            'error': 'Langue non trouvée'
+        })
+
+    # Obtenir les unités avec progression
+    units = CourseUnit.objects.filter(
+        language=language,
+        is_active=True
+    ).order_by('order', 'unit_number')
+
+    units_with_progress = []
+    for unit in units:
+        modules_count = unit.modules.count()
+        completed_modules = ModuleProgress.objects.filter(
+            user=request.user,
+            module__unit=unit,
+            is_completed=True
+        ).count()
+
+        progress_percentage = 0
+        if modules_count > 0:
+            progress_percentage = int((completed_modules / modules_count) * 100)
+
+        units_with_progress.append({
+            'id': unit.id,
+            'unit_number': unit.unit_number,
+            'title': unit.title,
+            'description': unit.description,
+            'modules_count': modules_count,
+            'completed_modules': completed_modules,
+            'progress_percentage': progress_percentage,
+            'icon': unit.icon,
+            'color': unit.color,
+        })
+
+    context = {
+        'course_units': units_with_progress,
+        'selected_language': selected_language,
+        'selected_language_name': language.name,
+    }
+
+    return render(request, 'language_learning/partials/learning_content.html', context)
 
 
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
