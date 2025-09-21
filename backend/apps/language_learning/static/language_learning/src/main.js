@@ -5,11 +5,10 @@ console.log('🚀 Language Learning OWL App Starting (NPM version)...');
 // Import styles
 import './scss/learning.scss';
 
-// Templates XML inline
-const TEMPLATES = xml`
-<templates>
-  <!-- UnitCard Template -->
-  <t t-name="UnitCard">
+
+// Unit Card Component
+class UnitCard extends Component {
+  static template = xml`
     <div class="unit-card border rounded p-3 mb-3 cursor-pointer" t-on-click="onClick">
       <div class="d-flex justify-content-between align-items-start mb-2">
         <h6 class="unit-title mb-1">
@@ -29,10 +28,36 @@ const TEMPLATES = xml`
         <t t-esc="props.unit.completed_modules"/>/<t t-esc="props.unit.modules_count"/> modules
       </small>
     </div>
-  </t>
+  `;
 
-  <!-- ProgressPanel Template -->
-  <t t-name="ProgressPanel">
+  static props = {
+    unit: Object,
+    isActive: { type: Boolean, optional: true },
+    onUnitClick: { type: Function, optional: true }
+  };
+
+  onClick() {
+    if (this.props.onUnitClick) {
+      this.props.onUnitClick(this.props.unit.id);
+    }
+  }
+
+  get progressWidth() {
+    return `${this.props.unit.progress_percentage || 0}%`;
+  }
+
+  get progressClass() {
+    const percentage = this.props.unit.progress_percentage || 0;
+    if (percentage === 100) return 'bg-success';
+    if (percentage >= 50) return 'bg-primary';
+    if (percentage > 0) return 'bg-warning';
+    return 'bg-secondary';
+  }
+}
+
+// Progress Panel Component
+class ProgressPanel extends Component {
+  static template = xml`
     <div class="card">
       <div class="card-header">
         <h6 class="card-title mb-0">
@@ -59,10 +84,29 @@ const TEMPLATES = xml`
         </button>
       </div>
     </div>
-  </t>
+  `;
 
-  <!-- Navbar Template -->
-  <t t-name="Navbar">
+  static props = {
+    userStreak: Number,
+    unitsCount: Number,
+    completedUnitsCount: { type: Number, optional: true }
+  };
+
+  get completedUnits() {
+    return this.props.completedUnitsCount || 0;
+  }
+
+  get streakIcon() {
+    if (this.props.userStreak >= 30) return '🔥';
+    if (this.props.userStreak >= 7) return '⚡';
+    if (this.props.userStreak >= 3) return '✨';
+    return '🌟';
+  }
+}
+
+// Navbar Component
+class Navbar extends Component {
+  static template = xml`
     <nav class="navbar navbar-expand-lg bg-primary text-white mb-4">
       <div class="container-fluid">
         <div class="navbar-brand text-white">
@@ -81,10 +125,29 @@ const TEMPLATES = xml`
         </div>
       </div>
     </nav>
-  </t>
+  `;
 
-  <!-- LearningDashboard Template -->
-  <t t-name="LearningDashboard">
+  static props = {
+    selectedLanguage: String,
+    selectedLanguageName: String,
+    userStreak: Number
+  };
+
+  get languageFlag() {
+    const flagMap = {
+      'EN': '🇬🇧',
+      'FR': '🇫🇷',
+      'ES': '🇪🇸',
+      'DE': '🇩🇪',
+      'IT': '🇮🇹'
+    };
+    return flagMap[this.props.selectedLanguage] || '🌍';
+  }
+}
+
+// Main Dashboard Component
+class LearningDashboard extends Component {
+  static template = xml`
     <div class="language-learning-app">
       <t t-if="!state.isReady">
         <div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
@@ -132,83 +195,7 @@ const TEMPLATES = xml`
         </div>
       </t>
     </div>
-  </t>
-</templates>
-`;
-
-// Unit Card Component
-class UnitCard extends Component {
-  static template = 'UnitCard';
-  static props = {
-    unit: Object,
-    isActive: { type: Boolean, optional: true },
-    onUnitClick: { type: Function, optional: true }
-  };
-
-  onClick() {
-    if (this.props.onUnitClick) {
-      this.props.onUnitClick(this.props.unit.id);
-    }
-  }
-
-  get progressWidth() {
-    return `${this.props.unit.progress_percentage || 0}%`;
-  }
-
-  get progressClass() {
-    const percentage = this.props.unit.progress_percentage || 0;
-    if (percentage === 100) return 'bg-success';
-    if (percentage >= 50) return 'bg-primary';
-    if (percentage > 0) return 'bg-warning';
-    return 'bg-secondary';
-  }
-}
-
-// Progress Panel Component
-class ProgressPanel extends Component {
-  static template = 'ProgressPanel';
-  static props = {
-    userStreak: Number,
-    unitsCount: Number,
-    completedUnitsCount: { type: Number, optional: true }
-  };
-
-  get completedUnits() {
-    return this.props.completedUnitsCount || 0;
-  }
-
-  get streakIcon() {
-    if (this.props.userStreak >= 30) return '🔥';
-    if (this.props.userStreak >= 7) return '⚡';
-    if (this.props.userStreak >= 3) return '✨';
-    return '🌟';
-  }
-}
-
-// Navbar Component
-class Navbar extends Component {
-  static template = 'Navbar';
-  static props = {
-    selectedLanguage: String,
-    selectedLanguageName: String,
-    userStreak: Number
-  };
-
-  get languageFlag() {
-    const flagMap = {
-      'EN': '🇬🇧',
-      'FR': '🇫🇷',
-      'ES': '🇪🇸',
-      'DE': '🇩🇪',
-      'IT': '🇮🇹'
-    };
-    return flagMap[this.props.selectedLanguage] || '🌍';
-  }
-}
-
-// Main Dashboard Component
-class LearningDashboard extends Component {
-  static template = 'language_learning.LearningDashboard';
+  `;
   static components = { UnitCard, ProgressPanel, Navbar };
 
   setup() {
@@ -268,7 +255,7 @@ async function startApp() {
       throw new Error('Container #language-learning-app not found');
     }
 
-    const app = await mount(LearningDashboard, appContainer, { templates });
+    const app = await mount(LearningDashboard, appContainer);
     console.log('✅ OWL app mounted successfully!', app);
 
   } catch (error) {
