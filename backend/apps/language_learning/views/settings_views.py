@@ -53,11 +53,11 @@ def language_learning_settings(request):
             })
 
         messages.success(request, 'Settings saved successfully!')
-        return redirect('language_learning:settings')
+        return redirect('saas_web:settings')
 
-    return render(request, 'language_learning/language_learning_settings.html', {
-        'user': request.user
-    })
+    # For GET requests, redirect to main settings page with language_learning tab active
+    from django.urls import reverse
+    return redirect(f"{reverse('saas_web:settings')}?tab=language_learning")
 
 
 @login_required

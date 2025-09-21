@@ -1,24 +1,30 @@
 <!-- Language Learning Settings Tab -->
-<div id="language_learning" class="tab-content active">
+{% load i18n %}
     <!-- Langues d'apprentissage -->
     <div class="content-section">
         <div class="section-header">
             <h3 class="section-title">
                 <i class="bi bi-translate"></i>
-                {% load i18n %}{% trans "Learning Languages" %}
+                {% trans "Learning Languages" %}
             </h3>
-            <button class="section-toggle">
-                <i class="bi bi-chevron-up"></i>
-            </button>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
         </div>
         <div class="section-content">
-            <form method="post" hx-post="/learning/settings/" hx-trigger="change delay:500ms from:select" hx-target="#htmx-messages" hx-swap="innerHTML">
+            <form method="post"
+                  hx-post="{% url 'saas_web:language_learning_settings' %}"
+                  hx-trigger="change delay:500ms from:select"
+                  hx-target="#htmx-messages"
+                  hx-swap="innerHTML">
                 {% csrf_token %}
                 <input type="hidden" name="setting_type" value="languages">
 
-                <div class="form-grid">
+                <div class="form-row">
                     <div class="form-group">
-                        <label for="native_language">{% trans "Native Language" %}</label>
+                        <label class="form-label" for="native_language">{% trans "Native Language" %}</label>
                         <select id="native_language" name="native_language" class="form-control">
                             <option value="EN" {% if user.learning_profile.native_language == 'EN' %}selected{% endif %}>🇬🇧 English</option>
                             <option value="FR" {% if user.learning_profile.native_language == 'FR' %}selected{% endif %}>🇫🇷 Français</option>
@@ -28,11 +34,11 @@
                             <option value="PT" {% if user.learning_profile.native_language == 'PT' %}selected{% endif %}>🇵🇹 Português</option>
                             <option value="NL" {% if user.learning_profile.native_language == 'NL' %}selected{% endif %}>🇳🇱 Nederlands</option>
                         </select>
-                        <small class="help-text">{% trans "Your native language for translations and explanations" %}</small>
+                        <div class="form-help">{% trans "Your native language for translations and explanations" %}</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="target_language">{% trans "Target Language" %}</label>
+                        <label class="form-label" for="target_language">{% trans "Target Language" %}</label>
                         <select id="target_language" name="target_language" class="form-control">
                             <option value="EN" {% if user.learning_profile.target_language == 'EN' %}selected{% endif %}>🇬🇧 English</option>
                             <option value="FR" {% if user.learning_profile.target_language == 'FR' %}selected{% endif %}>🇫🇷 Français</option>
@@ -45,11 +51,11 @@
                             <option value="JA" {% if user.learning_profile.target_language == 'JA' %}selected{% endif %}>🇯🇵 日本語</option>
                             <option value="KO" {% if user.learning_profile.target_language == 'KO' %}selected{% endif %}>🇰🇷 한국어</option>
                         </select>
-                        <small class="help-text">{% trans "Language you are currently learning" %}</small>
+                        <div class="form-help">{% trans "Language you are currently learning" %}</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="language_level">{% trans "Current Level" %}</label>
+                        <label class="form-label" for="language_level">{% trans "Current Level" %}</label>
                         <select id="language_level" name="language_level" class="form-control">
                             <option value="A1" {% if user.learning_profile.language_level == 'A1' %}selected{% endif %}>{% trans "Beginner (A1)" %}</option>
                             <option value="A2" {% if user.learning_profile.language_level == 'A2' %}selected{% endif %}>{% trans "Elementary (A2)" %}</option>
@@ -58,11 +64,11 @@
                             <option value="C1" {% if user.learning_profile.language_level == 'C1' %}selected{% endif %}>{% trans "Advanced (C1)" %}</option>
                             <option value="C2" {% if user.learning_profile.language_level == 'C2' %}selected{% endif %}>{% trans "Proficient (C2)" %}</option>
                         </select>
-                        <small class="help-text">{% trans "Your current level in the target language" %}</small>
+                        <div class="form-help">{% trans "Your current level in the target language" %}</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="objectives">{% trans "Learning Objectives" %}</label>
+                        <label class="form-label" for="objectives">{% trans "Learning Objectives" %}</label>
                         <select id="objectives" name="objectives" class="form-control">
                             <option value="TRAVEL" {% if user.learning_profile.objectives == 'TRAVEL' %}selected{% endif %}>{% trans "Travel" %}</option>
                             <option value="BUSINESS" {% if user.learning_profile.objectives == 'BUSINESS' %}selected{% endif %}>{% trans "Business & Career" %}</option>
@@ -71,7 +77,7 @@
                             <option value="CULTURE" {% if user.learning_profile.objectives == 'CULTURE' %}selected{% endif %}>{% trans "Cultural Understanding" %}</option>
                             <option value="FAMILY" {% if user.learning_profile.objectives == 'FAMILY' %}selected{% endif %}>{% trans "Family & Relationships" %}</option>
                         </select>
-                        <small class="help-text">{% trans "What motivates you to learn this language?" %}</small>
+                        <div class="form-help">{% trans "What motivates you to learn this language?" %}</div>
                     </div>
                 </div>
             </form>
@@ -85,51 +91,57 @@
                 <i class="bi bi-mortarboard-fill"></i>
                 Préférences d'apprentissage
             </h3>
-            <button class="section-toggle">
-                <i class="bi bi-chevron-up"></i>
-            </button>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
         </div>
         <div class="section-content">
-            <form id="language_learning_goals_form" method="post">
+            <form id="language_learning_goals_form" method="post"
+                  hx-post="{% url 'saas_web:language_learning_settings' %}"
+                  hx-trigger="change delay:500ms from:input"
+                  hx-target="#htmx-messages"
+                  hx-swap="innerHTML">
                 {% csrf_token %}
                 <input type="hidden" name="setting_type" value="language_learning">
-                
-                <div class="form-grid">
+
+                <div class="form-row">
                     <div class="form-group">
-                        <label for="daily_goal_minutes">Objectif quotidien</label>
+                        <label class="form-label" for="daily_goal_minutes">Objectif quotidien</label>
                         <div class="input-group">
                             <input type="number" id="daily_goal_minutes" name="daily_goal_minutes" 
                                    min="5" max="300" step="5" value="15" class="form-control">
                             <span class="input-text">minutes par jour</span>
                         </div>
-                        <small class="help-text">Temps que vous souhaitez consacrer chaque jour à l'apprentissage</small>
+                        <div class="form-help">Temps que vous souhaitez consacrer chaque jour à l'apprentissage</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="weekly_goal_days">Objectif hebdomadaire</label>
+                        <label class="form-label" for="weekly_goal_days">Objectif hebdomadaire</label>
                         <div class="input-group">
                             <input type="number" id="weekly_goal_days" name="weekly_goal_days" 
                                    min="1" max="7" value="5" class="form-control">
                             <span class="input-text">jours par semaine</span>
                         </div>
-                        <small class="help-text">Nombre de jours où vous souhaitez étudier chaque semaine</small>
+                        <div class="form-help">Nombre de jours où vous souhaitez étudier chaque semaine</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="preferred_study_time">Heure préférée d'étude</label>
+                        <label class="form-label" for="preferred_study_time">Heure préférée d'étude</label>
                         <input type="time" id="preferred_study_time" name="preferred_study_time" 
                                value="18:00" class="form-control">
-                        <small class="help-text">Heure à laquelle vous préférez étudier</small>
+                        <div class="form-help">Heure à laquelle vous préférez étudier</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="reminder_frequency">Fréquence des rappels</label>
+                        <label class="form-label" for="reminder_frequency">Fréquence des rappels</label>
                         <select id="reminder_frequency" name="reminder_frequency" class="form-control">
                             <option value="daily">Quotidien</option>
                             <option value="weekdays" selected>Jours de semaine</option>
                             <option value="custom">Personnalisé</option>
                         </select>
-                        <small class="help-text">À quelle fréquence recevoir des rappels</small>
+                        <div class="form-help">À quelle fréquence recevoir des rappels</div>
                     </div>
                 </div>
 
@@ -154,10 +166,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Enregistrer les objectifs</button>
-                </div>
             </form>
         </div>
     </div>
@@ -169,40 +177,46 @@
                 <i class="bi bi-gear"></i>
                 Préférences d'apprentissage
             </h3>
-            <button class="section-toggle">
-                <i class="bi bi-chevron-up"></i>
-            </button>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
         </div>
         <div class="section-content">
-            <form id="language_learning_preferences_form" method="post">
+            <form id="language_learning_preferences_form" method="post"
+                  hx-post="{% url 'saas_web:language_learning_settings' %}"
+                  hx-trigger="change delay:500ms from:input,select"
+                  hx-target="#htmx-messages"
+                  hx-swap="innerHTML">
                 {% csrf_token %}
                 <input type="hidden" name="setting_type" value="language_learning_preferences">
                 
-                <div class="form-grid">
+                <div class="form-row">
                     <div class="form-group">
-                        <label for="preferred_difficulty">Niveau de difficulté préféré</label>
+                        <label class="form-label" for="preferred_difficulty">Niveau de difficulté préféré</label>
                         <select id="preferred_difficulty" name="preferred_difficulty" class="form-control">
                             <option value="easy">Facile</option>
                             <option value="normal">Normal</option>
                             <option value="hard">Difficile</option>
                             <option value="adaptive" selected>Adaptatif</option>
                         </select>
-                        <small class="help-text">Le système ajustera automatiquement en mode adaptatif</small>
+                        <div class="form-help">Le système ajustera automatiquement en mode adaptatif</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="audio_playback_speed">Vitesse de lecture audio</label>
+                        <label class="form-label" for="audio_playback_speed">Vitesse de lecture audio</label>
                         <div class="input-group">
                             <input type="range" id="audio_playback_speed" name="audio_playback_speed" 
                                    min="0.5" max="2.0" step="0.1" value="1.0" class="form-range">
                             <span class="range-value" id="speed_value">1.0x</span>
                         </div>
-                        <small class="help-text">Vitesse de lecture des contenus audio</small>
+                        <div class="form-help">Vitesse de lecture des contenus audio</div>
                     </div>
 
                     <div class="form-group">
-                        <label>Méthodes d'apprentissage préférées</label>
-                        <div class="checkbox-grid">
+                        <label class="form-label">Méthodes d'apprentissage préférées</label>
+                        <div class="checkbox-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" name="learning_methods" value="flashcards" checked>
                                 <span class="checkbox-custom"></span>
@@ -268,10 +282,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Enregistrer les préférences</button>
-                </div>
             </form>
         </div>
     </div>
@@ -283,9 +293,11 @@
                 <i class="bi bi-lightning"></i>
                 Configurations rapides
             </h3>
-            <button class="section-toggle">
-                <i class="bi bi-chevron-up"></i>
-            </button>
+            <div class="section-actions">
+                <button class="section-toggle">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+            </div>
         </div>
         <div class="section-content">
             <div class="preset-grid">
@@ -312,151 +324,3 @@
             </div>
         </div>
     </div>
-</div>
-
-<script>
-// Language Learning Settings JavaScript
-document.addEventListener('DOMContentLoaded', function() {
-    // Load initial settings
-    loadLanguageLearningSettings();
-    
-    // Setup audio speed slider
-    const speedSlider = document.getElementById('audio_playback_speed');
-    const speedValue = document.getElementById('speed_value');
-    
-    if (speedSlider && speedValue) {
-        speedSlider.addEventListener('input', function() {
-            speedValue.textContent = this.value + 'x';
-        });
-    }
-});
-
-function loadLanguageLearningSettings() {
-    fetch('/language_learning/api/user-settings/')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.settings) {
-                populateLanguageLearningForm(data.settings);
-            }
-        })
-        .catch(error => {
-            console.error('Error loading language learning settings:', error);
-        });
-}
-
-function populateLanguageLearningForm(settings) {
-    // Populate form fields with settings
-    Object.keys(settings).forEach(key => {
-        const element = document.querySelector(`[name="${key}"]`);
-        if (element) {
-            if (element.type === 'checkbox') {
-                element.checked = settings[key];
-            } else if (element.type === 'range') {
-                element.value = settings[key];
-                if (key === 'audio_playback_speed') {
-                    document.getElementById('speed_value').textContent = settings[key] + 'x';
-                }
-            } else {
-                element.value = settings[key];
-            }
-        }
-    });
-    
-    // Handle multi-select checkboxes (learning methods)
-    if (settings.learning_methods && Array.isArray(settings.learning_methods)) {
-        document.querySelectorAll('[name="learning_methods"]').forEach(checkbox => {
-            checkbox.checked = settings.learning_methods.includes(checkbox.value);
-        });
-    }
-}
-
-function loadLanguageLearningStats() {
-    fetch('/language_learning/api/items/stats/')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.stats) {
-                updateLanguageLearningStats(data.stats);
-            }
-        })
-        .catch(error => {
-            console.error('Error loading language learning stats:', error);
-        });
-}
-
-function updateLanguageLearningStats(stats) {
-    document.getElementById('total-languages').textContent = stats.total_languages || 0;
-    document.getElementById('longest-streak').textContent = stats.longest_streak || 0;
-    document.getElementById('lessons-completed').textContent = stats.total_lessons_completed || 0;
-    
-    // Format study time
-    const totalMinutes = stats.total_study_time || 0;
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    const timeDisplay = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-    document.getElementById('total-study-time').textContent = timeDisplay;
-}
-
-function applyLanguageLearningPreset(presetName) {
-    if (confirm(`Appliquer la configuration "${presetName}" ? Cela remplacera vos paramètres actuels.`)) {
-        fetch('/language_learning/api/settings/apply_preset/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            body: JSON.stringify({
-                preset_name: presetName,
-                override_user_settings: true
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast(`Configuration "${presetName}" appliquée avec succès!`, 'success');
-                loadLanguageLearningSettings(); // Reload settings
-            } else {
-                showToast('Erreur lors de l\'application de la configuration', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error applying preset:', error);
-            showToast('Erreur lors de l\'application de la configuration', 'error');
-        });
-    }
-}
-
-// Form submission handlers
-document.getElementById('language_learning_goals_form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    submitLanguageLearningForm(this, 'Objectifs mis à jour avec succès!');
-});
-
-document.getElementById('language_learning_preferences_form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    submitLanguageLearningForm(this, 'Préférences mises à jour avec succès!');
-});
-
-function submitLanguageLearningForm(form, successMessage) {
-    const formData = new FormData(form);
-    
-    fetch('/language_learning/settings/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast(successMessage, 'success');
-        } else {
-            showToast(data.message || 'Erreur lors de la sauvegarde', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error submitting form:', error);
-        showToast('Erreur lors de la sauvegarde', 'error');
-    });
-}
-</script>
