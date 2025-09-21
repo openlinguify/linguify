@@ -99,13 +99,14 @@ def home(request):
 
         context['course_units'] = units_with_progress
 
-        # Calculer le streak
+        # Calculer le streak et le niveau
         user_language = UserLanguage.objects.filter(
             user=request.user,
             language=language
         ).first()
         if user_language:
             context['user_streak'] = user_language.streak_count
+            context['current_level'] = user_language.language_level
 
     return render(request, 'language_learning/main.html', context)
 

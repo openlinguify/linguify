@@ -27,17 +27,9 @@
 
     <!-- Main Content -->
     <div class="container-fluid">
-        <div id="main-content"
-             hx-get="{% url 'language_learning:learning_interface' %}"
-             hx-trigger="load"
-             hx-target="#main-content"
-             class="fade-in">
-
-            <!-- Initial loading state -->
-            <div class="loading">
-                <div class="spinner"></div>
-            </div>
-
+        <div id="main-content" class="fade-in">
+            <!-- Le contenu sera affiché directement ici -->
+            {% include 'language_learning/partials/learning_content.html' %}
         </div>
     </div>
 </div>

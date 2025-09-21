@@ -1,24 +1,20 @@
 {% load static %}
 {% load i18n %}
 <!-- Language Learning Navbar - Linguify Style -->
-<div class="navbar-linguify">
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+  <div class="container-fluid">
     <!-- Gauche: Navigation + Actions principales -->
-    <div class="navbar-section">
-        <!-- Start Learning Button - Left side -->
-        <button id="startLearning" class="btn-navbar btn-navbar-primary"
-                onclick="document.querySelector('.unit-card')?.click()">
-            <i class="bi bi-play-circle"></i>
-            <span class="d-none d-xl-inline">{% trans "Start Learning" %}</span>
-        </button>
+    <div class="d-flex align-items-center">
+
 
         <!-- Navigation tabs -->
         <div class="nav-tabs-group">
-            <a href="{% url 'language_learning:learning_interface' %}"
+            <a href="{% url 'language_learning:home' %}"
                class="nav-tab active">
                 <i class="bi bi-house"></i>
                 {% trans "Dashboard" %}
             </a>
-            <a href="{% url 'language_learning:learning_interface' %}?view=lessons"
+            <a href="{% url 'language_learning:home' %}?view=lessons"
                class="nav-tab">
                 <i class="bi bi-book"></i>
                 {% trans "Lessons" %}
@@ -34,32 +30,37 @@
             </a>
         </div>
 
-        <div class="container-extra">
-            <!-- Language Selector -->
-            <div class="language-selector">
-                <label class="navbar-label me-2">{% trans "Learning:" %}</label>
-                <select x-model="selectedLanguage"
-                        name="lang"
-                        class="form-control-linguify"
-                        style="width: 120px;"
-                        hx-get="{% url 'language_learning:learning_interface' %}"
-                        hx-target="#main-content"
-                        hx-trigger="change"
-                        hx-include="this">
-                    <option value="EN" {% if selected_language == 'EN' %}selected{% endif %}>🇬🇧 English</option>
-                    <option value="FR" {% if selected_language == 'FR' %}selected{% endif %}>🇫🇷 Français</option>
-                    <option value="ES" {% if selected_language == 'ES' %}selected{% endif %}>🇪🇸 Español</option>
-                    <option value="DE" {% if selected_language == 'DE' %}selected{% endif %}>🇩🇪 Deutsch</option>
-                </select>
-            </div>
+    </div>
 
-            <!-- Streak Display -->
-            <div class="streak-display d-flex align-items-center me-3">
-                <i class="bi bi-fire text-warning me-1"></i>
-                <span class="fw-bold" x-text="userStreak"></span>
-                <span class="d-none d-lg-inline ms-1">{% trans "day streak" %}</span>
-                <span class="ms-1" x-text="getStreakIcon(userStreak)"></span>
-            </div>
+    <!-- Centre: Language Selector and Streak -->
+    <div class="navbar-section d-flex align-items-center gap-3">
+        <!-- Language Selector -->
+        <div class="d-flex align-items-center">
+            <label class="navbar-label me-2 text-nowrap">{% trans "Learning:" %}</label>
+            <select name="lang"
+                    class="form-select form-select-sm"
+                    style="min-width: 150px; max-width: 200px;"
+                    hx-get="{% url 'language_learning:home' %}"
+                    hx-target="body"
+                    hx-trigger="change"
+                    hx-include="this">
+                <option value="EN" {% if selected_language == 'EN' %}selected{% endif %}>🇬🇧 English</option>
+                <option value="FR" {% if selected_language == 'FR' %}selected{% endif %}>🇫🇷 Français</option>
+                <option value="ES" {% if selected_language == 'ES' %}selected{% endif %}>🇪🇸 Español</option>
+                <option value="NL" {% if selected_language == 'NL' %}selected{% endif %}>🇳🇱 Nederlands</option>
+            </select>
+        </div>
+
+        <!-- Streak Display -->
+        <div class="d-flex align-items-center">
+            <i class="bi bi-fire text-warning me-1"></i>
+            <span class="fw-bold">{{ user_streak|default:0 }}</span>
+            <span class="d-none d-md-inline ms-1">
+                {% trans "day streak" %}
+            </span>
+            {% if user_streak > 0 %}
+                <span class="ms-1">🔥</span>
+            {% endif %}
         </div>
     </div>
 

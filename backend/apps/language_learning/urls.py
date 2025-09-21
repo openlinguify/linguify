@@ -25,7 +25,6 @@ urlpatterns = [
 
     # Main pages
     path('', api_views.home, name='home'),
-    path('interface/', api_views.learning_interface, name='learning_interface'),
     path('progress/', learning_progress_views.progress_view, name='progress'),
     # Settings pages
     path('settings/', settings_views.language_learning_settings, name='settings'),
