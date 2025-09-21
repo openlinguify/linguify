@@ -25,16 +25,12 @@ import string
 
 from ..utils.storage import ProfileStorage
 
-# ====== CONSTANTES TEMPORAIRES ======
-# Ces constantes sont maintenant définies dans language_learning.models
-# Dupliquées ici temporairement pour éviter les imports circulaires
-# Seront supprimées après migration complète
-
-LANGUAGE_CHOICES = [
-    ('EN', 'English'),
-    ('FR', 'French'),
-    ('NL', 'Dutch'),
-    ('ES', 'Spanish'),
+# Choix pour l'interface utilisateur uniquement
+INTERFACE_LANGUAGE_CHOICES = [
+    ('en', 'English'),
+    ('fr', 'Français'),
+    ('nl', 'Nederlands'),
+    ('es', 'Español'),
 ]
 
 GENDER_CHOICES = [
@@ -194,29 +190,6 @@ class UserManager(BaseUserManager):
         """
         return self.filter(Q(first_name__icontains=name) | Q(last_name__icontains=name))
 
-    def search_by_language(self, language: str) -> QuerySet:
-        """
-        Search for users by native or target language.
-
-        Args:
-            language (str): The language to search for.
-
-        Returns:
-            QuerySet: A QuerySet containing users whose native or target language matches the given language string.
-        """
-        return self.filter(Q(native_language=language) | Q(target_language=language))
-
-    def search_by_level(self, level: str) -> QuerySet:
-        """
-        Search for users by language level.
-
-        Args:
-            level (str): The language level to search for.
-
-        Returns:
-            QuerySet: A QuerySet containing users whose language level matches the given level string.
-        """
-        return self.filter(language_level=level)
 
 
 # Base User Model
@@ -273,7 +246,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     bio = models.TextField(max_length=500, null=True, blank=True)
 
     is_coach = models.BooleanField(default=False)
-    interface_language = models.CharField(max_length=10, default='en')
+    interface_language = models.CharField(max_length=10, choices=INTERFACE_LANGUAGE_CHOICES, default='en')
     theme = models.CharField(max_length=10, default='light')
     # settings fields
     email_notifications = models.BooleanField(default=True)
@@ -296,50 +269,25 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def update_profile(self, **kwargs):
-        # Champs du profil utilisateur principal
-        user_allowed_fields = {
+        """
+        Met à jour le profil utilisateur.
+        Note: Les champs d'apprentissage des langues ont été déplacés vers
+        l'app language_learning et doivent être gérés séparément.
+        """
+        # Champs autorisés pour le profil utilisateur
+        allowed_fields = {
             "first_name", "last_name", "phone_number", "bio", "profile_picture",
             "interface_language", "theme", "email_notifications", "push_notifications",
             "public_profile", "share_progress", "share_activity",
             "terms_accepted", "terms_accepted_at", "terms_version"
         }
 
-        # Séparer les champs pour chaque modèle
-        user_updates = {}
-        learning_updates = {}
-
+        # Mettre à jour seulement les champs autorisés
         for k, v in kwargs.items():
-            if k in user_allowed_fields:
-                user_updates[k] = v
-            elif k in learning_fields:
-                learning_updates[k] = v
-
-        # Mettre à jour le modèle User
-        if user_updates:
-            for k, v in user_updates.items():
+            if k in allowed_fields:
                 setattr(self, k, v)
-            self.save()
 
-        # Mettre à jour le profil d'apprentissage
-        if learning_updates:
-            # Vérifier les contraintes de langues
-            if ('target_language' in learning_updates and 'native_language' in learning_updates and
-                learning_updates['target_language'] == learning_updates['native_language']):
-                raise ValidationError('Target language cannot be the same as native language')
-
-            profile = self.get_learning_profile()
-
-            # Vérifier les contraintes avec les valeurs existantes
-            target_lang = learning_updates.get('target_language', profile.target_language)
-            native_lang = learning_updates.get('native_language', profile.native_language)
-
-            if target_lang == native_lang:
-                raise ValidationError('Target language cannot be the same as native language')
-
-            # Appliquer les mises à jour
-            for k, v in learning_updates.items():
-                setattr(profile, k, v)
-            profile.save()
+        self.save()
 
     @property
     def get_profile_picture_url(self):
@@ -497,17 +445,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         remaining = self.deletion_date - timezone.now()
         return max(0, remaining.days)
     def clean(self, *args, **kwargs):
-        # Validation des langues
-        if self.native_language == self.target_language:
-            raise ValidationError("Native language and target language cannot be the same.")
-        
         # Validation case-insensitive du username
         if self.username:
             # Exclure l'instance actuelle lors de la mise à jour
             existing_users = User.objects.filter(username__iexact=self.username)
             if self.pk:
                 existing_users = existing_users.exclude(pk=self.pk)
-            
+
             if existing_users.exists():
                 raise ValidationError(_('This username is already taken'))
 
@@ -601,37 +545,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         full_name = f"{self.first_name} {self.last_name}".strip()
         return full_name if full_name else self.username
 
-    def get_learning_profile(self):
-        """
-        Récupère ou crée le profil d'apprentissage de l'utilisateur.
-        Cette méthode facilite la migration des données existantes.
-        """
-        from apps.language_learning.models import UserLearningProfile
-
-        profile, created = UserLearningProfile.objects.get_or_create(
-            user=self,
-            defaults={
-                'native_language': self.native_language,
-                'target_language': self.target_language,
-                'language_level': self.language_level,
-                'objectives': self.objectives,
-                'speaking_exercises': self.speaking_exercises,
-                'listening_exercises': self.listening_exercises,
-                'reading_exercises': self.reading_exercises,
-                'writing_exercises': self.writing_exercises,
-                'daily_goal': self.daily_goal,
-                'weekday_reminders': self.weekday_reminders,
-                'weekend_reminders': self.weekend_reminders,
-                'reminder_time': self.reminder_time,
-            }
-        )
-
-        if created:
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.info(f"Created learning profile for user {self.username}")
-
-        return profile
     
     @property
     def age(self):
@@ -659,35 +572,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         from ..utils.helpers import get_profile_picture_urls
         return get_profile_picture_urls(self)
 
-    # Propriétés pour accès transparent aux données d'apprentissage
-    # Ces propriétés permettent une migration en douceur
-    @property
-    def learning_native_language(self):
-        """Accède à la langue native depuis le profil d'apprentissage"""
-        if hasattr(self, 'learning_profile'):
-            return self.learning_profile.native_language
-        return self.native_language  # Fallback vers l'ancien champ
-
-    @property
-    def learning_target_language(self):
-        """Accède à la langue cible depuis le profil d'apprentissage"""
-        if hasattr(self, 'learning_profile'):
-            return self.learning_profile.target_language
-        return self.target_language  # Fallback vers l'ancien champ
-
-    @property
-    def learning_language_level(self):
-        """Accède au niveau de langue depuis le profil d'apprentissage"""
-        if hasattr(self, 'learning_profile'):
-            return self.learning_profile.language_level
-        return self.language_level  # Fallback vers l'ancien champ
-
-    @property
-    def learning_objectives(self):
-        """Accède aux objectifs depuis le profil d'apprentissage"""
-        if hasattr(self, 'learning_profile'):
-            return self.learning_profile.objectives
-        return self.objectives  # Fallback vers l'ancien champ
 
 # Extended Coach Profile Model: the additional fields for a coach profile are added here as a separate model.
 # This model has a Many-to-many relationship with the User model.
@@ -708,8 +592,11 @@ class CoachProfile(models.Model):
     """
     class Meta:
         app_label = 'authentication'
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='coach_profile')
-    coaching_languages = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default=LANGUAGE_CHOICES[0][0])
+    # Note: Les langues de coaching sont maintenant un simple CharField
+    # Les choix de langues sont gérés dans language_learning.models
+    coaching_languages = models.CharField(max_length=20, help_text="Language codes (e.g., EN, FR, ES)")
     price_per_hour = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
     availability = models.TextField(null=True, blank=True)
     description = models.TextField(max_length=1000, null=True, blank=True)

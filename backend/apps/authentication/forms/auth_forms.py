@@ -7,7 +7,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
-from ..models.models import LANGUAGE_CHOICES, LEVEL_CHOICES, OBJECTIVES_CHOICES
+from ..models.models import INTERFACE_LANGUAGE_CHOICES
 
 User = get_user_model()
 
@@ -102,38 +102,16 @@ class RegisterForm(UserCreationForm):
         label=_('Confirm password')
     )
     
-    native_language = forms.ChoiceField(
-        choices=[('', _('Select your native language'))] + LANGUAGE_CHOICES,
+    interface_language = forms.ChoiceField(
+        choices=INTERFACE_LANGUAGE_CHOICES,
+        initial='en',
         widget=forms.Select(attrs={
             'class': 'form-select'
         }),
-        label=_('Your native language')
+        label=_('Interface language'),
+        help_text=_('Choose the language for the application interface')
     )
-    
-    target_language = forms.ChoiceField(
-        choices=[('', _('Select the language to learn'))] + LANGUAGE_CHOICES,
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        }),
-        label=_('Language you want to learn')
-    )
-    
-    language_level = forms.ChoiceField(
-        choices=[('', _('Select your level'))] + LEVEL_CHOICES,
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        }),
-        label=_('Current language level')
-    )
-    
-    objectives = forms.ChoiceField(
-        choices=[('', _('Select your objectives'))] + OBJECTIVES_CHOICES,
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        }),
-        label=_('Learning objectives')
-    )
-    
+
     terms = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={
@@ -146,8 +124,7 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = (
             'first_name', 'last_name', 'username', 'email', 'phone_number',
-            'birthday', 'gender', 'password1', 'password2', 'native_language',
-            'target_language', 'language_level', 'objectives', 'terms'
+            'birthday', 'gender', 'interface_language', 'password1', 'password2', 'terms'
         )
     
     def clean_username(self):
@@ -177,11 +154,6 @@ class RegisterForm(UserCreationForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        native_language = cleaned_data.get('native_language')
-        target_language = cleaned_data.get('target_language')
-
-        if native_language and target_language and native_language == target_language:
-            raise forms.ValidationError(_("Native language and target language cannot be the same"))
 
         # Validation des termes avec message explicite
         terms_accepted = cleaned_data.get('terms')
@@ -201,10 +173,7 @@ class RegisterForm(UserCreationForm):
         user.phone_number = self.cleaned_data.get('phone_number', '')
         user.birthday = self.cleaned_data['birthday']
         user.gender = self.cleaned_data['gender']
-        user.native_language = self.cleaned_data['native_language']
-        user.target_language = self.cleaned_data['target_language']
-        user.language_level = self.cleaned_data['language_level']
-        user.objectives = self.cleaned_data['objectives']
+        user.interface_language = self.cleaned_data['interface_language']
 
         # Enregistrer l'acceptation des termes si cochée
         if self.cleaned_data.get('terms'):

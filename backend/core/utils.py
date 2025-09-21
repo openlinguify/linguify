@@ -85,7 +85,7 @@ def get_installed_apps():
         'task',              # Commented out in original INSTALLED_APPS
         'screen',            # Not a complete app - no apps.py
         'subscription',      # Commented out in original INSTALLED_APPS
-        'language_learning', # Now ready for use
+        # 'language_learning', # Now ready for use
         'teaching',          # Temporarily hidden - work in progress
     ]
     

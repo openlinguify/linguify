@@ -159,44 +159,17 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="{{ form.native_language.id_for_label }}" class="form-label">{% trans 'Your native language' %}</label>
-                        {{ form.native_language }}
-                        {% if form.native_language.errors %}
+                        <label for="{{ form.interface_language.id_for_label }}" class="form-label">{{ form.interface_language.label }}</label>
+                        {{ form.interface_language }}
+                        <div class="form-text">
+                            <i class="bi bi-info-circle"></i>
+                            {{ form.interface_language.help_text }}
+                        </div>
+                        {% if form.interface_language.errors %}
                             <div class="error-message">
-                                {% for error in form.native_language.errors %}{{ error }}{% endfor %}
+                                {% for error in form.interface_language.errors %}{{ error }}{% endfor %}
                             </div>
                         {% endif %}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="{{ form.target_language.id_for_label }}" class="form-label">{% trans 'Language you want to learn' %}</label>
-                        {{ form.target_language }}
-                        {% if form.target_language.errors %}
-                            <div class="error-message">
-                                {% for error in form.target_language.errors %}{{ error }}{% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="{{ form.language_level.id_for_label }}" class="form-label">{% trans 'Current language level' %}</label>
-                            {{ form.language_level }}
-                            {% if form.language_level.errors %}
-                                <div class="error-message">
-                                    {% for error in form.language_level.errors %}{{ error }}{% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="form-group">
-                            <label for="{{ form.objectives.id_for_label }}" class="form-label">{% trans 'Learning objectives' %}</label>
-                            {{ form.objectives }}
-                            {% if form.objectives.errors %}
-                                <div class="error-message">
-                                    {% for error in form.objectives.errors %}{{ error }}{% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
                     </div>
                     
                     <div class="checkbox-group">

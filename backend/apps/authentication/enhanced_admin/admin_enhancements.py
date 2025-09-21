@@ -35,10 +35,9 @@ def enhance_user_admin(UserAdmin):
     
     # Add custom filters
     UserAdmin.list_filter = list(UserAdmin.list_filter) + [
-        AccountStatusFilter, 
+        AccountStatusFilter,
         ProfileCompletionFilter,
-        RegistrationDateFilter, 
-        'language_level'
+        RegistrationDateFilter
     ]
     
     # Add readonly fields
@@ -229,9 +228,7 @@ def export_user_data(self, request, queryset):
             user.username,
             user.first_name,
             user.last_name,
-            user.get_native_language_display(),
-            user.get_target_language_display(),
-            user.language_level,
+            # Note: Champs de langue supprimés - voir UserLearningProfile
             'Yes' if user.is_active else 'No',
             'Yes' if user.is_coach else 'No',
             user.created_at.strftime('%Y-%m-%d'),

@@ -61,7 +61,7 @@ class NewUsersFilter(admin.SimpleListFilter):
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'username', 'full_name', 'online_status', 'new_user_badge', 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'last_login', 'created_at')
-    list_filter = (NewUsersFilter, 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'native_language', 'target_language', 'created_at')
+    list_filter = (NewUsersFilter, 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'created_at')
     search_fields = ('email', 'username', 'first_name', 'last_name', 'public_id')
     readonly_fields = ('public_id', 'created_at', 'updated_at', 'last_login')
     exclude = ('password',)  # Do not expose password hash in admin forms
@@ -76,23 +76,14 @@ class UserAdmin(admin.ModelAdmin):
         ('Profile', {
             'fields': ('profile_picture', 'bio', 'birthday', 'gender'),
         }),
-        ('Language Settings', {
-            'fields': ('native_language', 'target_language', 'language_level', 'objectives'),
-        }),
+        # Note: Les paramètres de langue ont été déplacés vers language_learning.UserLearningProfile
         ('Terms & Conditions', {
             'fields': ('terms_accepted', 'terms_accepted_at', 'terms_version'),
         }),
         ('Status', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'is_coach'),
         }),
-        ('Learning Preferences', {
-            'fields': (
-                'speaking_exercises', 'listening_exercises', 
-                'reading_exercises', 'writing_exercises',
-                'daily_goal'
-            ),
-            'classes': ('collapse',),
-        }),
+        # Note: Les préférences d'apprentissage ont été déplacées vers language_learning.UserLearningProfile
         ('System Information', {
             'fields': ('public_id', 'created_at', 'updated_at', 'last_login'),
             'classes': ('collapse',),
@@ -103,9 +94,7 @@ class UserAdmin(admin.ModelAdmin):
         return f"{obj.first_name} {obj.last_name}"
     full_name.short_description = "Name"
     
-    def language_info(self, obj):
-        return f"{obj.native_language} → {obj.target_language} ({obj.language_level})"
-    language_info.short_description = "Languages"
+    # Note: language_info supprimée car les champs ont été déplacés vers UserLearningProfile
 
     def terms_status(self, obj):
         if obj.terms_accepted:

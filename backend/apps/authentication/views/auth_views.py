@@ -55,19 +55,7 @@ class RegisterView(View):
                 # Log registration
                 SecurityAuditLogger.log_registration(user, client_ip, user_agent)
                 
-                # Set interface language from current session language or native language
-                current_language = getattr(request, 'LANGUAGE_CODE', 'en')
-                native_language = user.native_language or current_language
-                
-                # Map native language codes to interface language codes if needed
-                language_mapping = {
-                    'EN': 'en', 'FR': 'fr', 'ES': 'es', 'NL': 'nl', 
-                    'DE': 'de', 'IT': 'it', 'PT': 'pt'
-                }
-                interface_lang = language_mapping.get(native_language.upper(), current_language)
-                
-                user.interface_language = interface_lang
-                user.save()
+                # The interface_language is already set from the form, no need to modify
 
                 # Log successful registration with terms acceptance
                 import logging

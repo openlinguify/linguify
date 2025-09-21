@@ -4,7 +4,7 @@ URLs configuration for language_learning app.
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .views import learning_views, settings_views, language_learning_progress_views
+from .views import learning_views, settings_views, language_learning_progress_views, setup_views
 
 app_name = 'language_learning'
 
@@ -15,6 +15,11 @@ router.register(r'user-languages', views.UserLanguageViewSet, basename='user-lan
 router.register(r'items', views.LanguagelearningItemViewSet, basename='languagelearning-item')
 
 urlpatterns = [
+    # Configuration initiale pour nouveaux utilisateurs
+    path('setup/', setup_views.learning_setup, name='learning_setup'),
+    path('setup/skip/', setup_views.skip_setup, name='skip_setup'),
+    path('profile/settings/', setup_views.profile_settings, name='profile_settings'),
+
     # Main pages
     path('', learning_views.learning_interface, name='home'),
     path('learn/', learning_views.learning_interface, name='learning_interface'),
