@@ -1,0 +1,125 @@
+<!-- Unit Detail - API Version -->
+<div x-show="activeUnit" x-transition class="fade-in">
+    <!-- Back Button -->
+    <div class="mb-4">
+        <button @click="goBackToUnits()" class="back-button">
+            <i class="bi bi-arrow-left"></i>
+            Retour aux unités
+        </button>
+    </div>
+
+    <!-- Unit Header -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-2" x-text="activeUnit?.title"></h2>
+                    <p class="text-muted mb-3" x-text="activeUnit?.description"></p>
+
+                    <!-- Progress Bar -->
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">Progression de l'unité</small>
+                            <small class="text-muted">
+                                <span x-text="activeUnit?.completed_modules"></span>/<span x-text="activeUnit?.modules_count"></span> modules
+                            </small>
+                        </div>
+                        <div class="unit-progress">
+                            <div class="progress-bar"
+                                 :class="activeUnit?.progress_percentage === 100 ? 'bg-success' :
+                                         activeUnit?.progress_percentage >= 50 ? 'bg-primary' :
+                                         activeUnit?.progress_percentage > 0 ? 'bg-warning' : 'bg-secondary'"
+                                 :style="'width: ' + (activeUnit?.progress_percentage || 0) + '%'"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="text-muted small">Durée estimée</div>
+                    <div class="fw-bold fs-5">
+                        <span x-text="activeUnit?.estimated_duration || 0"></span> min
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modules List -->
+    <div class="row">
+        <div class="col-12">
+            <h5 class="mb-3">
+                <i class="bi bi-collection me-2"></i>
+                Modules de cours
+            </h5>
+
+            <!-- Loading State -->
+            <div x-show="loading" class="text-center p-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="mt-2 text-muted">Chargement des modules...</p>
+            </div>
+
+            <!-- Modules -->
+            <template x-for="module in activeUnitModules" :key="module.id">
+                <div x-data="moduleCard(module)"
+                     class="module-card card mb-3"
+                     :class="{ 'completed': module.is_completed, 'locked': !module.is_unlocked }">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-primary me-2">
+                                        Module <span x-text="module.module_number"></span>
+                                    </span>
+                                    <h6 class="mb-0" x-text="module.title"></h6>
+                                    <template x-if="module.is_completed">
+                                        <i class="bi bi-check-circle-fill text-success ms-2"></i>
+                                    </template>
+                                </div>
+                                <p class="text-muted mb-2 small" x-text="module.description"></p>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-light text-dark">
+                                        <i class="bi bi-clock me-1"></i><span x-text="module.estimated_duration"></span> min
+                                    </span>
+                                    <span :class="badgeClass" x-text="module.module_type_display"></span>
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-star me-1"></i><span x-text="module.xp_reward"></span> XP
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <template x-if="module.is_completed">
+                                    <div class="text-success">
+                                        <i class="bi bi-check-circle-fill fs-3"></i>
+                                        <div class="small">Terminé</div>
+                                        <template x-if="module.score > 0">
+                                            <div class="small text-muted">Score: <span x-text="module.score"></span>%</div>
+                                        </template>
+                                    </div>
+                                </template>
+                                <template x-if="!module.is_completed && module.is_unlocked">
+                                    <button @click="selectModule()" class="btn btn-primary">
+                                        <i class="bi bi-play-circle me-1"></i>
+                                        <span x-text="module.attempts > 0 ? 'Continuer' : 'Commencer'"></span>
+                                    </button>
+                                </template>
+                                <template x-if="!module.is_completed && !module.is_unlocked">
+                                    <div class="text-muted">
+                                        <i class="bi bi-lock fs-3"></i>
+                                        <div class="small">Verrouillé</div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Empty State -->
+            <div x-show="!loading && activeUnitModules.length === 0" class="text-center p-4">
+                <i class="bi bi-collection text-muted fs-1"></i>
+                <p class="text-muted mt-2">Aucun module disponible pour cette unité.</p>
+            </div>
+        </div>
+    </div>
+</div>

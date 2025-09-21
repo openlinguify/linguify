@@ -5,44 +5,109 @@ document.addEventListener('alpine:init', () => {
     // Main Learning Dashboard Component
     Alpine.data('learningDashboard', () => ({
         // State
-        selectedLanguage: 'EN',
-        selectedLanguageName: 'English',
+        selectedLanguage: 'ES',
+        selectedLanguageName: 'Español',
+        courseUnits: [],
+        userProgress: null,
         userStreak: 0,
         activeUnit: null,
+        activeUnitModules: [],
         loading: false,
+        apiUrls: {},
 
         // Initialize
         init() {
             console.log('🎯 Learning Dashboard initialized');
-            this.loadInitialData();
+            this.loadConfig();
+            this.loadDashboardData();
         },
 
-        // Load initial data from the page
-        loadInitialData() {
-            const dataScript = document.getElementById('language-learning-data');
-            if (dataScript) {
+        // Load configuration from the page
+        loadConfig() {
+            const configScript = document.getElementById('language-learning-config');
+            if (configScript) {
                 try {
-                    const data = JSON.parse(dataScript.textContent);
-                    this.selectedLanguage = data.selectedLanguage || 'EN';
-                    this.selectedLanguageName = data.selectedLanguageName || 'English';
-                    this.userStreak = data.userStreak || 0;
-                    this.activeUnit = data.activeUnit || null;
-                    console.log('✅ Initial data loaded:', data);
+                    const config = JSON.parse(configScript.textContent);
+                    this.selectedLanguage = config.selectedLanguage || 'ES';
+                    this.apiUrls = config.apiUrls || {};
+                    console.log('✅ Config loaded:', config);
                 } catch (error) {
-                    console.error('❌ Error loading initial data:', error);
+                    console.error('❌ Error loading config:', error);
                 }
+            }
+        },
+
+        // Load dashboard data from API
+        async loadDashboardData() {
+            this.loading = true;
+            try {
+                const response = await fetch(`${this.apiUrls.dashboard}?lang=${this.selectedLanguage}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        this.selectedLanguageName = data.selected_language_name;
+                        this.courseUnits = data.course_units;
+                        this.userProgress = data.user_progress;
+                        this.userStreak = data.user_streak;
+                        console.log('✅ Dashboard data loaded:', data);
+                    } else {
+                        console.error('❌ API error:', data.error);
+                    }
+                } else {
+                    console.error('❌ HTTP error:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ Error loading dashboard data:', error);
+            } finally {
+                this.loading = false;
             }
         },
 
         // Language selection
         selectLanguage(langCode) {
             console.log('🌍 Language selected:', langCode);
-            this.loading = true;
+            this.selectedLanguage = langCode;
+            this.loadDashboardData();
+        },
 
-            // Update URL and reload page with new language
-            const url = new URL(window.location);
-            url.searchParams.set('lang', langCode);
-            window.location.href = url.toString();
+        // Load unit details
+        async loadUnitDetails(unitId) {
+            this.loading = true;
+            try {
+                const response = await fetch(`${this.apiUrls.unitDetail}${unitId}/`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        this.activeUnit = data.unit;
+                        this.activeUnitModules = data.modules;
+                        console.log('✅ Unit details loaded:', data);
+                    } else {
+                        console.error('❌ API error:', data.error);
+                    }
+                } else {
+                    console.error('❌ HTTP error:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ Error loading unit details:', error);
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        // Go back to units list
+        goBackToUnits() {
+            this.activeUnit = null;
+            this.activeUnitModules = [];
         },
 
         // Get language flag emoji
@@ -67,7 +132,7 @@ document.addEventListener('alpine:init', () => {
     }));
 
     // Unit Card Component
-    Alpine.data('unitCard', (unit) => ({
+    Alpine.data('unitCard', (unit, dashboard) => ({
         unit: unit,
 
         // Get progress bar width
@@ -87,7 +152,7 @@ document.addEventListener('alpine:init', () => {
         // Handle unit click
         selectUnit() {
             console.log('📚 Unit selected:', this.unit.id);
-            // This will be handled by HTMX
+            dashboard.loadUnitDetails(this.unit.id);
         }
     }));
 

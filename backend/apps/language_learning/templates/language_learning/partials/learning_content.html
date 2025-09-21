@@ -1,29 +1,33 @@
 {% load static %}
 
-<!-- Learning Content (loaded via HTMX) -->
-{% if active_unit_id %}
-    <!-- Unit Detail View -->
-    {% include 'language_learning/partials/unit_detail.html' %}
-{% else %}
-    <!-- Units List View (Default) -->
-    <div class="row">
-        <div class="col-md-8" id="units-container">
-            {% include 'language_learning/partials/units_list.html' %}
-        </div>
+<!-- Learning Content - API Driven -->
+<div class="row">
+    <div class="col-md-8" id="units-container">
+        <!-- Units List View -->
+        {% include 'language_learning/partials/units_list_api.html' %}
 
-        <!-- Progress Panel -->
-        <div class="col-md-4" id="progress-container">
-            {% include 'language_learning/partials/progress_panel.html' %}
-        </div>
+        <!-- Unit Detail View -->
+        {% include 'language_learning/partials/unit_detail_api.html' %}
     </div>
-{% endif %}
+
+    <!-- Progress Panel -->
+    <div class="col-md-4" id="progress-container">
+        {% include 'language_learning/partials/progress_panel.html' %}
+    </div>
+</div>
 
 <!-- Module Modal -->
 <div class="modal fade" id="moduleModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div id="module-modal-content">
-                <!-- Module content will be loaded here via HTMX -->
+                <!-- Module content will be loaded here via API -->
+                <div class="modal-body text-center p-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Chargement du module...</p>
+                </div>
             </div>
         </div>
     </div>

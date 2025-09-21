@@ -4,16 +4,16 @@
 {% block title %}Language Learning - OpenLinguify{% endblock %}
 
 {% block content %}
-<!-- Données pour l'application Language Learning -->
-<script id="language-learning-data" type="application/json">
+<!-- Configuration initiale pour l'application Language Learning -->
+<script id="language-learning-config" type="application/json">
 {
-    "selectedLanguage": "{{ selected_language }}",
-    "selectedLanguageName": "{{ selected_language_name }}",
-    "courseUnits": {{ course_units|safe }},
-    "activeUnit": {{ active_unit|safe }},
-    "activeUnitModules": {{ active_unit_modules|safe }},
-    "userStreak": {{ user_streak }},
-    "viewType": "{{ view_type }}"
+    "selectedLanguage": "{{ selected_language|default:'ES' }}",
+    "apiUrls": {
+        "dashboard": "{% url 'language_learning:api_dashboard_data' %}",
+        "unitDetail": "/language-learning/api/unit/",
+        "startModule": "/language-learning/api/module/",
+        "completeModule": "/language-learning/api/module/"
+    }
 }
 </script>
 

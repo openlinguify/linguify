@@ -3,7 +3,7 @@ API Views utilisant Django REST Framework pour l'application Language Learning
 """
 from django.shortcuts import render, get_object_or_404, redirect
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.decorators import login_required
@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count, Q
 import json
 import logging
+from django.core.serializers.json import DjangoJSONEncoder
 
 from ..models import *
 from ..serializers import *
@@ -20,52 +21,32 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def home(request):
-    """Vue principale de l'application Language Learning"""
-    selected_language = request.GET.get('lang', '')
-    unit_id = request.GET.get('unit', '')
+    """Page principale - template seulement, données chargées via API"""
+    return render(request, 'language_learning/main.html', {
+        'selected_language': request.GET.get('lang', 'ES')
+    })
 
-    # Si aucune langue n'est sélectionnée, utiliser la langue cible de l'utilisateur
-    if not selected_language:
-        try:
-            learning_profile = request.user.learning_profile
-            selected_language = learning_profile.target_language
-        except AttributeError:
-            # Si pas de profil d'apprentissage, créer un profil par défaut
-            learning_profile = UserLearningProfile.objects.create(user=request.user)
-            selected_language = learning_profile.target_language
 
-    # En dernier recours, utiliser une langue par défaut
-    if not selected_language:
-        selected_language = 'ES'
+# =============================================================================
+# API ENDPOINTS PURES POUR HTMX + ALPINE.JS
+# =============================================================================
 
-    context = {
-        'selected_language': selected_language,
-        'selected_language_name': '',
-        'course_units': [],
-        'user_progress': None,
-        'user_streak': 0,
-        'view_type': 'home',
-    }
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_dashboard_data(request):
+    """API pour obtenir les données du dashboard"""
+    selected_language = request.GET.get('lang', 'ES')
 
-    # Obtenir la langue sélectionnée
-    language = Language.objects.filter(code=selected_language).first()
-    if language:
-        context['selected_language_name'] = language.name
+    try:
+        # Obtenir la langue
+        language = Language.objects.get(code=selected_language)
 
-        # Obtenir ou créer la progression de l'utilisateur
+        # Progression utilisateur
         user_progress, created = UserCourseProgress.objects.get_or_create(
             user=request.user,
             language=language,
-            defaults={
-                'total_xp': 0,
-                'level': 1
-            }
+            defaults={'total_xp': 0, 'level': 1}
         )
-        context['user_progress'] = {
-            'level': user_progress.level,
-            'total_xp': user_progress.total_xp,
-            'get_completion_percentage': user_progress.get_completion_percentage()
-        }
 
         # Obtenir les unités avec progression
         units = CourseUnit.objects.filter(
@@ -73,7 +54,7 @@ def home(request):
             is_active=True
         ).order_by('order', 'unit_number')
 
-        units_with_progress = []
+        units_data = []
         for unit in units:
             modules_count = unit.modules.count()
             completed_modules = ModuleProgress.objects.filter(
@@ -86,7 +67,7 @@ def home(request):
             if modules_count > 0:
                 progress_percentage = int((completed_modules / modules_count) * 100)
 
-            units_with_progress.append({
+            units_data.append({
                 'id': unit.id,
                 'unit_number': unit.unit_number,
                 'title': unit.title,
@@ -98,63 +79,198 @@ def home(request):
                 'color': unit.color,
             })
 
-        context['course_units'] = units_with_progress
-
-        # Calculer le streak et le niveau
+        # Streak de l'utilisateur
         user_language = UserLanguage.objects.filter(
             user=request.user,
             language=language
         ).first()
-        if user_language:
-            context['user_streak'] = user_language.streak_count
-            context['current_level'] = user_language.language_level
 
-    # Si un unit_id est fourni, retourner le détail de l'unité (pour HTMX)
-    if unit_id:
-        try:
-            unit = CourseUnit.objects.get(id=unit_id, language=language, is_active=True)
+        user_streak = user_language.streak_count if user_language else 0
 
-            # Récupérer les modules de l'unité
-            modules = CourseModule.objects.filter(unit=unit).order_by('order', 'module_number')
+        return Response({
+            'success': True,
+            'selected_language': selected_language,
+            'selected_language_name': language.name,
+            'course_units': units_data,
+            'user_progress': {
+                'level': user_progress.level,
+                'total_xp': user_progress.total_xp,
+                'completion_percentage': user_progress.get_completion_percentage()
+            },
+            'user_streak': user_streak,
+        })
 
-            modules_with_progress = []
-            for module in modules:
-                progress = ModuleProgress.objects.filter(
-                    user=request.user,
-                    module=module
-                ).first()
+    except Language.DoesNotExist:
+        return Response({
+            'success': False,
+            'error': f'Langue {selected_language} non trouvée'
+        }, status=404)
 
-                modules_with_progress.append({
-                    'id': module.id,
-                    'title': module.title,
-                    'description': module.description,
-                    'module_type': module.module_type,
-                    'estimated_duration': module.estimated_duration,
-                    'xp_reward': module.xp_reward,
-                    'is_completed': progress.is_completed if progress else False,
-                    'is_unlocked': module.is_available_for_user(request.user),
-                    'score': progress.score if progress else None,
-                })
 
-            context.update({
-                'active_unit_id': unit.id,
-                'active_unit': {
-                    'id': unit.id,
-                    'title': unit.title,
-                    'description': unit.description,
-                    'unit_number': unit.unit_number,
-                },
-                'active_unit_modules': modules_with_progress,
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_unit_detail(request, unit_id):
+    """API pour obtenir le détail d'une unité"""
+    try:
+        unit = CourseUnit.objects.get(id=unit_id, is_active=True)
+
+        # Récupérer les modules de l'unité
+        modules = CourseModule.objects.filter(unit=unit).order_by('order', 'module_number')
+
+        modules_data = []
+        for module in modules:
+            progress = ModuleProgress.objects.filter(
+                user=request.user,
+                module=module
+            ).first()
+
+            modules_data.append({
+                'id': module.id,
+                'module_number': module.module_number,
+                'title': module.title,
+                'description': module.description,
+                'module_type': module.module_type,
+                'module_type_display': module.get_module_type_display(),
+                'estimated_duration': module.estimated_duration,
+                'xp_reward': module.xp_reward,
+                'is_completed': progress.is_completed if progress else False,
+                'is_unlocked': module.is_available_for_user(request.user),
+                'score': progress.score if progress else 0,
+                'attempts': progress.attempts if progress else 0,
             })
 
-            # Retourner seulement le détail de l'unité (pour HTMX)
-            return render(request, 'language_learning/partials/unit_detail.html', context)
+        # Statistiques de l'unité
+        completed_modules = sum(1 for m in modules_data if m['is_completed'])
 
-        except CourseUnit.DoesNotExist:
-            # Si l'unité n'existe pas, retourner à la vue principale
-            pass
+        unit_data = {
+            'id': unit.id,
+            'title': unit.title,
+            'description': unit.description,
+            'unit_number': unit.unit_number,
+            'modules_count': len(modules_data),
+            'completed_modules': completed_modules,
+            'progress_percentage': int((completed_modules / len(modules_data)) * 100) if modules_data else 0,
+            'estimated_duration': sum(m['estimated_duration'] for m in modules_data),
+        }
 
-    return render(request, 'language_learning/main.html', context)
+        return Response({
+            'success': True,
+            'unit': unit_data,
+            'modules': modules_data
+        })
+
+    except CourseUnit.DoesNotExist:
+        return Response({
+            'success': False,
+            'error': f'Unité {unit_id} non trouvée'
+        }, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_start_module(request, module_id):
+    """API pour démarrer un module"""
+    try:
+        module = CourseModule.objects.get(id=module_id)
+
+        # Vérifier si le module est disponible
+        if not module.is_available_for_user(request.user):
+            return Response({
+                'success': False,
+                'error': 'Ce module est verrouillé. Complétez les modules précédents pour y accéder.'
+            }, status=403)
+
+        # Obtenir ou créer la progression
+        progress, created = ModuleProgress.objects.get_or_create(
+            user=request.user,
+            module=module
+        )
+
+        # Incrémenter le nombre de tentatives
+        progress.attempts += 1
+        progress.save()
+
+        return Response({
+            'success': True,
+            'module': {
+                'id': module.id,
+                'title': module.title,
+                'description': module.description,
+                'module_type': module.module_type,
+                'module_type_display': module.get_module_type_display(),
+                'estimated_duration': module.estimated_duration,
+                'xp_reward': module.xp_reward,
+            },
+            'progress': {
+                'attempts': progress.attempts,
+                'is_completed': progress.is_completed,
+                'score': progress.score,
+            },
+            'is_new_attempt': created,
+        })
+
+    except CourseModule.DoesNotExist:
+        return Response({
+            'success': False,
+            'error': f'Module {module_id} non trouvé'
+        }, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_complete_module(request, module_id):
+    """API pour compléter un module"""
+    try:
+        module = CourseModule.objects.get(id=module_id)
+
+        progress, created = ModuleProgress.objects.get_or_create(
+            user=request.user,
+            module=module
+        )
+
+        # Récupérer le score depuis le POST
+        score = int(request.data.get('score', 100))
+
+        # Marquer comme complété
+        progress.complete(score=score)
+
+        # Mettre à jour les XP de l'utilisateur
+        user_progress = UserCourseProgress.objects.filter(
+            user=request.user,
+            language=module.unit.language
+        ).first()
+
+        if user_progress:
+            user_progress.total_xp += module.xp_reward
+            user_progress.level = (user_progress.total_xp // 100) + 1
+            user_progress.save()
+
+        return Response({
+            'success': True,
+            'module': {
+                'id': module.id,
+                'title': module.title,
+                'is_completed': True,
+            },
+            'progress': {
+                'score': progress.score,
+                'completion_date': progress.completion_date,
+            },
+            'rewards': {
+                'xp_earned': module.xp_reward,
+                'total_xp': user_progress.total_xp if user_progress else 0,
+                'level': user_progress.level if user_progress else 1,
+            }
+        })
+
+    except CourseModule.DoesNotExist:
+        return Response({
+            'success': False,
+            'error': f'Module {module_id} non trouvé'
+        }, status=404)
+
+
+
 
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet pour les langues disponibles"""

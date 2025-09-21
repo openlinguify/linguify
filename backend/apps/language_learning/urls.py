@@ -28,6 +28,12 @@ urlpatterns = [
     # Settings pages
     path('settings/', settings_views.language_learning_settings, name='settings'),
 
+    # API endpoints pour HTMX
+    path('api/dashboard/', api_views.api_dashboard_data, name='api_dashboard_data'),
+    path('api/unit/<int:unit_id>/', api_views.api_unit_detail, name='api_unit_detail'),
+    path('api/module/<int:module_id>/start/', api_views.api_start_module, name='api_start_module'),
+    path('api/module/<int:module_id>/complete/', api_views.api_complete_module, name='api_complete_module'),
+
     # API endpoints DRF
     path('api/', include(router.urls)),
 ]
