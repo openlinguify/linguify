@@ -1,0 +1,41 @@
+<!-- Learning Navbar Partial -->
+<div class="learning-navbar">
+    <div class="container">
+        <a href="{% url 'language_learning:learning_interface' %}" class="navbar-brand">
+            <i class="bi bi-book me-2"></i>Language Learning
+        </a>
+
+        <div class="navbar-actions">
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <label class="text-white-50 me-2">Learning:</label>
+                <select x-model="selectedLanguage"
+                        name="lang"
+                        class="form-select form-select-sm"
+                        hx-get="{% url 'language_learning:learning_interface' %}"
+                        hx-target="#main-content"
+                        hx-trigger="change"
+                        hx-include="this">
+                    <option value="EN" {% if selected_language == 'EN' %}selected{% endif %}>🇬🇧 English</option>
+                    <option value="FR" {% if selected_language == 'FR' %}selected{% endif %}>🇫🇷 Français</option>
+                    <option value="ES" {% if selected_language == 'ES' %}selected{% endif %}>🇪🇸 Español</option>
+                    <option value="DE" {% if selected_language == 'DE' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                </select>
+            </div>
+
+            <!-- Streak Display -->
+            <div class="streak-display">
+                <i class="bi bi-fire text-warning"></i>
+                <span x-text="userStreak"></span>
+                <span class="d-none d-lg-inline">day streak</span>
+                <span x-text="getStreakIcon(userStreak)"></span>
+            </div>
+
+            <!-- Settings Link -->
+            <a href="/settings/language_learning/" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-gear"></i>
+                <span class="d-none d-lg-inline ms-1">Settings</span>
+            </a>
+        </div>
+    </div>
+</div>

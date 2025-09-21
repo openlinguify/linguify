@@ -336,3 +336,118 @@ def complete_module(request, module_id):
         'total_xp': user_progress.total_xp if user_progress else 0,
         'level': user_progress.level if user_progress else 1,
     })
+
+
+@login_required
+@require_http_methods(["GET"])
+def navbar_partial(request):
+    """Retourne seulement la navbar (pour mises à jour HTMX)"""
+    selected_language = request.GET.get('lang', 'EN')
+
+    # Obtenir la langue sélectionnée
+    language = Language.objects.filter(code=selected_language).first()
+    user_streak = 0
+
+    if language and request.user.is_authenticated:
+        user_language = UserLanguage.objects.filter(
+            user=request.user,
+            language=language
+        ).first()
+        if user_language:
+            user_streak = user_language.streak_count
+
+    context = {
+        'selected_language': selected_language,
+        'selected_language_name': language.name if language else '',
+        'user_streak': user_streak,
+    }
+
+    return render(request, 'language_learning/partials/navbar.html', context)
+
+
+@login_required
+@require_http_methods(["GET"])
+def progress_panel_partial(request):
+    """Retourne seulement le panneau de progression (pour mises à jour HTMX)"""
+    selected_language = request.GET.get('lang', 'EN')
+
+    # Obtenir la langue sélectionnée
+    language = Language.objects.filter(code=selected_language).first()
+    user_streak = 0
+    units_count = 0
+
+    if language:
+        units_count = CourseUnit.objects.filter(
+            language=language,
+            is_active=True
+        ).count()
+
+        if request.user.is_authenticated:
+            user_language = UserLanguage.objects.filter(
+                user=request.user,
+                language=language
+            ).first()
+            if user_language:
+                user_streak = user_language.streak_count
+
+    context = {
+        'user_streak': user_streak,
+        'course_units_raw': [{'id': i} for i in range(units_count)],  # Dummy data for count
+    }
+
+    return render(request, 'language_learning/partials/progress_panel.html', context)
+
+
+@login_required
+@require_http_methods(["GET"])
+def units_list_partial(request):
+    """Retourne seulement la liste des unités (pour mises à jour HTMX)"""
+    selected_language = request.GET.get('lang', 'EN')
+
+    context = {
+        'selected_language': selected_language,
+        'selected_language_name': '',
+        'course_units_raw': [],
+    }
+
+    # Obtenir la langue sélectionnée
+    language = Language.objects.filter(code=selected_language).first()
+    if language:
+        context['selected_language_name'] = language.name
+
+        # Obtenir les unités du cours pour cette langue
+        units = CourseUnit.objects.filter(
+            language=language,
+            is_active=True
+        ).order_by('order', 'unit_number')
+
+        # Calculer la progression pour chaque unité
+        units_with_progress = []
+        for unit in units:
+            modules_count = unit.modules.count()
+            if request.user.is_authenticated:
+                completed_modules = ModuleProgress.objects.filter(
+                    user=request.user,
+                    module__unit=unit,
+                    is_completed=True
+                ).count()
+            else:
+                completed_modules = 0
+
+            progress_percentage = 0
+            if modules_count > 0:
+                progress_percentage = int((completed_modules / modules_count) * 100)
+
+            units_with_progress.append({
+                'id': unit.id,
+                'unit_number': unit.unit_number,
+                'title': unit.title,
+                'description': unit.description,
+                'modules_count': modules_count,
+                'completed_modules': completed_modules,
+                'progress_percentage': progress_percentage,
+            })
+
+        context['course_units_raw'] = units_with_progress
+
+    return render(request, 'language_learning/partials/units_list.html', context)

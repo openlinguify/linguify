@@ -29,6 +29,11 @@ urlpatterns = [
     path('module/<int:module_id>/start/', learning_views.start_module, name='start_module'),
     path('module/<int:module_id>/complete/', learning_views.complete_module, name='complete_module'),
 
+    # HTMX Partials endpoints
+    path('partials/navbar/', learning_views.navbar_partial, name='navbar_partial'),
+    path('partials/progress/', learning_views.progress_panel_partial, name='progress_panel_partial'),
+    path('partials/units/', learning_views.units_list_partial, name='units_list_partial'),
+
     # Legacy pages (kept for compatibility)
     path('old/', views.language_learning_home, name='old_home'),
     path('create/', views.create_item, name='create_item'),

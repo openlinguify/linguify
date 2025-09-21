@@ -1,0 +1,43 @@
+<!-- Progress Panel Partial -->
+<div x-data="progressPanel({
+    userStreak: {{ user_streak }},
+    unitsCount: {{ course_units_raw|length }},
+    completedUnitsCount: 0
+})" class="progress-panel">
+    <div class="mb-4 text-center">
+        <h6 class="mb-3">
+            <i class="bi bi-graph-up me-2"></i>
+            Progression
+        </h6>
+
+        <!-- Streak -->
+        <div class="progress-stat">
+            <span class="number text-primary" x-text="userStreak"></span>
+            <div class="label">
+                jours consécutifs <span x-text="streakIcon"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="row text-center mb-3">
+        <div class="col-6">
+            <div class="progress-stat">
+                <span class="number text-success" x-text="completedUnits"></span>
+                <div class="label">Complétées</div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="progress-stat">
+                <span class="number text-info" x-text="unitsCount"></span>
+                <div class="label">Total</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Continue Button -->
+    <button class="btn btn-primary w-100" onclick="document.querySelector('.unit-card')?.click()">
+        <i class="bi bi-play-circle me-2"></i>
+        {% if course_units_raw %}Continuer{% else %}Commencer{% endif %}
+    </button>
+</div>
