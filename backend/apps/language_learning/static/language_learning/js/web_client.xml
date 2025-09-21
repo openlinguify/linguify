@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<linguify xml:space="preserve">
+<templates xml:space="preserve">
 
 <t t-name="language_learning.WebClient">
-  <Navbar />
-  <dic class="p-3">
-    content
-  </div>
+    <t t-if="!state.fullscreen">
+        <NavBar/>
+    </t>
+    <t t-if="!state.fullscreen">
 </t>
 
-</linguify>
+</templates>
