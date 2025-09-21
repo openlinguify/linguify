@@ -26,17 +26,6 @@ urlpatterns = [
     # Main pages
     path('', template_views.learning_interface, name='home'),
     path('progress/', learning_progress_views.progress_view, name='progress'),
-
-    # HTMX Partials endpoints
-    path('partials/navbar/', template_views.navbar_partial, name='navbar_partial'),
-    path('partials/progress/', template_views.progress_panel_partial, name='progress_panel_partial'),
-    path('partials/units/', template_views.units_list_partial, name='units_list_partial'),
-    path('learn/', template_views.learning_interface, name='learning_interface'),
-    path('api/refresh-progress/', template_views.refresh_progress, name='refresh_progress'),
-    path('unit/<int:unit_id>/modules/', template_views.unit_modules, name='unit_modules'),
-    path('module/<int:module_id>/start/', template_views.start_module, name='start_module'),
-    path('module/<int:module_id>/complete/', template_views.complete_module, name='complete_module'),
-
     # Settings pages
     path('settings/', settings_views.language_learning_settings, name='settings'),
 
