@@ -106,21 +106,29 @@ def update_community_profile_on_user_change(sender, instance, created, **kwargs)
             # Update teaching/learning languages if they changed
             updated = False
             
-            if instance.target_language:
-                from apps.authentication.models import LANGUAGE_CHOICES
-                lang_dict = dict(LANGUAGE_CHOICES)
-                target_lang_name = lang_dict.get(instance.target_language, instance.target_language)
-                if not profile.learning_languages or target_lang_name not in profile.learning_languages:
-                    profile.learning_languages = [target_lang_name]
-                    updated = True
-            
-            if instance.native_language:
-                from apps.authentication.models import LANGUAGE_CHOICES
-                lang_dict = dict(LANGUAGE_CHOICES)
-                native_lang_name = lang_dict.get(instance.native_language, instance.native_language)
-                if not profile.teaching_languages or native_lang_name not in profile.teaching_languages:
-                    profile.teaching_languages = [native_lang_name]
-                    updated = True
+            # Get language information from UserLearningProfile
+            try:
+                learning_profile = instance.learning_profile
+
+                if learning_profile.target_language:
+                    from apps.language_learning.models import LANGUAGE_CHOICES
+                    lang_dict = dict(LANGUAGE_CHOICES)
+                    target_lang_name = lang_dict.get(learning_profile.target_language, learning_profile.target_language)
+                    if not profile.learning_languages or target_lang_name not in profile.learning_languages:
+                        profile.learning_languages = [target_lang_name]
+                        updated = True
+
+                if learning_profile.native_language:
+                    from apps.language_learning.models import LANGUAGE_CHOICES
+                    lang_dict = dict(LANGUAGE_CHOICES)
+                    native_lang_name = lang_dict.get(learning_profile.native_language, learning_profile.native_language)
+                    if not profile.teaching_languages or native_lang_name not in profile.teaching_languages:
+                        profile.teaching_languages = [native_lang_name]
+                        updated = True
+
+            except Exception:
+                # UserLearningProfile doesn't exist yet or other error
+                pass
             
             if updated:
                 profile.save()

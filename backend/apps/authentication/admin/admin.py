@@ -26,6 +26,7 @@ class CoachProfileInline(admin.StackedInline):
     )
     extra = 0
 
+
 class NewUsersFilter(admin.SimpleListFilter):
     """Filtre pour voir les nouveaux utilisateurs"""
     title = 'Nouveaux utilisateurs'
@@ -60,7 +61,7 @@ class NewUsersFilter(admin.SimpleListFilter):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'username', 'full_name', 'online_status', 'new_user_badge', 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'last_login', 'created_at')
+    list_display = ('email', 'username', 'full_name', 'phone_number', 'interface_language', 'online_status', 'new_user_badge', 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'last_login', 'created_at')
     list_filter = (NewUsersFilter, 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'created_at')
     search_fields = ('email', 'username', 'first_name', 'last_name', 'public_id')
     readonly_fields = ('public_id', 'created_at', 'updated_at', 'last_login')
@@ -73,17 +74,27 @@ class UserAdmin(admin.ModelAdmin):
         (None, {
             'fields': ('email', 'username', 'first_name', 'last_name')
         }),
-        ('Profile', {
-            'fields': ('profile_picture', 'bio', 'birthday', 'gender'),
+        ('Contact & Profile', {
+            'fields': ('phone_number', 'profile_picture', 'bio', 'birthday', 'gender'),
         }),
-        # Note: Les paramètres de langue ont été déplacés vers language_learning.UserLearningProfile
+        ('Language Settings', {
+            'fields': ('interface_language',),
+            'description': 'Language settings for the application interface. Learning language preferences are managed in the Language Learning Profile.'
+        }),
+        ('Account Deletion', {
+            'fields': ('is_pending_deletion', 'deletion_scheduled_at', 'deletion_date'),
+            'classes': ('collapse',),
+        }),
         ('Terms & Conditions', {
             'fields': ('terms_accepted', 'terms_accepted_at', 'terms_version'),
         }),
         ('Status', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'is_coach'),
         }),
-        # Note: Les préférences d'apprentissage ont été déplacées vers language_learning.UserLearningProfile
+        ('Learning Preferences', {
+            'description': 'Learning preferences are managed via the Language Learning Profile (see related objects below).',
+            'fields': (),  # Empty fieldset with description only
+        }),
         ('System Information', {
             'fields': ('public_id', 'created_at', 'updated_at', 'last_login'),
             'classes': ('collapse',),

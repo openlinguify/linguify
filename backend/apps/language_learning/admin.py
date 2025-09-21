@@ -10,6 +10,28 @@ from .models import (
 )
 
 
+class UserLearningProfileInline(admin.StackedInline):
+    """Inline for UserLearningProfile to be used in User admin"""
+    model = UserLearningProfile
+    can_delete = False
+    verbose_name_plural = "Language Learning Profile"
+    fk_name = "user"
+    fieldsets = (
+        ('Learning Languages', {
+            'fields': ('native_language', 'target_language', 'language_level', 'objectives')
+        }),
+        ('Exercise Preferences', {
+            'fields': ('speaking_exercises', 'listening_exercises', 'reading_exercises', 'writing_exercises'),
+            'classes': ('collapse',),
+        }),
+        ('Study Goals & Reminders', {
+            'fields': ('daily_goal', 'weekday_reminders', 'weekend_reminders', 'reminder_time'),
+            'classes': ('collapse',),
+        }),
+    )
+    extra = 0
+
+
 @admin.register(LanguagelearningItem)
 class LanguagelearningItemAdmin(admin.ModelAdmin):
     """Administration des items Language Learning"""
