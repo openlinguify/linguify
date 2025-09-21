@@ -43,6 +43,7 @@ urlpatterns = [
     path('api/start_language/', views.start_language_learning, name='start_language'),
     path('api/user-settings/', views.get_user_language_learning_settings, name='user_settings'),
     path('api/settings/', views.get_user_language_learning_settings, name='api_user_settings'),
+    path('api/units/<int:unit_id>/modules/', learning_views.api_unit_modules, name='api_unit_modules'),
 
     # DRF ViewSets
     path('api/v1/', include(router.urls)),

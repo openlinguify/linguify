@@ -21,33 +21,44 @@
                               onTabChange.bind="onTabChange"/>
 
       <div class="container-fluid mt-4">
-        <div class="row">
-          <div class="col-md-8">
-            <div class="card">
-              <div class="card-header">
-                <h5 class="card-title mb-0">
-                  <i class="bi bi-book-half me-2"></i>Unités de cours
-                </h5>
-              </div>
-              <div class="card-body">
-                <t t-if="learningState.courseUnits.length === 0">
-                  <p class="text-muted text-center">Aucune unité disponible</p>
-                </t>
-                <t t-else="">
-                  <t t-foreach="learningState.courseUnits" t-as="unit" t-key="unit.id">
-                    <UnitCard unit="unit" onUnitClick.bind="onUnitClick"/>
+        <!-- Affichage conditionnel : liste des unités ou vue détaillée d'une unité -->
+        <t t-if="learningState.activeUnit">
+          <!-- Vue détaillée d'une unité -->
+          <UnitView unit="learningState.activeUnit"
+                    modules="learningState.activeUnitModules"
+                    onBackClick.bind="onBackToUnits"
+                    onModuleClick.bind="onModuleClick"/>
+        </t>
+        <t t-else="">
+          <!-- Vue par défaut : liste des unités -->
+          <div class="row">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title mb-0">
+                    <i class="bi bi-book-half me-2"></i>Unités de cours
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <t t-if="learningState.courseUnits.length === 0">
+                    <p class="text-muted text-center">Aucune unité disponible</p>
                   </t>
-                </t>
+                  <t t-else="">
+                    <t t-foreach="learningState.courseUnits" t-as="unit" t-key="unit.id">
+                      <UnitCard unit="unit" onUnitClick.bind="onUnitClick"/>
+                    </t>
+                  </t>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="col-md-4">
-            <ProgressPanel userStreak="learningState.userStreak"
-                         unitsCount="learningState.courseUnits.length"
-                         completedUnitsCount="0"/>
+            <div class="col-md-4">
+              <ProgressPanel userStreak="learningState.userStreak"
+                           unitsCount="learningState.courseUnits.length"
+                           completedUnitsCount="0"/>
+            </div>
           </div>
-        </div>
+        </t>
       </div>
     </t>
   </div>

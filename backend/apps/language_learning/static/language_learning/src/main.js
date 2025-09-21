@@ -37,6 +37,69 @@ class UnitCard extends Component {
   }
 }
 
+// Module Card Component
+class ModuleCard extends Component {
+  static template = templates["language_learning.ModuleCard"];
+
+  static props = {
+    module: Object,
+    onModuleClick: { type: Function, optional: true }
+  };
+
+  onClick() {
+    if (this.props.onModuleClick) {
+      this.props.onModuleClick(this.props.module.id);
+    }
+  }
+
+  get difficultyBadgeClass() {
+    const difficulty = this.props.module.difficulty;
+    switch (difficulty) {
+      case 'beginner': return 'bg-success';
+      case 'intermediate': return 'bg-warning';
+      case 'advanced': return 'bg-danger';
+      default: return 'bg-secondary';
+    }
+  }
+}
+
+// Unit View Component
+class UnitView extends Component {
+  static template = templates["language_learning.UnitView"];
+  static components = { ModuleCard };
+
+  static props = {
+    unit: Object,
+    modules: Array,
+    onBackClick: { type: Function, optional: true },
+    onModuleClick: { type: Function, optional: true }
+  };
+
+  onBackClick() {
+    if (this.props.onBackClick) {
+      this.props.onBackClick();
+    }
+  }
+
+  onModuleClick(moduleId) {
+    if (this.props.onModuleClick) {
+      this.props.onModuleClick(moduleId);
+    }
+  }
+
+  get progressWidth() {
+    return `${this.props.unit.progress_percentage || 0}%`;
+  }
+
+  get progressClass() {
+    const percentage = this.props.unit.progress_percentage || 0;
+    if (percentage === 100) return 'bg-success';
+    if (percentage >= 50) return 'bg-primary';
+    if (percentage > 0) return 'bg-warning';
+    return 'bg-secondary';
+  }
+}
+
 // Progress Panel Component
 class ProgressPanel extends Component {
   static template = templates["language_learning.ProgressPanel"];
@@ -129,7 +192,7 @@ class LanguageLearningNavbar extends Component {
 // Main Dashboard Component
 class LearningDashboard extends Component {
   static template = templates["language_learning.Dashboard"];
-  static components = { UnitCard, ProgressPanel, LanguageLearningNavbar };
+  static components = { UnitCard, ProgressPanel, LanguageLearningNavbar, UnitView };
 
   setup() {
     console.log('🔧 LearningDashboard setup() called');
@@ -143,7 +206,8 @@ class LearningDashboard extends Component {
       selectedLanguageName: 'English',
       courseUnits: [],
       userStreak: 0,
-      activeUnit: null
+      activeUnit: null,
+      activeUnitModules: []
     });
 
     onWillStart(async () => {
@@ -178,11 +242,52 @@ class LearningDashboard extends Component {
     }
   }
 
-  onUnitClick(unitId) {
+  async onUnitClick(unitId) {
     const unit = this.learningState.courseUnits.find(u => u.id === unitId);
     if (unit) {
-      this.learningState.activeUnit = unit;
       console.log('🎯 Unit selected:', unit);
+
+      // Charger les modules de l'unité
+      try {
+        const modules = await this.loadUnitModules(unitId);
+        this.learningState.activeUnit = unit;
+        this.learningState.activeUnitModules = modules;
+        console.log('✅ Modules loaded:', modules);
+      } catch (error) {
+        console.error('❌ Error loading modules:', error);
+        // Afficher l'unité même si on ne peut pas charger les modules
+        this.learningState.activeUnit = unit;
+        this.learningState.activeUnitModules = [];
+      }
+    }
+  }
+
+  onBackToUnits() {
+    console.log('🔙 Returning to units list');
+    this.learningState.activeUnit = null;
+    this.learningState.activeUnitModules = [];
+  }
+
+  onModuleClick(moduleId) {
+    console.log('📖 Module clicked:', moduleId);
+    // Ici on pourrait naviguer vers le contenu du module
+    // Pour l'instant, on affiche juste un message
+    alert(`Module ${moduleId} sélectionné! (Navigation vers le contenu du module à implémenter)`);
+  }
+
+  async loadUnitModules(unitId) {
+    try {
+      // Faire un appel API pour charger les modules de l'unité
+      const response = await fetch(`/language_learning/api/units/${unitId}/modules/`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      return data.modules || [];
+    } catch (error) {
+      console.error('❌ Error fetching unit modules:', error);
+      // Fallback: utiliser des données de test ou retourner un tableau vide
+      return [];
     }
   }
 

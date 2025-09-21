@@ -35,33 +35,87 @@ export const templates = {
       <LanguageLearningNavbar selectedLanguage="learningState.selectedLanguage" selectedLanguageName="learningState.selectedLanguageName" userStreak="learningState.userStreak" onLanguageChange.bind="onLanguageChange" onTabChange.bind="onTabChange"/>
 
       <div class="container-fluid mt-4">
-        <div class="row">
-          <div class="col-md-8">
-            <div class="card">
-              <div class="card-header">
-                <h5 class="card-title mb-0">
-                  <i class="bi bi-book-half me-2"/>Unités de cours
-                </h5>
-              </div>
-              <div class="card-body">
-                <t t-if="learningState.courseUnits.length === 0">
-                  <p class="text-muted text-center">Aucune unité disponible</p>
-                </t>
-                <t t-else="">
-                  <t t-foreach="learningState.courseUnits" t-as="unit" t-key="unit.id">
-                    <UnitCard unit="unit" onUnitClick.bind="onUnitClick"/>
+        <!-- Affichage conditionnel : liste des unités ou vue détaillée d'une unité -->
+        <t t-if="learningState.activeUnit">
+          <!-- Vue détaillée d'une unité -->
+          <UnitView unit="learningState.activeUnit" modules="learningState.activeUnitModules" onBackClick.bind="onBackToUnits" onModuleClick.bind="onModuleClick"/>
+        </t>
+        <t t-else="">
+          <!-- Vue par défaut : liste des unités -->
+          <div class="row">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title mb-0">
+                    <i class="bi bi-book-half me-2"/>Unités de cours
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <t t-if="learningState.courseUnits.length === 0">
+                    <p class="text-muted text-center">Aucune unité disponible</p>
                   </t>
-                </t>
+                  <t t-else="">
+                    <t t-foreach="learningState.courseUnits" t-as="unit" t-key="unit.id">
+                      <UnitCard unit="unit" onUnitClick.bind="onUnitClick"/>
+                    </t>
+                  </t>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="col-md-4">
-            <ProgressPanel userStreak="learningState.userStreak" unitsCount="learningState.courseUnits.length" completedUnitsCount="0"/>
+            <div class="col-md-4">
+              <ProgressPanel userStreak="learningState.userStreak" unitsCount="learningState.courseUnits.length" completedUnitsCount="0"/>
+            </div>
           </div>
-        </div>
+        </t>
       </div>
     </t>
+  </div>`,
+
+  "language_learning.ModuleCard": xml`<div class="module-card card mb-3 cursor-pointer" t-on-click="onClick">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-primary me-2">
+              Module <t t-esc="props.module.module_number"/>
+            </span>
+            <h6 class="mb-0"><t t-esc="props.module.title"/></h6>
+            <t t-if="props.module.is_completed">
+              <i class="bi bi-check-circle-fill text-success ms-2"/>
+            </t>
+          </div>
+          <p class="text-muted mb-1 small"><t t-esc="props.module.description"/></p>
+          <div class="d-flex align-items-center">
+            <span class="badge bg-light text-dark me-2">
+              <i class="bi bi-clock me-1"/><t t-esc="props.module.estimated_duration"/> min
+            </span>
+            <span class="badge" t-att-class="difficultyBadgeClass">
+              <t t-esc="props.module.difficulty_display"/>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-4 text-end">
+          <t t-if="props.module.is_completed">
+            <div class="text-success">
+              <i class="bi bi-check-circle-fill fs-3"/>
+              <div class="small">Terminé</div>
+            </div>
+          </t>
+          <t t-elif="props.module.is_unlocked">
+            <button class="btn btn-primary">
+              <i class="bi bi-play-circle me-1"/>Commencer
+            </button>
+          </t>
+          <t t-else="">
+            <div class="text-muted">
+              <i class="bi bi-lock fs-3"/>
+              <div class="small">Verrouillé</div>
+            </div>
+          </t>
+        </div>
+      </div>
+    </div>
   </div>`,
 
   "language_learning.Navbar": xml`<div class="navbar-linguify">
@@ -189,6 +243,55 @@ export const templates = {
     <small class="text-muted">
       <t t-esc="props.unit.completed_modules"/>/<t t-esc="props.unit.modules_count"/> modules
     </small>
+  </div>`,
+
+  "language_learning.UnitView": xml`<div class="unit-view">
+    <!-- Header avec titre de l'unité et bouton retour -->
+    <div class="d-flex align-items-center mb-4">
+      <button class="btn btn-outline-secondary me-3" t-on-click="onBackClick">
+        <i class="bi bi-arrow-left me-2"/>Retour
+      </button>
+      <div>
+        <h2 class="mb-1"><t t-esc="props.unit.title"/></h2>
+        <p class="text-muted mb-0"><t t-esc="props.unit.description"/></p>
+      </div>
+    </div>
+
+    <!-- Progression de l'unité -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h6 class="mb-2">Progression de l'unité</h6>
+            <div class="progress mb-2" style="height: 12px;">
+              <div class="progress-bar" t-att-class="progressClass" t-att-style="'width: ' + progressWidth"/>
+            </div>
+            <small class="text-muted">
+              <t t-esc="props.unit.completed_modules"/>/<t t-esc="props.unit.modules_count"/> modules terminés
+            </small>
+          </div>
+          <div class="col-md-4 text-end">
+            <div class="text-muted small">Durée estimée</div>
+            <div class="fw-bold"><t t-esc="props.unit.estimated_duration"/> min</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste des modules -->
+    <div class="modules-list">
+      <h5 class="mb-3"><i class="bi bi-collection me-2"/>Modules de cours</h5>
+      <t t-if="props.modules.length === 0">
+        <div class="text-center p-4">
+          <p class="text-muted">Aucun module disponible pour cette unité.</p>
+        </div>
+      </t>
+      <t t-else="">
+        <t t-foreach="props.modules" t-as="module" t-key="module.id">
+          <ModuleCard module="module" onModuleClick.bind="onModuleClick"/>
+        </t>
+      </t>
+    </div>
   </div>`
 };
 

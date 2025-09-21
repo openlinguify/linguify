@@ -213,6 +213,51 @@ def unit_modules(request, unit_id):
 
 @login_required
 @require_http_methods(["GET"])
+def api_unit_modules(request, unit_id):
+    """API endpoint pour récupérer les modules d'une unité (pour OWL)"""
+    unit = get_object_or_404(CourseUnit, id=unit_id)
+
+    modules = CourseModule.objects.filter(
+        unit=unit
+    ).order_by('order', 'module_number')
+
+    modules_data = []
+    for module in modules:
+        progress = ModuleProgress.objects.filter(
+            user=request.user,
+            module=module
+        ).first()
+
+        modules_data.append({
+            'id': module.id,
+            'module_number': module.module_number,
+            'title': module.title,
+            'description': module.description,
+            'module_type': module.module_type,
+            'difficulty': module.difficulty,
+            'difficulty_display': module.get_difficulty_display(),
+            'estimated_duration': module.estimated_duration,
+            'xp_reward': module.xp_reward,
+            'is_completed': progress.is_completed if progress else False,
+            'is_unlocked': module.is_available_for_user(request.user),
+            'score': progress.score if progress else None,
+            'attempts': progress.attempts if progress else 0,
+        })
+
+    return JsonResponse({
+        'unit': {
+            'id': unit.id,
+            'title': unit.title,
+            'description': unit.description,
+            'unit_number': unit.unit_number,
+            'estimated_duration': unit.estimated_duration,
+        },
+        'modules': modules_data
+    })
+
+
+@login_required
+@require_http_methods(["GET"])
 def start_module(request, module_id):
     """Démarre un module (pour HTMX)"""
     module = get_object_or_404(CourseModule, id=module_id)
