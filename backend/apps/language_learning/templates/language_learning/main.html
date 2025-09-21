@@ -3,16 +3,6 @@
 
 {% block content %}
 <!-- OWL App Mount Point -->
-<div id="language-learning-app">
-    <!-- Minimal fallback -->
-    <div class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Chargement de Linguify Learn...</span>
-        </div>
-        <p class="mt-2 text-muted">Initialisation...</p>
-    </div>
-</div>
-
 <!-- CSRF Token for API calls -->
 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
@@ -58,5 +48,5 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('=== FIN DEBUG ===');
 });
 </script>
-<script src="{% static 'language_learning/js/main.js' %}"></script>
+
 {% endblock %}
