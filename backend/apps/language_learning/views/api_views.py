@@ -110,61 +110,6 @@ def home(request):
 
     return render(request, 'language_learning/main.html', context)
 
-
-@login_required
-def learning_interface(request):
-    """Interface d'apprentissage chargée par HTMX"""
-    selected_language = request.GET.get('lang', 'ES')
-
-    # Obtenir la langue
-    language = Language.objects.filter(code=selected_language).first()
-    if not language:
-        return render(request, 'language_learning/partials/learning_content.html', {
-            'course_units': [],
-            'selected_language': selected_language,
-            'error': 'Langue non trouvée'
-        })
-
-    # Obtenir les unités avec progression
-    units = CourseUnit.objects.filter(
-        language=language,
-        is_active=True
-    ).order_by('order', 'unit_number')
-
-    units_with_progress = []
-    for unit in units:
-        modules_count = unit.modules.count()
-        completed_modules = ModuleProgress.objects.filter(
-            user=request.user,
-            module__unit=unit,
-            is_completed=True
-        ).count()
-
-        progress_percentage = 0
-        if modules_count > 0:
-            progress_percentage = int((completed_modules / modules_count) * 100)
-
-        units_with_progress.append({
-            'id': unit.id,
-            'unit_number': unit.unit_number,
-            'title': unit.title,
-            'description': unit.description,
-            'modules_count': modules_count,
-            'completed_modules': completed_modules,
-            'progress_percentage': progress_percentage,
-            'icon': unit.icon,
-            'color': unit.color,
-        })
-
-    context = {
-        'course_units': units_with_progress,
-        'selected_language': selected_language,
-        'selected_language_name': language.name,
-    }
-
-    return render(request, 'language_learning/partials/learning_content.html', context)
-
-
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet pour les langues disponibles"""
     queryset = Language.objects.filter(is_active=True)

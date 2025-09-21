@@ -7,11 +7,11 @@
         </h5>
     </div>
     <div class="card-body">
-        {% if course_units_raw %}
-            {% for unit in course_units_raw %}
+        {% if course_units %}
+            {% for unit in course_units %}
             <div x-data="unitCard({{ unit|safe }})"
                  class="unit-card card"
-                 hx-get="{% url 'language_learning:learning_interface' %}?unit={{ unit.id }}&lang={{ selected_language }}"
+                 hx-get="{% url 'language_learning:home' %}?unit={{ unit.id }}&lang={{ selected_language }}"
                  hx-target="#main-content"
                  hx-trigger="click">
                 <div class="card-body">

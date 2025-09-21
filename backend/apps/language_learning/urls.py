@@ -15,7 +15,6 @@ router.register(r'course-units', views.CourseUnitViewSet, basename='course-unit'
 router.register(r'module-progress', views.ModuleProgressViewSet, basename='module-progress')
 router.register(r'user-progress', views.UserCourseProgressViewSet, basename='user-progress')
 router.register(r'learning-profile', views.UserLearningProfileViewSet, basename='learning-profile')
-router.register(r'learning-interface', views.LearningInterfaceViewSet, basename='learning-interface')
 
 urlpatterns = [
     # Configuration initiale pour nouveaux utilisateurs qui viennent d'installer l'application depuis l'app store.
