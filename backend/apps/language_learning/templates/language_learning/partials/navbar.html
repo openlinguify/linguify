@@ -1,17 +1,47 @@
-<!-- Learning Navbar Partial -->
-<div class="learning-navbar">
-    <div class="container">
-        <a href="{% url 'language_learning:learning_interface' %}" class="navbar-brand">
-            <i class="bi bi-book me-2"></i>Language Learning
-        </a>
+{% load static %}
+{% load i18n %}
+<!-- Language Learning Navbar - Linguify Style -->
+<div class="navbar-linguify">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="navbar-section">
+        <!-- Start Learning Button - Left side -->
+        <button id="startLearning" class="btn-navbar btn-navbar-primary"
+                onclick="document.querySelector('.unit-card')?.click()">
+            <i class="bi bi-play-circle"></i>
+            <span class="d-none d-xl-inline">{% trans "Start Learning" %}</span>
+        </button>
 
-        <div class="navbar-actions">
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <a href="{% url 'language_learning:learning_interface' %}"
+               class="nav-tab active">
+                <i class="bi bi-house"></i>
+                {% trans "Dashboard" %}
+            </a>
+            <a href="{% url 'language_learning:learning_interface' %}?view=lessons"
+               class="nav-tab">
+                <i class="bi bi-book"></i>
+                {% trans "Lessons" %}
+            </a>
+            <a href="{% url 'language_learning:progress' %}"
+               class="nav-tab">
+                <i class="bi bi-trophy"></i>
+                {% trans "Progress" %}
+            </a>
+            <a href="#" class="nav-tab">
+                <i class="bi bi-people"></i>
+                {% trans "Community" %}
+            </a>
+        </div>
+
+        <div class="container-extra">
             <!-- Language Selector -->
             <div class="language-selector">
-                <label class="text-white-50 me-2">Learning:</label>
+                <label class="navbar-label me-2">{% trans "Learning:" %}</label>
                 <select x-model="selectedLanguage"
                         name="lang"
-                        class="form-select form-select-sm"
+                        class="form-control-linguify"
+                        style="width: 120px;"
                         hx-get="{% url 'language_learning:learning_interface' %}"
                         hx-target="#main-content"
                         hx-trigger="change"
@@ -24,17 +54,38 @@
             </div>
 
             <!-- Streak Display -->
-            <div class="streak-display">
-                <i class="bi bi-fire text-warning"></i>
-                <span x-text="userStreak"></span>
-                <span class="d-none d-lg-inline">day streak</span>
-                <span x-text="getStreakIcon(userStreak)"></span>
+            <div class="streak-display d-flex align-items-center me-3">
+                <i class="bi bi-fire text-warning me-1"></i>
+                <span class="fw-bold" x-text="userStreak"></span>
+                <span class="d-none d-lg-inline ms-1">{% trans "day streak" %}</span>
+                <span class="ms-1" x-text="getStreakIcon(userStreak)"></span>
             </div>
+        </div>
+    </div>
 
-            <!-- Settings Link -->
-            <a href="/settings/language_learning/" class="btn btn-outline-light btn-sm">
+    <!-- Droite: Actions et filtres contextuels -->
+    <div class="navbar-section-right">
+        <!-- Level Display -->
+        <div class="level-display d-flex align-items-center me-3">
+            <span class="navbar-label me-2">{% trans "Level:" %}</span>
+            <span class="badge bg-primary">Beginner</span>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="navbar-actions-group">
+            <button id="quickPractice" class="btn-navbar btn-navbar-outline" title="{% trans 'Quick Practice' %}">
+                <i class="bi bi-lightning"></i>
+                <span class="d-none d-xl-inline">{% trans "Practice" %}</span>
+            </button>
+
+            <button id="vocabulary" class="btn-navbar btn-navbar-outline" title="{% trans 'Vocabulary' %}">
+                <i class="bi bi-journal-text"></i>
+                <span class="d-none d-xl-inline">{% trans "Vocabulary" %}</span>
+            </button>
+
+            <a href="/settings/language_learning/" id="learningSettings" class="btn-navbar btn-navbar-outline" title="{% trans 'Language Learning Settings' %}">
                 <i class="bi bi-gear"></i>
-                <span class="d-none d-lg-inline ms-1">Settings</span>
+                <span class="d-none d-xxl-inline">{% trans "Settings" %}</span>
             </a>
         </div>
     </div>
