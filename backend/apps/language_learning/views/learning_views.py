@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.db.models import Count, Q
+import json
 
 from ..models import *
 
@@ -31,9 +32,9 @@ def learning_interface(request):
     context = {
         'selected_language': selected_language,
         'selected_language_name': '',
-        'course_units': [],
-        'active_unit': None,
-        'active_unit_modules': [],
+        'course_units': json.dumps([]),
+        'active_unit': json.dumps(None),
+        'active_unit_modules': json.dumps([]),
         'user_progress': None,
         'user_streak': 0,
         'view_type': view_type,  # Pour la navbar
@@ -82,7 +83,7 @@ def learning_interface(request):
                     'progress_percentage': progress_percentage,
                 })
 
-            context['course_units'] = units_with_progress
+            context['course_units'] = json.dumps(units_with_progress)
 
             # Si une unité est active ou prendre la première
             active_unit_id = request.GET.get('unit')
@@ -95,7 +96,12 @@ def learning_interface(request):
                 active_unit = units.first()
 
             if active_unit:
-                context['active_unit'] = active_unit
+                context['active_unit'] = json.dumps({
+                    'id': active_unit.id,
+                    'unit_number': active_unit.unit_number,
+                    'title': active_unit.title,
+                    'description': active_unit.description
+                })
                 context['active_unit_id'] = active_unit.id
 
                 # Obtenir les modules de l'unité active
@@ -123,7 +129,7 @@ def learning_interface(request):
                         'is_locked': not module.is_available_for_user(request.user),
                     })
 
-                context['active_unit_modules'] = modules_with_status
+                context['active_unit_modules'] = json.dumps(modules_with_status)
 
             # Calculer le streak (simplifié pour l'exemple)
             user_language = UserLanguage.objects.filter(
@@ -137,8 +143,8 @@ def learning_interface(request):
     if request.headers.get('HX-Request'):
         return render(request, 'language_learning/partials/learning_content.html', context)
 
-    # Sinon retourner la page complète avec navbar
-    return render(request, 'language_learning/base.html', context)
+    # Sinon retourner la page complète avec OWL
+    return render(request, 'language_learning/main.html', context)
 
 
 @login_required
@@ -146,27 +152,28 @@ def refresh_progress(request):
     """API endpoint to refresh user progress data via HTMX"""
     selected_language = request.GET.get('lang', 'EN')
 
-    # For now, return basic progress info
-    # TODO: Calculate real progress from UserLearningProfile and lessons
+    # Prepare context for the progress template
     context = {
-        'progress_percentage': 0,
-        'lessons_completed': 0,
-        'streak_count': 0,
-        'total_time_spent': 0,
         'selected_language': selected_language,
+        'user_progress': {
+            'level': 1,
+            'total_xp': 0,
+            'get_completion_percentage': 0,
+        },
+        'user_streak': 0,
     }
 
     try:
         # Get user's learning profile
         learning_profile = request.user.learning_profile
-        context.update({
-            'progress_percentage': getattr(learning_profile, 'progress_percentage', 0),
-            'lessons_completed': getattr(learning_profile, 'lessons_completed', 0),
-            'streak_count': getattr(learning_profile, 'streak_count', 0),
-            'total_time_spent': getattr(learning_profile, 'total_time_spent', 0),
+        context['user_progress'].update({
+            'level': getattr(learning_profile, 'language_level', 'A1'),
+            'total_xp': getattr(learning_profile, 'total_time_spent', 0) * 10,  # Convert minutes to XP
+            'get_completion_percentage': getattr(learning_profile, 'progress_percentage', 0),
         })
+        context['user_streak'] = getattr(learning_profile, 'streak_count', 0)
     except AttributeError:
-        # No learning profile yet
+        # No learning profile yet - use defaults
         pass
 
     return render(request, 'language_learning/partials/progress_info.html', context)

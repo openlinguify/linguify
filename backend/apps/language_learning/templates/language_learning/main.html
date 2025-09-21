@@ -1,0 +1,82 @@
+{% extends "language_learning/base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- OWL App Mount Point -->
+<div id="language-learning-app">
+    <!-- Fallback content while OWL loads -->
+    <div class="container mt-4">
+        <div class="alert alert-info">
+            <h4><i class="bi bi-globe"></i> Linguify Learn</h4>
+            <p>L'interface OWL se charge...</p>
+            <div class="d-flex justify-content-center mt-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test content to verify basic display -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="progress-card progress-card-primary">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="progress-card-label">Test - Niveau</h6>
+                            <p class="progress-card-value">1</p>
+                        </div>
+                        <i class="bi bi-trophy-fill progress-card-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSRF Token for API calls -->
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+<!-- Initial data for OWL app -->
+<script id="initial-data" type="application/json">
+{
+    "selectedLanguage": "{{ selected_language|default:'EN' }}",
+    "selectedLanguageName": "{{ selected_language_name|default:'' }}",
+    "courseUnits": {{ course_units|default:'[]' }},
+    "activeUnit": {{ active_unit|default:'null' }},
+    "activeUnitModules": {{ active_unit_modules|default:'[]' }},
+    "userProgress": {
+        "level": {% if user_progress.level %}{{ user_progress.level }}{% else %}1{% endif %},
+        "total_xp": {% if user_progress.total_xp %}{{ user_progress.total_xp }}{% else %}0{% endif %},
+        "get_completion_percentage": {% if user_progress.get_completion_percentage %}{{ user_progress.get_completion_percentage }}{% else %}0{% endif %}
+    },
+    "userStreak": {{ user_streak|default:0 }},
+    "viewType": "{{ view_type|default:'home' }}"
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<!-- OWL Framework -->
+<script src="https://unpkg.com/@odoo/owl@2/dist/owl.iife.js"></script>
+<script>
+// Test OWL loading
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DEBUT DEBUG ===');
+    console.log('OWL disponible:', typeof owl !== 'undefined' ? 'OUI' : 'NON');
+    if (typeof owl !== 'undefined') {
+        console.log('OWL components:', Object.keys(owl));
+    }
+
+    const appElement = document.getElementById('language-learning-app');
+    console.log('Element app trouvé:', appElement ? 'OUI' : 'NON');
+
+    const dataElement = document.getElementById('initial-data');
+    console.log('Element data trouvé:', dataElement ? 'OUI' : 'NON');
+    if (dataElement) {
+        console.log('Contenu data:', dataElement.textContent);
+    }
+    console.log('=== FIN DEBUG ===');
+});
+</script>
+<script src="{% static 'language_learning/js/main.js' %}"></script>
+{% endblock %}

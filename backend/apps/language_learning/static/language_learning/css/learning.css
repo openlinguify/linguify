@@ -1,0 +1,224 @@
+/**
+ * Language Learning App Styles
+ */
+
+/* Override Bootstrap navbar styling */
+.navbar-linguify {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: none;
+}
+
+.navbar-linguify .navbar-brand {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.navbar-linguify .nav-link {
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.navbar-linguify .nav-link:hover {
+    background: rgba(255,255,255,0.1) !important;
+    border-radius: 4px;
+}
+
+/* Progress cards animations */
+.progress-card {
+    transition: all 0.3s ease;
+}
+
+.progress-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Unit cards */
+.units-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.unit-title {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.unit-description {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.progress-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #28a745 0deg, #28a745 calc(var(--progress, 0) * 3.6deg), #e9ecef calc(var(--progress, 0) * 3.6deg));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.progress-circle::before {
+    content: '';
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    background: white;
+    border-radius: 50%;
+}
+
+.progress-circle span {
+    position: relative;
+    z-index: 1;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Module cards */
+.modules-container {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+}
+
+.module-title {
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.module-description {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.module-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.module-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateX(2px);
+}
+
+/* Loading states */
+.loading-overlay .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .progress-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .module-card .module-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .module-actions {
+        align-self: stretch;
+    }
+
+    .modules-container {
+        position: static;
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .progress-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .unit-card {
+        padding: 1rem;
+    }
+
+    .unit-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .language-learning-app {
+        background: #1a1a1a !important;
+    }
+
+    .progress-card,
+    .unit-card,
+    .module-card,
+    .modules-container {
+        background: #2c2c2c !important;
+        border-color: #404040 !important;
+        color: #f8f9fa !important;
+    }
+
+    .unit-title,
+    .module-title {
+        color: #f8f9fa !important;
+    }
+
+    .progress-circle::before {
+        background: #2c2c2c !important;
+    }
+}
+
+/* Notification styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000;
+    max-width: 400px;
+    animation: slideIn 0.3s ease;
+}
+
+.notification.success {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.notification.error {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.notification.info {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
