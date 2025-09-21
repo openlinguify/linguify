@@ -5,17 +5,13 @@ console.log('🚀 Language Learning OWL App Starting (NPM version)...');
 // Import styles
 import './scss/learning.scss';
 
-// Import templates as text and convert to xml
-import UnitCardTemplateText from './templates/UnitCard.xml';
-import ProgressPanelTemplateText from './templates/ProgressPanel.xml';
-import LanguageLearningNavbarTemplateText from './templates/LanguageLearningNavbar.xml';
-import LearningDashboardTemplateText from './templates/LearningDashboard.xml';
-
-// Convert imported text to OWL xml templates
-const UnitCardTemplate = xml(UnitCardTemplateText);
-const ProgressPanelTemplate = xml(ProgressPanelTemplateText);
-const LanguageLearningNavbarTemplate = xml(LanguageLearningNavbarTemplateText);
-const LearningDashboardTemplate = xml(LearningDashboardTemplateText);
+// Import templates from separate file
+import {
+  UnitCardTemplate,
+  ProgressPanelTemplate,
+  LanguageLearningNavbarTemplate,
+  LearningDashboardTemplate
+} from './templates.js';
 
 // Unit Card Component
 class UnitCard extends Component {

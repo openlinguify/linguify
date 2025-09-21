@@ -32,7 +32,7 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.xml$/,
-          type: 'asset/source'
+          use: 'raw-loader'
         }
       ]
     },
