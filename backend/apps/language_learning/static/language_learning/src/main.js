@@ -199,6 +199,8 @@ class LearningDashboard extends Component {
   static components = { UnitCard, ProgressPanel, Navbar };
 
   setup() {
+    console.log('🔧 LearningDashboard setup() called');
+
     this.state = useState({
       isReady: false
     });
@@ -212,8 +214,15 @@ class LearningDashboard extends Component {
     });
 
     onWillStart(async () => {
-      await this.loadInitialData();
-      this.state.isReady = true;
+      console.log('🚀 onWillStart called');
+      try {
+        await this.loadInitialData();
+        this.state.isReady = true;
+        console.log('✅ State set to ready');
+      } catch (error) {
+        console.error('❌ Error in onWillStart:', error);
+        this.state.isReady = true; // Set to true anyway to show something
+      }
     });
   }
 
@@ -255,11 +264,27 @@ async function startApp() {
       throw new Error('Container #language-learning-app not found');
     }
 
+    console.log('📦 Container found, clearing content...');
+    // Clear any existing content before mounting
+    appContainer.innerHTML = '';
+
     const app = await mount(LearningDashboard, appContainer);
     console.log('✅ OWL app mounted successfully!', app);
 
   } catch (error) {
     console.error('❌ Error starting app:', error);
+
+    // Fallback
+    const appContainer = document.getElementById('language-learning-app');
+    if (appContainer) {
+      appContainer.innerHTML = `
+        <div class="alert alert-danger m-4">
+          <h5><i class="bi bi-exclamation-triangle"></i> Erreur OWL</h5>
+          <p>Impossible de charger l'interface OWL.</p>
+          <small class="text-muted">Erreur: ${error.message}</small>
+        </div>
+      `;
+    }
   }
 }
 
