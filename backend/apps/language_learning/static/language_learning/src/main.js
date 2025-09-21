@@ -104,33 +104,99 @@ class ProgressPanel extends Component {
   }
 }
 
-// Navbar Component
-class Navbar extends Component {
+// Language Learning Navbar Component - Linguify Style
+class LanguageLearningNavbar extends Component {
   static template = xml`
-    <nav class="navbar navbar-expand-lg bg-primary text-white mb-4">
-      <div class="container-fluid">
-        <div class="navbar-brand text-white">
-          <i class="bi bi-translate me-2"></i>Language Learning
+    <div class="navbar-linguify">
+      <!-- Gauche: Navigation + Actions principales -->
+      <div class="navbar-section">
+        <!-- Start Learning Button - Left side -->
+        <button t-on-click="startLearning" class="btn-navbar btn-navbar-primary">
+          <i class="bi bi-play-circle"></i>
+          <span class="d-none d-xl-inline">Start Learning</span>
+        </button>
+
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+          <a href="#" class="nav-tab active" t-on-click="() => this.selectTab('dashboard')">
+            <i class="bi bi-house"></i>
+            Dashboard
+          </a>
+          <a href="#" class="nav-tab" t-on-click="() => this.selectTab('lessons')">
+            <i class="bi bi-book"></i>
+            Lessons
+          </a>
+          <a href="#" class="nav-tab" t-on-click="() => this.selectTab('progress')">
+            <i class="bi bi-trophy"></i>
+            Progress
+          </a>
+          <a href="#" class="nav-tab" t-on-click="() => this.selectTab('community')">
+            <i class="bi bi-people"></i>
+            Community
+          </a>
         </div>
-        <div class="d-flex align-items-center">
-          <div class="me-4">
-            <span class="badge bg-light text-dark me-2"><t t-esc="languageFlag"/></span>
-            <span class="text-white fw-bold"><t t-esc="props.selectedLanguageName"/></span>
+
+        <div class="container-extra">
+          <!-- Language Selector -->
+          <div class="language-selector d-flex align-items-center me-3">
+            <span class="navbar-label me-2">Learning:</span>
+            <button class="btn btn-outline-primary btn-sm dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown">
+              <t t-esc="languageFlag"/> <t t-esc="props.selectedLanguageName"/>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#" t-on-click="() => this.selectLanguage('EN')">🇬🇧 English</a></li>
+              <li><a class="dropdown-item" href="#" t-on-click="() => this.selectLanguage('FR')">🇫🇷 Français</a></li>
+              <li><a class="dropdown-item" href="#" t-on-click="() => this.selectLanguage('ES')">🇪🇸 Español</a></li>
+              <li><a class="dropdown-item" href="#" t-on-click="() => this.selectLanguage('DE')">🇩🇪 Deutsch</a></li>
+            </ul>
           </div>
-          <div class="me-3">
-            <span class="badge bg-warning text-dark">
-              <i class="bi bi-fire me-1"></i><t t-esc="props.userStreak"/> jours
-            </span>
+
+          <!-- Streak Display -->
+          <div class="streak-display d-flex align-items-center me-3">
+            <i class="bi bi-fire text-warning me-1"></i>
+            <span class="fw-bold"><t t-esc="props.userStreak"/></span>
+            <span class="d-none d-lg-inline ms-1">day streak</span>
           </div>
         </div>
       </div>
-    </nav>
+
+      <!-- Droite: Actions et filtres contextuels -->
+      <div class="navbar-section-right">
+        <!-- Level Display -->
+        <div class="level-display d-flex align-items-center me-3">
+          <span class="navbar-label me-2">Level:</span>
+          <span class="badge bg-primary"><t t-esc="userLevel"/></span>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="navbar-actions-group">
+          <button t-on-click="openPractice" class="btn-navbar btn-navbar-outline" title="Quick Practice">
+            <i class="bi bi-lightning"></i>
+            <span class="d-none d-xl-inline">Practice</span>
+          </button>
+
+          <button t-on-click="openVocabulary" class="btn-navbar btn-navbar-outline" title="Vocabulary">
+            <i class="bi bi-journal-text"></i>
+            <span class="d-none d-xl-inline">Vocabulary</span>
+          </button>
+
+          <button t-on-click="openSettings" class="btn-navbar btn-navbar-outline" title="Language Learning Settings">
+            <i class="bi bi-gear"></i>
+            <span class="d-none d-xxl-inline">Settings</span>
+          </button>
+        </div>
+      </div>
+    </div>
   `;
 
   static props = {
     selectedLanguage: String,
     selectedLanguageName: String,
-    userStreak: Number
+    userStreak: Number,
+    onLanguageChange: { type: Function, optional: true },
+    onTabChange: { type: Function, optional: true }
   };
 
   get languageFlag() {
@@ -142,6 +208,49 @@ class Navbar extends Component {
       'IT': '🇮🇹'
     };
     return flagMap[this.props.selectedLanguage] || '🌍';
+  }
+
+  get userLevel() {
+    // Calculate user level based on progress
+    return 'Beginner'; // For now, could be calculated from props
+  }
+
+  startLearning() {
+    console.log('Starting learning session...');
+    // Scroll to first unit or start first lesson
+    if (this.props.onTabChange) {
+      this.props.onTabChange('start-learning');
+    }
+  }
+
+  selectTab(tab) {
+    console.log('Selected tab:', tab);
+    if (this.props.onTabChange) {
+      this.props.onTabChange(tab);
+    }
+  }
+
+  selectLanguage(langCode) {
+    console.log('Selected language:', langCode);
+    if (this.props.onLanguageChange) {
+      this.props.onLanguageChange(langCode);
+    }
+  }
+
+  openPractice() {
+    console.log('Opening practice...');
+    // Open practice modal or start practice session
+  }
+
+  openVocabulary() {
+    console.log('Opening vocabulary...');
+    // Open vocabulary modal or navigate to vocabulary page
+  }
+
+  openSettings() {
+    console.log('Opening settings...');
+    // Navigate to settings page
+    window.location.href = '/settings/language_learning/';
   }
 }
 
@@ -160,9 +269,11 @@ class LearningDashboard extends Component {
         </div>
       </t>
       <t t-else="">
-        <Navbar selectedLanguage="learningState.selectedLanguage"
-                selectedLanguageName="learningState.selectedLanguageName"
-                userStreak="learningState.userStreak"/>
+        <LanguageLearningNavbar selectedLanguage="learningState.selectedLanguage"
+                                selectedLanguageName="learningState.selectedLanguageName"
+                                userStreak="learningState.userStreak"
+                                onLanguageChange.bind="onLanguageChange"
+                                onTabChange.bind="onTabChange"/>
 
         <div class="container-fluid mt-4">
           <div class="row">
@@ -196,7 +307,7 @@ class LearningDashboard extends Component {
       </t>
     </div>
   `;
-  static components = { UnitCard, ProgressPanel, Navbar };
+  static components = { UnitCard, ProgressPanel, LanguageLearningNavbar };
 
   setup() {
     console.log('🔧 LearningDashboard setup() called');
@@ -251,6 +362,33 @@ class LearningDashboard extends Component {
       this.learningState.activeUnit = unit;
       console.log('🎯 Unit selected:', unit);
     }
+  }
+
+  onLanguageChange(langCode) {
+    console.log('Language change requested:', langCode);
+    // Here you would update the learning language
+    // Could make an API call to update user preferences
+    this.learningState.selectedLanguage = langCode;
+    const languageNames = {
+      'EN': 'English',
+      'FR': 'Français',
+      'ES': 'Español',
+      'DE': 'Deutsch'
+    };
+    this.learningState.selectedLanguageName = languageNames[langCode] || langCode;
+  }
+
+  onTabChange(tab) {
+    console.log('Tab change requested:', tab);
+    // Handle navigation between different sections
+    if (tab === 'start-learning') {
+      // Scroll to first unit
+      const firstUnit = document.querySelector('.unit-card');
+      if (firstUnit) {
+        firstUnit.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    // Could update state to show different views
   }
 }
 
