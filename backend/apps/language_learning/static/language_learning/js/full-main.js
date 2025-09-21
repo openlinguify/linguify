@@ -236,54 +236,142 @@ class ModuleList extends Component {
     }
 }
 
-// Navigation Bar Component
+// Navigation Bar Component - Style Linguify
 class NavigationBar extends Component {
     static template = xml`
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/language_learning/">
-                    <i class="bi bi-globe"></i> Linguify Learn
-                </a>
-
-                <div class="navbar-nav ms-auto">
-                    <div class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="bi bi-translate"></i> <t t-esc="getLanguageName()"/>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" t-on-click="selectLanguage" data-lang="EN">🇬🇧 English</a></li>
-                            <li><a class="dropdown-item" href="#" t-on-click="selectLanguage" data-lang="FR">🇫🇷 Français</a></li>
-                            <li><a class="dropdown-item" href="#" t-on-click="selectLanguage" data-lang="ES">🇪🇸 Español</a></li>
-                            <li><a class="dropdown-item" href="#" t-on-click="selectLanguage" data-lang="DE">🇩🇪 Deutsch</a></li>
-                        </ul>
-                    </div>
-
-                    <a class="nav-link" href="/language_learning/progress/">
-                        <i class="bi bi-graph-up"></i> Progrès
+        <div class="navbar-linguify mb-4">
+            <!-- Section gauche: Navigation + Actions -->
+            <div class="navbar-section">
+                <!-- Tabs de navigation -->
+                <div class="nav-tabs-group">
+                    <a href="/language_learning/"
+                       t-att-class="getTabClass('home')"
+                       t-on-click="setActiveTab"
+                       data-tab="home">
+                        <i class="bi bi-house"></i>
+                        Accueil
                     </a>
-
-                    <a class="nav-link" href="/language_learning/settings/">
-                        <i class="bi bi-gear"></i> Paramètres
+                    <a href="/language_learning/?view=lessons"
+                       t-att-class="getTabClass('lessons')"
+                       t-on-click="setActiveTab"
+                       data-tab="lessons">
+                        <i class="bi bi-book"></i>
+                        Leçons
+                    </a>
+                    <a href="/language_learning/progress/"
+                       t-att-class="getTabClass('progress')"
+                       t-on-click="setActiveTab"
+                       data-tab="progress">
+                        <i class="bi bi-graph-up"></i>
+                        Progrès
+                    </a>
+                    <a href="/language_learning/?view=practice"
+                       t-att-class="getTabClass('practice')"
+                       t-on-click="setActiveTab"
+                       data-tab="practice">
+                        <i class="bi bi-lightning"></i>
+                        Pratique
+                    </a>
+                    <a href="/language_learning/settings/"
+                       t-att-class="getTabClass('settings')"
+                       t-on-click="setActiveTab"
+                       data-tab="settings">
+                        <i class="bi bi-gear"></i>
+                        Paramètres
                     </a>
                 </div>
             </div>
-        </nav>
+
+            <!-- Section droite: Sélecteur de langue et actions -->
+            <div class="navbar-section-right">
+                <!-- Sélecteur de langue principal -->
+                <select class="form-select-linguify"
+                        style="min-width: 180px;"
+                        t-on-change="selectLanguage"
+                        t-att-value="state.selectedLanguage">
+                    <option value="EN">🇬🇧 English</option>
+                    <option value="FR">🇫🇷 Français</option>
+                    <option value="ES">🇪🇸 Español</option>
+                    <option value="NL">🇳🇱 Nederlands</option>
+                </select>
+
+                <span t-if="state.selectedLanguageName" class="badge-linguify badge-primary">
+                    <i class="bi bi-check-circle"></i>
+                    <t t-esc="state.selectedLanguageName"/>
+                </span>
+
+                <!-- Bouton actualiser -->
+                <button class="btn-navbar btn-navbar-outline"
+                        t-on-click="refreshProgress"
+                        title="Actualiser">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    <span class="d-none d-lg-inline">Actualiser</span>
+                </button>
+
+                <!-- Actions principales -->
+                <div class="navbar-actions-group">
+                    <button t-if="state.selectedLanguage"
+                            class="btn-navbar btn-navbar-primary"
+                            t-on-click="startPractice"
+                            title="Session de pratique">
+                        <i class="bi bi-play-fill"></i>
+                        <span class="d-none d-xl-inline">Pratiquer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     `;
 
     setup() {
         this.store = this.props.store;
         this.state = useState(this.store.state);
+
+        // Initialiser l'onglet actif
+        this.state.activeTab = this.state.viewType || 'home';
     }
 
-    getLanguageName() {
-        return this.state.selectedLanguageName || this.state.selectedLanguage || 'Langue';
+    getTabClass(tabName) {
+        return `nav-tab ${this.state.activeTab === tabName ? 'active' : ''}`;
+    }
+
+    setActiveTab(event) {
+        event.preventDefault();
+        const tab = event.target.closest('a').getAttribute('data-tab');
+        this.state.activeTab = tab;
+        this.store.setState({ viewType: tab });
+        console.log('Tab activated:', tab);
     }
 
     selectLanguage(event) {
-        const lang = event.target.getAttribute('data-lang');
+        const lang = event.target.value;
         console.log('Language selected:', lang);
-        this.store.setState({ selectedLanguage: lang });
-        window.notificationService.info(`Langue changée: ${lang}`);
+
+        // Mettre à jour le nom de la langue
+        const languageNames = {
+            'EN': 'English',
+            'FR': 'Français',
+            'ES': 'Español',
+            'NL': 'Nederlands'
+        };
+
+        this.store.setState({
+            selectedLanguage: lang,
+            selectedLanguageName: languageNames[lang] || lang
+        });
+
+        window.notificationService.info(`Langue changée: ${languageNames[lang]}`);
+    }
+
+    refreshProgress() {
+        console.log('Refreshing progress...');
+        this.store.refreshProgress();
+        window.notificationService.success('Progression actualisée');
+    }
+
+    startPractice() {
+        console.log('Starting practice session...');
+        window.notificationService.info('Session de pratique démarrée !');
+        // Ici on pourrait ouvrir un modal ou rediriger vers la pratique
     }
 }
 
