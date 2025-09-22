@@ -181,12 +181,52 @@ document.addEventListener('alpine:init', () => {
         },
 
         async loadExercises(moduleId) {
-            // Pour l'instant, simulons des exercices
-            this.exercises = this.generateSampleExercises(moduleId);
-            this.totalExercises = this.exercises.length;
-            this.currentExerciseIndex = 0;
-            this.earnedXP = 0;
-            this.resetExerciseState();
+            this.loading = true;
+            try {
+                const response = await fetch(`${this.apiUrls.moduleExercises}${moduleId}/exercises/`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        this.exercises = data.exercises || [];
+                        this.totalExercises = this.exercises.length;
+                        this.currentExerciseIndex = 0;
+                        this.earnedXP = 0;
+                        this.resetExerciseState();
+                        console.log('✅ Exercices chargés:', data);
+                    } else {
+                        console.error('❌ Erreur API exercices:', data.error);
+                        // Fallback vers les exercices d'exemple
+                        this.exercises = this.generateSampleExercises(moduleId);
+                        this.totalExercises = this.exercises.length;
+                        this.currentExerciseIndex = 0;
+                        this.earnedXP = 0;
+                        this.resetExerciseState();
+                    }
+                } else {
+                    console.error('❌ Erreur HTTP:', response.status);
+                    // Fallback vers les exercices d'exemple
+                    this.exercises = this.generateSampleExercises(moduleId);
+                    this.totalExercises = this.exercises.length;
+                    this.currentExerciseIndex = 0;
+                    this.earnedXP = 0;
+                    this.resetExerciseState();
+                }
+            } catch (error) {
+                console.error('❌ Erreur de chargement des exercices:', error);
+                // Fallback vers les exercices d'exemple
+                this.exercises = this.generateSampleExercises(moduleId);
+                this.totalExercises = this.exercises.length;
+                this.currentExerciseIndex = 0;
+                this.earnedXP = 0;
+                this.resetExerciseState();
+            } finally {
+                this.loading = false;
+            }
         },
 
         generateSampleExercises(moduleId) {
@@ -304,13 +344,45 @@ document.addEventListener('alpine:init', () => {
         },
 
         async completeModule() {
+            const score = Math.round((this.earnedXP / (this.totalExercises * 20)) * 100);
+
             console.log('Module completed!', {
                 moduleId: this.currentModule.id,
                 totalXP: this.earnedXP,
-                score: Math.round((this.earnedXP / (this.totalExercises * 20)) * 100)
+                score: score
             });
 
-            alert(`Module terminé ! Vous avez gagné ${this.earnedXP} XP !`);
+            try {
+                const response = await fetch(`${this.apiUrls.completeModule}${this.currentModule.id}/complete/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        score: score
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        alert(`Module terminé ! Vous avez gagné ${data.rewards.xp_earned} XP !`);
+                        console.log('✅ Module complété avec succès:', data);
+                    } else {
+                        alert(`Module terminé ! Vous avez gagné ${this.earnedXP} XP !`);
+                        console.error('❌ Erreur lors de la completion:', data.error);
+                    }
+                } else {
+                    alert(`Module terminé ! Vous avez gagné ${this.earnedXP} XP !`);
+                    console.error('❌ Erreur HTTP completion:', response.status);
+                }
+            } catch (error) {
+                alert(`Module terminé ! Vous avez gagné ${this.earnedXP} XP !`);
+                console.error('❌ Erreur de completion du module:', error);
+            }
+
             this.closeExercise();
         },
 

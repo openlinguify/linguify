@@ -1,13 +1,9 @@
 from django.contrib import admin
-from .models import (
-    LanguagelearningItem,
-    Language,
-    UserLanguage,
-    Lesson,
-    UserLessonProgress,
-    LanguageLearningSettings,
-    UserLearningProfile
-)
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
+from django import forms
+import json
+from .models import *
 
 
 class UserLearningProfileInline(admin.StackedInline):
@@ -235,6 +231,355 @@ class LanguageLearningSettingsAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
+
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('user')
+
+
+# =============================================================================
+# ADMINISTRATION DES COURS ET MODULES
+# =============================================================================
+
+class ExerciseContentWidget(forms.Textarea):
+    """Widget personnalisé pour éditer le contenu des exercices en JSON"""
+
+    class Media:
+        css = {
+            'all': ('admin/css/exercise_editor.css',)
+        }
+        js = ('admin/js/exercise_editor.js',)
+
+    def __init__(self, attrs=None):
+        default_attrs = {
+            'rows': 20,
+            'cols': 80,
+            'style': 'font-family: monospace; font-size: 14px;'
+        }
+        if attrs:
+            default_attrs.update(attrs)
+        super().__init__(default_attrs)
+
+
+class CourseModuleForm(forms.ModelForm):
+    """Formulaire personnalisé pour l'édition des modules"""
+
+    content = forms.JSONField(
+        widget=ExerciseContentWidget,
+        help_text="""
+        Format JSON pour les exercices:
+        {
+            "exercises": [
+                {
+                    "type": "multiple_choice",
+                    "question": "Votre question",
+                    "prompt": "Instructions",
+                    "options": ["Option A", "Option B", "Option C", "Option D"],
+                    "correct_answer": "Option A",
+                    "explanation": "Explication de la réponse"
+                },
+                {
+                    "type": "translation",
+                    "text_to_translate": "Texte à traduire",
+                    "correct_answer": ["Réponse 1", "Réponse 2"],
+                    "explanation": "Explication"
+                },
+                {
+                    "type": "fill_blank",
+                    "question": "Question",
+                    "sentence_with_blank": "Phrase avec _____",
+                    "placeholder": "Indice",
+                    "correct_answer": ["Réponse"],
+                    "explanation": "Explication"
+                },
+                {
+                    "type": "audio",
+                    "audio_url": "/static/audio/file.mp3",
+                    "correct_answer": ["Réponse"],
+                    "explanation": "Explication"
+                }
+            ]
+        }
+        """,
+        required=False
+    )
+
+    class Meta:
+        model = CourseModule
+        fields = '__all__'
+
+    def clean_content(self):
+        content = self.cleaned_data.get('content')
+        if content:
+            try:
+                if isinstance(content, str):
+                    content = json.loads(content)
+
+                # Valider la structure des exercices
+                if 'exercises' in content:
+                    for i, exercise in enumerate(content['exercises']):
+                        if 'type' not in exercise:
+                            raise forms.ValidationError(f"Exercice {i+1}: Le champ 'type' est requis")
+
+                        if exercise['type'] not in ['multiple_choice', 'translation', 'fill_blank', 'audio']:
+                            raise forms.ValidationError(f"Exercice {i+1}: Type invalide '{exercise['type']}'")
+
+                return content
+            except json.JSONDecodeError as e:
+                raise forms.ValidationError(f"JSON invalide: {e}")
+
+        return content or {}
+
+
+class CourseModuleInline(admin.TabularInline):
+    """Inline pour les modules d'une unité"""
+    model = CourseModule
+    extra = 1
+    fields = ['module_number', 'title', 'module_type', 'estimated_duration', 'xp_reward', 'is_locked', 'order']
+    ordering = ['order', 'module_number']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by('order', 'module_number')
+
+
+@admin.register(CourseUnit)
+class CourseUnitAdmin(admin.ModelAdmin):
+    """Administration des unités de cours"""
+
+    list_display = ['title', 'language', 'unit_number', 'modules_count_display', 'order', 'is_active']
+    list_filter = ['language', 'is_active']
+    search_fields = ['title', 'description']
+    ordering = ['language', 'order', 'unit_number']
+    inlines = [CourseModuleInline]
+
+    fieldsets = (
+        (None, {
+            'fields': ('language', 'unit_number', 'title', 'description', 'is_active')
+        }),
+        ('Apparence', {
+            'fields': ('icon', 'color', 'order'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def modules_count_display(self, obj):
+        count = obj.modules.count()
+        return format_html(
+            '<span style="color: {};">{} modules</span>',
+            '#28a745' if count > 0 else '#dc3545',
+            count
+        )
+    modules_count_display.short_description = 'Modules'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('language').prefetch_related('modules')
+
+
+@admin.register(CourseModule)
+class CourseModuleAdmin(admin.ModelAdmin):
+    """Administration des modules de cours"""
+
+    form = CourseModuleForm
+    list_display = ['title', 'unit', 'module_type', 'estimated_duration', 'xp_reward', 'exercises_count_display', 'is_locked']
+    list_filter = ['module_type', 'unit__language', 'is_locked']
+    search_fields = ['title', 'description', 'unit__title']
+    ordering = ['unit', 'order', 'module_number']
+    actions = ['create_sample_exercises']
+
+    fieldsets = (
+        (None, {
+            'fields': ('unit', 'module_number', 'title', 'module_type', 'description')
+        }),
+        ('Configuration', {
+            'fields': ('estimated_duration', 'xp_reward', 'is_locked', 'order')
+        }),
+        ('Contenu et Exercices', {
+            'fields': ('content',),
+            'description': 'Définissez ici les exercices du module au format JSON'
+        }),
+    )
+
+    def exercises_count_display(self, obj):
+        content = obj.content or {}
+        exercises = content.get('exercises', [])
+        count = len(exercises)
+
+        if count == 0:
+            return format_html('<span style="color: #dc3545;">Aucun exercice</span>')
+        else:
+            return format_html(
+                '<span style="color: #28a745;">{} exercice{}</span>',
+                count,
+                's' if count > 1 else ''
+            )
+    exercises_count_display.short_description = 'Exercices'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('unit', 'unit__language')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+
+        # Pré-remplir le contenu avec un exemple si vide
+        if obj and not obj.content:
+            if obj.module_type == 'vocabulary':
+                example_content = {
+                    "exercises": [
+                        {
+                            "type": "multiple_choice",
+                            "question": "Comment dit-on 'Bonjour' en espagnol ?",
+                            "prompt": "Choisissez la bonne réponse",
+                            "options": ["Hola", "Adiós", "Gracias", "Por favor"],
+                            "correct_answer": "Hola",
+                            "explanation": "Hola est la salutation la plus courante en espagnol."
+                        }
+                    ]
+                }
+            elif obj.module_type == 'grammar':
+                example_content = {
+                    "exercises": [
+                        {
+                            "type": "fill_blank",
+                            "question": "Complétez avec l'article correct",
+                            "sentence_with_blank": "_____ casa es muy grande.",
+                            "placeholder": "article",
+                            "correct_answer": ["La"],
+                            "explanation": "'Casa' est féminin, donc on utilise 'la'."
+                        }
+                    ]
+                }
+            else:
+                example_content = {
+                    "exercises": [
+                        {
+                            "type": "multiple_choice",
+                            "question": f"Question d'exemple pour {obj.get_module_type_display()}",
+                            "prompt": "Choisissez la bonne réponse",
+                            "options": ["Option A", "Option B", "Option C", "Option D"],
+                            "correct_answer": "Option A",
+                            "explanation": "Explication de la réponse correcte."
+                        }
+                    ]
+                }
+
+            form.base_fields['content'].initial = json.dumps(example_content, indent=2, ensure_ascii=False)
+
+        return form
+
+    @admin.action(description='Créer des exercices d\'exemple pour les modules sélectionnés')
+    def create_sample_exercises(self, request, queryset):
+        """Action pour créer des exercices d'exemple"""
+        updated = 0
+        for module in queryset:
+            if not module.content or not module.content.get('exercises'):
+                if module.module_type == 'vocabulary':
+                    sample_exercises = [
+                        {
+                            "type": "multiple_choice",
+                            "question": f"Question de vocabulaire pour {module.title}",
+                            "prompt": "Choisissez la bonne réponse",
+                            "options": ["Option A", "Option B", "Option C", "Option D"],
+                            "correct_answer": "Option A",
+                            "explanation": "Explication de la réponse."
+                        },
+                        {
+                            "type": "translation",
+                            "text_to_translate": "Texte à traduire",
+                            "correct_answer": ["Traduction"],
+                            "explanation": "Explication de la traduction."
+                        }
+                    ]
+                elif module.module_type == 'grammar':
+                    sample_exercises = [
+                        {
+                            "type": "fill_blank",
+                            "question": f"Exercice de grammaire pour {module.title}",
+                            "sentence_with_blank": "Phrase avec _____ à compléter.",
+                            "placeholder": "mot manquant",
+                            "correct_answer": ["réponse"],
+                            "explanation": "Explication grammaticale."
+                        }
+                    ]
+                else:
+                    sample_exercises = [
+                        {
+                            "type": "multiple_choice",
+                            "question": f"Question pour {module.title}",
+                            "prompt": "Choisissez la bonne réponse",
+                            "options": ["Option A", "Option B", "Option C", "Option D"],
+                            "correct_answer": "Option A",
+                            "explanation": "Explication de la réponse."
+                        }
+                    ]
+
+                module.content = {"exercises": sample_exercises}
+                module.save()
+                updated += 1
+
+        self.message_user(request, f"{updated} modules mis à jour avec des exercices d'exemple.")
+
+
+@admin.register(ModuleProgress)
+class ModuleProgressAdmin(admin.ModelAdmin):
+    """Administration de la progression des modules"""
+
+    list_display = ['user', 'module_title', 'module_type', 'is_completed', 'score', 'attempts', 'last_accessed']
+    list_filter = ['is_completed', 'module__module_type', 'module__unit__language', 'completion_date']
+    search_fields = ['user__username', 'module__title', 'module__unit__title']
+    readonly_fields = ['last_accessed']
+    date_hierarchy = 'last_accessed'
+
+    fieldsets = (
+        (None, {
+            'fields': ('user', 'module', 'is_completed', 'score', 'attempts')
+        }),
+        ('Temps', {
+            'fields': ('time_spent', 'completion_date', 'last_accessed')
+        }),
+    )
+
+    def module_title(self, obj):
+        return obj.module.title
+    module_title.short_description = 'Module'
+
+    def module_type(self, obj):
+        return obj.module.get_module_type_display()
+    module_type.short_description = 'Type'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'module', 'module__unit')
+
+
+@admin.register(UserCourseProgress)
+class UserCourseProgressAdmin(admin.ModelAdmin):
+    """Administration de la progression globale des utilisateurs"""
+
+    list_display = ['user', 'language', 'level', 'total_xp', 'completion_percentage', 'last_activity_date']
+    list_filter = ['language', 'level', 'started_date']
+    search_fields = ['user__username', 'language__name']
+    readonly_fields = ['started_date', 'last_activity_date']
+    date_hierarchy = 'last_activity_date'
+
+    fieldsets = (
+        (None, {
+            'fields': ('user', 'language', 'current_unit', 'current_module')
+        }),
+        ('Progression', {
+            'fields': ('total_xp', 'level')
+        }),
+        ('Dates', {
+            'fields': ('started_date', 'last_activity_date')
+        }),
+    )
+
+    def completion_percentage(self, obj):
+        percentage = obj.get_completion_percentage()
+        color = '#28a745' if percentage >= 75 else '#ffc107' if percentage >= 25 else '#dc3545'
+        return format_html(
+            '<span style="color: {}; font-weight: bold;">{}</span>',
+            color,
+            f"{percentage}%"
+        )
+    completion_percentage.short_description = 'Completion'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'language', 'current_unit', 'current_module')
