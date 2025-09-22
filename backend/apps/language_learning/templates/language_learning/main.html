@@ -38,6 +38,64 @@
 {% block extra_css %}
 <!-- Linguify Learning Tailwind styles -->
 <link rel="stylesheet" href="{% static 'css/tailwind-learning.css' %}">
+<style>
+/* Exercise Interface Styles */
+.option-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.option-button:hover:not(:disabled) {
+    border-color: var(--linguify-primary) !important;
+    background: rgba(45, 91, 186, 0.05) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.1);
+}
+
+.option-selected {
+    border-color: var(--linguify-primary) !important;
+    background: rgba(45, 91, 186, 0.1) !important;
+    color: var(--linguify-primary) !important;
+    font-weight: 600;
+}
+
+.option-correct {
+    border-color: var(--linguify-success) !important;
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: var(--linguify-success) !important;
+}
+
+.option-incorrect {
+    border-color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+}
+
+.option-disabled {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+}
+
+.exercise-interface {
+    backdrop-filter: blur(3px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.sentence-container input {
+    display: inline-block;
+    min-width: 120px;
+    border: none !important;
+    border-bottom: 2px solid var(--linguify-primary) !important;
+    background: transparent;
+    border-radius: 0;
+    padding: 0.25rem 0.5rem;
+}
+
+.sentence-container input:focus {
+    outline: none;
+    border-bottom-color: var(--linguify-accent) !important;
+    box-shadow: 0 2px 0 var(--linguify-accent);
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}

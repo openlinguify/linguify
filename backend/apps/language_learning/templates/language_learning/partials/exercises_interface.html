@@ -1,0 +1,178 @@
+<!-- Exercise Interface - Linguify Style -->
+<div x-show="showExerciseInterface" x-transition class="exercise-interface"
+     style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000;">
+    <div style="background: var(--linguify-white); min-height: 100vh; padding: 1.5rem;">
+        <div style="width: 100%;">
+
+            <!-- Exercise Header -->
+            <div class="d-flex align-items-center justify-content-between mb-4" style="border-bottom: 2px solid var(--linguify-gray-200); padding-bottom: 0.75rem;">
+                <div class="d-flex align-items-center">
+                    <button @click="closeExercise()" class="btn-navbar btn-navbar-outline me-3">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div>
+                        <h4 class="mb-0" style="color: var(--linguify-gray-800); font-weight: 600;" x-text="currentModule?.title"></h4>
+                        <small style="color: var(--linguify-gray-600);" x-text="currentModule?.module_type_display"></small>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Progress -->
+                    <div class="d-flex align-items-center">
+                        <span style="color: var(--linguify-gray-600); font-size: 0.875rem;" x-text="(currentExerciseIndex + 1) + ' / ' + totalExercises"></span>
+                        <div style="width: 100px; height: 6px; background: var(--linguify-gray-200); border-radius: 20px; margin-left: 0.5rem;">
+                            <div style="height: 100%; background: var(--linguify-gradient); border-radius: 20px; transition: width 0.3s ease;"
+                                 :style="'width: ' + ((currentExerciseIndex + 1) / totalExercises * 100) + '%'"></div>
+                        </div>
+                    </div>
+
+                    <!-- XP Counter -->
+                    <div class="d-flex align-items-center" style="background: rgba(245, 158, 11, 0.1); color: #d97706; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600;">
+                        <i class="bi bi-star-fill me-1"></i>
+                        <span x-text="earnedXP + ' XP'"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercise Content -->
+            <div class="exercise-content" style="max-width: 800px; margin: 0 auto;">
+
+                <!-- Multiple Choice Exercise -->
+                <div x-show="currentExercise?.type === 'multiple_choice'" class="exercise-type">
+                    <div class="text-center mb-4">
+                        <h5 style="color: var(--linguify-gray-800); margin-bottom: 1rem;" x-text="currentExercise?.question"></h5>
+                        <p style="color: var(--linguify-gray-600); font-size: 1.1rem;" x-text="currentExercise?.prompt"></p>
+                    </div>
+
+                    <div class="exercise-options">
+                        <template x-for="(option, index) in currentExercise?.options" :key="index">
+                            <button @click="selectOption(index)"
+                                    class="option-button w-100 mb-3 p-3 text-start"
+                                    :class="getOptionClass(index)"
+                                    style="border: 2px solid var(--linguify-gray-200); border-radius: 12px; background: var(--linguify-white); transition: all 0.3s ease;"
+                                    :disabled="answered">
+                                <span style="font-weight: 500;" x-text="option"></span>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Fill in the Blank Exercise -->
+                <div x-show="currentExercise?.type === 'fill_blank'" class="exercise-type">
+                    <div class="text-center mb-4">
+                        <h5 style="color: var(--linguify-gray-800); margin-bottom: 1rem;" x-text="currentExercise?.question"></h5>
+                    </div>
+
+                    <div class="sentence-container text-center mb-4">
+                        <p style="font-size: 1.2rem; line-height: 2;" x-html="currentExercise?.sentence_with_blank"></p>
+                    </div>
+
+                    <div style="max-width: 400px; margin: 0 auto;">
+                        <input type="text"
+                               x-model="userAnswer"
+                               @keyup.enter="checkAnswer()"
+                               class="form-control form-control-lg text-center"
+                               :placeholder="currentExercise?.placeholder || 'Votre réponse...'"
+                               :disabled="answered"
+                               style="border: 2px solid var(--linguify-gray-200); border-radius: 12px; padding: 1rem;">
+                    </div>
+                </div>
+
+                <!-- Translation Exercise -->
+                <div x-show="currentExercise?.type === 'translation'" class="exercise-type">
+                    <div class="text-center mb-4">
+                        <h5 style="color: var(--linguify-gray-800); margin-bottom: 1rem;">Traduisez cette phrase</h5>
+                        <div style="background: var(--linguify-gray-50); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                            <p style="font-size: 1.2rem; color: var(--linguify-gray-800); margin: 0;" x-text="currentExercise?.text_to_translate"></p>
+                        </div>
+                    </div>
+
+                    <div style="max-width: 500px; margin: 0 auto;">
+                        <textarea x-model="userAnswer"
+                                  @keyup.ctrl.enter="checkAnswer()"
+                                  class="form-control"
+                                  rows="3"
+                                  :placeholder="'Tapez votre traduction...'"
+                                  :disabled="answered"
+                                  style="border: 2px solid var(--linguify-gray-200); border-radius: 12px; padding: 1rem; resize: none;"></textarea>
+                        <small style="color: var(--linguify-gray-500);">Appuyez sur Ctrl + Entrée pour valider</small>
+                    </div>
+                </div>
+
+                <!-- Audio Exercise -->
+                <div x-show="currentExercise?.type === 'audio'" class="exercise-type">
+                    <div class="text-center mb-4">
+                        <h5 style="color: var(--linguify-gray-800); margin-bottom: 1rem;">Écoutez et répétez</h5>
+
+                        <div class="audio-player mb-4">
+                            <button @click="playAudio()" class="btn-navbar btn-navbar-primary" style="border-radius: 50%; width: 80px; height: 80px;">
+                                <i class="bi bi-play-fill fs-2" x-show="!audioPlaying"></i>
+                                <i class="bi bi-pause-fill fs-2" x-show="audioPlaying"></i>
+                            </button>
+                            <p style="color: var(--linguify-gray-600); margin-top: 1rem;">Cliquez pour écouter</p>
+                        </div>
+                    </div>
+
+                    <div style="max-width: 500px; margin: 0 auto;">
+                        <input type="text"
+                               x-model="userAnswer"
+                               @keyup.enter="checkAnswer()"
+                               class="form-control form-control-lg text-center"
+                               placeholder="Tapez ce que vous entendez..."
+                               :disabled="answered"
+                               style="border: 2px solid var(--linguify-gray-200); border-radius: 12px; padding: 1rem;">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="exercise-actions text-center mt-5">
+                <template x-if="!answered">
+                    <button @click="checkAnswer()"
+                            class="btn-navbar btn-navbar-primary px-4 py-2"
+                            :disabled="!canSubmit"
+                            style="min-width: 120px;">
+                        Vérifier
+                    </button>
+                </template>
+
+                <template x-if="answered">
+                    <button @click="nextExercise()"
+                            class="btn-navbar btn-navbar-primary px-4 py-2"
+                            style="min-width: 120px;">
+                        <span x-show="currentExerciseIndex < totalExercises - 1">Continuer</span>
+                        <span x-show="currentExerciseIndex >= totalExercises - 1">Terminer</span>
+                    </button>
+                </template>
+            </div>
+
+            <!-- Feedback -->
+            <div x-show="answered" x-transition class="feedback-container mt-4" style="max-width: 600px; margin: 0 auto;">
+                <div class="feedback-card p-4"
+                     :style="isCorrect ? 'background: rgba(16, 185, 129, 0.1); border: 2px solid var(--linguify-success); border-radius: 12px;' : 'background: rgba(239, 68, 68, 0.1); border: 2px solid #ef4444; border-radius: 12px;'">
+
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="me-2 fs-4"
+                           :class="isCorrect ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"
+                           :style="isCorrect ? 'color: var(--linguify-success);' : 'color: #ef4444;'"></i>
+                        <h6 class="mb-0"
+                            :style="isCorrect ? 'color: var(--linguify-success);' : 'color: #ef4444;'"
+                            x-text="isCorrect ? 'Correct !' : 'Incorrect'"></h6>
+                    </div>
+
+                    <div x-show="!isCorrect && currentExercise?.correct_answer">
+                        <p style="color: var(--linguify-gray-700); margin: 0;">
+                            <strong>Bonne réponse :</strong> <span x-text="currentExercise?.correct_answer"></span>
+                        </p>
+                    </div>
+
+                    <div x-show="currentExercise?.explanation">
+                        <p style="color: var(--linguify-gray-600); margin-top: 0.5rem; margin-bottom: 0;" x-text="currentExercise?.explanation"></p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

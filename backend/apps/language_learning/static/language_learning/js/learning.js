@@ -16,11 +16,30 @@ document.addEventListener('alpine:init', () => {
         apiUrls: {},
         currentView: 'units', // 'units', 'lessons', 'unit-detail' - Start with units
 
+        // Exercise Interface State
+        showExerciseInterface: false,
+        currentModule: null,
+        exercises: [],
+        currentExerciseIndex: 0,
+        totalExercises: 0,
+        earnedXP: 0,
+        answered: false,
+        isCorrect: false,
+        selectedOption: null,
+        userAnswer: '',
+        audioPlaying: false,
+
         // Initialize
         init() {
             console.log('🎯 Learning Dashboard initialized');
             this.loadConfig();
             this.loadDashboardData();
+
+            // Listen for module exercise start events
+            window.addEventListener('start-module-exercise', (event) => {
+                console.log('🎮 Starting exercise for module:', event.detail.module);
+                this.startExercise(event.detail.module);
+            });
         },
 
         // Load configuration from the page
@@ -134,6 +153,185 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+        // Exercise Interface Computed Properties
+        get currentExercise() {
+            return this.exercises[this.currentExerciseIndex] || null;
+        },
+
+        get canSubmit() {
+            if (!this.currentExercise) return false;
+
+            switch (this.currentExercise.type) {
+                case 'multiple_choice':
+                    return this.selectedOption !== null;
+                case 'fill_blank':
+                case 'translation':
+                case 'audio':
+                    return this.userAnswer.trim().length > 0;
+                default:
+                    return false;
+            }
+        },
+
+        // Exercise Interface Methods
+        startExercise(module) {
+            this.currentModule = module;
+            this.showExerciseInterface = true;
+            this.loadExercises(module.id);
+        },
+
+        async loadExercises(moduleId) {
+            // Pour l'instant, simulons des exercices
+            this.exercises = this.generateSampleExercises(moduleId);
+            this.totalExercises = this.exercises.length;
+            this.currentExerciseIndex = 0;
+            this.earnedXP = 0;
+            this.resetExerciseState();
+        },
+
+        generateSampleExercises(moduleId) {
+            // Génération d'exercices d'exemple basés sur le type de module
+            const exercises = [];
+
+            // Exercice à choix multiples
+            exercises.push({
+                type: 'multiple_choice',
+                question: 'Comment dit-on "Bonjour" en espagnol ?',
+                prompt: 'Choisissez la bonne réponse',
+                options: ['Hola', 'Adiós', 'Gracias', 'Por favor'],
+                correct_answer: 'Hola',
+                explanation: '"Hola" est la façon la plus courante de dire bonjour en espagnol.'
+            });
+
+            // Exercice de complétion
+            exercises.push({
+                type: 'fill_blank',
+                question: 'Complétez la phrase',
+                sentence_with_blank: 'Me llamo _____ y tengo 25 ans.',
+                placeholder: 'votre nom',
+                correct_answer: ['María', 'Juan', 'Ana', 'Carlos'],
+                explanation: 'Cette phrase signifie "Je m\'appelle _____ et j\'ai 25 ans."'
+            });
+
+            // Exercice de traduction
+            exercises.push({
+                type: 'translation',
+                text_to_translate: 'I am learning Spanish',
+                correct_answer: ['Estoy aprendiendo español', 'Aprendo español'],
+                explanation: 'Cette phrase peut se traduire de deux façons en espagnol selon le contexte.'
+            });
+
+            // Exercice audio (simulé)
+            exercises.push({
+                type: 'audio',
+                audio_url: '/static/audio/hola.mp3',
+                correct_answer: ['hola', 'Hola'],
+                explanation: 'Vous avez entendu le mot "hola" qui signifie "bonjour".'
+            });
+
+            return exercises;
+        },
+
+        selectOption(index) {
+            if (this.answered) return;
+            this.selectedOption = index;
+        },
+
+        getOptionClass(index) {
+            if (!this.answered) {
+                return this.selectedOption === index ? 'option-selected' : '';
+            }
+
+            const isCorrectOption = this.currentExercise.options[index] === this.currentExercise.correct_answer;
+            const isSelected = this.selectedOption === index;
+
+            if (isCorrectOption) return 'option-correct';
+            if (isSelected && !isCorrectOption) return 'option-incorrect';
+            return 'option-disabled';
+        },
+
+        checkAnswer() {
+            if (this.answered) return;
+
+            let userResponse = '';
+            let correct = false;
+
+            switch (this.currentExercise.type) {
+                case 'multiple_choice':
+                    userResponse = this.currentExercise.options[this.selectedOption];
+                    correct = userResponse === this.currentExercise.correct_answer;
+                    break;
+
+                case 'fill_blank':
+                case 'translation':
+                case 'audio':
+                    userResponse = this.userAnswer.trim().toLowerCase();
+                    const correctAnswers = Array.isArray(this.currentExercise.correct_answer)
+                        ? this.currentExercise.correct_answer
+                        : [this.currentExercise.correct_answer];
+
+                    correct = correctAnswers.some(answer =>
+                        answer.toLowerCase() === userResponse
+                    );
+                    break;
+            }
+
+            this.isCorrect = correct;
+            this.answered = true;
+
+            if (correct) {
+                this.earnedXP += 20;
+            }
+
+            console.log('Exercise result:', { correct, userResponse, earnedXP: this.earnedXP });
+        },
+
+        nextExercise() {
+            if (this.currentExerciseIndex < this.totalExercises - 1) {
+                this.currentExerciseIndex++;
+                this.resetExerciseState();
+            } else {
+                this.completeModule();
+            }
+        },
+
+        resetExerciseState() {
+            this.answered = false;
+            this.isCorrect = false;
+            this.selectedOption = null;
+            this.userAnswer = '';
+            this.audioPlaying = false;
+        },
+
+        async completeModule() {
+            console.log('Module completed!', {
+                moduleId: this.currentModule.id,
+                totalXP: this.earnedXP,
+                score: Math.round((this.earnedXP / (this.totalExercises * 20)) * 100)
+            });
+
+            alert(`Module terminé ! Vous avez gagné ${this.earnedXP} XP !`);
+            this.closeExercise();
+        },
+
+        closeExercise() {
+            this.showExerciseInterface = false;
+            this.currentModule = null;
+            this.exercises = [];
+            this.currentExerciseIndex = 0;
+            this.totalExercises = 0;
+            this.earnedXP = 0;
+            this.resetExerciseState();
+        },
+
+        playAudio() {
+            this.audioPlaying = true;
+            setTimeout(() => {
+                this.audioPlaying = false;
+            }, 2000);
+            console.log('Playing audio:', this.currentExercise?.audio_url);
+        },
+
         // Get language flag emoji
         getLanguageFlag(langCode) {
             const flags = {
@@ -180,6 +378,7 @@ document.addEventListener('alpine:init', () => {
         }
     }));
 
+
     // Module Card Component
     Alpine.data('moduleCard', (module) => ({
         module: module,
@@ -202,15 +401,15 @@ document.addEventListener('alpine:init', () => {
 
         // Handle module click
         async selectModule() {
+            console.log('🔘 Button clicked! Module:', this.module.title); // Debug log
+
             if (this.module.is_unlocked) {
                 console.log('📖 Module selected:', this.module.id);
 
-                // Show modal
-                const modal = new bootstrap.Modal(document.getElementById('moduleModal'));
-                modal.show();
-
-                // TODO: Load module content via API
-                alert('Module démarré ! (Implémentation en cours)');
+                // Dispatch event to trigger exercise start
+                window.dispatchEvent(new CustomEvent('start-module-exercise', {
+                    detail: { module: this.module }
+                }));
             } else {
                 alert('Ce module est verrouillé. Complétez les modules précédents pour y accéder.');
             }
