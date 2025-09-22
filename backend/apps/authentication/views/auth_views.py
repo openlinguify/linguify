@@ -26,11 +26,14 @@ class LoginView(auth_views.LoginView):
 
     def get_context_data(self, **kwargs):
         """Add email from URL parameter to context"""
+        logger.info(f"LOGIN VIEW: GET context for {self.request.path}")
         context = super().get_context_data(**kwargs)
 
         # Récupérer l'email depuis les paramètres URL
         email = self.request.GET.get('email', '')
         from_register = self.request.GET.get('from', '') == 'register'
+
+        logger.info(f"LOGIN: Email prefill = '{email}', from_register = {from_register}")
 
         context['prefill_email'] = email
         context['from_register'] = from_register
@@ -51,16 +54,19 @@ class LoginView(auth_views.LoginView):
     def form_valid(self, form):
         """Override to check if user is verified"""
         user = form.get_user()
-        
+        logger.info(f"LOGIN ATTEMPT: User {user.username} (email: {user.email})")
+
         if not user.is_active:
             # User exists but is not verified
+            logger.warning(f"LOGIN BLOCKED: User {user.username} not verified")
             messages.error(
-                self.request, 
+                self.request,
                 _('Your email address is not verified yet. Please check your email and click the verification link.')
             )
             return redirect(f'/auth/email-verification-waiting/?email={user.email}')
-        
+
         # User is verified, proceed with normal login
+        logger.info(f"LOGIN SUCCESS: User {user.username} logged in successfully")
         response = super().form_valid(form)
         messages.success(self.request, _('Welcome back!'))
         return response
@@ -69,17 +75,21 @@ class RegisterView(View):
     """Register View"""
     
     def get(self, request):
+        logger.info(f"REGISTER VIEW: GET for {request.path}")
         form = RegisterForm()
         return render(request, 'authentication/register.html', {'form': form})
     
     def post(self, request):
+        logger.info(f"REGISTER POST: Attempt for {request.path}")
         form = RegisterForm(request.POST)
 
         # Vérifier si le formulaire indique une redirection vers login
         if not form.is_valid():
+            logger.warning(f"REGISTER FORM INVALID: {form.errors}")
             # Vérifier si c'est une erreur d'email dupliqué qui nécessite une redirection
             if hasattr(form, '_redirect_to_login') and form._redirect_to_login:
                 duplicate_email = getattr(form, '_duplicate_email', '')
+                logger.info(f"DUPLICATE EMAIL REDIRECT: {duplicate_email} → login page")
                 # Rediriger vers la page de connexion avec l'email pré-rempli
                 # Préserver la langue actuelle de l'utilisateur
                 current_language = translation.get_language()
@@ -91,7 +101,9 @@ class RegisterView(View):
 
                 # Construire l'URL de redirection avec la langue actuelle
                 login_url = reverse('auth:login')
-                return redirect(f'{login_url}?email={duplicate_email}&from=register')
+                redirect_url = f'{login_url}?email={duplicate_email}&from=register'
+                logger.info(f"REDIRECTING TO: {redirect_url}")
+                return redirect(redirect_url)
 
         if form.is_valid():
             client_ip = EmailVerificationRateLimiter.get_client_ip(request)

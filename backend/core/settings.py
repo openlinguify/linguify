@@ -234,6 +234,7 @@ AUTH0_TOKEN_CACHE_TIMEOUT = 3600  # 1 heure en secondes
 AUTH0_USERINFO_CACHE_TIMEOUT = 3600  # 1 heure en secondes 
 
 MIDDLEWARE = [
+    'apps.authentication.middleware.debug_middleware.DebugMiddleware',  # Debug logging - FIRST
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
