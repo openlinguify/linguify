@@ -290,12 +290,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     is_coach = models.BooleanField(default=False)
     interface_language = models.CharField(max_length=20, choices=settings.LANGUAGES, default='en', verbose_name=_("language"), help_text=_("The language in which the user wants to see the interface."), null=True, blank=True,)
-    timezone = TimeZoneField(
-        choices_display="WITH_GMT_OFFSET",
-        use_pytz=False,
-        default=settings.TIME_ZONE,
-        help_text=_("The timezone in which the user wants to see times."),
-    )
+    timezone = TimeZoneField(choices_display="WITH_GMT_OFFSET", use_pytz=False, default=settings.TIME_ZONE, help_text=_("The timezone in which the user wants to see times."))
     is_device = models.BooleanField(_("device"), default=False, help_text=_("Whether the user is a device or a real user."))
     theme = models.CharField(max_length=10, default='light')
     # settings fields
