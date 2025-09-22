@@ -37,7 +37,7 @@ class NotebookMainView(TemplateView):
     """
     Vue principale pour l'interface notebook
     """
-    template_name = 'notebook/main.html'
+    template_name = 'notebook/base.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
