@@ -88,7 +88,6 @@ urlpatterns = [
     path('api/v1/revision/', include('apps.revision.urls', namespace='revision')),
     path('api/v1/notebook/', include('apps.notebook.urls', namespace='notebook')),
     path('documents/', include('apps.documents.urls', namespace='documents')),
-    path('notebook/', include('apps.notebook.urls', namespace='notebook')),
     path('revision/', include('apps.revision.urls', namespace='revision_web')),
     path('learning/', include('apps.course.urls', namespace='course')),
     path('quizz/', include('apps.quizz.urls_web', namespace='quizz_web')),
