@@ -1,5 +1,6 @@
 <!-- Units List - API Version -->
-<div x-show="!activeUnit" x-transition class="fade-in">
+<div x-show="!activeUnit" x-transition class="fade-in" style="background: var(--linguify-gray-50); min-height: 100vh; padding: 1.5rem;">
+    <div style="max-width: 1200px; margin: 0 auto;">
     <!-- Loading State -->
     <div x-show="loading" class="text-center p-4">
         <div class="spinner-border text-primary" role="status">
@@ -8,64 +9,48 @@
         <p class="mt-2 text-muted">Chargement des unités...</p>
     </div>
 
-    <!-- Units Grid -->
-    <div x-show="!loading && courseUnits.length > 0" class="row">
+    <!-- Units List -->
+    <div x-show="!loading && courseUnits.length > 0" class="units-list">
         <template x-for="unit in courseUnits" :key="unit.id">
-            <div class="col-md-6 mb-4">
-                <div x-data="unitCard(unit, $data)"
-                     class="unit-card card h-100"
-                     :class="{ 'completed': unit.progress_percentage === 100 }"
-                     @click="selectUnit()">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="unit-icon me-3" :style="'background-color: ' + unit.color">
-                                <span x-text="unit.icon" class="fs-3"></span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h5 class="card-title mb-1" x-text="unit.title"></h5>
-                                <p class="card-text text-muted small mb-2" x-text="unit.description"></p>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-light text-dark">
-                                        Unité <span x-text="unit.unit_number"></span>
-                                    </span>
-                                    <span class="badge bg-primary">
-                                        <span x-text="unit.completed_modules"></span>/<span x-text="unit.modules_count"></span> modules
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+            <div x-data="unitCard(unit, $data)"
+                 class="unit-card"
+                 :class="{
+                     'completed': unit.progress_percentage === 100,
+                     'active': unit.progress_percentage > 0 && unit.progress_percentage < 100
+                 }"
+                 @click="selectUnit()">
 
-                        <!-- Progress Bar -->
-                        <div class="mb-2">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <small class="text-muted">Progression</small>
-                                <small class="text-muted">
-                                    <span x-text="unit.progress_percentage"></span>%
-                                </small>
-                            </div>
-                            <div class="unit-progress">
-                                <div class="progress-bar"
-                                     :class="progressClass"
-                                     :style="'width: ' + progressWidth"></div>
-                            </div>
-                        </div>
-
-                        <!-- Action Button -->
-                        <div class="text-end">
-                            <template x-if="unit.progress_percentage === 100">
-                                <span class="text-success">
-                                    <i class="bi bi-check-circle-fill me-1"></i>
-                                    Terminé
-                                </span>
-                            </template>
-                            <template x-if="unit.progress_percentage < 100">
-                                <button class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-play-circle me-1"></i>
-                                    <span x-text="unit.progress_percentage > 0 ? 'Continuer' : 'Commencer'"></span>
-                                </button>
-                            </template>
-                        </div>
+                <!-- Unit Header -->
+                <div class="unit-header">
+                    <div class="unit-number" x-text="'Unité ' + unit.unit_number"></div>
+                    <div class="unit-modules-count">
+                        <i class="bi bi-collection"></i>
+                        <span x-text="unit.completed_modules + '/' + unit.modules_count"></span>
                     </div>
+                </div>
+
+                <!-- Unit Content -->
+                <div class="unit-title" x-text="unit.title"></div>
+                <div class="unit-description" x-text="unit.description"></div>
+
+                <!-- Progress Bar -->
+                <div class="unit-progress">
+                    <div class="unit-progress-bar"
+                         :style="'width: ' + unit.progress_percentage + '%'"></div>
+                </div>
+
+                <!-- Progress Text -->
+                <div class="unit-progress-text">
+                    <template x-if="unit.progress_percentage === 100">
+                        <span><i class="bi bi-check-circle-fill"></i> Terminé</span>
+                    </template>
+                    <template x-if="unit.progress_percentage > 0 && unit.progress_percentage < 100">
+                        <span><i class="bi bi-clock-history"></i> <span x-text="unit.progress_percentage + '%'"></span> terminé</span>
+                    </template>
+                    <template x-if="unit.progress_percentage === 0">
+                        <span><i class="bi bi-star"></i> Nouveau</span>
+                    </template>
+                </div>
                 </div>
             </div>
         </template>
@@ -75,5 +60,6 @@
     <div x-show="!loading && courseUnits.length === 0" class="text-center p-4">
         <i class="bi bi-collection text-muted fs-1"></i>
         <p class="text-muted mt-2">Aucune unité de cours disponible pour cette langue.</p>
+    </div>
     </div>
 </div>
