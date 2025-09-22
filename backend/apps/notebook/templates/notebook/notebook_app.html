@@ -1,5 +1,6 @@
 {% extends "saas_web/base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}Notebook - Notes{% endblock %}
 
@@ -14,250 +15,26 @@
 
 {% block extra_head %}
 <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 {% endblock %}
 
 {% block content %}
 {% csrf_token %}
+
+<!-- Main notebook app - FAST LOAD -->
 <div class="notebook-app" x-data="notebookApp()" x-init="init()">
     <div class="notebook-layout">
-        <!-- Sidebar gauche avec la liste des notes -->
-        <div class="notes-sidebar">
-            <!-- Header de la sidebar -->
-            <div class="sidebar-header">
-                <input type="text"
-                       x-model="searchQuery"
-                       @input.debounce.300ms="loadNotes()"
-                       placeholder="Search notes..."
-                       class="sidebar-search">
-            </div>
+        <!-- Sidebar Component -->
+        {% include 'components/notebook_sidebar.html' %}
 
-            <!-- Liste des notes -->
-            <div class="notes-list">
-            <!-- Loading state -->
-            <div class="loading-state" x-show="isLoading">
-                <i class="fas fa-spinner fa-spin"></i>
-                Loading notes...
-            </div>
-
-            <!-- Empty state -->
-            <div class="empty-state" x-show="!isLoading && notes.length === 0">
-                <i class="fas fa-sticky-note"></i>
-                <h3>No notes found</h3>
-                <p>Start by creating your first note!</p>
-                <button @click="showCreateModal = true" class="btn btn-primary">
-                    <i class="fas fa-plus"></i>
-                    Create a note
-                </button>
-            </div>
-
-            <!-- Notes loop for sidebar -->
-            <template x-for="note in notes" :key="note.id">
-                <div class="note-list-item"
-                     :class="{ 'selected': currentNote && currentNote.id === note.id, 'pinned': note.is_pinned }"
-                     @click="openNote(note)">
-
-                    <!-- Titre de la note -->
-                    <div class="note-list-title" x-text="note.title || 'Untitled'"></div>
-
-                    <!-- Aperçu du contenu -->
-                    <div class="note-list-preview" x-text="note.content || 'No content'"></div>
-
-                    <!-- Métadonnées -->
-                    <div class="note-list-meta">
-                        <div class="note-tags">
-                            <span x-show="note.note_type" class="note-tag type" x-text="note.note_type"></span>
-                        </div>
-                        <span class="note-date" x-text="timeAgo(note.updated_at)"></span>
-                    </div>
-                </div>
-            </template>
-            </div>
-        </div>
-
-        <!-- Zone principale pour l'édition/visualisation -->
-        <div class="note-content-area">
-            <!-- Pas de note sélectionnée -->
-            <div x-show="!currentNote" class="note-editor empty-state">
-                <i class="fas fa-file-alt" style="font-size: 3rem; color: #d1d5db;"></i>
-                <h2 style="color: #6b7280; margin-top: 1rem;">Select a note to view</h2>
-                <p style="color: #9ca3af;">Choose a note from the sidebar or create a new one</p>
-                <button @click="showCreateModal = true" class="btn btn-primary" style="margin-top: 1rem;">
-                    <i class="fas fa-plus"></i>
-                    Create New Note
-                </button>
-            </div>
-
-            <!-- Note sélectionnée -->
-            <div x-show="currentNote" class="note-editor">
-                <!-- Header de la note -->
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 2rem;">
-                    <div style="flex: 1;">
-                        <input x-model="currentNote.title"
-                               @blur="updateNote()"
-                               type="text"
-                               placeholder="Note title"
-                               style="font-size: 2rem; font-weight: bold; border: none; outline: none; width: 100%; background: transparent;">
-                    </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button @click="togglePin(currentNote)" class="btn btn-outline" :title="currentNote.is_pinned ? 'Unpin' : 'Pin'">
-                            <i :class="currentNote.is_pinned ? 'fas fa-thumbtack' : 'far fa-thumbtack'"></i>
-                        </button>
-                        <button @click="deleteNote(currentNote.id)" class="btn btn-outline">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Métadonnées -->
-                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-                    <select x-model="currentNote.language" @change="updateNote()" style="padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;">
-                        <option value="">Language</option>
-                        <option value="fr">French</option>
-                        <option value="en">English</option>
-                        <option value="es">Spanish</option>
-                        <option value="de">German</option>
-                    </select>
-                    <select x-model="currentNote.difficulty" @change="updateNote()" style="padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;">
-                        <option value="">Difficulty</option>
-                        <option value="BEGINNER">Beginner</option>
-                        <option value="INTERMEDIATE">Intermediate</option>
-                        <option value="ADVANCED">Advanced</option>
-                    </select>
-                    <select x-model="currentNote.note_type" @change="updateNote()" style="padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;">
-                        <option value="NOTE">Note</option>
-                        <option value="VOCABULARY">Vocabulary</option>
-                        <option value="GRAMMAR">Grammar</option>
-                        <option value="EXPRESSION">Expression</option>
-                    </select>
-                </div>
-
-                <!-- Contenu principal -->
-                <div style="margin-bottom: 2rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Content</label>
-                    <textarea x-model="currentNote.content"
-                              @blur="updateNote()"
-                              placeholder="Write your note here..."
-                              style="width: 100%; min-height: 200px; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical;"></textarea>
-                </div>
-
-                <!-- Traduction -->
-                <div style="margin-bottom: 2rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Translation</label>
-                    <textarea x-model="currentNote.translation"
-                              @blur="updateNote()"
-                              placeholder="Add translation..."
-                              style="width: 100%; min-height: 100px; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical;"></textarea>
-                </div>
-
-                <!-- Prononciation -->
-                <div style="margin-bottom: 2rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Pronunciation</label>
-                    <input x-model="currentNote.pronunciation"
-                           @blur="updateNote()"
-                           type="text"
-                           placeholder="Add pronunciation guide..."
-                           style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px;">
-                </div>
-            </div>
-        </div>
+        <!-- Editor Component -->
+        {% include 'components/notebook_editor.html' %}
     </div>
 
-    <!-- Modal de création/édition -->
-    <div class="modal" x-show="showCreateModal || showEditModal" x-transition>
-        <div class="modal-backdrop" @click="closeModals()"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 x-text="showEditModal ? 'Modifier la note' : 'Nouvelle note'"></h3>
-                <button @click="closeModals()" class="modal-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <form @submit.prevent="saveNote()" class="note-form">
-                <div class="form-group">
-                    <label>Titre</label>
-                    <input
-                        type="text"
-                        x-model="currentNote.title"
-                        placeholder="Titre de la note"
-                        required
-                        class="form-input"
-                    >
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Langue</label>
-                        <select x-model="currentNote.language" class="form-select">
-                            <option value="">Sélectionner</option>
-                            <option value="fr">Français</option>
-                            <option value="en">Anglrerferfais</option>
-                            <option value="es">Espagnol</option>
-                            <option value="de">Allemand</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Difficulté</label>
-                        <select x-model="currentNote.difficulty" class="form-select">
-                            <option value="">Sélectionner</option>
-                            <option value="BEGINNER">Débutant</option>
-                            <option value="INTERMEDIATE">Intermédiaire</option>
-                            <option value="ADVANCED">Avancé</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Contenu</label>
-                    <textarea
-                        x-model="currentNote.content"
-                        placeholder="Contenu de la note"
-                        rows="6"
-                        class="form-textarea"
-                    ></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Traduction</label>
-                    <textarea
-                        x-model="currentNote.translation"
-                        placeholder="Traduction (optionnel)"
-                        rows="3"
-                        class="form-textarea"
-                    ></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Prononciation</label>
-                    <input
-                        type="text"
-                        x-model="currentNote.pronunciation"
-                        placeholder="Guide de prononciation"
-                        class="form-input"
-                    >
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" @click="closeModals()" class="btn btn-secondary">
-                        Annuler
-                    </button>
-                    <button type="submit" class="btn btn-primary" :disabled="isSaving">
-                        <span x-show="!isSaving">
-                            <i class="fas fa-save"></i>
-                            <span x-text="showEditModal ? 'Modifier' : 'Créer'"></span>
-                        </span>
-                        <span x-show="isSaving">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            Enregistrement...
-                        </span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- Modal Component -->
+    {% include 'components/notebook_modal.html' %}
 </div>
 
+<!-- Scripts chargés en parallèle pour vitesse F1 -->
 <script src="{% static 'notebook/js/notebook.js' %}"></script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 {% endblock %}

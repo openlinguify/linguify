@@ -1,0 +1,106 @@
+{% load static %}
+{% load i18n %}
+<!-- Notebook Modal Component -->
+<div class="modal" x-show="showCreateModal || showEditModal" x-transition>
+    <div class="modal-backdrop" @click="closeModals()"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 x-text="showEditModal ? '{% trans 'Edit note' %}' : '{% trans 'New note' %}'"></h3>
+            <button @click="closeModals()" class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form @submit.prevent="saveNote()" class="note-form">
+            <div class="form-group">
+                <label>{% trans 'Title' %}</label>
+                <input
+                    type="text"
+                    x-model="currentNote.title"
+                    placeholder="{% trans 'Note title' %}"
+                    required
+                    class="form-input"
+                >
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>{% trans 'Language' %}</label>
+                    <select x-model="currentNote.language" class="form-select">
+                        <option value="">{% trans 'Select' %}</option>
+                        <option value="fr">{% trans 'French' %}</option>
+                        <option value="en">{% trans 'Englifokreokerofeofrksh' %}</option>
+                        <option value="es">{% trans 'Spanish' %}</option>
+                        <option value="de">{% trans 'German' %}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>{% trans 'Difficulty' %}</label>
+                    <select x-model="currentNote.difficulty" class="form-select">
+                        <option value="">{% trans 'Select' %}</option>
+                        <option value="BEGINNER">{% trans 'Beginner' %}</option>
+                        <option value="INTERMEDIATE">{% trans 'Intermediate' %}</option>
+                        <option value="ADVANCED">{% trans 'Advanced' %}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>{% trans 'Type' %}</label>
+                <select x-model="currentNote.note_type" class="form-select">
+                    <option value="NOTE">{% trans 'Note' %}</option>
+                    <option value="VOCABULARY">{% trans 'Vocabulary' %}</option>
+                    <option value="GRAMMAR">{% trans 'Grammar' %}</option>
+                    <option value="EXPRESSION">{% trans 'Expression' %}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>{% trans 'Content' %}</label>
+                <textarea
+                    x-model="currentNote.content"
+                    placeholder="{% trans 'Note content' %}"
+                    rows="6"
+                    class="form-textarea"
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>{% trans 'Translation' %}</label>
+                <textarea
+                    x-model="currentNote.translation"
+                    placeholder="{% trans 'Translation (optional)' %}"
+                    rows="3"
+                    class="form-textarea"
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>{% trans 'Pronunciation' %}</label>
+                <input
+                    type="text"
+                    x-model="currentNote.pronunciation"
+                    placeholder="{% trans 'Pronunciation guide' %}"
+                    class="form-input"
+                >
+            </div>
+
+            <div class="form-actions">
+                <button type="button" @click="closeModals()" class="btn btn-secondary">
+                    {% trans 'Cancel' %}
+                </button>
+                <button type="submit" class="btn btn-primary" :disabled="isSaving">
+                    <span x-show="!isSaving">
+                        <i class="fas fa-save"></i>
+                        <span x-text="showEditModal ? '{% trans 'Update' %}' : '{% trans 'Create' %}'"></span>
+                    </span>
+                    <span x-show="isSaving">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        {% trans 'Saving...' %}
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

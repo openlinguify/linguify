@@ -235,10 +235,16 @@ function notebookApp() {
             }
         },
 
+        openCreateModal() {
+            this.currentNote = { ...this.emptyNote };
+            this.showCreateModal = true;
+            this.showEditModal = false;
+        },
+
         closeModals() {
             this.showCreateModal = false;
             this.showEditModal = false;
-            this.currentNote = { ...this.emptyNote };
+            this.currentNote = null;
         },
 
         getCsrfToken() {

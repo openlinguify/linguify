@@ -1,4 +1,4 @@
-/* Notebook Application Styles */
+/* Notebook Application Styles - PERFORMANCE OPTIMIZED */
 
 /* Layout principal avec sidebar */
 .notebook-layout {
@@ -10,7 +10,7 @@
 /* Sidebar gauche pour la liste des notes */
 .notes-sidebar {
     width: 350px;
-    background: #c41010;
+    background: #ffffff;
     border-right: 1px solid #e5e7eb;
     display: flex;
     flex-direction: column;

@@ -5,7 +5,7 @@
     <!-- Gauche: Navigation + Actions principales -->
     <div class="navbar-section">
         <!-- New Note Button - Left side -->
-        <button @click="showCreateModal = true" class="btn-navbar btn-navbar-primary">
+        <button @click="openCreateModal()" class="btn-navbar btn-navbar-primary">
             <i class="bi bi-plus-lg"></i>
             <span class="d-none d-xl-inline">{% trans 'New Note' %}</span>
         </button>
