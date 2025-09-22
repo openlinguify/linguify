@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 <!-- Language Learning Navbar - Linguify Style -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+<nav class="navbar navbar-expand-lg" style="background: var(--linguify-white); border-bottom: 1px solid var(--linguify-gray-200);">
   <div class="container-fluid">
     <!-- Gauche: Navigation + Actions principales -->
     <div class="d-flex align-items-center">
@@ -9,13 +9,17 @@
 
         <!-- Navigation tabs -->
         <div class="nav-tabs-group">
-            <a href="{% url 'language_learning:home' %}"
-               class="nav-tab active">
+            <a @click="currentView = 'units'; activeUnit = null;"
+               class="nav-tab"
+               :class="{ 'active': currentView === 'units' }"
+               style="cursor: pointer;">
                 <i class="bi bi-house"></i>
                 {% trans "Dashboard" %}
             </a>
-            <a href="{% url 'language_learning:home' %}?view=lessons"
-               class="nav-tab">
+            <a @click="currentView = 'lessons'"
+               class="nav-tab"
+               :class="{ 'active': currentView === 'lessons' }"
+               style="cursor: pointer;">
                 <i class="bi bi-book"></i>
                 {% trans "Lessons" %}
             </a>
@@ -23,10 +27,6 @@
                class="nav-tab">
                 <i class="bi bi-trophy"></i>
                 {% trans "Progress" %}
-            </a>
-            <a href="#" class="nav-tab">
-                <i class="bi bi-people"></i>
-                {% trans "Community" %}
             </a>
         </div>
 
@@ -47,16 +47,6 @@
                 <option value="NL">🇳🇱 Nederlands</option>
             </select>
         </div>
-
-        <!-- Streak Display -->
-        <div class="d-flex align-items-center">
-            <i class="bi bi-fire text-warning me-1"></i>
-            <span class="fw-bold" x-text="userStreak"></span>
-            <span class="d-none d-md-inline ms-1">
-                {% trans "day streak" %}
-            </span>
-            <span class="ms-1" x-text="getStreakIcon(userStreak)"></span>
-        </div>
     </div>
 
     <!-- Droite: Actions et filtres contextuels -->
@@ -64,7 +54,7 @@
         <!-- Level Display -->
         <div class="level-display d-flex align-items-center me-3">
             <span class="navbar-label me-2">{% trans "Level:" %}</span>
-            <span class="badge bg-primary" x-text="userProgress?.level || 'Beginner'"></span>
+            <span style="background: var(--linguify-gradient); color: white; padding: 0.25rem 0.625rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;" x-text="userProgress?.level || 'Beginner'"></span>
         </div>
 
         <!-- Quick Actions -->

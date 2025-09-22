@@ -1,79 +1,89 @@
-<!-- Unit Detail - API Version -->
-<div x-show="currentView === 'unit-detail'" x-transition class="fade-in" style="background: var(--linguify-gray-50); min-height: 100vh; padding: 1.5rem;">
+<!-- Lessons View - API Version -->
+<div x-show="currentView === 'lessons'" x-transition class="fade-in" style="background: var(--linguify-gray-50); min-height: 100vh; padding: 1.5rem;">
     <div style="max-width: 1200px; margin: 0 auto;">
-        <!-- Back Button -->
-        <div class="mb-4">
-        <button @click="goBackToUnits()" class="btn-navbar btn-navbar-outline">
-            <i class="bi bi-arrow-left"></i>
-            Retour aux unités
-        </button>
-    </div>
 
-    <!-- Unit Header -->
-    <div class="unit-card mb-4" style="cursor: default;">
-        <!-- Unit Header -->
-        <div class="unit-header">
-            <div class="unit-number" x-text="'Unité ' + (activeUnit?.unit_number || '')"></div>
-            <div class="unit-modules-count">
-                <i class="bi bi-collection"></i>
-                <span x-text="(activeUnit?.completed_modules || 0) + '/' + (activeUnit?.modules_count || 0)"></span>
-            </div>
-        </div>
-
-        <!-- Unit Content -->
-        <div class="unit-title" x-text="activeUnit?.title"></div>
-        <div class="unit-description" x-text="activeUnit?.description"></div>
-
-        <!-- Additional Info -->
-        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <div class="small" style="color: var(--linguify-gray-600);">Progression de l'unité</div>
-            <div class="small" style="color: var(--linguify-gray-600);">
-                Durée estimée: <span class="fw-bold" x-text="(activeUnit?.estimated_duration || 0) + ' min'"></span>
-            </div>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="unit-progress">
-            <div class="unit-progress-bar"
-                 :style="'width: ' + (activeUnit?.progress_percentage || 0) + '%'"></div>
-        </div>
-
-        <!-- Progress Text -->
-        <div class="unit-progress-text">
-            <template x-if="activeUnit?.progress_percentage === 100">
-                <span><i class="bi bi-check-circle-fill"></i> Terminé</span>
-            </template>
-            <template x-if="activeUnit?.progress_percentage > 0 && activeUnit?.progress_percentage < 100">
-                <span><i class="bi bi-clock-history"></i> <span x-text="activeUnit?.progress_percentage + '%'"></span> terminé</span>
-            </template>
-            <template x-if="activeUnit?.progress_percentage === 0">
-                <span><i class="bi bi-star"></i> Nouveau</span>
-            </template>
-        </div>
-    </div>
-
-    <!-- Modules List -->
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex align-items-center mb-4" style="border-bottom: 2px solid var(--linguify-gray-200); padding-bottom: 0.75rem;">
+        <!-- Lessons Header -->
+        <div class="d-flex align-items-center justify-content-between mb-4" style="border-bottom: 2px solid var(--linguify-gray-200); padding-bottom: 0.75rem;">
+            <div class="d-flex align-items-center">
                 <div style="background: var(--linguify-gradient); padding: 0.5rem; border-radius: 8px; margin-right: 0.75rem;">
-                    <i class="bi bi-collection text-white"></i>
+                    <i class="bi bi-book text-white"></i>
                 </div>
-                <h5 class="mb-0" style="color: var(--linguify-gray-800); font-weight: 600;">
-                    Modules de cours
-                </h5>
+                <div>
+                    <h4 class="mb-0" style="color: var(--linguify-gray-800); font-weight: 600;">
+                        Lessons
+                    </h4>
+                    <small class="text-muted" x-show="activeUnit" x-text="'Unité: ' + (activeUnit?.title || '')"></small>
+                </div>
             </div>
 
+            <!-- Back to Units if needed -->
+            <button @click="currentView = 'units'; activeUnit = null;" class="btn-navbar btn-navbar-outline" x-show="activeUnit">
+                <i class="bi bi-grid-3x3-gap me-1"></i>
+                Voir toutes les unités
+            </button>
+        </div>
+
+        <!-- Unit Selection (if no active unit) -->
+        <div x-show="!activeUnit" class="mb-4">
+            <p class="text-muted mb-3">Sélectionnez une unité pour voir ses lessons :</p>
+            <div class="units-list">
+                <template x-for="unit in courseUnits" :key="unit.id">
+                    <div @click="selectUnitForLessons(unit)"
+                         class="unit-card"
+                         style="cursor: pointer;"
+                         :class="{
+                             'completed': unit.progress_percentage === 100,
+                             'active': unit.progress_percentage > 0 && unit.progress_percentage < 100
+                         }">
+
+                        <!-- Unit Header -->
+                        <div class="unit-header">
+                            <div class="unit-number" x-text="'Unité ' + unit.unit_number"></div>
+                            <div class="unit-modules-count">
+                                <i class="bi bi-collection"></i>
+                                <span x-text="unit.completed_modules + '/' + unit.modules_count"></span>
+                            </div>
+                        </div>
+
+                        <!-- Unit Content -->
+                        <div class="unit-title" x-text="unit.title"></div>
+                        <div class="unit-description" x-text="unit.description"></div>
+
+                        <!-- Progress Bar -->
+                        <div class="unit-progress">
+                            <div class="unit-progress-bar"
+                                 :style="'width: ' + unit.progress_percentage + '%'"></div>
+                        </div>
+
+                        <!-- Progress Text -->
+                        <div class="unit-progress-text">
+                            <template x-if="unit.progress_percentage === 100">
+                                <span><i class="bi bi-check-circle-fill"></i> Terminé</span>
+                            </template>
+                            <template x-if="unit.progress_percentage > 0 && unit.progress_percentage < 100">
+                                <span><i class="bi bi-clock-history"></i> <span x-text="unit.progress_percentage + '%'"></span> terminé</span>
+                            </template>
+                            <template x-if="unit.progress_percentage === 0">
+                                <span><i class="bi bi-star"></i> Nouveau</span>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Lessons/Modules List (when unit is selected) -->
+        <div x-show="activeUnit">
             <!-- Loading State -->
             <div x-show="loading" class="text-center p-4">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Chargement...</span>
                 </div>
-                <p class="mt-2 text-muted">Chargement des modules...</p>
+                <p class="mt-2 text-muted">Chargement des lessons...</p>
             </div>
 
             <!-- Modules Grid -->
-            <div class="module-grid">
+            <div x-show="!loading" class="module-grid">
                 <template x-for="module in activeUnitModules" :key="module.id">
                     <div x-data="moduleCard(module)"
                          class="module-card"
@@ -83,7 +93,7 @@
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <span class="unit-modules-count">
                                 <i class="bi bi-book-fill"></i>
-                                <span x-text="'Module ' + module.module_number"></span>
+                                <span x-text="'Lesson ' + module.module_number"></span>
                             </span>
                             <template x-if="module.is_completed">
                                 <i class="bi bi-check-circle-fill" style="color: var(--linguify-success);"></i>
@@ -137,9 +147,8 @@
             <!-- Empty State -->
             <div x-show="!loading && activeUnitModules.length === 0" class="text-center p-4">
                 <i class="bi bi-collection text-muted fs-1"></i>
-                <p class="text-muted mt-2">Aucun module disponible pour cette unité.</p>
+                <p class="text-muted mt-2">Aucune lesson disponible pour cette unité.</p>
             </div>
         </div>
-    </div>
     </div>
 </div>

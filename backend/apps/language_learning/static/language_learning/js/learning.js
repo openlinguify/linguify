@@ -14,6 +14,7 @@ document.addEventListener('alpine:init', () => {
         activeUnitModules: [],
         loading: false,
         apiUrls: {},
+        currentView: 'units', // 'units', 'lessons', 'unit-detail'
 
         // Initialize
         init() {
@@ -76,7 +77,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         // Load unit details
-        async loadUnitDetails(unitId) {
+        async loadUnitDetails(unitId, switchView = true) {
             this.loading = true;
             try {
                 const response = await fetch(`${this.apiUrls.unitDetail}${unitId}/`, {
@@ -90,6 +91,9 @@ document.addEventListener('alpine:init', () => {
                     if (data.success) {
                         this.activeUnit = data.unit;
                         this.activeUnitModules = data.modules;
+                        if (switchView && this.currentView === 'units') {
+                            this.currentView = 'unit-detail';
+                        }
                         console.log('✅ Unit details loaded:', data);
                     } else {
                         console.error('❌ API error:', data.error);
@@ -108,6 +112,21 @@ document.addEventListener('alpine:init', () => {
         goBackToUnits() {
             this.activeUnit = null;
             this.activeUnitModules = [];
+            this.currentView = 'units';
+        },
+
+        // Select unit for lessons view
+        selectUnitForLessons(unit) {
+            this.loadUnitDetails(unit.id, false); // Don't auto-switch view
+        },
+
+        // Switch to lessons view
+        switchToLessonsView() {
+            this.currentView = 'lessons';
+            if (!this.activeUnit && this.courseUnits.length > 0) {
+                // Auto-select first unit if available
+                this.selectUnitForLessons(this.courseUnits[0]);
+            }
         },
 
         // Get language flag emoji
