@@ -164,74 +164,36 @@ document.addEventListener('alpine:init', () => {
         get badgeClass() {
             const type = this.module.module_type;
             const classes = {
-                'vocabulary': 'module-badge vocabulary',
-                'grammar': 'module-badge grammar',
-                'listening': 'module-badge listening',
-                'speaking': 'module-badge speaking',
-                'reading': 'module-badge reading',
-                'writing': 'module-badge writing',
-                'culture': 'module-badge culture',
-                'review': 'module-badge review'
+                'vocabulary': 'badge bg-info',
+                'grammar': 'badge bg-warning',
+                'listening': 'badge bg-success',
+                'speaking': 'badge bg-primary',
+                'reading': 'badge bg-secondary',
+                'writing': 'badge bg-dark',
+                'culture': 'badge bg-light text-dark',
+                'review': 'badge bg-outline-primary'
             };
-            return classes[type] || 'module-badge';
+            return classes[type] || 'badge bg-light text-dark';
         },
 
         // Handle module click
-        selectModule() {
+        async selectModule() {
             if (this.module.is_unlocked) {
                 console.log('📖 Module selected:', this.module.id);
-                // This will be handled by HTMX
+
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('moduleModal'));
+                modal.show();
+
+                // TODO: Load module content via API
+                alert('Module démarré ! (Implémentation en cours)');
             } else {
                 alert('Ce module est verrouillé. Complétez les modules précédents pour y accéder.');
             }
         }
     }));
 
-    // Progress Panel Component
-    Alpine.data('progressPanel', (data) => ({
-        userStreak: data.userStreak || 0,
-        unitsCount: data.unitsCount || 0,
-        completedUnitsCount: data.completedUnitsCount || 0,
-
-        // Get completed units count
-        get completedUnits() {
-            return this.completedUnitsCount;
-        },
-
-        // Get streak icon
-        get streakIcon() {
-            if (this.userStreak >= 30) return '🔥';
-            if (this.userStreak >= 7) return '⚡';
-            if (this.userStreak >= 3) return '✨';
-            return '🌟';
-        }
-    }));
-
-    // Unit View Component
-    Alpine.data('unitView', (unit, modules) => ({
-        unit: unit,
-        modules: modules || [],
-
-        // Get progress bar width
-        get progressWidth() {
-            return `${this.unit.progress_percentage || 0}%`;
-        },
-
-        // Get progress bar class
-        get progressClass() {
-            const percentage = this.unit.progress_percentage || 0;
-            if (percentage === 100) return 'bg-success';
-            if (percentage >= 50) return 'bg-primary';
-            if (percentage > 0) return 'bg-warning';
-            return 'bg-secondary';
-        },
-
-        // Handle back click
-        goBack() {
-            console.log('🔙 Going back to units list');
-            // This will be handled by HTMX
-        }
-    }));
+    // Removed old components - all functionality now in main learningDashboard
 });
 
 // HTMX Configuration and Event Handlers

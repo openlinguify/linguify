@@ -1,0 +1,64 @@
+<!-- Progress Panel - API Version -->
+<div class="progress-panel">
+    <div class="mb-4 text-center">
+        <h6 class="mb-3">
+            <i class="bi bi-graph-up me-2"></i>
+            Progression
+        </h6>
+
+        <!-- Streak -->
+        <div class="progress-stat">
+            <span class="number text-primary" x-text="userStreak"></span>
+            <div class="label">
+                jours consécutifs <span x-text="getStreakIcon(userStreak)"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="row text-center mb-3">
+        <div class="col-6">
+            <div class="progress-stat">
+                <span class="number text-success" x-text="courseUnits.filter(u => u.progress_percentage === 100).length"></span>
+                <div class="label">Complétées</div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="progress-stat">
+                <span class="number text-info" x-text="courseUnits.length"></span>
+                <div class="label">Total</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Progress -->
+    <template x-if="userProgress">
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="text-muted">Niveau</small>
+                <span class="badge bg-primary" x-text="userProgress.level"></span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="text-muted">XP Total</small>
+                <small x-text="userProgress.total_xp + ' XP'"></small>
+            </div>
+        </div>
+    </template>
+
+    <!-- Continue Button -->
+    <template x-if="courseUnits.length > 0">
+        <button @click="courseUnits[0] && loadUnitDetails(courseUnits[0].id)"
+                class="btn btn-primary w-100">
+            <i class="bi bi-play-circle me-2"></i>
+            Continuer l'apprentissage
+        </button>
+    </template>
+
+    <!-- Empty State -->
+    <template x-if="courseUnits.length === 0 && !loading">
+        <div class="text-center text-muted">
+            <i class="bi bi-collection fs-1"></i>
+            <p class="mt-2">Aucun cours disponible</p>
+        </div>
+    </template>
+</div>
