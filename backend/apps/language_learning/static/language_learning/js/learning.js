@@ -14,7 +14,7 @@ document.addEventListener('alpine:init', () => {
         activeUnitModules: [],
         loading: false,
         apiUrls: {},
-        currentView: 'units', // 'units', 'lessons', 'unit-detail'
+        currentView: 'units', // 'units', 'lessons', 'unit-detail' - Start with units
 
         // Initialize
         init() {
@@ -56,6 +56,11 @@ document.addEventListener('alpine:init', () => {
                         this.userProgress = data.user_progress;
                         this.userStreak = data.user_streak;
                         console.log('✅ Dashboard data loaded:', data);
+
+                        // Auto-load first unit for lessons view
+                        if (this.currentView === 'lessons' && this.courseUnits.length > 0) {
+                            this.selectUnitForLessons(this.courseUnits[0]);
+                        }
                     } else {
                         console.error('❌ API error:', data.error);
                     }
@@ -92,7 +97,7 @@ document.addEventListener('alpine:init', () => {
                         this.activeUnit = data.unit;
                         this.activeUnitModules = data.modules;
                         if (switchView && this.currentView === 'units') {
-                            this.currentView = 'unit-detail';
+                            this.currentView = 'lessons';
                         }
                         console.log('✅ Unit details loaded:', data);
                     } else {

@@ -64,13 +64,6 @@
                 </h5>
             </div>
 
-            <!-- Loading State -->
-            <div x-show="loading" class="text-center p-4">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Chargement...</span>
-                </div>
-                <p class="mt-2 text-muted">Chargement des modules...</p>
-            </div>
 
             <!-- Modules Grid -->
             <div class="module-grid">
@@ -135,9 +128,9 @@
             </div>
 
             <!-- Empty State -->
-            <div x-show="!loading && activeUnitModules.length === 0" class="text-center p-4">
-                <i class="bi bi-collection text-muted fs-1"></i>
-                <p class="text-muted mt-2">Aucun module disponible pour cette unité.</p>
+            <div x-show="activeUnitModules.length === 0" class="text-center p-4">
+                <i class="bi bi-collection fs-1" style="color: var(--linguify-gray-400);"></i>
+                <p class="mt-2" style="color: var(--linguify-gray-600);">Aucun module disponible pour cette unité.</p>
             </div>
         </div>
     </div>

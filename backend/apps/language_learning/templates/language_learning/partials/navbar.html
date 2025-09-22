@@ -11,17 +11,10 @@
         <div class="nav-tabs-group">
             <a @click="currentView = 'units'; activeUnit = null;"
                class="nav-tab"
-               :class="{ 'active': currentView === 'units' }"
-               style="cursor: pointer;">
-                <i class="bi bi-house"></i>
-                {% trans "Dashboard" %}
-            </a>
-            <a @click="currentView = 'lessons'"
-               class="nav-tab"
-               :class="{ 'active': currentView === 'lessons' }"
+               :class="{ 'active': currentView === 'units' || currentView === 'lessons' }"
                style="cursor: pointer;">
                 <i class="bi bi-book"></i>
-                {% trans "Lessons" %}
+                {% trans "Cours" %}
             </a>
             <a href="{% url 'language_learning:progress' %}"
                class="nav-tab">
