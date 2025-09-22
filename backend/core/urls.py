@@ -154,8 +154,8 @@ urlpatterns += i18n_patterns(
     # Authentication (login/register pages) - with language prefix
     path('auth/', include('apps.authentication.urls.auth', namespace='auth')),
 
-    # Redirect to dashboard for authenticated users, or to portal for others
-    path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
+    # Redirect to dashboard (will handle authentication there)
+    path('', RedirectView.as_view(url='/dashboard/', permanent=False), name='home'),
     prefix_default_language=True,  # Add language prefix even for default language
 )
 

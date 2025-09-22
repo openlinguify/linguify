@@ -158,7 +158,7 @@ python manage.py migrate_to_global_tags
 - [ ] Synchronisation cross-device
 - [ ] Système de templates de tags
 
-## 🧪 TESTS
+## TESTS
 
 Tests couvrant :
 - Modèles et validations

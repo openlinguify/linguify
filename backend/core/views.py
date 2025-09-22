@@ -7,6 +7,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import redirect, render
 from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils import translation
 
 def lms_info(request):
     """Page d'information sur le LMS"""
@@ -105,3 +107,22 @@ def language_redirect_view(request, path):
 def app_language_redirect_view(request, app_slug):
     """Redirect app URLs to the same URL with language prefix"""
     return redirect(f'/{get_preferred_language(request)}/apps/{app_slug}/')
+
+
+def smart_home_redirect(request):
+    """
+    Smart home redirect that avoids multiple redirections:
+    - If authenticated → redirect to dashboard
+    - If anonymous → redirect directly to login with language prefix
+    """
+    if request.user.is_authenticated:
+        # User is logged in, go to dashboard
+        return redirect('/dashboard/')
+    else:
+        # User is not logged in, redirect directly to localized login
+        # Get current language code
+        language = translation.get_language() or get_preferred_language(request)
+
+        # Build the localized login URL
+        login_url = f'/{language}/auth/login/'
+        return redirect(login_url)

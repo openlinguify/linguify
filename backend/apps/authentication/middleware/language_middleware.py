@@ -45,7 +45,19 @@ class UserLanguageMiddleware(MiddlewareMixin):
                 translation.activate('en')
                 request.LANGUAGE_CODE = 'en'
         else:
-            # For anonymous users, detect language from multiple sources
+            # For anonymous users, check if LocaleMiddleware already set the language from URL
+            current_language = getattr(request, 'LANGUAGE_CODE', None) or translation.get_language()
+
+            # If URL contains a language prefix (handled by LocaleMiddleware), respect it
+            url_has_language_prefix = any(request.path.startswith(f'/{lang}/') for lang, _ in settings.LANGUAGES)
+
+            if url_has_language_prefix and current_language in [lang for lang, _ in settings.LANGUAGES]:
+                # URL language takes precedence - don't override it
+                logger.info(f"Respecting URL language: {current_language}")
+                request.session[LANGUAGE_SESSION_KEY] = current_language
+                return None
+
+            # For cases without URL language prefix, detect language from other sources
             language = None
 
             # 1. Check URL parameter (from portal links)
