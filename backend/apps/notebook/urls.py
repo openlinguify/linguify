@@ -6,7 +6,8 @@ from .views.notebook_views import (
     NoteViewSet,
     NoteCategoryViewSet,
     SharedNoteViewSet,
-    get_app_config
+    get_app_config,
+    NotebookMainView
 )
 
 app_name = 'notebook'
@@ -17,9 +18,12 @@ router.register(r'categories', NoteCategoryViewSet, basename='category')
 router.register(r'shared-notes', SharedNoteViewSet, basename='shared-note')
 
 urlpatterns = [
-    # API REST endpoints
-    path('', include(router.urls)),
+    # Interface web moderne (priorité pour dashboard)
+    path('app/', NotebookMainView.as_view(), name='notebook_app'),
 
     # Configuration de l'application
     path('config/', get_app_config, name='config'),
+
+    # API REST endpoints
+    path('api/', include(router.urls)),
 ]

@@ -35,35 +35,47 @@ from core.serializers.tag_serializers import TagSerializer
 @method_decorator(login_required, name='dispatch')
 class NotebookMainView(TemplateView):
     """
-    Vue principale pour l'interface notebook
+    Vue principale pour l'interface notebook moderne avec HTMX et Alpine.js
     """
-    template_name = 'notebook/base.html'
-    
+    template_name = 'notebook/notebook_app.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         # Ajouter les informations de l'app courante pour l'icône du header
         current_app_info = {
             'name': 'notebook',
             'display_name': 'Notes',
             'route_path': '/notebook/'
         }
-        
+
+        # Configuration pour l'interface
+        notebook_config = {
+            'api_base_url': '/notebook/',
+            'features': {
+                'sharing': True,
+                'tags': True,
+                'search': True,
+                'export': True,
+                'categories': True,
+            },
+            'limits': {
+                'max_note_size': 1024 * 1024,  # 1MB
+                'max_notes': 1000,
+            },
+            'user_preferences': {
+                'theme': getattr(self.request.user, 'theme', 'light'),
+                'language': getattr(self.request.user, 'language', 'fr'),
+            }
+        }
+
         context.update({
-            'page_title': 'Notebook',
-            'debug': self.request.GET.get('debug', 'false').lower() == 'true',
+            'page_title': 'Notebook - Notes',
             'current_app': current_app_info,
+            'notebook_config': notebook_config,
         })
         return context
 
-def notebook_app(request):
-    """
-    Vue principale pour charger l'application Notebook (legacy)
-    """
-    context = {
-        'debug': request.GET.get('debug', 'false').lower() == 'true',
-    }
-    return render(request, 'notebook/base.html', context)
 
 
 @require_http_methods(["GET"])

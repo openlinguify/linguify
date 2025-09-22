@@ -1,0 +1,492 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+
+{% block title %}Notebook - Notes{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'notebook/css/notebook.css' %}">
+{% endblock %}
+
+{% block extra_head %}
+<script src="https://unpkg.com/htmx.org@1.9.6"></script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="notebook-app" x-data="notebookApp()" x-init="init()">
+    <!-- Header avec barre de recherche et actions -->
+    <div class="notebook-header">
+        <div class="header-top">
+            <h1 class="notebook-title">
+                <i class="fas fa-book"></i>
+                Mes Notes
+            </h1>
+            <div class="header-actions">
+                <button @click="showCreateModal = true" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Nouvelle Note
+                </button>
+            </div>
+        </div>
+
+        <!-- Barre de recherche et filtres -->
+        <div class="search-bar">
+            <div class="search-input-group">
+                <i class="fas fa-search"></i>
+                <input
+                    type="text"
+                    placeholder="Rechercher dans les notes..."
+                    x-model="searchQuery"
+                    @input.debounce.300ms="loadNotes()"
+                    class="search-input"
+                >
+            </div>
+
+            <div class="filters">
+                <select x-model="selectedLanguage" @change="loadNotes()" class="filter-select">
+                    <option value="">Toutes les langues</option>
+                    <option value="fr">Français</option>
+                    <option value="en">Anglais</option>
+                    <option value="es">Espagnol</option>
+                    <option value="de">Allemand</option>
+                </select>
+
+                <select x-model="archiveStatus" @change="loadNotes()" class="filter-select">
+                    <option value="active">Notes actives</option>
+                    <option value="archived">Notes archivées</option>
+                    <option value="all">Toutes les notes</option>
+                </select>
+
+                <select x-model="sortBy" @change="loadNotes()" class="filter-select">
+                    <option value="updated_desc">Modifiées récemment</option>
+                    <option value="updated_asc">Plus anciennes</option>
+                    <option value="title_asc">Titre A-Z</option>
+                    <option value="title_desc">Titre Z-A</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions en lot -->
+    <div class="bulk-actions" x-show="selectedNotes.length > 0" x-transition>
+        <div class="bulk-info">
+            <span x-text="selectedNotes.length"></span> note(s) sélectionnée(s)
+        </div>
+        <div class="bulk-buttons">
+            <button @click="bulkArchive()" class="btn btn-secondary">
+                <i class="fas fa-archive"></i>
+                Archiver
+            </button>
+            <button @click="bulkDelete()" class="btn btn-danger">
+                <i class="fas fa-trash"></i>
+                Supprimer
+            </button>
+            <button @click="clearSelection()" class="btn btn-outline">
+                Annuler
+            </button>
+        </div>
+    </div>
+
+    <!-- Liste des notes -->
+    <div class="notes-container">
+        <div class="notes-grid" id="notes-list">
+            <!-- Les notes seront chargées ici via HTMX -->
+            <div class="loading-state" x-show="isLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                Chargement des notes...
+            </div>
+
+            <div class="empty-state" x-show="!isLoading && notes.length === 0">
+                <i class="fas fa-sticky-note"></i>
+                <h3>Aucune note trouvée</h3>
+                <p>Commencez par créer votre première note !</p>
+                <button @click="showCreateModal = true" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Créer une note
+                </button>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" x-show="totalPages > 1">
+            <button
+                @click="changePage(currentPage - 1)"
+                :disabled="currentPage <= 1"
+                class="btn btn-outline"
+            >
+                <i class="fas fa-chevron-left"></i>
+                Précédent
+            </button>
+
+            <span class="page-info">
+                Page <span x-text="currentPage"></span> sur <span x-text="totalPages"></span>
+            </span>
+
+            <button
+                @click="changePage(currentPage + 1)"
+                :disabled="currentPage >= totalPages"
+                class="btn btn-outline"
+            >
+                Suivant
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de création/édition -->
+    <div class="modal" x-show="showCreateModal || showEditModal" x-transition>
+        <div class="modal-backdrop" @click="closeModals()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 x-text="showEditModal ? 'Modifier la note' : 'Nouvelle note'"></h3>
+                <button @click="closeModals()" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form @submit.prevent="saveNote()" class="note-form">
+                <div class="form-group">
+                    <label>Titre</label>
+                    <input
+                        type="text"
+                        x-model="currentNote.title"
+                        placeholder="Titre de la note"
+                        required
+                        class="form-input"
+                    >
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Langue</label>
+                        <select x-model="currentNote.language" class="form-select">
+                            <option value="">Sélectionner</option>
+                            <option value="fr">Français</option>
+                            <option value="en">Anglais</option>
+                            <option value="es">Espagnol</option>
+                            <option value="de">Allemand</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Difficulté</label>
+                        <select x-model="currentNote.difficulty" class="form-select">
+                            <option value="">Sélectionner</option>
+                            <option value="BEGINNER">Débutant</option>
+                            <option value="INTERMEDIATE">Intermédiaire</option>
+                            <option value="ADVANCED">Avancé</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Contenu</label>
+                    <textarea
+                        x-model="currentNote.content"
+                        placeholder="Contenu de la note"
+                        rows="6"
+                        class="form-textarea"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Traduction</label>
+                    <textarea
+                        x-model="currentNote.translation"
+                        placeholder="Traduction (optionnel)"
+                        rows="3"
+                        class="form-textarea"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Prononciation</label>
+                    <input
+                        type="text"
+                        x-model="currentNote.pronunciation"
+                        placeholder="Guide de prononciation"
+                        class="form-input"
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" @click="closeModals()" class="btn btn-secondary">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary" :disabled="isSaving">
+                        <span x-show="!isSaving">
+                            <i class="fas fa-save"></i>
+                            <span x-text="showEditModal ? 'Modifier' : 'Créer'"></span>
+                        </span>
+                        <span x-show="isSaving">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Enregistrement...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function notebookApp() {
+    return {
+        // État général
+        isLoading: false,
+        isSaving: false,
+
+        // Notes
+        notes: [],
+        selectedNotes: [],
+
+        // Pagination
+        currentPage: 1,
+        totalPages: 1,
+        totalNotes: 0,
+
+        // Recherche et filtres
+        searchQuery: '',
+        selectedLanguage: '',
+        archiveStatus: 'active',
+        sortBy: 'updated_desc',
+
+        // Modals
+        showCreateModal: false,
+        showEditModal: false,
+        currentNote: {
+            id: null,
+            title: '',
+            content: '',
+            language: '',
+            translation: '',
+            pronunciation: '',
+            difficulty: '',
+            is_pinned: false,
+            is_archived: false
+        },
+
+        // Méthodes
+        init() {
+            this.loadNotes();
+        },
+
+        async loadNotes() {
+            this.isLoading = true;
+            try {
+                const params = new URLSearchParams({
+                    page: this.currentPage,
+                    search: this.searchQuery,
+                    language: this.selectedLanguage,
+                    archive_status: this.archiveStatus,
+                    sort: this.sortBy
+                });
+
+                const response = await fetch(`/notebook/api/notes/?${params}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                this.notes = data.results;
+                this.totalPages = Math.ceil(data.count / 50);
+                this.totalNotes = data.count;
+            } catch (error) {
+                console.error('Erreur lors du chargement des notes:', error);
+                this.showAlert('Erreur lors du chargement des notes', 'error');
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        changePage(page) {
+            if (page >= 1 && page <= this.totalPages) {
+                this.currentPage = page;
+                this.loadNotes();
+            }
+        },
+
+        async saveNote() {
+            this.isSaving = true;
+            try {
+                const url = this.showEditModal ?
+                    `/notebook/api/notes/${this.currentNote.id}/` :
+                    '/notebook/api/notes/';
+
+                const method = this.showEditModal ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCsrfToken()
+                    },
+                    body: JSON.stringify(this.currentNote)
+                });
+
+                if (response.ok) {
+                    this.closeModals();
+                    this.loadNotes();
+                    this.showAlert('Note enregistrée avec succès', 'success');
+                } else {
+                    throw new Error('Erreur lors de l\'enregistrement');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                this.showAlert('Erreur lors de l\'enregistrement de la note', 'error');
+            } finally {
+                this.isSaving = false;
+            }
+        },
+
+        editNote(note) {
+            this.currentNote = { ...note };
+            this.showEditModal = true;
+        },
+
+        async deleteNote(noteId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/notebook/api/notes/${noteId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': this.getCsrfToken()
+                    }
+                });
+
+                if (response.ok) {
+                    this.loadNotes();
+                    this.showAlert('Note supprimée', 'success');
+                } else {
+                    throw new Error('Erreur lors de la suppression');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                this.showAlert('Erreur lors de la suppression', 'error');
+            }
+        },
+
+        async togglePin(note) {
+            try {
+                const response = await fetch(`/notebook/api/notes/${note.id}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCsrfToken()
+                    },
+                    body: JSON.stringify({
+                        is_pinned: !note.is_pinned
+                    })
+                });
+
+                if (response.ok) {
+                    this.loadNotes();
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        },
+
+        toggleSelection(noteId) {
+            const index = this.selectedNotes.indexOf(noteId);
+            if (index > -1) {
+                this.selectedNotes.splice(index, 1);
+            } else {
+                this.selectedNotes.push(noteId);
+            }
+        },
+
+        clearSelection() {
+            this.selectedNotes = [];
+        },
+
+        async bulkArchive() {
+            try {
+                const response = await fetch('/notebook/api/notes/bulk_update/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCsrfToken()
+                    },
+                    body: JSON.stringify({
+                        note_ids: this.selectedNotes,
+                        updates: { is_archived: true }
+                    })
+                });
+
+                if (response.ok) {
+                    this.clearSelection();
+                    this.loadNotes();
+                    this.showAlert('Notes archivées', 'success');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                this.showAlert('Erreur lors de l\'archivage', 'error');
+            }
+        },
+
+        async bulkDelete() {
+            if (!confirm(`Supprimer ${this.selectedNotes.length} note(s) ?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/notebook/api/notes/bulk_delete/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCsrfToken()
+                    },
+                    body: JSON.stringify({
+                        note_ids: this.selectedNotes
+                    })
+                });
+
+                if (response.ok) {
+                    this.clearSelection();
+                    this.loadNotes();
+                    this.showAlert('Notes supprimées', 'success');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                this.showAlert('Erreur lors de la suppression', 'error');
+            }
+        },
+
+        closeModals() {
+            this.showCreateModal = false;
+            this.showEditModal = false;
+            this.currentNote = {
+                id: null,
+                title: '',
+                content: '',
+                language: '',
+                translation: '',
+                pronunciation: '',
+                difficulty: '',
+                is_pinned: false,
+                is_archived: false
+            };
+        },
+
+        getCsrfToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+        },
+
+        showAlert(message, type) {
+            // Implémentation simple d'alert
+            // TODO: Remplacer par un système de notification plus sophistiqué
+            if (type === 'error') {
+                alert('Erreur: ' + message);
+            } else {
+                alert(message);
+            }
+        }
+    }
+}
+</script>
+{% endblock %}
