@@ -1,0 +1,103 @@
+{% load static %}
+{% load i18n %}
+<!-- Notebook App Navbar - Linguify Style -->
+<div class="navbar-linguify">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="navbar-section">
+        <!-- New Note Button - Left side -->
+        <button @click="showCreateModal = true" class="btn-navbar btn-navbar-primary">
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-xl-inline">{% trans 'New Note' %}</span>
+        </button>
+
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <a href="/notebook/" class="nav-tab active">
+                <i class="bi bi-journal-text"></i>
+                {% trans 'Notes' %}
+            </a>
+            <!-- Future tabs can be added here -->
+        </div>
+
+        <div class="container-extra">
+            <!-- Bouton Refresh -->
+            <button @click="loadNotes()" class="btn-sb" title="{% trans 'Refresh notes' %}">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Droite: Actions et filtres contextuels -->
+    <div class="navbar-section-right">
+        <!-- Search -->
+        <input
+            type="text"
+            placeholder="{% trans 'Search in notes...' %}"
+            x-model="searchQuery"
+            @input.debounce.300ms="loadNotes()"
+            class="form-control-linguify"
+            style="width: 140px; min-width: 100px;"
+        >
+
+        <!-- Language Filter -->
+        <div class="dropdown">
+            <button class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span x-text="selectedLanguage === '' ? 'All languages' :
+                    (selectedLanguage === 'fr' ? 'French' :
+                     selectedLanguage === 'en' ? 'English' :
+                     selectedLanguage === 'es' ? 'Spanish' :
+                     selectedLanguage === 'de' ? 'German' : selectedLanguage)">All languages</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" @click="selectedLanguage = ''; loadNotes()">{% trans 'All languages' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click="selectedLanguage = 'fr'; loadNotes()">{% trans 'French' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click="selectedLanguage = 'en'; loadNotes()">{% trans 'English' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click="selectedLanguage = 'es'; loadNotes()">{% trans 'Spanish' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click="selectedLanguage = 'de'; loadNotes()">{% trans 'German' %}</a></li>
+            </ul>
+        </div>
+
+        <!-- Archive Status Filter -->
+        <div class="dropdown">
+            <button class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span x-text="archiveStatus === 'active' ? 'Active notes' :
+                    (archiveStatus === 'archived' ? 'Archived notes' : 'All notes')">Active notes</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" @click="archiveStatus = 'active'; loadNotes()">{% trans 'Active notes' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click="archiveStatus = 'archived'; loadNotes()">{% trans 'Archived notes' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click="archiveStatus = 'all'; loadNotes()">{% trans 'All notes' %}</a></li>
+            </ul>
+        </div>
+
+        <!-- Sort Filter Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span x-text="sortBy === 'updated_desc' ? 'Most recent' :
+                    (sortBy === 'updated_asc' ? 'Oldest' :
+                     sortBy === 'title_asc' ? 'Title A-Z' :
+                     sortBy === 'title_desc' ? 'Title Z-A' : sortBy)">Most recent</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" @click="sortBy = 'updated_desc'; loadNotes()">{% trans 'Most recent' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click="sortBy = 'updated_asc'; loadNotes()">{% trans 'Oldest' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click="sortBy = 'title_asc'; loadNotes()">{% trans 'Title A-Z' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click="sortBy = 'title_desc'; loadNotes()">{% trans 'Title Z-A' %}</a></li>
+            </ul>
+        </div>
+
+        <!-- Actions -->
+        <div class="navbar-actions-group">
+            <!-- Bulk Actions (when notes are selected) -->
+            <button x-show="selectedNotes.length > 0" @click="bulkArchive()" class="btn-navbar btn-navbar-outline" title="{% trans 'Archive selection' %}">
+                <i class="bi bi-archive"></i>
+                <span class="d-none d-xl-inline">{% trans 'Archive' %}</span>
+            </button>
+
+            <button x-show="selectedNotes.length > 0" @click="bulkDelete()" class="btn-navbar btn-navbar-outline" title="{% trans 'Delete selection' %}">
+                <i class="bi bi-trash"></i>
+                <span class="d-none d-xl-inline">{% trans 'Delete' %}</span>
+            </button>
+        </div>
+    </div>
+</div>

@@ -3,8 +3,294 @@
 
 {% block title %}Notebook - Notes{% endblock %}
 
+{% block header_content %}
+{% include 'components/header/app_header.html' %}
+{% include 'components/notebook_navbar.html' %}
+{% endblock %}
+
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'notebook/css/notebook.css' %}">
+<style>
+/* Styles minimalistes pour la visibilité des éléments notebook */
+.notes-container {
+    padding: 2rem;
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.note-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    position: relative;
+    cursor: pointer;
+}
+
+.note-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.note-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    flex: 1;
+}
+
+.note-content {
+    color: #64748b;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.note-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.note-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.note-tag {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.note-tag.language {
+    background: #3b82f6;
+    color: white;
+}
+
+.note-tag.difficulty {
+    background: #10b981;
+    color: white;
+}
+
+.loading-state,
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #64748b;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #9ca3af;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    margin: 1rem 0 0.5rem;
+    color: #1e293b;
+}
+
+.bulk-actions {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    margin: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.bulk-buttons {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Modal styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    z-index: 10;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.note-form {
+    padding: 1.5rem 2rem 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+    color: #1e293b;
+    transition: all 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .notes-container {
+        padding: 1rem;
+    }
+
+    .notes-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .bulk-actions {
+        margin: 1rem;
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+}
+</style>
 {% endblock %}
 
 {% block extra_head %}
@@ -13,61 +299,9 @@
 {% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <div class="notebook-app" x-data="notebookApp()" x-init="init()">
-    <!-- Header avec barre de recherche et actions -->
-    <div class="notebook-header">
-        <div class="header-top">
-            <h1 class="notebook-title">
-                <i class="fas fa-book"></i>
-                Mes Notes
-            </h1>
-            <div class="header-actions">
-                <button @click="showCreateModal = true" class="btn btn-primary">
-                    <i class="fas fa-plus"></i>
-                    Nouvelle Note
-                </button>
-            </div>
-        </div>
-
-        <!-- Barre de recherche et filtres -->
-        <div class="search-bar">
-            <div class="search-input-group">
-                <i class="fas fa-search"></i>
-                <input
-                    type="text"
-                    placeholder="Rechercher dans les notes..."
-                    x-model="searchQuery"
-                    @input.debounce.300ms="loadNotes()"
-                    class="search-input"
-                >
-            </div>
-
-            <div class="filters">
-                <select x-model="selectedLanguage" @change="loadNotes()" class="filter-select">
-                    <option value="">Toutes les langues</option>
-                    <option value="fr">Français</option>
-                    <option value="en">Anglais</option>
-                    <option value="es">Espagnol</option>
-                    <option value="de">Allemand</option>
-                </select>
-
-                <select x-model="archiveStatus" @change="loadNotes()" class="filter-select">
-                    <option value="active">Notes actives</option>
-                    <option value="archived">Notes archivées</option>
-                    <option value="all">Toutes les notes</option>
-                </select>
-
-                <select x-model="sortBy" @change="loadNotes()" class="filter-select">
-                    <option value="updated_desc">Modifiées récemment</option>
-                    <option value="updated_asc">Plus anciennes</option>
-                    <option value="title_asc">Titre A-Z</option>
-                    <option value="title_desc">Titre Z-A</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <!-- Actions en lot -->
+    <!-- Actions en lot (affichées quand des notes sont sélectionnées) -->
     <div class="bulk-actions" x-show="selectedNotes.length > 0" x-transition>
         <div class="bulk-info">
             <span x-text="selectedNotes.length"></span> note(s) sélectionnée(s)
@@ -274,18 +508,28 @@ function notebookApp() {
         async loadNotes() {
             this.isLoading = true;
             try {
+                // Map sort values to DRF ordering format
+                const sortMapping = {
+                    'updated_desc': '-updated_at',
+                    'updated_asc': 'updated_at',
+                    'title_asc': 'title',
+                    'title_desc': '-title'
+                };
+
                 const params = new URLSearchParams({
                     page: this.currentPage,
                     search: this.searchQuery,
                     language: this.selectedLanguage,
                     archive_status: this.archiveStatus,
-                    sort: this.sortBy
+                    ordering: sortMapping[this.sortBy] || '-updated_at'
                 });
 
                 const response = await fetch(`/notebook/api/notes/?${params}`, {
                     headers: {
-                        'Accept': 'application/json'
-                    }
+                        'Accept': 'application/json',
+                        'X-CSRFToken': this.getCsrfToken()
+                    },
+                    credentials: 'same-origin'
                 });
 
                 const data = await response.json();
@@ -322,6 +566,7 @@ function notebookApp() {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': this.getCsrfToken()
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify(this.currentNote)
                 });
 
@@ -355,7 +600,8 @@ function notebookApp() {
                     method: 'DELETE',
                     headers: {
                         'X-CSRFToken': this.getCsrfToken()
-                    }
+                    },
+                    credentials: 'same-origin'
                 });
 
                 if (response.ok) {
@@ -378,6 +624,7 @@ function notebookApp() {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': this.getCsrfToken()
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
                         is_pinned: !note.is_pinned
                     })
@@ -412,6 +659,7 @@ function notebookApp() {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': this.getCsrfToken()
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
                         note_ids: this.selectedNotes,
                         updates: { is_archived: true }
@@ -441,6 +689,7 @@ function notebookApp() {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': this.getCsrfToken()
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
                         note_ids: this.selectedNotes
                     })
