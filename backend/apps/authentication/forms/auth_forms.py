@@ -9,6 +9,9 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from ..models.models import DuplicateEmailError
+import logging
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -152,13 +155,15 @@ class RegisterForm(UserCreationForm):
             if User.objects.filter(email=email).exists():
                 # Utiliser DuplicateEmailError pour une meilleure traçabilité
                 error = DuplicateEmailError(
-                    message=_("An account with this email already exists. Please use a different email or login with your existing account."),
+                    message=_("An account with this email already exists. You will be redirected to the login page."),
                     email=email
                 )
-                # Log l'erreur pour le monitoring
-                import logging
-                logger = logging.getLogger(__name__)
+
                 logger.warning(f"Registration attempt with duplicate email: {email}")
+
+                # Marquer pour redirection (sera géré dans la vue)
+                self._redirect_to_login = True
+                self._duplicate_email = email
 
                 # Convertir en ValidationError pour le formulaire
                 raise forms.ValidationError(error.message)

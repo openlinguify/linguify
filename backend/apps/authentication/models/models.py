@@ -34,14 +34,6 @@ class DuplicateEmailError(Exception):
         self.email = email
         super().__init__(self.message)
 
-# Choix pour l'interface utilisateur uniquement
-INTERFACE_LANGUAGE_CHOICES = [
-    ('en', 'English'),
-    ('fr', 'Français'),
-    ('nl', 'Nederlands'),
-    ('es', 'Español'),
-]
-
 GENDER_CHOICES = [
     ('M', 'Male'),
     ('F', 'Female'),

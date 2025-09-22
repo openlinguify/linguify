@@ -40,6 +40,7 @@ SpeechRecognition = "^3.10.0"
 supabase = "^2.17.0"
 cryptography = "^45.0.6"
 stripe = "11.1.0"
+django-timezone-field = "^7.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"

@@ -18,7 +18,31 @@ from ..models.models import DuplicateEmailError
 class LoginView(auth_views.LoginView):
     """Login View"""
     template_name = 'authentication/login.html'
-    
+
+    def get_context_data(self, **kwargs):
+        """Add email from URL parameter to context"""
+        context = super().get_context_data(**kwargs)
+
+        # Récupérer l'email depuis les paramètres URL
+        email = self.request.GET.get('email', '')
+        from_register = self.request.GET.get('from', '') == 'register'
+
+        context['prefill_email'] = email
+        context['from_register'] = from_register
+
+        return context
+
+    def get_form(self, form_class=None):
+        """Pre-fill email field if provided in URL"""
+        form = super().get_form(form_class)
+
+        # Pré-remplir l'email si fourni dans l'URL
+        email = self.request.GET.get('email', '')
+        if email:
+            form.fields['username'].initial = email
+
+        return form
+
     def form_valid(self, form):
         """Override to check if user is verified"""
         user = form.get_user()
@@ -45,7 +69,19 @@ class RegisterView(View):
     
     def post(self, request):
         form = RegisterForm(request.POST)
-        
+
+        # Vérifier si le formulaire indique une redirection vers login
+        if not form.is_valid():
+            # Vérifier si c'est une erreur d'email dupliqué qui nécessite une redirection
+            if hasattr(form, '_redirect_to_login') and form._redirect_to_login:
+                duplicate_email = getattr(form, '_duplicate_email', '')
+                # Rediriger vers la page de connexion avec l'email pré-rempli
+                messages.info(
+                    request,
+                    _('An account with this email already exists. Please login with your existing account.')
+                )
+                return redirect(f'/auth/login/?email={duplicate_email}&from=register')
+
         if form.is_valid():
             client_ip = EmailVerificationRateLimiter.get_client_ip(request)
             user_agent = request.META.get('HTTP_USER_AGENT', '')
