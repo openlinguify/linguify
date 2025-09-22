@@ -127,3 +127,13 @@ msgstr "Error during verification"
 
 msgid "Passwords do not match"
 msgstr "Passwords do not match"
+
+# DuplicateEmailError messages
+msgid "An account with this email already exists. You will be redirected to the login page."
+msgstr "An account with this email already exists. You will be redirected to the login page."
+
+msgid "An account with this email already exists. Please login with your existing account."
+msgstr "An account with this email already exists. Please login with your existing account."
+
+msgid "An account with <strong>%(email)s</strong> already exists. Please sign in below."
+msgstr "An account with <strong>%(email)s</strong> already exists. Please sign in below."

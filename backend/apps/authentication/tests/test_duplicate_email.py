@@ -413,6 +413,33 @@ class DuplicateEmailInternationalizationTest(TestCase):
             error_message = str(form.errors['email'])
             self.assertIn('doorgestuurd', error_message)  # Mot néerlandais
 
+    def test_english_duplicate_email_message(self):
+        """Test que les messages sont en anglais"""
+        from django.utils import translation
+
+        # Activer la langue anglaise
+        with translation.override('en'):
+            form_data = {
+                'first_name': 'Test',
+                'last_name': 'User',
+                'username': 'testuser4',
+                'email': 'i18n@example.com',  # Email existant
+                'password1': 'TestPass123!',
+                'password2': 'TestPass123!',
+                'birthday': '1990-01-01',
+                'gender': 'M',
+                'interface_language': 'en',
+                'terms': True
+            }
+
+            form = RegisterForm(data=form_data)
+            self.assertFalse(form.is_valid())
+
+            # Vérifier que le message est en anglais
+            self.assertIn('email', form.errors)
+            error_message = str(form.errors['email'])
+            self.assertIn('redirected to the login page', error_message)  # Message anglais
+
     def test_login_url_preservation_with_language(self):
         """Test que la redirection préserve la langue dans l'URL"""
         from django.test import RequestFactory
@@ -421,7 +448,7 @@ class DuplicateEmailInternationalizationTest(TestCase):
         from unittest.mock import patch
 
         # Tester avec différentes langues
-        for lang_code in ['fr', 'es', 'nl']:
+        for lang_code in ['fr', 'es', 'nl', 'en']:
             with translation.override(lang_code):
                 factory = RequestFactory()
                 request = factory.post(f'/{lang_code}/auth/register/', {
