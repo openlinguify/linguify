@@ -7,26 +7,82 @@ from .views.notebook_views import (
     NoteCategoryViewSet,
     SharedNoteViewSet,
 )
+from .views.xml_views import (
+    list_xml_views,
+    get_xml_view,
+    render_xml_view_html,
+    create_from_xml_view,
+    xml_view_fields,
+    reload_xml_templates,
+    xml_demo_page,
+    xml_index_page,
+)
+from .views.xml_interactive_views import (
+    interactive_xml_view,
+    update_note_api,
+    delete_note_api,
+    duplicate_note_api,
+)
+from .views.xml_export_views import (
+    export_notes_xml,
+    export_single_note_xml,
+    export_notes_odoo_style,
+)
 app_name = 'notebook'
 
 router = DefaultRouter()
 router.register(r'notes', NoteViewSet, basename='note')
 router.register(r'categories', NoteCategoryViewSet, basename='category')
 router.register(r'shared-notes', SharedNoteViewSet, basename='shared-note')
-# Tags are now managed by the global tag system in core
-
 
 urlpatterns = [
     # API REST endpoints
     path('', include(router.urls)),
+
+    # XML Template endpoints
+    path('xml/views/', list_xml_views, name='xml-views-list'),
+    path('xml/views/<str:view_id>/', get_xml_view, name='xml-view-detail'),
+    path('xml/views/<str:view_id>/html/', render_xml_view_html, name='xml-view-html'),
+    path('xml/views/<str:view_id>/interactive/', interactive_xml_view, name='xml-interactive-view'),
+    path('xml/views/<str:view_id>/create/', create_from_xml_view, name='xml-view-create'),
+    path('xml/views/<str:view_id>/fields/', xml_view_fields, name='xml-view-fields'),
+    path('xml/reload/', reload_xml_templates, name='xml-reload'),
+
+    # XML Interactive API endpoints
+    path('xml/api/notes/<int:note_id>/update/', update_note_api, name='xml-api-note-update'),
+    path('xml/api/notes/<int:note_id>/delete/', delete_note_api, name='xml-api-note-delete'),
+    path('xml/api/notes/<int:note_id>/duplicate/', duplicate_note_api, name='xml-api-note-duplicate'),
+
+    # Raccourcis URLs pour les vues interactives
+    path('views/<str:view_id>/', interactive_xml_view, name='xml-view-interactive'),
+    path('kanban/', interactive_xml_view, {'view_id': 'vocabulary_kanban_view'}, name='notebook-kanban'),
+    path('table/', interactive_xml_view, {'view_id': 'note_tree_view'}, name='notebook-table'),
+    path('form/', interactive_xml_view, {'view_id': 'note_form_view'}, name='notebook-form'),
+    path('search/', interactive_xml_view, {'view_id': 'note_search_advanced_view'}, name='notebook-search'),
+
+    # Pages XML
+    path('xml/', xml_index_page, name='xml-index'),
+    path('xml/demo/', xml_demo_page, name='xml-demo'),
+
+    # XML Export endpoints
+    path('xml/export/', export_notes_xml, name='xml-export-all'),
+    path('xml/export/<int:note_id>/', export_single_note_xml, name='xml-export-single'),
+    path('xml/export/odoo/', export_notes_odoo_style, name='xml-export-odoo'),
 ]
 
 
 # Endpoints disponibles :
 
-# /api/notes/ - CRUD des notes
-# /api/notes/due_for_review/ - Notes à réviser
-# /api/notes/by_language/ - Notes par langue
-# /api/categories/ - Gestion des catégories
+# /api/v1/notebook/notes/ - CRUD des notes
+# /api/v1/notebook/notes/due_for_review/ - Notes à réviser
+# /api/v1/notebook/categories/ - Gestion des catégories
+# /api/v1/notebook/shared-notes/ - Gestion des notes partagées
 # /api/v1/core/tags/ - Gestion des tags (système global)
-# /api/shared/ - Gestion des notes partagées
+
+# XML Template endpoints:
+# /api/v1/notebook/xml/views/ - Liste toutes les vues XML
+# /api/v1/notebook/xml/views/{view_id}/ - Détails d'une vue XML
+# /api/v1/notebook/xml/views/{view_id}/html/ - Rendu HTML d'une vue XML
+# /api/v1/notebook/xml/views/{view_id}/create/ - Créer un objet via vue XML
+# /api/v1/notebook/xml/views/{view_id}/fields/ - Liste des champs d'une vue
+# /api/v1/notebook/xml/reload/ - Recharger les templates XML

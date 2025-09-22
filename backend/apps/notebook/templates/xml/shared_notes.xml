@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linguify>
+    <data>
+        <!-- Vue formulaire pour les notes partagées -->
+        <record id="shared_note_form_view" model="ir.ui.view">
+            <field name="name">shared.note.form</field>
+            <field name="model">notebook.sharednote</field>
+            <field name="arch" type="xml">
+                <form string="Note Partagée">
+                    <header>
+                        <field name="can_edit" widget="statusbar" statusbar_visible="false,true"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="note" options="{'no_create': True}"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Partage">
+                                <field name="shared_with"/>
+                                <field name="shared_at"/>
+                                <field name="can_edit"/>
+                            </group>
+                            <group string="Permissions">
+                                <field name="note_title" string="Titre de la note"/>
+                                <field name="note_owner" string="Propriétaire"/>
+                                <field name="note_category" string="Catégorie"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Contenu de la note">
+                                <group>
+                                    <field name="note_content" string="Contenu" readonly="1"/>
+                                    <field name="note_language" string="Langue" readonly="1"/>
+                                    <field name="note_type" string="Type" readonly="1"/>
+                                </group>
+                            </page>
+
+                            <page string="Historique des modifications" attrs="{'invisible': [('can_edit', '=', False)]}">
+                                <field name="modification_history" widget="text" readonly="1"/>
+                            </page>
+
+                            <page string="Commentaires">
+                                <field name="comments" widget="text" placeholder="Ajoutez vos commentaires sur cette note partagée..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue liste pour les notes partagées -->
+        <record id="shared_note_tree_view" model="ir.ui.view">
+            <field name="name">shared.note.tree</field>
+            <field name="model">notebook.sharednote</field>
+            <field name="arch" type="xml">
+                <tree string="Notes Partagées" decoration-info="can_edit==True">
+                    <field name="note"/>
+                    <field name="shared_with"/>
+                    <field name="shared_at"/>
+                    <field name="can_edit"/>
+                    <field name="note_owner" string="Propriétaire"/>
+                    <field name="note_type" string="Type"/>
+                    <field name="note_language" string="Langue"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue kanban pour les notes partagées -->
+        <record id="shared_note_kanban_view" model="ir.ui.view">
+            <field name="name">shared.note.kanban</field>
+            <field name="model">notebook.sharednote</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="can_edit">
+                    <field name="note"/>
+                    <field name="shared_with"/>
+                    <field name="shared_at"/>
+                    <field name="can_edit"/>
+                    <field name="note_title"/>
+                    <field name="note_owner"/>
+                    <field name="note_content"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card" t-attf-class="#{record.can_edit.raw_value ? 'oe_kanban_color_5' : 'oe_kanban_color_0'}">
+                                <div class="oe_kanban_content">
+                                    <div class="oe_kanban_title">
+                                        <strong><field name="note_title"/></strong>
+                                        <t t-if="record.can_edit.raw_value">✏️</t>
+                                        <t t-else="">👁️</t>
+                                    </div>
+                                    <div class="oe_kanban_details">
+                                        <div><strong>Partagé avec:</strong> <field name="shared_with"/></div>
+                                        <div><strong>Propriétaire:</strong> <field name="note_owner"/></div>
+                                        <div class="oe_kanban_content_preview">
+                                            <field name="note_content"/>
+                                        </div>
+                                    </div>
+                                    <div class="oe_kanban_bottom">
+                                        <div class="oe_kanban_bottom_left">
+                                            Partagé le: <field name="shared_at"/>
+                                        </div>
+                                        <div class="oe_kanban_bottom_right">
+                                            <t t-if="record.can_edit.raw_value">
+                                                <span class="badge badge-success">Édition</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge badge-info">Lecture</span>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vue de recherche pour les notes partagées -->
+        <record id="shared_note_search_view" model="ir.ui.view">
+            <field name="name">shared.note.search</field>
+            <field name="model">notebook.sharednote</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher Notes Partagées">
+                    <field name="note"/>
+                    <field name="shared_with"/>
+                    <field name="note_owner"/>
+                    <field name="note_content"/>
+
+                    <!-- Filtres -->
+                    <filter string="Mes partages" domain="[('note.user', '=', uid)]"/>
+                    <filter string="Partagées avec moi" domain="[('shared_with', '=', uid)]"/>
+                    <filter string="Édition autorisée" domain="[('can_edit', '=', True)]"/>
+                    <filter string="Lecture seule" domain="[('can_edit', '=', False)]"/>
+
+                    <separator/>
+
+                    <!-- Filtres par date -->
+                    <filter string="Partagé aujourd'hui" domain="[('shared_at', '>=', datetime.datetime.now().strftime('%Y-%m-%d 00:00:00'))]"/>
+                    <filter string="Partagé cette semaine" domain="[('shared_at', '>=', (datetime.datetime.now() - datetime.timedelta(weeks=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
+
+                    <separator/>
+
+                    <!-- Groupements -->
+                    <group expand="0" string="Grouper par">
+                        <filter string="Permissions" context="{'group_by': 'can_edit'}"/>
+                        <filter string="Partagé avec" context="{'group_by': 'shared_with'}"/>
+                        <filter string="Propriétaire" context="{'group_by': 'note.user'}"/>
+                        <filter string="Type de note" context="{'group_by': 'note.note_type'}"/>
+                        <filter string="Date de partage" context="{'group_by': 'shared_at:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Vue graphique pour les statistiques de partage -->
+        <record id="shared_note_graph_view" model="ir.ui.view">
+            <field name="name">shared.note.graph</field>
+            <field name="model">notebook.sharednote</field>
+            <field name="arch" type="xml">
+                <graph string="Statistiques Partage" type="pie">
+                    <field name="can_edit" type="row"/>
+                    <field name="shared_at" type="col" interval="month"/>
+                </graph>
+            </field>
+        </record>
+    </data>
+</linguify>

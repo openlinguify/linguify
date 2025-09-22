@@ -324,6 +324,15 @@ def bulk_update_notes(request):
             'success': True,
             'updated_count': updated_count
         })
-        
+
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+def redirect_to_xml_view(request, view_id):
+    """
+    Redirige vers la vue XML interactive correspondante
+    """
+    from django.shortcuts import redirect
+    return redirect('notebook:xml-view-interactive', view_id=view_id)

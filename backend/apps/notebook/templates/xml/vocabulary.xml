@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linguify>
+    <data>
+        <!-- Vue formulaire spécialisée pour le vocabulaire -->
+        <record id="vocabulary_form_view" model="ir.ui.view">
+            <field name="name">vocabulary.form</field>
+            <field name="model">notebook.note</field>
+            <field name="arch" type="xml">
+                <form string="Vocabulaire">
+                    <header>
+                        <button name="mark_reviewed" string="Marquer comme révisé" type="object" class="oe_highlight"/>
+                        <field name="difficulty" widget="statusbar" statusbar_visible="BEGINNER,INTERMEDIATE,ADVANCED"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="title" placeholder="Mot ou expression"/>
+                            </h1>
+                            <h2>
+                                <field name="pronunciation" placeholder="Prononciation phonétique"/>
+                            </h2>
+                        </div>
+
+                        <group>
+                            <group string="Informations générales">
+                                <field name="language"/>
+                                <field name="note_type" invisible="1"/>
+                                <field name="category"/>
+                                <field name="priority"/>
+                            </group>
+                            <group string="Révision">
+                                <field name="review_count"/>
+                                <field name="last_reviewed_at"/>
+                                <field name="is_pinned"/>
+                                <field name="is_archived"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Définition &amp; Traduction">
+                                <group>
+                                    <field name="content" string="Définition" placeholder="Définition du mot..."/>
+                                    <field name="translation" placeholder="Traduction..."/>
+                                </group>
+                            </page>
+
+                            <page string="Exemples">
+                                <field name="example_sentences" widget="text" placeholder="Phrases d'exemple (une par ligne)"/>
+                            </page>
+
+                            <page string="Mots liés">
+                                <field name="related_words" widget="text" placeholder="Synonymes, antonymes, mots de la même famille..."/>
+                            </page>
+
+                            <page string="Métadonnées">
+                                <group>
+                                    <group>
+                                        <field name="created_at"/>
+                                        <field name="updated_at"/>
+                                    </group>
+                                    <group>
+                                        <field name="user"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue kanban pour le vocabulaire -->
+        <record id="vocabulary_kanban_view" model="ir.ui.view">
+            <field name="name">vocabulary.kanban</field>
+            <field name="model">notebook.note</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="language">
+                    <field name="title"/>
+                    <field name="translation"/>
+                    <field name="language"/>
+                    <field name="difficulty"/>
+                    <field name="review_count"/>
+                    <field name="last_reviewed_at"/>
+                    <field name="is_pinned"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card" t-attf-class="#{record.difficulty.raw_value === 'ADVANCED' ? 'oe_kanban_color_1' : record.difficulty.raw_value === 'INTERMEDIATE' ? 'oe_kanban_color_3' : 'oe_kanban_color_7'}">
+                                <div class="oe_kanban_content">
+                                    <div class="oe_kanban_title">
+                                        <strong><field name="title"/></strong>
+                                        <t t-if="record.is_pinned.raw_value">⭐</t>
+                                    </div>
+                                    <div class="oe_kanban_details">
+                                        <div><em><field name="translation"/></em></div>
+                                        <div class="oe_kanban_tags">
+                                            <span class="badge"><field name="difficulty"/></span>
+                                            <span class="badge">Révisions: <field name="review_count"/></span>
+                                        </div>
+                                    </div>
+                                    <div class="oe_kanban_bottom">
+                                        <div class="oe_kanban_bottom_left">
+                                            <t t-if="record.last_reviewed_at.raw_value">
+                                                Dernière révision: <field name="last_reviewed_at"/>
+                                            </t>
+                                            <t t-else="">
+                                                Jamais révisé
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vue liste pour le vocabulaire -->
+        <record id="vocabulary_tree_view" model="ir.ui.view">
+            <field name="name">vocabulary.tree</field>
+            <field name="model">notebook.note</field>
+            <field name="arch" type="xml">
+                <tree string="Vocabulaire" decoration-info="difficulty=='BEGINNER'" decoration-warning="difficulty=='INTERMEDIATE'" decoration-danger="difficulty=='ADVANCED'">
+                    <field name="title"/>
+                    <field name="translation"/>
+                    <field name="language"/>
+                    <field name="difficulty"/>
+                    <field name="pronunciation"/>
+                    <field name="review_count"/>
+                    <field name="last_reviewed_at"/>
+                    <field name="created_at"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue graphique spécifique au vocabulaire -->
+        <record id="vocabulary_graph_view" model="ir.ui.view">
+            <field name="name">vocabulary.graph</field>
+            <field name="model">notebook.note</field>
+            <field name="arch" type="xml">
+                <graph string="Progression Vocabulaire" type="line">
+                    <field name="language" type="row"/>
+                    <field name="created_at" type="col" interval="week"/>
+                    <field name="review_count" type="measure"/>
+                </graph>
+            </field>
+        </record>
+    </data>
+</linguify>

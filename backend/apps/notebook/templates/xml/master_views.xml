@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linguify>
+    <data>
+        <!-- Actions et menus pour organiser toutes les vues -->
+
+        <!-- Actions pour les notes -->
+        <record id="action_notes_all" model="ir.actions.act_window">
+            <field name="name">Toutes les Notes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">notebook.note</field>
+            <field name="view_mode">tree,form,kanban,calendar,graph,pivot</field>
+            <field name="view_id" ref="note_tree_view"/>
+            <field name="search_view_id" ref="note_search_advanced_view"/>
+        </record>
+
+        <record id="action_vocabulary" model="ir.actions.act_window">
+            <field name="name">Vocabulaire</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">notebook.note</field>
+            <field name="view_mode">kanban,form,tree,graph</field>
+            <field name="view_id" ref="vocabulary_kanban_view"/>
+            <field name="domain">[('note_type', '=', 'VOCABULARY')]</field>
+            <field name="context">{'default_note_type': 'VOCABULARY'}</field>
+        </record>
+
+        <record id="action_grammar" model="ir.actions.act_window">
+            <field name="name">Grammaire</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">notebook.note</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="domain">[('note_type', '=', 'GRAMMAR')]</field>
+            <field name="context">{'default_note_type': 'GRAMMAR'}</field>
+        </record>
+
+        <record id="action_notes_to_review" model="ir.actions.act_window">
+            <field name="name">Notes à Réviser</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">notebook.note</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('last_reviewed_at', '=', False)]</field>
+        </record>
+
+        <!-- Actions pour les catégories -->
+        <record id="action_categories" model="ir.actions.act_window">
+            <field name="name">Catégories</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">notebook.category</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="view_id" ref="category_tree_view"/>
+            <field name="search_view_id" ref="category_search_view"/>
+        </record>
+
+        <!-- Actions pour les notes partagées -->
+        <record id="action_shared_notes" model="ir.actions.act_window">
+            <field name="name">Notes Partagées</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">notebook.sharednote</field>
+            <field name="view_mode">kanban,tree,form,graph</field>
+            <field name="view_id" ref="shared_note_kanban_view"/>
+            <field name="search_view_id" ref="shared_note_search_view"/>
+        </record>
+
+        <!-- Actions pour les tableaux de bord -->
+        <record id="action_notes_dashboard" model="ir.actions.act_window">
+            <field name="name">Tableau de Bord Notes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">notebook.note</field>
+            <field name="view_mode">dashboard,graph,pivot</field>
+            <field name="view_id" ref="notes_dashboard_view"/>
+        </record>
+
+        <record id="action_review_dashboard" model="ir.actions.act_window">
+            <field name="name">Tableau de Révision</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">notebook.note</field>
+            <field name="view_mode">dashboard</field>
+            <field name="view_id" ref="review_dashboard_view"/>
+        </record>
+
+        <!-- Structure de menu principal -->
+        <menuitem id="menu_notebook_root" name="📚 Notebook" sequence="10"/>
+
+        <!-- Menus principaux -->
+        <menuitem id="menu_notes" name="📝 Notes" parent="menu_notebook_root" sequence="10"/>
+        <menuitem id="menu_learning" name="🎓 Apprentissage" parent="menu_notebook_root" sequence="20"/>
+        <menuitem id="menu_organization" name="📁 Organisation" parent="menu_notebook_root" sequence="30"/>
+        <menuitem id="menu_analytics" name="📊 Analyses" parent="menu_notebook_root" sequence="40"/>
+
+        <!-- Sous-menus Notes -->
+        <menuitem id="menu_all_notes" name="Toutes les notes" parent="menu_notes" action="action_notes_all" sequence="10"/>
+        <menuitem id="menu_new_note" name="➕ Nouvelle note" parent="menu_notes" sequence="20"/>
+        <menuitem id="menu_pinned_notes" name="📌 Notes épinglées" parent="menu_notes" sequence="30"/>
+        <menuitem id="menu_archived_notes" name="🗄️ Archives" parent="menu_notes" sequence="40"/>
+
+        <!-- Sous-menus Apprentissage -->
+        <menuitem id="menu_vocabulary" name="📚 Vocabulaire" parent="menu_learning" action="action_vocabulary" sequence="10"/>
+        <menuitem id="menu_grammar" name="📝 Grammaire" parent="menu_learning" action="action_grammar" sequence="20"/>
+        <menuitem id="menu_expressions" name="💬 Expressions" parent="menu_learning" sequence="30"/>
+        <menuitem id="menu_review" name="🔄 Révisions" parent="menu_learning" action="action_notes_to_review" sequence="40"/>
+
+        <!-- Sous-menus Organisation -->
+        <menuitem id="menu_categories" name="📂 Catégories" parent="menu_organization" action="action_categories" sequence="10"/>
+        <menuitem id="menu_tags" name="🏷️ Tags" parent="menu_organization" sequence="20"/>
+        <menuitem id="menu_shared" name="👥 Partage" parent="menu_organization" action="action_shared_notes" sequence="30"/>
+
+        <!-- Sous-menus Analyses -->
+        <menuitem id="menu_dashboard" name="📊 Tableau de bord" parent="menu_analytics" action="action_notes_dashboard" sequence="10"/>
+        <menuitem id="menu_review_stats" name="📈 Révisions" parent="menu_analytics" action="action_review_dashboard" sequence="20"/>
+        <menuitem id="menu_progress" name="🎯 Progression" parent="menu_analytics" sequence="30"/>
+
+        <!-- Vues spécialisées additionnelles -->
+
+        <!-- Vue d'aide et tutoriel -->
+        <record id="help_view" model="ir.ui.view">
+            <field name="name">help.view</field>
+            <field name="model">notebook.note</field>
+            <field name="arch" type="xml">
+                <form string="Aide et Tutoriel">
+                    <div class="help-container">
+                        <h1>🎯 Guide d'utilisation du Notebook</h1>
+
+                        <div class="help-section">
+                            <h2>📝 Créer des notes</h2>
+                            <p>Utilisez le menu "Nouvelle note" pour créer différents types de contenus :</p>
+                            <ul>
+                                <li><strong>Vocabulaire</strong> : Mots, expressions, traductions</li>
+                                <li><strong>Grammaire</strong> : Règles, explications, exemples</li>
+                                <li><strong>Culture</strong> : Informations culturelles et contextuelles</li>
+                            </ul>
+                        </div>
+
+                        <div class="help-section">
+                            <h2>🔄 Système de révision</h2>
+                            <p>Le système de révision espacée vous aide à mémoriser :</p>
+                            <ul>
+                                <li>Révisez régulièrement vos notes</li>
+                                <li>Les intervalles s'adaptent à votre performance</li>
+                                <li>Suivez vos statistiques dans le tableau de bord</li>
+                            </ul>
+                        </div>
+
+                        <div class="help-section">
+                            <h2>📁 Organisation</h2>
+                            <p>Organisez vos notes efficacement :</p>
+                            <ul>
+                                <li>Utilisez les catégories pour grouper par thème</li>
+                                <li>Ajoutez des tags pour un classement flexible</li>
+                                <li>Épinglez les notes importantes</li>
+                            </ul>
+                        </div>
+
+                        <div class="help-section">
+                            <h2>👥 Partage et collaboration</h2>
+                            <p>Partagez vos connaissances :</p>
+                            <ul>
+                                <li>Partagez des notes avec d'autres utilisateurs</li>
+                                <li>Définissez les permissions (lecture/écriture)</li>
+                                <li>Collaborez sur des projets d'apprentissage</li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue de paramètres personnalisés -->
+        <record id="settings_view" model="ir.ui.view">
+            <field name="name">settings.view</field>
+            <field name="model">notebook.note</field>
+            <field name="arch" type="xml">
+                <form string="Paramètres Notebook">
+                    <group>
+                        <group string="Préférences de révision">
+                            <field name="daily_review_goal" string="Objectif quotidien"/>
+                            <field name="review_notification" string="Notifications"/>
+                            <field name="preferred_review_time" string="Heure préférée"/>
+                        </group>
+
+                        <group string="Interface">
+                            <field name="default_view" string="Vue par défaut"/>
+                            <field name="items_per_page" string="Éléments par page"/>
+                            <field name="theme_preference" string="Thème"/>
+                        </group>
+
+                        <group string="Langues">
+                            <field name="native_language" string="Langue native"/>
+                            <field name="learning_languages" string="Langues apprises"/>
+                            <field name="interface_language" string="Langue interface"/>
+                        </group>
+
+                        <group string="Export et sauvegarde">
+                            <field name="auto_backup" string="Sauvegarde auto"/>
+                            <field name="export_format" string="Format d'export"/>
+                            <field name="cloud_sync" string="Sync cloud"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+    </data>
+</linguify>
