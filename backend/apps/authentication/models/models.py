@@ -10,6 +10,7 @@ from decimal import Decimal
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth import models as auth_models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 import re
@@ -22,8 +23,16 @@ from django.utils.translation import gettext_lazy as _
 from PIL import Image
 import secrets
 import string
+from timezone_field import TimeZoneField
 
 from ..utils.storage import ProfileStorage
+
+class DuplicateEmailError(Exception):
+    """Raised when an email is already associated with a pre-existing user."""
+    def __init__(self, message=None, email=None):
+        self.message = message
+        self.email = email
+        super().__init__(self.message)
 
 # Choix pour l'interface utilisateur uniquement
 INTERFACE_LANGUAGE_CHOICES = [
@@ -83,6 +92,32 @@ from ..utils.validators import validate_username_format as validate_username
 
 
 class UserManager(BaseUserManager):
+    def get_user_by_sub_or_email(self, sub, email=None):
+        """Fetch existing user by sub or email."""
+        try:
+            return self.get(sub=sub)
+        except self.model.DoesNotExist as err:
+            if not email:
+                return None
+
+            if settings.OIDC_FALLBACK_TO_EMAIL_FOR_IDENTIFICATION:
+                try:
+                    return self.get(email=email)
+                except self.model.DoesNotExist:
+                    pass
+            elif (
+                self.filter(email=email).exists()
+                and not settings.OIDC_ALLOW_DUPLICATE_EMAILS
+            ):
+                raise DuplicateEmailError(
+                    message=_(
+                        "We couldn't find a user with this sub but the email is already "
+                        "associated with a registered user."
+                    ),
+                    email=email  # Ajout du paramètre email ici
+                ) from err
+        return None
+
     def get_object_by_public_id(self, public_id: str) -> Any:
         """
         Retrieve a user instance by public_id or raise Http404 if not found.
@@ -113,9 +148,17 @@ class UserManager(BaseUserManager):
         if self.filter(username__iexact=username).exists():
             raise ValidationError(_('This username is already taken'))
 
+        # Vérifier l'unicité de l'email avec DuplicateEmailError
+        normalized_email = self.normalize_email(email)
+        if self.filter(email=normalized_email).exists():
+            raise DuplicateEmailError(
+                message=_('This email address is already registered. Please use a different email or reset your password.'),
+                email=normalized_email
+            )
+
         user = self.model(
             username=username,
-            email=self.normalize_email(email),
+            email=normalized_email,
             **kwargs
         )
         user.set_password(password)
@@ -246,7 +289,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     bio = models.TextField(max_length=500, null=True, blank=True)
 
     is_coach = models.BooleanField(default=False)
-    interface_language = models.CharField(max_length=10, choices=INTERFACE_LANGUAGE_CHOICES, default='en')
+    interface_language = models.CharField(max_length=20, choices=settings.LANGUAGES, default='en', verbose_name=_("language"), help_text=_("The language in which the user wants to see the interface."), null=True, blank=True,)
+    timezone = TimeZoneField(
+        choices_display="WITH_GMT_OFFSET",
+        use_pytz=False,
+        default=settings.TIME_ZONE,
+        help_text=_("The timezone in which the user wants to see times."),
+    )
+    is_device = models.BooleanField(_("device"), default=False, help_text=_("Whether the user is a device or a real user."))
     theme = models.CharField(max_length=10, default='light')
     # settings fields
     email_notifications = models.BooleanField(default=True)
@@ -262,12 +312,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     terms_accepted_at = models.DateTimeField(null=True, blank=True, help_text='When the user accepted the terms and conditions')
     terms_version = models.CharField(max_length=10, null=True, blank=True, default='v1.0', help_text='Version of terms that was accepted')
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
-    
     # Custom manager
     objects = UserManager()
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    
     def update_profile(self, **kwargs):
         """
         Met à jour le profil utilisateur.

@@ -13,6 +13,7 @@ from ..forms.auth_forms import RegisterForm
 from ..services.email_service import EmailVerificationService
 from ..security.rate_limiter import EmailVerificationRateLimiter, rate_limit_response
 from ..security.audit_logger import SecurityAuditLogger
+from ..models.models import DuplicateEmailError
 
 class LoginView(auth_views.LoginView):
     """Login View"""
@@ -51,7 +52,7 @@ class RegisterView(View):
             
             try:
                 user = form.save()
-                
+
                 # Log registration
                 SecurityAuditLogger.log_registration(user, client_ip, user_agent)
                 
@@ -86,11 +87,23 @@ class RegisterView(View):
                     )
                     messages.error(request, _('Account created but failed to send verification email. Please contact support.'))
                     
+            except DuplicateEmailError as e:
+                # Gérer spécifiquement les erreurs d'email dupliqué
+                SecurityAuditLogger.log_suspicious_activity(
+                    e.email,
+                    f'Duplicate email registration attempt: {e.email}',
+                    client_ip,
+                    'WARNING'
+                )
+                messages.error(request, e.message)
+                # Rediriger vers la page de connexion avec l'email pré-rempli
+                return redirect(f'/auth/login/?email={e.email}&duplicate=true')
+
             except Exception as e:
                 SecurityAuditLogger.log_suspicious_activity(
-                    request.POST.get('email', 'unknown'), 
-                    f'Registration failed: {str(e)}', 
-                    client_ip, 
+                    request.POST.get('email', 'unknown'),
+                    f'Registration failed: {str(e)}',
+                    client_ip,
                     'ERROR'
                 )
                 messages.error(request, _('An error occurred while creating your account. Please try again.'))

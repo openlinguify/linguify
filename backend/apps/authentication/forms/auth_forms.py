@@ -7,7 +7,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
-from ..models.models import INTERFACE_LANGUAGE_CHOICES
+from django.conf import settings
+from ..models.models import DuplicateEmailError
 
 User = get_user_model()
 
@@ -103,7 +104,7 @@ class RegisterForm(UserCreationForm):
     )
     
     interface_language = forms.ChoiceField(
-        choices=INTERFACE_LANGUAGE_CHOICES,
+        choices=settings.LANGUAGES,
         initial='en',
         widget=forms.Select(attrs={
             'class': 'form-select'
@@ -145,11 +146,22 @@ class RegisterForm(UserCreationForm):
             if domain in disposable_domains:
                 raise forms.ValidationError(_("Please use a permanent email address"))
 
-            # Vérifier les emails existants
+            # Vérifier les emails existants avec DuplicateEmailError
             from django.contrib.auth import get_user_model
             User = get_user_model()
             if User.objects.filter(email=email).exists():
-                raise forms.ValidationError(_("An account with this email already exists"))
+                # Utiliser DuplicateEmailError pour une meilleure traçabilité
+                error = DuplicateEmailError(
+                    message=_("An account with this email already exists. Please use a different email or login with your existing account."),
+                    email=email
+                )
+                # Log l'erreur pour le monitoring
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Registration attempt with duplicate email: {email}")
+
+                # Convertir en ValidationError pour le formulaire
+                raise forms.ValidationError(error.message)
         return email
 
     def clean(self):
