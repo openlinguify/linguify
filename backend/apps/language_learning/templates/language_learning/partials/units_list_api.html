@@ -1,12 +1,13 @@
 <!-- Units List - API Version -->
 <div x-show="currentView === 'units'" x-transition class="fade-in" style="background: var(--linguify-gray-50); min-height: 100vh; padding: 1.5rem;">
-    <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="width: 100%;">
 
     <!-- Units List -->
-    <div x-show="courseUnits.length > 0" class="units-list">
+    <div x-show="courseUnits.length > 0" style="width: 100%;">
         <template x-for="unit in courseUnits" :key="unit.id">
             <div x-data="unitCard(unit, $data)"
                  class="unit-card"
+                 style="width: 100%; margin-bottom: 1rem;"
                  :class="{
                      'completed': unit.progress_percentage === 100,
                      'active': unit.progress_percentage > 0 && unit.progress_percentage < 100

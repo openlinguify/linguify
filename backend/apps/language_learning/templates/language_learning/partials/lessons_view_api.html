@@ -1,6 +1,6 @@
 <!-- Lessons View - API Version -->
 <div x-show="currentView === 'lessons'" x-transition class="fade-in" style="background: var(--linguify-gray-50); min-height: 100vh; padding: 1.5rem;">
-    <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="width: 100%;">
 
         <!-- Lessons Header -->
         <div class="d-flex align-items-center justify-content-between mb-4" style="border-bottom: 2px solid var(--linguify-gray-200); padding-bottom: 0.75rem;">
@@ -12,25 +12,25 @@
                     <h4 class="mb-0" style="color: var(--linguify-gray-800); font-weight: 600;">
                         Lessons
                     </h4>
-                    <small class="text-muted" x-show="activeUnit" x-text="'Unité: ' + (activeUnit?.title || '')"></small>
+                    <small style="color: var(--linguify-gray-600);" x-show="activeUnit" x-text="'Unité: ' + (activeUnit?.title || '')"></small>
                 </div>
             </div>
 
             <!-- Back to Units if needed -->
             <button @click="currentView = 'units'; activeUnit = null;" class="btn-navbar btn-navbar-outline" x-show="activeUnit">
-                <i class="bi bi-grid-3x3-gap me-1"></i>
-                Voir toutes les unités
+                <i class="bi bi-arrow-left me-1"></i>
+                Retour
             </button>
         </div>
 
         <!-- Unit Selection (if no active unit) -->
         <div x-show="!activeUnit" class="mb-4">
-            <p class="text-muted mb-3">Sélectionnez une unité pour voir ses lessons :</p>
-            <div class="units-list">
+            <p class="mb-3" style="color: var(--linguify-gray-600);">Sélectionnez une unité pour voir ses lessons :</p>
+            <div style="width: 100%;">
                 <template x-for="unit in courseUnits" :key="unit.id">
                     <div @click="selectUnitForLessons(unit)"
                          class="unit-card"
-                         style="cursor: pointer;"
+                         style="cursor: pointer; width: 100%; margin-bottom: 1rem;"
                          :class="{
                              'completed': unit.progress_percentage === 100,
                              'active': unit.progress_percentage > 0 && unit.progress_percentage < 100

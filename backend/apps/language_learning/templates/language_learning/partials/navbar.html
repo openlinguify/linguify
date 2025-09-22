@@ -9,7 +9,7 @@
 
         <!-- Navigation tabs -->
         <div class="nav-tabs-group">
-            <a @click="currentView = 'units'; activeUnit = null;"
+            <a @click="if (activeUnit) { currentView = 'units'; activeUnit = null; } else { currentView = 'units'; }"
                class="nav-tab"
                :class="{ 'active': currentView === 'units' || currentView === 'lessons' }"
                style="cursor: pointer;">
