@@ -142,7 +142,7 @@ class UserManager(BaseUserManager):
 
         # Vérifier l'unicité de l'email avec DuplicateEmailError
         normalized_email = self.normalize_email(email)
-        if self.filter(email=normalized_email).exists():
+        if self.filter(email__iexact=normalized_email).exists():
             raise DuplicateEmailError(
                 message=_('This email address is already registered. Please use a different email or reset your password.'),
                 email=normalized_email

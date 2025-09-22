@@ -371,3 +371,13 @@ msgstr "Hora del recordatorio"
 
 msgid "When to receive your daily reminder"
 msgstr "Cuándo recibir tu recordatorio diario"
+
+# DuplicateEmailError messages
+msgid "An account with this email already exists. You will be redirected to the login page."
+msgstr "Ya existe una cuenta con este correo electrónico. Serás redirigido a la página de inicio de sesión."
+
+msgid "An account with this email already exists. Please login with your existing account."
+msgstr "Ya existe una cuenta con este correo electrónico. Por favor, inicia sesión con tu cuenta existente."
+
+msgid "An account with <strong>%(email)s</strong> already exists. Please sign in below."
+msgstr "Ya existe una cuenta con <strong>%(email)s</strong>. Por favor, inicia sesión a continuación."

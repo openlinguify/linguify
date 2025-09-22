@@ -14,6 +14,11 @@ from ..services.email_service import EmailVerificationService
 from ..security.rate_limiter import EmailVerificationRateLimiter, rate_limit_response
 from ..security.audit_logger import SecurityAuditLogger
 from ..models.models import DuplicateEmailError
+from django.urls import reverse
+from django.utils import translation
+import logging
+
+logger = logging.getLogger(__name__)
 
 class LoginView(auth_views.LoginView):
     """Login View"""
@@ -76,11 +81,17 @@ class RegisterView(View):
             if hasattr(form, '_redirect_to_login') and form._redirect_to_login:
                 duplicate_email = getattr(form, '_duplicate_email', '')
                 # Rediriger vers la page de connexion avec l'email pré-rempli
+                # Préserver la langue actuelle de l'utilisateur
+                current_language = translation.get_language()
+
                 messages.info(
                     request,
                     _('An account with this email already exists. Please login with your existing account.')
                 )
-                return redirect(f'/auth/login/?email={duplicate_email}&from=register')
+
+                # Construire l'URL de redirection avec la langue actuelle
+                login_url = reverse('auth:login')
+                return redirect(f'{login_url}?email={duplicate_email}&from=register')
 
         if form.is_valid():
             client_ip = EmailVerificationRateLimiter.get_client_ip(request)

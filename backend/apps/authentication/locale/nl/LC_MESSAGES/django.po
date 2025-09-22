@@ -371,3 +371,13 @@ msgstr "Herinneringstijd"
 
 msgid "When to receive your daily reminder"
 msgstr "Wanneer je dagelijkse herinnering ontvangen"
+
+# DuplicateEmailError messages
+msgid "An account with this email already exists. You will be redirected to the login page."
+msgstr "Er bestaat al een account met dit e-mailadres. Je wordt doorgestuurd naar de inlogpagina."
+
+msgid "An account with this email already exists. Please login with your existing account."
+msgstr "Er bestaat al een account met dit e-mailadres. Log in met je bestaande account."
+
+msgid "An account with <strong>%(email)s</strong> already exists. Please sign in below."
+msgstr "Er bestaat al een account met <strong>%(email)s</strong>. Log hieronder in."

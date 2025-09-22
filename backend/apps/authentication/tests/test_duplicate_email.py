@@ -34,10 +34,10 @@ class DuplicateEmailRegistrationTest(TestCase):
     def setUp(self):
         self.client = Client()
 
-        # Créer un utilisateur existant
+        # Créer un utilisateur existant pour ce test
         self.existing_user = User.objects.create_user(
-            username='existing_user',
-            email='existing@example.com',
+            username='existing_reg_user',
+            email='existing_registration@example.com',
             password='TestPass123!'
         )
 
@@ -47,7 +47,7 @@ class DuplicateEmailRegistrationTest(TestCase):
             'first_name': 'New',
             'last_name': 'User',
             'username': 'newuser',
-            'email': 'existing@example.com',  # Email déjà existant
+            'email': 'existing_registration@example.com',  # Email déjà existant
             'password1': 'TestPass123!',
             'password2': 'TestPass123!',
             'birthday': '1990-01-01',
@@ -66,12 +66,12 @@ class DuplicateEmailRegistrationTest(TestCase):
         with self.assertRaises(DuplicateEmailError) as context:
             User.objects.create_user(
                 username='another_user',
-                email='existing@example.com',  # Email déjà existant
+                email='existing_registration@example.com',  # Email déjà existant
                 password='TestPass123!'
             )
 
         error = context.exception
-        self.assertEqual(error.email, 'existing@example.com')
+        self.assertEqual(error.email, 'existing_registration@example.com')
         self.assertIn('already registered', error.message)
 
 
@@ -81,7 +81,7 @@ class DuplicateEmailRegistrationTest(TestCase):
             'first_name': 'New',
             'last_name': 'User',
             'username': 'newuser2',
-            'email': 'EXISTING@EXAMPLE.COM',  # Même email en majuscules
+            'email': 'EXISTING_REGISTRATION@EXAMPLE.COM',  # Même email en majuscules
             'password1': 'TestPass123!',
             'password2': 'TestPass123!',
             'birthday': '1990-01-01',
@@ -126,11 +126,8 @@ class DuplicateEmailAuditTest(TestCase):
             'terms': True
         }
 
-        # Mock le logger
-        with patch('logging.getLogger') as mock_get_logger:
-            mock_logger = MagicMock()
-            mock_get_logger.return_value = mock_logger
-
+        # Mock le logger spécifique au module forms
+        with patch('apps.authentication.forms.auth_forms.logger') as mock_logger:
             # Tester le formulaire avec email dupliqué
             form = RegisterForm(data=form_data)
             self.assertFalse(form.is_valid())
@@ -320,3 +317,136 @@ class DuplicateEmailIntegrationTest(TestCase):
         error = context.exception
         self.assertEqual(error.email, 'integration@example.com')
         self.assertIn('already registered', error.message)
+
+
+class DuplicateEmailInternationalizationTest(TestCase):
+    """Test de l'internationalisation pour les messages d'erreur d'email dupliqué"""
+
+    def setUp(self):
+        self.client = Client()
+
+        # Créer un utilisateur existant
+        User.objects.create_user(
+            username='i18n_user',
+            email='i18n@example.com',
+            password='TestPass123!'
+        )
+
+    def test_french_duplicate_email_message(self):
+        """Test que les messages sont traduits en français"""
+        from django.utils import translation
+
+        # Activer la langue française
+        with translation.override('fr'):
+            form_data = {
+                'first_name': 'Test',
+                'last_name': 'User',
+                'username': 'testuser',
+                'email': 'i18n@example.com',  # Email existant
+                'password1': 'TestPass123!',
+                'password2': 'TestPass123!',
+                'birthday': '1990-01-01',
+                'gender': 'M',
+                'interface_language': 'fr',
+                'terms': True
+            }
+
+            form = RegisterForm(data=form_data)
+            self.assertFalse(form.is_valid())
+
+            # Vérifier que le message est en français
+            self.assertIn('email', form.errors)
+            error_message = str(form.errors['email'])
+            self.assertIn('redirigé', error_message)  # Mot français
+
+    def test_spanish_duplicate_email_message(self):
+        """Test que les messages sont traduits en espagnol"""
+        from django.utils import translation
+
+        # Activer la langue espagnole
+        with translation.override('es'):
+            form_data = {
+                'first_name': 'Test',
+                'last_name': 'User',
+                'username': 'testuser2',
+                'email': 'i18n@example.com',  # Email existant
+                'password1': 'TestPass123!',
+                'password2': 'TestPass123!',
+                'birthday': '1990-01-01',
+                'gender': 'M',
+                'interface_language': 'es',
+                'terms': True
+            }
+
+            form = RegisterForm(data=form_data)
+            self.assertFalse(form.is_valid())
+
+            # Vérifier que le message est en espagnol
+            self.assertIn('email', form.errors)
+            error_message = str(form.errors['email'])
+            self.assertIn('redirigido', error_message)  # Mot espagnol
+
+    def test_dutch_duplicate_email_message(self):
+        """Test que les messages sont traduits en néerlandais"""
+        from django.utils import translation
+
+        # Activer la langue néerlandaise
+        with translation.override('nl'):
+            form_data = {
+                'first_name': 'Test',
+                'last_name': 'User',
+                'username': 'testuser3',
+                'email': 'i18n@example.com',  # Email existant
+                'password1': 'TestPass123!',
+                'password2': 'TestPass123!',
+                'birthday': '1990-01-01',
+                'gender': 'M',
+                'interface_language': 'nl',
+                'terms': True
+            }
+
+            form = RegisterForm(data=form_data)
+            self.assertFalse(form.is_valid())
+
+            # Vérifier que le message est en néerlandais
+            self.assertIn('email', form.errors)
+            error_message = str(form.errors['email'])
+            self.assertIn('doorgestuurd', error_message)  # Mot néerlandais
+
+    def test_login_url_preservation_with_language(self):
+        """Test que la redirection préserve la langue dans l'URL"""
+        from django.test import RequestFactory
+        from django.utils import translation
+        from apps.authentication.views.auth_views import RegisterView
+        from unittest.mock import patch
+
+        # Tester avec différentes langues
+        for lang_code in ['fr', 'es', 'nl']:
+            with translation.override(lang_code):
+                factory = RequestFactory()
+                request = factory.post(f'/{lang_code}/auth/register/', {
+                    'first_name': 'Test',
+                    'last_name': 'User',
+                    'username': f'testuser_{lang_code}',
+                    'email': 'i18n@example.com',
+                    'password1': 'TestPass123!',
+                    'password2': 'TestPass123!',
+                    'birthday': '1990-01-01',
+                    'gender': 'M',
+                    'interface_language': lang_code,
+                    'terms': 'on'
+                })
+
+                # Mock les messages
+                with patch('django.contrib.messages.info'):
+                    # Mock le redirect pour capturer l'URL
+                    with patch('django.shortcuts.redirect') as mock_redirect:
+                        view = RegisterView()
+                        view.post(request)
+
+                        # Vérifier que redirect a été appelé
+                        if mock_redirect.called:
+                            call_args = mock_redirect.call_args[0][0]
+                            # Vérifier que l'URL contient l'email et from=register
+                            self.assertIn('email=i18n@example.com', call_args)
+                            self.assertIn('from=register', call_args)

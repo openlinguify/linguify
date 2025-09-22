@@ -9,6 +9,8 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from ..models.models import DuplicateEmailError
+from django.utils import timezone
+from django.conf import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -152,7 +154,7 @@ class RegisterForm(UserCreationForm):
             # Vérifier les emails existants avec DuplicateEmailError
             from django.contrib.auth import get_user_model
             User = get_user_model()
-            if User.objects.filter(email=email).exists():
+            if User.objects.filter(email__iexact=email).exists():
                 # Utiliser DuplicateEmailError pour une meilleure traçabilité
                 error = DuplicateEmailError(
                     message=_("An account with this email already exists. You will be redirected to the login page."),
@@ -180,8 +182,7 @@ class RegisterForm(UserCreationForm):
         return cleaned_data
     
     def save(self, commit=True):
-        from django.utils import timezone
-        from django.conf import settings
+        
 
         user = super().save(commit=False)
         user.first_name = self.cleaned_data['first_name']
