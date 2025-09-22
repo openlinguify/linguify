@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linguify>
+    <record id="notebook_sidebar_view" model="linguify.ui.view">
+        <field name="name">notebook.sidebar.view</field>
+        <field name="model">notebook.note</field>
+        <field name="arch" type="xml">
+            <div class="sidebar-content">
+                <!-- En-tête de la vue -->
+                <div class="page-header-sidebar">
+                    <h5> Vue: <field name="view_id"/></h5>
+                    <small class="text-muted"><field name="model_name"/> | <field name="view_type"/></small>
+                </div>
+
+                <!-- Navigation entre vues -->
+                <div class="navigation">
+                    <h5>📓 Vues Nogtgtgttgtebook</h5>
+                    <div class="list-group">
+                        <button class="list-group-item list-group-item-action" data-view="kanban" data-url="/api/v1/notebook/kanban/">
+                            🎨 Vue Kanban
+                        </button>
+                        <button class="list-group-item list-group-item-action" data-view="tree" data-url="/api/v1/notebook/table/">
+                            📊 Vue Tableau
+                        </button>
+                        <button class="list-group-item list-group-item-action" data-view="form" data-url="/api/v1/notebook/form/">
+                            📝 Vue Formulaire
+                        </button>
+                        <button class="list-group-item list-group-item-action" data-view="search" data-url="/api/v1/notebook/search/">
+                            🔍 Recherche Avancéyhyhye
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistiques -->
+                <div class="actions-bar">
+                    <h5>⚡ Actions</h5>
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <h6>Total</h6>
+                            <h4><field name="stats_total"/></h4>
+                        </div>
+                        <div class="stat-card">
+                            <h6>Épinglées</h6>
+                            <h4><field name="stats_pinned"/></h4>
+                        </div>
+                        <div class="stat-card">
+                            <h6>Archivées</h6>
+                            <h4><field name="stats_archived"/></h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire d'édition de notes -->
+                <form id="noteForm" class="note-editor mt-4">
+                    <h6>✏️ Éditeur de Notes</h6>
+                    <div class="mt-3">
+                        <field name="id" invisible="1"/>
+
+                        <group>
+                            <field name="title" placeholder="Titre de la note" class="form-control form-control-sm"/>
+                        </group>
+
+                        <group>
+                            <field name="content" widget="text" placeholder="Contenu de la note" class="form-control form-control-sm" rows="4"/>
+                        </group>
+
+                        <group col="2">
+                            <field name="language" class="form-select form-select-sm">
+                                <option value="">Choisir...</option>
+                                <option value="FR">Français</option>
+                                <option value="EN">Anglais</option>
+                                <option value="ES">Espagnol</option>
+                                <option value="DE">Allemand</option>
+                            </field>
+
+                            <field name="priority" class="form-select form-select-sm">
+                                <option value="LOW">Basse</option>
+                                <option value="MEDIUM" selected="1">Moyenne</option>
+                                <option value="HIGH">Haute</option>
+                            </field>
+                        </group>
+
+                        <footer>
+                            <button type="button" class="btn btn-primary btn-sm oe_highlight" special="save">
+                                💾 Sauvegarder
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" special="cancel">
+                                🗑️ Nouveau
+                            </button>
+                        </footer>
+                    </div>
+                </form>
+            </div>
+        </field>
+    </record>
+</linguify>

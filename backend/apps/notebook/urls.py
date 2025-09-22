@@ -17,7 +17,7 @@ from .views.xml_views import (
     xml_demo_page,
     xml_index_page,
 )
-from .views.xml_interactive_views import (
+from .views.xml_interactive_views_simple import (
     interactive_xml_view,
     update_note_api,
     delete_note_api,

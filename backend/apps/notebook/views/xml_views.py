@@ -304,9 +304,8 @@ def reload_xml_templates(request):
     try:
         # Recharger le parser
         new_parser = reload_xml_parser()
-
         stats = new_parser.get_statistics()
-
+        
         return Response({
             'success': True,
             'message': 'Templates XML rechargés avec succès',

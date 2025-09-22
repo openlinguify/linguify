@@ -55,8 +55,8 @@ class XMLTemplateParser:
             tree = ET.parse(xml_file_path)
             root = tree.getroot()
 
-            # Parser les vues
-            for record in root.findall('.//record[@model="ir.ui.view"]'):
+            # Parser les vues (support pour ir.ui.view et linguify.ui.view)
+            for record in root.findall('.//record[@model="ir.ui.view"]') + root.findall('.//record[@model="linguify.ui.view"]'):
                 view_id = record.get('id')
                 view_data = {'source_file': os.path.basename(xml_file_path)}
 
@@ -112,14 +112,22 @@ class XMLTemplateParser:
         arch_data = {
             'type': None,
             'fields': [],
-            'structure': {}
+            'structure': {},
+            'raw_xml': ''
         }
 
-        # Récupérer le premier élément enfant (form, tree, etc.)
+        # Récupérer le premier élément enfant (form, tree, div, etc.)
         for child in arch_field:
             if child.tag in ['form', 'tree', 'search', 'kanban']:
                 arch_data['type'] = child.tag
                 arch_data['structure'] = self._parse_view_element(child)
+                break
+            elif child.tag in ['div', 'section', 'html']:
+                # Pour les éléments HTML personnalisés (comme pour la sidebar)
+                arch_data['type'] = child.tag
+                arch_data['structure'] = self._parse_view_element(child)
+                # Conserver le XML brut pour les éléments HTML
+                arch_data['raw_xml'] = ET.tostring(child, encoding='unicode', method='xml')
                 break
 
         return arch_data
@@ -557,3 +565,212 @@ def render_xml_view_as_html(view_id: str, data=None) -> str:
         return renderer(view_id, data)
     else:
         return f"<p>Type de vue '{view_type}' non supporté</p>"
+
+
+def render_xml_sidebar(context_data: Dict[str, Any]) -> str:
+    """Rendu de la sidebar à partir de la vue XML notebook_sidebar_view"""
+    sidebar_view = xml_parser.get_view('notebook_sidebar_view')
+    if not sidebar_view:
+        print("❌ Vue 'notebook_sidebar_view' non trouvée")
+        return render_fallback_sidebar(context_data)
+
+    print(f"✅ Vue trouvée: {sidebar_view}")
+
+    # Extraire l'architecture XML
+    arch = sidebar_view.get('arch', {})
+    print(f"🏗️ Architecture brute: {arch}")
+
+    # Essayer différents formats de stockage de l'arch
+    arch_string = ''
+    if isinstance(arch, dict):
+        # Essayer d'abord le XML brut
+        arch_string = arch.get('raw_xml', '') or arch.get('content', '') or arch.get('data', '') or str(arch.get('xml', ''))
+    elif isinstance(arch, str):
+        arch_string = arch
+    else:
+        arch_string = str(arch)
+
+    print(f"🏗️ Architecture string: {arch_string[:200]}...")
+
+    if not arch_string or arch_string == '{}':
+        print("❌ Architecture XML vide")
+        return render_fallback_sidebar(context_data)
+
+    # Parser le contenu XML pour générer le HTML
+    try:
+        # Parse l'architecture XML
+        import xml.etree.ElementTree as ET
+
+        # Si c'est du XML raw, le parser directement sans wrapper
+        if arch_string.strip().startswith('<'):
+            arch_root = ET.fromstring(arch_string)
+        else:
+            # Sinon, wrapper dans un élément root
+            arch_root = ET.fromstring(f"<root>{arch_string}</root>")
+
+        # Convertir le XML en HTML en substituant les variables
+        html = _convert_xml_to_html(arch_root, context_data)
+        print(f"✅ HTML généré: {len(html)} caractères")
+        return html
+
+    except Exception as e:
+        print(f"❌ Erreur lors du parsing XML de la sidebar: {e}")
+        import traceback
+        traceback.print_exc()
+        return render_fallback_sidebar(context_data)
+
+
+def _convert_xml_to_html(element, context_data: Dict[str, Any]) -> str:
+    """Convertit un élément XML en HTML en substituant les champs"""
+    if element.tag == 'root':
+        # Pour l'élément racine, traiter tous les enfants
+        html = ""
+        for child in element:
+            html += _convert_xml_to_html(child, context_data)
+        return html
+
+    elif element.tag == 'field':
+        # Remplacer les champs par les valeurs du contexte ou créer des inputs
+        field_name = element.get('name', '')
+        invisible = element.get('invisible') == '1'
+
+        if field_name == 'view_id':
+            return str(context_data.get('view_id', 'Unknown'))
+        elif field_name == 'model_name':
+            return str(context_data.get('model_name', ''))
+        elif field_name == 'view_type':
+            return str(context_data.get('view_type', ''))
+        elif field_name == 'stats_total':
+            return str(context_data.get('stats', {}).get('total', 0))
+        elif field_name == 'stats_pinned':
+            return str(context_data.get('stats', {}).get('pinned', 0))
+        elif field_name == 'stats_archived':
+            return str(context_data.get('stats', {}).get('archived', 0))
+        elif field_name == 'id':
+            if invisible:
+                return '<input type="hidden" id="noteId" value="">'
+            return '<input type="hidden" id="noteId" value="">'
+        elif field_name == 'title':
+            placeholder = element.get('placeholder', 'Titre de la note')
+            class_attr = element.get('class', 'form-control form-control-sm')
+            return f'<label for="noteTitle" class="form-label">Titre</label><input type="text" class="{class_attr}" id="noteTitle" placeholder="{placeholder}">'
+        elif field_name == 'content':
+            placeholder = element.get('placeholder', 'Contenu de la note')
+            class_attr = element.get('class', 'form-control form-control-sm')
+            rows = element.get('rows', '4')
+            return f'<label for="noteContent" class="form-label">Contenu</label><textarea class="{class_attr}" id="noteContent" rows="{rows}" placeholder="{placeholder}"></textarea>'
+        elif field_name == 'language':
+            class_attr = element.get('class', 'form-select form-select-sm')
+            # Traiter les options
+            options_html = ""
+            for child in element:
+                if child.tag == 'option':
+                    value = child.get('value', '')
+                    text = child.text or ''
+                    options_html += f'<option value="{value}">{text}</option>'
+            return f'<label for="noteLanguage" class="form-label">Langue</label><select class="{class_attr}" id="noteLanguage">{options_html}</select>'
+        elif field_name == 'priority':
+            class_attr = element.get('class', 'form-select form-select-sm')
+            # Traiter les options
+            options_html = ""
+            for child in element:
+                if child.tag == 'option':
+                    value = child.get('value', '')
+                    text = child.text or ''
+                    selected = ' selected' if child.get('selected') == '1' else ''
+                    options_html += f'<option value="{value}"{selected}>{text}</option>'
+            return f'<label for="notePriority" class="form-label">Priorité</label><select class="{class_attr}" id="notePriority">{options_html}</select>'
+        else:
+            return f"[{field_name}]"
+
+    elif element.tag == 'group':
+        # Convertir group en div avec classes Bootstrap
+        col = element.get('col', '1')
+        if col == '2':
+            # Groupe avec 2 colonnes
+            children_html = ""
+            children = list(element)
+            for i, child in enumerate(children):
+                child_html = _convert_xml_to_html(child, context_data)
+                col_class = 'col-6' if len(children) == 2 else 'col-12'
+                children_html += f'<div class="{col_class}">{child_html}</div>'
+            return f'<div class="row">{children_html}</div>'
+        else:
+            # Groupe simple
+            children_html = ""
+            for child in element:
+                children_html += _convert_xml_to_html(child, context_data)
+            return f'<div class="mb-3">{children_html}</div>'
+
+    elif element.tag == 'footer':
+        # Convertir footer en div avec boutons
+        children_html = ""
+        for child in element:
+            children_html += _convert_xml_to_html(child, context_data)
+        return f'<div class="mt-3 d-grid gap-2">{children_html}</div>'
+
+    elif element.tag == 'button':
+        # Traiter les boutons spéciaux
+        special = element.get('special', '')
+        btn_type = element.get('type', 'button')
+        class_attr = element.get('class', 'btn btn-primary btn-sm')
+        text = element.text or ''
+
+        if special == 'save':
+            return f'<button type="{btn_type}" class="{class_attr}" onclick="saveNote()">{text}</button>'
+        elif special == 'cancel':
+            return f'<button type="{btn_type}" class="{class_attr}" onclick="clearForm()">{text}</button>'
+        else:
+            # Bouton normal - copier tous les attributs
+            attrs = []
+            for key, value in element.attrib.items():
+                if key != 'special':  # Exclure special
+                    attrs.append(f'{key}="{value}"')
+            attr_string = ' ' + ' '.join(attrs) if attrs else ''
+            return f'<button{attr_string}>{text}</button>'
+
+    else:
+        # Pour les autres éléments, créer la balise HTML
+        tag = element.tag
+        attrs = []
+
+        # Copier les attributs
+        for key, value in element.attrib.items():
+            attrs.append(f'{key}="{value}"')
+
+        attr_string = ' ' + ' '.join(attrs) if attrs else ''
+
+        # Contenu de l'élément
+        text = element.text or ''
+
+        # Traiter les enfants
+        children_html = ""
+        for child in element:
+            children_html += _convert_xml_to_html(child, context_data)
+
+        # Ajouter le texte après les enfants
+        tail = element.tail or ''
+
+        return f"<{tag}{attr_string}>{text}{children_html}</{tag}>{tail}"
+
+
+def render_fallback_sidebar(context_data: Dict[str, Any]) -> str:
+    """Fallback HTML sidebar si la vue XML n'est pas disponible"""
+    stats = context_data.get('stats', {})
+    return f"""
+    <div class="sidebar-content">
+        <div class="page-header-sidebar">
+            <h5>🔍 Vue: {context_data.get('view_id', 'Unknown')}</h5>
+            <small class="text-muted">{context_data.get('model_name', '')} | {context_data.get('view_type', '')}</small>
+        </div>
+        <div class="actions-bar">
+            <h5>⚡ Actions</h5>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h6>Total</h6>
+                    <h4>{stats.get('total', 0)}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    """
