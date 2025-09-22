@@ -18,12 +18,12 @@ router.register(r'categories', NoteCategoryViewSet, basename='category')
 router.register(r'shared-notes', SharedNoteViewSet, basename='shared-note')
 
 urlpatterns = [
-    # Interface web moderne (priorité pour dashboard)
-    path('app/', NotebookMainView.as_view(), name='notebook_app'),
-
     # Configuration de l'application
     path('config/', get_app_config, name='config'),
 
     # API REST endpoints
     path('api/', include(router.urls)),
+
+    # Interface web moderne (priorité pour dashboard)
+    path('', NotebookMainView.as_view(), name='notebook_app'),
 ]
