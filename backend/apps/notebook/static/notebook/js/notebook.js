@@ -301,6 +301,111 @@ function notebookApp() {
     }
 }
 
+// Slash commands component for the notebook editor
+function notebookSlashCommands() {
+    return {
+        showCommands: false,
+        commandPosition: { x: 0, y: 0 },
+        selectedCommand: 0,
+        commands: [
+            { name: 'Note', text: '**Note:** ' },
+            { name: 'Tâche', text: '☐ ' },
+            { name: 'Idée', text: '**Idée:** ' },
+            { name: 'Question', text: '**Question:** ' },
+            { name: 'Traduction', text: '**FR:** \n**EN:** ' },
+            { name: 'Vocabulaire', text: '**Mot:** définition' },
+            { name: 'Rappel', text: '**Rappel:** ' }
+        ],
+
+        handleKeydown(event) {
+            const textarea = event.target;
+
+            if (event.key === '/') {
+                const cursorPos = textarea.selectionStart;
+                const textBefore = textarea.value.substring(0, cursorPos);
+
+                if (cursorPos === 0 || textBefore.endsWith('\n') || textBefore.endsWith(' ')) {
+                    setTimeout(() => {
+                        this.showCommandMenu(textarea);
+                    }, 10);
+                }
+            }
+
+            if (this.showCommands) {
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    this.selectedCommand = (this.selectedCommand + 1) % this.commands.length;
+                } else if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    this.selectedCommand = this.selectedCommand === 0 ? this.commands.length - 1 : this.selectedCommand - 1;
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    this.insertCommand(textarea);
+                } else if (event.key === 'Escape') {
+                    this.hideCommandMenu();
+                }
+            }
+        },
+
+        showCommandMenu(textarea) {
+            const cursorPos = textarea.selectionStart;
+            const textBeforeCursor = textarea.value.substring(0, cursorPos);
+            const lines = textBeforeCursor.split('\n');
+            const currentLine = lines.length - 1;
+            const currentColumn = lines[lines.length - 1].length;
+
+            // Get textarea styles for accurate positioning
+            const style = window.getComputedStyle(textarea);
+            const lineHeight = parseInt(style.lineHeight) || 24;
+            const fontSize = parseInt(style.fontSize) || 16;
+            const paddingTop = parseInt(style.paddingTop) || 0;
+            const paddingLeft = parseInt(style.paddingLeft) || 0;
+
+            // Calculate approximate character width
+            const charWidth = fontSize * 0.6; // Rough estimate for monospace-ish fonts
+
+            // Get textarea position
+            const rect = textarea.getBoundingClientRect();
+
+            // Calculate cursor position
+            const x = rect.left + paddingLeft + (currentColumn * charWidth);
+            const y = rect.top + paddingTop + (currentLine * lineHeight) + lineHeight + 5;
+
+            this.commandPosition = {
+                x: Math.min(x, window.innerWidth - 220), // Keep menu in viewport
+                y: Math.min(y, window.innerHeight - 200)  // Keep menu in viewport
+            };
+
+            this.showCommands = true;
+            this.selectedCommand = 0;
+        },
+
+        hideCommandMenu() {
+            this.showCommands = false;
+        },
+
+        insertCommand(textarea) {
+            const command = this.commands[this.selectedCommand];
+            const cursorPos = textarea.selectionStart;
+            const textBefore = textarea.value.substring(0, cursorPos - 1);
+            const textAfter = textarea.value.substring(cursorPos);
+
+            textarea.value = textBefore + command.text + textAfter;
+            textarea.dispatchEvent(new Event('input'));
+
+            const newPos = cursorPos - 1 + command.text.length;
+            textarea.setSelectionRange(newPos, newPos);
+
+            this.hideCommandMenu();
+        },
+
+        selectCommand(index, textarea) {
+            this.selectedCommand = index;
+            this.insertCommand(textarea);
+        }
+    }
+}
+
 // Editor.js notebook component
 function notebookEditor() {
     return {
