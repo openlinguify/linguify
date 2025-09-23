@@ -1,23 +1,19 @@
 {% load static %}
 {% load i18n %}
 <!-- Notebook Sidebar Component -->
-<div class="notes-sidebar show">
-    <!-- Header de la sidebar -->
-    <div class="sidebar-header">
-        <input type="text"
-               x-model="searchQuery"
-               @input.debounce.300ms="loadNotes()"
-               placeholder="{% trans 'Search notes...' %}"
-               class="sidebar-search">
-    </div>
-
-    <!-- Liste des notes -->
-    <div class="notes-list">
-        <!-- Loading state -->
-        <div class="loading-state" x-show="isLoading">
-            <i class="fas fa-spinner fa-spin"></i>
-            {% trans 'Loading notes...' %}
+<div id="notebookSidebar" class="sidebar-linguify show">
+    <div class="sidebar-content">
+        <!-- Header de la sidebar -->
+        <div class="sidebar-header">
+            <input type="text"
+                   x-model="searchQuery"
+                   @input.debounce.300ms="loadNotes()"
+                   placeholder="{% trans 'Search notes...' %}"
+                   class="sidebar-search">
         </div>
+
+        <!-- Liste des notes -->
+        <div class="notes-list">
 
         <!-- Empty state -->
         <div class="empty-state" x-show="!isLoading && notes.length === 0">
@@ -51,5 +47,6 @@
                 </div>
             </div>
         </template>
+        </div>
     </div>
 </div>
