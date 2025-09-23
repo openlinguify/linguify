@@ -12,7 +12,7 @@
 /* Layout principal avec sidebar */
 .notebook-layout {
     display: flex;
-    height: calc(100vh - 120px); /* Ajuster selon la hauteur du header */
+    height: calc(100vh - 64px); /* Header fixe + navbar = 64px total */
     overflow: hidden;
 }
 

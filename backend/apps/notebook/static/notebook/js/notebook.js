@@ -68,7 +68,7 @@ function notebookApp() {
 
                 const data = await response.json();
                 this.notes = data.results;
-                this.totalPages = Math.ceil(data.count / 50);
+                this.totalPages = Math.ceil(data.count / 20);  // Mis à jour pour page_size=20
                 this.totalNotes = data.count;
             } catch (error) {
                 console.error('Error loading notes:', error);

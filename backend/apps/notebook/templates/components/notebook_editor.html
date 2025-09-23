@@ -66,23 +66,5 @@
                       style="width: 100%; min-height: 200px; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical;"></textarea>
         </div>
 
-        <!-- Traduction -->
-        <div style="margin-bottom: 2rem;">
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">{% trans 'Translation' %}</label>
-            <textarea x-model="currentNote.translation"
-                      @blur="updateNote()"
-                      placeholder="{% trans 'Add translation...' %}"
-                      style="width: 100%; min-height: 100px; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical;"></textarea>
-        </div>
-
-        <!-- Prononciation -->
-        <div style="margin-bottom: 2rem;">
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">{% trans 'Pronunciation' %}</label>
-            <input x-model="currentNote.pronunciation"
-                   @blur="updateNote()"
-                   type="text"
-                   placeholder="{% trans 'Add pronunciation guide...' %}"
-                   style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px;">
-        </div>
     </div>
 </div>

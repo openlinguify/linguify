@@ -413,12 +413,12 @@ class EnhancedCursorPagination(CursorPagination):
 
 class StandardResultsSetPagination(PageNumberPagination):
     """
-    Pagination standard par numéro de page, 
+    Pagination standard par numéro de page,
     utilisée pour les endpoints moins critiques en performance
     """
-    page_size = 50
+    page_size = 20  # Réduit pour vitesse Formula 1
     page_size_query_param = 'page_size'
-    max_page_size = 100
+    max_page_size = 50  # Limite réduite aussi
 
 # TagViewSet is now handled by the global tags system in core
 
@@ -508,9 +508,13 @@ class NoteViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # Base queryset with optimized joins
-        queryset = Note.objects.select_related('category').prefetch_related(
-            'sharednote_set__shared_with'
-        )
+        # Pour la liste, on évite les jointures complexes pour plus de vitesse
+        if self.action == 'list':
+            queryset = Note.objects.select_related('category')  # Pas de prefetch pour la liste
+        else:
+            queryset = Note.objects.select_related('category').prefetch_related(
+                'sharednote_set__shared_with'
+            )
         # Tags are now fetched via the global tag system
         
         # Gestion du filtre d'archivage par défaut
