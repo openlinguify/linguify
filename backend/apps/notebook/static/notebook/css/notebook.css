@@ -1,9 +1,24 @@
-/* Notebook Application Styles - PERFORMANCE OPTIMIZED */
+/* ==========================================================================
+   Notebook Application Styles
+   ========================================================================== */
 
-/* Navbar fixe pour notebook */
+/* App Layout & Structure */
+.notebook-app {
+    display: none; /* Hidden until Alpine.js initializes */
+}
+
+.notebook-app.alpine-initialized {
+    display: block;
+}
+
+.main-content {
+    padding: 0 !important; /* Override default padding for full-width layout */
+}
+
+/* Navigation */
 .navbar-linguify {
     position: fixed !important;
-    top: 64px; /* Sous le header principal */
+    top: 64px;
     left: 0;
     right: 0;
     z-index: 100;
@@ -11,38 +26,24 @@
     border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
 }
 
-/* CACHE TOUT LE CONTENU Alpine.js jusqu'à l'init */
-.notebook-app {
-    display: none;
-}
-
-.notebook-app.alpine-initialized {
-    display: block;
-}
-
-/* Supprime le padding du main-content pour notebook */
-.main-content {
-    padding: 0 !important;
-}
-
-/* Layout principal avec sidebar */
+/* Content Container */
 .conteneur-content {
     display: flex;
     overflow: hidden;
     position: absolute;
-    top: calc(120px + 1vh); /* Header (64px) + Navbar (56px) + 2% = 120px + 2vh */
+    top: calc(120px + 1vh);
     left: 0;
     right: 0;
     bottom: 0;
 }
 
-/* Sidebar utilise maintenant les styles Linguify officiels via .sidebar-linguify */
-/* Override pour la sidebar - doit respecter la navbar fixe */
+/* Sidebar */
 #revisionSidebar.sidebar-linguify {
     position: relative !important;
     top: 0 !important;
     height: 100% !important;
 }
+
 .sidebar-header {
     padding: 1rem;
     border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
@@ -68,7 +69,11 @@
     padding: 0.5rem;
 }
 
-/* Zone principale pour le contenu */
+/* ==========================================================================
+   Note Content & Editor Layout
+   ========================================================================== */
+
+/* Content Area */
 .note-content-area {
     flex: 1;
     display: flex;
@@ -77,6 +82,7 @@
     overflow: hidden;
 }
 
+/* Note Editor */
 .note-editor {
     flex: 1;
     padding: 2rem;
@@ -85,7 +91,13 @@
     flex-direction: column;
 }
 
-/* Modern Note Editor Layout - Notebook specific */
+.note-editor.empty-state {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 300px;
+}
+
 .note-editor-modern {
     flex: 1;
     display: flex;
@@ -94,7 +106,7 @@
     height: calc(100vh - 160px);
 }
 
-/* Header moderne */
+/* Note Header */
 .note-header-modern {
     display: flex;
     justify-content: space-between;
@@ -137,6 +149,7 @@
     color: #9ca3af;
 }
 
+/* Language Selector */
 .language-select-inline {
     padding: 0.5rem 0.75rem;
     border: 1px solid #e5e7eb;
@@ -161,6 +174,7 @@
     background: #f9fafb;
 }
 
+/* Action Buttons */
 .note-actions {
     display: flex;
     gap: 0.5rem;
@@ -212,7 +226,7 @@
     transform: translateY(-1px);
 }
 
-/* Zone de contenu moderne */
+/* Content Modern Layout */
 .note-content-modern {
     flex: 1;
     display: flex;
@@ -220,19 +234,6 @@
     background: white;
     overflow: hidden;
     min-height: 0;
-}
-
-/* Empty state styling */
-.note-editor.empty-state {
-    flex: 1;
-    padding: 2rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    min-height: 300px;
 }
 
 

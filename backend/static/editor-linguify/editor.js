@@ -1,11 +1,28 @@
-// Linguify Editor - Universal Text Editor with Slash Commands and Formatting
-// This file contains reusable Alpine.js components for rich text editing
-// Can be used across all Linguify modules (notebook, flashcards, lessons, etc.)
-// Part of the Linguify platform
+/**
+ * Linguify Editor - Universal Text Editor with Slash Commands and Formatting
+ *
+ * This file contains reusable Alpine.js components for rich text editing
+ * Can be used across all Linguify modules (notebook, flashcards, lessons, etc.)
+ * Part of the Linguify platform
+ *
+ * @version 1.0.0
+ * @author Linguify Team
+ */
 
-// Universal slash commands component for text editing
+/**
+ * Universal slash commands component for text editing
+ *
+ * Features:
+ * - Slash commands (/ + dropdown menu)
+ * - Text formatting toolbar (bold, italic, headers, etc.)
+ * - Keyboard navigation
+ * - Mobile responsive
+ *
+ * @returns {Object} Alpine.js component data and methods
+ */
 function linguifyEditor() {
     return {
+        // === Slash Commands ===
         showCommands: false,
         commandPosition: { x: 0, y: 0 },
         selectedCommand: 0,
@@ -19,16 +36,21 @@ function linguifyEditor() {
             { name: 'Rappel', text: '**Rappel:** ' }
         ],
 
-        // Formatting toolbar
+        // === Formatting Toolbar ===
         showFormatToolbar: false,
         toolbarPosition: { x: 0, y: 0 },
         selectedText: '',
         selectionStart: 0,
         selectionEnd: 0,
 
+        /**
+         * Handle keyboard events for slash commands and navigation
+         * @param {KeyboardEvent} event - The keyboard event
+         */
         handleKeydown(event) {
             const textarea = event.target;
 
+            // === Slash Command Trigger ===
             if (event.key === '/') {
                 const cursorPos = textarea.selectionStart;
                 const textBefore = textarea.value.substring(0, cursorPos);
@@ -42,6 +64,7 @@ function linguifyEditor() {
                 }
             }
 
+            // === Command Menu Navigation ===
             if (this.showCommands) {
                 if (event.key === 'ArrowDown') {
                     event.preventDefault();
