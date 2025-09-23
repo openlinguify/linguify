@@ -190,6 +190,7 @@ class LinguifyEditor {
                 },
 
 
+
                 /**
                  * Embed Tool (YouTube, Vimeo, etc.)
                  */
@@ -250,16 +251,17 @@ class LinguifyEditor {
                     config: {
                         endpoint: '/notebook/api/fetch-url-meta/' // For URL preview
                     }
-                }
+                },
+
             },
 
             /**
-             * Inline Toolbar configuration
+             * Inline Toolbar configuration - Enhanced with more tools
              */
             inlineToolbar: ['bold', 'italic', 'link', 'marker', 'inlineCode'],
 
             /**
-             * Disable block tunes
+             * Block tunes configuration
              */
             tunes: [],
 
