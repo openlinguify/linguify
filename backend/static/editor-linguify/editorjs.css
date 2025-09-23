@@ -107,7 +107,7 @@
     background: #f3f4f6;
 }
 
-/* Placeholder */
+/* Placeholder with slash command hint */
 .ce-paragraph[data-placeholder]:empty::before {
     color: #9ca3af;
     font-style: italic;
@@ -115,6 +115,56 @@
 
 .ce-header[data-placeholder]:empty::before {
     color: #9ca3af;
+}
+
+/* Enhance toolbox visibility */
+.ce-toolbox {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    padding: 8px;
+    max-width: 300px;
+}
+
+.ce-toolbox__button {
+    border-radius: 8px;
+    padding: 12px;
+    margin: 2px 0;
+    transition: all 0.2s ease;
+}
+
+.ce-toolbox__button:hover {
+    background: #f8fafc;
+    transform: translateX(4px);
+}
+
+.ce-toolbox__button--active {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+}
+
+/* Slash command indicator */
+.ce-toolbar__plus::after {
+    content: "Tapez '/' pour ouvrir les commandes";
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    margin-left: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.ce-toolbar__plus:hover::after {
+    opacity: 1;
 }
 
 /* Custom tool styles */
@@ -235,6 +285,42 @@
     .editorjs-container {
         padding: 0.5rem;
     }
+}
+
+/* Custom Linguify Tools */
+.language-note-tool {
+    margin: 1rem 0;
+}
+
+.language-note-tool input:focus,
+.language-note-tool textarea:focus,
+.language-note-tool select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Slash command helper text */
+.ce-toolbar__content::after {
+    content: "💡 Astuce: Tapez '/' dans un paragraphe vide pour accéder rapidement aux outils";
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #1f2937;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    max-width: 250px;
+    text-align: center;
+}
+
+.editorjs-container:hover .ce-toolbar__content::after {
+    opacity: 0.8;
 }
 
 /* Animations */

@@ -25,7 +25,7 @@ class LinguifyEditor {
             /**
              * Placeholder text
              */
-            placeholder: 'Tapez "/" pour voir les commandes disponibles...',
+            placeholder: 'Commencez à écrire ou tapez "/" pour les commandes...',
 
             /**
              * Enable autofocus
@@ -57,9 +57,25 @@ class LinguifyEditor {
             },
 
             /**
+             * Log level
+             */
+            logLevel: 'ERROR',
+
+            /**
              * Tools configuration
              */
             tools: {
+                /**
+                 * Paragraph Tool (with improvements)
+                 */
+                paragraph: {
+                    class: Paragraph,
+                    inlineToolbar: true,
+                    config: {
+                        placeholder: 'Tapez "/" pour les commandes ou commencez à écrire...'
+                    }
+                },
+
                 /**
                  * Header Tool
                  */
@@ -71,7 +87,11 @@ class LinguifyEditor {
                         levels: [1, 2, 3, 4, 5, 6],
                         defaultLevel: 2
                     },
-                    shortcut: 'CMD+SHIFT+H'
+                    shortcut: 'CMD+SHIFT+H',
+                    toolbox: {
+                        title: '📝 Titre',
+                        icon: '<svg width="17" height="15" viewBox="0 0 17 15"><path d="M9.4 0L7.6 0 7.6 15 9.4 15 9.4 7.5 15.5 7.5 15.5 15 17 15 17 0 15.5 0 15.5 6 9.4 6 9.4 0ZM0 2L0 3.5 4.5 3.5 4.5 15 6 15 6 3.5 10.5 3.5 10.5 2 0 2Z"/></svg>'
+                    }
                 },
 
                 /**
@@ -167,13 +187,66 @@ class LinguifyEditor {
                 inlineCode: {
                     class: InlineCode,
                     shortcut: 'CMD+SHIFT+I'
+                },
+
+
+                /**
+                 * Embed Tool (YouTube, Vimeo, etc.)
+                 */
+                embed: {
+                    class: Embed,
+                    inlineToolbar: true,
+                    config: {
+                        services: {
+                            youtube: true,
+                            vimeo: true,
+                            codepen: true,
+                            twitter: true,
+                            instagram: true,
+                            gfycat: true,
+                            imgur: true,
+                            pinterest: true
+                        }
+                    },
+                    toolbox: {
+                        title: '🎥 Vidéo/Embed',
+                        icon: '<svg width="17" height="15" viewBox="0 0 17 15"><path d="M10.918 13.933a.6.6 0 0 1-.858.185l-4.238-2.763a.6.6 0 0 1 0-.932l4.238-2.763a.6.6 0 0 1 .911.466v5.621a.6.6 0 0 1-.053.186z"/><rect x="1.4" y="2.4" width="12.2" height="10.2" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>'
+                    }
+                },
+
+                /**
+                 * Simple Image Tool
+                 */
+                image: {
+                    class: SimpleImage,
+                    inlineToolbar: true,
+                    config: {
+                        placeholder: 'Collez l\'URL de l\'image',
+                        buttonContent: 'Sélectionner une image',
+                        uploader: false
+                    },
+                    toolbox: {
+                        title: '🖼️ Image',
+                        icon: '<svg width="17" height="15" viewBox="0 0 17 15"><rect x="1" y="3" width="14" height="9" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="5.5" cy="6.5" r="1.5" fill="currentColor"/><polyline points="11 9, 8 6, 4 10" stroke="currentColor" stroke-width="1" fill="none"/></svg>'
+                    }
+                },
+
+                /**
+                 * Raw HTML Tool
+                 */
+                raw: {
+                    class: RawTool,
+                    toolbox: {
+                        title: '📄 HTML',
+                        icon: '<svg width="17" height="15" viewBox="0 0 17 15"><path d="M13.133 14h-9.267c-1.495 0-2.585-.983-2.585-2.333v-8.334c0-1.35 1.09-2.333 2.585-2.333h9.267c1.495 0 2.585.983 2.585 2.333v8.334c0 1.35-1.09 2.333-2.585 2.333z"/><path d="M4.65 7.333L6.167 10l1.517-2.667" stroke="#fff" stroke-linecap="round"/><path d="M11.3 5L9.783 7.667 11.3 10.333" stroke="#fff" stroke-linecap="round"/></svg>'
+                    }
                 }
             },
 
             /**
              * Inline Toolbar configuration
              */
-            inlineToolbar: ['bold', 'italic', 'underline', 'link', 'marker', 'inlineCode'],
+            inlineToolbar: ['bold', 'italic', 'link', 'marker', 'inlineCode'],
 
             /**
              * Editor.js i18n configuration for French
@@ -321,6 +394,7 @@ class LinguifyEditor {
         while (elapsed < maxWait) {
             if (typeof EditorJS !== 'undefined' &&
                 typeof Header !== 'undefined' &&
+                typeof Paragraph !== 'undefined' &&
                 typeof List !== 'undefined' &&
                 typeof Checklist !== 'undefined' &&
                 typeof Quote !== 'undefined' &&
@@ -329,7 +403,10 @@ class LinguifyEditor {
                 typeof Table !== 'undefined' &&
                 typeof Warning !== 'undefined' &&
                 typeof Marker !== 'undefined' &&
-                typeof InlineCode !== 'undefined') {
+                typeof InlineCode !== 'undefined' &&
+                typeof Embed !== 'undefined' &&
+                typeof SimpleImage !== 'undefined' &&
+                typeof RawTool !== 'undefined') {
                 return;
             }
             await new Promise(resolve => setTimeout(resolve, interval));

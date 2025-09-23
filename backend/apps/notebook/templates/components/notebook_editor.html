@@ -19,12 +19,17 @@
         <div class="note-header-modern">
             <div class="note-title-section">
                 <div class="title-row">
-                    <input x-model="currentNote.title"
+                    <input x-show="currentNote"
+                           :value="currentNote ? currentNote.title : ''"
+                           @input="currentNote.title = $event.target.value"
                            @blur="updateNote()"
                            type="text"
                            placeholder="{% trans 'Note title' %}"
                            class="note-title-input">
-                    <select x-model="currentNote.language" @change="updateNote()" class="language-select-inline">
+                    <select x-show="currentNote"
+                            :value="currentNote ? currentNote.language : ''"
+                            @change="currentNote.language = $event.target.value; updateNote()"
+                            class="language-select-inline">
                         <option value="">{% trans 'Language' %}</option>
                         <option value="fr">🇫🇷 Français</option>
                         <option value="en">🇬🇧 English</option>
