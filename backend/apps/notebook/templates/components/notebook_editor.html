@@ -45,14 +45,22 @@
             </select>
         </div>
 
-        <!-- Contenu principal -->
+        <!-- Contenu principal avec Editor.js -->
         <div class="content-section">
             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">{% trans 'Content' %}</label>
+
+            <!-- Simple fallback to textarea for now -->
             <textarea x-model="currentNote.content"
                       @blur="updateNote()"
-                      placeholder="{% trans 'Write your note here...' %}"
-                      style="width: 100%; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical;">
+                      @input="updateNote()"
+                      placeholder="{% trans 'Write your note here...' %} Tapez / pour voir les commandes..."
+                      style="width: 100%; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical; min-height: 300px; font-family: inherit; line-height: 1.5;">
             </textarea>
+
+            <!-- Editor help text -->
+            <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                💡 <strong>Astuce:</strong> Tapez <code>/</code> pour accéder aux commandes (Header, Liste, Tâche, Quote, Code, Table, etc.)
+            </div>
         </div>
 
     </div>

@@ -300,3 +300,177 @@ function notebookApp() {
         }
     }
 }
+
+// Editor.js notebook component
+function notebookEditor() {
+    return {
+        editor: null,
+        isReady: false,
+        isLoading: false,
+
+        init() {
+            // Initialize when a note is opened
+            this.$nextTick(() => {
+                // Watch for changes to currentNote on the parent context
+                this.$watch('currentNote', (note) => {
+                    if (note) {
+                        this.initEditor();
+                    }
+                });
+            });
+        },
+
+        async initEditor() {
+            if (this.editor) {
+                this.editor.destroy();
+            }
+
+            this.isLoading = true;
+
+            try {
+                // Wait for Editor.js to be loaded
+                await this.waitForEditorJS();
+
+                console.log('🔧 Initializing Editor.js...');
+                this.editor = new EditorJS({
+                    holder: 'notebook-editor',
+                    placeholder: 'Tapez "/" pour voir les commandes disponibles...',
+                    autofocus: true,
+
+                    tools: {
+                        header: {
+                            class: Header,
+                            inlineToolbar: true,
+                            config: {
+                                placeholder: 'Titre...',
+                                levels: [1, 2, 3, 4],
+                                defaultLevel: 2
+                            },
+                            shortcut: 'CMD+SHIFT+H'
+                        },
+
+                        list: {
+                            class: List,
+                            inlineToolbar: true,
+                            config: {
+                                defaultStyle: 'unordered'
+                            }
+                        },
+
+                        checklist: {
+                            class: Checklist,
+                            inlineToolbar: true
+                        },
+
+                        quote: {
+                            class: Quote,
+                            inlineToolbar: true,
+                            config: {
+                                quotePlaceholder: 'Citation...',
+                                captionPlaceholder: 'Auteur...'
+                            }
+                        },
+
+                        code: {
+                            class: CodeTool,
+                            config: {
+                                placeholder: 'Entrez votre code...'
+                            }
+                        },
+
+                        delimiter: Delimiter,
+
+                        table: {
+                            class: Table,
+                            inlineToolbar: true
+                        }
+                    },
+
+                    // Inline tools
+                    inlineToolbar: ['marker', 'inlineCode'],
+
+                    onChange: () => {
+                        this.saveContent();
+                    }
+                });
+
+                await this.editor.isReady;
+
+                // Load existing content if available
+                if (this.currentNote && this.currentNote.content) {
+                    await this.loadContent();
+                }
+
+                this.isReady = true;
+                this.isLoading = false;
+                console.log('✅ Editor.js ready');
+
+            } catch (error) {
+                console.error('❌ Failed to init Editor.js:', error);
+                this.isLoading = false;
+                this.showFallback();
+            }
+        },
+
+        async waitForEditorJS() {
+            // Wait for all dependencies to load
+            const maxWait = 10000; // 10 seconds
+            const interval = 100; // Check every 100ms
+            let elapsed = 0;
+
+            while (elapsed < maxWait) {
+                if (typeof EditorJS !== 'undefined' &&
+                    typeof Header !== 'undefined' &&
+                    typeof List !== 'undefined' &&
+                    typeof Checklist !== 'undefined') {
+                    return;
+                }
+                await new Promise(resolve => setTimeout(resolve, interval));
+                elapsed += interval;
+            }
+
+            throw new Error('Editor.js dependencies failed to load');
+        },
+
+        async loadContent() {
+            if (!this.editor || !this.currentNote || !this.currentNote.content) return;
+
+            try {
+                let content;
+                if (typeof this.currentNote.content === 'string') {
+                    content = JSON.parse(this.currentNote.content);
+                } else {
+                    content = this.currentNote.content;
+                }
+
+                await this.editor.render(content);
+            } catch (e) {
+                // If not valid JSON, treat as plain text
+                await this.editor.render({
+                    blocks: [{
+                        type: 'paragraph',
+                        data: { text: this.currentNote.content || '' }
+                    }]
+                });
+            }
+        },
+
+        async saveContent() {
+            if (!this.editor || !this.isReady || !this.currentNote) return;
+
+            try {
+                const data = await this.editor.save();
+                this.currentNote.content = JSON.stringify(data);
+                // Trigger save via the main app
+                this.updateNote();
+            } catch (error) {
+                console.error('Error saving editor content:', error);
+            }
+        },
+
+        showFallback() {
+            document.getElementById('notebook-editor-fallback').style.display = 'block';
+            document.getElementById('notebook-editor').style.display = 'none';
+        }
+    };
+}
