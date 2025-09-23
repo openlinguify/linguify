@@ -1,5 +1,15 @@
 /* Notebook Application Styles - PERFORMANCE OPTIMIZED */
 
+/* Navbar fixe pour notebook */
+.navbar-linguify {
+    position: fixed !important;
+    top: 64px; /* Sous le header principal */
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--linguify-white, #ffffff);
+    border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
+}
 
 /* CACHE TOUT LE CONTENU Alpine.js jusqu'à l'init */
 .notebook-app {
@@ -16,13 +26,17 @@
 }
 
 /* Layout principal avec sidebar */
-.notebook-layout {
+.conteneur-content {
     display: flex;
-    height: calc(100vh - 64px); /* Seulement le header fixe (64px) */
     overflow: hidden;
 }
 
 /* Sidebar utilise maintenant les styles Linguify officiels via .sidebar-linguify */
+/* Override pour la sidebar - doit respecter la navbar fixe */
+#revisionSidebar.sidebar-linguify {
+    top: 120px !important; /* Header (64px) + Navbar (56px) = 120px */
+    height: calc(100vh - 120px) !important;
+}
 .sidebar-header {
     padding: 1rem;
     border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);

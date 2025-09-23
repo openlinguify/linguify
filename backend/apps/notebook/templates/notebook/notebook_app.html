@@ -22,12 +22,13 @@
 {% csrf_token %}
 <!-- Main notebook app - FAST LOAD -->
 <div class="notebook-app" x-data="notebookApp()" x-init="init(); $nextTick(() => $el.classList.add('alpine-initialized'))">
-    
+    <div>
     {% include 'components/notebook_navbar.html' %}
-    <div class="notebook-layout">
-        {% include 'components/notebook_sidebar.html' %}
-        {% include 'components/notebook_editor.html' %}
     </div>
+        <div class="conteneur-content">
+            {% include 'components/notebook_sidebar.html' %}
+            {% include 'components/notebook_editor.html' %}
+        </div>
 </div>
 
 <!-- Script local uniquement - Alpine.js déjà chargé dans head -->
