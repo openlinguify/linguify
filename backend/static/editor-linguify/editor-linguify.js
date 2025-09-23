@@ -391,13 +391,27 @@ class LinguifyEditor {
 
             console.log('✅ LinguifyEditor initialized successfully');
 
-            // Supprimer les tooltips du bouton +
+            // Supprimer les tooltips et le bouton settings
             setTimeout(() => {
                 const plusBtn = document.querySelector('.ce-toolbar__plus');
                 if (plusBtn) {
                     plusBtn.removeAttribute('title');
                     plusBtn.removeAttribute('data-tooltip');
                 }
+
+                // Supprimer complètement le bouton settings (6 points)
+                const settingsBtn = document.querySelector('.ce-toolbar__settings-btn');
+                if (settingsBtn) {
+                    settingsBtn.remove();
+                }
+
+                // Aussi supprimer par d'autres sélecteurs si nécessaire
+                const settingsBtns = document.querySelectorAll('span.ce-toolbar__settings-btn, .ce-toolbar__actions span:last-child');
+                settingsBtns.forEach(btn => {
+                    if (btn && btn.innerHTML.includes('svg')) {
+                        btn.remove();
+                    }
+                });
             }, 100);
 
             return this.editor;

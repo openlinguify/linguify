@@ -148,188 +148,214 @@
     color: var(--linguify-white);
 }
 
-/* Inline toolbar - Plus visible et moderne */
+/* Inline toolbar - Natural behavior */
 .ce-inline-toolbar {
-    background: var(--linguify-white) !important;
-    border: 1px solid var(--linguify-gray-200) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
-    padding: 6px !important;
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 10px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.15) !important;
+    padding: 8px 10px !important;
     z-index: 9999 !important;
-    position: absolute !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: flex !important;
-    pointer-events: auto !important;
-}
-
-/* S'assurer que la toolbar apparaît lors de la sélection */
-.codex-editor .ce-inline-toolbar {
-    display: flex !important;
-}
-
-.codex-editor .ce-inline-toolbar--showed {
-    display: flex !important;
-    opacity: 1 !important;
-    visibility: visible !important;
 }
 
 .ce-inline-toolbar__buttons {
-    background: transparent;
-    padding: 0;
-    display: flex;
-    gap: 2px;
+    background: transparent !important;
+    padding: 0 !important;
+    display: flex !important;
+    gap: 4px !important;
+    align-items: center !important;
 }
 
 .ce-inline-tool {
-    color: var(--linguify-gray);
-    border-radius: 8px;
-    padding: 8px 10px;
-    transition: all 0.2s ease;
-    position: relative;
-    background: transparent;
-    border: 1px solid transparent;
-    min-width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #374151 !important;
+    background: transparent !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    cursor: pointer !important;
 }
 
 .ce-inline-tool:hover {
-    background: var(--linguify-gray-50);
-    color: var(--linguify-primary);
-    border-color: var(--linguify-primary-light);
-    transform: translateY(-1px);
+    background: #f3f4f6 !important;
+    color: #1f2937 !important;
 }
 
 .ce-inline-tool--active {
-    background: var(--linguify-gradient);
-    color: var(--linguify-white);
-    border-color: var(--linguify-primary);
-    box-shadow: 0 2px 4px rgba(45, 91, 186, 0.3);
+    background: var(--linguify-primary, #2D5BBA) !important;
+    color: white !important;
 }
 
-/* Styles spécifiques pour les outils inline */
-.ce-inline-tool--link {
-    color: var(--linguify-primary) !important;
-}
-
-.ce-inline-tool--bold,
-.ce-inline-tool--italic,
-.ce-inline-tool--link,
-.ce-inline-tool--marker,
-.ce-inline-tool--inlineCode {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    visibility: visible !important;
-}
-
-/* Conversion toolbar */
-.ce-conversion-toolbar {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
-}
-
-.ce-conversion-tool:hover {
-    background: #f3f4f6;
-}
-
-/* Block tunes */
-.ce-popover {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
-}
-
-.ce-popover__item:hover {
-    background: #f3f4f6;
-}
-
-/* Settings */
-.ce-settings {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
-}
-
-.ce-settings__button:hover {
-    background: #f3f4f6;
-}
-
-/* Placeholder with slash command hint */
-.ce-paragraph[data-placeholder]:empty::before {
-    color: #9ca3af;
-    font-style: italic;
-}
-
-.ce-header[data-placeholder]:empty::before {
-    color: #9ca3af;
-}
-
-/* Enhance toolbox visibility */
+/* Toolbox styling */
 .ce-toolbox {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    padding: 8px;
-    max-width: 300px;
+    /* Positioning */
+    position: absolute !important;
+    top: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin-top: 8px !important;
+    z-index: 1000 !important;
+
+    /* Appearance */
+    background: white !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+
+    /* Size & scroll */
+    padding: 12px !important;
+    max-width: 320px !important;
+    max-height: 420px !important;
+    overflow-y: auto !important;
+
+    /* Hide scrollbar but keep functionality */
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE/Edge */
 }
 
-.ce-toolbox__button {
-    border-radius: 8px;
-    padding: 12px;
-    margin: 2px 0;
-    transition: all 0.2s ease;
+/* Hide scrollbar for webkit browsers */
+.ce-toolbox::-webkit-scrollbar {
+    display: none !important;
 }
 
-.ce-toolbox__button:hover {
-    background: #f8fafc;
-    transform: translateX(4px);
+/* Hide toolbox when Editor.js sets it to hidden */
+.ce-toolbox[style*="display: none"] {
+    display: none !important;
 }
 
-.ce-toolbox__button--active {
-    background: #eff6ff;
-    border-left: 4px solid #3b82f6;
+/* Style toolbox content only when it's visible */
+.ce-toolbox:not([style*="display: none"]) .ce-popover {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+    position: relative !important;
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-height: 350px !important;
+    overflow-y: auto !important;
 }
 
-/* Suppression de tous les tooltips */
+.ce-toolbox:not([style*="display: none"]) .ce-popover__items {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.ce-toolbox:not([style*="display: none"]) .ce-popover-item {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    padding: 10px 12px !important;
+    margin: 2px 0 !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.ce-toolbox .ce-popover-item:hover {
+    background: #f8fafc !important;
+    transform: translateX(2px) !important;
+}
+
+.ce-toolbox .ce-popover-item__icon {
+    flex-shrink: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #64748b !important;
+}
+
+.ce-toolbox .ce-popover-item__title {
+    flex: 1 !important;
+    font-weight: 500 !important;
+    color: #1e293b !important;
+    font-size: 14px !important;
+}
+
+.ce-toolbox .ce-popover-item__secondary-title {
+    font-size: 12px !important;
+    color: #94a3b8 !important;
+    font-weight: 400 !important;
+}
+
+/* Search field in toolbox when visible */
+.ce-toolbox:not([style*="display: none"]) .cdx-search-field {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-bottom: 12px !important;
+    padding: 10px 12px !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    transition: all 0.2s ease !important;
+}
+
+.ce-toolbox:not([style*="display: none"]) .cdx-search-field:focus-within {
+    background: #ffffff !important;
+    border-color: var(--linguify-primary, #2D5BBA) !important;
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1) !important;
+}
+
+.ce-toolbox:not([style*="display: none"]) .cdx-search-field__input {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    border: none !important;
+    background: transparent !important;
+    outline: none !important;
+}
+
+/* Hide "nothing found" when there are items */
+.ce-toolbox:not([style*="display: none"]) .ce-popover__nothing-found-message {
+    display: none !important;
+}
+
+/* Suppression de tous les tooltips et �l�ments g�nants */
 .ce-toolbar__plus::after,
 .ce-toolbar__settings-btn::after,
 .ce-toolbar__plus[title],
 .ce-tooltip,
 [data-tooltip],
-.ce-hint {
+.ce-hint,
+.ce-inline-toolbar__dropdown,
+.ce-inline-tool--conversion,
+.ce-popover--conversion,
+.ce-conversion-tool,
+.ce-conversion-toolbar,
+.ce-conversion-tool--showed,
+.ce-inline-toolbar__toggler-and-button-wrapper .ce-popover,
+.ce-settings,
+.ce-toolbar__settings-btn,
+.ce-block__content .ce-settings,
+.ce-block-tunes,
+.ce-settings__button,
+span.ce-toolbar__settings-btn,
+.ce-toolbar__actions span:last-child,
+.ce-toolbar__actions span:nth-child(2) {
     display: none !important;
-}
-
-/* Supprimer l'attribut title du bouton + */
-.ce-toolbar__plus {
-    title: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    left: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
 }
 
 /* CSS pour masquer les tooltips natifs du navigateur */
 .ce-toolbar__plus:hover::before,
 .ce-toolbar__plus:hover::after {
     content: none !important;
-    display: none !important;
-}
-
-/* Masquer seulement les tooltips, pas le menu toolbox */
-.ce-tooltip {
-    display: none !important;
-}
-
-/* Masquer SEULEMENT les éléments de tune gênants, pas la toolbar */
-.ce-settings,
-.ce-toolbar__settings-btn,
-.ce-block__content .ce-settings,
-.ce-block-tunes {
     display: none !important;
 }
 
@@ -341,24 +367,14 @@
     visibility: visible !important;
 }
 
-/* Masquer seulement les block tunes, pas le toolbox */
-.ce-block-tunes,
-.ce-settings__button {
-    display: none !important;
+/* Placeholder with slash command hint */
+.ce-paragraph[data-placeholder]:empty::before {
+    color: #9ca3af;
+    font-style: italic;
 }
 
-/* Suppression du bouton tune (6 points) */
-.ce-toolbar__settings-btn,
-.ce-settings-button {
-    display: none !important;
-}
-
-/* Garder le toolbox menu visible */
-.ce-popover.ce-toolbox {
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    display: block !important;
+.ce-header[data-placeholder]:empty::before {
+    color: #9ca3af;
 }
 
 /* Custom tool styles */
@@ -470,35 +486,6 @@
     font-family: monospace;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .ce-block__content {
-        padding: 0 10px !important;
-    }
-
-    .editorjs-container {
-        padding: 0.5rem;
-    }
-}
-
-/* Custom Linguify Tools */
-.language-note-tool {
-    margin: 1rem 0;
-}
-
-.language-note-tool input:focus,
-.language-note-tool textarea:focus,
-.language-note-tool select:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Slash command helper text - SUPPRIMÉ */
-.ce-toolbar__content::after {
-    display: none !important;
-}
-
 /* Button Icon Components - Reusable avec couleurs Linguify */
 .btn-icon {
     display: inline-flex;
@@ -575,6 +562,16 @@
     height: calc(100vh - 140px);
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+    .ce-block__content {
+        padding: 0 10px !important;
+    }
+
+    .editorjs-container {
+        padding: 0.5rem;
+    }
+}
 
 /* Animations */
 .ce-block {
