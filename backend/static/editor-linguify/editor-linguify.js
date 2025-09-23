@@ -95,10 +95,10 @@ class LinguifyEditor {
                 },
 
                 /**
-                 * List Tool
+                 * List Tool (with nesting support)
                  */
                 list: {
-                    class: List,
+                    class: NestedList,
                     inlineToolbar: true,
                     config: {
                         defaultStyle: 'unordered'
@@ -239,6 +239,16 @@ class LinguifyEditor {
                     toolbox: {
                         title: '📄 HTML',
                         icon: '<svg width="17" height="15" viewBox="0 0 17 15"><path d="M13.133 14h-9.267c-1.495 0-2.585-.983-2.585-2.333v-8.334c0-1.35 1.09-2.333 2.585-2.333h9.267c1.495 0 2.585.983 2.585 2.333v8.334c0 1.35-1.09 2.333-2.585 2.333z"/><path d="M4.65 7.333L6.167 10l1.517-2.667" stroke="#fff" stroke-linecap="round"/><path d="M11.3 5L9.783 7.667 11.3 10.333" stroke="#fff" stroke-linecap="round"/></svg>'
+                    }
+                },
+
+                /**
+                 * Link Tool
+                 */
+                linkTool: {
+                    class: LinkTool,
+                    config: {
+                        endpoint: '/notebook/api/fetch-url-meta/' // For URL preview
                     }
                 }
             },
@@ -395,7 +405,7 @@ class LinguifyEditor {
             if (typeof EditorJS !== 'undefined' &&
                 typeof Header !== 'undefined' &&
                 typeof Paragraph !== 'undefined' &&
-                typeof List !== 'undefined' &&
+                typeof NestedList !== 'undefined' &&
                 typeof Checklist !== 'undefined' &&
                 typeof Quote !== 'undefined' &&
                 typeof CodeTool !== 'undefined' &&
@@ -406,7 +416,8 @@ class LinguifyEditor {
                 typeof InlineCode !== 'undefined' &&
                 typeof Embed !== 'undefined' &&
                 typeof SimpleImage !== 'undefined' &&
-                typeof RawTool !== 'undefined') {
+                typeof RawTool !== 'undefined' &&
+                typeof LinkTool !== 'undefined') {
                 return;
             }
             await new Promise(resolve => setTimeout(resolve, interval));

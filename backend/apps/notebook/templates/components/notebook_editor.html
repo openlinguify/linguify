@@ -16,20 +16,20 @@
     <!-- Note sélectionnée -->
     <div x-show="currentNote" class="note-editor-modern">
         <!-- Header compact avec titre et actions -->
-        <div class="note-header-modern">
-            <div class="note-title-section">
-                <div class="title-row">
+        <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50 sticky top-0 z-10">
+            <div class="flex-1">
+                <div class="flex gap-3 items-center">
                     <input x-show="currentNote"
                            :value="currentNote ? currentNote.title : ''"
                            @input="currentNote.title = $event.target.value"
                            @blur="updateNote()"
                            type="text"
                            placeholder="{% trans 'Note title' %}"
-                           class="note-title-input">
+                           class="text-lg font-semibold border-none bg-transparent text-slate-800 p-2 min-w-80 outline-none focus:border-b-2 focus:border-blue-500">
                     <select x-show="currentNote"
                             :value="currentNote ? currentNote.language : ''"
                             @change="currentNote.language = $event.target.value; updateNote()"
-                            class="language-select-inline">
+                            class="px-3 py-1.5 border border-gray-200 rounded-md bg-white text-sm text-slate-600">
                         <option value="">{% trans 'Language' %}</option>
                         <option value="fr">🇫🇷 Français</option>
                         <option value="en">🇬🇧 English</option>
@@ -39,14 +39,28 @@
                 </div>
             </div>
 
-            <div class="note-actions">
-                <!-- New buttons will be added here -->
+            <div class="flex items-center gap-2">
+                <button @click="currentNote.is_pinned = !currentNote.is_pinned; updateNote()"
+                        class="btn-icon btn-icon-indigo"
+                        :class="{'btn-icon-active': currentNote && currentNote.is_pinned}"
+                        title="{% trans 'Pin note' %}">
+                    <i class="bi bi-pin-angle"></i>
+                </button>
+                <button @click="copyNoteContent()" class="btn-icon btn-icon-emerald" title="{% trans 'Copy content' %}">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+                <button @click="exportNote()" class="btn-icon btn-icon-violet" title="{% trans 'Export note' %}">
+                    <i class="bi bi-download"></i>
+                </button>
+                <button @click="deleteNote(currentNote.id)" class="btn-icon btn-icon-red" title="{% trans 'Delete note' %}">
+                    <i class="bi bi-trash3"></i>
+                </button>
             </div>
         </div>
 
         <!-- Zone de contenu principal -->
-        <div class="note-content-modern">
-            <div class="content-wrapper">
+        <div class="h-screen-editor overflow-hidden flex flex-col">
+            <div class="flex-1 overflow-hidden">
                 <!-- Editor.js Container -->
                 <div id="editorjs-container" class="editorjs-container"></div>
             </div>

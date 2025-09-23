@@ -349,6 +349,74 @@ function notebookApp() {
             } catch (error) {
                 console.error('Error updating note:', error);
             }
+        },
+
+        async copyNoteContent() {
+            if (!this.linguifyEditor || !this.currentNote) return;
+
+            try {
+                const data = await this.linguifyEditor.save();
+                const textContent = this.extractTextFromEditorData(data);
+                await navigator.clipboard.writeText(textContent);
+                this.showAlert('Contenu copié dans le presse-papiers!', 'success');
+            } catch (error) {
+                console.error('Error copying content:', error);
+                this.showAlert('Erreur lors de la copie', 'error');
+            }
+        },
+
+        extractTextFromEditorData(data) {
+            if (!data || !data.blocks) return '';
+
+            return data.blocks.map(block => {
+                switch (block.type) {
+                    case 'paragraph':
+                        return block.data.text || '';
+                    case 'header':
+                        return block.data.text || '';
+                    case 'list':
+                        return block.data.items.join('\n');
+                    case 'quote':
+                        return `"${block.data.text}" - ${block.data.caption}`;
+                    case 'code':
+                        return block.data.code || '';
+                    default:
+                        return '';
+                }
+            }).join('\n\n');
+        },
+
+        async exportNote() {
+            if (!this.linguifyEditor || !this.currentNote) return;
+
+            try {
+                const data = await this.linguifyEditor.save();
+                const exportData = {
+                    title: this.currentNote.title,
+                    content: data,
+                    language: this.currentNote.language,
+                    created_at: this.currentNote.created_at,
+                    updated_at: this.currentNote.updated_at
+                };
+
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+                    type: 'application/json'
+                });
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${this.currentNote.title || 'note'}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                this.showAlert('Note exportée avec succès!', 'success');
+            } catch (error) {
+                console.error('Error exporting note:', error);
+                this.showAlert('Erreur lors de l\'export', 'error');
+            }
         }
     }
 }

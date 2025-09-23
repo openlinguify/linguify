@@ -5,11 +5,39 @@
 /* Editor Container */
 .editorjs-container {
     background: white;
-    border-radius: 8px;
-    min-height: 400px;
-    padding: 1rem;
-    height: 100%;
+    border-radius: 12px;
+    min-height: 500px;
+    max-height: calc(100vh - 200px);
+    padding: 2rem;
     overflow-y: auto;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+}
+
+.editorjs-container:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Custom scrollbar */
+.editorjs-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.editorjs-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.editorjs-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.editorjs-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 /* Customize Editor.js styles */
@@ -28,47 +56,67 @@
 
 /* Toolbar customization */
 .ce-toolbar__plus {
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    color: #374151;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .ce-toolbar__plus:hover {
-    background: #3b82f6;
-    color: white;
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .ce-toolbar__settings-btn {
     background: #f8fafc;
     border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
 
 .ce-toolbar__settings-btn:hover {
     background: #f3f4f6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Inline toolbar */
 .ce-inline-toolbar {
-    background: #1e293b;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .ce-inline-toolbar__buttons {
-    background: #1e293b;
+    background: transparent;
+    padding: 4px;
 }
 
 .ce-inline-tool {
     color: #e2e8f0;
+    border-radius: 8px;
+    margin: 2px;
+    transition: all 0.2s ease;
+    position: relative;
 }
 
 .ce-inline-tool:hover {
-    background: #334155;
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    transform: translateY(-1px);
 }
 
 .ce-inline-tool--active {
-    background: #3b82f6;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     color: white;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
 /* Conversion toolbar */
@@ -322,6 +370,58 @@
 .editorjs-container:hover .ce-toolbar__content::after {
     opacity: 0.8;
 }
+
+/* Button Icon Components - Reusable */
+.btn-icon {
+    @apply inline-flex items-center justify-center w-10 h-10 bg-white border rounded-lg cursor-pointer transition-all duration-200 text-base;
+}
+
+.btn-icon:hover {
+    @apply -translate-y-0.5 shadow-md;
+}
+
+/* Color variants */
+.btn-icon-indigo {
+    @apply text-indigo-500 border-indigo-200;
+}
+
+.btn-icon-indigo:hover {
+    @apply bg-indigo-50 text-indigo-600 border-indigo-300;
+}
+
+.btn-icon-indigo.btn-icon-active {
+    @apply bg-indigo-500 text-white border-indigo-500;
+}
+
+.btn-icon-emerald {
+    @apply text-emerald-600 border-emerald-200;
+}
+
+.btn-icon-emerald:hover {
+    @apply bg-emerald-50 text-emerald-700 border-emerald-300;
+}
+
+.btn-icon-violet {
+    @apply text-violet-600 border-violet-200;
+}
+
+.btn-icon-violet:hover {
+    @apply bg-violet-50 text-violet-700 border-violet-300;
+}
+
+.btn-icon-red {
+    @apply text-red-600 border-red-200;
+}
+
+.btn-icon-red:hover {
+    @apply bg-red-50 text-red-700 border-red-300;
+}
+
+/* Custom height for editor area */
+.h-screen-editor {
+    height: calc(100vh - 140px);
+}
+
 
 /* Animations */
 .ce-block {
