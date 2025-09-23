@@ -41,79 +41,9 @@
 
         <!-- Zone de contenu principal -->
         <div class="note-content-modern">
-            <div class="content-wrapper"
-                 x-data="linguifyEditor()"
-                 @click.away="hideCommandMenu()">
-
-                <textarea x-model="currentNote.content"
-                          @blur="updateNote()"
-                          @input="updateNote()"
-                          @keydown="handleKeydown($event)"
-                          @mouseup="handleSelection($event)"
-                          @keyup="handleSelection($event)"
-                          placeholder="{% trans 'Start writing your note...' %} Tapez / pour les commandes..."
-                          class="content-textarea"
-                          rows="20"></textarea>
-
-                <!-- Commands dropdown -->
-                <div x-show="showCommands"
-                     x-transition
-                     class="commands-dropdown"
-                     :style="`position: fixed; left: ${commandPosition.x}px; top: ${commandPosition.y}px; z-index: 1000;`">
-                    <div class="commands-menu">
-                        <template x-for="(command, index) in commands" :key="index">
-                            <div class="command-item"
-                                 :class="{ 'selected': index === selectedCommand }"
-                                 @click="selectCommand(index, $event.target.closest('[x-data]').querySelector('textarea'))"
-                                 @mouseenter="selectedCommand = index">
-                                <span class="command-name" x-text="command.name"></span>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
-                <!-- Formatting toolbar -->
-                <div x-show="showFormatToolbar"
-                     x-transition
-                     class="formatting-toolbar"
-                     :style="`position: fixed; left: ${toolbarPosition.x}px; top: ${toolbarPosition.y}px; z-index: 1001;`">
-                    <div class="toolbar-menu">
-                        <button @click="formatText('bold', $event.target.closest('[x-data]').querySelector('textarea'))"
-                                class="toolbar-btn" title="Gras">
-                            <i class="fas fa-bold"></i>
-                        </button>
-                        <button @click="formatText('italic', $event.target.closest('[x-data]').querySelector('textarea'))"
-                                class="toolbar-btn" title="Italique">
-                            <i class="fas fa-italic"></i>
-                        </button>
-                        <button @click="formatText('highlight', $event.target.closest('[x-data]').querySelector('textarea'))"
-                                class="toolbar-btn" title="Surligner">
-                            <i class="fas fa-highlighter"></i>
-                        </button>
-                        <button @click="formatText('code', $event.target.closest('[x-data]').querySelector('textarea'))"
-                                class="toolbar-btn" title="Code">
-                            <i class="fas fa-code"></i>
-                        </button>
-                        <div class="toolbar-separator"></div>
-                        <button @click="formatText('h1', $event.target.closest('[x-data]').querySelector('textarea'))"
-                                class="toolbar-btn" title="Titre 1">
-                            H1
-                        </button>
-                        <button @click="formatText('h2', $event.target.closest('[x-data]').querySelector('textarea'))"
-                                class="toolbar-btn" title="Titre 2">
-                            H2
-                        </button>
-                        <button @click="formatText('h3', $event.target.closest('[x-data]').querySelector('textarea'))"
-                                class="toolbar-btn" title="Titre 3">
-                            H3
-                        </button>
-                        <button @click="formatText('h4', $event.target.closest('[x-data]').querySelector('textarea'))"
-                                class="toolbar-btn" title="Titre 4">
-                            H4
-                        </button>
-                    </div>
-                </div>
-
+            <div class="content-wrapper">
+                <!-- Editor.js Container -->
+                <div id="editorjs-container" class="editorjs-container"></div>
             </div>
         </div>
     </div>

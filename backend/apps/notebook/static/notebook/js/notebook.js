@@ -10,6 +10,7 @@ function notebookApp() {
         totalNotes: 0,
         totalPages: 1,
         currentPage: 1,
+        linguifyEditor: null, // Editor.js instance
 
         // Filtres
         searchQuery: '',
@@ -21,6 +22,27 @@ function notebookApp() {
         // Méthodes
         init() {
             this.loadNotes();
+            this.initEditor();
+        },
+
+        async initEditor() {
+            // Initialize LinguifyEditor with Editor.js
+            if (!this.linguifyEditor && document.getElementById('editorjs-container')) {
+                this.linguifyEditor = new LinguifyEditor('editorjs-container', {
+                    onChange: async (data) => {
+                        // Auto-save when content changes
+                        if (this.currentNote) {
+                            this.currentNote.content = JSON.stringify(data);
+                            await this.updateNote();
+                        }
+                    },
+                    onReady: () => {
+                        console.log('Editor.js is ready for notebook!');
+                    }
+                });
+
+                await this.linguifyEditor.init();
+            }
         },
 
         async loadNotes() {
@@ -265,9 +287,39 @@ function notebookApp() {
             this.selectedNotes = this.notes.map(note => note.id);
         },
 
-        openNote(note) {
+        async openNote(note) {
             // Deep clone the note to avoid direct mutations
             this.currentNote = JSON.parse(JSON.stringify(note));
+
+            // Load content in Editor.js
+            if (this.linguifyEditor && this.linguifyEditor.isReady) {
+                try {
+                    // Clear current editor content
+                    await this.linguifyEditor.clear();
+
+                    // Load note content
+                    if (this.currentNote.content) {
+                        let contentData;
+                        try {
+                            // Try to parse as JSON (Editor.js format)
+                            contentData = JSON.parse(this.currentNote.content);
+                        } catch (e) {
+                            // If not JSON, convert plain text to Editor.js format
+                            contentData = {
+                                blocks: [{
+                                    type: 'paragraph',
+                                    data: {
+                                        text: this.currentNote.content
+                                    }
+                                }]
+                            };
+                        }
+                        await this.linguifyEditor.render(contentData);
+                    }
+                } catch (error) {
+                    console.error('Error loading note in editor:', error);
+                }
+            }
         },
 
         async updateNote() {

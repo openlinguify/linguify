@@ -1,0 +1,254 @@
+/**
+ * Editor.js Custom Styles for Linguify
+ */
+
+/* Editor Container */
+.editorjs-container {
+    background: white;
+    border-radius: 8px;
+    min-height: 400px;
+    padding: 1rem;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Customize Editor.js styles */
+.codex-editor {
+    max-width: none !important;
+}
+
+.codex-editor__redactor {
+    padding-bottom: 100px !important;
+}
+
+.ce-block__content {
+    max-width: none !important;
+    padding: 0 20px !important;
+}
+
+/* Toolbar customization */
+.ce-toolbar__plus {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+}
+
+.ce-toolbar__plus:hover {
+    background: #3b82f6;
+    color: white;
+}
+
+.ce-toolbar__settings-btn {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+}
+
+.ce-toolbar__settings-btn:hover {
+    background: #f3f4f6;
+}
+
+/* Inline toolbar */
+.ce-inline-toolbar {
+    background: #1e293b;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+}
+
+.ce-inline-toolbar__buttons {
+    background: #1e293b;
+}
+
+.ce-inline-tool {
+    color: #e2e8f0;
+}
+
+.ce-inline-tool:hover {
+    background: #334155;
+}
+
+.ce-inline-tool--active {
+    background: #3b82f6;
+    color: white;
+}
+
+/* Conversion toolbar */
+.ce-conversion-toolbar {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+.ce-conversion-tool:hover {
+    background: #f3f4f6;
+}
+
+/* Block tunes */
+.ce-popover {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+.ce-popover__item:hover {
+    background: #f3f4f6;
+}
+
+/* Settings */
+.ce-settings {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+.ce-settings__button:hover {
+    background: #f3f4f6;
+}
+
+/* Placeholder */
+.ce-paragraph[data-placeholder]:empty::before {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.ce-header[data-placeholder]:empty::before {
+    color: #9ca3af;
+}
+
+/* Custom tool styles */
+.ce-header {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.ce-paragraph {
+    line-height: 1.6;
+    color: #374151;
+}
+
+.cdx-list {
+    color: #374151;
+}
+
+.cdx-checklist__item-checkbox {
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+}
+
+.cdx-checklist__item--checked .cdx-checklist__item-checkbox {
+    background: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.cdx-quote {
+    border-left: 4px solid #3b82f6;
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.cdx-quote__text {
+    color: #1f2937;
+    font-style: italic;
+}
+
+.cdx-quote__caption {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.cdx-code {
+    background: #1e293b;
+    color: #f1f5f9;
+    border-radius: 8px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.cdx-delimiter {
+    line-height: 1.6em;
+    width: 100%;
+    text-align: center;
+}
+
+.cdx-delimiter::before {
+    display: inline-block;
+    content: "* * *";
+    font-size: 30px;
+    line-height: 65px;
+    height: 30px;
+    letter-spacing: 1em;
+}
+
+.cdx-table {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cdx-table__cell {
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem;
+}
+
+.cdx-table__cell--header {
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+.cdx-warning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.cdx-warning__title {
+    color: #d97706;
+    font-weight: 600;
+}
+
+.cdx-warning__message {
+    color: #92400e;
+}
+
+.cdx-marker {
+    background: #fef3c7;
+    padding: 0.125rem 0;
+}
+
+.cdx-inline-code {
+    background: #f3f4f6;
+    color: #dc2626;
+    padding: 0.125rem 0.25rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ce-block__content {
+        padding: 0 10px !important;
+    }
+
+    .editorjs-container {
+        padding: 0.5rem;
+    }
+}
+
+/* Animations */
+.ce-block {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
