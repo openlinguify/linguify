@@ -51,18 +51,19 @@
                         { icon: '☐', name: 'Tâche', text: '☐ ' },
                         { icon: '💡', name: 'Idée', text: '💡 **Idée:** ' },
                         { icon: '❓', name: 'Question', text: '❓ **Question:** ' },
-                        { icon: '🔄', name: 'Traduction', text: '🔄 **FR:** \\n🔄 **EN:** ' },
+                        { icon: '🔄', name: 'Traduction', text: '🔄 **FR:** \n🔄 **EN:** ' },
                         { icon: '📚', name: 'Vocabulaire', text: '📚 **Mot:** définition' },
                         { icon: '⏰', name: 'Rappel', text: '⏰ **Rappel:** ' }
                     ],
 
                     handleKeydown(event) {
+                        const textarea = event.target;
+
                         if (event.key === '/') {
-                            const textarea = event.target;
                             const cursorPos = textarea.selectionStart;
                             const textBefore = textarea.value.substring(0, cursorPos);
 
-                            if (cursorPos === 0 || textBefore.endsWith('\\n') || textBefore.endsWith(' ')) {
+                            if (cursorPos === 0 || textBefore.endsWith('\n') || textBefore.endsWith(' ')) {
                                 setTimeout(() => {
                                     this.showCommandMenu(textarea);
                                 }, 10);
