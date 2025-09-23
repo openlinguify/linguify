@@ -29,13 +29,19 @@
 .conteneur-content {
     display: flex;
     overflow: hidden;
+    position: absolute;
+    top: calc(120px + 1vh); /* Header (64px) + Navbar (56px) + 2% = 120px + 2vh */
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 /* Sidebar utilise maintenant les styles Linguify officiels via .sidebar-linguify */
 /* Override pour la sidebar - doit respecter la navbar fixe */
 #revisionSidebar.sidebar-linguify {
-    top: 120px !important; /* Header (64px) + Navbar (56px) = 120px */
-    height: calc(100vh - 120px) !important;
+    position: relative !important;
+    top: 0 !important;
+    height: 100% !important;
 }
 .sidebar-header {
     padding: 1rem;
