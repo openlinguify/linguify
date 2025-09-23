@@ -21,7 +21,6 @@
 
 {% block content %}
 {% csrf_token %}
-
 <!-- Main notebook app - FAST LOAD -->
 <div class="notebook-app" x-data="notebookApp()" x-init="init(); $nextTick(() => $el.classList.add('alpine-initialized'))">
     <div class="notebook-layout">
@@ -31,9 +30,6 @@
         <!-- Editor Component -->
         {% include 'components/notebook_editor.html' %}
     </div>
-
-    <!-- Modal Component -->
-    {% include 'components/notebook_modal.html' %}
 </div>
 
 <!-- Script local uniquement - Alpine.js déjà chargé dans head -->

@@ -41,7 +41,7 @@
         </div>
 
         <!-- New Note Button -->
-        <button @click="openCreateModal()" class="btn-navbar btn-navbar-primary">
+        <button @click="createNewNote()" class="btn-navbar btn-navbar-primary">
             <i class="bi bi-plus-lg"></i>
             <span class="d-none d-xl-inline">{% trans 'New Note' %}</span>
         </button>
@@ -82,14 +82,14 @@
                     (selectedLanguage === 'fr' ? 'French' :
                      selectedLanguage === 'en' ? 'English' :
                      selectedLanguage === 'es' ? 'Spanish' :
-                     selectedLanguage === 'de' ? 'German' : selectedLanguage)">All languages</span>
+                     selectedLanguage === 'nl' ? 'Dutch' : selectedLanguage)">All languages</span>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" @click="selectedLanguage = ''; loadNotes()">{% trans 'All languages' %}</a></li>
-                <li><a class="dropdown-item" href="#" @click="selectedLanguage = 'fr'; loadNotes()">{% trans 'French' %}</a></li>
-                <li><a class="dropdown-item" href="#" @click="selectedLanguage = 'en'; loadNotes()">{% trans 'English' %}</a></li>
-                <li><a class="dropdown-item" href="#" @click="selectedLanguage = 'es'; loadNotes()">{% trans 'Spanish' %}</a></li>
-                <li><a class="dropdown-item" href="#" @click="selectedLanguage = 'de'; loadNotes()">{% trans 'German' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = ''; loadNotes()">{% trans 'All languages' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = 'fr'; loadNotes()">{% trans 'French' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = 'en'; loadNotes()">{% trans 'English' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = 'es'; loadNotes()">{% trans 'Spanish' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = 'nl'; loadNotes()">{% trans 'Dutch' %}</a></li>
             </ul>
         </div>
 
@@ -100,9 +100,9 @@
                     (archiveStatus === 'archived' ? 'Archived notes' : 'All notes')">Active notes</span>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" @click="archiveStatus = 'active'; loadNotes()">{% trans 'Active notes' %}</a></li>
-                <li><a class="dropdown-item" href="#" @click="archiveStatus = 'archived'; loadNotes()">{% trans 'Archived notes' %}</a></li>
-                <li><a class="dropdown-item" href="#" @click="archiveStatus = 'all'; loadNotes()">{% trans 'All notes' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="archiveStatus = 'active'; loadNotes()">{% trans 'Active notes' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="archiveStatus = 'archived'; loadNotes()">{% trans 'Archived notes' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="archiveStatus = 'all'; loadNotes()">{% trans 'All notes' %}</a></li>
             </ul>
         </div>
 
@@ -115,15 +115,32 @@
                      sortBy === 'title_desc' ? 'Title Z-A' : sortBy)">Most recent</span>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" @click="sortBy = 'updated_desc'; loadNotes()">{% trans 'Most recent' %}</a></li>
-                <li><a class="dropdown-item" href="#" @click="sortBy = 'updated_asc'; loadNotes()">{% trans 'Oldest' %}</a></li>
-                <li><a class="dropdown-item" href="#" @click="sortBy = 'title_asc'; loadNotes()">{% trans 'Title A-Z' %}</a></li>
-                <li><a class="dropdown-item" href="#" @click="sortBy = 'title_desc'; loadNotes()">{% trans 'Title Z-A' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="sortBy = 'updated_desc'; loadNotes()">{% trans 'Most recent' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="sortBy = 'updated_asc'; loadNotes()">{% trans 'Oldest' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="sortBy = 'title_asc'; loadNotes()">{% trans 'Title A-Z' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="sortBy = 'title_desc'; loadNotes()">{% trans 'Title Z-A' %}</a></li>
             </ul>
         </div>
 
         <!-- Actions -->
         <div class="navbar-actions-group">
+            <!-- Select All button (when notes exist) -->
+            <button x-show="notes.length > 0 && selectedNotes.length === 0" @click="selectAll()" class="btn-navbar btn-navbar-outline" title="{% trans 'Select all notes' %}">
+                <i class="bi bi-check-square"></i>
+                <span class="d-none d-xl-inline">{% trans 'Select All' %}</span>
+            </button>
+
+            <!-- Selection counter -->
+            <span x-show="selectedNotes.length > 0" class="selection-counter">
+                <span x-text="selectedNotes.length"></span> {% trans 'selected' %}
+            </span>
+
+            <!-- Clear selection -->
+            <button x-show="selectedNotes.length > 0" @click="clearSelection()" class="btn-navbar btn-navbar-outline" title="{% trans 'Clear selection' %}">
+                <i class="bi bi-x-circle"></i>
+                <span class="d-none d-xl-inline">{% trans 'Clear' %}</span>
+            </button>
+
             <!-- Bulk Actions (when notes are selected) -->
             <button x-show="selectedNotes.length > 0" @click="bulkArchive()" class="btn-navbar btn-navbar-outline" title="{% trans 'Archive selection' %}">
                 <i class="bi bi-archive"></i>

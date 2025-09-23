@@ -4,7 +4,6 @@ function notebookApp() {
     return {
         // État général
         isLoading: false,
-        isSaving: false,
         notes: [],
         currentNote: null,
         selectedNotes: [],
@@ -18,21 +17,6 @@ function notebookApp() {
         archiveStatus: 'active',
         sortBy: 'updated_desc',
 
-        // Modals
-        showCreateModal: false,
-        showEditModal: false,
-
-        // Note vide pour création
-        emptyNote: {
-            title: '',
-            content: '',
-            language: '',
-            translation: '',
-            pronunciation: '',
-            difficulty: '',
-            is_pinned: false,
-            is_archived: false
-        },
 
         // Méthodes
         init() {
@@ -85,43 +69,7 @@ function notebookApp() {
             }
         },
 
-        async saveNote() {
-            this.isSaving = true;
-            try {
-                const url = this.currentNote.id
-                    ? `/notebook/api/notes/${this.currentNote.id}/`
-                    : `/notebook/api/notes/`;
-                const method = this.currentNote.id ? 'PUT' : 'POST';
 
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': this.getCsrfToken()
-                    },
-                    credentials: 'same-origin',
-                    body: JSON.stringify(this.currentNote)
-                });
-
-                if (response.ok) {
-                    await this.loadNotes();
-                    this.closeModals();
-                    this.showAlert('Note saved successfully!', 'success');
-                } else {
-                    throw new Error('Failed to save note');
-                }
-            } catch (error) {
-                console.error('Error saving note:', error);
-                this.showAlert('Error saving note', 'error');
-            } finally {
-                this.isSaving = false;
-            }
-        },
-
-        editNote(note) {
-            this.currentNote = { ...note };
-            this.showEditModal = true;
-        },
 
         async deleteNote(noteId) {
             if (!confirm('Are you sure you want to delete this note?')) return;
@@ -213,6 +161,8 @@ function notebookApp() {
         },
 
         async bulkDelete() {
+            if (this.selectedNotes.length === 0) return;
+
             if (!confirm(`Are you sure you want to delete ${this.selectedNotes.length} notes?`)) return;
 
             try {
@@ -235,17 +185,41 @@ function notebookApp() {
             }
         },
 
-        openCreateModal() {
-            this.currentNote = { ...this.emptyNote };
-            this.showCreateModal = true;
-            this.showEditModal = false;
+        async createNewNote() {
+            try {
+                // Créer une nouvelle note avec titre par défaut
+                const newNote = {
+                    title: 'Nouvelle note',
+                    content: '',
+                    language: '',
+                    is_pinned: false,
+                    is_archived: false
+                };
+
+                const response = await fetch('/notebook/api/notes/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCsrfToken()
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(newNote)
+                });
+
+                if (response.ok) {
+                    const createdNote = await response.json();
+                    // Recharger les notes et ouvrir la nouvelle
+                    await this.loadNotes();
+                    this.openNote(createdNote);
+                } else {
+                    throw new Error('Failed to create note');
+                }
+            } catch (error) {
+                console.error('Error creating note:', error);
+                this.showAlert('Erreur lors de la création de la note', 'error');
+            }
         },
 
-        closeModals() {
-            this.showCreateModal = false;
-            this.showEditModal = false;
-            this.currentNote = null;
-        },
 
         getCsrfToken() {
             return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
@@ -287,6 +261,10 @@ function notebookApp() {
 
         clearSelection() {
             this.selectedNotes = [];
+        },
+
+        selectAll() {
+            this.selectedNotes = this.notes.map(note => note.id);
         },
 
         openNote(note) {

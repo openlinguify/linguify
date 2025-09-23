@@ -7,7 +7,7 @@
         <i class="fas fa-file-alt" style="font-size: 3rem; color: #d1d5db;"></i>
         <h2 style="color: #6b7280; margin-top: 1rem;">{% trans 'Select a note to view' %}</h2>
         <p style="color: #9ca3af;">{% trans 'Choose a note from the sidebar or create a new one' %}</p>
-        <button @click="openCreateModal()" class="btn btn-primary" style="margin-top: 1rem;">
+        <button @click="createNewNote()" class="btn-linguify" style="margin-top: 1rem;">
             <i class="fas fa-plus"></i>
             {% trans 'Create New Note' %}
         </button>
@@ -41,19 +41,7 @@
                 <option value="fr">{% trans 'French' %}</option>
                 <option value="en">{% trans 'English' %}</option>
                 <option value="es">{% trans 'Spanish' %}</option>
-                <option value="de">{% trans 'German' %}</option>
-            </select>
-            <select x-model="currentNote.difficulty" @change="updateNote()" style="padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;">
-                <option value="">{% trans 'Difficulty' %}</option>
-                <option value="BEGINNER">{% trans 'Beginner' %}</option>
-                <option value="INTERMEDIATE">{% trans 'Intermediate' %}</option>
-                <option value="ADVANCED">{% trans 'Advanced' %}</option>
-            </select>
-            <select x-model="currentNote.note_type" @change="updateNote()" style="padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;">
-                <option value="NOTE">{% trans 'Note' %}</option>
-                <option value="VOCABULARY">{% trans 'Vocabulary' %}</option>
-                <option value="GRAMMAR">{% trans 'Grammar' %}</option>
-                <option value="EXPRESSION">{% trans 'Expression' %}</option>
+                <option value="nl">{% trans 'Dutch' %}</option>
             </select>
         </div>
 
@@ -63,7 +51,8 @@
             <textarea x-model="currentNote.content"
                       @blur="updateNote()"
                       placeholder="{% trans 'Write your note here...' %}"
-                      style="width: 100%; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical;"></textarea>
+                      style="width: 100%; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical;">
+            </textarea>
         </div>
 
     </div>
