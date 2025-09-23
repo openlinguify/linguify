@@ -18,13 +18,13 @@
         <!-- Header compact avec titre et actions -->
         <div class="note-header-modern">
             <div class="note-title-section">
-                <input x-model="currentNote.title"
-                       @blur="updateNote()"
-                       type="text"
-                       placeholder="{% trans 'Note title' %}"
-                       class="note-title-input">
-                <div class="note-metadata">
-                    <select x-model="currentNote.language" @change="updateNote()" class="language-select">
+                <div class="title-row">
+                    <input x-model="currentNote.title"
+                           @blur="updateNote()"
+                           type="text"
+                           placeholder="{% trans 'Note title' %}"
+                           class="note-title-input">
+                    <select x-model="currentNote.language" @change="updateNote()" class="language-select-inline">
                         <option value="">{% trans 'Language' %}</option>
                         <option value="fr">🇫🇷 Français</option>
                         <option value="en">🇬🇧 English</option>
@@ -35,12 +35,7 @@
             </div>
 
             <div class="note-actions">
-                <button @click="togglePin(currentNote)" class="action-btn" :class="{'pinned': currentNote.is_pinned}" :title="currentNote.is_pinned ? '{% trans 'Unpin' %}' : '{% trans 'Pin' %}'">
-                    <i :class="currentNote.is_pinned ? 'fas fa-thumbtack' : 'far fa-thumbtack'"></i>
-                </button>
-                <button @click="deleteNote(currentNote.id)" class="action-btn delete">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <!-- New buttons will be added here -->
             </div>
         </div>
 

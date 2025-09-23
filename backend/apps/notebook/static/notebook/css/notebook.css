@@ -109,8 +109,14 @@
     min-width: 0;
 }
 
+.title-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+}
+
 .note-title-input {
-    width: 100%;
+    flex: 1;
     font-size: 1.875rem;
     font-weight: 700;
     color: #1f2937;
@@ -118,9 +124,9 @@
     outline: none;
     background: transparent;
     padding: 0.25rem 0;
-    margin-bottom: 0.75rem;
     border-bottom: 2px solid transparent;
     transition: border-color 0.2s ease;
+    min-width: 0;
 }
 
 .note-title-input:focus {
@@ -131,13 +137,7 @@
     color: #9ca3af;
 }
 
-.note-metadata {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.language-select {
+.language-select-inline {
     padding: 0.5rem 0.75rem;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
@@ -145,13 +145,20 @@
     font-size: 0.875rem;
     color: #374151;
     cursor: pointer;
-    transition: border-color 0.2s ease;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    min-width: 140px;
 }
 
-.language-select:focus {
+.language-select-inline:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.language-select-inline:hover {
+    border-color: #d1d5db;
+    background: #f9fafb;
 }
 
 .note-actions {
@@ -863,8 +870,19 @@
         align-items: stretch;
     }
 
+    .title-row {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
     .note-title-input {
         font-size: 1.5rem;
+    }
+
+    .language-select-inline {
+        min-width: auto;
+        width: 100%;
     }
 
     .note-actions {
