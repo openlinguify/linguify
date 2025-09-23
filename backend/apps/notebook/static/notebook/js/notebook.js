@@ -153,7 +153,6 @@ function notebookApp() {
 
                 await this.loadNotes();
                 this.selectedNotes = [];
-                this.showAlert('Notes archived successfully!', 'success');
             } catch (error) {
                 console.error('Error archiving notes:', error);
                 this.showAlert('Error archiving notes', 'error');
@@ -178,7 +177,6 @@ function notebookApp() {
 
                 await this.loadNotes();
                 this.selectedNotes = [];
-                this.showAlert('Notes deleted successfully!', 'success');
             } catch (error) {
                 console.error('Error deleting notes:', error);
                 this.showAlert('Error deleting notes', 'error');

@@ -6,7 +6,6 @@
 
 {% block header_content %}
 {% include 'components/header/app_header.html' %}
-{% include 'components/notebook_navbar.html' %}
 {% endblock %}
 
 {% block extra_css %}
@@ -23,11 +22,10 @@
 {% csrf_token %}
 <!-- Main notebook app - FAST LOAD -->
 <div class="notebook-app" x-data="notebookApp()" x-init="init(); $nextTick(() => $el.classList.add('alpine-initialized'))">
+    
+    {% include 'components/notebook_navbar.html' %}
     <div class="notebook-layout">
-        <!-- Sidebar Component -->
         {% include 'components/notebook_sidebar.html' %}
-
-        <!-- Editor Component -->
         {% include 'components/notebook_editor.html' %}
     </div>
 </div>
