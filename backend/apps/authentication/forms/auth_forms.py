@@ -118,6 +118,27 @@ class RegisterForm(UserCreationForm):
         help_text=_('Choose the language for the application interface')
     )
 
+    how_did_you_hear = forms.ChoiceField(
+        choices=[
+            ('', _('-- Select an option --')),
+            ('search_engine', _('Search Engine (Google, Bing, etc.)')),
+            ('social_media', _('Social Media')),
+            ('friend_referral', _('Friend or Family')),
+            ('online_ad', _('Online Advertisement')),
+            ('blog_article', _('Blog or Article')),
+            ('app_store', _('App Store')),
+            ('school_university', _('School or University')),
+            ('work_colleague', _('Work or Colleague')),
+            ('other', _('Other')),
+        ],
+        required=True,
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        }),
+        label=_('How did you hear about us?'),
+        help_text=_('Help us understand how you discovered our platform')
+    )
+
     terms = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={
@@ -130,7 +151,7 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = (
             'first_name', 'last_name', 'username', 'email', 'phone_number',
-            'birthday', 'gender', 'interface_language', 'password1', 'password2', 'terms'
+            'birthday', 'gender', 'interface_language', 'how_did_you_hear', 'password1', 'password2', 'terms'
         )
     
     def clean_username(self):
@@ -192,6 +213,9 @@ class RegisterForm(UserCreationForm):
         user.birthday = self.cleaned_data['birthday']
         user.gender = self.cleaned_data['gender']
         user.interface_language = self.cleaned_data['interface_language']
+
+        # Enregistrer la source d'acquisition (maintenant obligatoire)
+        user.how_did_you_hear = self.cleaned_data['how_did_you_hear']
 
         # Enregistrer l'acceptation des termes si cochée
         if self.cleaned_data.get('terms'):

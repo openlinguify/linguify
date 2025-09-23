@@ -299,6 +299,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     terms_accepted_at = models.DateTimeField(null=True, blank=True, help_text='When the user accepted the terms and conditions')
     terms_version = models.CharField(max_length=10, null=True, blank=True, default='v1.0', help_text='Version of terms that was accepted')
 
+    # User acquisition source field - required for new users
+    how_did_you_hear = models.CharField(
+        max_length=50,
+        null=True,  # Keep null=True for existing users in database
+        blank=True,  # Keep blank=True for admin interface flexibility
+        default='other',  # Default value for existing users
+        choices=[
+            ('search_engine', 'Search Engine (Google, Bing, etc.)'),
+            ('social_media', 'Social Media'),
+            ('friend_referral', 'Friend or Family'),
+            ('online_ad', 'Online Advertisement'),
+            ('blog_article', 'Blog or Article'),
+            ('app_store', 'App Store'),
+            ('school_university', 'School or University'),
+            ('work_colleague', 'Work or Colleague'),
+            ('other', 'Other'),
+        ],
+        help_text='How the user heard about the platform'
+    )
+
     # Custom manager
     objects = UserManager()
 
@@ -316,7 +336,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             "first_name", "last_name", "phone_number", "bio", "profile_picture",
             "interface_language", "theme", "email_notifications", "push_notifications",
             "public_profile", "share_progress", "share_activity",
-            "terms_accepted", "terms_accepted_at", "terms_version"
+            "terms_accepted", "terms_accepted_at", "terms_version", "how_did_you_hear"
         }
 
         # Mettre à jour seulement les champs autorisés

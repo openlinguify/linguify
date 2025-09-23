@@ -61,8 +61,8 @@ class NewUsersFilter(admin.SimpleListFilter):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'username', 'full_name', 'phone_number', 'interface_language', 'online_status', 'new_user_badge', 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'last_login', 'created_at')
-    list_filter = (NewUsersFilter, 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'created_at')
+    list_display = ('email', 'username', 'full_name', 'phone_number', 'interface_language', 'acquisition_source', 'online_status', 'new_user_badge', 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'last_login', 'created_at')
+    list_filter = (NewUsersFilter, 'how_did_you_hear', 'terms_accepted', 'is_active', 'is_staff', 'is_superuser', 'is_coach', 'created_at')
     search_fields = ('email', 'username', 'first_name', 'last_name', 'public_id')
     readonly_fields = ('public_id', 'created_at', 'updated_at', 'last_login')
     exclude = ('password',)  # Do not expose password hash in admin forms
@@ -75,7 +75,7 @@ class UserAdmin(admin.ModelAdmin):
             'fields': ('email', 'username', 'first_name', 'last_name')
         }),
         ('Contact & Profile', {
-            'fields': ('phone_number', 'profile_picture', 'bio', 'birthday', 'gender'),
+            'fields': ('phone_number', 'profile_picture', 'bio', 'birthday', 'gender', 'how_did_you_hear'),
         }),
         ('Language Settings', {
             'fields': ('interface_language',),
@@ -104,6 +104,45 @@ class UserAdmin(admin.ModelAdmin):
     def full_name(self, obj):
         return f"{obj.first_name} {obj.last_name}"
     full_name.short_description = "Name"
+
+    def acquisition_source(self, obj):
+        """Display how the user heard about us"""
+        if obj.how_did_you_hear:
+            # Map values to user-friendly labels
+            source_labels = {
+                'search_engine': '🔍 Search',
+                'social_media': '📱 Social',
+                'friend_referral': '👥 Friend',
+                'online_ad': '📢 Ad',
+                'blog_article': '📝 Blog',
+                'app_store': '📲 App Store',
+                'school_university': '🎓 School',
+                'work_colleague': '💼 Work',
+                'other': '❓ Other',
+            }
+            label = source_labels.get(obj.how_did_you_hear, obj.how_did_you_hear)
+
+            # Add color coding
+            color_map = {
+                'search_engine': '#4285f4',
+                'social_media': '#1877f2',
+                'friend_referral': '#28a745',
+                'online_ad': '#ff6b6b',
+                'blog_article': '#6f42c1',
+                'app_store': '#007aff',
+                'school_university': '#17a2b8',
+                'work_colleague': '#ffc107',
+                'other': '#6c757d',
+            }
+            color = color_map.get(obj.how_did_you_hear, '#6c757d')
+
+            return format_html(
+                '<span style="color: {}; font-weight: 500;">{}</span>',
+                color, label
+            )
+        return format_html('<span style="color: #999;">-</span>')
+    acquisition_source.short_description = "Source"
+    acquisition_source.admin_order_field = 'how_did_you_hear'
     
     # Note: language_info supprimée car les champs ont été déplacés vers UserLearningProfile
 

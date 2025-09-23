@@ -171,7 +171,23 @@
                             </div>
                         {% endif %}
                     </div>
-                    
+
+                    <div class="form-group">
+                        <label for="{{ form.how_did_you_hear.id_for_label }}" class="form-label">{{ form.how_did_you_hear.label }}</label>
+                        {{ form.how_did_you_hear }}
+                        {% if form.how_did_you_hear.help_text %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i>
+                                {{ form.how_did_you_hear.help_text }}
+                            </div>
+                        {% endif %}
+                        {% if form.how_did_you_hear.errors %}
+                            <div class="error-message">
+                                {% for error in form.how_did_you_hear.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
                     <div class="checkbox-group">
                         {{ form.terms }}
                         <label class="checkbox-label" for="{{ form.terms.id_for_label }}">
