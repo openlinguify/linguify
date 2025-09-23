@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 <!-- Notebook Sidebar Component -->
-<div id="notebookSidebar" class="sidebar-linguify show">
+<div id="revisionSidebar" class="sidebar-linguify show">
     <div class="sidebar-content">
         <!-- Header de la sidebar -->
 
@@ -47,6 +47,13 @@
                     </div>
                 </div>
             </template>
+        </div>
+                <!-- Load more -->
+        <div id="loadMoreContainer" class="text-center load-more-container">
+            <button id="loadMoreBtn" class="btn-linguify-secondary">
+                <i class="bi bi-arrow-down-circle mr-2"></i>
+                {% trans "Load more" %}
+            </button>
         </div>
     </div>
 </div>
