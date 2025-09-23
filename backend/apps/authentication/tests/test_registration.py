@@ -10,8 +10,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from datetime import date
 from apps.authentication.forms.auth_forms import RegisterForm
-from apps.authentication.models import INTERFACE_LANGUAGE_CHOICES
-
+from django.conf import settings
 try:
     from apps.language_learning.models import UserLearningProfile, LANGUAGE_CHOICES
     HAS_LANGUAGE_LEARNING = True
@@ -57,7 +56,7 @@ class RegisterFormTest(TestCase):
         """Test que les choix de langue d'interface sont corrects"""
         form = RegisterForm()
         interface_choices = form.fields['interface_language'].choices
-        expected_choices = INTERFACE_LANGUAGE_CHOICES
+        expected_choices = settings.LANGUAGES
 
         self.assertEqual(interface_choices, expected_choices)
         print(f"✅ Choix de langue d'interface corrects: {len(expected_choices)} langues disponibles")

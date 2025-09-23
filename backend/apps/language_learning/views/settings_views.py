@@ -80,9 +80,9 @@ def get_user_language_learning_settings(request):
         'enable_audio_playback': getattr(user, 'enable_audio_playback', True),
         'show_pronunciation_hints': getattr(user, 'show_pronunciation_hints', True),
         'show_progress_animations': getattr(user, 'show_progress_animations', True),
-        'native_language': getattr(user, 'native_language', 'fr'),
-        'target_language': getattr(user, 'target_language', 'en'),
-        'language_level': getattr(user, 'language_level', 'beginner'),
+        'native_language': getattr(user.learning_profile, 'native_language', 'fr') if hasattr(user, 'learning_profile') else 'fr',
+        'target_language': getattr(user.learning_profile, 'target_language', 'en') if hasattr(user, 'learning_profile') else 'en',
+        'language_level': getattr(user.learning_profile, 'language_level', 'beginner') if hasattr(user, 'learning_profile') else 'beginner',
     }
 
     return JsonResponse({

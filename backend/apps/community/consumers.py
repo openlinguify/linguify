@@ -198,8 +198,8 @@ class LanguageExchangeConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'user_joined',
                     'user': self.user.username,
-                    'native_language': getattr(self.user, 'native_language', 'Unknown'),
-                    'target_language': getattr(self.user, 'target_language', 'Unknown')
+                    'native_language': getattr(self.user.learning_profile, 'native_language', 'Unknown') if hasattr(self.user, 'learning_profile') else 'Unknown',
+                    'target_language': getattr(self.user.learning_profile, 'target_language', 'Unknown') if hasattr(self.user, 'learning_profile') else 'Unknown'
                 }
             )
         else:

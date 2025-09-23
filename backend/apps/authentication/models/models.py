@@ -597,6 +597,76 @@ class User(AbstractBaseUser, PermissionsMixin):
     def name(self):
         return f"{self.first_name} {self.last_name}"
 
+    # DEPRECATED: Backward compatibility properties - will be removed in future version
+    # Use user.learning_profile.target_language instead
+    @property
+    def target_language(self):
+        """DEPRECATED: Use user.learning_profile.target_language instead"""
+        import warnings
+        warnings.warn(
+            "user.target_language is deprecated. Use user.learning_profile.target_language instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        try:
+            return self.learning_profile.target_language
+        except AttributeError:
+            return None
+
+    @property
+    def native_language(self):
+        """DEPRECATED: Use user.learning_profile.native_language instead"""
+        import warnings
+        warnings.warn(
+            "user.native_language is deprecated. Use user.learning_profile.native_language instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        try:
+            return self.learning_profile.native_language
+        except AttributeError:
+            return None
+
+    @property
+    def language_level(self):
+        """DEPRECATED: Use user.learning_profile.language_level instead"""
+        import warnings
+        warnings.warn(
+            "user.language_level is deprecated. Use user.learning_profile.language_level instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        try:
+            return self.learning_profile.language_level
+        except AttributeError:
+            return None
+
+    def get_target_language_display(self):
+        """DEPRECATED: Use user.learning_profile.get_target_language_display() instead"""
+        import warnings
+        warnings.warn(
+            "user.get_target_language_display() is deprecated. Use user.learning_profile.get_target_language_display() instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        try:
+            return self.learning_profile.get_target_language_display()
+        except AttributeError:
+            return None
+
+    def get_native_language_display(self):
+        """DEPRECATED: Use user.learning_profile.get_native_language_display() instead"""
+        import warnings
+        warnings.warn(
+            "user.get_native_language_display() is deprecated. Use user.learning_profile.get_native_language_display() instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        try:
+            return self.learning_profile.get_native_language_display()
+        except AttributeError:
+            return None
+
     def get_full_name(self):
         """Return the user's full name"""
         full_name = f"{self.first_name} {self.last_name}".strip()

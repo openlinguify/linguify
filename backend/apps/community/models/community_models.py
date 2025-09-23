@@ -68,30 +68,32 @@ class Profile(models.Model):
         
         # Priority 1: Perfect language exchange match
         # Users whose native language is what I'm learning AND who are learning my native language
-        if hasattr(self.user, 'native_language') and hasattr(self.user, 'target_language'):
-            perfect_matches = suggestions.filter(
-                user__native_language=self.user.target_language,
-                user__target_language=self.user.native_language
-            )
+        if hasattr(self.user, 'learning_profile'):
+            user_learning = self.user.learning_profile
+            if user_learning.native_language and user_learning.target_language:
+                perfect_matches = suggestions.filter(
+                    user__learning_profile__native_language=user_learning.target_language,
+                    user__learning_profile__target_language=user_learning.native_language
+                )
+
+                # Priority 2: One-way language match
+                # Users who speak what I'm learning OR are learning what I speak
+                good_matches = suggestions.filter(
+                    Q(user__learning_profile__native_language=user_learning.target_language) |
+                    Q(user__learning_profile__target_language=user_learning.native_language)
+                ).exclude(id__in=perfect_matches.values_list('id', flat=True))
+
+                # Priority 3: Same target language (study buddies)
+                study_buddies = suggestions.filter(
+                    user__learning_profile__target_language=user_learning.target_language
+                ).exclude(
+                    id__in=list(perfect_matches.values_list('id', flat=True)) +
+                    list(good_matches.values_list('id', flat=True))
+                )
             
-            # Priority 2: One-way language match
-            # Users who speak what I'm learning OR are learning what I speak
-            good_matches = suggestions.filter(
-                Q(user__native_language=self.user.target_language) |
-                Q(user__target_language=self.user.native_language)
-            ).exclude(id__in=perfect_matches.values_list('id', flat=True))
-            
-            # Priority 3: Same target language (study buddies)
-            study_buddies = suggestions.filter(
-                user__target_language=self.user.target_language
-            ).exclude(
-                id__in=list(perfect_matches.values_list('id', flat=True)) + 
-                list(good_matches.values_list('id', flat=True))
-            )
-            
-            # Combine with weights
-            from itertools import chain
-            weighted_suggestions = list(chain(
+                # Combine with weights
+                from itertools import chain
+                weighted_suggestions = list(chain(
                 perfect_matches[:limit//2],  # Half of suggestions from perfect matches
                 good_matches[:limit//3],      # Third from good matches
                 study_buddies[:limit//6]       # Remaining from study buddies

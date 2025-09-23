@@ -36,18 +36,23 @@ def create_community_profile_and_enable_apps(sender, instance, created, **kwargs
             name = instance.first_name or instance.username
             profile.bio = f"Hi! I'm {name}. I'm learning languages with Linguify and looking forward to connecting with other learners!"
             
-            # Set default learning/teaching languages from user settings
-            if instance.target_language:
-                from apps.authentication.models import LANGUAGE_CHOICES
-                lang_dict = dict(LANGUAGE_CHOICES)
-                target_lang_name = lang_dict.get(instance.target_language, instance.target_language)
-                profile.learning_languages = [target_lang_name]
-            
-            if instance.native_language:
-                from apps.authentication.models import LANGUAGE_CHOICES
-                lang_dict = dict(LANGUAGE_CHOICES)
-                native_lang_name = lang_dict.get(instance.native_language, instance.native_language)
-                profile.teaching_languages = [native_lang_name]
+            # Set default learning/teaching languages from user learning profile
+            try:
+                learning_profile = instance.learning_profile
+                if learning_profile.target_language:
+                    from apps.language_learning.models import LANGUAGE_CHOICES
+                    lang_dict = dict(LANGUAGE_CHOICES)
+                    target_lang_name = lang_dict.get(learning_profile.target_language, learning_profile.target_language)
+                    profile.learning_languages = [target_lang_name]
+
+                if learning_profile.native_language:
+                    from apps.language_learning.models import LANGUAGE_CHOICES
+                    lang_dict = dict(LANGUAGE_CHOICES)
+                    native_lang_name = lang_dict.get(learning_profile.native_language, learning_profile.native_language)
+                    profile.teaching_languages = [native_lang_name]
+            except AttributeError:
+                # Si pas de profil d'apprentissage, ignorer
+                pass
             
             profile.save()
         

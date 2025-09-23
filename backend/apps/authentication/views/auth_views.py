@@ -118,8 +118,6 @@ class RegisterView(View):
                 # The interface_language is already set from the form, no need to modify
 
                 # Log successful registration with terms acceptance
-                import logging
-                logger = logging.getLogger(__name__)
                 logger.info(f'User {user.email} registered successfully with terms accepted: {user.terms_accepted}')
 
                 # Send verification email

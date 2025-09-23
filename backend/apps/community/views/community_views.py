@@ -39,11 +39,12 @@ class CommunityMainView(LoginRequiredMixin, TemplateView):
         
         # Get perfect language exchange partners for new users
         suggested_partners = []
-        if is_new_user and hasattr(self.request.user, 'native_language') and hasattr(self.request.user, 'target_language'):
+        if (is_new_user and hasattr(self.request.user, 'learning_profile') and
+            self.request.user.learning_profile.native_language and self.request.user.learning_profile.target_language):
             # Find perfect language exchange matches
             suggested_partners = Profile.objects.filter(
-                user__native_language=self.request.user.target_language,
-                user__target_language=self.request.user.native_language
+                user__learning_profile__native_language=self.request.user.learning_profile.target_language,
+                user__learning_profile__target_language=self.request.user.learning_profile.native_language
             ).exclude(id=profile.id)[:3]
         
         context.update({
@@ -56,8 +57,9 @@ class CommunityMainView(LoginRequiredMixin, TemplateView):
             'is_new_user': is_new_user,
             'suggested_partners': suggested_partners,
             'has_profile_completed': bool(
-                getattr(self.request.user, 'native_language', None) and 
-                getattr(self.request.user, 'target_language', None)
+                hasattr(self.request.user, 'learning_profile') and
+                self.request.user.learning_profile.native_language and
+                self.request.user.learning_profile.target_language
             ),
         })
         return context
@@ -205,27 +207,31 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
         
         if self.request.user != profile_user:
             # Perfect mutual exchange
-            if (self.request.user.native_language == profile_user.target_language and
-                self.request.user.target_language == profile_user.native_language):
+            if (hasattr(self.request.user, 'learning_profile') and hasattr(profile_user, 'learning_profile') and
+                self.request.user.learning_profile.native_language == profile_user.learning_profile.target_language and
+                self.request.user.learning_profile.target_language == profile_user.learning_profile.native_language):
                 compatibility_score = 100
                 compatibility_reasons.append(f"Perfect language exchange match!")
                 compatibility_badge_color = 'success'
             
             # One-way teaching opportunities
-            elif self.request.user.native_language == profile_user.target_language:
+            elif (hasattr(self.request.user, 'learning_profile') and hasattr(profile_user, 'learning_profile') and
+                  self.request.user.learning_profile.native_language == profile_user.learning_profile.target_language):
                 compatibility_score = 70
-                compatibility_reasons.append(f"You can help with {self.request.user.get_native_language_display()}")
+                compatibility_reasons.append(f"You can help with {self.request.user.learning_profile.get_native_language_display() if hasattr(self.request.user, 'learning_profile') else 'your language'}")
                 compatibility_badge_color = 'primary'
             
-            elif profile_user.native_language == self.request.user.target_language:
+            elif (hasattr(self.request.user, 'learning_profile') and hasattr(profile_user, 'learning_profile') and
+                  profile_user.learning_profile.native_language == self.request.user.learning_profile.target_language):
                 compatibility_score = 70
-                compatibility_reasons.append(f"They can help with {profile_user.get_native_language_display()}")
+                compatibility_reasons.append(f"They can help with {profile_user.learning_profile.get_native_language_display() if hasattr(profile_user, 'learning_profile') else 'their language'}")
                 compatibility_badge_color = 'primary'
             
             # Same learning language
-            elif self.request.user.target_language == profile_user.target_language:
+            elif (hasattr(self.request.user, 'learning_profile') and hasattr(profile_user, 'learning_profile') and
+                  self.request.user.learning_profile.target_language == profile_user.learning_profile.target_language):
                 compatibility_score = 40
-                compatibility_reasons.append(f"Both learning {self.request.user.get_target_language_display()}")
+                compatibility_reasons.append(f"Both learning {self.request.user.learning_profile.get_target_language_display() if hasattr(self.request.user, 'learning_profile') else 'the same language'}")
                 compatibility_badge_color = 'info'
         
         # Get activity statistics
