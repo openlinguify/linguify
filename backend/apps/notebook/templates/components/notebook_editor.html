@@ -58,12 +58,12 @@
         </div>
 
         <!-- Contenu principal -->
-        <div style="margin-bottom: 2rem;">
+        <div class="content-section">
             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">{% trans 'Content' %}</label>
             <textarea x-model="currentNote.content"
                       @blur="updateNote()"
                       placeholder="{% trans 'Write your note here...' %}"
-                      style="width: 100%; min-height: 200px; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical;"></textarea>
+                      style="width: 100%; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical;"></textarea>
         </div>
 
     </div>

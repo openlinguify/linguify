@@ -1,5 +1,16 @@
 /* Notebook Application Styles - PERFORMANCE OPTIMIZED */
 
+/* Navbar fixe pour notebook */
+.navbar-linguify {
+    position: fixed !important;
+    top: 64px; /* Sous le header principal */
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--linguify-white, #ffffff);
+    border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
+}
+
 /* CACHE TOUT LE CONTENU Alpine.js jusqu'à l'init */
 .notebook-app {
     display: none;
@@ -9,34 +20,59 @@
     display: block;
 }
 
+/* Supprime le padding du main-content pour notebook */
+.main-content {
+    padding: 0 !important;
+}
+
 /* Layout principal avec sidebar */
 .notebook-layout {
     display: flex;
-    height: calc(100vh - 64px); /* Header fixe + navbar = 64px total */
+    height: calc(100vh - 120px); /* Header fixe (64px) + navbar fixe (56px) = 120px total */
+    margin-top: 56px; /* Espace pour la navbar fixe */
     overflow: hidden;
 }
 
 /* Sidebar gauche pour la liste des notes */
 .notes-sidebar {
     width: 350px;
-    background: #ffffff;
-    border-right: 1px solid #e5e7eb;
+    background: var(--linguify-white, #ffffff);
+    border-right: 1px solid var(--linguify-gray-200, #e5e7eb);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* État caché de la sidebar */
+.notes-sidebar:not(.show) {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    border-right: none;
+    flex: 0 0 0;
 }
 
 .sidebar-header {
     padding: 1rem;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
 }
 
 .sidebar-search {
     width: 100%;
     padding: 0.5rem 1rem;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--linguify-gray-200, #e5e7eb);
     border-radius: 6px;
     font-size: 0.875rem;
+}
+
+.sidebar-search:focus {
+    outline: none;
+    border-color: var(--linguify-primary, #2D5BBA);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.2);
 }
 
 .notes-list {
@@ -50,7 +86,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #f9fafb;
+    background: var(--linguify-gray-50, #f9fafb);
     overflow: hidden;
 }
 
@@ -58,6 +94,25 @@
     flex: 1;
     padding: 2rem;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Faire que la section de contenu prenne toute la hauteur */
+.content-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: transparent !important;
+}
+
+.content-section textarea {
+    flex: 1 !important;
+    min-height: auto !important;
+    height: auto !important;
+    resize: none !important; /* Empêche le resize pour garder la hauteur fixe */
+    margin: 0 !important; /* Assure l'alignement */
+    box-sizing: border-box !important; /* Inclut padding et border dans la largeur */
 }
 
 /* Cards de notes dans la sidebar */

@@ -4,7 +4,43 @@
 <div class="navbar-linguify">
     <!-- Gauche: Navigation + Actions principales -->
     <div class="navbar-section">
-        <!-- New Note Button - Left side -->
+        <!-- Bouton toggle sidebar -->
+        <div>
+            <button id="toggleSidebar"
+                class="btn-navbar-outline"
+                title="{% trans 'Hide/Show sidebar' %}"
+                aria-label="{% trans 'Toggle sidebar' %}"
+                aria-expanded="true"
+                onclick="
+                // Toggle sidebar for notebook
+                const sidebar = document.querySelector('.notes-sidebar');
+
+                if (sidebar) {
+                    // Simply toggle the show class
+                    sidebar.classList.toggle('show');
+
+                    // Update button icon
+                    const toggleBtn = document.getElementById('toggleSidebar');
+                    const icon = toggleBtn?.querySelector('i');
+                    if (icon) {
+                        const isVisible = sidebar.classList.contains('show');
+                        if (isVisible) {
+                            icon.className = 'bi bi-layout-sidebar-inset';
+                            toggleBtn.title = '{% trans "Hide sidebar" %}';
+                        } else {
+                            icon.className = 'bi bi-layout-sidebar-inset-reverse';
+                            toggleBtn.title = '{% trans "Show sidebar" %}';
+                        }
+                    }
+                } else {
+                    console.error('Sidebar not found');
+                }
+                ">
+            <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <!-- New Note Button -->
         <button @click="openCreateModal()" class="btn-navbar btn-navbar-primary">
             <i class="bi bi-plus-lg"></i>
             <span class="d-none d-xl-inline">{% trans 'New Note' %}</span>
