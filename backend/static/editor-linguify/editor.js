@@ -1,9 +1,10 @@
-// Linguify Editor - Notebook Slash Commands and Formatting Toolbar
-// This file contains the Alpine.js components for the notebook editor
+// Linguify Editor - Universal Text Editor with Slash Commands and Formatting
+// This file contains reusable Alpine.js components for rich text editing
+// Can be used across all Linguify modules (notebook, flashcards, lessons, etc.)
 // Part of the Linguify platform
 
-// Slash commands component for the notebook editor
-function notebookSlashCommands() {
+// Universal slash commands component for text editing
+function linguifyEditor() {
     return {
         showCommands: false,
         commandPosition: { x: 0, y: 0 },
