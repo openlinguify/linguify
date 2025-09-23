@@ -48,11 +48,18 @@
 
         <!-- Navigation tabs -->
         <div class="nav-tabs-group">
-            <a href="/notebook/" class="nav-tab active">
+            <button @click="archiveStatus = 'active'; loadNotes()"
+                    :class="{ 'active': archiveStatus === 'active' }"
+                    class="nav-tab">
                 <i class="bi bi-journal-text"></i>
                 {% trans 'Notes' %}
-            </a>
-            <!-- Future tabs can be added here -->
+            </button>
+            <button @click="archiveStatus = 'archived'; loadNotes()"
+                    :class="{ 'active': archiveStatus === 'archived' }"
+                    class="nav-tab">
+                <i class="bi bi-archive"></i>
+                {% trans 'Archives' %}
+            </button>
         </div>
 
         <div class="container-extra">
