@@ -14,54 +14,151 @@
     </div>
 
     <!-- Note sélectionnée -->
-    <div x-show="currentNote" class="note-editor">
-        <!-- Header de la note -->
-        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 2rem;">
-            <div style="flex: 1;">
+    <div x-show="currentNote" class="note-editor-modern">
+        <!-- Header compact avec titre et actions -->
+        <div class="note-header-modern">
+            <div class="note-title-section">
                 <input x-model="currentNote.title"
                        @blur="updateNote()"
                        type="text"
                        placeholder="{% trans 'Note title' %}"
-                       style="font-size: 2rem; font-weight: bold; border: none; outline: none; width: 100%; background: transparent;">
+                       class="note-title-input">
+                <div class="note-metadata">
+                    <select x-model="currentNote.language" @change="updateNote()" class="language-select">
+                        <option value="">{% trans 'Language' %}</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="en">🇬🇧 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="nl">🇳🇱 Nederlands</option>
+                    </select>
+                </div>
             </div>
-            <div style="display: flex; gap: 0.5rem;">
-                <button @click="togglePin(currentNote)" class="btn btn-outline" :title="currentNote.is_pinned ? '{% trans 'Unpin' %}' : '{% trans 'Pin' %}'">
+
+            <div class="note-actions">
+                <button @click="togglePin(currentNote)" class="action-btn" :class="{'pinned': currentNote.is_pinned}" :title="currentNote.is_pinned ? '{% trans 'Unpin' %}' : '{% trans 'Pin' %}'">
                     <i :class="currentNote.is_pinned ? 'fas fa-thumbtack' : 'far fa-thumbtack'"></i>
                 </button>
-                <button @click="deleteNote(currentNote.id)" class="btn btn-outline">
+                <button @click="deleteNote(currentNote.id)" class="action-btn delete">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Métadonnées -->
-        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-            <select x-model="currentNote.language" @change="updateNote()" style="padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;">
-                <option value="">{% trans 'Language' %}</option>
-                <option value="fr">{% trans 'French' %}</option>
-                <option value="en">{% trans 'English' %}</option>
-                <option value="es">{% trans 'Spanish' %}</option>
-                <option value="nl">{% trans 'Dutch' %}</option>
-            </select>
-        </div>
+        <!-- Zone de contenu principal -->
+        <div class="note-content-modern">
+            <div class="content-wrapper"
+                 x-data="{
+                    showCommands: false,
+                    commandPosition: { x: 0, y: 0 },
+                    selectedCommand: 0,
+                    commands: [
+                        { icon: '📝', name: 'Note', text: '📝 **Note:** ' },
+                        { icon: '☐', name: 'Tâche', text: '☐ ' },
+                        { icon: '💡', name: 'Idée', text: '💡 **Idée:** ' },
+                        { icon: '❓', name: 'Question', text: '❓ **Question:** ' },
+                        { icon: '🔄', name: 'Traduction', text: '🔄 **FR:** \\n🔄 **EN:** ' },
+                        { icon: '📚', name: 'Vocabulaire', text: '📚 **Mot:** définition' },
+                        { icon: '⏰', name: 'Rappel', text: '⏰ **Rappel:** ' }
+                    ],
 
-        <!-- Contenu principal avec Editor.js -->
-        <div class="content-section">
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">{% trans 'Content' %}</label>
+                    handleKeydown(event) {
+                        if (event.key === '/') {
+                            const textarea = event.target;
+                            const cursorPos = textarea.selectionStart;
+                            const textBefore = textarea.value.substring(0, cursorPos);
 
-            <!-- Simple fallback to textarea for now -->
-            <textarea x-model="currentNote.content"
-                      @blur="updateNote()"
-                      @input="updateNote()"
-                      placeholder="{% trans 'Write your note here...' %} Tapez / pour voir les commandes..."
-                      style="width: 100%; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical; min-height: 300px; font-family: inherit; line-height: 1.5;">
-            </textarea>
+                            if (cursorPos === 0 || textBefore.endsWith('\\n') || textBefore.endsWith(' ')) {
+                                setTimeout(() => {
+                                    this.showCommandMenu(textarea);
+                                }, 10);
+                            }
+                        }
 
-            <!-- Editor help text -->
-            <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
-                💡 <strong>Astuce:</strong> Tapez <code>/</code> pour accéder aux commandes (Header, Liste, Tâche, Quote, Code, Table, etc.)
+                        if (this.showCommands) {
+                            if (event.key === 'ArrowDown') {
+                                event.preventDefault();
+                                this.selectedCommand = (this.selectedCommand + 1) % this.commands.length;
+                            } else if (event.key === 'ArrowUp') {
+                                event.preventDefault();
+                                this.selectedCommand = this.selectedCommand === 0 ? this.commands.length - 1 : this.selectedCommand - 1;
+                            } else if (event.key === 'Enter') {
+                                event.preventDefault();
+                                this.insertCommand(textarea);
+                            } else if (event.key === 'Escape') {
+                                this.hideCommandMenu();
+                            }
+                        }
+                    },
+
+                    showCommandMenu(textarea) {
+                        const rect = textarea.getBoundingClientRect();
+                        this.commandPosition = {
+                            x: rect.left + 20,
+                            y: rect.top + 40
+                        };
+                        this.showCommands = true;
+                        this.selectedCommand = 0;
+                    },
+
+                    hideCommandMenu() {
+                        this.showCommands = false;
+                    },
+
+                    insertCommand(textarea) {
+                        const command = this.commands[this.selectedCommand];
+                        const cursorPos = textarea.selectionStart;
+                        const textBefore = textarea.value.substring(0, cursorPos - 1);
+                        const textAfter = textarea.value.substring(cursorPos);
+
+                        textarea.value = textBefore + command.text + textAfter;
+                        textarea.dispatchEvent(new Event('input'));
+
+                        const newPos = cursorPos - 1 + command.text.length;
+                        textarea.setSelectionRange(newPos, newPos);
+
+                        this.hideCommandMenu();
+                    },
+
+                    selectCommand(index, textarea) {
+                        this.selectedCommand = index;
+                        this.insertCommand(textarea);
+                    }
+                 }"
+                 @click.away="hideCommandMenu()">
+
+                <textarea x-model="currentNote.content"
+                          @blur="updateNote()"
+                          @input="updateNote()"
+                          @keydown="handleKeydown($event)"
+                          placeholder="{% trans 'Start writing your note...' %} Tapez / pour les commandes..."
+                          class="content-textarea"
+                          rows="20"></textarea>
+
+                <!-- Commands dropdown -->
+                <div x-show="showCommands"
+                     x-transition
+                     class="commands-dropdown"
+                     :style="`position: fixed; left: ${commandPosition.x}px; top: ${commandPosition.y}px; z-index: 1000;`">
+                    <div class="commands-menu">
+                        <template x-for="(command, index) in commands" :key="index">
+                            <div class="command-item"
+                                 :class="{ 'selected': index === selectedCommand }"
+                                 @click="selectCommand(index, $event.target.closest('[x-data]').querySelector('textarea'))"
+                                 @mouseenter="selectedCommand = index">
+                                <span class="command-icon" x-text="command.icon"></span>
+                                <span class="command-name" x-text="command.name"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Aide contextuelle -->
+                <div class="content-help">
+                    <span class="help-text">
+                        💡 <strong>Astuce:</strong> Tapez <code>/</code> pour accéder aux commandes rapides
+                    </span>
+                </div>
             </div>
         </div>
-
     </div>
 </div>
