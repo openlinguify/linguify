@@ -189,6 +189,19 @@ class LinguifyEditor {
                     shortcut: 'CMD+SHIFT+I'
                 },
 
+                /**
+                 * Color Tool (Test)
+                 */
+                Color: {
+                    class: ColorPlugin,
+                    config: {
+                        colorCollections: ['#EC7878','#9B59B6','#3498DB','#26A65B','#F39C12','#E67E22'],
+                        defaultColor: '#FF1300',
+                        type: 'text'
+                    }
+                },
+
+
 
 
                 /**
@@ -258,7 +271,7 @@ class LinguifyEditor {
             /**
              * Inline Toolbar configuration - Enhanced with more tools
              */
-            inlineToolbar: ['bold', 'italic', 'link', 'marker', 'inlineCode'],
+            inlineToolbar: ['bold', 'italic', 'link', 'marker', 'inlineCode', 'Color'],
 
             /**
              * Block tunes configuration
@@ -448,7 +461,8 @@ class LinguifyEditor {
                 typeof Embed !== 'undefined' &&
                 typeof SimpleImage !== 'undefined' &&
                 typeof RawTool !== 'undefined' &&
-                typeof LinkTool !== 'undefined') {
+                typeof LinkTool !== 'undefined' &&
+                typeof ColorPlugin !== 'undefined') {
                 return;
             }
             await new Promise(resolve => setTimeout(resolve, interval));
