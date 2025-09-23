@@ -35,6 +35,7 @@ class RegisterFormTest(TestCase):
             'birthday': date(1990, 1, 1),
             'gender': 'M',
             'interface_language': 'en',
+            'how_did_you_hear': 'social_media',
             'terms': True
         }
 
@@ -70,7 +71,7 @@ class RegisterFormTest(TestCase):
     def test_missing_required_fields(self):
         """Test validation avec champs obligatoires manquants"""
         required_fields = ['username', 'email', 'first_name', 'last_name',
-                         'password1', 'password2', 'birthday', 'gender', 'terms']
+                         'password1', 'password2', 'birthday', 'gender', 'how_did_you_hear', 'terms']
 
         for field in required_fields:
             with self.subTest(missing_field=field):
@@ -180,6 +181,7 @@ class UserCreationTest(TransactionTestCase):
             'birthday': date(1995, 5, 15),
             'gender': 'F',
             'interface_language': 'fr',
+            'how_did_you_hear': 'search_engine',
             'terms': True
         }
 
@@ -335,6 +337,7 @@ class RegisterFormIntegrationTest(TransactionTestCase):
             'birthday': date(1988, 12, 25),
             'gender': 'O',  # Autre
             'interface_language': 'es',  # Espagnol
+            'how_did_you_hear': 'friend_referral',
             'terms': True
         }
 

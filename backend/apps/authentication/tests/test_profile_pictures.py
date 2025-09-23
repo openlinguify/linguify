@@ -452,12 +452,12 @@ class SupabaseProfilePictureTestCase(TestCase):
     def test_profile_picture_display_after_upload(self):
         """Test que la photo de profil s'affiche correctement après upload."""
         # Définir une URL Supabase sur l'utilisateur
-        self.user.profile_picture_url = 'https://supabase.example.com/storage/v1/object/public/profiles/123/photo.jpg'
+        self.user.profile_picture = 'https://supabase.example.com/storage/v1/object/public/profiles/123/photo.jpg'
         self.user.save()
-        
+
         # Vérifier que get_profile_picture_url retourne l'URL Supabase
         self.assertEqual(
-            self.user.get_profile_picture_url,
+            self.user.get_profile_picture_url(),
             'https://supabase.example.com/storage/v1/object/public/profiles/123/photo.jpg'
         )
     
