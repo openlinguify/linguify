@@ -695,7 +695,7 @@ class UserAppSettingsAdmin(admin.ModelAdmin):
         </div>
         """
         return format_html(chart_html)
-    apps_count_chart.short_description = '📊 Apps Usage'
+    apps_count_chart.short_description = 'Apps Usage'
 
     def last_activity(self, obj):
         """Show user's last activity"""
@@ -1499,9 +1499,9 @@ class AppManagerMonitoringAdmin:
 
 
 # Register a custom admin site change for better organization
-admin.site.site_header = "🔧 Linguify App Manager Administration"
+admin.site.site_header = "Linguify App Manager Administration"
 admin.site.site_title = "App Manager Admin"
-admin.site.index_title = "📊 App Manager Dashboard"
+admin.site.index_title = "App Manager Dashboard"
 
 # Add monitoring utilities to admin site
 def admin_monitoring_context(request):

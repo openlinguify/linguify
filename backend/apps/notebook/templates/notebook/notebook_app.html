@@ -15,13 +15,15 @@
 
 {% block extra_head %}
 <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+<!-- Alpine.js local pour vitesse ultime -->
+<script src="{% static 'js/alpine.min.js' %}" defer></script>
 {% endblock %}
 
 {% block content %}
 {% csrf_token %}
 
 <!-- Main notebook app - FAST LOAD -->
-<div class="notebook-app" x-data="notebookApp()" x-init="init()">
+<div class="notebook-app" x-data="notebookApp()" x-init="init(); $nextTick(() => $el.classList.add('alpine-initialized'))">
     <div class="notebook-layout">
         <!-- Sidebar Component -->
         {% include 'components/notebook_sidebar.html' %}
@@ -34,7 +36,6 @@
     {% include 'components/notebook_modal.html' %}
 </div>
 
-<!-- Scripts chargés en parallèle pour vitesse F1 -->
+<!-- Script local uniquement - Alpine.js déjà chargé dans head -->
 <script src="{% static 'notebook/js/notebook.js' %}"></script>
-<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 {% endblock %}

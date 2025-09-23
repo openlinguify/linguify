@@ -1,5 +1,14 @@
 /* Notebook Application Styles - PERFORMANCE OPTIMIZED */
 
+/* CACHE TOUT LE CONTENU Alpine.js jusqu'à l'init */
+.notebook-app {
+    display: none;
+}
+
+.notebook-app.alpine-initialized {
+    display: block;
+}
+
 /* Layout principal avec sidebar */
 .notebook-layout {
     display: flex;
