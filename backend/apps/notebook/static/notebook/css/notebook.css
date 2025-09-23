@@ -1,15 +1,5 @@
 /* Notebook Application Styles - PERFORMANCE OPTIMIZED */
 
-/* Navbar fixe pour notebook */
-.navbar-linguify {
-    position: fixed !important;
-    top: 64px; /* Sous le header principal */
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background: var(--linguify-white, #ffffff);
-    border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
-}
 
 /* CACHE TOUT LE CONTENU Alpine.js jusqu'à l'init */
 .notebook-app {
@@ -28,8 +18,7 @@
 /* Layout principal avec sidebar */
 .notebook-layout {
     display: flex;
-    height: calc(100vh - 120px); /* Header fixe (64px) + navbar fixe (56px) = 120px total */
-    margin-top: 56px; /* Espace pour la navbar fixe */
+    height: calc(100vh - 64px); /* Seulement le header fixe (64px) */
     overflow: hidden;
 }
 
@@ -132,9 +121,8 @@
     right: 0.5rem;
     z-index: 10;
     padding: 0.25rem;
-    background: rgba(255, 255, 255, 0.9);
+
     border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .note-selection input[type="checkbox"] {
@@ -330,6 +318,11 @@
     text-align: center;
     padding: 3rem 1rem;
     color: #64748b;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 
 .loading-state i,
@@ -343,6 +336,11 @@
     font-size: 1.25rem;
     margin-bottom: 0.5rem;
     color: #1e293b;
+}
+
+.empty-state .btn-linguify {
+    width: auto !important;
+    display: inline-block !important;
 }
 
 
