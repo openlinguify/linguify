@@ -2,6 +2,44 @@
  * Editor.js Custom Styles for Linguify
  */
 
+/* Variables CSS Linguify */
+:root {
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #017E84;
+    --linguify-gray: #6B7280;
+    --linguify-primary-light: #4F7BD9;
+    --linguify-primary-dark: #1E4A8C;
+    --linguify-secondary-light: #A78BFA;
+    --linguify-secondary-dark: #7C3AED;
+    --linguify-accent-light: #26E4B8;
+    --linguify-accent-dark: #00B894;
+    --linguify-success: #10B981;
+    --linguify-warning: #F59E0B;
+    --linguify-error: #EF4444;
+    --linguify-danger: #DC2626;
+
+    /* Additional colors for consistency */
+    --linguify-white: #ffffff;
+    --linguify-gray-50: #f9fafb;
+    --linguify-gray-100: #f3f4f6;
+    --linguify-gray-200: #e5e7eb;
+    --linguify-gray-300: #d1d5db;
+    --linguify-gray-400: #9ca3af;
+    --linguify-gray-500: #6b7280;
+    --linguify-gray-600: #4b5563;
+    --linguify-gray-700: #374151;
+    --linguify-gray-800: #1f2937;
+    --linguify-gray-900: #111827;
+
+    /* Gray aliases for convenience */
+    --linguify-gray-light: var(--linguify-gray-200);
+    --linguify-gray-dark: var(--linguify-gray-700);
+
+    /* Gradient officiel */
+    --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #26E4B8 100%);
+}
+
 /* Editor Container */
 .editorjs-container {
     background: white;
@@ -40,36 +78,54 @@
     background: #94a3b8;
 }
 
-/* Customize Editor.js styles */
+/* Customize Editor.js styles - Pleine largeur */
 .codex-editor {
     max-width: none !important;
+    width: 100% !important;
 }
 
 .codex-editor__redactor {
     padding-bottom: 100px !important;
+    max-width: none !important;
 }
 
 .ce-block__content {
     max-width: none !important;
-    padding: 0 20px !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.ce-block {
+    max-width: none !important;
+    width: 100% !important;
 }
 
 /* Toolbar customization */
 .ce-toolbar__plus {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-    border-radius: 8px;
-    width: 32px;
-    height: 32px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    background: var(--linguify-gradient) !important;
+    border: none !important;
+    color: var(--linguify-white) !important;
+    border-radius: 8px !important;
+    width: 32px !important;
+    height: 32px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
 }
 
 .ce-toolbar__plus:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background: var(--linguify-primary) !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 8px rgba(45, 91, 186, 0.25) !important;
 }
 
 .ce-toolbar__settings-btn {
@@ -85,38 +141,88 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Inline toolbar */
+/* Text selection */
+.ce-paragraph::selection,
+.ce-header::selection {
+    background: var(--linguify-primary-light);
+    color: var(--linguify-white);
+}
+
+/* Inline toolbar - Plus visible et moderne */
 .ce-inline-toolbar {
-    background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
-    border-radius: 12px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--linguify-white) !important;
+    border: 1px solid var(--linguify-gray-200) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    padding: 6px !important;
+    z-index: 9999 !important;
+    position: absolute !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+    pointer-events: auto !important;
+}
+
+/* S'assurer que la toolbar apparaît lors de la sélection */
+.codex-editor .ce-inline-toolbar {
+    display: flex !important;
+}
+
+.codex-editor .ce-inline-toolbar--showed {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .ce-inline-toolbar__buttons {
     background: transparent;
-    padding: 4px;
+    padding: 0;
+    display: flex;
+    gap: 2px;
 }
 
 .ce-inline-tool {
-    color: #e2e8f0;
+    color: var(--linguify-gray);
     border-radius: 8px;
-    margin: 2px;
+    padding: 8px 10px;
     transition: all 0.2s ease;
     position: relative;
+    background: transparent;
+    border: 1px solid transparent;
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .ce-inline-tool:hover {
-    background: rgba(59, 130, 246, 0.2);
-    color: #93c5fd;
+    background: var(--linguify-gray-50);
+    color: var(--linguify-primary);
+    border-color: var(--linguify-primary-light);
     transform: translateY(-1px);
 }
 
 .ce-inline-tool--active {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    color: white;
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    background: var(--linguify-gradient);
+    color: var(--linguify-white);
+    border-color: var(--linguify-primary);
+    box-shadow: 0 2px 4px rgba(45, 91, 186, 0.3);
+}
+
+/* Styles spécifiques pour les outils inline */
+.ce-inline-tool--link {
+    color: var(--linguify-primary) !important;
+}
+
+.ce-inline-tool--bold,
+.ce-inline-tool--italic,
+.ce-inline-tool--link,
+.ce-inline-tool--marker,
+.ce-inline-tool--inlineCode {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
 }
 
 /* Conversion toolbar */
@@ -192,27 +298,67 @@
     border-left: 4px solid #3b82f6;
 }
 
-/* Slash command indicator */
-.ce-toolbar__plus::after {
-    content: "Tapez '/' pour ouvrir les commandes";
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #1f2937;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    white-space: nowrap;
-    margin-left: 8px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+/* Suppression de tous les tooltips */
+.ce-toolbar__plus::after,
+.ce-toolbar__settings-btn::after,
+.ce-toolbar__plus[title],
+.ce-tooltip,
+[data-tooltip],
+.ce-hint {
+    display: none !important;
 }
 
+/* Supprimer l'attribut title du bouton + */
+.ce-toolbar__plus {
+    title: none !important;
+}
+
+/* CSS pour masquer les tooltips natifs du navigateur */
+.ce-toolbar__plus:hover::before,
 .ce-toolbar__plus:hover::after {
-    opacity: 1;
+    content: none !important;
+    display: none !important;
+}
+
+/* Masquer seulement les tooltips, pas le menu toolbox */
+.ce-tooltip {
+    display: none !important;
+}
+
+/* Masquer SEULEMENT les éléments de tune gênants, pas la toolbar */
+.ce-settings,
+.ce-toolbar__settings-btn,
+.ce-block__content .ce-settings,
+.ce-block-tunes {
+    display: none !important;
+}
+
+/* Garder la toolbar principale visible */
+.ce-toolbar,
+.ce-toolbar__content,
+.ce-toolbar__plus {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Masquer seulement les block tunes, pas le toolbox */
+.ce-block-tunes,
+.ce-settings__button {
+    display: none !important;
+}
+
+/* Suppression du bouton tune (6 points) */
+.ce-toolbar__settings-btn,
+.ce-settings-button {
+    display: none !important;
+}
+
+/* Garder le toolbox menu visible */
+.ce-popover.ce-toolbox {
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    display: block !important;
 }
 
 /* Custom tool styles */
@@ -348,73 +494,80 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Slash command helper text */
+/* Slash command helper text - SUPPRIMÉ */
 .ce-toolbar__content::after {
-    content: "💡 Astuce: Tapez '/' dans un paragraphe vide pour accéder rapidement aux outils";
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #1f2937;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    max-width: 250px;
-    text-align: center;
+    display: none !important;
 }
 
-.editorjs-container:hover .ce-toolbar__content::after {
-    opacity: 0.8;
-}
-
-/* Button Icon Components - Reusable */
+/* Button Icon Components - Reusable avec couleurs Linguify */
 .btn-icon {
-    @apply inline-flex items-center justify-center w-10 h-10 bg-white border rounded-lg cursor-pointer transition-all duration-200 text-base;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--linguify-white);
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
 }
 
 .btn-icon:hover {
-    @apply -translate-y-0.5 shadow-md;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Color variants */
+/* Color variants avec couleurs Linguify */
 .btn-icon-indigo {
-    @apply text-indigo-500 border-indigo-200;
+    color: var(--linguify-primary);
+    border-color: var(--linguify-primary-light);
 }
 
 .btn-icon-indigo:hover {
-    @apply bg-indigo-50 text-indigo-600 border-indigo-300;
+    background: var(--linguify-gray-50);
+    color: var(--linguify-primary-dark);
+    border-color: var(--linguify-primary);
 }
 
 .btn-icon-indigo.btn-icon-active {
-    @apply bg-indigo-500 text-white border-indigo-500;
+    background: var(--linguify-gradient);
+    color: var(--linguify-white);
+    border-color: var(--linguify-primary);
 }
 
 .btn-icon-emerald {
-    @apply text-emerald-600 border-emerald-200;
+    color: var(--linguify-success);
+    border-color: var(--linguify-accent-light);
 }
 
 .btn-icon-emerald:hover {
-    @apply bg-emerald-50 text-emerald-700 border-emerald-300;
+    background: var(--linguify-gray-50);
+    color: var(--linguify-accent-dark);
+    border-color: var(--linguify-success);
 }
 
 .btn-icon-violet {
-    @apply text-violet-600 border-violet-200;
+    color: var(--linguify-secondary);
+    border-color: var(--linguify-secondary-light);
 }
 
 .btn-icon-violet:hover {
-    @apply bg-violet-50 text-violet-700 border-violet-300;
+    background: var(--linguify-gray-50);
+    color: var(--linguify-secondary-dark);
+    border-color: var(--linguify-secondary);
 }
 
 .btn-icon-red {
-    @apply text-red-600 border-red-200;
+    color: var(--linguify-danger);
+    border-color: var(--linguify-error);
 }
 
 .btn-icon-red:hover {
-    @apply bg-red-50 text-red-700 border-red-300;
+    background: var(--linguify-gray-50);
+    color: var(--linguify-danger);
+    border-color: var(--linguify-danger);
 }
 
 /* Custom height for editor area */

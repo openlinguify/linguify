@@ -72,7 +72,7 @@ class LinguifyEditor {
                     class: Paragraph,
                     inlineToolbar: true,
                     config: {
-                        placeholder: 'Tapez "/" pour les commandes ou commencez à écrire...'
+                        placeholder: 'Type "/" for commands or start typing...'
                     }
                 },
 
@@ -89,8 +89,8 @@ class LinguifyEditor {
                     },
                     shortcut: 'CMD+SHIFT+H',
                     toolbox: {
-                        title: '📝 Titre',
-                        icon: '<svg width="17" height="15" viewBox="0 0 17 15"><path d="M9.4 0L7.6 0 7.6 15 9.4 15 9.4 7.5 15.5 7.5 15.5 15 17 15 17 0 15.5 0 15.5 6 9.4 6 9.4 0ZM0 2L0 3.5 4.5 3.5 4.5 15 6 15 6 3.5 10.5 3.5 10.5 2 0 2Z"/></svg>'
+                        title: 'Titre',
+                        icon: '<svg width="17" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>'
                     }
                 },
 
@@ -226,7 +226,7 @@ class LinguifyEditor {
                         uploader: false
                     },
                     toolbox: {
-                        title: '🖼️ Image',
+                        title: 'Image',
                         icon: '<svg width="17" height="15" viewBox="0 0 17 15"><rect x="1" y="3" width="14" height="9" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="5.5" cy="6.5" r="1.5" fill="currentColor"/><polyline points="11 9, 8 6, 4 10" stroke="currentColor" stroke-width="1" fill="none"/></svg>'
                     }
                 },
@@ -237,7 +237,7 @@ class LinguifyEditor {
                 raw: {
                     class: RawTool,
                     toolbox: {
-                        title: '📄 HTML',
+                        title: 'HTML',
                         icon: '<svg width="17" height="15" viewBox="0 0 17 15"><path d="M13.133 14h-9.267c-1.495 0-2.585-.983-2.585-2.333v-8.334c0-1.35 1.09-2.333 2.585-2.333h9.267c1.495 0 2.585.983 2.585 2.333v8.334c0 1.35-1.09 2.333-2.585 2.333z"/><path d="M4.65 7.333L6.167 10l1.517-2.667" stroke="#fff" stroke-linecap="round"/><path d="M11.3 5L9.783 7.667 11.3 10.333" stroke="#fff" stroke-linecap="round"/></svg>'
                     }
                 },
@@ -259,6 +259,11 @@ class LinguifyEditor {
             inlineToolbar: ['bold', 'italic', 'link', 'marker', 'inlineCode'],
 
             /**
+             * Disable block tunes
+             */
+            tunes: [],
+
+            /**
              * Editor.js i18n configuration for French
              */
             i18n: {
@@ -277,8 +282,8 @@ class LinguifyEditor {
                     ui: {
                         "blockTunes": {
                             "toggler": {
-                                "Click to tune": "Cliquer pour ajuster",
-                                "or drag to move": "ou glisser pour déplacer"
+                                "Click to tune": "",
+                                "or drag to move": ""
                             },
                         },
                         "inlineToolbar": {
@@ -385,6 +390,16 @@ class LinguifyEditor {
             await this.editor.isReady;
 
             console.log('✅ LinguifyEditor initialized successfully');
+
+            // Supprimer les tooltips du bouton +
+            setTimeout(() => {
+                const plusBtn = document.querySelector('.ce-toolbar__plus');
+                if (plusBtn) {
+                    plusBtn.removeAttribute('title');
+                    plusBtn.removeAttribute('data-tooltip');
+                }
+            }, 100);
+
             return this.editor;
 
         } catch (error) {
