@@ -235,6 +235,30 @@ function notebookApp() {
             }
         },
 
+        async bulkUnarchive() {
+            if (this.selectedNotes.length === 0) return;
+
+            try {
+                for (let noteId of this.selectedNotes) {
+                    await fetch(`/notebook/api/notes/${noteId}/`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': this.getCsrfToken()
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ is_archived: false })
+                    });
+                }
+
+                await this.loadNotes();
+                this.selectedNotes = [];
+            } catch (error) {
+                console.error('Error unarchiving notes:', error);
+                this.showAlert('Error unarchiving notes', 'error');
+            }
+        },
+
         async bulkDelete() {
             if (this.selectedNotes.length === 0) return;
 

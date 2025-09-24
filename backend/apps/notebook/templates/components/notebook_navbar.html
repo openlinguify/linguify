@@ -131,11 +131,19 @@
             </button>
 
             <!-- Bulk Actions (when notes are selected) -->
-            <button x-show="selectedNotes.length > 0" @click="bulkArchive()" class="btn-navbar btn-navbar-outline" title="{% trans 'Archive selection' %}">
+            <!-- Archive button - only show when in active notes -->
+            <button x-show="selectedNotes.length > 0 && archiveStatus === 'active'" @click="bulkArchive()" class="btn-navbar btn-navbar-outline" title="{% trans 'Archive selection' %}">
                 <i class="bi bi-archive"></i>
                 <span class="d-none d-xl-inline">{% trans 'Archive' %}</span>
             </button>
 
+            <!-- Unarchive button - only show when in archived notes -->
+            <button x-show="selectedNotes.length > 0 && archiveStatus === 'archived'" @click="bulkUnarchive()" class="btn-navbar btn-navbar-outline" title="{% trans 'Unarchive selection' %}">
+                <i class="bi bi-archive-fill"></i>
+                <span class="d-none d-xl-inline">{% trans 'Unarchive' %}</span>
+            </button>
+
+            <!-- Delete button - always show when notes are selected -->
             <button x-show="selectedNotes.length > 0" @click="bulkDelete()" class="btn-navbar btn-navbar-outline" title="{% trans 'Delete selection' %}">
                 <i class="bi bi-trash"></i>
                 <span class="d-none d-xl-inline">{% trans 'Delete' %}</span>

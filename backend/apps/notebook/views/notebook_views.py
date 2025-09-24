@@ -23,6 +23,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import Http404
 from ..models import Note
 import json
 
@@ -796,6 +797,37 @@ class NoteViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(new_note)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get_object(self):
+        """
+        Custom get_object method that bypasses archive filtering for destroy action.
+        This allows deletion of both active and archived notes.
+        """
+        if self.action == 'destroy':
+            # For destroy action, get the note without archive filtering
+            queryset = Note.objects.select_related('category').prefetch_related(
+                'sharednote_set__shared_with'
+            )
+            # Only filter by ownership or shared access
+            user_id = self.request.user.id
+            note_id = self.kwargs['pk']
+
+            try:
+                note = queryset.get(
+                    Q(id=note_id) & (
+                        Q(user_id=user_id) |
+                        Q(id__in=SharedNote.objects.filter(
+                            shared_with_id=user_id
+                        ).values_list('note_id', flat=True))
+                    )
+                )
+                return note
+            except Note.DoesNotExist:
+                
+                raise Http404("Note not found or you don't have permission to delete it")
+
+        # For other actions, use the default behavior
+        return super().get_object()
 
 class SharedNoteViewSet(viewsets.ModelViewSet):
     serializer_class = SharedNoteSerializer
