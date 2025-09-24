@@ -25,7 +25,7 @@ class LinguifyEditor {
             /**
              * Placeholder text
              */
-            placeholder: 'Commencez à écrire ou tapez "/" pour les commandes...',
+            placeholder: 'Tapez "/" pour les commandes ou commencez à écrire...',
 
             /**
              * Enable autofocus
@@ -72,7 +72,7 @@ class LinguifyEditor {
                     class: Paragraph,
                     inlineToolbar: true,
                     config: {
-                        placeholder: 'Type "/" for commands or start typing...'
+                        placeholder: 'Tapez "/" pour les commandes ou commencez à écrire...'
                     }
                 },
 
@@ -189,17 +189,6 @@ class LinguifyEditor {
                     shortcut: 'CMD+SHIFT+I'
                 },
 
-                /**
-                 * Color Tool (Test)
-                 */
-                Color: {
-                    class: ColorPlugin,
-                    config: {
-                        colorCollections: ['#EC7878','#9B59B6','#3498DB','#26A65B','#F39C12','#E67E22'],
-                        defaultColor: '#FF1300',
-                        type: 'text'
-                    }
-                },
 
 
 
@@ -271,12 +260,17 @@ class LinguifyEditor {
             /**
              * Inline Toolbar configuration - Enhanced with more tools
              */
-            inlineToolbar: ['bold', 'italic', 'link', 'marker', 'inlineCode', 'Color'],
+            inlineToolbar: ['bold', 'italic', 'link', 'marker', 'inlineCode'],
 
             /**
              * Block tunes configuration
              */
             tunes: [],
+
+            /**
+             * Hide toolbar completely - using slash commands instead
+             */
+            toolbar: false,
 
             /**
              * Editor.js i18n configuration for French
@@ -404,30 +398,13 @@ class LinguifyEditor {
             // Wait for editor to be ready
             await this.editor.isReady;
 
+            // Setup slash command functionality
+            this.setupSlashCommands();
+
+            // Masquer définitivement le bouton plus avec CSS agressif
+            this.hideToolbarElements();
+
             console.log('✅ LinguifyEditor initialized successfully');
-
-            // Supprimer les tooltips et le bouton settings
-            setTimeout(() => {
-                const plusBtn = document.querySelector('.ce-toolbar__plus');
-                if (plusBtn) {
-                    plusBtn.removeAttribute('title');
-                    plusBtn.removeAttribute('data-tooltip');
-                }
-
-                // Supprimer complètement le bouton settings (6 points)
-                const settingsBtn = document.querySelector('.ce-toolbar__settings-btn');
-                if (settingsBtn) {
-                    settingsBtn.remove();
-                }
-
-                // Aussi supprimer par d'autres sélecteurs si nécessaire
-                const settingsBtns = document.querySelectorAll('span.ce-toolbar__settings-btn, .ce-toolbar__actions span:last-child');
-                settingsBtns.forEach(btn => {
-                    if (btn && btn.innerHTML.includes('svg')) {
-                        btn.remove();
-                    }
-                });
-            }, 100);
 
             return this.editor;
 
@@ -461,8 +438,7 @@ class LinguifyEditor {
                 typeof Embed !== 'undefined' &&
                 typeof SimpleImage !== 'undefined' &&
                 typeof RawTool !== 'undefined' &&
-                typeof LinkTool !== 'undefined' &&
-                typeof ColorPlugin !== 'undefined') {
+                typeof LinkTool !== 'undefined') {
                 return;
             }
             await new Promise(resolve => setTimeout(resolve, interval));
@@ -484,6 +460,24 @@ class LinguifyEditor {
         try {
             const outputData = await this.editor.save();
             console.log('Editor data saved:', outputData);
+
+            // Validation des données pour les nouveaux outils
+            if (outputData && outputData.blocks) {
+                outputData.blocks.forEach((block, index) => {
+                    try {
+                        // Vérifier que chaque bloc peut être sérialisé en JSON
+                        JSON.stringify(block);
+                    } catch (blockError) {
+                        console.error(`Block ${index} serialization error:`, blockError, block);
+                        // Nettoyer le bloc problématique
+                        if (block.data && typeof block.data === 'object') {
+                            // Garder seulement les propriétés sérialisables
+                            block.data = JSON.parse(JSON.stringify(block.data));
+                        }
+                    }
+                });
+            }
+
             return outputData;
         } catch (error) {
             console.error('Saving failed:', error);
@@ -524,6 +518,15 @@ class LinguifyEditor {
             this.editor = null;
             this.isReady = false;
         }
+
+        // Clean up slash menu
+        this.closeSlashMenu();
+
+        // Clean up toolbar observer
+        if (this.toolbarObserver) {
+            this.toolbarObserver.disconnect();
+            this.toolbarObserver = null;
+        }
     }
 
     /**
@@ -547,6 +550,309 @@ class LinguifyEditor {
             return this.editor.blocks.getCurrentBlockIndex();
         }
         return -1;
+    }
+
+    /**
+     * Remove all toolbar elements completely
+     */
+    hideToolbarElements() {
+        // Fonction pour supprimer les éléments toolbar
+        const removeToolbarElements = () => {
+            const selectorsToRemove = [
+                '.ce-toolbar',
+                '.ce-toolbar__plus',
+                '.ce-toolbar__settings-btn',
+                '.ce-toolbar__content',
+                '.ce-toolbar__actions'
+            ];
+
+            selectorsToRemove.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => el.remove());
+            });
+        };
+
+        // Supprimer immédiatement
+        removeToolbarElements();
+
+        // Observer pour supprimer les éléments qui apparaissent dynamiquement
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1) { // Element node
+                        // Supprimer les toolbars qui apparaissent dynamiquement
+                        if (node.classList && (
+                            node.classList.contains('ce-toolbar') ||
+                            node.classList.contains('ce-toolbar__plus') ||
+                            node.classList.contains('ce-toolbar__settings-btn') ||
+                            node.classList.contains('ce-toolbar__content') ||
+                            node.classList.contains('ce-toolbar__actions')
+                        )) {
+                            node.remove();
+                        }
+
+                        // Chercher et supprimer dans les enfants aussi
+                        const toolbarElements = node.querySelectorAll && node.querySelectorAll('.ce-toolbar, .ce-toolbar__plus, .ce-toolbar__settings-btn, .ce-toolbar__content, .ce-toolbar__actions');
+                        if (toolbarElements) {
+                            toolbarElements.forEach(el => el.remove());
+                        }
+                    }
+                });
+            });
+        });
+
+        // Observer les changements dans tout le document pour être sûr
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        // CSS minimal pour ajuster l'espacement
+        const style = document.createElement('style');
+        style.textContent = `
+            .codex-editor__redactor {
+                padding-left: 0 !important;
+                margin-left: 0 !important;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Stocker l'observer pour le nettoyage
+        this.toolbarObserver = observer;
+    }
+
+    /**
+     * Setup slash commands functionality
+     */
+    setupSlashCommands() {
+        if (!this.editor) return;
+
+        // Create slash command suggestions
+        const slashCommands = [
+            { title: 'Titre', description: 'Titre H1, H2, H3...', icon: '📝', tool: 'header' },
+            { title: 'Liste', description: 'Liste à puces ou numérotée', icon: '📋', tool: 'list' },
+            { title: 'Liste de tâches', description: 'Liste avec cases à cocher', icon: '✅', tool: 'checklist' },
+            { title: 'Citation', description: 'Bloc de citation', icon: '💬', tool: 'quote' },
+            { title: 'Code', description: 'Bloc de code', icon: '💻', tool: 'code' },
+            { title: 'Tableau', description: 'Insérer un tableau', icon: '📊', tool: 'table' },
+            { title: 'Avertissement', description: 'Bloc d\'avertissement', icon: '⚠️', tool: 'warning' },
+            { title: 'Image', description: 'Insérer une image', icon: '🖼️', tool: 'image' },
+            { title: 'Vidéo/Embed', description: 'Intégrer une vidéo', icon: '🎥', tool: 'embed' },
+            { title: 'Séparateur', description: 'Ligne de séparation', icon: '➖', tool: 'delimiter' },
+            { title: 'HTML', description: 'Code HTML brut', icon: '🔧', tool: 'raw' },
+            { title: 'Lien', description: 'Insérer un lien', icon: '🔗', tool: 'linkTool' }
+        ];
+
+        // Listen for input events only on editor container
+        const editorElement = document.getElementById(this.holderId);
+        if (editorElement) {
+            editorElement.addEventListener('keydown', (event) => {
+                this.handleSlashInput(event, slashCommands);
+            });
+
+            editorElement.addEventListener('input', (event) => {
+                if (event.target.closest('.ce-paragraph')) {
+                    this.detectSlashCommand(event, slashCommands);
+                }
+            });
+        }
+    }
+
+    /**
+     * Handle slash input
+     */
+    handleSlashInput(event, slashCommands) {
+        // Handle Escape to close any open slash menu
+        if (event.key === 'Escape') {
+            this.closeSlashMenu();
+            return;
+        }
+
+        // Handle Enter or Tab to select command
+        if ((event.key === 'Enter' || event.key === 'Tab') && this.slashMenuOpen) {
+            event.preventDefault();
+            this.selectSlashCommand();
+            return;
+        }
+
+        // Handle arrow keys for navigation
+        if (this.slashMenuOpen && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
+            event.preventDefault();
+            this.navigateSlashMenu(event.key === 'ArrowDown' ? 1 : -1);
+            return;
+        }
+    }
+
+    /**
+     * Detect slash command in text
+     */
+    detectSlashCommand(event, slashCommands) {
+        const target = event.target;
+        const text = target.textContent || '';
+
+        // Check if user typed "/" at the beginning of a line or after space
+        if (text.match(/^\/\w*$/) || text.match(/\s\/\w*$/)) {
+            const match = text.match(/\/(\w*)$/);
+            if (match) {
+                this.showSlashMenu(target, match[1], slashCommands);
+            }
+        } else {
+            this.closeSlashMenu();
+        }
+    }
+
+    /**
+     * Show slash command menu
+     */
+    showSlashMenu(target, query, slashCommands) {
+        // Remove existing menu
+        this.closeSlashMenu();
+
+        // Filter commands based on query
+        const filteredCommands = slashCommands.filter(cmd =>
+            cmd.title.toLowerCase().includes(query.toLowerCase()) ||
+            cmd.description.toLowerCase().includes(query.toLowerCase())
+        );
+
+        if (filteredCommands.length === 0) return;
+
+        // Create menu
+        const menu = document.createElement('div');
+        menu.className = 'slash-command-menu';
+        menu.style.cssText = `
+            position: absolute;
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 8px 0;
+            min-width: 350px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        `;
+
+        filteredCommands.forEach((cmd, index) => {
+            const item = document.createElement('div');
+            item.className = 'slash-command-item';
+            item.dataset.tool = cmd.tool;
+            item.style.cssText = `
+                padding: 12px 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: background-color 0.1s;
+                ${index === 0 ? 'background-color: #f8f9fa;' : ''}
+            `;
+
+            item.innerHTML = `
+                <span style="font-size: 16px;">${cmd.icon}</span>
+                <div>
+                    <div style="font-weight: 500; color: #1a1a1a;">${cmd.title}</div>
+                    <div style="font-size: 12px; color: #666;">${cmd.description}</div>
+                </div>
+            `;
+
+            item.addEventListener('mouseenter', () => {
+                document.querySelectorAll('.slash-command-item').forEach(i =>
+                    i.style.backgroundColor = ''
+                );
+                item.style.backgroundColor = '#f8f9fa';
+                this.selectedSlashIndex = index;
+            });
+
+            item.addEventListener('click', () => {
+                this.executeSlashCommand(cmd.tool, target);
+            });
+
+            menu.appendChild(item);
+        });
+
+        // Position menu
+        const rect = target.getBoundingClientRect();
+        menu.style.left = rect.left + 'px';
+        menu.style.top = (rect.bottom + 5) + 'px';
+
+        document.body.appendChild(menu);
+        this.slashMenuElement = menu;
+        this.slashMenuOpen = true;
+        this.selectedSlashIndex = 0;
+        this.slashTarget = target;
+        this.filteredSlashCommands = filteredCommands;
+    }
+
+    /**
+     * Close slash menu
+     */
+    closeSlashMenu() {
+        if (this.slashMenuElement) {
+            this.slashMenuElement.remove();
+            this.slashMenuElement = null;
+        }
+        this.slashMenuOpen = false;
+        this.selectedSlashIndex = -1;
+        this.slashTarget = null;
+        this.filteredSlashCommands = [];
+    }
+
+    /**
+     * Navigate slash menu with arrow keys
+     */
+    navigateSlashMenu(direction) {
+        if (!this.slashMenuElement || !this.filteredSlashCommands.length) return;
+
+        this.selectedSlashIndex = Math.max(0, Math.min(
+            this.filteredSlashCommands.length - 1,
+            this.selectedSlashIndex + direction
+        ));
+
+        // Update visual selection
+        const items = this.slashMenuElement.querySelectorAll('.slash-command-item');
+        items.forEach((item, index) => {
+            item.style.backgroundColor = index === this.selectedSlashIndex ? '#f8f9fa' : '';
+        });
+    }
+
+    /**
+     * Select current slash command
+     */
+    selectSlashCommand() {
+        if (!this.filteredSlashCommands.length || this.selectedSlashIndex < 0) return;
+
+        const selectedCommand = this.filteredSlashCommands[this.selectedSlashIndex];
+        this.executeSlashCommand(selectedCommand.tool, this.slashTarget);
+    }
+
+    /**
+     * Execute slash command
+     */
+    async executeSlashCommand(toolName, target) {
+        this.closeSlashMenu();
+
+        if (!this.editor) return;
+
+        try {
+            // Get current block index
+            const currentBlockIndex = this.editor.blocks.getCurrentBlockIndex();
+
+            // Remove the slash command text
+            if (target) {
+                const text = target.textContent || '';
+                const newText = text.replace(/\/\w*$/, '');
+                target.textContent = newText;
+            }
+
+            // Insert new block with the selected tool
+            const newBlock = await this.editor.blocks.insert(toolName, {}, {}, currentBlockIndex + 1);
+
+            // Focus the new block
+            this.editor.caret.setToBlock(currentBlockIndex + 1);
+
+        } catch (error) {
+            console.error('Error executing slash command:', error);
+        }
     }
 }
 
