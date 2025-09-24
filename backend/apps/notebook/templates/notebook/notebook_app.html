@@ -11,6 +11,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'editor-linguify/editorjs.css' %}">
 <link rel="stylesheet" href="{% static 'notebook/css/notebook.css' %}">
+<link rel="stylesheet" href="{% static 'notebook/css/delete_modal.css' %}">
 {% endblock %}
 
 {% block extra_head %}
@@ -56,6 +57,9 @@
             {% include 'components/notebook_sidebar.html' %}
             {% include 'components/notebook_editor.html' %}
         </div>
+
+    <!-- Modals -->
+    {% include 'components/delete_confirmation_modal.html' %}
 </div>
 
 <!-- Scripts locaux - Alpine.js déjà chargé dans head -->

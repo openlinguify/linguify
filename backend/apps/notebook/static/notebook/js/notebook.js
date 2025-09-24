@@ -21,6 +21,13 @@ function notebookApp() {
         archiveStatus: 'active',
         sortBy: 'updated_desc',
 
+        // Modal de confirmation de suppression
+        showDeleteModal: false,
+        deleteModalType: 'single', // 'single' ou 'bulk'
+        deleteModalData: null, // Données de l'élément à supprimer
+        deleteModalTitle: 'Delete Confirmation',
+        deleteModalCallback: null, // Fonction à exécuter lors de la confirmation
+
 
         // Méthodes
         init() {
@@ -147,9 +154,44 @@ function notebookApp() {
 
 
 
-        async deleteNote(noteId) {
-            if (!confirm('Are you sure you want to delete this note?')) return;
+        deleteNote(noteId) {
+            // Trouver la note dans la liste pour afficher ses informations dans le modal
+            const note = this.notes.find(n => n.id === noteId);
 
+            this.showDeleteConfirmation(
+                'single',
+                note,
+                async () => {
+                    try {
+                        const response = await fetch(`/notebook/api/notes/${noteId}/`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRFToken': this.getCsrfToken()
+                            },
+                            credentials: 'same-origin'
+                        });
+
+                        if (response.ok) {
+                            await this.loadNotes();
+                            if (this.currentNote && this.currentNote.id === noteId) {
+                                this.currentNote = null;
+                            }
+                            this.showAlert('Note supprimée avec succès ! 🗑️', 'success');
+                        } else {
+                            throw new Error('Failed to delete note');
+                        }
+                    } catch (error) {
+                        console.error('Error deleting note:', error);
+                        this.showAlert('Error deleting note', 'error');
+                        throw error; // Re-throw pour que le modal gère l'erreur
+                    }
+                },
+                'Delete Note'
+            );
+        },
+
+        async _performDeleteNote(noteId) {
+            // Fonction helper pour la logique de suppression (gardée pour référence si nécessaire)
             try {
                 const response = await fetch(`/notebook/api/notes/${noteId}/`, {
                     method: 'DELETE',
@@ -259,28 +301,36 @@ function notebookApp() {
             }
         },
 
-        async bulkDelete() {
+        bulkDelete() {
             if (this.selectedNotes.length === 0) return;
 
-            if (!confirm(`Are you sure you want to delete ${this.selectedNotes.length} notes?`)) return;
+            this.showDeleteConfirmation(
+                'bulk',
+                { count: this.selectedNotes.length },
+                async () => {
+                    try {
+                        const deletedCount = this.selectedNotes.length;
+                        for (let noteId of this.selectedNotes) {
+                            await fetch(`/notebook/api/notes/${noteId}/`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRFToken': this.getCsrfToken()
+                                },
+                                credentials: 'same-origin'
+                            });
+                        }
 
-            try {
-                for (let noteId of this.selectedNotes) {
-                    await fetch(`/notebook/api/notes/${noteId}/`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRFToken': this.getCsrfToken()
-                        },
-                        credentials: 'same-origin'
-                    });
-                }
-
-                await this.loadNotes();
-                this.selectedNotes = [];
-            } catch (error) {
-                console.error('Error deleting notes:', error);
-                this.showAlert('Error deleting notes', 'error');
-            }
+                        await this.loadNotes();
+                        this.selectedNotes = [];
+                        this.showAlert(`${deletedCount} notes supprimées avec succès ! 🎉`, 'success');
+                    } catch (error) {
+                        console.error('Error deleting notes:', error);
+                        this.showAlert('Error deleting notes', 'error');
+                        throw error; // Re-throw pour que le modal gère l'erreur
+                    }
+                },
+                'Delete Multiple Notes'
+            );
         },
 
         async createNewNote() {
@@ -323,14 +373,8 @@ function notebookApp() {
             return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
         },
 
-        showAlert(message, type) {
-            // Implémentation simple d'alert
-            // TODO: Remplacer par un système de notification plus sophistiqué
-            if (type === 'error') {
-                alert('Error: ' + message);
-            } else {
-                alert(message);
-            }
+        showAlert(message, type = 'success', duration = 5000) {
+            // No alerts or notifications - silent operation
         },
 
         // Helper functions for the notes display
@@ -488,7 +532,7 @@ function notebookApp() {
                 const data = await this.linguifyEditor.save();
                 const textContent = this.extractTextFromEditorData(data);
                 await navigator.clipboard.writeText(textContent);
-                this.showAlert('Contenu copié dans le presse-papiers!', 'success');
+                this.showAlert('Contenu copié dans le presse-papiers ! 📋', 'success');
             } catch (error) {
                 console.error('Error copying content:', error);
                 this.showAlert('Erreur lors de la copie', 'error');
@@ -542,11 +586,34 @@ function notebookApp() {
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
 
-                this.showAlert('Note exportée avec succès!', 'success');
+                this.showAlert('Note exportée avec succès ! 💾', 'success');
             } catch (error) {
                 console.error('Error exporting note:', error);
                 this.showAlert('Erreur lors de l\'export', 'error');
             }
+        },
+
+        // === MODAL FUNCTIONS ===
+        showDeleteConfirmation(type, data, callback, title = 'Delete Confirmation') {
+            this.deleteModalType = type;
+            this.deleteModalData = data;
+            this.deleteModalCallback = callback;
+            this.deleteModalTitle = title;
+            this.showDeleteModal = true;
+        },
+
+        async confirmDelete() {
+            if (this.deleteModalCallback) {
+                try {
+                    await this.deleteModalCallback();
+                } catch (error) {
+                    console.error('Error in delete callback:', error);
+                    this.showAlert('Error during deletion', 'error');
+                }
+            }
+            this.showDeleteModal = false;
+            this.deleteModalData = null;
+            this.deleteModalCallback = null;
         }
     }
 }
