@@ -26,7 +26,7 @@ class LinguifyEditor {
             /**
              * Placeholder text
              */
-            placeholder: 'Tapez "/" pour les commandes ou commencez à écrire...',
+            placeholder: 'Type "/" to see available commands...',
 
             /**
              * Enable autofocus
@@ -86,7 +86,7 @@ class LinguifyEditor {
                     class: Paragraph,
                     inlineToolbar: true,
                     config: {
-                        placeholder: 'Tapez "/" pour les commandes ou commencez à écrire...'
+                        placeholder: 'Type "/" to see available commands...'
                     }
                 },
 

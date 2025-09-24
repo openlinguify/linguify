@@ -561,7 +561,7 @@ function notebookEditor() {
                 console.log('🔧 Initializing Editor.js...');
                 this.editor = new EditorJS({
                     holder: 'notebook-editor',
-                    placeholder: 'Tapez "/" pour voir les commandes disponibles...',
+                    placeholder: 'Type "/" to see available commands...',
                     autofocus: true,
 
                     tools: {
