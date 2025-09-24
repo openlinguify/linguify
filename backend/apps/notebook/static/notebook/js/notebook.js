@@ -28,15 +28,8 @@ function notebookApp() {
 
             // Auto-save every 5 seconds if there's an active note
             this.autoSaveInterval = setInterval(() => {
-                console.log('Auto-save check:', {
-                    hasCurrentNote: !!this.currentNote,
-                    hasEditor: !!this.linguifyEditor,
-                    editorReady: this.linguifyEditor?.isReady
-                });
                 if (this.currentNote && this.linguifyEditor && this.linguifyEditor.isReady) {
                     this.saveCurrentNote();
-                } else {
-                    console.log('Auto-save skipped - conditions not met');
                 }
             }, 5000); // 5 seconds
 
@@ -49,36 +42,22 @@ function notebookApp() {
         },
 
         async saveCurrentNote() {
-            console.log('saveCurrentNote called');
             if (!this.currentNote || !this.linguifyEditor || !this.linguifyEditor.isReady) {
-                console.log('saveCurrentNote: conditions not met', {
-                    hasCurrentNote: !!this.currentNote,
-                    hasEditor: !!this.linguifyEditor,
-                    editorReady: this.linguifyEditor?.isReady
-                });
                 return;
             }
 
             try {
-                console.log('Attempting to save from linguifyEditor...');
                 const data = await this.linguifyEditor.save();
-                console.log('Editor save result:', data);
 
                 if (data && data.blocks) {
                     const newContent = JSON.stringify(data);
-                    console.log('Current content length:', this.currentNote.content?.length || 0);
-                    console.log('New content length:', newContent.length);
 
                     // Only save if content has changed
                     if (newContent !== this.currentNote.content) {
                         this.currentNote.content = newContent;
                         console.log('Auto-saving note with', data.blocks.length, 'blocks');
                         await this.updateNote();
-                    } else {
-                        console.log('Content has not changed, skipping save');
                     }
-                } else {
-                    console.log('No valid data from editor save');
                 }
             } catch (error) {
                 console.error('Error in auto-save:', error);

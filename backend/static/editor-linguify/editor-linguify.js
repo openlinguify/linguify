@@ -42,7 +42,7 @@ class LinguifyEditor {
              * onReady callback
              */
             onReady: () => {
-                this.isReady = true;
+                // 'this' refers to the config object here, not the LinguifyEditor instance
                 console.log('LinguifyEditor is ready!');
                 if (config.onReady) config.onReady();
             },
@@ -411,6 +411,9 @@ class LinguifyEditor {
 
             // Wait for editor to be ready
             await this.editor.isReady;
+
+            // Mark editor as ready
+            this.isReady = true;
 
             // Setup slash command functionality
             this.setupSlashCommands();
