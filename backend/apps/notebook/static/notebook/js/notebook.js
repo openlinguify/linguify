@@ -11,6 +11,7 @@ function notebookApp() {
         totalPages: 1,
         currentPage: 1,
         linguifyEditor: null, // Editor.js instance
+        saveTimeout: null, // Pour le debouncing de la sauvegarde
 
         // Filtres
         searchQuery: '',
@@ -23,6 +24,14 @@ function notebookApp() {
         init() {
             this.loadNotes();
             this.initEditor();
+
+            // Save before page unload
+            window.addEventListener('beforeunload', () => {
+                if (this.currentNote && this.saveTimeout) {
+                    clearTimeout(this.saveTimeout);
+                    this.updateNote();
+                }
+            });
         },
 
         async initEditor() {
@@ -30,10 +39,10 @@ function notebookApp() {
             if (!this.linguifyEditor && document.getElementById('editorjs-container')) {
                 this.linguifyEditor = new LinguifyEditor('editorjs-container', {
                     onChange: async (data) => {
-                        // Auto-save when content changes
+                        // Auto-save when content changes with debouncing
                         if (this.currentNote) {
                             this.currentNote.content = JSON.stringify(data);
-                            await this.updateNote();
+                            this.debouncedSave();
                         }
                     },
                     onReady: () => {
@@ -64,6 +73,7 @@ function notebookApp() {
                     ordering: sortMapping[this.sortBy] || '-updated_at'
                 });
 
+                // Use the DRF API endpoint
                 const response = await fetch(`/notebook/api/notes/?${params}`, {
                     headers: {
                         'Accept': 'application/json',
@@ -322,10 +332,29 @@ function notebookApp() {
             }
         },
 
+        // Debounced auto-save function
+        debouncedSave() {
+            if (this.saveTimeout) {
+                clearTimeout(this.saveTimeout);
+            }
+            this.saveTimeout = setTimeout(() => {
+                this.updateNote();
+            }, 2000); // Save after 2 seconds of inactivity
+        },
+
         async updateNote() {
             if (!this.currentNote || !this.currentNote.id) return;
 
             try {
+                // Prepare the data to send
+                const updateData = {
+                    title: this.currentNote.title,
+                    content: this.currentNote.content,
+                    language: this.currentNote.language,
+                    is_pinned: this.currentNote.is_pinned,
+                    is_archived: this.currentNote.is_archived
+                };
+
                 const response = await fetch(`/notebook/api/notes/${this.currentNote.id}/`, {
                     method: 'PATCH',
                     headers: {
@@ -333,7 +362,7 @@ function notebookApp() {
                         'X-CSRFToken': this.getCsrfToken()
                     },
                     credentials: 'same-origin',
-                    body: JSON.stringify(this.currentNote)
+                    body: JSON.stringify(updateData)
                 });
 
                 if (response.ok) {
@@ -343,11 +372,16 @@ function notebookApp() {
                     if (index !== -1) {
                         this.notes[index] = updatedNote;
                     }
+                    // Update current note with server response
+                    this.currentNote = { ...this.currentNote, ...updatedNote };
+                    console.log('Note updated successfully');
                 } else {
-                    console.error('Failed to update note');
+                    console.error('Failed to update note:', response.status, response.statusText);
+                    this.showAlert('Failed to save note', 'error');
                 }
             } catch (error) {
                 console.error('Error updating note:', error);
+                this.showAlert('Error saving note', 'error');
             }
         },
 

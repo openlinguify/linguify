@@ -21,14 +21,14 @@
                 <div class="flex gap-3 items-center">
                     <input x-show="currentNote"
                            :value="currentNote ? currentNote.title : ''"
-                           @input="currentNote.title = $event.target.value"
+                           @input="currentNote.title = $event.target.value; debouncedSave()"
                            @blur="updateNote()"
                            type="text"
                            placeholder="{% trans 'Note title' %}"
                            class="text-lg font-semibold border-none bg-transparent text-slate-800 p-2 min-w-80 outline-none focus:border-b-2 focus:border-blue-500">
                     <select x-show="currentNote"
                             :value="currentNote ? currentNote.language : ''"
-                            @change="currentNote.language = $event.target.value; updateNote()"
+                            @change="currentNote.language = $event.target.value; debouncedSave()"
                             class="px-3 py-1.5 border border-gray-200 rounded-md bg-white text-sm text-slate-600">
                         <option value="">{% trans 'Language' %}</option>
                         <option value="fr">🇫🇷 Français</option>
