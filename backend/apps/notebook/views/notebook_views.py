@@ -628,6 +628,14 @@ class NoteViewSet(viewsets.ModelViewSet):
             context['tags'] = tags if tags is not None else []
         return context
 
+    def perform_update(self, serializer):
+        """Update with optimized operations."""
+        with transaction.atomic():
+            note = serializer.save()
+            # Clear cache for review queries
+            cache_key = f'notes_due_review_{self.request.user.id}'
+            cache.delete(cache_key)
+
     @action(detail=True, methods=['post'])
     def mark_reviewed(self, request, pk=None):
         """Marquer une note comme révisée."""

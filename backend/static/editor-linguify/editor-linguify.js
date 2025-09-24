@@ -14,6 +14,7 @@ class LinguifyEditor {
         this.editor = null;
         this.config = config;
         this.isReady = false;
+        this.saveTimeout = null;
 
         // Default configuration
         this.defaultConfig = {
@@ -49,10 +50,23 @@ class LinguifyEditor {
             /**
              * onChange callback
              */
-            onChange: async (api, event) => {
+            onChange: (api, event) => {
                 if (config.onChange) {
-                    const data = await this.save();
-                    config.onChange(data, api, event);
+                    // Use a debounced approach to avoid calling save() too frequently
+                    if (this.saveTimeout) {
+                        clearTimeout(this.saveTimeout);
+                    }
+                    this.saveTimeout = setTimeout(async () => {
+                        try {
+                            // Call save on the API to get the actual content
+                            const data = await api.saver.save();
+                            config.onChange(data, api, event);
+                        } catch (error) {
+                            console.error('Error in onChange callback:', error);
+                            // Try alternative approach: pass the API so the callback can handle it
+                            config.onChange(null, api, event);
+                        }
+                    }, 100); // Small delay to avoid too many calls
                 }
             },
 

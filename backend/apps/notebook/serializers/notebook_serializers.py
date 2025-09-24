@@ -177,11 +177,11 @@ class NoteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         tags_data = self.context.get('tags', [])
         note = super().update(instance, validated_data)
-        
+
         # Always update tags, using an empty list if tags_data is None
         tags = Tag.objects.filter(id__in=tags_data or [], user=instance.user)
         note.set_tags(tags)
-        
+
         return note
 
 class SharedNoteSerializer(serializers.ModelSerializer):
