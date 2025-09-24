@@ -5,9 +5,9 @@
     <!-- Pas de note sélectionnée -->
     <div x-show="!currentNote" class="note-editor empty-state">
         <i class="fas fa-file-alt" style="font-size: 3rem; color: #d1d5db;"></i>
-        <h2 style="color: #6b7280; margin-top: 1rem;">{% trans 'Select a note to view' %}</h2>
-        <p style="color: #9ca3af;">{% trans 'Choose a note from the sidebar or create a new one' %}</p>
-        <button @click="createNewNote()" class="btn-linguify" style="margin-top: 1rem; width: auto; display: inline-block;">
+        <h2 style="color: #6b7280; margin-top: 1rem;" x-text="archiveStatus === 'archived' && notes.length === 0 ? '{% trans 'No archived notes' %}' : '{% trans 'Select a note to view' %}'"></h2>
+        <p style="color: #9ca3af;" x-text="archiveStatus === 'archived' && notes.length === 0 ? '{% trans 'You have no archived notes yet' %}' : '{% trans 'Choose a note from the sidebar or create a new one' %}'"></p>
+        <button x-show="archiveStatus !== 'archived'" @click="createNewNote()" class="btn-linguify" style="margin-top: 1rem; width: auto; display: inline-block;">
             <i class="fas fa-plus"></i>
             {% trans 'Create New Note' %}
         </button>
