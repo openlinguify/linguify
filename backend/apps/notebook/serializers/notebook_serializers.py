@@ -79,8 +79,9 @@ class NoteListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
         fields = [
-            'id', 'title', 'category_name', 'tags', 'note_type',
-            'is_pinned', 'created_at', 'updated_at', 'is_due_for_review'
+            'id', 'title', 'content', 'category_name', 'tags', 'note_type',
+            'is_pinned', 'created_at', 'updated_at', 'is_due_for_review',
+            'language'  # Also add language field
         ]
 
     def get_is_due_for_review(self, obj):

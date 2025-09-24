@@ -13,6 +13,7 @@ function notebookApp() {
         linguifyEditor: null, // Editor.js instance
         saveTimeout: null, // Pour le debouncing de la sauvegarde
         autoSaveInterval: null, // Pour la sauvegarde automatique
+        isSaving: false, // Pour éviter les sauvegardes multiples
 
         // Filtres
         searchQuery: '',
@@ -46,21 +47,37 @@ function notebookApp() {
                 return;
             }
 
+            // Prevent multiple saves at the same time
+            if (this.isSaving) {
+                return;
+            }
+
             try {
+                this.isSaving = true;
                 const data = await this.linguifyEditor.save();
 
-                if (data && data.blocks) {
+                if (data && data.blocks && Array.isArray(data.blocks)) {
+                    // Don't save if there are no blocks (empty content)
+                    if (data.blocks.length === 0) {
+                        console.log('Skipping save - no content blocks');
+                        return;
+                    }
+
                     const newContent = JSON.stringify(data);
 
-                    // Only save if content has changed
+                    // Only save if content has changed significantly
                     if (newContent !== this.currentNote.content) {
                         this.currentNote.content = newContent;
                         console.log('Auto-saving note with', data.blocks.length, 'blocks');
                         await this.updateNote();
                     }
+                } else {
+                    console.log('No valid data to save');
                 }
             } catch (error) {
                 console.error('Error in auto-save:', error);
+            } finally {
+                this.isSaving = false;
             }
         },
 
@@ -325,6 +342,8 @@ function notebookApp() {
         },
 
         async openNote(note) {
+            console.log('Opening note:', note.id, 'Content length:', note.content?.length || 0);
+
             // Deep clone the note to avoid direct mutations
             this.currentNote = JSON.parse(JSON.stringify(note));
 
@@ -335,12 +354,25 @@ function notebookApp() {
                     await this.linguifyEditor.clear();
 
                     // Load note content
-                    if (this.currentNote.content) {
+                    if (this.currentNote.content && this.currentNote.content.trim() !== '') {
                         let contentData;
                         try {
                             // Try to parse as JSON (Editor.js format)
                             contentData = JSON.parse(this.currentNote.content);
+                            console.log('Parsed content data:', contentData);
+
+                            // Ensure we have valid blocks
+                            if (!contentData.blocks || !Array.isArray(contentData.blocks) || contentData.blocks.length === 0) {
+                                console.log('No valid blocks found, creating empty paragraph');
+                                contentData = {
+                                    blocks: [{
+                                        type: 'paragraph',
+                                        data: { text: '' }
+                                    }]
+                                };
+                            }
                         } catch (e) {
+                            console.log('Content is not JSON, treating as plain text');
                             // If not JSON, convert plain text to Editor.js format
                             contentData = {
                                 blocks: [{
@@ -351,11 +383,24 @@ function notebookApp() {
                                 }]
                             };
                         }
+
+                        console.log('Rendering content with', contentData.blocks.length, 'blocks');
                         await this.linguifyEditor.render(contentData);
+                    } else {
+                        console.log('No content to load, loading empty editor');
+                        // Load empty content
+                        await this.linguifyEditor.render({
+                            blocks: [{
+                                type: 'paragraph',
+                                data: { text: '' }
+                            }]
+                        });
                     }
                 } catch (error) {
                     console.error('Error loading note in editor:', error);
                 }
+            } else {
+                console.log('Editor not ready, cannot load note');
             }
         },
 
