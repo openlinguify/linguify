@@ -324,6 +324,32 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.archived-indicator {
+    color: #6b7280;
+    font-size: 0.75rem;
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
+/* Archived mode styling for sidebar */
+.sidebar-linguify.archived-mode {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border-right: 3px solid #e2e8f0;
+}
+
+.sidebar-linguify.archived-mode .note-list-item {
+    background: rgba(148, 163, 184, 0.1);
+    border-left: 2px solid #cbd5e1;
+}
+
+.sidebar-linguify.archived-mode .note-list-item.selected {
+    background: rgba(148, 163, 184, 0.2);
+    border-left-color: #94a3b8;
 }
 
 .note-list-preview {

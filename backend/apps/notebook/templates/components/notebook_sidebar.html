@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 <!-- Notebook Sidebar Component -->
-<div id="notebookSidebar" class="sidebar-linguify show">
+<div id="notebookSidebar" class="sidebar-linguify show" :class="{ 'archived-mode': archiveStatus === 'archived' }">
     <div class="sidebar-content">
         <!-- Header de la sidebar -->
 
@@ -35,7 +35,12 @@
                     </div>
 
                     <!-- Titre de la note -->
-                    <div class="note-list-title" x-text="note.title || '{% trans 'Untitled' %}'"></div>
+                    <div class="note-list-title">
+                        <span x-text="note.title || '{% trans 'Untitled' %}'"></span>
+                        <span x-show="archiveStatus === 'archived'" class="archived-indicator">
+                            <i class="bi bi-archive-fill"></i>
+                        </span>
+                    </div>
 
 
                     <!-- Métadonnées -->
