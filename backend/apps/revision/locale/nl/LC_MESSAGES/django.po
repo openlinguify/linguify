@@ -934,7 +934,7 @@ msgstr "AI"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:5
 msgid "Deck cards"
-msgstr "Lijst kaarten"
+msgstr "Kaarten van het deck"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:6
 msgid "0 card(s)"

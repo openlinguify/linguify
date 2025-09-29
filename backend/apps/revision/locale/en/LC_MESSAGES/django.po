@@ -833,7 +833,7 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:56
 msgid "Add a card"
-msgstr ""
+msgstr "Add a card"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:8
 msgid "Add a new card"

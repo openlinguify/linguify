@@ -221,7 +221,7 @@ function loadDeckStats() {
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3">
                                 <div class="text-xs font-medium text-gray-900">${deck.name}</div>
-                                <div class="text-xs text-gray-500">${deck.description || 'No description'}</div>
+                                <div class="text-xs text-gray-500">${deck.description || _('No description')}</div>
                             </td>
                             <td class="px-4 py-3 text-xs text-gray-900">${deck.cards_count}</td>
                             <td class="px-4 py-3">
