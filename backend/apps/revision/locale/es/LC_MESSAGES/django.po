@@ -3,16 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-29 20:30+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 2025-09-29 21:43+0200\n"
+"PO-Revision-Date: 2025-09-29 20:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language-Team: Spanish <es@li.org>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -92,6 +91,7 @@ msgid "Deck statistics"
 msgstr ""
 
 #: .\apps\revision\admin.py:236
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:39
 #: .\apps\revision\templates\revision\partials\create_deck_form.html:38
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:51
 msgid "Description"
@@ -298,101 +298,104 @@ msgstr "Nombre de la lista"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:33
 msgid "Enter the new deck name..."
-msgstr ""
+msgstr "Introduce el nombre de la nueva lista..."
 
 #: .\apps\revision\templates\revision\components\deck_import.html:42
 msgid "This name must be unique among your decks"
-msgstr ""
+msgstr "Este nombre debe ser único entre tus listas"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:53
 #: .\apps\revision\templates\revision\components\deck_import.html:181
-#, fuzzy
-#| msgid "Description"
 msgid "Selection"
-msgstr "Descripción"
+msgstr "Selección"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:60
 #: .\apps\revision\templates\revision\components\deck_import.html:188
+#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:20
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:42
 msgid "Preview"
-msgstr ""
+msgstr "Vista previa"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:80
 msgid "Drop your file here"
-msgstr ""
+msgstr "Arrastra tu archivo aquí"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:81
 msgid "or click to select a file"
-msgstr ""
+msgstr "o haz clic para seleccionar un archivo"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:86
 msgid "Browse files"
-msgstr ""
+msgstr "Explorar archivos"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:93
 msgid "Drop the file here"
-msgstr ""
+msgstr "Suelta el archivo aquí"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:120
 msgid "Supported formats:"
-msgstr ""
+msgstr "Formatos compatibles:"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:135
 msgid "Minimum 2 columns required for front and back of cards"
-msgstr ""
+msgstr "Mínimo 2 columnas requeridas para el anverso y reverso de las cartas"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:151
 msgid "Next - Preview"
-msgstr ""
+msgstr "Siguiente - Vista previa"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:164
 #, fuzzy
 #| msgid "Import Cards"
 msgid "Import Preview"
-msgstr "Importar cartas"
+msgstr "Vista previa de importación"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:195
 #: .\apps\revision\templates\revision\components\navbar.html:171
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:221
 msgid "Import"
 msgstr "Importar"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:208
 msgid "File"
-msgstr ""
+msgstr "Archivo"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:221
 msgid "Rows"
-msgstr ""
+msgstr "Filas"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:234
 msgid "Cards to create"
-msgstr ""
+msgstr "Cartas a crear"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:246
 msgid "Column configuration"
-msgstr ""
+msgstr "Configuración de columnas"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:258
 msgid "First row contains headers"
-msgstr ""
+msgstr "La primera fila contiene encabezados"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:261
 msgid ""
 "Check this option if the first row contains column names and should not be "
 "imported as a card"
 msgstr ""
+"Marca esta opción si la primera fila contiene nombres de columnas y no debe "
+"importarse como una carta"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:272
 msgid "Front of cards"
-msgstr ""
+msgstr "Anverso de las cartas"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:283
 msgid "Front language (optional)"
-msgstr ""
+msgstr "Idioma del anverso (opcional)"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:286
 #: .\apps\revision\templates\revision\components\deck_import.html:312
 msgid "-- Select a language --"
-msgstr ""
+msgstr "-- Seleccionar un idioma --"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:287
 #: .\apps\revision\templates\revision\components\deck_import.html:313
@@ -401,7 +404,7 @@ msgstr ""
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:23
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:39
 msgid "English"
-msgstr ""
+msgstr "Inglés"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:288
 #: .\apps\revision\templates\revision\components\deck_import.html:314
@@ -410,7 +413,7 @@ msgstr ""
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:22
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:38
 msgid "French"
-msgstr ""
+msgstr "Francés"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:289
 #: .\apps\revision\templates\revision\components\deck_import.html:315
@@ -419,38 +422,39 @@ msgstr ""
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:24
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:40
 msgid "Spanish"
-msgstr ""
+msgstr "Español"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:290
 #: .\apps\revision\templates\revision\components\deck_import.html:316
 #: .\apps\revision\templates\revision\partials\create_card_form.html:43
 #: .\apps\revision\templates\revision\partials\create_card_form.html:85
 msgid "Dutch"
-msgstr ""
+msgstr "Holandés"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:298
 msgid "Back of cards"
-msgstr ""
+msgstr "Reverso de las cartas"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:309
 msgid "Back language (optional)"
-msgstr ""
+msgstr "Idioma del reverso (opcional)"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:325
 msgid "Change the selection to see the preview updated in real time"
 msgstr ""
+"Cambia la selección para ver la vista previa actualizada en tiempo real"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:336
 msgid "Card preview (first 5)"
-msgstr ""
+msgstr "Vista previa de cartas (primeras 5)"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:340
 msgid "Updating..."
-msgstr ""
+msgstr "Actualizando..."
 
 #: .\apps\revision\templates\revision\components\deck_import.html:358
 msgid "Confirm import"
-msgstr ""
+msgstr "Confirmar importación"
 
 #: .\apps\revision\templates\revision\components\navbar.html:10
 msgid "Hide/Show sidebar"
@@ -588,6 +592,7 @@ msgid "Display mode"
 msgstr ""
 
 #: .\apps\revision\templates\revision\components\navbar.html:153
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:13
 msgid "List view"
 msgstr ""
 
@@ -647,18 +652,21 @@ msgstr "Guardar"
 
 #: .\apps\revision\templates\revision\components\navbar.html:195
 #: .\apps\revision\templates\revision\partials\deck_details_section.html:71
+#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:45
 msgid "Delete"
 msgstr "Eliminar"
 
 #: .\apps\revision\templates\revision\components\navbar.html:196
 #: .\apps\revision\templates\revision\partials\create_card_form.html:33
 #: .\apps\revision\templates\revision\partials\create_card_form.html:75
+#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:42
 #, fuzzy
 #| msgid "Edit Deck"
 msgid "Edit"
 msgstr "Editar lista"
 
 #: .\apps\revision\templates\revision\components\navbar.html:197
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:45
 #, fuzzy
 #| msgid "Create Deck"
 msgid "Create"
@@ -692,6 +700,7 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\components\navbar.html:204
 #: .\apps\revision\templates\revision\components\share_deck.html:167
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:143
 #, fuzzy
 #| msgid "Create deck"
 msgid "Share this deck"
@@ -817,7 +826,140 @@ msgid "Social networks"
 msgstr ""
 
 #: .\apps\revision\templates\revision\components\share_deck.html:241
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:82
 msgid "Close"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:7
+#: .\apps\revision\templates\revision\explore\partials\popular_decks.html:39
+msgid "By"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:12
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:198
+#, fuzzy
+#| msgid "Deck Name"
+msgid "cards"
+msgstr "Nombre de la lista"
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:13
+msgid "users"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:25
+msgid "Do you want to import this deck into your collection?"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:27
+#: .\apps\revision\templates\revision\explore\partials\popular_decks.html:64
+#, fuzzy
+#| msgid "Import"
+msgid "Import this deck"
+msgstr "Importar"
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:46
+#, fuzzy
+#| msgid "Card preview (first 5)"
+msgid "Cards preview"
+msgstr "Vista previa de cartas (primeras 5)"
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:65
+msgid "This deck contains no visible cards."
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:73
+msgid "And"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:73
+#, fuzzy
+#| msgid "Import Cards"
+msgid "more cards..."
+msgstr "Importar cartas"
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:83
+msgid "Information"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:87
+#, fuzzy
+#| msgid "Create Deck"
+msgid "Created:"
+msgstr "Crear lista"
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:92
+msgid "Modified:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:98
+msgid "Category:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:105
+msgid "Language:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:112
+msgid "Level:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:122
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:59
+#, fuzzy
+#| msgid "Selection"
+msgid "Actions"
+msgstr "Selección"
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:129
+#: .\apps\revision\templates\revision\explore\partials\popular_decks.html:70
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:184
+msgid "Add to favorites"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:138
+msgid "Add to collection"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\popular_decks.html:7
+#, fuzzy
+#| msgid "Popular"
+msgid "Popular decks"
+msgstr "Populares"
+
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:6
+msgid "Discover thousands of decks"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:7
+msgid "More than"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:7
+msgid "decks created by the community"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:10
+#, fuzzy
+#| msgid "Preview"
+msgid "Grid view"
+msgstr "Vista previa"
+
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:16
+#, fuzzy
+#| msgid "Import Cards"
+msgid "Compact view"
+msgstr "Vista previa de importación"
+
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:33
+msgid "Search by title, subject, creator..."
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:48
+msgid "Intelligent search"
+msgstr ""
+
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:50
+msgid "AI"
 msgstr ""
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:5
@@ -1136,6 +1278,57 @@ msgstr ""
 msgid "Writing and translation exercises."
 msgstr ""
 
+#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:7
+msgid "No tags - Click on"
+msgstr ""
+
+#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:9
+msgid "to add some"
+msgstr ""
+
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:15
+#, fuzzy
+#| msgid "All tags"
+msgid "My tags"
+msgstr "Todas las etiquetas"
+
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:16
+msgid "Organize your decks with custom tags"
+msgstr ""
+
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:29
+#, fuzzy
+#| msgid "Search..."
+msgid "Search for a tag..."
+msgstr "Buscar..."
+
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:37
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:56
+msgid "Tag name"
+msgstr ""
+
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:57
+msgid "Usage"
+msgstr ""
+
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:58
+#, fuzzy
+#| msgid "Create Deck"
+msgid "Created"
+msgstr "Crear lista"
+
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:71
+msgid "No tags found"
+msgstr ""
+
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:72
+msgid "Start by creating your first tag to organize your decks"
+msgstr ""
+
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:79
+msgid "tag(s)"
+msgstr ""
+
 #: .\apps\revision\templates\revision\partials\welcome_section.html:5
 msgid "Welcome to your study space"
 msgstr ""
@@ -1248,6 +1441,8 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:11
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:71
+#: .\apps\revision\templates\revision\study\write_embedded.html:12
+#: .\apps\revision\templates\revision\study\write_embedded.html:145
 #, fuzzy
 #| msgid "Create deck"
 msgid "Back to deck"
@@ -1263,6 +1458,7 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:28
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:37
+#: .\apps\revision\templates\revision\study\write_embedded.html:35
 msgid "Read aloud"
 msgstr ""
 
@@ -1306,6 +1502,84 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:93
 msgid "Remaining"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:6
+msgid "Writing Mode"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:24
+msgid "Write the translation of the given word"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:32
+msgid "Source language"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:34
+msgid "Read the word aloud"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:48
+msgid "Type your answer..."
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:54
+msgid "Submit"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:61
+msgid "Show hint (-2 points)"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:63
+msgid "Hint (-2 pts)"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:65
+msgid "Skip this card (-5 points)"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:67
+msgid "Skip (-5 pts)"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:85
+msgid "Correct answer:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:89
+#, fuzzy
+#| msgid "Deck Name"
+msgid "Next card"
+msgstr "Nombre de la lista"
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:110
+msgid "Writing session completed!"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:119
+msgid "Correct answers"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:127
+msgid "Points earned"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:133
+msgid "Total time:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:134
+msgid "Hints used:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:135
+msgid "Accuracy:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\study\write_embedded.html:141
+msgid "Restart"
 msgstr ""
 
 #: .\apps\revision\views\revision_settings_views.py:118

@@ -1,15 +1,16 @@
-<!-- Détails du deck public -->
+{% load i18n %}
+<!-- Public deck details -->
 <div class="deck-details-content">
     <div class="deck-header-info">
         <div class="deck-title-section">
             <h4 class="deck-name">{{ deck.name }}</h4>
-            <p class="deck-author">Par <strong>{{ deck.user.username }}</strong></p>
+            <p class="deck-author">{% trans "By" %} <strong>{{ deck.user.username }}</strong></p>
         </div>
         
         <div class="deck-actions-section">
             <div class="deck-stats-badges">
-                <span class="badge badge-info">{{ total_cards }} cartes</span>
-                <span class="badge badge-success">{{ total_sessions }} utilisateurs</span>
+                <span class="badge badge-info">{{ total_cards }} {% trans "cards" %}</span>
+                <span class="badge badge-success">{{ total_sessions }} {% trans "users" %}</span>
                 {% if deck.avg_rating %}
                 <span class="badge badge-warning">
                     <i class="bi bi-star-fill"></i> {{ deck.avg_rating|floatformat:1 }}
@@ -21,9 +22,9 @@
             <button class="btn-linguify"
                     hx-post="{% url 'revision_web:explore_import_deck' deck.id %}"
                     hx-swap="none"
-                    hx-confirm="Voulez-vous importer ce deck dans votre collection ?">
+                    hx-confirm="{% trans 'Do you want to import this deck into your collection?' %}">
                 <i class="bi bi-download me-2"></i>
-                Importer ce deck
+                {% trans "Import this deck" %}
             </button>
             {% endif %}
         </div>
@@ -35,14 +36,14 @@
                 <!-- Description -->
                 {% if deck.description %}
                 <div class="deck-description mb-4">
-                    <h6><i class="bi bi-info-circle me-2"></i>Description</h6>
+                    <h6><i class="bi bi-info-circle me-2"></i>{% trans "Description" %}</h6>
                     <p class="text-muted">{{ deck.description }}</p>
                 </div>
                 {% endif %}
                 
                 <!-- Aperçu des cartes -->
                 <div class="cards-preview">
-                    <h6><i class="bi bi-card-list me-2"></i>Aperçu des cartes ({{ cards|length }}/{{ total_cards }})</h6>
+                    <h6><i class="bi bi-card-list me-2"></i>{% trans "Cards preview" %} ({{ cards|length }}/{{ total_cards }})</h6>
                     
                     <div class="cards-preview-grid">
                         {% for card in cards %}
@@ -61,7 +62,7 @@
                         </div>
                         {% empty %}
                         <div class="empty-cards">
-                            <p class="text-muted">Ce deck ne contient aucune carte visible.</p>
+                            <p class="text-muted">{% trans "This deck contains no visible cards." %}</p>
                         </div>
                         {% endfor %}
                     </div>
@@ -69,7 +70,7 @@
                     {% if total_cards > cards|length %}
                     <div class="text-center mt-3">
                         <small class="text-muted">
-                            Et {{ total_cards|add:cards|length|add:-1 }} autres cartes...
+                            {% trans "And" %} {{ total_cards|add:cards|length|add:-1 }} {% trans "more cards..." %}
                         </small>
                     </div>
                     {% endif %}
@@ -79,36 +80,36 @@
             <div class="col-md-4">
                 <!-- Informations détaillées -->
                 <div class="deck-metadata">
-                    <h6><i class="bi bi-info-square me-2"></i>Informations</h6>
+                    <h6><i class="bi bi-info-square me-2"></i>{% trans "Information" %}</h6>
                     
                     <div class="metadata-list">
                         <div class="metadata-item">
-                            <span class="label">Créé le:</span>
+                            <span class="label">{% trans "Created:" %}</span>
                             <span class="value">{{ deck.created_at|date:"d/m/Y à H:i" }}</span>
                         </div>
                         
                         <div class="metadata-item">
-                            <span class="label">Modifié le:</span>
+                            <span class="label">{% trans "Modified:" %}</span>
                             <span class="value">{{ deck.updated_at|date:"d/m/Y à H:i" }}</span>
                         </div>
                         
                         {% if deck.category %}
                         <div class="metadata-item">
-                            <span class="label">Catégorie:</span>
+                            <span class="label">{% trans "Category:" %}</span>
                             <span class="value">{{ deck.category|title }}</span>
                         </div>
                         {% endif %}
                         
                         {% if deck.language %}
                         <div class="metadata-item">
-                            <span class="label">Langue:</span>
+                            <span class="label">{% trans "Language:" %}</span>
                             <span class="value">{{ deck.language|upper }}</span>
                         </div>
                         {% endif %}
                         
                         {% if deck.level %}
                         <div class="metadata-item">
-                            <span class="label">Niveau:</span>
+                            <span class="label">{% trans "Level:" %}</span>
                             <span class="value">{{ deck.level|title }}</span>
                         </div>
                         {% endif %}
@@ -118,14 +119,14 @@
                 <!-- Actions supplémentaires -->
                 {% if can_import %}
                 <div class="additional-actions mt-4">
-                    <h6><i class="bi bi-gear me-2"></i>Actions</h6>
+                    <h6><i class="bi bi-gear me-2"></i>{% trans "Actions" %}</h6>
                     
                     <div class="action-buttons-list">
                         <button class="action-btn-full favorite-btn"
                                 hx-post="{% url 'revision_web:explore_toggle_favorite' deck.id %}"
                                 hx-swap="outerHTML">
                             <i class="bi bi-heart me-2"></i>
-                            Ajouter aux favoris
+                            {% trans "Add to favorites" %}
                         </button>
                         
                         <button class="action-btn-full collection-btn"
@@ -134,12 +135,12 @@
                                 data-bs-toggle="modal" 
                                 data-bs-target="#collectionModal">
                             <i class="bi bi-collection me-2"></i>
-                            Ajouter à une collection
+                            {% trans "Add to collection" %}
                         </button>
                         
                         <button class="action-btn-full share-btn">
                             <i class="bi bi-share me-2"></i>
-                            Partager ce deck
+                            {% trans "Share this deck" %}
                         </button>
                     </div>
                 </div>

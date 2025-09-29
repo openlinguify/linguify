@@ -1,25 +1,26 @@
-<!-- Templates HTML pour les éléments de tags -->
+{% load i18n %}
+<!-- HTML Templates for tag elements -->
 
-<!-- Template pour afficher "Aucun tag" avec icône cliquable -->
+<!-- Template to display "No tags" with clickable icon -->
 <template id="no-tags-template">
     <span class="no-tags-message">
-        Aucun tag - Cliquez sur 
+        {% trans "No tags - Click on" %} 
         <i class="bi bi-tag clickable-tag-icon" style="cursor: pointer; color: #2d5bba;"></i> 
-        pour en ajouter
+        {% trans "to add some" %}
     </span>
 </template>
 
-<!-- Template pour un tag individuel -->
+<!-- Template for individual tag -->
 <template id="tag-template">
     <span class="tag-linguify"></span>
 </template>
 
-<!-- Template pour le preview d'un tag -->
+<!-- Template for tag preview -->
 <template id="tag-preview-template">
-    <span class="badge tag-color-preview">Aperçu</span>
+    <span class="badge tag-color-preview">{% trans "Preview" %}</span>
 </template>
 
-<!-- Template pour une ligne de tag dans le tableau de gestion -->
+<!-- Template for a tag row in the management table -->
 <template id="tag-table-row-template">
     <tr class="tag-row" data-tag="">
         <td>
@@ -38,10 +39,10 @@
         </td>
         <td>
             <div class="btn-group btn-group-sm">
-                <button class="btn btn-outline-primary edit-tag-btn" title="Modifier">
+                <button class="btn btn-outline-primary edit-tag-btn" title="{% trans 'Edit' %}">
                     <i class="bi bi-pencil"></i>
                 </button>
-                <button class="btn btn-outline-danger delete-tag-btn" title="Supprimer">
+                <button class="btn btn-outline-danger delete-tag-btn" title="{% trans 'Delete' %}">
                     <i class="bi bi-trash"></i>
                 </button>
             </div>
@@ -49,7 +50,7 @@
     </tr>
 </template>
 
-<!-- Template pour les boutons de pagination -->
+<!-- Template for pagination buttons -->
 <template id="pagination-item-template">
     <li class="page-item">
         <a class="page-link" href="#"></a>

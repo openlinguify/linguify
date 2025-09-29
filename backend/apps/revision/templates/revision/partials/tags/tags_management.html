@@ -1,4 +1,5 @@
-<!-- Modal de gestion des tags - Utilisant le style tailwind-modals.css -->
+{% load i18n %}
+<!-- Tags Management Modal - Using tailwind-modals.css style -->
 
 <div class="modal-overlay" id="tagsManagementModal" style="display: none; z-index: 9999;">
     <div class="modal-backdrop">
@@ -11,8 +12,8 @@
                         <i class="bi bi-tags" style="color: #2d5bba; font-size: 1.5rem;"></i>
                     </div>
                     <div>
-                        <h4 class="modal-title" id="tagsManagementModalLabel">Mes étiquettes</h4>
-                        <p class="modal-subtitle">Organisez vos decks avec des étiquettes personnalisées</p>
+                        <h4 class="modal-title" id="tagsManagementModalLabel">{% trans "My tags" %}</h4>
+                        <p class="modal-subtitle">{% trans "Organize your decks with custom tags" %}</p>
                     </div>
                 </div>
                 <button type="button" class="modal-close-btn" onclick="window.tagsManagement.closeTagsManagement()" aria-label="Close">
@@ -25,7 +26,7 @@
                 <!-- Barre de recherche -->
                 <div class="mb-4">
                     <input type="text" id="tagsSearchInput" class="form-control" 
-                           placeholder="Rechercher une étiquette...">
+                           placeholder="{% trans 'Search for a tag...' %}">
                 </div>
 
                 <!-- Formulaire de création rapide dans le style tailwind -->
@@ -33,15 +34,15 @@
                     <form id="quickCreateTagForm">
                         <div class="d-flex gap-3 align-items-center p-3 mb-4" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
                             <input type="text" id="quickTagName" class="form-control" 
-                                   placeholder="Nom de l'étiquette" required maxlength="50">
+                                   placeholder="{% trans 'Tag name' %}" required maxlength="50">
                             <input type="color" id="quickTagColor" class="form-control form-control-color" 
                                    value="#3b82f6" style="width: 50px;">
                             <div id="quickTagPreview">
                                 <span class="tag-badge-linguify" style="background: #3b82f6; color: white;">
-                                    <span id="quickPreviewText">Aperçu</span>
+                                    <span id="quickPreviewText">{% trans "Preview" %}</span>
                                 </span>
                             </div>
-                            <button type="submit" class="btn btn-primary" id="createNewTagBtn">Créer</button>
+                            <button type="submit" class="btn btn-primary" id="createNewTagBtn">{% trans "Create" %}</button>
                         </div>
                     </form>
                 </div>
@@ -52,14 +53,14 @@
                         <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
                             <tr>
                                 <th style="width: 40px; padding: 8px 12px; font-weight: 600; font-size: 0.8125rem; color: #374151;"></th>
-                                <th style="padding: 8px 12px; font-weight: 600; font-size: 0.8125rem; color: #374151;">Nom de l'étiquette</th>
-                                <th style="width: 80px; padding: 8px 12px; font-weight: 600; font-size: 0.8125rem; color: #374151;">Usage</th>
-                                <th style="width: 90px; padding: 8px 12px; font-weight: 600; font-size: 0.8125rem; color: #374151;">Créé</th>
-                                <th style="width: 80px; padding: 8px 12px; font-weight: 600; font-size: 0.8125rem; color: #374151; text-align: center;">Actions</th>
+                                <th style="padding: 8px 12px; font-weight: 600; font-size: 0.8125rem; color: #374151;">{% trans "Tag name" %}</th>
+                                <th style="width: 80px; padding: 8px 12px; font-weight: 600; font-size: 0.8125rem; color: #374151;">{% trans "Usage" %}</th>
+                                <th style="width: 90px; padding: 8px 12px; font-weight: 600; font-size: 0.8125rem; color: #374151;">{% trans "Created" %}</th>
+                                <th style="width: 80px; padding: 8px 12px; font-weight: 600; font-size: 0.8125rem; color: #374151; text-align: center;">{% trans "Actions" %}</th>
                             </tr>
                         </thead>
                         <tbody id="tagsTableBody">
-                            <!-- Tags seront chargés ici -->
+                            <!-- Tags will be loaded here -->
                         </tbody>
                     </table>
                 </div>
@@ -67,18 +68,18 @@
                 <!-- État vide -->
                 <div id="tagsEmptyState" class="text-center py-5" style="display: none;">
                     <i class="bi bi-tags text-muted" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                    <h5>Aucune étiquette trouvée</h5>
-                    <p class="text-muted">Commencez par créer votre première étiquette pour organiser vos decks</p>
+                    <h5>{% trans "No tags found" %}</h5>
+                    <p class="text-muted">{% trans "Start by creating your first tag to organize your decks" %}</p>
                 </div>
             </div>
 
             <!-- Footer -->
             <div class="modal-footer">
                 <span class="text-muted me-auto">
-                    <span id="tagsCount">0</span> étiquette(s)
+                    <span id="tagsCount">0</span> {% trans "tag(s)" %}
                 </span>
                 <button type="button" class="btn btn-secondary" onclick="window.tagsManagement.closeTagsManagement()">
-                    Fermer
+                    {% trans "Close" %}
                 </button>
             </div>
         </div>

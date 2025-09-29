@@ -1,18 +1,19 @@
-<!-- Advanced Search Bar - Interface modernisée -->
+{% load i18n %}
+<!-- Advanced Search Bar - Modern Interface -->
 <div class="modern-search-container">
     <div class="search-header-enhanced">
         <div class="search-title-group">
-            <h4 class="search-title">Découvrez des milliers de decks</h4>
-            <p class="search-subtitle">Plus de <span class="highlight-number">{{ total_results }}</span> decks créés par la communauté</p>
+            <h4 class="search-title">{% trans "Discover thousands of decks" %}</h4>
+            <p class="search-subtitle">{% trans "More than" %} <span class="highlight-number">{{ total_results }}</span> {% trans "decks created by the community" %}</p>
         </div>
         <div class="view-mode-selector">
-            <button class="view-mode-btn active" data-view="grid" title="Vue grille">
+            <button class="view-mode-btn active" data-view="grid" title="{% trans 'Grid view' %}">
                 <i class="bi bi-grid-3x3-gap"></i>
             </button>
-            <button class="view-mode-btn" data-view="list" title="Vue liste">
+            <button class="view-mode-btn" data-view="list" title="{% trans 'List view' %}">
                 <i class="bi bi-list-ul"></i>
             </button>
-            <button class="view-mode-btn" data-view="compact" title="Vue compacte">
+            <button class="view-mode-btn" data-view="compact" title="{% trans 'Compact view' %}">
                 <i class="bi bi-layout-three-columns"></i>
             </button>
         </div>
@@ -29,7 +30,7 @@
                        name="q"
                        value="{{ query }}"
                        class="search-input-modern" 
-                       placeholder="Rechercher par titre, sujet, créateur..." 
+                       placeholder="{% trans 'Search by title, subject, creator...' %}" 
                        autocomplete="off"
                        hx-get="{% url 'revision_web:explore_search' %}"
                        hx-trigger="input changed delay:300ms, search"
@@ -44,9 +45,9 @@
                         hx-trigger="focus"
                         hx-target="#searchSuggestions"
                         class="search-action-btn ai-search" 
-                        title="Recherche intelligente">
+                        title="{% trans 'Intelligent search' %}">
                         <i class="bi bi-stars"></i>
-                        <span class="action-text">IA</span>
+                        <span class="action-text">{% trans "AI" %}</span>
                     </button>
                     <button id="advancedSearchToggle" class="search-action-btn advanced-toggle" title="Options avancées">
                         <i class="bi bi-sliders"></i>
@@ -172,7 +173,7 @@
             
             <div class="deck-card-header">
                 <div class="deck-category">
-                    <span class="category-badge">{{ deck.category|default:"Général" }}</span>
+                    <span class="category-badge">{{ deck.category|default:"General" }}</span>
                     <span class="language-flag">{{ deck.language|default:"FR"|upper }}</span>
                 </div>
                 <div class="deck-actions">
@@ -180,7 +181,7 @@
                     <button class="action-btn favorite-btn" 
                             hx-post="{% url 'revision_web:explore_toggle_favorite' deck.id %}"
                             hx-trigger="click consume"
-                            title="Ajouter aux favoris">
+                            title="{% trans 'Add to favorites' %}">
                         <i class="bi bi-heart"></i>
                     </button>
                     {% endif %}
@@ -194,7 +195,7 @@
                 <div class="deck-stats">
                     <span class="stat-item">
                         <i class="bi bi-stack"></i>
-                        {{ deck.cards_count }} cartes
+                        {{ deck.cards_count }} {% trans "cards" %}
                     </span>
                     <span class="stat-item">
                         <i class="bi bi-person"></i>
@@ -217,7 +218,7 @@
                         hx-trigger="click consume"
                         hx-swap="none">
                     <i class="bi bi-download"></i>
-                    Importer
+                    {% trans "Import" %}
                 </button>
                 {% endif %}
             </div>
