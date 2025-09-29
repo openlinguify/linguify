@@ -1647,3 +1647,6 @@ msgstr "Voortgang succesvol gereset"
 
 msgid "Error during reset"
 msgstr "Fout tijdens reset"
+
+msgid "Deck imported from"
+msgstr "Deck geïmporteerd vanuit"

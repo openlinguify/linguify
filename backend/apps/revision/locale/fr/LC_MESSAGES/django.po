@@ -1653,3 +1653,6 @@ msgstr "Progression réinitialisée avec succès"
 
 msgid "Error during reset"
 msgstr "Erreur lors de la réinitialisation"
+
+msgid "Deck imported from"
+msgstr "Deck importé depuis"

@@ -1302,7 +1302,7 @@ async function importNewDeck() {
             // Création d'un nouveau deck
             const deckData = {
                 name: name,
-                description: `Deck importé depuis ${file.name}`,
+                description: _('Deck imported from') + ` ${file.name}`,
                 is_public: false
             };
             
