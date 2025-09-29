@@ -5,11 +5,26 @@
 # TODO: Migrer depuis validators.py
 
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 def validate_username(username):
     """Valide un nom d'utilisateur"""
     # TODO: Implémenter
+
+    message = _("The username has to be between %(min_length)s et %(max_length)s caracters")
+    code = "invalid_length"
+    def __init__(self, min_length=3, max_length=28):
+        self.min_length = min_length
+        self.max_length = max_length
+        super().__init__(limit_value=None)
+    def __call__(self, value):
+        if not value:
+            raise ValidationError(_("The username cannot be empty."))
     pass
+
+#### Add a system to prevent bots on the plateform.
+def bots_detected(self):
+    pass 
 
 def validate_profile_picture(picture):
     """

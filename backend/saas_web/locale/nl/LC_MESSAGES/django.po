@@ -110,6 +110,70 @@ msgstr "Uitloggen"
 msgid "Help"
 msgstr "Hulp"
 
+# Navigation
+msgid "Return to dashboard"
+msgstr "Terug naar dashboard"
+
+msgid "Go to dashboard"
+msgstr "Ga naar dashboard"
+
+msgid "Browse app store"
+msgstr "Blader door de winkel"
+
+msgid "Toggle navigation menu"
+msgstr "Navigatiemenu schakelen"
+
+msgid "Select language"
+msgstr "Taal selecteren"
+
+msgid "French"
+msgstr "Frans"
+
+msgid "English"
+msgstr "Engels"
+
+msgid "Spanish"
+msgstr "Spaans"
+
+msgid "Dutch"
+msgstr "Nederlands"
+
+# Notifications
+msgid "View notifications"
+msgstr "Bekijk meldingen"
+
+msgid "Unread notifications count"
+msgstr "Aantal ongelezen meldingen"
+
+msgid "Notifications"
+msgstr "Meldingen"
+
+msgid "Mark all notifications as read"
+msgstr "Markeer alle meldingen als gelezen"
+
+msgid "Mark all as read"
+msgstr "Alles als gelezen markeren"
+
+msgid "No new notifications"
+msgstr "Geen nieuwe meldingen"
+
+# User Menu
+msgid "User menu"
+msgstr "Gebruikersmenu"
+
+msgid "Profile picture"
+msgstr "Profielfoto"
+
+msgid "Bugs & Feedbacks"
+msgstr "Bugs en feedback"
+
+# Mobile Navigation
+msgid "Home"
+msgstr "Home"
+
+msgid "Store"
+msgstr "Winkel"
+
 msgid "Support"
 msgstr "Ondersteuning"
 

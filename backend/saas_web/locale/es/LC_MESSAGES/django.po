@@ -110,6 +110,70 @@ msgstr "Cerrar sesión"
 msgid "Help"
 msgstr "Ayuda"
 
+# Navigation
+msgid "Return to dashboard"
+msgstr "Volver al panel"
+
+msgid "Go to dashboard"
+msgstr "Ir al panel"
+
+msgid "Browse app store"
+msgstr "Explorar la tienda"
+
+msgid "Toggle navigation menu"
+msgstr "Alternar menú de navegación"
+
+msgid "Select language"
+msgstr "Seleccionar idioma"
+
+msgid "French"
+msgstr "Francés"
+
+msgid "English"
+msgstr "Inglés"
+
+msgid "Spanish"
+msgstr "Español"
+
+msgid "Dutch"
+msgstr "Holandés"
+
+# Notifications
+msgid "View notifications"
+msgstr "Ver notificaciones"
+
+msgid "Unread notifications count"
+msgstr "Número de notificaciones no leídas"
+
+msgid "Notifications"
+msgstr "Notificaciones"
+
+msgid "Mark all notifications as read"
+msgstr "Marcar todas las notificaciones como leídas"
+
+msgid "Mark all as read"
+msgstr "Marcar todo como leído"
+
+msgid "No new notifications"
+msgstr "No hay nuevas notificaciones"
+
+# User Menu
+msgid "User menu"
+msgstr "Menú de usuario"
+
+msgid "Profile picture"
+msgstr "Foto de perfil"
+
+msgid "Bugs & Feedbacks"
+msgstr "Errores y comentarios"
+
+# Mobile Navigation
+msgid "Home"
+msgstr "Inicio"
+
+msgid "Store"
+msgstr "Tienda"
+
 msgid "Support"
 msgstr "Soporte"
 

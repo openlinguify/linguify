@@ -110,6 +110,70 @@ msgstr "Logout"
 msgid "Help"
 msgstr "Help"
 
+# Navigation
+msgid "Return to dashboard"
+msgstr "Return to dashboard"
+
+msgid "Go to dashboard"
+msgstr "Go to dashboard"
+
+msgid "Browse app store"
+msgstr "Browse app store"
+
+msgid "Toggle navigation menu"
+msgstr "Toggle navigation menu"
+
+msgid "Select language"
+msgstr "Select language"
+
+msgid "French"
+msgstr "French"
+
+msgid "English"
+msgstr "English"
+
+msgid "Spanish"
+msgstr "Spanish"
+
+msgid "Dutch"
+msgstr "Dutch"
+
+# Notifications
+msgid "View notifications"
+msgstr "View notifications"
+
+msgid "Unread notifications count"
+msgstr "Unread notifications count"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Mark all notifications as read"
+msgstr "Mark all notifications as read"
+
+msgid "Mark all as read"
+msgstr "Mark all as read"
+
+msgid "No new notifications"
+msgstr "No new notifications"
+
+# User Menu
+msgid "User menu"
+msgstr "User menu"
+
+msgid "Profile picture"
+msgstr "Profile picture"
+
+msgid "Bugs & Feedbacks"
+msgstr "Bugs & Feedbacks"
+
+# Mobile Navigation
+msgid "Home"
+msgstr "Home"
+
+msgid "Store"
+msgstr "Store"
+
 msgid "Support"
 msgstr "Support"
 

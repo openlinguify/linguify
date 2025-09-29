@@ -80,7 +80,7 @@
                         <li>
                             <a class="dropdown-item language-item" href="#" onclick="setLanguage('en')" data-lang="en">
                                 <img src="{% static 'img/country_flags/gb.png' %}" alt="{% trans 'English' %}" style="width: 20px; height: auto;" class="me-2">
-                                English
+                                {% trans 'English' %}
                             </a>
                         </li>
                         <li>
@@ -104,7 +104,7 @@
                     </ul>
                 </div>
                 
-                <!-- Notifications -->
+                <!-- Notifications app -->
                 <div class="dropdown" id="notificationDropdown">
                     <button class="btn btn-outline-secondary position-relative btn-sm header-btn" 
                             type="button" 
@@ -157,6 +157,7 @@
                         <span class="d-inline">{{ user.username|default:"Utilisateur"|truncatechars:12 }}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        <!-- Profile is unabled for the moment and will be activated when the community app will be ready -->
                         {% comment %}
                         <li>
                             <a class="dropdown-item" href="/profile/">
@@ -169,6 +170,12 @@
                             <a class="dropdown-item" href="{% url 'saas_web:settings' %}">
                                 <i class="bi bi-gear me-2" aria-hidden="true"></i>
                                 {% trans "Settings" %}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://openlinguify.featurebase.app/en" target="_blank">
+                                <i class="bi bi-gear me-2" aria-hidden="true"></i>
+                                {% trans "Bugs & Feedbacks" %}
                             </a>
                         </li>
                         <li><hr class="dropdown-divider"></li>

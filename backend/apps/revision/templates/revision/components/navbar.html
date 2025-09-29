@@ -106,11 +106,11 @@
         <!-- Filtres pour la page Statistiques - Simplifiés -->
         <!-- Time Range Filter - Spécifique aux statistiques -->
         <select id="statsTimeRange" class="form-select-linguify" style="width: 140px; min-width: 120px;">
-            <option value="7">7 derniers jours</option>
-            <option value="30" selected>30 derniers jours</option>
-            <option value="90">3 derniers mois</option>
-            <option value="365">Cette année</option>
-            <option value="all">Toute la période</option>
+            <option value="7">{% trans "7 last days" %</option>
+            <option value="30" selected>{% trans "30 last days" %</option>
+            <option value="90">{% trans "3 last months" %</option>
+            <option value="365">{% trans "This year" %</option>
+            <option value="all">{% trans "All periods" %</option>
         </select>
         
         <button id="exportStats" class="btn-navbar btn-navbar-outline" title="Exporter les statistiques">
@@ -120,7 +120,7 @@
         
         {% elif view_type == 'explore' %}
         <!-- Filtres pour la page Explorer - Alignés avec la Liste de cartes -->
-        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans "Research in progress ..." %" style="width: 140px; min-width: 100px;">
         
         <!-- Status Filter Dropdown -->
         <div class="dropdown">
@@ -151,10 +151,10 @@
         <!-- Tags Filter Dropdown -->
         <div class="dropdown">
             <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="tagsFilterText">Tous les tags</span>
+                <span id="tagsFilterText">{% trans "All tags" %</span>
             </button>
             <ul id="tagsFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectTagsFilter('', 'Tous les tags')">Tous les tags</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectTagsFilter('', 'Tous les tags')">{% trans "All tags" %</a></li>
                 <!-- More tags will be dynamically loaded here -->
             </ul>
         </div>
@@ -166,32 +166,33 @@
         <!-- Status Filter Dropdown -->
         <div class="dropdown">
             <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="statusFilterText">Tous les statuts</span>
+                <span id="statusFilterText">{% trans "All status" %</span>
             </button>
             <ul id="statusFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous les statuts')">Tous les statuts</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('active', 'Actifs')">Actifs</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('archived', 'Archivés')">Archivés</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('public', 'Publics')">Publics</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous les statuts')">{% trans "All status" %</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('active', 'Actifs')">{% trans "Actives" %</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('archived', 'Archivés')">{% trans "Archived" %</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('public', 'Publics')">{% trans "Public" %</a></li>
             </ul>
         </div>
         
         <!-- Sort Filter Dropdown -->
         <div class="dropdown">
             <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="sortFilterText">Plus récents</span>
+                <span id="sortFilterText">{% trans "Filter" %</span>
             </button>
             <ul id="sortFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">Plus récents</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">{% trans "Most recent" %</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_asc', 'Plus récents')">{% trans "Less recent" %</a></li>
                 <li><a class="dropdown-item" href="#" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('progress_desc', 'Progression')">Progression</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('progress_desc', 'Progression')">{% trans "Progress" %}</a></li>
             </ul>
         </div>
         
         <!-- Tags Filter Dropdown -->
         <div class="dropdown">
             <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="tagsFilterText">Tous les tags</span>
+                <span id="tagsFilterText">{% trans "All tags" %}</span>
             </button>
             <ul id="tagsFilterDropdown" class="dropdown-menu">
                 <!-- Tags will be dynamically loaded here -->
@@ -205,13 +206,13 @@
                         title="Vue liste"
                         onclick="toggleViewMode('list')">
                     <i class="bi bi-list-ul"></i>
-                    <span class="d-none d-xl-inline">Liste</span>
+                    <span class="d-none d-xl-inline">{% trans "List" %}</span>
                 </button>
                 <button id="tableViewBtn" class="btn-navbar btn-navbar-outline" 
                         title="Vue tableau"
                         onclick="toggleViewMode('table')">
                     <i class="bi bi-table"></i>
-                    <span class="d-none d-xl-inline">Tableau</span>
+                    <span class="d-none d-xl-inline">{% trans "Board" %}</span>
                 </button>
             </div>
         </div>
@@ -220,12 +221,12 @@
         <div id="generalActions" class="navbar-actions-group">
             <button id="importDeck" class="btn-navbar btn-navbar-outline">
                 <i class="bi bi-upload"></i>
-                <span class="d-none d-xxl-inline">Importer</span>
+                <span class="d-none d-xxl-inline">{% trans "Import" %}</span>
             </button>
             
             <button id="createDeck" class="btn-navbar btn-navbar-primary">
                 <i class="bi bi-plus-lg"></i>
-                <span class="d-none d-xxl-inline">Nouveau</span>
+                <span class="d-none d-xxl-inline">{% trans "New list" %}</span>
             </button>
         </div>
         {% endif %}

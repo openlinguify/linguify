@@ -42,6 +42,18 @@ GENDER_CHOICES = [
     ('P', 'Prefer not to say'),
 ]
 
+HOW_DID_YOU_HEAR = [
+    ('search_engine', 'Search Engine (Google, Bing, etc.)'),
+    ('social_media', 'Social Media'),
+    ('friend_referral', 'Friend or Family'),
+    ('online_ad', 'Online Advertisement'),
+    ('blog_article', 'Blog or Article'),
+    ('app_store', 'App Store'),
+    ('school_university', 'School or University'),
+    ('work_colleague', 'Work or Colleague'),
+    ('other', 'Other'),
+]
+
 def validate_profile_picture(file):
     """
     Validates profile picture uploads by checking:
@@ -286,8 +298,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_device = models.BooleanField(_("device"), default=False, help_text=_("Whether the user is a device or a real user."))
     theme = models.CharField(max_length=10, default='light')
     # settings fields
-    email_notifications = models.BooleanField(default=True)
-    push_notifications = models.BooleanField(default=True)
+    email_notifications = models.BooleanField(default=True, verbose_name=_("Receive the notification by emails"))
+    push_notifications = models.BooleanField(default=True, verbose_name=_("Receive the push notification"))
+    marketing_emails = models.BooleanField(default=True, verbose_name=_("Receive the marketing emails"))
 
     # Private settings fields
     public_profile = models.BooleanField(default=True)
@@ -305,17 +318,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,  # Keep null=True for existing users in database
         blank=True,  # Keep blank=True for admin interface flexibility
         default='other',  # Default value for existing users
-        choices=[
-            ('search_engine', 'Search Engine (Google, Bing, etc.)'),
-            ('social_media', 'Social Media'),
-            ('friend_referral', 'Friend or Family'),
-            ('online_ad', 'Online Advertisement'),
-            ('blog_article', 'Blog or Article'),
-            ('app_store', 'App Store'),
-            ('school_university', 'School or University'),
-            ('work_colleague', 'Work or Colleague'),
-            ('other', 'Other'),
-        ],
+        choices=HOW_DID_YOU_HEAR,
         help_text='How the user heard about the platform'
     )
 
@@ -346,6 +349,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         self.save()
 
+    # Thoses methodes concern username:
+    
+
+
+
     @property
     def get_profile_picture_url(self):
         """
@@ -364,6 +372,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                 pass
         
         return None
+    
+    def get_preferref_language(self):
+        return self.native_language or self.interface_language or 'en'
     
     def get_profile_picture_absolute_url(self, request):
         """
@@ -757,7 +768,7 @@ class CoachProfile(models.Model):
         """
         return f"Coach Profile of {self.user.username}"
 
-# Review Model lol
+# Review Model
 class Review(models.Model):
     """
     Model representing a review.

@@ -110,6 +110,70 @@ msgstr "Déconnexion"
 msgid "Help"
 msgstr "Aide"
 
+# Navigation
+msgid "Return to dashboard"
+msgstr "Retour au tableau de bord"
+
+msgid "Go to dashboard"
+msgstr "Aller au tableau de bord"
+
+msgid "Browse app store"
+msgstr "Parcourir le magasin"
+
+msgid "Toggle navigation menu"
+msgstr "Basculer le menu de navigation"
+
+msgid "Select language"
+msgstr "Sélectionner la langue"
+
+msgid "French"
+msgstr "Français"
+
+msgid "English"
+msgstr "Anglais"
+
+msgid "Spanish"
+msgstr "Espagnol"
+
+msgid "Dutch"
+msgstr "Néerlandais"
+
+# Notifications
+msgid "View notifications"
+msgstr "Voir les notifications"
+
+msgid "Unread notifications count"
+msgstr "Nombre de notifications non lues"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Mark all notifications as read"
+msgstr "Marquer toutes les notifications comme lues"
+
+msgid "Mark all as read"
+msgstr "Tout marquer comme lu"
+
+msgid "No new notifications"
+msgstr "Aucune nouvelle notification"
+
+# User Menu
+msgid "User menu"
+msgstr "Menu utilisateur"
+
+msgid "Profile picture"
+msgstr "Photo de profil"
+
+msgid "Bugs & Feedbacks"
+msgstr "Bugs et commentaires"
+
+# Mobile Navigation
+msgid "Home"
+msgstr "Accueil"
+
+msgid "Store"
+msgstr "Magasin"
+
 msgid "Support"
 msgstr "Support"
 

@@ -1,0 +1,172 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Preview Campaign" %}: {{ campaign.name }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+    &rsaquo; <a href="{% url 'admin:authentication_emailcampaign_changelist' %}">{% trans "Email Campaigns" %}</a>
+    &rsaquo; <a href="{% url 'admin:authentication_emailcampaign_change' campaign.pk %}">{{ campaign.name }}</a>
+    &rsaquo; {% trans "Preview" %}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>{% trans "Campaign Preview" %}: {{ campaign.name }}</h1>
+
+<div class="module">
+    <h2>{% trans "Campaign Details" %}</h2>
+    <div class="form-row">
+        <div>
+            <strong>{% trans "Template" %}:</strong> {{ campaign.template }}<br>
+            <strong>{% trans "Recipient Type" %}:</strong> {{ campaign.get_recipient_type_display }}<br>
+            <strong>{% trans "Status" %}:</strong> {{ campaign.get_status_display }}<br>
+            {% if campaign.context_data %}
+            <strong>{% trans "Template Variables" %}:</strong>
+            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px;">{{ campaign.context_data }}</pre>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .language-tabs {
+        display: flex;
+        gap: 10px;
+        margin: 20px 0;
+        border-bottom: 2px solid #ddd;
+    }
+    .language-tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+    }
+    .language-tab.active {
+        background: white;
+        font-weight: bold;
+        position: relative;
+        bottom: -2px;
+        border-bottom: 2px solid white;
+    }
+    .preview-content {
+        display: none;
+        padding: 20px;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+    }
+    .preview-content.active {
+        display: block;
+    }
+    .email-preview {
+        margin: 20px 0;
+    }
+    .email-preview h3 {
+        color: #666;
+        margin-bottom: 10px;
+    }
+    .email-subject {
+        background: #f9f9f9;
+        padding: 15px;
+        border-left: 4px solid #79aec8;
+        margin: 10px 0;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .email-body {
+        background: #f5f5f5;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin: 10px 0;
+        white-space: pre-wrap;
+        font-family: Arial, sans-serif;
+    }
+    .email-body-html {
+        background: white;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+    .warning-message {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        color: #856404;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+</style>
+
+<div class="module">
+    <h2>{% trans "Email Previews" %}</h2>
+
+    {% if not preview_data %}
+        <div class="warning-message">
+            {% trans "No translations found for this template. Please add translations first." %}
+        </div>
+    {% else %}
+        <div class="language-tabs">
+            {% for preview in preview_data %}
+            <div class="language-tab {% if forloop.first %}active{% endif %}" data-lang="{{ forloop.counter }}">
+                {{ preview.language }}
+            </div>
+            {% endfor %}
+        </div>
+
+        {% for preview in preview_data %}
+        <div class="preview-content {% if forloop.first %}active{% endif %}" id="preview-{{ forloop.counter }}">
+            <div class="email-preview">
+                <h3>{% trans "Subject" %}</h3>
+                <div class="email-subject">{{ preview.subject }}</div>
+            </div>
+
+            <div class="email-preview">
+                <h3>{% trans "Plain Text Body" %}</h3>
+                <div class="email-body">{{ preview.body_text }}</div>
+            </div>
+
+            {% if preview.body_html %}
+            <div class="email-preview">
+                <h3>{% trans "HTML Body" %}</h3>
+                <div class="email-body-html">{{ preview.body_html|safe }}</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div class="submit-row">
+    <a href="{% url 'admin:authentication_emailcampaign_change' campaign.pk %}" class="button">
+        {% trans "Back to Campaign" %}
+    </a>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.language-tab');
+    const contents = document.querySelectorAll('.preview-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const langId = this.getAttribute('data-lang');
+
+            // Remove active class from all tabs and contents
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding content
+            this.classList.add('active');
+            document.getElementById('preview-' + langId).classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}
