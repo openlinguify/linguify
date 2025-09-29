@@ -457,7 +457,7 @@ msgstr ""
 
 #: .\templates\revision\partials\deck_details_section.html:57
 msgid "Export"
-msgstr ""
+msgstr "Exportar"
 
 #: .\templates\revision\partials\deck_details_section.html:60
 msgid "Make Public"
