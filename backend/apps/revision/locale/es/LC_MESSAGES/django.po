@@ -1,0 +1,710 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-29 19:29+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+#: .\admin.py:30
+msgid "Due for review"
+msgstr ""
+
+#: .\admin.py:35
+msgid "Due today"
+msgstr ""
+
+#: .\admin.py:36
+msgid "Due tomorrow"
+msgstr ""
+
+#: .\admin.py:37
+msgid "Due this week"
+msgstr ""
+
+#: .\admin.py:38
+msgid "Overdue"
+msgstr ""
+
+#: .\admin.py:58 .\admin.py:666
+msgid "Learning Progress"
+msgstr ""
+
+#: .\admin.py:63
+msgid "Not started"
+msgstr ""
+
+#: .\admin.py:64
+msgid "In progress"
+msgstr ""
+
+#: .\admin.py:65 .\admin.py:578
+msgid "Learned"
+msgstr ""
+
+#: .\admin.py:103 .\admin.py:502
+msgid "Timestamps"
+msgstr ""
+
+#: .\admin.py:107 .\templates\components\revision_header.html:27
+#: .\templates\revision\components\navbar.html:90
+msgid "Statistics"
+msgstr "Estadísticas"
+
+#: .\admin.py:153 .\templates\revision\stats_dashboard.html:278
+msgid "Cards"
+msgstr ""
+
+#: .\admin.py:172
+msgid "Completion Rate"
+msgstr ""
+
+#: .\admin.py:183
+msgid "Never reviewed"
+msgstr ""
+
+#: .\admin.py:184
+msgid "Last review"
+msgstr ""
+
+#: .\admin.py:189
+msgid "No cards in this deck"
+msgstr ""
+
+#: .\admin.py:230
+msgid "Deck statistics"
+msgstr ""
+
+#: .\admin.py:236 .\templates\revision\partials\create_deck_form.html:38
+msgid "Description"
+msgstr ""
+
+#: .\admin.py:241 .\admin.py:571
+msgid "User"
+msgstr ""
+
+#: .\admin.py:247
+msgid "Mark selected decks as active"
+msgstr ""
+
+#: .\admin.py:252
+msgid "Mark selected decks as inactive"
+msgstr ""
+
+#: .\admin.py:273
+msgid "Export selected decks to CSV"
+msgstr ""
+
+#: .\admin.py:281
+msgid "Mark all cards in selected decks as learned"
+msgstr ""
+
+#: .\admin.py:290
+msgid "Reset progress for all cards in selected decks"
+msgstr ""
+
+#: .\admin.py:316
+msgid "Duplicate selected decks"
+msgstr ""
+
+#: .\admin.py:322 .\admin.py:345
+msgid "Deck not found."
+msgstr ""
+
+#: .\admin.py:331
+#, python-format
+msgid "Study: %s"
+msgstr ""
+
+#: .\admin.py:372
+#, python-format
+msgid "Analytics: %s"
+msgstr ""
+
+#: .\admin.py:392
+msgid "Import Flashcards from CSV"
+msgstr ""
+
+#: .\admin.py:407
+msgid "Please provide a name for the new deck."
+msgstr ""
+
+#: .\admin.py:411
+msgid "Please select an existing deck."
+msgstr ""
+
+#: .\admin.py:415
+msgid "Please select a user."
+msgstr ""
+
+#: .\admin.py:499
+msgid "Review Information"
+msgstr ""
+
+#: .\admin.py:555
+msgid "Front"
+msgstr ""
+
+#: .\admin.py:560
+msgid "Back"
+msgstr ""
+
+#: .\admin.py:565 .\templates\revision\stats_dashboard.html:277
+msgid "Deck"
+msgstr ""
+
+#: .\admin.py:609
+msgid "Next Review"
+msgstr ""
+
+#: .\admin.py:639 .\templates\revision\components\navbar.html:189
+msgid "Progress"
+msgstr "Progreso"
+
+#: .\admin.py:643
+msgid "No review data available"
+msgstr ""
+
+#: .\admin.py:671
+msgid "Mark selected flashcards as learned"
+msgstr ""
+
+#: .\admin.py:676
+msgid "Mark selected flashcards as not learned"
+msgstr ""
+
+#: .\admin.py:682
+msgid "Reset review progress for selected flashcards"
+msgstr ""
+
+#: .\admin.py:687
+msgid "Schedule selected flashcards for today"
+msgstr ""
+
+#: .\admin.py:693
+msgid "Schedule selected flashcards for tomorrow"
+msgstr ""
+
+#: .\admin.py:706
+msgid "Distribute selected flashcards over the next week"
+msgstr ""
+
+#: .\admin.py:729
+msgid "Export selected flashcards to CSV"
+msgstr ""
+
+#: .\admin.py:736
+msgid "No flashcards selected."
+msgstr ""
+
+#: .\admin.py:756
+msgid "Invalid date format."
+msgstr ""
+
+#: .\admin.py:760
+msgid "Schedule Custom Review"
+msgstr ""
+
+#: .\admin.py:771
+msgid "Schedule selected cards for custom date"
+msgstr ""
+
+#: .\admin.py:777
+msgid "Flashcard not found."
+msgstr ""
+
+#: .\admin.py:787
+msgid "Card marked as successfully reviewed!"
+msgstr ""
+
+#: .\admin.py:794
+msgid "Card will be shown again soon."
+msgstr ""
+
+#: .\admin.py:815
+msgid "Review Card"
+msgstr ""
+
+#: .\templates\components\revision_header.html:11
+msgid "Go to dashboard"
+msgstr ""
+
+#: .\templates\components\revision_header.html:13
+msgid "Dashboard"
+msgstr ""
+
+#: .\templates\components\revision_header.html:20
+msgid "Study modes"
+msgstr ""
+
+#: .\templates\components\revision_header.html:22
+msgid "Study"
+msgstr ""
+
+#: .\templates\components\revision_header.html:29
+msgid "Stats"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:80
+msgid "Card List"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:85
+msgid "Explore"
+msgstr "Explorar"
+
+#: .\templates\revision\components\navbar.html:110
+msgid "7 last days"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:124
+msgid "Research in progress ..."
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:129
+#: .\templates\revision\components\navbar.html:132
+msgid "All statuses"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:133
+msgid "Recent"
+msgstr "Recientes"
+
+#: .\templates\revision\components\navbar.html:134
+msgid "Popular"
+msgstr "Populares"
+
+#: .\templates\revision\components\navbar.html:135
+#: .\templates\revision\components\navbar.html:176
+#: .\templates\revision\partials\create_deck_form.html:100
+#: .\templates\revision\partials\create_deck_form.html:109
+msgid "Public"
+msgstr "Públicos"
+
+#: .\templates\revision\components\navbar.html:142
+#: .\templates\revision\components\navbar.html:145
+#: .\templates\revision\components\navbar.html:186
+msgid "Most recent"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:147
+msgid "Popularity"
+msgstr "Popularidad"
+
+#: .\templates\revision\components\navbar.html:148
+msgid "Number of cards"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:158
+#: .\templates\revision\components\navbar.html:196
+msgid "All tags"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:170
+#: .\templates\revision\components\navbar.html:173
+msgid "All status"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:174
+msgid "Active"
+msgstr "Activos"
+
+#: .\templates\revision\components\navbar.html:175
+msgid "Archived"
+msgstr "Archivados"
+
+#: .\templates\revision\components\navbar.html:183
+msgid "Filter"
+msgstr "Filtro"
+
+#: .\templates\revision\components\navbar.html:187
+msgid "Less recent"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:205
+msgid "Display mode"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:207
+msgid "List view"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:210
+msgid "List"
+msgstr "Lista"
+
+#: .\templates\revision\components\navbar.html:213
+msgid "Table view"
+msgstr ""
+
+#: .\templates\revision\components\navbar.html:216
+msgid "Board"
+msgstr "Tablero"
+
+#: .\templates\revision\components\navbar.html:225
+msgid "Import"
+msgstr "Importar"
+
+#: .\templates\revision\components\navbar.html:230
+msgid "New list"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:8
+msgid "Create New Deck"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:12
+#: .\templates\revision\partials\create_deck_form.html:116
+#: .\templates\revision\partials\edit_card_form.html:9
+#: .\templates\revision\partials\edit_card_form.html:53
+msgid "Cancel"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:23
+#: .\templates\revision\partials\deck_details_section.html:12
+msgid "Deck Name"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:29
+msgid "Ex: English Vocabulary Level B2"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:46
+msgid "Briefly describe the content of this deck..."
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:53
+msgid "Tags"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:61
+msgid "No tags - Add them in the field below"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:68
+msgid "Add tags (press Enter)"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:77
+msgid "Visibility"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:87
+#: .\templates\revision\partials\create_deck_form.html:108
+msgid "Private"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:88
+msgid "Visible by you only"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:101
+msgid "Visible by everyone"
+msgstr ""
+
+#: .\templates\revision\partials\create_deck_form.html:120
+msgid "Create Deck"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:13
+msgid "Deck Description"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:31
+msgid "Add Card"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:36
+msgid "Review Difficult"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:41
+msgid "Reset"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:51
+msgid "Edit Deck"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:54
+msgid "Import Cards"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:57
+msgid "Export"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:60
+msgid "Make Public"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:63
+msgid "Make Private"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:67
+msgid "Archive"
+msgstr ""
+
+#: .\templates\revision\partials\deck_details_section.html:70
+msgid "Delete"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:6
+msgid "Edit Card"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:18
+msgid "Front (Question)"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:21
+#: .\templates\revision\partials\edit_card_form.html:37
+msgid "Auto"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:22
+#: .\templates\revision\partials\edit_card_form.html:38
+msgid "French"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:23
+#: .\templates\revision\partials\edit_card_form.html:39
+msgid "English"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:24
+#: .\templates\revision\partials\edit_card_form.html:40
+msgid "Spanish"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:25
+#: .\templates\revision\partials\edit_card_form.html:41
+msgid "Italian"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:26
+#: .\templates\revision\partials\edit_card_form.html:42
+msgid "German"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:27
+#: .\templates\revision\partials\edit_card_form.html:43
+msgid "Portuguese"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:29
+msgid "Front language"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:34
+msgid "Back (Answer)"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:45
+msgid "Back language"
+msgstr ""
+
+#: .\templates\revision\partials\edit_card_form.html:57
+msgid "Save"
+msgstr ""
+
+#: .\templates\revision\partials\sidebar_section.html:11
+msgid "No decks"
+msgstr ""
+
+#: .\templates\revision\partials\sidebar_section.html:12
+msgid "Create your first flashcard deck to start studying"
+msgstr ""
+
+#: .\templates\revision\partials\sidebar_section.html:15
+#: .\templates\revision\partials\welcome_section.html:12
+msgid "Create deck"
+msgstr ""
+
+#: .\templates\revision\partials\sidebar_section.html:23
+msgid "Load more"
+msgstr ""
+
+#: .\templates\revision\partials\study_modes_section.html:9
+msgid "Flashcards"
+msgstr ""
+
+#: .\templates\revision\partials\study_modes_section.html:11
+msgid "Traditional cards for memorizing vocabulary."
+msgstr ""
+
+#: .\templates\revision\partials\study_modes_section.html:21
+msgid "Learn"
+msgstr ""
+
+#: .\templates\revision\partials\study_modes_section.html:23
+msgid "Interactive multiple choice quizzes."
+msgstr ""
+
+#: .\templates\revision\partials\study_modes_section.html:33
+msgid "Match"
+msgstr ""
+
+#: .\templates\revision\partials\study_modes_section.html:35
+msgid "Match terms and definitions in pairs."
+msgstr ""
+
+#: .\templates\revision\partials\study_modes_section.html:45
+msgid "Quick Review"
+msgstr ""
+
+#: .\templates\revision\partials\study_modes_section.html:47
+msgid "Quick review with spaced repetition."
+msgstr ""
+
+#: .\templates\revision\partials\study_modes_section.html:57
+msgid "Writing"
+msgstr ""
+
+#: .\templates\revision\partials\study_modes_section.html:59
+msgid "Writing and translation exercises."
+msgstr ""
+
+#: .\templates\revision\partials\welcome_section.html:5
+msgid "Welcome to your study space"
+msgstr ""
+
+#: .\templates\revision\partials\welcome_section.html:7
+msgid ""
+"Select a deck from the list or create a new one to start studying with "
+"flashcards"
+msgstr ""
+
+#: .\templates\revision\partials\welcome_section.html:16
+msgid "Explore public decks"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:5
+msgid "Statistics - Revision"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:97
+msgid "Total Decks"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:111
+msgid "Total Cards"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:125
+msgid "Cards Learned"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:139
+msgid "Progress Rate"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:161
+msgid "Cards Studied"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:180
+msgid "Accuracy Rate"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:199
+msgid "Study Time"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:218
+msgid "Current Streak"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:236
+msgid "Study Activity"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:250
+msgid "Performance Breakdown"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:267
+msgid "Deck Performance"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:279
+msgid "Mastered"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:280
+msgid "Accuracy"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:287
+msgid "Loading deck statistics..."
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:301
+msgid "Recent Activity"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:306
+msgid "Loading recent activity..."
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:385
+msgid "Study Goals"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:387
+msgid "Set Goal"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:393
+msgid "Daily Cards Goal"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:405
+msgid "Weekly Study Time"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:417
+msgid "Accuracy Target"
+msgstr ""
+
+#: .\templates\revision\stats_dashboard.html:421
+msgid "Target"
+msgstr ""
+
+#: .\views\revision_settings_views.py:118
+msgid "Paramètres Révision - Linguify"
+msgstr ""
+
+#: .\views\revision_settings_views.py:129
+msgid "Erreur lors de la récupération des paramètres"
+msgstr ""
+
+#: .\views\revision_settings_views.py:132
+msgid "Erreur lors du chargement des paramètres de révision"
+msgstr ""
+
+#: .\views\revision_settings_views.py:301
+#: .\views\revision_settings_views.py:305
+msgid "Paramètres de révision mis à jour avec succès"
+msgstr ""
+
+#: .\views\revision_settings_views.py:311
+msgid "Valeur invalide dans les paramètres"
+msgstr ""
+
+#: .\views\revision_settings_views.py:324
+msgid "Erreur lors de la mise à jour des paramètres de révision"
+msgstr ""
