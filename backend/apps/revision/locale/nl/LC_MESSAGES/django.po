@@ -968,15 +968,15 @@ msgstr "Deck kaarten"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:6
 msgid "0 card(s)"
-msgstr ""
+msgstr "0 kaart(en)"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:36
 msgid "Apply"
-msgstr ""
+msgstr "Toepassen"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:40
 msgid "Default"
-msgstr ""
+msgstr "Standaard"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:53
 msgid "Start by adding some cards to review!"
@@ -1650,3 +1650,9 @@ msgstr "Fout tijdens reset"
 
 msgid "Deck imported from"
 msgstr "Deck geïmporteerd vanuit"
+
+msgid "To learn"
+msgstr "Te leren"
+
+msgid "Created on"
+msgstr "Gemaakt op"

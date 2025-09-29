@@ -970,7 +970,7 @@ msgstr "Cartas del mazo"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:6
 msgid "0 card(s)"
-msgstr ""
+msgstr "0 carta(s)"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:36
 msgid "Apply"
@@ -978,7 +978,7 @@ msgstr "Aplicar"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:40
 msgid "Default"
-msgstr ""
+msgstr "Predeterminado"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:53
 msgid "Start by adding some cards to review!"
@@ -1640,3 +1640,9 @@ msgstr "Error durante el reinicio"
 
 msgid "Deck imported from"
 msgstr "Mazo importado desde"
+
+msgid "To learn"
+msgstr "Por aprender"
+
+msgid "Created on"
+msgstr "Creada el"

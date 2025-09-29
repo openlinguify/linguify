@@ -955,10 +955,10 @@ async function loadDeckCards() {
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
                             <span class="badge ${card.learned ? 'bg-linguify-accent' : 'bg-secondary'}">
-                                ${card.learned ? 'Apprise' : 'À apprendre'}
+                                ${card.learned ? _('Learned') : _('To learn')}
                             </span>
                             <small class="text-muted ms-2">
-                                Créée le ${formatDate(card.created_at)}
+                                ${_('Created on')} ${formatDate(card.created_at)}
                             </small>
                         </div>
                     </div>

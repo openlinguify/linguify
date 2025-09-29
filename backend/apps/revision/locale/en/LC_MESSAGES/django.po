@@ -1359,3 +1359,9 @@ msgstr "Error during reset"
 
 msgid "Deck imported from"
 msgstr "Deck imported from"
+
+msgid "To learn"
+msgstr "To learn"
+
+msgid "Created on"
+msgstr "Created on"

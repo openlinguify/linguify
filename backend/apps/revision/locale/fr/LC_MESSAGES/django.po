@@ -1656,3 +1656,9 @@ msgstr "Erreur lors de la réinitialisation"
 
 msgid "Deck imported from"
 msgstr "Deck importé depuis"
+
+msgid "To learn"
+msgstr "À apprendre"
+
+msgid "Created on"
+msgstr "Créée le"
