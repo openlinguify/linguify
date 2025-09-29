@@ -110,37 +110,37 @@ msgstr ""
 
 #: .\apps\revision\admin.py:273
 msgid "Export selected decks to CSV"
-msgstr ""
+msgstr "Geselecteerde decks exporteren naar CSV"
 
 #: .\apps\revision\admin.py:281
 msgid "Mark all cards in selected decks as learned"
-msgstr ""
+msgstr "Markeer alle kaarten in geselecteerde decks als geleerd"
 
 #: .\apps\revision\admin.py:290
 msgid "Reset progress for all cards in selected decks"
-msgstr ""
+msgstr "Reset voortgang voor alle kaarten in geselecteerde decks"
 
 #: .\apps\revision\admin.py:316
 msgid "Duplicate selected decks"
-msgstr ""
+msgstr "Dupliceer geselecteerde decks"
 
 #: .\apps\revision\admin.py:322 .\apps\revision\admin.py:345
 msgid "Deck not found."
-msgstr ""
+msgstr "Deck niet gevonden."
 
 #: .\apps\revision\admin.py:331
 #, python-format
 msgid "Study: %s"
-msgstr ""
+msgstr "Studeren: %s"
 
 #: .\apps\revision\admin.py:372
 #, python-format
 msgid "Analytics: %s"
-msgstr ""
+msgstr "Analyse: %s"
 
 #: .\apps\revision\admin.py:392
 msgid "Import Flashcards from CSV"
-msgstr ""
+msgstr "Flashcards importeren uit CSV"
 
 #: .\apps\revision\admin.py:407
 msgid "Please provide a name for the new deck."
@@ -213,59 +213,59 @@ msgstr ""
 
 #: .\apps\revision\admin.py:729
 msgid "Export selected flashcards to CSV"
-msgstr ""
+msgstr "Geselecteerde flashcards exporteren naar CSV"
 
 #: .\apps\revision\admin.py:736
 msgid "No flashcards selected."
-msgstr ""
+msgstr "Geen flashcards geselecteerd."
 
 #: .\apps\revision\admin.py:756
 msgid "Invalid date format."
-msgstr ""
+msgstr "Ongeldig datumformaat."
 
 #: .\apps\revision\admin.py:760
 msgid "Schedule Custom Review"
-msgstr ""
+msgstr "Aangepaste beoordeling plannen"
 
 #: .\apps\revision\admin.py:771
 msgid "Schedule selected cards for custom date"
-msgstr ""
+msgstr "Geselecteerde kaarten plannen voor aangepaste datum"
 
 #: .\apps\revision\admin.py:777
 msgid "Flashcard not found."
-msgstr ""
+msgstr "Flashcard niet gevonden."
 
 #: .\apps\revision\admin.py:787
 msgid "Card marked as successfully reviewed!"
-msgstr ""
+msgstr "Kaart gemarkeerd als succesvol beoordeeld!"
 
 #: .\apps\revision\admin.py:794
 msgid "Card will be shown again soon."
-msgstr ""
+msgstr "Kaart wordt binnenkort opnieuw getoond."
 
 #: .\apps\revision\admin.py:815
 msgid "Review Card"
-msgstr ""
+msgstr "Kaart beoordelen"
 
 #: .\apps\revision\templates\components\revision_header.html:11
 msgid "Go to dashboard"
-msgstr ""
+msgstr "Ga naar dashboard"
 
 #: .\apps\revision\templates\components\revision_header.html:13
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 #: .\apps\revision\templates\components\revision_header.html:20
 msgid "Study modes"
-msgstr ""
+msgstr "Studiemodi"
 
 #: .\apps\revision\templates\components\revision_header.html:22
 msgid "Study"
-msgstr ""
+msgstr "Studeren"
 
 #: .\apps\revision\templates\components\revision_header.html:29
 msgid "Stats"
-msgstr ""
+msgstr "Statistieken"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:11
 #, fuzzy
@@ -558,7 +558,7 @@ msgstr "Alle tags"
 #: .\apps\revision\templates\revision\components\navbar.html:102
 #: .\apps\revision\templates\revision\components\navbar.html:144
 msgid "No tags available"
-msgstr ""
+msgstr "Geen tags beschikbaar"
 
 #: .\apps\revision\templates\revision\components\navbar.html:110
 msgid "Search..."
@@ -676,7 +676,7 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\components\navbar.html:199
 msgid "Error"
-msgstr ""
+msgstr "Fout"
 
 #: .\apps\revision\templates\revision\components\navbar.html:200
 #: .\apps\revision\templates\revision\partials\create_card_form.html:31
@@ -686,15 +686,15 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\components\navbar.html:201
 msgid "Error loading deck"
-msgstr ""
+msgstr "Fout bij laden van deck"
 
 #: .\apps\revision\templates\revision\components\navbar.html:202
 msgid "Error creating card"
-msgstr ""
+msgstr "Fout bij maken van kaart"
 
 #: .\apps\revision\templates\revision\components\navbar.html:203
 msgid "Error loading cards"
-msgstr ""
+msgstr "Fout bij laden van kaarten"
 
 #: .\apps\revision\templates\revision\components\navbar.html:204
 #: .\apps\revision\templates\revision\components\share_deck.html:167
@@ -997,43 +997,43 @@ msgstr "Kaart toevoegen"
 #: .\apps\revision\templates\revision\partials\create_card_form.html:22
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:18
 msgid "Front (Question)"
-msgstr ""
+msgstr "Voorkant (Vraag)"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:28
 #: .\apps\revision\templates\revision\partials\create_card_form.html:70
 msgid "Default deck language"
-msgstr ""
+msgstr "Standaard deck taal"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:38
 #: .\apps\revision\templates\revision\partials\create_card_form.html:80
 msgid "Use default deck language"
-msgstr ""
+msgstr "Gebruik standaard deck taal"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:49
 msgid "Ex: How do you say hello in English?"
-msgstr ""
+msgstr "Bv: Hoe zeg je hallo in het Engels?"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:54
 msgid "Translate automatically to back language"
-msgstr ""
+msgstr "Automatisch vertalen naar volgende taal"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:57
 #: .\apps\revision\templates\revision\partials\create_card_form.html:98
 msgid "Translate"
-msgstr ""
+msgstr "Vertaal"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:64
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:34
 msgid "Back (Answer)"
-msgstr ""
+msgstr "Achterkant (Antwoord)"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:90
 msgid "Ex: Hello"
-msgstr ""
+msgstr "Bv: Hallo"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:95
 msgid "Translate automatically to front language"
-msgstr ""
+msgstr "Automatisch vertalen naar hoofdtaal"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:107
 #, fuzzy
@@ -1278,11 +1278,11 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:7
 msgid "No tags - Click on"
-msgstr ""
+msgstr "Geen tags - Klik op"
 
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:9
 msgid "to add some"
-msgstr ""
+msgstr "om er wat toe te voegen"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:15
 #, fuzzy
@@ -1317,7 +1317,7 @@ msgstr "Lijst maken"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:71
 msgid "No tags found"
-msgstr ""
+msgstr "Geen tags gevonden"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:72
 msgid "Start by creating your first tag to organize your decks"

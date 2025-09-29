@@ -5,7 +5,7 @@ function _(key, fallback = null) {
     return (window.translations && window.translations[key]) || fallback || key;
 }
 
-// État global de l'application
+// Global application state
 let appState = {
     decks: [],
     selectedDeck: null,
@@ -27,7 +27,7 @@ let appState = {
     }
 };
 
-// API Service optimisé
+// Optimized API Service
 const revisionAPI = {
     async getDecks(page = 1, filters = {}) {
         const params = new URLSearchParams({
@@ -414,13 +414,13 @@ function renderDecksList() {
                 <span class="deck-card-count">${deck.cards_count || 0}</span>
                 <div class="deck-card-icons">
                     ${deck.is_public ? '<i class="bi bi-globe2 text-linguify-accent" title="Public"></i>' : ''}
-                    ${deck.is_archived ? '<i class="bi bi-archive text-gray-400" title="Archivé"></i>' : ''}
+                    ${deck.is_archived ? `<i class="bi bi-archive text-gray-400" title="${_('Archived')}"></i>` : ''}
                 </div>
                 <h4 class="deck-card-title">${deck.name || _('Unnamed')}</h4>
             </div>
             <div class="deck-card-description">${deck.description || _('No description')}</div>
             <div class="deck-card-tags">
-                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ((!deck.tags || deck.tags.length === 0) ? `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deck.id})" style="cursor: pointer; color: #2d5bba; font-size: 0.875rem;"></i> pour en ajouter</span>` : deck.tags.map(tag => `<span class="tag-linguify tag-linguify-blue">${tag}</span>`).join(''))}</div>
+                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ((!deck.tags || deck.tags.length === 0) ? `<span class="no-tags-message">${_('No tags - Click on')} <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deck.id})" style="cursor: pointer; color: #2d5bba; font-size: 0.875rem;"></i> ${_('to add some')}</span>` : deck.tags.map(tag => `<span class="tag-linguify tag-linguify-blue">${tag}</span>`).join(''))}</div>
                 <button class="btn-link-linguify text-sm" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="${_('Add tags')}">
                     <i class="bi bi-tag"></i>
                 </button>
@@ -771,7 +771,7 @@ function updateLanguageDisplay(side) {
     if (select && display) {
         const selectedOption = select.options[select.selectedIndex];
         if (selectedOption.value === '' || selectedOption.value === null) {
-            display.textContent = 'Langue par défaut du deck';
+            display.textContent = _('Default deck language');
         } else {
             display.textContent = selectedOption.textContent;
         }
@@ -787,9 +787,9 @@ function resetLanguageSelectors() {
     if (frontSelector) frontSelector.style.display = 'none';
     if (frontButton) {
         frontButton.innerHTML = `<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">${_('Edit')}</span>`;
-        frontButton.title = 'Modifier la langue pour cette carte';
+        frontButton.title = _('Edit language for this card');
     }
-    if (frontDisplay) frontDisplay.textContent = 'Langue par défaut du deck';
+    if (frontDisplay) frontDisplay.textContent = _('Default deck language');
     
     // Reset back language selector
     const backSelector = document.getElementById('backLangSelector');
@@ -799,14 +799,14 @@ function resetLanguageSelectors() {
     if (backSelector) backSelector.style.display = 'none';
     if (backButton) {
         backButton.innerHTML = `<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">${_('Edit')}</span>`;
-        backButton.title = 'Modifier la langue pour cette carte';
+        backButton.title = _('Edit language for this card');
     }
-    if (backDisplay) backDisplay.textContent = 'Langue par défaut du deck';
+    if (backDisplay) backDisplay.textContent = _('Default deck language');
 }
 
 async function createNewCard() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -1101,7 +1101,7 @@ async function editCard(cardId) {
             window.notificationService.error('Cette carte n\'existe plus');
             await loadDeckCards(); // Refresh view
         } else {
-            window.notificationService.error('Erreur lors du chargement de la carte');
+            window.notificationService.error(_('Error loading card'));
         }
     }
 }
@@ -1162,7 +1162,7 @@ async function submitCardEdit() {
         } else if (error.status === 403) {
             window.notificationService.error('Vous n\'avez pas l\'autorisation de modifier cette carte');
         } else {
-            window.notificationService.error('Erreur lors de la modification de la carte');
+            window.notificationService.error(_('Error editing card'));
         }
     }
 }
@@ -1202,7 +1202,7 @@ async function deleteCard(cardId) {
         } else if (error.status === 403) {
             window.notificationService.error('Vous n\'avez pas l\'autorisation de supprimer cette carte');
         } else {
-            window.notificationService.error('Erreur lors de la suppression de la carte');
+            window.notificationService.error(_('Error deleting card'));
         }
     }
 }
@@ -1248,7 +1248,7 @@ async function createNewDeck() {
         } else if (error.data && error.data.name && error.data.name[0]) {
             window.notificationService.error(error.data.name[0]);
         } else {
-            window.notificationService.error('Erreur lors de la création du deck');
+            window.notificationService.error(_('Error creating deck'));
         }
     }
 }
@@ -1327,13 +1327,13 @@ async function importNewDeck() {
         showImportPreview(previewResult);
         
     } catch (error) {
-        console.error('Erreur lors du preview:', error);
+        console.error('Error during preview:', error);
         
         // Gérer les erreurs spécifiques
         if (error.status === 400 && error.message.includes('deck with this name already exists')) {
             window.notificationService.error('Un deck avec ce nom existe déjà. Veuillez choisir un autre nom.');
         } else {
-            window.notificationService.error('Erreur lors de la préparation de l\'import: ' + error.message);
+            window.notificationService.error(_('Error preparing import: ') + error.message);
         }
     }
 }
@@ -1414,14 +1414,14 @@ function handleFileSelect(e) {
     const file = e.target.files[0];
     
     if (!file) {
-        console.log('Aucun fichier sélectionné');
+        console.log('No file selected');
         clearSelectedFile();
         return;
     }
     
     console.log('✅ Fichier trouvé:', file.name);
     
-    // Validation du fichier
+    // File validation
     if (!validateFile(file)) {
         console.log('Fichier invalide');
         clearSelectedFile();
@@ -1430,7 +1430,7 @@ function handleFileSelect(e) {
     
     console.log('✅ Fichier valide, affichage des infos');
     
-    // Sauvegarder le fichier dans une variable globale temporaire
+    // Save the file in a temporary global variable
     window.selectedImportFile = file;
     
     // Afficher les informations du fichier
@@ -1671,7 +1671,7 @@ function showImportPreview(previewResult) {
     
     const columns = previewResult.columns || [];
     if (columns.length === 0) {
-        window.notificationService.error('Aucune colonne trouvée dans le fichier');
+        window.notificationService.error(_('No columns found in file'));
         return;
     }
     
@@ -1825,8 +1825,8 @@ async function updatePreview() {
         }, 500);
         
     } catch (error) {
-        console.error('Erreur lors de la mise à jour du preview:', error);
-        window.notificationService.error('Erreur lors de la mise à jour du preview');
+        console.error('Error updating preview:', error);
+        window.notificationService.error(_('Error updating preview'));
         
         // Cacher l'indicateur en cas d'erreur
         const updateIndicator = document.getElementById('previewUpdateIndicator');
@@ -1938,13 +1938,13 @@ async function confirmImport() {
         window.targetDeckId = null;
         
     } catch (error) {
-        console.error('Erreur lors de l\'import final:', error);
-        window.notificationService.error('Erreur lors de l\'import: ' + error.message);
+        console.error('Error during final import:', error);
+        window.notificationService.error(_('Import error: ') + error.message);
     }
 }
 
 function cancelImportPreview() {
-    // TODO: Supprimer le deck temporaire créé
+    // TODO: Delete the temporary deck created
     hideImportPreview();
 }
 
@@ -1963,7 +1963,7 @@ function hideImportPreview() {
 
 function showEditDeckForm() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2002,7 +2002,7 @@ function hideEditDeckForm() {
 
 async function saveEditDeck() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2052,14 +2052,14 @@ async function saveEditDeck() {
         
     } catch (error) {
         console.error('Error updating deck:', error);
-        window.notificationService.error('Erreur lors de la modification du deck');
+        window.notificationService.error(_('Error editing deck'));
     }
 }
 
 // Version de sauvegarde pour auto-save (sans fermer le formulaire)
 async function autoSaveEditDeck() {
     if (!appState.selectedDeck) {
-        console.error('Aucun deck sélectionné pour auto-save');
+        console.error('No deck selected for auto-save');
         return;
     }
     
@@ -2172,7 +2172,7 @@ function enableInlineEditDeckName() {
                 window.notificationService.success('Nom du deck modifié avec succès');
             } catch (error) {
                 console.error('Error updating deck name:', error);
-                window.notificationService.error('Erreur lors de la modification du nom');
+                window.notificationService.error(_('Error editing name'));
                 deckNameElement.textContent = originalText;
             }
         } else {
@@ -2261,7 +2261,7 @@ function enableInlineEditDeckDescription() {
                 window.notificationService.success('Description du deck modifiée avec succès');
             } catch (error) {
                 console.error('Error updating deck description:', error);
-                window.notificationService.error('Erreur lors de la modification de la description');
+                window.notificationService.error(_('Error editing description'));
                 deckDescElement.textContent = originalText;
             }
         } else {
@@ -2298,7 +2298,7 @@ function enableInlineEditDeckDescription() {
 function showTagsEditor() {
     if (!appState.selectedDeck) return;
     
-    // Ouvrir le formulaire d'édition existant du deck
+    // Open the existing deck edit form
     // qui contient déjà une interface pour gérer les tags
     showEditDeckForm();
     
@@ -2315,7 +2315,7 @@ function showTagsEditor() {
 
 function showImportCardsForm() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2350,7 +2350,7 @@ function showImportCardsForm() {
         formTitle.textContent = `Importer des cartes dans "${appState.selectedDeck.name}"`;
     }
     
-    // Modifier le texte du bouton de soumission
+    // Modify the submit button text
     if (elements.submitImport) {
         elements.submitImport.textContent = 'Importer les cartes';
     }
@@ -2369,7 +2369,7 @@ function showImportCardsForm() {
 
 async function exportDeck() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2416,7 +2416,7 @@ async function exportDeck() {
         
     } catch (error) {
         console.error('Error exporting deck:', error);
-        window.notificationService.error('Erreur lors de l\'exportation du deck');
+        window.notificationService.error(_('Error exporting deck'));
     }
 }
 
@@ -2424,7 +2424,7 @@ async function makePrivate() {
     console.log('makePrivate called, selectedDeck:', appState.selectedDeck);
     
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2463,7 +2463,7 @@ async function makePrivate() {
 
 async function executeMakePrivate() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2486,7 +2486,7 @@ async function executeMakePrivate() {
         // Re-render the decks list to hide the public icon
         renderDecksList();
         
-        // Fermer le modal
+        // Close the modal
         const makePrivateModalElement = document.getElementById('makePrivateModal');
         if (makePrivateModalElement) {
             hideTailwindModal(makePrivateModalElement);
@@ -2640,7 +2640,7 @@ function setupShareModalEventHandlers() {
                 
                 window.notificationService.success('Jeu de cartes rendu public avec succès !');
                 
-                // Fermer la modal actuelle et afficher la modal de partage
+                // Close current modal and display share modal
                 const makePublicModalElement = document.getElementById('makePublicModal');
                 if (makePublicModalElement) {
                     hideTailwindModal(makePublicModalElement);
@@ -3084,7 +3084,7 @@ async function saveDeckLanguagePreferences() {
 // Reset Progress functionality
 async function resetDeckProgress() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -3201,7 +3201,7 @@ async function confirmResetProgress() {
 
 async function archiveDeck() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -3288,7 +3288,7 @@ async function executeArchiveDeck(shouldArchive) {
     document.querySelector('.modal')?.remove();
     
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -3333,7 +3333,7 @@ async function executeArchiveDeck(shouldArchive) {
 
 async function deleteDeckConfirm() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     

@@ -19,43 +19,43 @@ msgstr ""
 
 #: .\apps\revision\admin.py:30
 msgid "Due for review"
-msgstr ""
+msgstr "À réviser"
 
 #: .\apps\revision\admin.py:35
 msgid "Due today"
-msgstr ""
+msgstr "Échéance aujourd'hui"
 
 #: .\apps\revision\admin.py:36
 msgid "Due tomorrow"
-msgstr ""
+msgstr "Échéance demain"
 
 #: .\apps\revision\admin.py:37
 msgid "Due this week"
-msgstr ""
+msgstr "Échéance cette semaine"
 
 #: .\apps\revision\admin.py:38
 msgid "Overdue"
-msgstr ""
+msgstr "En retard"
 
 #: .\apps\revision\admin.py:58 .\apps\revision\admin.py:666
 msgid "Learning Progress"
-msgstr ""
+msgstr "Progression d'apprentissage"
 
 #: .\apps\revision\admin.py:63
 msgid "Not started"
-msgstr ""
+msgstr "Non commencé"
 
 #: .\apps\revision\admin.py:64
 msgid "In progress"
-msgstr ""
+msgstr "En cours"
 
 #: .\apps\revision\admin.py:65 .\apps\revision\admin.py:578
 msgid "Learned"
-msgstr ""
+msgstr "Appris"
 
 #: .\apps\revision\admin.py:103 .\apps\revision\admin.py:502
 msgid "Timestamps"
-msgstr ""
+msgstr "Horodatage"
 
 #: .\apps\revision\admin.py:107
 #: .\apps\revision\templates\components\revision_header.html:27
@@ -66,28 +66,28 @@ msgstr "Statistiques"
 #: .\apps\revision\admin.py:153
 #: .\apps\revision\templates\revision\stats_dashboard.html:278
 msgid "Cards"
-msgstr ""
+msgstr "Cartes"
 
 #: .\apps\revision\admin.py:172
 msgid "Completion Rate"
-msgstr ""
+msgstr "Taux de complétion"
 
 #: .\apps\revision\admin.py:183
 msgid "Never reviewed"
-msgstr ""
+msgstr "Jamais révisé"
 
 #: .\apps\revision\admin.py:184
 msgid "Last review"
-msgstr ""
+msgstr "Dernière révision"
 
 #: .\apps\revision\admin.py:189
 #: .\apps\revision\templates\revision\partials\cards_section.html:52
 msgid "No cards in this deck"
-msgstr ""
+msgstr "Aucune carte dans ce deck"
 
 #: .\apps\revision\admin.py:230
 msgid "Deck statistics"
-msgstr ""
+msgstr "Statistiques du deck"
 
 #: .\apps\revision\admin.py:236
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:39
@@ -98,15 +98,15 @@ msgstr "Description"
 
 #: .\apps\revision\admin.py:241 .\apps\revision\admin.py:571
 msgid "User"
-msgstr ""
+msgstr "Utilisateur"
 
 #: .\apps\revision\admin.py:247
 msgid "Mark selected decks as active"
-msgstr ""
+msgstr "Marquer les decks sélectionnés comme actifs"
 
 #: .\apps\revision\admin.py:252
 msgid "Mark selected decks as inactive"
-msgstr ""
+msgstr "Marquer les decks sélectionnés comme inactifs"
 
 #: .\apps\revision\admin.py:273
 msgid "Export selected decks to CSV"
@@ -131,7 +131,7 @@ msgstr ""
 #: .\apps\revision\admin.py:331
 #, python-format
 msgid "Study: %s"
-msgstr ""
+msgstr "Étudier : %s"
 
 #: .\apps\revision\admin.py:372
 #, python-format
@@ -156,7 +156,7 @@ msgstr ""
 
 #: .\apps\revision\admin.py:499
 msgid "Review Information"
-msgstr ""
+msgstr "Informations de révision"
 
 #: .\apps\revision\admin.py:555
 #: .\apps\revision\templates\revision\partials\cards_section.html:13
@@ -176,7 +176,7 @@ msgstr ""
 
 #: .\apps\revision\admin.py:609
 msgid "Next Review"
-msgstr ""
+msgstr "Prochaine révision"
 
 #: .\apps\revision\admin.py:639
 #: .\apps\revision\templates\revision\components\navbar.html:134
@@ -185,31 +185,31 @@ msgstr "Progression"
 
 #: .\apps\revision\admin.py:643
 msgid "No review data available"
-msgstr ""
+msgstr "Aucune donnée de révision disponible"
 
 #: .\apps\revision\admin.py:671
 msgid "Mark selected flashcards as learned"
-msgstr ""
+msgstr "Marquer les cartes sélectionnées comme apprises"
 
 #: .\apps\revision\admin.py:676
 msgid "Mark selected flashcards as not learned"
-msgstr ""
+msgstr "Marquer les cartes sélectionnées comme non apprises"
 
 #: .\apps\revision\admin.py:682
 msgid "Reset review progress for selected flashcards"
-msgstr ""
+msgstr "Réinitialiser la progression de révision pour les cartes sélectionnées"
 
 #: .\apps\revision\admin.py:687
 msgid "Schedule selected flashcards for today"
-msgstr ""
+msgstr "Programmer les cartes sélectionnées pour aujourd'hui"
 
 #: .\apps\revision\admin.py:693
 msgid "Schedule selected flashcards for tomorrow"
-msgstr ""
+msgstr "Programmer les cartes sélectionnées pour demain"
 
 #: .\apps\revision\admin.py:706
 msgid "Distribute selected flashcards over the next week"
-msgstr ""
+msgstr "Répartir les cartes sélectionnées sur la semaine prochaine"
 
 #: .\apps\revision\admin.py:729
 msgid "Export selected flashcards to CSV"
@@ -217,51 +217,51 @@ msgstr ""
 
 #: .\apps\revision\admin.py:736
 msgid "No flashcards selected."
-msgstr ""
+msgstr "Aucune carte sélectionnée."
 
 #: .\apps\revision\admin.py:756
 msgid "Invalid date format."
-msgstr ""
+msgstr "Format de date invalide."
 
 #: .\apps\revision\admin.py:760
 msgid "Schedule Custom Review"
-msgstr ""
+msgstr "Programmer une révision personnalisée"
 
 #: .\apps\revision\admin.py:771
 msgid "Schedule selected cards for custom date"
-msgstr ""
+msgstr "Programmer les cartes sélectionnées pour une date personnalisée"
 
 #: .\apps\revision\admin.py:777
 msgid "Flashcard not found."
-msgstr ""
+msgstr "Carte non trouvée."
 
 #: .\apps\revision\admin.py:787
 msgid "Card marked as successfully reviewed!"
-msgstr ""
+msgstr "Carte marquée comme révisée avec succès !"
 
 #: .\apps\revision\admin.py:794
 msgid "Card will be shown again soon."
-msgstr ""
+msgstr "La carte sera bientôt affichée à nouveau."
 
 #: .\apps\revision\admin.py:815
 msgid "Review Card"
-msgstr ""
+msgstr "Réviser la carte"
 
 #: .\apps\revision\templates\components\revision_header.html:11
 msgid "Go to dashboard"
-msgstr ""
+msgstr "Aller au tableau de bord"
 
 #: .\apps\revision\templates\components\revision_header.html:13
 msgid "Dashboard"
-msgstr ""
+msgstr "Tableau de bord"
 
 #: .\apps\revision\templates\components\revision_header.html:20
 msgid "Study modes"
-msgstr ""
+msgstr "Modes d'étude"
 
 #: .\apps\revision\templates\components\revision_header.html:22
 msgid "Study"
-msgstr ""
+msgstr "Étudier"
 
 #: .\apps\revision\templates\components\revision_header.html:29
 msgid "Stats"
@@ -403,7 +403,7 @@ msgstr "-- Sélectionner une langue --"
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:23
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:39
 msgid "English"
-msgstr ""
+msgstr "Anglais"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:288
 #: .\apps\revision\templates\revision\components\deck_import.html:314
@@ -412,7 +412,7 @@ msgstr ""
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:22
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:38
 msgid "French"
-msgstr ""
+msgstr "Français"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:289
 #: .\apps\revision\templates\revision\components\deck_import.html:315
@@ -421,14 +421,14 @@ msgstr ""
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:24
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:40
 msgid "Spanish"
-msgstr ""
+msgstr "Espagnol"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:290
 #: .\apps\revision\templates\revision\components\deck_import.html:316
 #: .\apps\revision\templates\revision\partials\create_card_form.html:43
 #: .\apps\revision\templates\revision\partials\create_card_form.html:85
 msgid "Dutch"
-msgstr ""
+msgstr "Néerlandais"
 
 #: .\apps\revision\templates\revision\components\deck_import.html:298
 msgid "Back of cards"
@@ -484,19 +484,19 @@ msgstr "Explorer"
 
 #: .\apps\revision\templates\revision\components\navbar.html:40
 msgid "Refresh"
-msgstr ""
+msgstr "Actualiser"
 
 #: .\apps\revision\templates\revision\components\navbar.html:54
 msgid "7 last days"
-msgstr ""
+msgstr "7 derniers jours"
 
 #: .\apps\revision\templates\revision\components\navbar.html:55
 msgid "30 last days"
-msgstr ""
+msgstr "30 derniers jours"
 
 #: .\apps\revision\templates\revision\components\navbar.html:56
 msgid "3 last months"
-msgstr ""
+msgstr "3 derniers mois"
 
 #: .\apps\revision\templates\revision\components\navbar.html:61
 #, fuzzy
@@ -539,7 +539,7 @@ msgstr "Publics"
 #: .\apps\revision\templates\revision\components\navbar.html:89
 #: .\apps\revision\templates\revision\components\navbar.html:131
 msgid "Most recent"
-msgstr ""
+msgstr "Plus récents"
 
 #: .\apps\revision\templates\revision\components\navbar.html:91
 msgid "Popularity"
@@ -558,7 +558,7 @@ msgstr "Tous les tags"
 #: .\apps\revision\templates\revision\components\navbar.html:102
 #: .\apps\revision\templates\revision\components\navbar.html:144
 msgid "No tags available"
-msgstr ""
+msgstr "Aucun tag disponible"
 
 #: .\apps\revision\templates\revision\components\navbar.html:110
 msgid "Search..."
@@ -583,7 +583,7 @@ msgstr "Filtre"
 
 #: .\apps\revision\templates\revision\components\navbar.html:132
 msgid "Less recent"
-msgstr ""
+msgstr "Moins récents"
 
 #: .\apps\revision\templates\revision\components\navbar.html:151
 msgid "Display mode"
@@ -612,7 +612,7 @@ msgstr "Nouvelle liste"
 
 #: .\apps\revision\templates\revision\components\navbar.html:186
 msgid "Share"
-msgstr ""
+msgstr "Partager"
 
 #: .\apps\revision\templates\revision\components\navbar.html:187
 #: .\apps\revision\templates\revision\components\share_deck.html:73
@@ -672,11 +672,11 @@ msgstr "Créer la liste"
 
 #: .\apps\revision\templates\revision\components\navbar.html:198
 msgid "New"
-msgstr ""
+msgstr "Nouveau"
 
 #: .\apps\revision\templates\revision\components\navbar.html:199
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 #: .\apps\revision\templates\revision\components\navbar.html:200
 #: .\apps\revision\templates\revision\partials\create_card_form.html:31
@@ -686,15 +686,15 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\components\navbar.html:201
 msgid "Error loading deck"
-msgstr ""
+msgstr "Erreur lors du chargement du deck"
 
 #: .\apps\revision\templates\revision\components\navbar.html:202
 msgid "Error creating card"
-msgstr ""
+msgstr "Erreur lors de la création de la carte"
 
 #: .\apps\revision\templates\revision\components\navbar.html:203
 msgid "Error loading cards"
-msgstr ""
+msgstr "Erreur lors du chargement des cartes"
 
 #: .\apps\revision\templates\revision\components\navbar.html:204
 #: .\apps\revision\templates\revision\components\share_deck.html:167
@@ -707,7 +707,7 @@ msgstr "Créer une liste"
 #: .\apps\revision\templates\revision\components\navbar.html:205
 #: .\apps\revision\templates\revision\components\share_deck.html:198
 msgid "Share quickly"
-msgstr ""
+msgstr "Partager rapidement"
 
 #: .\apps\revision\templates\revision\components\navbar.html:206
 msgid "Column"
@@ -721,7 +721,7 @@ msgstr "Rendre public"
 
 #: .\apps\revision\templates\revision\components\share_deck.html:18
 msgid "Allow other users to discover and use it"
-msgstr ""
+msgstr "Permettre à d'autres utilisateurs de le découvrir et de l'utiliser"
 
 #: .\apps\revision\templates\revision\components\share_deck.html:34
 #, fuzzy
@@ -813,7 +813,7 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\components\share_deck.html:187
 msgid "Copy"
-msgstr ""
+msgstr "Copier"
 
 #: .\apps\revision\templates\revision\components\share_deck.html:191
 msgid "The link has been copied!"
@@ -826,12 +826,12 @@ msgstr ""
 #: .\apps\revision\templates\revision\components\share_deck.html:241
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:82
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:7
 #: .\apps\revision\templates\revision\explore\partials\popular_decks.html:39
 msgid "By"
-msgstr ""
+msgstr "Par"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:12
 #: .\apps\revision\templates\revision\explore\partials\search_results.html:198
@@ -842,7 +842,7 @@ msgstr "Nom de la liste"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:13
 msgid "users"
-msgstr ""
+msgstr "utilisateurs"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:25
 msgid "Do you want to import this deck into your collection?"
@@ -867,7 +867,7 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:73
 msgid "And"
-msgstr ""
+msgstr "Et"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:73
 #, fuzzy
@@ -877,7 +877,7 @@ msgstr "Importer des cartes"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:83
 msgid "Information"
-msgstr ""
+msgstr "Informations"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:87
 #, fuzzy
@@ -887,19 +887,19 @@ msgstr "Créer la liste"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:92
 msgid "Modified:"
-msgstr ""
+msgstr "Modifié :"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:98
 msgid "Category:"
-msgstr ""
+msgstr "Catégorie :"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:105
 msgid "Language:"
-msgstr ""
+msgstr "Langue :"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:112
 msgid "Level:"
-msgstr ""
+msgstr "Niveau :"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:122
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:59
@@ -912,11 +912,11 @@ msgstr "Sélection"
 #: .\apps\revision\templates\revision\explore\partials\popular_decks.html:70
 #: .\apps\revision\templates\revision\explore\partials\search_results.html:184
 msgid "Add to favorites"
-msgstr ""
+msgstr "Ajouter aux favoris"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:138
 msgid "Add to collection"
-msgstr ""
+msgstr "Ajouter à la collection"
 
 #: .\apps\revision\templates\revision\explore\partials\popular_decks.html:7
 #, fuzzy
@@ -972,7 +972,7 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:36
 msgid "Apply"
-msgstr ""
+msgstr "Appliquer"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:40
 msgid "Default"
@@ -997,43 +997,43 @@ msgstr "Ajouter une carte"
 #: .\apps\revision\templates\revision\partials\create_card_form.html:22
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:18
 msgid "Front (Question)"
-msgstr ""
+msgstr "Recto (Question)"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:28
 #: .\apps\revision\templates\revision\partials\create_card_form.html:70
 msgid "Default deck language"
-msgstr ""
+msgstr "Langue par défaut du deck"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:38
 #: .\apps\revision\templates\revision\partials\create_card_form.html:80
 msgid "Use default deck language"
-msgstr ""
+msgstr "Utiliser la langue par défaut du deck"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:49
 msgid "Ex: How do you say hello in English?"
-msgstr ""
+msgstr "Ex: Comment dit-on bonjour en anglais ?"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:54
 msgid "Translate automatically to back language"
-msgstr ""
+msgstr "Traduire automatiquement vers la langue verso"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:57
 #: .\apps\revision\templates\revision\partials\create_card_form.html:98
 msgid "Translate"
-msgstr ""
+msgstr "Traduire"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:64
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:34
 msgid "Back (Answer)"
-msgstr ""
+msgstr "Verso (Réponse)"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:90
 msgid "Ex: Hello"
-msgstr ""
+msgstr "Ex: Bonjour"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:95
 msgid "Translate automatically to front language"
-msgstr ""
+msgstr "Traduire automatiquement vers la langue recto"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:107
 #, fuzzy
@@ -1223,7 +1223,7 @@ msgstr "Visible par vous seulement"
 
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:169
 msgid "Public - Visible by all users"
-msgstr ""
+msgstr "Public - Visible par tous les utilisateurs"
 
 #: .\apps\revision\templates\revision\partials\sidebar_section.html:11
 msgid "No decks"
@@ -1284,11 +1284,11 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:7
 msgid "No tags - Click on"
-msgstr ""
+msgstr "Aucun tag - Cliquez sur"
 
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:9
 msgid "to add some"
-msgstr ""
+msgstr "pour en ajouter"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:15
 #, fuzzy
@@ -1323,7 +1323,7 @@ msgstr "Créer la liste"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:71
 msgid "No tags found"
-msgstr ""
+msgstr "Aucun tag trouvé"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:72
 msgid "Start by creating your first tag to organize your decks"
@@ -1413,7 +1413,7 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:306
 msgid "Loading recent activity..."
-msgstr ""
+msgstr "Chargement de l'activité récente..."
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:385
 msgid "Study Goals"
