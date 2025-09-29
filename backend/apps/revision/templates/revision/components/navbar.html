@@ -1,14 +1,14 @@
 {% load i18n %}
-<!-- Interface unifiée Linguify -->
+<!-- Unified Linguify Navbar -->
 <div class="navbar-linguify">
-    <!-- Gauche: Navigation + Actions principales -->
+    <!-- Left: Navigation + Main Actions -->
     <div class="navbar-section">
-        <!-- Bouton toggle sidebar pour toutes les pages -->
+        <!-- Sidebar toggle button for all pages -->
         <div>
             <button id="toggleSidebar" 
                 class="btn-navbar-outline" 
-                title="Masquer/Afficher la barre latérale"
-                aria-label="Basculer la barre latérale"
+                title="Hide/Show sidebar"
+                aria-label="Toggle sidebar"
                 aria-expanded="true"
                 onclick="
                 // Universal sidebar toggle that works on all pages
@@ -56,10 +56,10 @@
                         const nowVisible = sidebar.classList.contains('show');
                         if (nowVisible) {
                             icon.className = 'bi bi-layout-sidebar-inset';
-                            toggleBtn.title = 'Masquer la barre latérale';
+                            toggleBtn.title = 'Hide sidebar';
                         } else {
                             icon.className = 'bi bi-layout-sidebar-inset-reverse';
-                            toggleBtn.title = 'Afficher la barre latérale';
+                            toggleBtn.title = 'Show sidebar';
                         }
                     }
                     
@@ -77,23 +77,23 @@
             <a href="{% url 'revision_web:main' %}" 
                class="nav-tab {% if app_name == 'revision' and not study_mode and not view_type %}active{% endif %}">
                 <i class="bi bi-stack"></i>
-                Liste de cartes
+                {% trans "Card List" %}
             </a>
             <a href="/revision/explore/" 
                class="nav-tab {% if view_type == 'explore' %}active{% endif %}">
                 <i class="bi bi-globe2"></i>
-                Explorer
+                {% trans "Explore" %}
             </a>
             <a href="{% url 'revision_web:stats_dashboard' %}" 
                class="nav-tab {% if view_type == 'stats' %}active{% endif %}">
                 <i class="bi bi-graph-up"></i>
-                Statistiques
+                {% trans "Statistics" %}
             </a>
         </div>
 
         <!-- Refresh - Always show, universal for all views -->
         <div class="container-extra">
-            <button class="btn-sb" title="Actualiser" onclick="location.reload()">
+            <button class="btn-sb" title="Refresh" onclick="location.reload()">
                 <i class="bi bi-arrow-clockwise"></i>
                 <span class="d-none d-xl-inline"></span>
             </button>
@@ -101,11 +101,11 @@
 
     </div>
     
-    <!-- Droite: Actions et filtres contextuels -->
+    <!-- Right: Actions and contextual filters -->
     <div class="navbar-section-right">
         {% if view_type == 'stats' %}
-        <!-- Filtres pour la page Statistiques - Simplifiés -->
-        <!-- Time Range Filter - Spécifique aux statistiques -->
+        <!-- Filters for Statistics page - Simplified -->
+        <!-- Time Range Filter - Statistics specific -->
         <select id="statsTimeRange" class="form-select-linguify" style="width: 140px; min-width: 120px;">
             <option value="7">{% trans "7 last days" %}</option>
             <option value="30" selected>{% trans "30 last days" %</option>
@@ -114,38 +114,38 @@
             <option value="all">{% trans "All periods" %</option>
         </select>
         
-        <button id="exportStats" class="btn-navbar btn-navbar-outline" title="Exporter les statistiques">
+        <button id="exportStats" class="btn-navbar btn-navbar-outline" title="Export statistics">
             <i class="bi bi-download"></i>
-            <span class="d-none d-lg-inline">Exporter</span>
+            <span class="d-none d-lg-inline">Export</span>
         </button>
         
         {% elif view_type == 'explore' %}
-        <!-- Filtres pour la page Explorer - Alignés avec la Liste de cartes -->
+        <!-- Filters for Explore page - Aligned with Card List -->
         <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Research in progress ...' %}" style="width: 140px; min-width: 100px;">
         
         <!-- Status Filter Dropdown -->
         <div class="dropdown">
             <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="statusFilterText">Tous les statuts</span>
+                <span id="statusFilterText">{% trans 'All statuses' %}</span>
             </button>
             <ul id="statusFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous les statuts')">Tous les statuts</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('new', 'Récents')">Récents</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('popular', 'Populaires')">Populaires</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('public', 'Publics')">Publics</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="" data-text="{% trans 'All statuses'|escapejs %}">{% trans "All statuses" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="new" data-text="{% trans 'Recent'|escapejs %}">{% trans "Recent" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="popular" data-text="{% trans 'Popular'|escapejs %}">{% trans "Popular" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="public" data-text="{% trans 'Public'|escapejs %}">{% trans "Public" %}</a></li>
             </ul>
         </div>
         
         <!-- Sort Filter Dropdown -->
         <div class="dropdown">
             <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="sortFilterText">Plus récents</span>
+                <span id="sortFilterText">{% trans "Most recent" %}</span>
             </button>
             <ul id="sortFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">Plus récents</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('popularity_desc', 'Popularité')">Popularité</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('cards_desc', 'Nb. cartes')">Nb. cartes</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="updated_desc" data-text="{% trans 'Most recent'|escapejs %}">{% trans "Most recent" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="name_asc" data-text="A-Z">A-Z</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="popularity_desc" data-text="{% trans 'Popularity'|escapejs %}">{% trans "Popularity" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="cards_desc" data-text="{% trans 'Number of cards'|escapejs %}">{% trans "Number of cards" %}</a></li>
             </ul>
         </div>
         
@@ -155,7 +155,7 @@
                 <span id="tagsFilterText">{% trans "All tags" %</span>
             </button>
             <ul id="tagsFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectTagsFilter('', 'Tous les tags')">{% trans "All tags" %</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectTagsFilter" data-value="" data-text="{% trans 'All tags'|escapejs %}">{% trans "All tags" %}</a></li>
                 <!-- More tags will be dynamically loaded here -->
             </ul>
         </div>
@@ -170,10 +170,10 @@
                 <span id="statusFilterText">{% trans "All status" %</span>
             </button>
             <ul id="statusFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous les statuts')">{% trans "All status" %</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('active', 'Actifs')">{% trans "Actives" %</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('archived', 'Archivés')">{% trans "Archived" %</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('public', 'Publics')">{% trans "Public" %</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="" data-text="{% trans 'All status'|escapejs %}">{% trans "All status" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="active" data-text="{% trans 'Active'|escapejs %}">{% trans "Active" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="archived" data-text="{% trans 'Archived'|escapejs %}">{% trans "Archived" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="public" data-text="{% trans 'Public'|escapejs %}">{% trans "Public" %}</a></li>
             </ul>
         </div>
         
@@ -183,10 +183,10 @@
                 <span id="sortFilterText">{% trans "Filter" %}</span>
             </button>
             <ul id="sortFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">{% trans "Most recent" %</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_asc', 'Plus récents')">{% trans "Less recent" %</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('progress_desc', 'Progression')">{% trans "Progress" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="updated_desc" data-text="{% trans 'Most recent'|escapejs %}">{% trans "Most recent" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="updated_asc" data-text="{% trans 'Less recent'|escapejs %}">{% trans "Less recent" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="name_asc" data-text="A-Z">A-Z</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="progress_desc" data-text="{% trans 'Progress'|escapejs %}">{% trans "Progress" %}</a></li>
             </ul>
         </div>
         
@@ -200,17 +200,17 @@
             </ul>
         </div>
         
-        <!-- View Toggle - Only show on Liste de cartes page -->
+        <!-- View Toggle - Only show on Card List page -->
         <div id="viewToggleGroup" class="navbar-actions-group">
-            <div class="btn-group" role="group" aria-label="Mode d'affichage">
+            <div class="btn-group" role="group" aria-label="{% trans 'Display mode' %}">
                 <button id="listViewBtn" class="btn-navbar btn-navbar-outline active" 
-                        title="Vue liste"
+                        title="{% trans 'List view' %}"
                         onclick="toggleViewMode('list')">
                     <i class="bi bi-list-ul"></i>
                     <span class="d-none d-xl-inline">{% trans "List" %}</span>
                 </button>
                 <button id="tableViewBtn" class="btn-navbar btn-navbar-outline" 
-                        title="Vue tableau"
+                        title="{% trans 'Table view' %}"
                         onclick="toggleViewMode('table')">
                     <i class="bi bi-table"></i>
                     <span class="d-none d-xl-inline">{% trans "Board" %}</span>
@@ -233,3 +233,26 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle dropdown item clicks with data attributes
+    document.querySelectorAll('[data-action]').forEach(function(element) {
+        element.addEventListener('click', function(e) {
+            e.preventDefault();
+            const action = this.dataset.action;
+            const value = this.dataset.value;
+            const text = this.dataset.text;
+
+            // Call the appropriate function based on action
+            if (action === 'selectStatusFilter') {
+                selectStatusFilter(value, text);
+            } else if (action === 'selectSortFilter') {
+                selectSortFilter(value, text);
+            } else if (action === 'selectTagsFilter') {
+                selectTagsFilter(value, text);
+            }
+        });
+    });
+});
+</script>
