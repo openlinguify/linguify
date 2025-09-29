@@ -1662,3 +1662,8 @@ msgstr "À apprendre"
 
 msgid "Created on"
 msgstr "Créée le"
+
+msgid "card"
+msgid_plural "cards"
+msgstr[0] "carte"
+msgstr[1] "cartes"

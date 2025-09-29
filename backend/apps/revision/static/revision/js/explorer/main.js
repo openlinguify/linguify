@@ -619,7 +619,7 @@ function renderDeckCard(deck) {
                             </div>
                         </div>
                         <span class="deck-stats-badge">
-                            ${deck.cards_count || 0} cartes
+                            ${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)}
                         </span>
                     </div>
                 </div>
@@ -671,7 +671,7 @@ function renderDeckListItem(deck) {
             <div class="deck-list-content">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <h6 class="mb-1 fw-bold">${deck.name}</h6>
-                    <span class="deck-stats-badge">${deck.cards_count || 0} cartes</span>
+                    <span class="deck-stats-badge">${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)}</span>
                 </div>
                 
                 <div class="d-flex align-items-center gap-3 mb-2">
@@ -715,7 +715,7 @@ function renderPublicDeckDetails() {
     
     elements.publicDeckName.textContent = deck.name;
     elements.publicDeckAuthor.textContent = `Par @${deck.user.username}`;
-    elements.publicDeckStats.textContent = `${deck.cards_count || 0} cartes`;
+    elements.publicDeckStats.textContent = `${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)}`;
     
     // Rendu des cartes
     const cardsContainer = elements.publicDeckCardsPreview;
@@ -784,7 +784,7 @@ function renderPopularDecks() {
                 <div class="popular-deck-meta">
                     <div class="popular-deck-stats">
                         <span>${category.icon}</span>
-                        <span>${deck.cards_count || 0} cartes</span>
+                        <span>${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)}</span>
                     </div>
                     <div class="popular-deck-author">@${deck.user.username}</div>
                 </div>
@@ -986,7 +986,7 @@ async function loadAuthorOtherDecks(userId) {
                     <div class="recent-deck-icon">${category.icon}</div>
                     <div class="recent-deck-info">
                         <div class="recent-deck-name">${deck.name}</div>
-                        <div class="recent-deck-meta">${deck.cards_count || 0} cartes • ${formatDate(deck.created_at)}</div>
+                        <div class="recent-deck-meta">${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)} • ${formatDate(deck.created_at)}</div>
                     </div>
                 </div>
             `;
@@ -1485,7 +1485,7 @@ function generateFallbackSuggestions(query) {
             type: 'deck',
             title: deck.title,
             icon: '📚',
-            meta: `${deck.cards} cartes • ${deck.author} • ${deck.rating}⭐`,
+            meta: `${deck.cards} ${window.ngettext('card', 'cards', deck.cards)} • ${deck.author} • ${deck.rating}⭐`,
             action: () => performSearch(deck.title)
         });
     });
@@ -2161,7 +2161,7 @@ function renderFavorites() {
                     <div class="favorite-deck-icon">${category.icon}</div>
                     <div>
                         <div class="favorite-deck-name">${deck.name}</div>
-                        <div class="favorite-deck-meta">${deck.cards_count} cartes</div>
+                        <div class="favorite-deck-meta">${deck.cards_count} ${window.ngettext('card', 'cards', deck.cards_count || 0)}</div>
                     </div>
                 </div>
             </div>
@@ -2291,7 +2291,7 @@ async function showAddToCollectionModal(deckId) {
                 <div class="selected-deck-info">
                     <h6>${deck.name}</h6>
                     <div class="selected-deck-meta">
-                        ${deck.cards_count || 0} cartes • Par @${deck.user.username}
+                        ${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)} • Par @${deck.user.username}
                     </div>
                 </div>
             </div>
@@ -2427,7 +2427,7 @@ async function loadCollectionDecks(collectionId) {
                     <div class="collection-deck-info">
                         <div class="collection-deck-name">${deck.name}</div>
                         <div class="collection-deck-meta">
-                            ${deck.cards_count || 0} cartes • Par @${deck.user.username} • ${formatDate(deck.created_at)}
+                            ${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)} • Par @${deck.user.username} • ${formatDate(deck.created_at)}
                         </div>
                     </div>
                     <div class="collection-deck-actions">

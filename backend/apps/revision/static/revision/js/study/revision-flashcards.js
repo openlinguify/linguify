@@ -436,7 +436,7 @@ class FlashcardStudyMode {
             <div class="empty-state">
                 <i class="bi bi-trophy text-warning" style="font-size: 4rem;"></i>
                 <h4 class="mt-3">Session terminée !</h4>
-                <p class="text-muted">Excellent travail ! Vous avez terminé ${this.studyCards.length} cartes.</p>
+                <p class="text-muted">Excellent travail ! Vous avez terminé ${this.studyCards.length} ${window.ngettext('card', 'cards', this.studyCards.length)}.</p>
                 <div class="row text-center mt-4 mb-4">
                     <div class="col">
                         <div class="stat-value text-linguify-accent">${this.studyStats.correct}</div>

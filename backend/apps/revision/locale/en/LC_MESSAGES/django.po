@@ -1365,3 +1365,8 @@ msgstr "To learn"
 
 msgid "Created on"
 msgstr "Created on"
+
+msgid "card"
+msgid_plural "cards"
+msgstr[0] "card"
+msgstr[1] "cards"

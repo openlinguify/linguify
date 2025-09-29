@@ -1648,3 +1648,8 @@ msgstr "Por aprender"
 
 msgid "Created on"
 msgstr "Creada el"
+
+msgid "card"
+msgid_plural "cards"
+msgstr[0] "tarjeta"
+msgstr[1] "tarjetas"

@@ -1627,3 +1627,8 @@ msgstr "Te leren"
 
 msgid "Created on"
 msgstr "Gemaakt op"
+
+msgid "card"
+msgid_plural "cards"
+msgstr[0] "kaart"
+msgstr[1] "kaarten"

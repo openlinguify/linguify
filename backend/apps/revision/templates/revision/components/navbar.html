@@ -203,7 +203,29 @@ window.translations = {
     'Error loading cards': "{% trans 'Error loading cards' %}",
     'Share this deck': "{% trans 'Share this deck' %}",
     'Share quickly': "{% trans 'Share quickly' %}",
-    'Column': "{% trans 'Column' %}"
+    'Column': "{% trans 'Column' %}",
+    'To learn': "{% trans 'To learn' %}",
+    'Created on': "{% trans 'Created on' %}"
+};
+
+// Pluralization data
+window.pluralTranslations = {
+    'card': {
+        singular: "{% blocktrans count counter=1 %}card{% plural %}cards{% endblocktrans %}",
+        plural: "{% blocktrans count counter=2 %}card{% plural %}cards{% endblocktrans %}"
+    }
+};
+
+// Pluralization helper - ngettext equivalent
+window.ngettext = function(singular, plural, count) {
+    // Check if we have a translation for this string
+    if (window.pluralTranslations && window.pluralTranslations[singular]) {
+        return count === 1 ?
+            window.pluralTranslations[singular].singular :
+            window.pluralTranslations[singular].plural;
+    }
+    // Fallback: use English plural rules (n != 1)
+    return count === 1 ? singular : plural;
 };
 
 document.addEventListener('DOMContentLoaded', function() {

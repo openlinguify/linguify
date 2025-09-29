@@ -67,7 +67,7 @@ class MatchingStudyMode {
             if (unlearnedCards.length >= 6) {
                 // Priorité absolue aux cartes non-apprises (6 cartes)
                 cardsToUse = unlearnedCards.slice(0, 6);
-                console.log(`🎯 Mode focus: ${cardsToUse.length} cartes non-apprises uniquement`);
+                console.log(`🎯 Mode focus: ${cardsToUse.length} ${window.ngettext('card', 'cards', cardsToUse.length)} non-apprises uniquement`);
             } else if (unlearnedCards.length >= 3) {
                 // Mélanger cartes non-apprises avec quelques apprises (max 8 total)
                 cardsToUse = [...unlearnedCards];
@@ -82,7 +82,7 @@ class MatchingStudyMode {
             } else {
                 // Toutes apprises - mode révision (max 6 pour garder de la difficulté)
                 cardsToUse = learnedCards.slice(0, 6);
-                console.log(`📚 Mode révision: ${cardsToUse.length} cartes apprises (révision)`);
+                console.log(`📚 Mode révision: ${cardsToUse.length} ${window.ngettext('card', 'cards', cardsToUse.length)} apprises (révision)`);
             }
             
             // Préparer les cartes matching (mélanger l'ordre)

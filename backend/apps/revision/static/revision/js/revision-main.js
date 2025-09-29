@@ -1915,8 +1915,8 @@ async function confirmImport() {
         // Adapter le message selon le contexte
         const isImportToExisting = window.importToExistingDeck && window.targetDeckId;
         const message = isImportToExisting 
-            ? `${importResult.cards_created} cartes ajoutées au deck "${importState.tempDeck.name}" !`
-            : `Import réussi ! ${importResult.cards_created} cartes créées`;
+            ? `${importResult.cards_created} ${window.ngettext('card', 'cards', importResult.cards_created)} ajoutées au deck "${importState.tempDeck.name}" !`
+            : `Import réussi ! ${importResult.cards_created} ${window.ngettext('card', 'cards', importResult.cards_created)} créées`;
             
         window.notificationService.success(message);
         
@@ -2412,7 +2412,7 @@ async function exportDeck() {
         link.click();
         document.body.removeChild(link);
         
-        window.notificationService.success(`Deck exporté : ${cards.length} cartes`);
+        window.notificationService.success(`Deck exporté : ${cards.length} ${window.ngettext('card', 'cards', cards.length)}`);
         
     } catch (error) {
         console.error('Error exporting deck:', error);
@@ -2950,7 +2950,7 @@ async function applyLanguagesToAllCards() {
         return;
     }
     
-    const confirmMessage = `Voulez-vous appliquer ces langues à toutes les ${appState.selectedDeck.cards_count} cartes du deck ?\n\n` +
+    const confirmMessage = `Voulez-vous appliquer ces langues à toutes les ${appState.selectedDeck.cards_count} ${window.ngettext('card', 'cards', appState.selectedDeck.cards_count)} du deck ?\n\n` +
                           `Recto: ${frontLang ? getLanguageName(frontLang) : 'Détection automatique'}\n` +
                           `Verso: ${backLang ? getLanguageName(backLang) : 'Détection automatique'}`;
     
@@ -2968,7 +2968,7 @@ async function applyLanguagesToAllCards() {
             await revisionAPI.updateCard(card.id, updateData);
         }
         
-        window.notificationService.success(`Langues appliquées à ${deck.cards_count || 0} cartes`);
+        window.notificationService.success(`Langues appliquées à ${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)}`);
         
         // Reload deck to refresh data
         await selectDeck(appState.selectedDeck.id);
