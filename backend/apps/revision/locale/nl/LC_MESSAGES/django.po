@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-29 19:29+0200\n"
+"POT-Creation-Date: 2025-09-29 19:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: .\admin.py:30
 msgid "Due for review"
 msgstr ""
@@ -256,9 +257,17 @@ msgstr ""
 msgid "Stats"
 msgstr ""
 
+#: .\templates\revision\components\navbar.html:10
+msgid "Hide/Show sidebar"
+msgstr "Zijbalk verbergen/tonen"
+
+#: .\templates\revision\components\navbar.html:11
+msgid "Toggle sidebar"
+msgstr "Zijbalk schakelen"
+
 #: .\templates\revision\components\navbar.html:80
 msgid "Card List"
-msgstr ""
+msgstr "Kaartenlijst"
 
 #: .\templates\revision\components\navbar.html:85
 msgid "Explore"
@@ -310,6 +319,10 @@ msgstr ""
 #: .\templates\revision\components\navbar.html:196
 msgid "All tags"
 msgstr ""
+
+#: .\templates\revision\components\navbar.html:165
+msgid "Search..."
+msgstr "Zoeken..."
 
 #: .\templates\revision\components\navbar.html:170
 #: .\templates\revision\components\navbar.html:173

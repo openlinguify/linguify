@@ -5,69 +5,13 @@
     <div class="navbar-section">
         <!-- Sidebar toggle button for all pages -->
         <div>
-            <button id="toggleSidebar" 
-                class="btn-navbar-outline" 
-                title="Hide/Show sidebar"
-                aria-label="Toggle sidebar"
+            <button id="toggleSidebar"
+                class="btn-navbar-outline"
+                title="{% trans 'Hide/Show sidebar' %}"
+                aria-label="{% trans 'Toggle sidebar' %}"
                 aria-expanded="true"
-                onclick="
-                // Universal sidebar toggle that works on all pages
-                const revisionSidebar = document.getElementById('revisionSidebar');
-                const exploreSidebar = document.getElementById('exploreSidebar');  
-                const statsSidebar = document.getElementById('statsSidebar');
-                
-                const sidebar = revisionSidebar || exploreSidebar || statsSidebar;
-                
-                if (sidebar) {
-                    const isCurrentlyVisible = sidebar.classList.contains('show');
-                    
-                    if (isCurrentlyVisible) {
-                        // Hide sidebar
-                        sidebar.classList.remove('show');
-                        sidebar.style.width = '0px';
-                        sidebar.style.minWidth = '0px';
-                        sidebar.style.maxWidth = '0px';
-                        sidebar.style.padding = '0px';
-                        sidebar.style.margin = '0px';
-                        sidebar.style.border = 'none';
-                        sidebar.style.overflow = 'hidden';
-                        sidebar.style.flex = '0 0 0px';
-                        sidebar.style.opacity = '0';
-                        sidebar.style.visibility = 'hidden';
-                    } else {
-                        // Show sidebar
-                        sidebar.classList.add('show');
-                        sidebar.style.removeProperty('width');
-                        sidebar.style.removeProperty('minWidth');
-                        sidebar.style.removeProperty('maxWidth');
-                        sidebar.style.removeProperty('padding');
-                        sidebar.style.removeProperty('margin');
-                        sidebar.style.removeProperty('border');
-                        sidebar.style.removeProperty('overflow');
-                        sidebar.style.removeProperty('flex');
-                        sidebar.style.removeProperty('opacity');
-                        sidebar.style.removeProperty('visibility');
-                    }
-                    
-                    // Update button icon
-                    const toggleBtn = document.getElementById('toggleSidebar');
-                    const icon = toggleBtn?.querySelector('i');
-                    if (icon) {
-                        const nowVisible = sidebar.classList.contains('show');
-                        if (nowVisible) {
-                            icon.className = 'bi bi-layout-sidebar-inset';
-                            toggleBtn.title = 'Hide sidebar';
-                        } else {
-                            icon.className = 'bi bi-layout-sidebar-inset-reverse';
-                            toggleBtn.title = 'Show sidebar';
-                        }
-                    }
-                    
-                    console.log('Sidebar toggled:', sidebar.id, 'Show:', sidebar.classList.contains('show'));
-                } else {
-                    console.error('No sidebar found on this page');
-                }
-                ">
+                data-hide-text="{% trans 'Hide sidebar' %}"
+                data-show-text="{% trans 'Show sidebar' %}">
             <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
             </button>
         </div>
@@ -108,7 +52,7 @@
         <!-- Time Range Filter - Statistics specific -->
         <select id="statsTimeRange" class="form-select-linguify" style="width: 140px; min-width: 120px;">
             <option value="7">{% trans "7 last days" %}</option>
-            <option value="30" selected>{% trans "30 last days" %</option>
+            <option value="30" selected>{% trans "30 last days" %}</option>
             <option value="90">{% trans "3 last months" %</option>
             <option value="365">{% trans "This year" %</option>
             <option value="all">{% trans "All periods" %</option>
@@ -152,7 +96,7 @@
         <!-- Tags Filter Dropdown -->
         <div class="dropdown">
             <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="tagsFilterText">{% trans "All tags" %</span>
+                <span id="tagsFilterText">{% trans "All tags" %}</span>
             </button>
             <ul id="tagsFilterDropdown" class="dropdown-menu">
                 <li><a class="dropdown-item" href="#" data-action="selectTagsFilter" data-value="" data-text="{% trans 'All tags'|escapejs %}">{% trans "All tags" %}</a></li>
@@ -161,8 +105,8 @@
         </div>
         
         {% else %}
-        <!-- Filtres pour les pages personnelles -->
-        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
+        <!-- Filters for personal pages -->
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Search...' %}" style="width: 140px; min-width: 100px;">
         
         <!-- Status Filter Dropdown -->
         <div class="dropdown">
@@ -254,5 +198,67 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Handle sidebar toggle
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    if (toggleSidebar) {
+        toggleSidebar.addEventListener('click', function() {
+            // Universal sidebar toggle that works on all pages
+            const revisionSidebar = document.getElementById('revisionSidebar');
+            const exploreSidebar = document.getElementById('exploreSidebar');
+            const statsSidebar = document.getElementById('statsSidebar');
+
+            const sidebar = revisionSidebar || exploreSidebar || statsSidebar;
+
+            if (sidebar) {
+                const isCurrentlyVisible = sidebar.classList.contains('show');
+
+                if (isCurrentlyVisible) {
+                    // Hide sidebar
+                    sidebar.classList.remove('show');
+                    sidebar.style.width = '0px';
+                    sidebar.style.minWidth = '0px';
+                    sidebar.style.maxWidth = '0px';
+                    sidebar.style.padding = '0px';
+                    sidebar.style.margin = '0px';
+                    sidebar.style.border = 'none';
+                    sidebar.style.overflow = 'hidden';
+                    sidebar.style.flex = '0 0 0px';
+                    sidebar.style.opacity = '0';
+                    sidebar.style.visibility = 'hidden';
+                } else {
+                    // Show sidebar
+                    sidebar.classList.add('show');
+                    sidebar.style.removeProperty('width');
+                    sidebar.style.removeProperty('minWidth');
+                    sidebar.style.removeProperty('maxWidth');
+                    sidebar.style.removeProperty('padding');
+                    sidebar.style.removeProperty('margin');
+                    sidebar.style.removeProperty('border');
+                    sidebar.style.removeProperty('overflow');
+                    sidebar.style.removeProperty('flex');
+                    sidebar.style.removeProperty('opacity');
+                    sidebar.style.removeProperty('visibility');
+                }
+
+                // Update button icon and title
+                const icon = toggleSidebar.querySelector('i');
+                if (icon) {
+                    const nowVisible = sidebar.classList.contains('show');
+                    if (nowVisible) {
+                        icon.className = 'bi bi-layout-sidebar-inset';
+                        toggleSidebar.title = toggleSidebar.dataset.hideText;
+                    } else {
+                        icon.className = 'bi bi-layout-sidebar-inset-reverse';
+                        toggleSidebar.title = toggleSidebar.dataset.showText;
+                    }
+                }
+
+                console.log('Sidebar toggled:', sidebar.id, 'Show:', sidebar.classList.contains('show'));
+            } else {
+                console.error('No sidebar found on this page');
+            }
+        });
+    }
 });
 </script>
