@@ -1,14 +1,15 @@
+{% load i18n %}
 <!-- Create Card Form -->
 <div id="createCardForm" class="create-card-form-hidden">
     <div class="study-header">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <i class="bi bi-plus-circle text-linguify-primary me-2" style="font-size: 1.5rem;"></i>
-                <h4 class="mb-0 text-linguify-primary">Ajouter une nouvelle carte</h4>
+                <h4 class="mb-0 text-linguify-primary">{% trans "Add a new card" %}</h4>
             </div>
             <button id="cancelCardCreate" class="btn btn-outline-custom btn-sm">
                 <i class="bi bi-x-lg"></i>
-                Annuler
+                {% trans "Cancel" %}
             </button>
         </div>
     </div>
@@ -18,84 +19,83 @@
             <div class="col-md-6">
                 <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
                     <i class="bi bi-card-text me-2"></i>
-                    Recto (Question) <span class="text-danger">*</span>
+                    {% trans "Front (Question)" %} <span class="text-danger">*</span>
                 </label>
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <div class="d-flex align-items-center">
                         <span class="badge bg-gradient-subtle-linguify text-linguify-primary border-linguify px-2 py-1">
                             <i class="bi bi-translate me-1" style="font-size: 0.75rem;"></i>
-                            <span id="deckFrontLangDisplay">Langue par défaut du deck</span>
+                            <span id="deckFrontLangDisplay">{% trans "Default deck language" %}</span>
                         </span>
                     </div>
-                    <button type="button" class="btn btn-link btn-sm text-linguify-accent p-0" id="changeFrontLang" title="Modifier la langue pour cette carte">
+                    <button type="button" class="btn btn-link btn-sm text-linguify-accent p-0" id="changeFrontLang" title="{% trans 'Edit language for this card' %}">
                         <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
-                        <span class="ms-1" style="font-size: 0.75rem;">Modifier</span>
+                        <span class="ms-1" style="font-size: 0.75rem;">{% trans "Edit" %}</span>
                     </button>
                 </div>
                 <div id="frontLangSelector" style="display: none;" class="mb-2">
                     <select id="newCardFrontLang" class="form-select form-select-sm">
-                        <option value="">Utiliser langue par défaut du deck</option>
-                        <option value="fr">🇫🇷 Français</option>
-                        <option value="en">🇺🇸 Anglais</option>
-                        <option value="es">🇪🇸 Espagnol</option>
-                        <option value="it">🇮🇹 Italien</option>
-                        <option value="de">🇩🇪 Allemand</option>
-                        <option value="pt">🇵🇹 Portugais</option>
+                        <option value="">{% trans "Use default deck language" %}</option>
+                        <option value="en">🇺🇸 {% trans "English" %}</option>
+                        <option value="fr">🇫🇷 {% trans "French" %}</option>
+
+                        <option value="es">🇪🇸 {% trans "Spanish" %}</option>
+                        <option value="nl">nl {% trans "Dutch" %}</option>
+
                     </select>
                 </div>
                 <div class="position-relative">
                     <textarea id="newCardFront" class="form-control" rows="4" 
-                              placeholder="Ex: Comment dit-on 'bonjour' en anglais ?" required></textarea>
+                              placeholder="{% trans 'Ex: How do you say hello in English?' %}" required></textarea>
                     <button type="button" 
                             class="btn btn-outline-primary btn-sm position-absolute translate-btn" 
                             style="top: 8px; right: 8px; z-index: 10;"
                             id="translateFrontBtn"
-                            title="Traduire automatiquement vers la langue du verso"
+                            title="{% trans 'Translate automatically to back language' %}"
                             onclick="translateText('front')">
                         <i class="bi bi-translate me-1"></i>
-                        <span>Traduire</span>
+                        <span>{% trans "Translate" %}</span>
                     </button>
                 </div>
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-bold text-linguify-primary mb-2" style="font-size: 1rem;">
                     <i class="bi bi-card-text-reverse me-2"></i>
-                    Verso (Réponse) <span class="text-danger">*</span>
+                    {% trans "Back (Answer)" %} <span class="text-danger">*</span>
                 </label>
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <div class="d-flex align-items-center">
                         <span class="badge bg-gradient-subtle-linguify text-linguify-primary border-linguify px-2 py-1">
                             <i class="bi bi-translate me-1" style="font-size: 0.75rem;"></i>
-                            <span id="deckBackLangDisplay">Langue par défaut du deck</span>
+                            <span id="deckBackLangDisplay">{% trans "Default deck language" %}</span>
                         </span>
                     </div>
-                    <button type="button" class="btn btn-link btn-sm text-linguify-accent p-0" id="changeBackLang" title="Modifier la langue pour cette carte">
+                    <button type="button" class="btn btn-link btn-sm text-linguify-accent p-0" id="changeBackLang" title="{% trans 'Edit language for this card' %}">
                         <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
-                        <span class="ms-1" style="font-size: 0.75rem;">Modifier</span>
+                        <span class="ms-1" style="font-size: 0.75rem;">{% trans "Edit" %}</span>
                     </button>
                 </div>
                 <div id="backLangSelector" style="display: none;" class="mb-2">
                     <select id="newCardBackLang" class="form-select form-select-sm">
-                        <option value="">Utiliser langue par défaut du deck</option>
-                        <option value="fr">🇫🇷 Français</option>
-                        <option value="en">🇺🇸 Anglais</option>
-                        <option value="es">🇪🇸 Espagnol</option>
-                        <option value="it">🇮🇹 Italien</option>
-                        <option value="de">🇩🇪 Allemand</option>
-                        <option value="pt">🇵🇹 Portugais</option>
+                        <option value="">{% trans "Use default deck language" %}</option>
+                        <option value="en">🇺🇸 {% trans "English" %}</option>
+                        <option value="fr">🇫🇷 {% trans "French" %}</option>
+
+                        <option value="es">🇪🇸 {% trans "Spanish" %}</option>
+                        <option value="nl">nl {% trans "Dutch" %}</option>
                     </select>
                 </div>
                 <div class="position-relative">
                     <textarea id="newCardBack" class="form-control" rows="4" 
-                              placeholder="Ex: Hello" required></textarea>
+                              placeholder="{% trans 'Ex: Hello' %}" required></textarea>
                     <button type="button" 
                             class="btn btn-outline-primary btn-sm position-absolute translate-btn" 
                             style="top: 8px; right: 8px; z-index: 10;"
                             id="translateBackBtn"
-                            title="Traduire automatiquement vers la langue du recto"
+                            title="{% trans 'Translate automatically to front language' %}"
                             onclick="translateText('back')">
                         <i class="bi bi-translate me-1"></i>
-                        <span>Traduire</span>
+                        <span>{% trans "Translate" %}</span>
                     </button>
                 </div>
             </div>
@@ -104,10 +104,10 @@
         <div class="mt-4">
             <button id="submitCardCreate" class="btn btn-gradient me-2">
                 <i class="bi bi-plus-lg me-1"></i>
-                Ajouter la carte
+                {% trans "Add the card" %}
             </button>
             <button id="cancelCardCreateAlt" class="btn btn-outline-custom">
-                Annuler
+                {% trans "Cancel" %}
             </button>
         </div>
     </div>
