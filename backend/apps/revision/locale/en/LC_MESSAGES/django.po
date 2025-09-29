@@ -629,7 +629,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Description"
 msgid "No description"
-msgstr "Description"
+msgstr "No description"
 
 #: .\apps\revision\templates\revision\components\navbar.html:191
 #, fuzzy
@@ -813,7 +813,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Deck Name"
 msgid "Deck cards"
-msgstr "Deck Name"
+msgstr "Deck cards"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:6
 msgid "0 card(s)"
@@ -1079,43 +1079,43 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:9
 msgid "Flashcards"
-msgstr ""
+msgstr "Flashcards"
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:11
 msgid "Traditional cards for memorizing vocabulary."
-msgstr ""
+msgstr "Traditional cards for memorizing vocabulary."
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:21
 msgid "Learn"
-msgstr ""
+msgstr "Learn"
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:23
 msgid "Interactive multiple choice quizzes."
-msgstr ""
+msgstr "Interactive multiple choice quizzes."
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:33
 msgid "Match"
-msgstr ""
+msgstr "Match"
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:35
 msgid "Match terms and definitions in pairs."
-msgstr ""
+msgstr "Match terms and definitions in pairs."
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:45
 msgid "Quick Review"
-msgstr ""
+msgstr "Quick Review"
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:47
 msgid "Quick review with spaced repetition."
-msgstr ""
+msgstr "Quick review with spaced repetition."
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:57
 msgid "Writing"
-msgstr ""
+msgstr "Writing"
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:59
 msgid "Writing and translation exercises."
-msgstr ""
+msgstr "Writing and translation exercises."
 
 #: .\apps\revision\templates\revision\partials\welcome_section.html:5
 msgid "Welcome to your study space"

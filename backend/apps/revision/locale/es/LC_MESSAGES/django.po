@@ -637,7 +637,7 @@ msgstr "Sin nombre"
 #, fuzzy
 #| msgid "Description"
 msgid "No description"
-msgstr "Descripción"
+msgstr "Sin descripción"
 
 #: .\apps\revision\templates\revision\components\navbar.html:191
 #, fuzzy
@@ -966,7 +966,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Deck Name"
 msgid "Deck cards"
-msgstr "Nombre de la lista"
+msgstr "Cartas del mazo"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:6
 msgid "0 card(s)"
@@ -1228,43 +1228,43 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:9
 msgid "Flashcards"
-msgstr ""
+msgstr "Tarjetas de memoria"
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:11
 msgid "Traditional cards for memorizing vocabulary."
-msgstr ""
+msgstr "Tarjetas tradicionales para memorizar vocabulario."
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:21
 msgid "Learn"
-msgstr ""
+msgstr "Aprender"
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:23
 msgid "Interactive multiple choice quizzes."
-msgstr ""
+msgstr "Cuestionarios interactivos de opción múltiple."
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:33
 msgid "Match"
-msgstr ""
+msgstr "Emparejar"
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:35
 msgid "Match terms and definitions in pairs."
-msgstr ""
+msgstr "Empareja términos y definiciones por pares."
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:45
 msgid "Quick Review"
-msgstr ""
+msgstr "Revisión Rápida"
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:47
 msgid "Quick review with spaced repetition."
-msgstr ""
+msgstr "Revisión rápida con repetición espaciada."
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:57
 msgid "Writing"
-msgstr ""
+msgstr "Escritura"
 
 #: .\apps\revision\templates\revision\partials\study_modes_section.html:59
 msgid "Writing and translation exercises."
-msgstr ""
+msgstr "Ejercicios de escritura y traducción."
 
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:7
 msgid "No tags - Click on"
