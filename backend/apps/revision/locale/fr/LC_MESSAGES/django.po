@@ -1443,10 +1443,8 @@ msgstr ""
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:71
 #: .\apps\revision\templates\revision\study\write_embedded.html:12
 #: .\apps\revision\templates\revision\study\write_embedded.html:145
-#, fuzzy
-#| msgid "Create deck"
 msgid "Back to deck"
-msgstr "Créer une liste"
+msgstr "Retour au deck"
 
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:24
 msgid "Click to start"
@@ -1663,3 +1661,12 @@ msgid "card"
 msgid_plural "cards"
 msgstr[0] "carte"
 msgstr[1] "cartes"
+
+msgid "No cards to review!"
+msgstr "Aucune carte à réviser !"
+
+msgid "This deck contains no cards, or all cards are already learned."
+msgstr "Ce deck ne contient aucune carte, ou alors toutes les cartes sont déjà apprises."
+
+msgid "Practice with all cards"
+msgstr "S'entraîner avec toutes les cartes"

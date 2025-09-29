@@ -1444,7 +1444,7 @@ msgstr "Flashcards Modus"
 #: .\apps\revision\templates\revision\study\write_embedded.html:12
 #: .\apps\revision\templates\revision\study\write_embedded.html:145
 msgid "Back to deck"
-msgstr "Terug naar lijst"
+msgstr "Terug naar deck"
 
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:24
 msgid "Click to start"
@@ -1628,3 +1628,12 @@ msgid "card"
 msgid_plural "cards"
 msgstr[0] "kaart"
 msgstr[1] "kaarten"
+
+msgid "No cards to review!"
+msgstr "Geen kaarten om te beoordelen!"
+
+msgid "This deck contains no cards, or all cards are already learned."
+msgstr "Dit deck bevat geen kaarten, of alle kaarten zijn al geleerd."
+
+msgid "Practice with all cards"
+msgstr "Oefenen met alle kaarten"

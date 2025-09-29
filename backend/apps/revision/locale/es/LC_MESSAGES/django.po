@@ -1429,10 +1429,8 @@ msgstr "Modo Tarjetas"
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:71
 #: .\apps\revision\templates\revision\study\write_embedded.html:12
 #: .\apps\revision\templates\revision\study\write_embedded.html:145
-#, fuzzy
-#| msgid "Create deck"
 msgid "Back to deck"
-msgstr "Crear lista"
+msgstr "Volver al mazo"
 
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:24
 msgid "Click to start"
@@ -1649,3 +1647,12 @@ msgid "card"
 msgid_plural "cards"
 msgstr[0] "tarjeta"
 msgstr[1] "tarjetas"
+
+msgid "No cards to review!"
+msgstr "¡No hay tarjetas para repasar!"
+
+msgid "This deck contains no cards, or all cards are already learned."
+msgstr "Este mazo no contiene tarjetas, o todas las tarjetas ya están aprendidas."
+
+msgid "Practice with all cards"
+msgstr "Practicar con todas las tarjetas"

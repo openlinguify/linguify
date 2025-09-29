@@ -211,15 +211,15 @@ class FlashcardStudyMode {
         const noCardsElement = document.getElementById('noCardsToStudy');
         noCardsElement.innerHTML = `
             <i class="bi bi-check-circle text-linguify-accent" style="font-size: 4rem;"></i>
-            <h4 class="mt-3 text-linguify-accent">Aucune carte à réviser !</h4>
-            <p class="text-muted">Ce deck ne contient aucune carte, ou alors toutes les cartes sont déjà apprises.</p>
+            <h4 class="mt-3 text-linguify-accent">${window.translations['No cards to review!'] || 'Aucune carte à réviser !'}</h4>
+            <p class="text-muted">${window.translations['This deck contains no cards, or all cards are already learned.'] || 'Ce deck ne contient aucune carte, ou alors toutes les cartes sont déjà apprises.'}</p>
             <div class="d-flex gap-2 justify-content-center">
                 <button class="btn btn-outline-custom" id="practiceAllCardsBtn">
                     <i class="bi bi-arrow-clockwise me-1"></i>
-                    S'entraîner avec toutes les cartes
+                    ${window.translations['Practice with all cards'] || "S'entraîner avec toutes les cartes"}
                 </button>
                 <button class="btn btn-gradient" id="exitFromNoCardsBtn">
-                    Retour au deck
+                    ${window.translations['Back to deck'] || 'Retour au deck'}
                 </button>
             </div>
         `;

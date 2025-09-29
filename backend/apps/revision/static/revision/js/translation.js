@@ -258,14 +258,23 @@ function getNotificationIcon(type) {
 }
 
 // Fonction simple pour inverser une carte
-window.flipCard = async function(cardId) {
-    console.log('Inversion carte:', cardId);
-    
-    // Valider l'ID de la carte
-    if (!cardId || cardId === 'undefined' || cardId === 'unknown') {
-        console.error('ID de carte invalide:', cardId);
-        showNotification('Impossible d\'inverser la carte: ID invalide', 'error');
-        return;
+window.flipCard = async function(cardId, event) {
+    console.log('Inversion carte:', cardId, 'Event:', event);
+
+    // Si cardId n'est pas valide, essayer de le trouver depuis l'élément cliqué
+    if (!cardId || cardId === 'undefined' || cardId === 'unknown' || cardId === undefined) {
+        if (event && event.target) {
+            const button = event.target.closest('button');
+            const cardElement = button?.closest('[data-card-id]');
+            cardId = cardElement?.dataset?.cardId;
+            console.log('ID récupéré depuis le DOM:', cardId);
+        }
+
+        if (!cardId || cardId === 'undefined' || cardId === 'unknown') {
+            console.error('ID de carte invalide:', cardId);
+            showNotification('Impossible d\'inverser la carte: ID invalide', 'error');
+            return;
+        }
     }
     
     // Si c'est un ID temporaire, faire uniquement l'inversion visuelle

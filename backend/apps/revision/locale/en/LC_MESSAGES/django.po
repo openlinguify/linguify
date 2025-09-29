@@ -1229,10 +1229,8 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:11
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:71
-#, fuzzy
-#| msgid "Create deck"
 msgid "Back to deck"
-msgstr "Create deck"
+msgstr "Back to deck"
 
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:24
 msgid "Click to start"
@@ -1374,3 +1372,12 @@ msgstr[1] "cards"
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:7
 msgid "No tags - Click on 🏷️ to add some"
 msgstr "No tags - Click on 🏷️ to add some"
+
+msgid "No cards to review!"
+msgstr "No cards to review!"
+
+msgid "This deck contains no cards, or all cards are already learned."
+msgstr "This deck contains no cards, or all cards are already learned."
+
+msgid "Practice with all cards"
+msgstr "Practice with all cards"
