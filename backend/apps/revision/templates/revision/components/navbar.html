@@ -98,7 +98,8 @@
             <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
                 <span id="tagsFilterText">{% trans "All tags" %}</span>
             </button>
-            <ul id="tagsFilterDropdown" class="dropdown-menu">
+            <ul id="tagsFilterDropdown" class="dropdown-menu"
+                data-empty-text="{% trans 'No tags available' %}">
                 <li><a class="dropdown-item" href="#" data-action="selectTagsFilter" data-value="" data-text="{% trans 'All tags'|escapejs %}">{% trans "All tags" %}</a></li>
                 <!-- More tags will be dynamically loaded here -->
             </ul>
@@ -139,7 +140,8 @@
             <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
                 <span id="tagsFilterText">{% trans "All tags" %}</span>
             </button>
-            <ul id="tagsFilterDropdown" class="dropdown-menu">
+            <ul id="tagsFilterDropdown" class="dropdown-menu"
+                data-empty-text="{% trans 'No tags available' %}">
                 <!-- Tags will be dynamically loaded here -->
             </ul>
         </div>
@@ -179,6 +181,31 @@
 </div>
 
 <script>
+// Global translations object for JavaScript
+window.translations = {
+    'Share': "{% trans 'Share' %}",
+    'Make public': "{% trans 'Make public' %}",
+    'Loading decks': "{% trans 'Loading decks' %}",
+    'Unnamed': "{% trans 'Unnamed' %}",
+    'No description': "{% trans 'No description' %}",
+    'Add tags': "{% trans 'Add tags' %}",
+    'Public': "{% trans 'Public' %}",
+    'Save': "{% trans 'Save' %}",
+    'Cancel': "{% trans 'Cancel' %}",
+    'Delete': "{% trans 'Delete' %}",
+    'Edit': "{% trans 'Edit' %}",
+    'Create': "{% trans 'Create' %}",
+    'New': "{% trans 'New' %}",
+    'Error': "{% trans 'Error' %}",
+    'Edit language for this card': "{% trans 'Edit language for this card' %}",
+    'Error loading deck': "{% trans 'Error loading deck' %}",
+    'Error creating card': "{% trans 'Error creating card' %}",
+    'Error loading cards': "{% trans 'Error loading cards' %}",
+    'Share this deck': "{% trans 'Share this deck' %}",
+    'Share quickly': "{% trans 'Share quickly' %}",
+    'Column': "{% trans 'Column' %}"
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     // Handle dropdown item clicks with data attributes
     document.querySelectorAll('[data-action]').forEach(function(element) {

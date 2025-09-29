@@ -1,4 +1,10 @@
 // Revision Main Interface Manager
+
+// Translation helper function
+function _(key, fallback = null) {
+    return (window.translations && window.translations[key]) || fallback || key;
+}
+
 // État global de l'application
 let appState = {
     decks: [],
@@ -243,7 +249,7 @@ function updateShareButtonText() {
             shareIcon.className = 'bi bi-share me-2';
         }
         if (shareTextNode) {
-            shareTextNode.textContent = 'Partager';
+            shareTextNode.textContent = _('Share');
         }
         
         // Show "Rendre privé" option
@@ -256,7 +262,7 @@ function updateShareButtonText() {
             shareIcon.className = 'bi bi-globe2 me-2';
         }
         if (shareTextNode) {
-            shareTextNode.textContent = 'Rendre public';
+            shareTextNode.textContent = _('Make public');
         }
         
         // Hide "Rendre privé" option
@@ -302,7 +308,7 @@ async function loadDecks(reset = true) {
         // Use enhanced error handling with retry
         window.notificationService.handleApiError(
             error, 
-            'Chargement des decks',
+            _('Loading decks'),
             () => loadDecks(reset) // Retry with same parameters
         );
     } finally {
@@ -332,7 +338,7 @@ async function refreshSelectedDeck() {
         
         console.log('✅ Deck sélectionné actualisé');
     } catch (error) {
-        console.error('❌ Erreur lors de l\'actualisation du deck sélectionné:', error);
+        console.error('❌ ' + _('Error') + ' lors de l\'actualisation du deck sélectionné:', error);
         // Don't show error for this, as the main refresh might still succeed
     }
 }
@@ -343,8 +349,8 @@ function updateDeckDetailsDisplay(deck) {
     if (!elements.deckDetails || elements.deckDetails.style.display === 'none') return;
     
     // Update basic deck info
-    if (elements.deckName) elements.deckName.textContent = deck.name || 'Sans nom';
-    if (elements.deckDescription) elements.deckDescription.textContent = deck.description || 'Aucune description';
+    if (elements.deckName) elements.deckName.textContent = deck.name || _('Unnamed');
+    if (elements.deckDescription) elements.deckDescription.textContent = deck.description || _('No description');
     
     // Update progress
     const progress = calculateProgress(deck);
@@ -410,12 +416,12 @@ function renderDecksList() {
                     ${deck.is_public ? '<i class="bi bi-globe2 text-linguify-accent" title="Public"></i>' : ''}
                     ${deck.is_archived ? '<i class="bi bi-archive text-gray-400" title="Archivé"></i>' : ''}
                 </div>
-                <h4 class="deck-card-title">${deck.name || 'Sans nom'}</h4>
+                <h4 class="deck-card-title">${deck.name || _('Unnamed')}</h4>
             </div>
-            <div class="deck-card-description">${deck.description || 'Aucune description'}</div>
+            <div class="deck-card-description">${deck.description || _('No description')}</div>
             <div class="deck-card-tags">
                 <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ((!deck.tags || deck.tags.length === 0) ? `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deck.id})" style="cursor: pointer; color: #2d5bba; font-size: 0.875rem;"></i> pour en ajouter</span>` : deck.tags.map(tag => `<span class="tag-linguify tag-linguify-blue">${tag}</span>`).join(''))}</div>
-                <button class="btn-link-linguify text-sm" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="Ajouter des tags">
+                <button class="btn-link-linguify text-sm" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="${_('Add tags')}">
                     <i class="bi bi-tag"></i>
                 </button>
             </div>
@@ -503,8 +509,8 @@ async function selectDeck(deckId) {
         elements.deckDetails.style.display = 'block';
         
         // Populate deck details
-        elements.deckName.textContent = deck.name || 'Sans nom';
-        elements.deckDescription.textContent = deck.description || 'Aucune description';
+        elements.deckName.textContent = deck.name || _('Unnamed');
+        elements.deckDescription.textContent = deck.description || _('No description');
         
         // Display deck tags
         const deckTagsDisplay = document.getElementById('deckTagsDisplay');
@@ -565,7 +571,7 @@ async function selectDeck(deckId) {
                 '<a href="/login/" style="color: white; text-decoration: underline;">Se connecter</a>'
             );
         } else {
-            window.notificationService.error(`Erreur lors du chargement du deck: ${error.message}`);
+            window.notificationService.error(`${_('Error loading deck')}: ${error.message}`);
         }
     }
 }
@@ -733,8 +739,8 @@ function toggleFrontLanguageSelector() {
             button.title = 'Confirmer le choix de langue';
         } else {
             selector.style.display = 'none';
-            button.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
-            button.title = 'Modifier la langue pour cette carte';
+            button.innerHTML = `<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">${_('Edit')}</span>`;
+            button.title = _('Edit language for this card');
             updateLanguageDisplay('front');
         }
     }
@@ -751,8 +757,8 @@ function toggleBackLanguageSelector() {
             button.title = 'Confirmer le choix de langue';
         } else {
             selector.style.display = 'none';
-            button.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
-            button.title = 'Modifier la langue pour cette carte';
+            button.innerHTML = `<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">${_('Edit')}</span>`;
+            button.title = _('Edit language for this card');
             updateLanguageDisplay('back');
         }
     }
@@ -780,7 +786,7 @@ function resetLanguageSelectors() {
     
     if (frontSelector) frontSelector.style.display = 'none';
     if (frontButton) {
-        frontButton.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
+        frontButton.innerHTML = `<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">${_('Edit')}</span>`;
         frontButton.title = 'Modifier la langue pour cette carte';
     }
     if (frontDisplay) frontDisplay.textContent = 'Langue par défaut du deck';
@@ -792,7 +798,7 @@ function resetLanguageSelectors() {
     
     if (backSelector) backSelector.style.display = 'none';
     if (backButton) {
-        backButton.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
+        backButton.innerHTML = `<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">${_('Edit')}</span>`;
         backButton.title = 'Modifier la langue pour cette carte';
     }
     if (backDisplay) backDisplay.textContent = 'Langue par défaut du deck';
@@ -845,7 +851,7 @@ async function createNewCard() {
         
     } catch (error) {
         console.error('Error creating card:', error);
-        window.notificationService.error('Erreur lors de la création de la carte');
+        window.notificationService.error(_('Error creating card'));
     }
 }
 
@@ -917,13 +923,13 @@ async function loadDeckCards() {
                     <div class="d-flex gap-2">
                         <button class="btn btn-link p-0" 
                                 onclick="window.revisionMain?.editCard(${cardId})" 
-                                title="Modifier"
+                                title="${_('Edit')}"
                                 style="color: #6c757d; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <button class="btn btn-link p-0" 
                                 onclick="window.revisionMain?.deleteCard(${cardId})" 
-                                title="Supprimer"
+                                title="${_('Delete')}"
                                 style="color: #6c757d; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
                             <i class="bi bi-trash"></i>
                         </button>
@@ -963,7 +969,7 @@ async function loadDeckCards() {
         
     } catch (error) {
         console.error('Error loading deck cards:', error);
-        window.notificationService.error('Erreur lors du chargement des cartes');
+        window.notificationService.error(_('Error loading cards'));
     } finally {
         appState.isLoadingCards = false;
     }
@@ -1672,12 +1678,12 @@ function showImportPreview(previewResult) {
     columns.forEach(col => {
         const optionFront = document.createElement('option');
         optionFront.value = col.index;
-        optionFront.textContent = `Colonne ${col.index + 1}: ${col.name || 'Sans nom'}`;
+        optionFront.textContent = `${_('Column')} ${col.index + 1}: ${col.name || _('Unnamed')}`;
         frontSelect.appendChild(optionFront);
         
         const optionBack = document.createElement('option');
         optionBack.value = col.index;
-        optionBack.textContent = `Colonne ${col.index + 1}: ${col.name || 'Sans nom'}`;
+        optionBack.textContent = `${_('Column')} ${col.index + 1}: ${col.name || _('Unnamed')}`;
         backSelect.appendChild(optionBack);
     });
     
@@ -2101,7 +2107,7 @@ async function autoSaveEditDeck() {
         }
         const deckDescElement = document.getElementById('deckDescription');
         if (deckDescElement && updatedDeck.description !== undefined) {
-            deckDescElement.textContent = updatedDeck.description || 'Aucune description';
+            deckDescElement.textContent = updatedDeck.description || _('No description');
         }
         
     } catch (error) {
@@ -2605,7 +2611,7 @@ function setupShareModalEventHandlers() {
     
     // Utiliser la délégation d'événements sur document pour éviter les problèmes de timing
     document.addEventListener('click', async function(e) {
-        // Handler pour le bouton "Rendre public et partager"
+        // Handler pour le bouton "Make public and share"
         if (e.target.id === 'makeDeckPublicBtn' || e.target.closest('#makeDeckPublicBtn')) {
             e.preventDefault();
             const button = e.target.closest('#makeDeckPublicBtn') || e.target;
@@ -3544,6 +3550,7 @@ async function loadTagsFilter() {
         const tagsArray = Array.from(tags).sort();
         
         if (tagsArray.length === 0) {
+            const emptyText = dropdown.dataset.emptyText || 'No tags available';
             dropdown.innerHTML = `
                 <div class="tags-filter-empty" style="
                     padding: 24px 16px;
@@ -3552,7 +3559,7 @@ async function loadTagsFilter() {
                     font-size: 14px;
                 ">
                     <i class="bi bi-tags" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
-                    <div>Aucun tag disponible</div>
+                    <div>${emptyText}</div>
                 </div>
             `;
             return;
@@ -4543,7 +4550,7 @@ function ensureModalsExist() {
                             <i class="bi bi-x-circle mr-2"></i>Annuler
                         </button>
                         <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" id="makeDeckPublicBtn">
-                            <i class="bi bi-globe2 mr-2"></i>Rendre public
+                            <i class="bi bi-globe2 mr-2"></i>${_('Make public')}
                         </button>
                     </div>
                 </div>
@@ -4564,7 +4571,7 @@ function ensureModalsExist() {
                                 <i class="bi bi-globe2 text-green-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-1">Partager ce deck</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1">${_('Share this deck')}</h3>
                                 <p class="text-sm text-gray-500" id="shareModalDeckName">"Nom du jeu de cartes"</p>
                             </div>
                         </div>
@@ -4595,7 +4602,7 @@ function ensureModalsExist() {
                         <div class="mb-4">
                             <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
                                 <i class="bi bi-send text-blue-600 mr-2"></i>
-                                Partager rapidement
+                                ${_('Share quickly')}
                             </h4>
                             <div class="flex flex-wrap gap-2">
                                 <button class="px-3 py-2 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" id="shareByEmailBtn" type="button">

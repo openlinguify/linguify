@@ -382,7 +382,7 @@ msgstr ""
 #: .\templates\revision\partials\edit_card_form.html:9
 #: .\templates\revision\partials\edit_card_form.html:53
 msgid "Cancel"
-msgstr ""
+msgstr "Annuleren"
 
 #: .\templates\revision\partials\create_deck_form.html:23
 #: .\templates\revision\partials\deck_details_section.html:12
@@ -472,7 +472,7 @@ msgstr ""
 
 #: .\templates\revision\partials\deck_details_section.html:70
 msgid "Delete"
-msgstr ""
+msgstr "Verwijderen"
 
 #: .\templates\revision\partials\edit_card_form.html:6
 msgid "Edit Card"
@@ -531,7 +531,7 @@ msgstr ""
 
 #: .\templates\revision\partials\edit_card_form.html:57
 msgid "Save"
-msgstr ""
+msgstr "Opslaan"
 
 #: .\templates\revision\partials\sidebar_section.html:11
 msgid "No decks"
