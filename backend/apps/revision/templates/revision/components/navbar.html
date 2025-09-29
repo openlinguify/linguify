@@ -1,3 +1,4 @@
+{% load i18n %}
 <!-- Interface unifiée Linguify -->
 <div class="navbar-linguify">
     <!-- Gauche: Navigation + Actions principales -->
@@ -106,7 +107,7 @@
         <!-- Filtres pour la page Statistiques - Simplifiés -->
         <!-- Time Range Filter - Spécifique aux statistiques -->
         <select id="statsTimeRange" class="form-select-linguify" style="width: 140px; min-width: 120px;">
-            <option value="7">{% trans "7 last days" %</option>
+            <option value="7">{% trans "7 last days" %}</option>
             <option value="30" selected>{% trans "30 last days" %</option>
             <option value="90">{% trans "3 last months" %</option>
             <option value="365">{% trans "This year" %</option>
@@ -120,7 +121,7 @@
         
         {% elif view_type == 'explore' %}
         <!-- Filtres pour la page Explorer - Alignés avec la Liste de cartes -->
-        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans "Research in progress ..." %" style="width: 140px; min-width: 100px;">
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Research in progress ...' %}" style="width: 140px; min-width: 100px;">
         
         <!-- Status Filter Dropdown -->
         <div class="dropdown">
@@ -179,7 +180,7 @@
         <!-- Sort Filter Dropdown -->
         <div class="dropdown">
             <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="sortFilterText">{% trans "Filter" %</span>
+                <span id="sortFilterText">{% trans "Filter" %}</span>
             </button>
             <ul id="sortFilterDropdown" class="dropdown-menu">
                 <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">{% trans "Most recent" %</a></li>
