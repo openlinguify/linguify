@@ -89,7 +89,7 @@ msgstr ""
 
 #: .\admin.py:236 .\templates\revision\partials\create_deck_form.html:38
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: .\admin.py:241 .\admin.py:571
 msgid "User"
@@ -155,7 +155,7 @@ msgstr ""
 
 #: .\admin.py:555
 msgid "Front"
-msgstr ""
+msgstr "Front"
 
 #: .\admin.py:560
 msgid "Back"
@@ -284,7 +284,7 @@ msgstr ""
 #: .\templates\revision\components\navbar.html:129
 #: .\templates\revision\components\navbar.html:132
 msgid "All statuses"
-msgstr ""
+msgstr "All statuses"
 
 #: .\templates\revision\components\navbar.html:133
 msgid "Recent"
@@ -318,7 +318,7 @@ msgstr ""
 #: .\templates\revision\components\navbar.html:158
 #: .\templates\revision\components\navbar.html:196
 msgid "All tags"
-msgstr ""
+msgstr "All tags"
 
 #: .\templates\revision\components\navbar.html:165
 msgid "Search..."
@@ -327,7 +327,7 @@ msgstr "Search..."
 #: .\templates\revision\components\navbar.html:170
 #: .\templates\revision\components\navbar.html:173
 msgid "All status"
-msgstr ""
+msgstr "All status"
 
 #: .\templates\revision\components\navbar.html:174
 msgid "Active"
@@ -371,11 +371,11 @@ msgstr "Import"
 
 #: .\templates\revision\components\navbar.html:230
 msgid "New list"
-msgstr ""
+msgstr "New list"
 
 #: .\templates\revision\partials\create_deck_form.html:8
 msgid "Create New Deck"
-msgstr ""
+msgstr "Create New Deck"
 
 #: .\templates\revision\partials\create_deck_form.html:12
 #: .\templates\revision\partials\create_deck_form.html:116
@@ -387,7 +387,7 @@ msgstr "Cancel"
 #: .\templates\revision\partials\create_deck_form.html:23
 #: .\templates\revision\partials\deck_details_section.html:12
 msgid "Deck Name"
-msgstr ""
+msgstr "Deck Name"
 
 #: .\templates\revision\partials\create_deck_form.html:29
 msgid "Ex: English Vocabulary Level B2"
@@ -399,7 +399,7 @@ msgstr ""
 
 #: .\templates\revision\partials\create_deck_form.html:53
 msgid "Tags"
-msgstr ""
+msgstr "Tags"
 
 #: .\templates\revision\partials\create_deck_form.html:61
 msgid "No tags - Add them in the field below"
@@ -411,12 +411,12 @@ msgstr ""
 
 #: .\templates\revision\partials\create_deck_form.html:77
 msgid "Visibility"
-msgstr ""
+msgstr "Visibility"
 
 #: .\templates\revision\partials\create_deck_form.html:87
 #: .\templates\revision\partials\create_deck_form.html:108
 msgid "Private"
-msgstr ""
+msgstr "Private"
 
 #: .\templates\revision\partials\create_deck_form.html:88
 msgid "Visible by you only"
@@ -428,7 +428,7 @@ msgstr ""
 
 #: .\templates\revision\partials\create_deck_form.html:120
 msgid "Create Deck"
-msgstr ""
+msgstr "Create Deck"
 
 #: .\templates\revision\partials\deck_details_section.html:13
 msgid "Deck Description"
@@ -452,7 +452,7 @@ msgstr ""
 
 #: .\templates\revision\partials\deck_details_section.html:54
 msgid "Import Cards"
-msgstr ""
+msgstr "Import Cards"
 
 #: .\templates\revision\partials\deck_details_section.html:57
 msgid "Export"
@@ -535,7 +535,7 @@ msgstr "Save"
 
 #: .\templates\revision\partials\sidebar_section.html:11
 msgid "No decks"
-msgstr ""
+msgstr "No decks"
 
 #: .\templates\revision\partials\sidebar_section.html:12
 msgid "Create your first flashcard deck to start studying"
@@ -544,7 +544,7 @@ msgstr ""
 #: .\templates\revision\partials\sidebar_section.html:15
 #: .\templates\revision\partials\welcome_section.html:12
 msgid "Create deck"
-msgstr ""
+msgstr "Create deck"
 
 #: .\templates\revision\partials\sidebar_section.html:23
 msgid "Load more"

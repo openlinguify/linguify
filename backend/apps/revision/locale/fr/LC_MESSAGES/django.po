@@ -89,7 +89,7 @@ msgstr ""
 
 #: .\admin.py:236 .\templates\revision\partials\create_deck_form.html:38
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: .\admin.py:241 .\admin.py:571
 msgid "User"
@@ -155,11 +155,11 @@ msgstr ""
 
 #: .\admin.py:555
 msgid "Front"
-msgstr ""
+msgstr "Recto"
 
 #: .\admin.py:560
 msgid "Back"
-msgstr ""
+msgstr "Verso"
 
 #: .\admin.py:565 .\templates\revision\stats_dashboard.html:277
 msgid "Deck"
@@ -284,7 +284,7 @@ msgstr ""
 #: .\templates\revision\components\navbar.html:129
 #: .\templates\revision\components\navbar.html:132
 msgid "All statuses"
-msgstr ""
+msgstr "Tous les statuts"
 
 #: .\templates\revision\components\navbar.html:133
 msgid "Recent"
@@ -318,7 +318,7 @@ msgstr ""
 #: .\templates\revision\components\navbar.html:158
 #: .\templates\revision\components\navbar.html:196
 msgid "All tags"
-msgstr ""
+msgstr "Tous les tags"
 
 #: .\templates\revision\components\navbar.html:165
 msgid "Search..."
@@ -327,7 +327,7 @@ msgstr "Rechercher..."
 #: .\templates\revision\components\navbar.html:170
 #: .\templates\revision\components\navbar.html:173
 msgid "All status"
-msgstr ""
+msgstr "Tous les statuts"
 
 #: .\templates\revision\components\navbar.html:174
 msgid "Active"
@@ -371,11 +371,11 @@ msgstr "Importer"
 
 #: .\templates\revision\components\navbar.html:230
 msgid "New list"
-msgstr ""
+msgstr "Nouvelle liste"
 
 #: .\templates\revision\partials\create_deck_form.html:8
 msgid "Create New Deck"
-msgstr ""
+msgstr "Créer une nouvelle liste"
 
 #: .\templates\revision\partials\create_deck_form.html:12
 #: .\templates\revision\partials\create_deck_form.html:116
@@ -387,56 +387,56 @@ msgstr "Annuler"
 #: .\templates\revision\partials\create_deck_form.html:23
 #: .\templates\revision\partials\deck_details_section.html:12
 msgid "Deck Name"
-msgstr ""
+msgstr "Nom de la liste"
 
 #: .\templates\revision\partials\create_deck_form.html:29
 msgid "Ex: English Vocabulary Level B2"
-msgstr ""
+msgstr "Ex: Vocabulaire anglais niveau B2"
 
 #: .\templates\revision\partials\create_deck_form.html:46
 msgid "Briefly describe the content of this deck..."
-msgstr ""
+msgstr "Décrivez brièvement le contenu de cette liste..."
 
 #: .\templates\revision\partials\create_deck_form.html:53
 msgid "Tags"
-msgstr ""
+msgstr "Tags"
 
 #: .\templates\revision\partials\create_deck_form.html:61
 msgid "No tags - Add them in the field below"
-msgstr ""
+msgstr "Aucun tag - Ajoutez-les dans le champ ci-dessous"
 
 #: .\templates\revision\partials\create_deck_form.html:68
 msgid "Add tags (press Enter)"
-msgstr ""
+msgstr "Ajouter des tags (appuyez sur Entrée)"
 
 #: .\templates\revision\partials\create_deck_form.html:77
 msgid "Visibility"
-msgstr ""
+msgstr "Visibilité"
 
 #: .\templates\revision\partials\create_deck_form.html:87
 #: .\templates\revision\partials\create_deck_form.html:108
 msgid "Private"
-msgstr ""
+msgstr "Privé"
 
 #: .\templates\revision\partials\create_deck_form.html:88
 msgid "Visible by you only"
-msgstr ""
+msgstr "Visible par vous seulement"
 
 #: .\templates\revision\partials\create_deck_form.html:101
 msgid "Visible by everyone"
-msgstr ""
+msgstr "Visible par tout le monde"
 
 #: .\templates\revision\partials\create_deck_form.html:120
 msgid "Create Deck"
-msgstr ""
+msgstr "Créer la liste"
 
 #: .\templates\revision\partials\deck_details_section.html:13
 msgid "Deck Description"
-msgstr ""
+msgstr "Description de la liste"
 
 #: .\templates\revision\partials\deck_details_section.html:31
 msgid "Add Card"
-msgstr ""
+msgstr "Ajouter une carte"
 
 #: .\templates\revision\partials\deck_details_section.html:36
 msgid "Review Difficult"
@@ -448,11 +448,11 @@ msgstr ""
 
 #: .\templates\revision\partials\deck_details_section.html:51
 msgid "Edit Deck"
-msgstr ""
+msgstr "Modifier la liste"
 
 #: .\templates\revision\partials\deck_details_section.html:54
 msgid "Import Cards"
-msgstr ""
+msgstr "Importer des cartes"
 
 #: .\templates\revision\partials\deck_details_section.html:57
 msgid "Export"
@@ -460,15 +460,15 @@ msgstr "Exporter"
 
 #: .\templates\revision\partials\deck_details_section.html:60
 msgid "Make Public"
-msgstr ""
+msgstr "Rendre public"
 
 #: .\templates\revision\partials\deck_details_section.html:63
 msgid "Make Private"
-msgstr ""
+msgstr "Rendre privé"
 
 #: .\templates\revision\partials\deck_details_section.html:67
 msgid "Archive"
-msgstr ""
+msgstr "Archiver"
 
 #: .\templates\revision\partials\deck_details_section.html:70
 msgid "Delete"
@@ -535,7 +535,7 @@ msgstr "Enregistrer"
 
 #: .\templates\revision\partials\sidebar_section.html:11
 msgid "No decks"
-msgstr ""
+msgstr "Aucune liste"
 
 #: .\templates\revision\partials\sidebar_section.html:12
 msgid "Create your first flashcard deck to start studying"
@@ -544,7 +544,7 @@ msgstr ""
 #: .\templates\revision\partials\sidebar_section.html:15
 #: .\templates\revision\partials\welcome_section.html:12
 msgid "Create deck"
-msgstr ""
+msgstr "Créer une liste"
 
 #: .\templates\revision\partials\sidebar_section.html:23
 msgid "Load more"
