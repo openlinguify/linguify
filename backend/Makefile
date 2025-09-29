@@ -504,12 +504,12 @@ install:
 
 run:
 	@echo "🚀 Starting Django server..."
-	poetry run python manage.py runserver 0.0.0.0:8000
+	poetry run python manage.py runserver 0.0.0.0:8001
 
 stop:
 	@echo "🛑 Stopping Django server..."
 	@pkill -f "python.*manage.py runserver" || echo "No Django server running"
-	@lsof -ti:8000 | xargs kill -9 2>/dev/null || echo "Port 8000 is free"
+	@ss -tlpn | grep :8001 | awk '{print $$6}' | grep -o '[0-9]*' | head -1 | xargs -r kill -9 2>/dev/null || echo "Port 8001 is free"
 	@echo "✅ Server stopped"
 
 shell:

@@ -1,8 +1,7 @@
-# Generated manually for enhanced feedback system
+# Enhanced feedback system - Clean migration
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-from django.utils import timezone
 
 
 class Migration(migrations.Migration):
@@ -12,17 +11,17 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Step 1: Add new fields with default values or null=True
+        # Step 1: Add new fields with appropriate defaults or null=True
         migrations.AddField(
             model_name='userfeedback',
             name='title',
-            field=models.CharField(default='Imported feedback', help_text='Brief summary of the feedback', max_length=200),
-            preserve_default=False,
+            field=models.CharField(max_length=200, help_text='Brief summary of the feedback', default='Feedback'),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='category',
             field=models.CharField(
+                max_length=20,
                 choices=[
                     ('ui_ux', 'UI/UX'),
                     ('performance', 'Performance'),
@@ -36,14 +35,14 @@ class Migration(migrations.Migration):
                     ('other', 'Other'),
                 ],
                 default='other',
-                help_text='Category for better organization',
-                max_length=20
+                help_text='Category for better organization'
             ),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='priority',
             field=models.CharField(
+                max_length=10,
                 choices=[
                     ('low', 'Low'),
                     ('medium', 'Medium'),
@@ -51,14 +50,14 @@ class Migration(migrations.Migration):
                     ('critical', 'Critical'),
                 ],
                 default='medium',
-                help_text='Priority level',
-                max_length=10
+                help_text='Priority level'
             ),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='status',
             field=models.CharField(
+                max_length=15,
                 choices=[
                     ('new', 'New'),
                     ('in_progress', 'In Progress'),
@@ -68,84 +67,93 @@ class Migration(migrations.Migration):
                     ('wont_fix', "Won't Fix"),
                 ],
                 default='new',
-                help_text='Current status',
-                max_length=15
+                help_text='Current status'
             ),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='description',
-            field=models.TextField(default='', help_text='Detailed description of the feedback'),
-            preserve_default=False,
+            field=models.TextField(help_text='Detailed description of the feedback', default='No description provided'),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='steps_to_reproduce',
-            field=models.TextField(blank=True, help_text='For bug reports: steps to reproduce the issue', null=True),
+            field=models.TextField(blank=True, null=True, help_text='For bug reports: steps to reproduce the issue'),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='expected_behavior',
-            field=models.TextField(blank=True, help_text='What should have happened', null=True),
+            field=models.TextField(blank=True, null=True, help_text='What should have happened'),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='actual_behavior',
-            field=models.TextField(blank=True, help_text='What actually happened', null=True),
+            field=models.TextField(blank=True, null=True, help_text='What actually happened'),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='browser_info',
-            field=models.TextField(blank=True, help_text='Browser, OS, and device information', null=True),
+            field=models.TextField(blank=True, null=True, help_text='Browser, OS, and device information'),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='page_url',
-            field=models.URLField(blank=True, help_text='URL where the issue occurred', max_length=500, null=True),
+            field=models.URLField(blank=True, null=True, max_length=500, help_text='URL where the issue occurred'),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='screenshot',
-            field=models.ImageField(blank=True, help_text='Optional screenshot of the issue', null=True, upload_to='feedback_screenshots/%Y/%m/'),
+            field=models.ImageField(blank=True, null=True, upload_to='feedback_screenshots/%Y/%m/', help_text='Optional screenshot of the issue'),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='admin_notes',
-            field=models.TextField(blank=True, help_text='Internal notes for admins (not visible to users)', null=True),
+            field=models.TextField(blank=True, null=True, help_text='Internal notes for admins (not visible to users)'),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='assigned_to',
-            field=models.ForeignKey(blank=True, help_text='Staff member assigned to handle this feedback', limit_choices_to={'is_staff': True}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_feedbacks', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='assigned_feedbacks',
+                to=settings.AUTH_USER_MODEL,
+                limit_choices_to={'is_staff': True},
+                help_text='Staff member assigned to handle this feedback'
+            ),
         ),
         migrations.AddField(
             model_name='userfeedback',
-            name='created_at_new',
-            field=models.DateTimeField(blank=True, null=True),
+            name='created_at',
+            field=models.DateTimeField(auto_now_add=True, null=True, blank=True),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='updated_at',
-            field=models.DateTimeField(auto_now=True, blank=True, null=True),
+            field=models.DateTimeField(auto_now=True, null=True, blank=True),
         ),
         migrations.AddField(
             model_name='userfeedback',
             name='resolved_at',
-            field=models.DateTimeField(blank=True, help_text='When the feedback was resolved', null=True),
+            field=models.DateTimeField(blank=True, null=True, help_text='When the feedback was resolved'),
         ),
 
-        # Step 2: Migrate existing data
+        # Step 2: Migrate existing data from legacy fields
         migrations.RunSQL(
             """
-            UPDATE authentication_userfeedback
-            SET
-                title = COALESCE(SUBSTRING(feedback_content FROM 1 FOR 50) || '...', 'Legacy Feedback'),
+            UPDATE authentication_userfeedback SET
+                title = COALESCE(
+                    CASE
+                        WHEN LENGTH(feedback_content) > 50 THEN SUBSTRING(feedback_content FROM 1 FOR 50) || '...'
+                        WHEN feedback_content IS NOT NULL AND feedback_content != '' THEN feedback_content
+                        ELSE 'Legacy Feedback'
+                    END,
+                    'Legacy Feedback'
+                ),
                 description = COALESCE(feedback_content, 'No description provided'),
-                created_at_new = COALESCE(feedback_date, NOW()),
-                status = 'new',
-                priority = 'medium',
-                category = 'other'
-            WHERE title IS NULL OR title = '';
+                created_at = COALESCE(feedback_date, NOW())
+            WHERE title = 'Feedback' OR description = 'No description provided' OR created_at IS NULL;
             """,
             reverse_sql=migrations.RunSQL.noop
         ),
@@ -155,6 +163,7 @@ class Migration(migrations.Migration):
             model_name='userfeedback',
             name='feedback_type',
             field=models.CharField(
+                max_length=20,
                 choices=[
                     ('bug_report', 'Bug Report'),
                     ('feature_request', 'Feature Request'),
@@ -165,20 +174,31 @@ class Migration(migrations.Migration):
                     ('other', 'Other'),
                 ],
                 default='other',
-                help_text='Type of feedback',
-                max_length=20
+                help_text='Type of feedback'
             ),
         ),
 
-        # Step 4: Create new models
+        # Step 4: Make legacy fields optional
+        migrations.AlterField(
+            model_name='userfeedback',
+            name='feedback_date',
+            field=models.DateTimeField(blank=True, null=True, help_text='Legacy field - use created_at instead'),
+        ),
+        migrations.AlterField(
+            model_name='userfeedback',
+            name='feedback_content',
+            field=models.TextField(blank=True, null=True, help_text='Legacy field - use description instead'),
+        ),
+
+        # Step 5: Create new models
         migrations.CreateModel(
             name='FeedbackAttachment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(help_text='Additional file attachment (images, logs, etc.)', upload_to='feedback_attachments/%Y/%m/')),
-                ('filename', models.CharField(help_text='Original filename', max_length=255)),
+                ('file', models.FileField(upload_to='feedback_attachments/%Y/%m/', help_text='Additional file attachment (images, logs, etc.)')),
+                ('filename', models.CharField(max_length=255, help_text='Original filename')),
                 ('file_size', models.PositiveIntegerField(help_text='File size in bytes')),
-                ('content_type', models.CharField(help_text='MIME type of the file', max_length=100)),
+                ('content_type', models.CharField(max_length=100, help_text='MIME type of the file')),
                 ('uploaded_at', models.DateTimeField(auto_now_add=True)),
                 ('feedback', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='attachments', to='authentication.userfeedback')),
             ],
@@ -195,7 +215,7 @@ class Migration(migrations.Migration):
                 ('message', models.TextField(help_text='Response message to the user')),
                 ('is_internal', models.BooleanField(default=False, help_text='Internal note (not visible to user)')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('author', models.ForeignKey(help_text='Staff member who wrote the response', limit_choices_to={'is_staff': True}, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, limit_choices_to={'is_staff': True}, help_text='Staff member who wrote the response')),
                 ('feedback', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='responses', to='authentication.userfeedback')),
             ],
             options={
@@ -205,18 +225,18 @@ class Migration(migrations.Migration):
             },
         ),
 
-        # Step 5: Add indexes and constraints
+        # Step 6: Add indexes
         migrations.AddIndex(
             model_name='userfeedback',
-            index=models.Index(fields=['feedback_type', '-created_at_new'], name='auth_feedb_type_created_idx'),
+            index=models.Index(fields=['feedback_type', '-created_at'], name='auth_feedb_type_created_idx'),
         ),
         migrations.AddIndex(
             model_name='userfeedback',
-            index=models.Index(fields=['status', '-created_at_new'], name='auth_feedb_status_created_idx'),
+            index=models.Index(fields=['status', '-created_at'], name='auth_feedb_status_created_idx'),
         ),
         migrations.AddIndex(
             model_name='userfeedback',
-            index=models.Index(fields=['priority', '-created_at_new'], name='auth_feedb_priority_created_idx'),
+            index=models.Index(fields=['priority', '-created_at'], name='auth_feedb_priority_created_idx'),
         ),
         migrations.AddIndex(
             model_name='userfeedback',
@@ -224,32 +244,16 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name='userfeedback',
-            index=models.Index(fields=['user', '-created_at_new'], name='auth_feedb_user_created_idx'),
+            index=models.Index(fields=['user', '-created_at'], name='auth_feedb_user_created_idx'),
         ),
 
-        # Step 6: Update model meta options
+        # Step 7: Update model meta options
         migrations.AlterModelOptions(
             name='userfeedback',
             options={
-                'ordering': ['-created_at_new'],
+                'ordering': ['-created_at'],
                 'verbose_name': 'User Feedback',
                 'verbose_name_plural': 'User Feedbacks'
             },
-        ),
-
-        # Step 7: Final cleanup - remove the temporary created_at_new field and replace with created_at
-        migrations.RemoveField(
-            model_name='userfeedback',
-            name='created_at',
-        ),
-        migrations.RenameField(
-            model_name='userfeedback',
-            old_name='created_at_new',
-            new_name='created_at',
-        ),
-        migrations.AlterField(
-            model_name='userfeedback',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, blank=True, null=True),
         ),
     ]

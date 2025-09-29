@@ -1,0 +1,378 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{% trans "Bugs & Feedbacks" %} | Open Linguify{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'authentication/css/feedback.css' %}">
+<style>
+.feedback-dashboard {
+    padding: 2rem 0;
+}
+
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.dashboard-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-title h1 {
+    color: #2c3e50;
+    margin: 0;
+}
+
+.dashboard-subtitle {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 4px solid #007bff;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.stat-card.new { border-left-color: #007bff; }
+.stat-card.in-progress { border-left-color: #ffc107; }
+.stat-card.resolved { border-left-color: #28a745; }
+.stat-card.total { border-left-color: #6f42c1; }
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.btn-feedback {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-feedback.btn-primary {
+    background: #007bff;
+    color: white;
+    border: 2px solid #007bff;
+}
+
+.btn-feedback.btn-outline {
+    background: transparent;
+    color: #007bff;
+    border: 2px solid #007bff;
+}
+
+.btn-feedback:hover {
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.recent-feedback {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.recent-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.feedback-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f8f9fa;
+    transition: background 0.3s ease;
+}
+
+.feedback-item:hover {
+    background: #f8f9fa;
+}
+
+.feedback-item:last-child {
+    border-bottom: none;
+}
+
+.feedback-type-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.2rem;
+}
+
+.type-bug { background: #dc354520; color: #dc3545; }
+.type-feature { background: #007bff20; color: #007bff; }
+.type-improvement { background: #28a74520; color: #28a745; }
+.type-question { background: #6f42c120; color: #6f42c1; }
+.type-other { background: #6c757d20; color: #6c757d; }
+
+.feedback-content {
+    flex: 1;
+}
+
+.feedback-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.feedback-meta {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.feedback-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-new { background: #007bff20; color: #007bff; }
+.status-in-progress { background: #ffc10720; color: #ffc107; }
+.status-resolved { background: #28a74520; color: #28a745; }
+.status-closed { background: #6c757d20; color: #6c757d; }
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn-feedback {
+        justify-content: center;
+    }
+
+    .feedback-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container feedback-dashboard">
+    <!-- En-tête -->
+    <div class="dashboard-header">
+        <div class="dashboard-title">
+            <h1>
+                <i class="bi bi-bug-fill"></i>
+                {% trans "Bugs & Feedbacks" %}
+            </h1>
+        </div>
+        <p class="dashboard-subtitle">
+            {% trans "Manage your feedback, bug reports, and feature requests" %}
+        </p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-cards">
+        <div class="stat-card total">
+            <div class="stat-number">{{ stats.total }}</div>
+            <div class="stat-label">{% trans "Total Feedbacks" %}</div>
+        </div>
+        <div class="stat-card new">
+            <div class="stat-number">{{ stats.new }}</div>
+            <div class="stat-label">{% trans "New" %}</div>
+        </div>
+        <div class="stat-card in-progress">
+            <div class="stat-number">{{ stats.in_progress }}</div>
+            <div class="stat-label">{% trans "In Progress" %}</div>
+        </div>
+        <div class="stat-card resolved">
+            <div class="stat-number">{{ stats.resolved }}</div>
+            <div class="stat-label">{% trans "Resolved" %}</div>
+        </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="action-buttons">
+        <a href="{% url 'authentication:feedback_create' %}" class="btn-feedback btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            {% trans "Submit New Feedback" %}
+        </a>
+        <a href="{% url 'authentication:feedback_bug_report' %}" class="btn-feedback btn-outline">
+            <i class="bi bi-bug"></i>
+            {% trans "Report Bug" %}
+        </a>
+        <a href="{% url 'authentication:feedback_feature_request' %}" class="btn-feedback btn-outline">
+            <i class="bi bi-lightbulb"></i>
+            {% trans "Request Feature" %}
+        </a>
+        <a href="{% url 'authentication:feedback_list' %}" class="btn-feedback btn-outline">
+            <i class="bi bi-list-ul"></i>
+            {% trans "View All" %}
+        </a>
+    </div>
+
+    <!-- Feedbacks récents -->
+    <div class="recent-feedback">
+        <div class="recent-header">
+            <h3>
+                <i class="bi bi-clock-history"></i>
+                {% trans "Recent Feedbacks" %}
+            </h3>
+            <a href="{% url 'authentication:feedback_list' %}" class="text-primary">
+                {% trans "View all" %} →
+            </a>
+        </div>
+
+        {% if recent_feedbacks %}
+            {% for feedback in recent_feedbacks %}
+            <div class="feedback-item">
+                <div class="feedback-type-icon type-{{ feedback.feedback_type }}">
+                    {% if feedback.feedback_type == 'bug_report' %}
+                        <i class="bi bi-bug-fill"></i>
+                    {% elif feedback.feedback_type == 'feature_request' %}
+                        <i class="bi bi-lightbulb-fill"></i>
+                    {% elif feedback.feedback_type == 'improvement' %}
+                        <i class="bi bi-star-fill"></i>
+                    {% elif feedback.feedback_type == 'question' %}
+                        <i class="bi bi-question-circle-fill"></i>
+                    {% else %}
+                        <i class="bi bi-chat-dots-fill"></i>
+                    {% endif %}
+                </div>
+
+                <div class="feedback-content">
+                    <div class="feedback-title">
+                        <a href="{% url 'authentication:feedback_detail' feedback.pk %}" class="text-decoration-none">
+                            {{ feedback.title }}
+                        </a>
+                    </div>
+                    <div class="feedback-meta">
+                        {{ feedback.created_at|naturaltime }}
+                        {% if feedback.responses.count %}
+                            • <i class="bi bi-chat"></i> {{ feedback.responses.count }} response{{ feedback.responses.count|pluralize }}
+                        {% endif %}
+                        {% if feedback.attachments.count %}
+                            • <i class="bi bi-paperclip"></i> {{ feedback.attachments.count }} file{{ feedback.attachments.count|pluralize }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="feedback-status status-{{ feedback.status }}">
+                    {{ feedback.get_status_display }}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-chat-dots"></i>
+                </div>
+                <h4>{% trans "No feedback yet" %}</h4>
+                <p>{% trans "Start by submitting your first feedback or bug report." %}</p>
+                <a href="{% url 'authentication:feedback_create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus"></i>
+                    {% trans "Submit Feedback" %}
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if pending_feedbacks > 0 %}
+    <div class="mt-4 alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        {% blocktrans count counter=pending_feedbacks %}
+            You have {{ counter }} feedback pending response.
+        {% plural %}
+            You have {{ counter }} feedbacks pending response.
+        {% endblocktrans %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation d'entrée pour les cartes de statistiques
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Animation pour les items de feedback
+    const feedbackItems = document.querySelectorAll('.feedback-item');
+    feedbackItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-20px)';
+        setTimeout(() => {
+            item.style.transition = 'all 0.3s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateX(0)';
+        }, 200 + (index * 50));
+    });
+});
+</script>
+{% endblock %}

@@ -80,6 +80,9 @@ urlpatterns = [
     path('csrf/', utils.get_csrf_token, name='get_csrf_token'),
     path('api/', include('rest_framework.urls')),
     path('api/auth/', include('apps.authentication.urls.main')),
+
+    # Authentication app features (feedback system)
+    path('auth/', include('apps.authentication.urls_feedback')),
     # Test settings interface
     path('test-settings/', test_settings, name='test_settings'),
     # Terms and conditions endpoints

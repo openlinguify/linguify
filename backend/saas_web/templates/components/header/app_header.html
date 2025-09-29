@@ -173,8 +173,8 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="https://openlinguify.featurebase.app/en" target="_blank">
-                                <i class="bi bi-gear me-2" aria-hidden="true"></i>
+                            <a class="dropdown-item" href="{% url 'authentication:feedback_dashboard' %}">
+                                <i class="bi bi-bug me-2" aria-hidden="true"></i>
                                 {% trans "Bugs & Feedbacks" %}
                             </a>
                         </li>
@@ -200,6 +200,10 @@
                 <a class="nav-link mobile-nav-item" href="{% url 'saas_web:app_store' %}">
                     <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
                     {% trans "Store" %}
+                </a>
+                <a class="nav-link mobile-nav-item" href="{% url 'authentication:feedback_dashboard' %}">
+                    <i class="bi bi-bug me-2" aria-hidden="true"></i>
+                    {% trans "Bugs & Feedbacks" %}
                 </a>
             </div>
         </div>

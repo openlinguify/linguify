@@ -1,0 +1,799 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{{ feedback.title }} | {% trans "Feedback" %} | Open Linguify{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'authentication/css/feedback.css' %}">
+<style>
+.feedback-detail-container {
+    padding: 2rem 0;
+}
+
+.breadcrumb-nav {
+    margin-bottom: 2rem;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item {
+    font-size: 0.9rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: #6c757d;
+}
+
+.feedback-header {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.header-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.feedback-type-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.type-bug_report { background: #dc354520; color: #dc3545; }
+.type-feature_request { background: #007bff20; color: #007bff; }
+.type-improvement { background: #28a74520; color: #28a745; }
+.type-compliment { background: #17a2b820; color: #17a2b8; }
+.type-complaint { background: #fd7e1420; color: #fd7e14; }
+.type-question { background: #6f42c120; color: #6f42c1; }
+.type-other { background: #6c757d20; color: #6c757d; }
+
+.header-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.feedback-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    word-wrap: break-word;
+}
+
+.feedback-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.status-priority-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.status-new { background: #007bff20; color: #007bff; }
+.status-in_progress { background: #ffc10720; color: #ffc107; }
+.status-resolved { background: #28a74520; color: #28a745; }
+.status-closed { background: #6c757d20; color: #6c757d; }
+.status-duplicate { background: #fd7e1420; color: #fd7e14; }
+.status-wont_fix { background: #dc354520; color: #dc3545; }
+
+.priority-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.priority-low { background: #28a74520; color: #28a745; }
+.priority-medium { background: #ffc10720; color: #ffc107; }
+.priority-high { background: #fd7e1420; color: #fd7e14; }
+.priority-critical { background: #dc354520; color: #dc3545; }
+
+.feedback-body {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.content-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.section-title {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.description-content {
+    line-height: 1.6;
+    color: #495057;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.bug-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.bug-detail-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border-left: 4px solid #007bff;
+}
+
+.bug-detail-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.bug-detail-content {
+    color: #495057;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.info-list li:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.info-value {
+    color: #2c3e50;
+    font-weight: 500;
+    text-align: right;
+}
+
+.responses-section {
+    margin-top: 2rem;
+}
+
+.response-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #007bff;
+}
+
+.response-item:last-child {
+    margin-bottom: 0;
+}
+
+.response-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.response-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #007bff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.author-info {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.response-date {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.response-content {
+    color: #495057;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.attachments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.attachment-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.attachment-item:hover {
+    border-color: #007bff;
+    background: #e7f3ff;
+}
+
+.attachment-icon {
+    font-size: 2rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.attachment-name {
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+    word-break: break-all;
+}
+
+.attachment-size {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.screenshot-preview {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.screenshot-preview:hover {
+    transform: scale(1.02);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.back-button:hover {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+@media (max-width: 968px) {
+    .feedback-body {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .feedback-type-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 1.5rem;
+    }
+
+    .bug-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .feedback-detail-container {
+        padding: 1rem 0;
+    }
+
+    .feedback-header,
+    .content-section,
+    .info-card {
+        padding: 1.5rem;
+    }
+
+    .status-priority-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .attachments-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container feedback-detail-container">
+    <!-- Navigation breadcrumb -->
+    <nav class="breadcrumb-nav">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'authentication:feedback_dashboard' %}">
+                    {% trans "Bugs & Feedbacks" %}
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'authentication:feedback_list' %}">
+                    {% trans "My Feedbacks" %}
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                {{ feedback.get_feedback_type_display }}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- En-tête du feedback -->
+    <div class="feedback-header">
+        <div class="header-top">
+            <div class="feedback-type-icon type-{{ feedback.feedback_type }}">
+                {% if feedback.feedback_type == 'bug_report' %}
+                    <i class="bi bi-bug-fill"></i>
+                {% elif feedback.feedback_type == 'feature_request' %}
+                    <i class="bi bi-lightbulb-fill"></i>
+                {% elif feedback.feedback_type == 'improvement' %}
+                    <i class="bi bi-star-fill"></i>
+                {% elif feedback.feedback_type == 'compliment' %}
+                    <i class="bi bi-hand-thumbs-up-fill"></i>
+                {% elif feedback.feedback_type == 'complaint' %}
+                    <i class="bi bi-hand-thumbs-down-fill"></i>
+                {% elif feedback.feedback_type == 'question' %}
+                    <i class="bi bi-question-circle-fill"></i>
+                {% else %}
+                    <i class="bi bi-chat-dots-fill"></i>
+                {% endif %}
+            </div>
+
+            <div class="header-content">
+                <h1 class="feedback-title">{{ feedback.title }}</h1>
+
+                <div class="feedback-meta">
+                    <div class="meta-item">
+                        <i class="bi bi-calendar"></i>
+                        <span>{% trans "Created" %} {{ feedback.created_at|naturaltime }}</span>
+                    </div>
+
+                    <div class="meta-item">
+                        <i class="bi bi-tag"></i>
+                        <span>{{ feedback.get_category_display }}</span>
+                    </div>
+
+                    {% if feedback.updated_at and feedback.updated_at != feedback.created_at %}
+                    <div class="meta-item">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <span>{% trans "Updated" %} {{ feedback.updated_at|naturaltime }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if feedback.resolved_at %}
+                    <div class="meta-item">
+                        <i class="bi bi-check-circle"></i>
+                        <span>{% trans "Resolved" %} {{ feedback.resolved_at|naturaltime }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="status-priority-row">
+                    <div class="status-badge status-{{ feedback.status }}" style="color: {{ status_info.color }};">
+                        {{ status_info.status }}
+                    </div>
+                    <div class="priority-badge priority-{{ feedback.priority }}" style="color: {{ priority_info.color }};">
+                        {{ priority_info.priority }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Corps du feedback -->
+    <div class="feedback-body">
+        <!-- Contenu principal -->
+        <div class="main-content">
+            <!-- Description -->
+            <div class="content-section">
+                <h3 class="section-title">
+                    <i class="bi bi-card-text"></i>
+                    {% trans "Description" %}
+                </h3>
+                <div class="description-content">{{ feedback.description }}</div>
+            </div>
+
+            <!-- Détails spécifiques aux bugs -->
+            {% if feedback.is_bug_report and feedback.steps_to_reproduce or feedback.expected_behavior or feedback.actual_behavior %}
+            <div class="content-section">
+                <h3 class="section-title">
+                    <i class="bi bi-bug"></i>
+                    {% trans "Bug Details" %}
+                </h3>
+
+                <div class="bug-details-grid">
+                    {% if feedback.steps_to_reproduce %}
+                    <div class="bug-detail-item">
+                        <div class="bug-detail-title">{% trans "Steps to Reproduce" %}</div>
+                        <div class="bug-detail-content">{{ feedback.steps_to_reproduce }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if feedback.expected_behavior %}
+                    <div class="bug-detail-item">
+                        <div class="bug-detail-title">{% trans "Expected Behavior" %}</div>
+                        <div class="bug-detail-content">{{ feedback.expected_behavior }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if feedback.actual_behavior %}
+                    <div class="bug-detail-item">
+                        <div class="bug-detail-title">{% trans "Actual Behavior" %}</div>
+                        <div class="bug-detail-content">{{ feedback.actual_behavior }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Screenshot -->
+            {% if feedback.screenshot %}
+            <div class="content-section">
+                <h3 class="section-title">
+                    <i class="bi bi-image"></i>
+                    {% trans "Screenshot" %}
+                </h3>
+                <div class="text-center">
+                    <img src="{{ feedback.screenshot.url }}" alt="{% trans 'Feedback screenshot' %}"
+                         class="screenshot-preview" onclick="openImageModal(this.src)">
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Fichiers attachés -->
+            {% if attachments %}
+            <div class="content-section">
+                <h3 class="section-title">
+                    <i class="bi bi-paperclip"></i>
+                    {% trans "Attachments" %}
+                </h3>
+                <div class="attachments-grid">
+                    {% for attachment in attachments %}
+                    <div class="attachment-item">
+                        <a href="{{ attachment.file.url }}" target="_blank" class="text-decoration-none">
+                            <div class="attachment-icon">
+                                {% if 'image' in attachment.content_type %}
+                                    <i class="bi bi-image text-primary"></i>
+                                {% elif 'pdf' in attachment.content_type %}
+                                    <i class="bi bi-file-pdf text-danger"></i>
+                                {% elif 'text' in attachment.content_type %}
+                                    <i class="bi bi-file-text text-info"></i>
+                                {% else %}
+                                    <i class="bi bi-file-earmark text-secondary"></i>
+                                {% endif %}
+                            </div>
+                            <div class="attachment-name">{{ attachment.filename }}</div>
+                            <div class="attachment-size">{{ attachment.get_file_size_display }}</div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Réponses -->
+            {% if responses %}
+            <div class="content-section responses-section">
+                <h3 class="section-title">
+                    <i class="bi bi-chat"></i>
+                    {% trans "Responses" %} ({{ responses.count }})
+                </h3>
+
+                {% for response in responses %}
+                <div class="response-item">
+                    <div class="response-header">
+                        <div class="response-author">
+                            <div class="author-avatar">
+                                {{ response.author.first_name.0|default:response.author.username.0|upper }}
+                            </div>
+                            <div class="author-info">
+                                {{ response.author.get_full_name|default:response.author.username }}
+                                <div class="response-date">{{ response.created_at|naturaltime }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="response-content">{{ response.message }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Informations générales -->
+            <div class="info-card">
+                <h4 class="section-title">
+                    <i class="bi bi-info-circle"></i>
+                    {% trans "Information" %}
+                </h4>
+                <ul class="info-list">
+                    <li>
+                        <span class="info-label">{% trans "ID" %}</span>
+                        <span class="info-value">#{{ feedback.pk }}</span>
+                    </li>
+                    <li>
+                        <span class="info-label">{% trans "Type" %}</span>
+                        <span class="info-value">{{ feedback.get_feedback_type_display }}</span>
+                    </li>
+                    <li>
+                        <span class="info-label">{% trans "Category" %}</span>
+                        <span class="info-value">{{ feedback.get_category_display }}</span>
+                    </li>
+                    <li>
+                        <span class="info-label">{% trans "Priority" %}</span>
+                        <span class="info-value">
+                            <span class="priority-badge priority-{{ feedback.priority }}">
+                                {{ feedback.get_priority_display }}
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="info-label">{% trans "Status" %}</span>
+                        <span class="info-value">
+                            <span class="status-badge status-{{ feedback.status }}">
+                                {{ feedback.get_status_display }}
+                            </span>
+                        </span>
+                    </li>
+                    {% if feedback.assigned_to %}
+                    <li>
+                        <span class="info-label">{% trans "Assigned to" %}</span>
+                        <span class="info-value">{{ feedback.assigned_to.get_full_name|default:feedback.assigned_to.username }}</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Informations techniques -->
+            {% if feedback.browser_info or feedback.page_url %}
+            <div class="info-card">
+                <h4 class="section-title">
+                    <i class="bi bi-gear"></i>
+                    {% trans "Technical Info" %}
+                </h4>
+                <ul class="info-list">
+                    {% if feedback.page_url %}
+                    <li>
+                        <span class="info-label">{% trans "Page URL" %}</span>
+                        <span class="info-value">
+                            <a href="{{ feedback.page_url }}" target="_blank" class="text-primary">
+                                {% trans "View Page" %} <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                        </span>
+                    </li>
+                    {% endif %}
+                    {% if feedback.browser_info %}
+                    <li>
+                        <span class="info-label">{% trans "Browser Info" %}</span>
+                        <span class="info-value">
+                            <details>
+                                <summary style="cursor: pointer; color: #007bff;">{% trans "View Details" %}</summary>
+                                <div style="margin-top: 0.5rem; font-size: 0.8rem; word-break: break-all;">
+                                    {{ feedback.browser_info }}
+                                </div>
+                            </details>
+                        </span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Statistiques -->
+            <div class="info-card">
+                <h4 class="section-title">
+                    <i class="bi bi-graph-up"></i>
+                    {% trans "Activity" %}
+                </h4>
+                <ul class="info-list">
+                    <li>
+                        <span class="info-label">{% trans "Responses" %}</span>
+                        <span class="info-value">{{ responses.count }}</span>
+                    </li>
+                    <li>
+                        <span class="info-label">{% trans "Attachments" %}</span>
+                        <span class="info-value">{{ attachments.count }}</span>
+                    </li>
+                    <li>
+                        <span class="info-label">{% trans "Days Open" %}</span>
+                        <span class="info-value">{{ feedback.days_since_created }}</span>
+                    </li>
+                    {% if feedback.resolved_at %}
+                    <li>
+                        <span class="info-label">{% trans "Resolution Time" %}</span>
+                        <span class="info-value">
+                            {% with days_to_resolve=feedback.resolved_at|timeuntil:feedback.created_at %}
+                                {{ days_to_resolve|default:"Same day" }}
+                            {% endwith %}
+                        </span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bouton de retour -->
+    <div class="mt-4">
+        <a href="{% url 'authentication:feedback_list' %}" class="back-button">
+            <i class="bi bi-arrow-left"></i>
+            {% trans "Back to My Feedbacks" %}
+        </a>
+    </div>
+</div>
+
+<!-- Modal pour l'image -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans "Screenshot" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="" style="max-width: 100%; height: auto;">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openImageModal(imageSrc) {
+    document.getElementById('modalImage').src = imageSrc;
+    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+    modal.show();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation d'entrée
+    const sections = document.querySelectorAll('.content-section, .info-card');
+    sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            section.style.transition = 'all 0.5s ease';
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Auto-refresh du statut (optionnel)
+    const feedbackId = {{ feedback.pk }};
+    setInterval(() => {
+        refreshFeedbackStatus(feedbackId);
+    }, 60000); // Refresh every minute
+});
+
+function refreshFeedbackStatus(feedbackId) {
+    fetch(`/auth/feedback/${feedbackId}/status/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                // Mettre à jour les badges de statut
+                const statusBadges = document.querySelectorAll('.status-badge');
+                statusBadges.forEach(badge => {
+                    badge.className = `status-badge status-${data.status}`;
+                    badge.textContent = data.status_display;
+                    badge.style.color = data.status_color;
+                });
+            }
+        })
+        .catch(error => console.log('Status refresh error:', error));
+}
+</script>
+{% endblock %}
