@@ -1283,12 +1283,8 @@ msgid "Writing and translation exercises."
 msgstr "Exercices d'écriture et de traduction."
 
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:7
-msgid "No tags - Click on"
-msgstr "Aucun tag - Cliquez sur"
-
-#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:9
-msgid "to add some"
-msgstr "pour en ajouter"
+msgid "No tags - Click on 🏷️ to add some"
+msgstr "Aucune étiquette - Cliquez sur 🏷️ pour en ajouter"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:15
 #, fuzzy

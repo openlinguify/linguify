@@ -420,7 +420,7 @@ function renderDecksList() {
             </div>
             <div class="deck-card-description">${deck.description || _('No description')}</div>
             <div class="deck-card-tags">
-                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ((!deck.tags || deck.tags.length === 0) ? `<span class="no-tags-message">${_('No tags - Click on')} <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deck.id})" style="cursor: pointer; color: #2d5bba; font-size: 0.875rem;"></i> ${_('to add some')}</span>` : deck.tags.map(tag => `<span class="tag-linguify tag-linguify-blue">${tag}</span>`).join(''))}</div>
+                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ((!deck.tags || deck.tags.length === 0) ? `<span class="no-tags-message" onclick="event.stopPropagation(); quickEditTags(${deck.id})" style="cursor: pointer;">${_('No tags - Click on 🏷️ to add some')}</span>` : deck.tags.map(tag => `<span class="tag-linguify tag-linguify-blue">${tag}</span>`).join(''))}</div>
                 <button class="btn-link-linguify text-sm" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="${_('Add tags')}">
                     <i class="bi bi-tag"></i>
                 </button>
@@ -2859,7 +2859,7 @@ function updateCardsCount() {
     if (!cardsCountElement || !appState.selectedDeck) return;
     
     const count = appState.selectedDeck.cards_count || 0;
-    cardsCountElement.textContent = `${count} carte${count > 1 ? 's' : ''}`;
+    cardsCountElement.textContent = `${count} ${window.ngettext('card', 'cards', count)}`;
 }
 
 // === LANGUAGE SETTINGS FOR DECK ===

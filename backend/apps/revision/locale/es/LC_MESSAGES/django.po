@@ -1269,12 +1269,8 @@ msgid "Writing and translation exercises."
 msgstr "Ejercicios de escritura y traducción."
 
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:7
-msgid "No tags - Click on"
-msgstr "Sin etiquetas - Haz clic en"
-
-#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:9
-msgid "to add some"
-msgstr "para añadir algunas"
+msgid "No tags - Click on 🏷️ to add some"
+msgstr "Sin etiquetas - Haz clic en 🏷️ para añadir"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:15
 #, fuzzy
@@ -1641,7 +1637,7 @@ msgid "Error during reset"
 msgstr "Error durante el reinicio"
 
 msgid "Deck imported from"
-msgstr "Mazo importado desde"
+msgstr "Deck importado desde"
 
 msgid "To learn"
 msgstr "Por aprender"

@@ -1287,12 +1287,8 @@ msgid "Writing and translation exercises."
 msgstr "Schrijf- en vertaaloefeningen."
 
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:7
-msgid "No tags - Click on"
-msgstr "Geen tags - Klik op"
-
-#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:9
-msgid "to add some"
-msgstr "om er wat toe te voegen"
+msgid "No tags - Click on 🏷️ to add some"
+msgstr "Geen tags - Klik op 🏷️ om toe te voegen"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:15
 msgid "My tags"
@@ -1620,7 +1616,7 @@ msgstr "Fout bij het bijwerken van revisie-instellingen"
 #~ msgstr "Fout tijdens reset"
 
 msgid "Deck imported from"
-msgstr "Lijst geïmporteerd uit"
+msgstr "Deck geïmporteerd uit"
 
 msgid "To learn"
 msgstr "Te leren"

@@ -448,7 +448,7 @@ function createNoTagsElement(deckId) {
     console.log('Fonction quickEditTags existe:', typeof quickEditTags !== 'undefined');
     
     // Version directe et robuste avec icône plus visible
-    const htmlContent = `<span class="no-tags-message">${_('No tags - Click on')} <i class="bi bi-tag" onclick="event.stopPropagation(); console.log('Clic sur icône tag, deck:', ${deckId}); if(typeof quickEditTags !== 'undefined') { quickEditTags(${deckId}); } else { console.error('quickEditTags non définie'); }" style="cursor: pointer; color: #2d5bba; font-size: 1rem; margin: 0 4px; font-weight: bold; background: #f0f9ff; padding: 2px 4px; border-radius: 3px;">🏷️</i> ${_('to add some')}</span>`;
+    const htmlContent = `<span class="no-tags-message" onclick="event.stopPropagation(); console.log('Clic sur icône tag, deck:', ${deckId}); if(typeof quickEditTags !== 'undefined') { quickEditTags(${deckId}); } else { console.error('quickEditTags non définie'); }" style="cursor: pointer; color: #2d5bba;">${_('No tags - Click on 🏷️ to add some')}</span>`;
     
     console.log('HTML généré:', htmlContent);
     return htmlContent;

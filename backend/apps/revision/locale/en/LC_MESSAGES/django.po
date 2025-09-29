@@ -1119,77 +1119,77 @@ msgstr "Writing and translation exercises."
 
 #: .\apps\revision\templates\revision\partials\welcome_section.html:5
 msgid "Welcome to your study space"
-msgstr ""
+msgstr "Welcome to your study space"
 
 #: .\apps\revision\templates\revision\partials\welcome_section.html:7
 msgid ""
 "Select a deck from the list or create a new one to start studying with "
 "flashcards"
-msgstr ""
+msgstr "Select a deck from the list or create a new one to start studying with flashcards"
 
 #: .\apps\revision\templates\revision\partials\welcome_section.html:16
 msgid "Explore public decks"
-msgstr ""
+msgstr "Explore public decks"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:5
 msgid "Statistics - Revision"
-msgstr ""
+msgstr "Statistics - Revision"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:97
 msgid "Total Decks"
-msgstr ""
+msgstr "Total Decks"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:111
 msgid "Total Cards"
-msgstr ""
+msgstr "Total Cards"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:125
 msgid "Cards Learned"
-msgstr ""
+msgstr "Cards Learned"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:139
 msgid "Progress Rate"
-msgstr ""
+msgstr "Progress Rate"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:161
 msgid "Cards Studied"
-msgstr ""
+msgstr "Cards Studied"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:180
 msgid "Accuracy Rate"
-msgstr ""
+msgstr "Accuracy Rate"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:199
 msgid "Study Time"
-msgstr ""
+msgstr "Study Time"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:218
 msgid "Current Streak"
-msgstr ""
+msgstr "Current Streak"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:236
 msgid "Study Activity"
-msgstr ""
+msgstr "Study Activity"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:250
 msgid "Performance Breakdown"
-msgstr ""
+msgstr "Performance Breakdown"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:267
 msgid "Deck Performance"
-msgstr ""
+msgstr "Deck Performance"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:279
 msgid "Mastered"
-msgstr ""
+msgstr "Mastered"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:280
 msgid "Accuracy"
-msgstr ""
+msgstr "Accuracy"
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:287
 msgid "Loading deck statistics..."
-msgstr ""
+msgstr "Loading deck statistics..."
 
 #: .\apps\revision\templates\revision\stats_dashboard.html:301
 msgid "Recent Activity"
@@ -1370,3 +1370,7 @@ msgid "card"
 msgid_plural "cards"
 msgstr[0] "card"
 msgstr[1] "cards"
+
+#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:7
+msgid "No tags - Click on 🏷️ to add some"
+msgstr "No tags - Click on 🏷️ to add some"
