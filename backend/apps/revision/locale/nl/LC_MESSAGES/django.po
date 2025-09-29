@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-29 21:43+0200\n"
+"POT-Creation-Date: 2025-09-30 00:35+0200\n"
 "PO-Revision-Date: 2025-09-29 20:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -286,6 +286,7 @@ msgstr "Importeren"
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:9
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:53
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:12
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:98
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -463,16 +464,12 @@ msgid "Toggle sidebar"
 msgstr "Zijbalk schakelen"
 
 #: .\apps\revision\templates\revision\components\navbar.html:13
-#, fuzzy
-#| msgid "Hide/Show sidebar"
 msgid "Hide sidebar"
-msgstr "Zijbalk verbergen/tonen"
+msgstr "Zijbalk verbergen"
 
 #: .\apps\revision\templates\revision\components\navbar.html:14
-#, fuzzy
-#| msgid "Hide/Show sidebar"
 msgid "Show sidebar"
-msgstr "Zijbalk verbergen/tonen"
+msgstr "Zijbalk tonen"
 
 #: .\apps\revision\templates\revision\components\navbar.html:24
 msgid "Card List"
@@ -499,10 +496,8 @@ msgid "3 last months"
 msgstr "Laatste 3 maanden"
 
 #: .\apps\revision\templates\revision\components\navbar.html:61
-#, fuzzy
-#| msgid "Statistics"
 msgid "Export statistics"
-msgstr "Statistieken"
+msgstr "Statistieken exporteren"
 
 #: .\apps\revision\templates\revision\components\navbar.html:63
 #: .\apps\revision\templates\revision\partials\deck_details_section.html:58
@@ -616,32 +611,24 @@ msgstr "Delen"
 
 #: .\apps\revision\templates\revision\components\navbar.html:187
 #: .\apps\revision\templates\revision\components\share_deck.html:73
-#, fuzzy
-#| msgid "Make Public"
 msgid "Make public"
 msgstr "Openbaar maken"
 
 #: .\apps\revision\templates\revision\components\navbar.html:188
-#, fuzzy
-#| msgid "No decks"
 msgid "Loading decks"
-msgstr "Geen lijsten"
+msgstr "Lijsten laden..."
 
 #: .\apps\revision\templates\revision\components\navbar.html:189
 msgid "Unnamed"
 msgstr "Naamloos"
 
 #: .\apps\revision\templates\revision\components\navbar.html:190
-#, fuzzy
-#| msgid "Description"
 msgid "No description"
 msgstr "Geen beschrijving"
 
 #: .\apps\revision\templates\revision\components\navbar.html:191
-#, fuzzy
-#| msgid "All tags"
 msgid "Add tags"
-msgstr "Alle tags"
+msgstr "Tags toevoegen"
 
 #: .\apps\revision\templates\revision\components\navbar.html:193
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:57
@@ -658,17 +645,13 @@ msgstr "Verwijderen"
 #: .\apps\revision\templates\revision\partials\create_card_form.html:33
 #: .\apps\revision\templates\revision\partials\create_card_form.html:75
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:42
-#, fuzzy
-#| msgid "Edit Deck"
 msgid "Edit"
-msgstr "Lijst bewerken"
+msgstr "Bewerken"
 
 #: .\apps\revision\templates\revision\components\navbar.html:197
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:45
-#, fuzzy
-#| msgid "Create Deck"
 msgid "Create"
-msgstr "Lijst maken"
+msgstr "Maken"
 
 #: .\apps\revision\templates\revision\components\navbar.html:198
 msgid "New"
@@ -699,10 +682,8 @@ msgstr "Fout bij laden van kaarten"
 #: .\apps\revision\templates\revision\components\navbar.html:204
 #: .\apps\revision\templates\revision\components\share_deck.html:167
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:143
-#, fuzzy
-#| msgid "Create deck"
 msgid "Share this deck"
-msgstr "Lijst maken"
+msgstr "Deze lijst delen"
 
 #: .\apps\revision\templates\revision\components\navbar.html:205
 #: .\apps\revision\templates\revision\components\share_deck.html:198
@@ -724,16 +705,15 @@ msgid "Allow other users to discover and use it"
 msgstr "Sta andere gebruikers toe om het te ontdekken en gebruiken"
 
 #: .\apps\revision\templates\revision\components\share_deck.html:34
-#, fuzzy
-#| msgid "Create deck"
 msgid "Currently private deck"
-msgstr "Lijst maken"
+msgstr "Momenteel privélijst"
 
 #: .\apps\revision\templates\revision\components\share_deck.html:35
 msgid ""
 "This deck is only visible to you. Make it public to share it with others."
 msgstr ""
-"Deze lijst is alleen zichtbaar voor jou. Maak het openbaar om het met anderen te delen."
+"Deze lijst is alleen zichtbaar voor jou. Maak het openbaar om het met "
+"anderen te delen."
 
 #: .\apps\revision\templates\revision\components\share_deck.html:43
 msgid "What will happen when making this deck public:"
@@ -793,8 +773,6 @@ msgid "You can make this deck public again later if you wish."
 msgstr "Je kunt deze lijst later weer openbaar maken als je wilt."
 
 #: .\apps\revision\templates\revision\components\share_deck.html:148
-#, fuzzy
-#| msgid "Make Private"
 msgid "Make private"
 msgstr "Privé maken"
 
@@ -825,6 +803,7 @@ msgid "Social networks"
 msgstr "Sociale netwerken"
 
 #: .\apps\revision\templates\revision\components\share_deck.html:241
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:47
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:82
 msgid "Close"
 msgstr "Sluiten"
@@ -836,10 +815,8 @@ msgstr "Door"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:12
 #: .\apps\revision\templates\revision\explore\partials\search_results.html:198
-#, fuzzy
-#| msgid "Deck Name"
 msgid "cards"
-msgstr "Lijstnaam"
+msgstr "kaarten"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:13
 msgid "users"
@@ -871,20 +848,16 @@ msgid "And"
 msgstr "En"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:73
-#, fuzzy
-#| msgid "Import Cards"
 msgid "more cards..."
-msgstr "Kaarten importeren"
+msgstr "meer kaarten..."
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:83
 msgid "Information"
 msgstr "Informatie"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:87
-#, fuzzy
-#| msgid "Create Deck"
 msgid "Created:"
-msgstr "Lijst maken"
+msgstr "Gemaakt:"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:92
 msgid "Modified:"
@@ -904,10 +877,8 @@ msgstr "Niveau:"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:122
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:59
-#, fuzzy
-#| msgid "Selection"
 msgid "Actions"
-msgstr "Selectie"
+msgstr "Acties"
 
 #: .\apps\revision\templates\revision\explore\partials\deck_details.html:129
 #: .\apps\revision\templates\revision\explore\partials\popular_decks.html:70
@@ -962,10 +933,8 @@ msgid "AI"
 msgstr "AI"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:5
-#, fuzzy
-#| msgid "Deck Name"
 msgid "Deck cards"
-msgstr "Deck kaarten"
+msgstr "Lijst kaarten"
 
 #: .\apps\revision\templates\revision\partials\cards_section.html:6
 msgid "0 card(s)"
@@ -1065,7 +1034,7 @@ msgstr ""
 
 #: .\apps\revision\templates\revision\partials\create_deck_form.html:68
 msgid "Add tags (press Enter)"
-msgstr ""
+msgstr "Tags toevoegen (druk op Enter)"
 
 #: .\apps\revision\templates\revision\partials\create_deck_form.html:77
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:137
@@ -1081,12 +1050,12 @@ msgstr "Privé"
 #: .\apps\revision\templates\revision\partials\create_deck_form.html:88
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:148
 msgid "Visible by you only"
-msgstr ""
+msgstr "Alleen zichtbaar voor jou"
 
 #: .\apps\revision\templates\revision\partials\create_deck_form.html:101
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:161
 msgid "Visible by everyone"
-msgstr ""
+msgstr "Zichtbaar voor iedereen"
 
 #: .\apps\revision\templates\revision\partials\create_deck_form.html:120
 msgid "Create Deck"
@@ -1203,10 +1172,8 @@ msgid "Max 10 tags, press Enter to add"
 msgstr "Max 10 tags, druk op Enter om toe te voegen"
 
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:119
-#, fuzzy
-#| msgid "Save"
 msgid "Saved"
-msgstr "Opslaan"
+msgstr "Opgeslagen"
 
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:126
 msgid "0/10 tags"
@@ -1219,6 +1186,48 @@ msgstr "Privé - Alleen zichtbaar voor jou"
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:169
 msgid "Public - Visible by all users"
 msgstr "Openbaar - Zichtbaar voor alle gebruikers"
+
+# Reset Progress Modal translations
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:43
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:102
+msgid "Reset Progress"
+msgstr "Voortgang Resetten"
+
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:44
+msgid "This action will reset the progress of all cards in the deck."
+msgstr "Deze actie zal de voortgang van alle kaarten in het deck resetten."
+
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:57
+msgid "Deck:"
+msgstr "Deck:"
+
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:61
+msgid "Affected cards:"
+msgstr "Beïnvloede kaarten:"
+
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:63
+msgid "card(s)"
+msgstr "kaart(en)"
+
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:69
+msgid "After reset:"
+msgstr "Na reset:"
+
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:73
+msgid "All cards will be marked as 'not learned'"
+msgstr "Alle kaarten zullen gemarkeerd worden als 'niet geleerd'"
+
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:77
+msgid "The review counter will be reset to zero"
+msgstr "De herziening teller zal gereset worden naar nul"
+
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:81
+msgid "Learning history will be erased"
+msgstr "Leergeschiedenis zal gewist worden"
+
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:90
+msgid "This action is irreversible."
+msgstr "Deze actie is onomkeerbaar."
 
 #: .\apps\revision\templates\revision\partials\sidebar_section.html:11
 msgid "No decks"
@@ -1286,10 +1295,8 @@ msgid "to add some"
 msgstr "om er wat toe te voegen"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:15
-#, fuzzy
-#| msgid "All tags"
 msgid "My tags"
-msgstr "Alle tags"
+msgstr "Mijn tags"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:16
 msgid "Organize your decks with custom tags"
@@ -1311,10 +1318,8 @@ msgid "Usage"
 msgstr ""
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:58
-#, fuzzy
-#| msgid "Create Deck"
 msgid "Created"
-msgstr "Lijst maken"
+msgstr "Gemaakt"
 
 #: .\apps\revision\templates\revision\partials\tags\tags_management.html:71
 msgid "No tags found"
@@ -1442,10 +1447,8 @@ msgstr "Flashcards Modus"
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:71
 #: .\apps\revision\templates\revision\study\write_embedded.html:12
 #: .\apps\revision\templates\revision\study\write_embedded.html:145
-#, fuzzy
-#| msgid "Create deck"
 msgid "Back to deck"
-msgstr "Lijst maken"
+msgstr "Terug naar lijst"
 
 #: .\apps\revision\templates\revision\study\flashcards_embedded.html:24
 msgid "Click to start"
@@ -1548,10 +1551,8 @@ msgid "Correct answer:"
 msgstr "Juiste antwoord:"
 
 #: .\apps\revision\templates\revision\study\write_embedded.html:89
-#, fuzzy
-#| msgid "Deck Name"
 msgid "Next card"
-msgstr "Lijstnaam"
+msgstr "Volgende kaart"
 
 #: .\apps\revision\templates\revision\study\write_embedded.html:110
 msgid "Writing session completed!"
@@ -1606,51 +1607,20 @@ msgstr "Ongeldige waarde in instellingen"
 msgid "Erreur lors de la mise à jour des paramètres de révision"
 msgstr "Fout bij het bijwerken van revisie-instellingen"
 
-# Reset Progress Modal translations
-msgid "Reset Progress"
-msgstr "Voortgang Resetten"
+#~ msgid "Warning!"
+#~ msgstr "Waarschuwing!"
 
-msgid "Warning!"
-msgstr "Waarschuwing!"
+#~ msgid "Reset in progress..."
+#~ msgstr "Reset bezig..."
 
-msgid "This action will reset the progress of all cards in the deck."
-msgstr "Deze actie zal de voortgang van alle kaarten in het deck resetten."
+#~ msgid "Progress reset successfully"
+#~ msgstr "Voortgang succesvol gereset"
 
-msgid "Deck:"
-msgstr "Deck:"
-
-msgid "Affected cards:"
-msgstr "Beïnvloede kaarten:"
-
-msgid "card(s)"
-msgstr "kaart(en)"
-
-msgid "After reset:"
-msgstr "Na reset:"
-
-msgid "All cards will be marked as 'not learned'"
-msgstr "Alle kaarten zullen gemarkeerd worden als 'niet geleerd'"
-
-msgid "The review counter will be reset to zero"
-msgstr "De herziening teller zal gereset worden naar nul"
-
-msgid "Learning history will be erased"
-msgstr "Leergeschiedenis zal gewist worden"
-
-msgid "This action is irreversible."
-msgstr "Deze actie is onomkeerbaar."
-
-msgid "Reset in progress..."
-msgstr "Reset bezig..."
-
-msgid "Progress reset successfully"
-msgstr "Voortgang succesvol gereset"
-
-msgid "Error during reset"
-msgstr "Fout tijdens reset"
+#~ msgid "Error during reset"
+#~ msgstr "Fout tijdens reset"
 
 msgid "Deck imported from"
-msgstr "Deck geïmporteerd vanuit"
+msgstr "Lijst geïmporteerd uit"
 
 msgid "To learn"
 msgstr "Te leren"
