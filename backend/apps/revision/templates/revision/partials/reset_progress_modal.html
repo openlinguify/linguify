@@ -1,0 +1,49 @@
+{% load i18n %}
+<!-- Reset Progress Modal -->
+<div id="resetProgressModal" class="modal fade" tabindex="-1" aria-labelledby="resetProgressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title mb-0" id="resetProgressModalLabel">{% trans "Reset Progress" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning d-flex align-items-center mb-3">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>
+                        <strong>{% trans "Warning!" %}</strong>
+                        {% trans "This action will reset the progress of all cards in the deck." %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <strong>{% trans "Deck:" %}</strong> "<span id="resetDeckName"></span>"<br>
+                    <strong>{% trans "Affected cards:" %}</strong> <span id="resetCardCount">0</span> {% trans "card(s)" %}
+                </div>
+
+                <div class="mb-3">
+                    <h6>{% trans "After reset:" %}</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-arrow-right text-warning me-2"></i>{% trans "All cards will be marked as 'not learned'" %}</li>
+                        <li><i class="bi bi-arrow-right text-warning me-2"></i>{% trans "The review counter will be reset to zero" %}</li>
+                        <li><i class="bi bi-arrow-right text-warning me-2"></i>{% trans "Learning history will be erased" %}</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    <strong>{% trans "This action is irreversible." %}</strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    {% trans "Cancel" %}
+                </button>
+                <button type="button" class="btn btn-warning" id="confirmResetProgress">
+                    <i class="bi bi-arrow-clockwise me-2"></i>
+                    {% trans "Reset Progress" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

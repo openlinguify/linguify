@@ -1604,3 +1604,46 @@ msgstr ""
 #: .\apps\revision\views\revision_settings_views.py:324
 msgid "Erreur lors de la mise à jour des paramètres de révision"
 msgstr ""
+
+# Reset Progress Modal translations
+msgid "Reset Progress"
+msgstr "Voortgang Resetten"
+
+msgid "Warning!"
+msgstr "Waarschuwing!"
+
+msgid "This action will reset the progress of all cards in the deck."
+msgstr "Deze actie zal de voortgang van alle kaarten in het deck resetten."
+
+msgid "Deck:"
+msgstr "Deck:"
+
+msgid "Affected cards:"
+msgstr "Beïnvloede kaarten:"
+
+msgid "card(s)"
+msgstr "kaart(en)"
+
+msgid "After reset:"
+msgstr "Na reset:"
+
+msgid "All cards will be marked as 'not learned'"
+msgstr "Alle kaarten zullen gemarkeerd worden als 'niet geleerd'"
+
+msgid "The review counter will be reset to zero"
+msgstr "De herziening teller zal gereset worden naar nul"
+
+msgid "Learning history will be erased"
+msgstr "Leergeschiedenis zal gewist worden"
+
+msgid "This action is irreversible."
+msgstr "Deze actie is onomkeerbaar."
+
+msgid "Reset in progress..."
+msgstr "Reset bezig..."
+
+msgid "Progress reset successfully"
+msgstr "Voortgang succesvol gereset"
+
+msgid "Error during reset"
+msgstr "Fout tijdens reset"
