@@ -796,31 +796,340 @@ class Review(models.Model):
         """
         return f"Review by {self.reviewer.username}"
 
+FEEDBACK_TYPE_CHOICES = [
+    ('bug_report', 'Bug Report'),
+    ('feature_request', 'Feature Request'),
+    ('improvement', 'Improvement Suggestion'),
+    ('compliment', 'Compliment'),
+    ('complaint', 'Complaint'),
+    ('question', 'Question/Help'),
+    ('other', 'Other'),
+]
+
+FEEDBACK_PRIORITY_CHOICES = [
+    ('low', 'Low'),
+    ('medium', 'Medium'),
+    ('high', 'High'),
+    ('critical', 'Critical'),
+]
+
+FEEDBACK_STATUS_CHOICES = [
+    ('new', 'New'),
+    ('in_progress', 'In Progress'),
+    ('resolved', 'Resolved'),
+    ('closed', 'Closed'),
+    ('duplicate', 'Duplicate'),
+    ('wont_fix', "Won't Fix"),
+]
+
+FEEDBACK_CATEGORY_CHOICES = [
+    ('ui_ux', 'UI/UX'),
+    ('performance', 'Performance'),
+    ('functionality', 'Functionality'),
+    ('content', 'Content'),
+    ('mobile', 'Mobile App'),
+    ('desktop', 'Desktop'),
+    ('account', 'Account Management'),
+    ('payment', 'Payment/Billing'),
+    ('language_learning', 'Language Learning'),
+    ('other', 'Other'),
+]
+
 class UserFeedback(models.Model):
     """
-    Model representing user feedback to get a little bit of feedback don't u think?.
+    Enhanced model representing comprehensive user feedback and bug tracking.
 
     Attributes:
         user (User): Foreign key to the User model, representing the user who gave the feedback.
-        feedback_type (str): Type of feedback, either 'like' or 'dislike'.
-        feedback_content (str): Optional text content of the feedback.
-        feedback_date (datetime): Date and time when the feedback was created.
+        title (str): Short title/summary of the feedback.
+        feedback_type (str): Type of feedback (bug report, feature request, etc.).
+        category (str): Category of the feedback for better organization.
+        priority (str): Priority level of the feedback.
+        status (str): Current status of the feedback.
+        description (str): Detailed description of the feedback.
+        steps_to_reproduce (str): For bug reports, steps to reproduce the issue.
+        expected_behavior (str): What the user expected to happen.
+        actual_behavior (str): What actually happened.
+        browser_info (str): Browser and system information.
+        page_url (str): URL where the issue occurred.
+        screenshot (ImageField): Optional screenshot of the issue.
+        admin_notes (str): Internal notes for admins.
+        assigned_to (User): Staff member assigned to handle this feedback.
+        resolved_at (datetime): When the feedback was resolved.
+        created_at (datetime): Date and time when the feedback was created.
+        updated_at (datetime): Date and time when the feedback was last updated.
     """
     class Meta:
         app_label = 'authentication'
+        verbose_name = "User Feedback"
+        verbose_name_plural = "User Feedbacks"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['feedback_type', '-created_at']),
+            models.Index(fields=['status', '-created_at']),
+            models.Index(fields=['priority', '-created_at']),
+            models.Index(fields=['category']),
+            models.Index(fields=['user', '-created_at']),
+        ]
+
+    # Basic information
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbacks')
-    feedback_type = models.CharField(max_length=10, choices=[('like', 'Like'), ('dislike', 'Dislike')], default='like')
-    feedback_content = models.TextField(null=True, blank=True)
-    feedback_date = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=200, help_text="Brief summary of the feedback")
+    feedback_type = models.CharField(
+        max_length=20,
+        choices=FEEDBACK_TYPE_CHOICES,
+        default='other',
+        help_text="Type of feedback"
+    )
+    category = models.CharField(
+        max_length=20,
+        choices=FEEDBACK_CATEGORY_CHOICES,
+        default='other',
+        help_text="Category for better organization"
+    )
+
+    # Priority and status tracking
+    priority = models.CharField(
+        max_length=10,
+        choices=FEEDBACK_PRIORITY_CHOICES,
+        default='medium',
+        help_text="Priority level"
+    )
+    status = models.CharField(
+        max_length=15,
+        choices=FEEDBACK_STATUS_CHOICES,
+        default='new',
+        help_text="Current status"
+    )
+
+    # Detailed feedback content
+    description = models.TextField(help_text="Detailed description of the feedback")
+    steps_to_reproduce = models.TextField(
+        null=True,
+        blank=True,
+        help_text="For bug reports: steps to reproduce the issue"
+    )
+    expected_behavior = models.TextField(
+        null=True,
+        blank=True,
+        help_text="What should have happened"
+    )
+    actual_behavior = models.TextField(
+        null=True,
+        blank=True,
+        help_text="What actually happened"
+    )
+
+    # Technical information
+    browser_info = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Browser, OS, and device information"
+    )
+    page_url = models.URLField(
+        null=True,
+        blank=True,
+        max_length=500,
+        help_text="URL where the issue occurred"
+    )
+    screenshot = models.ImageField(
+        upload_to='feedback_screenshots/%Y/%m/',
+        null=True,
+        blank=True,
+        help_text="Optional screenshot of the issue"
+    )
+
+    # Admin and tracking fields
+    admin_notes = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Internal notes for admins (not visible to users)"
+    )
+    assigned_to = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='assigned_feedbacks',
+        limit_choices_to={'is_staff': True},
+        help_text="Staff member assigned to handle this feedback"
+    )
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    resolved_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When the feedback was resolved"
+    )
+
+    # Legacy field for backward compatibility
+    feedback_content = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Legacy field - use 'description' instead"
+    )
+    feedback_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Legacy field - use 'created_at' instead"
+    )
+
+    def save(self, *args, **kwargs):
+        # Auto-resolve timestamp when status changes to resolved
+        if self.status == 'resolved' and not self.resolved_at:
+            self.resolved_at = timezone.now()
+        elif self.status != 'resolved' and self.resolved_at:
+            self.resolved_at = None
+
+        # Migrate legacy data if needed
+        if self.feedback_content and not self.description:
+            self.description = self.feedback_content
+        if self.feedback_date and not self.created_at:
+            self.created_at = self.feedback_date
+
+        super().save(*args, **kwargs)
+
+    def get_status_display_with_color(self):
+        """Return status with appropriate color coding"""
+        colors = {
+            'new': '#007bff',
+            'in_progress': '#ffc107',
+            'resolved': '#28a745',
+            'closed': '#6c757d',
+            'duplicate': '#fd7e14',
+            'wont_fix': '#dc3545',
+        }
+        return {
+            'status': self.get_status_display(),
+            'color': colors.get(self.status, '#6c757d')
+        }
+
+    def get_priority_display_with_color(self):
+        """Return priority with appropriate color coding"""
+        colors = {
+            'low': '#28a745',
+            'medium': '#ffc107',
+            'high': '#fd7e14',
+            'critical': '#dc3545',
+        }
+        return {
+            'priority': self.get_priority_display(),
+            'color': colors.get(self.priority, '#6c757d')
+        }
+
+    def is_bug_report(self):
+        """Check if this feedback is a bug report"""
+        return self.feedback_type == 'bug_report'
+
+    def is_feature_request(self):
+        """Check if this feedback is a feature request"""
+        return self.feedback_type == 'feature_request'
+
+    def days_since_created(self):
+        """Calculate days since feedback was created"""
+        return (timezone.now() - self.created_at).days
+
+    def days_since_updated(self):
+        """Calculate days since feedback was last updated"""
+        return (timezone.now() - self.updated_at).days
 
     def __str__(self):
         """
         String representation of the UserFeedback model.
 
         Returns:
-            str: A string representing the user's username and the feedback type.
+            str: A string representing the feedback title and type.
         """
-        return f"{self.user.username} - {self.feedback_type}"
+        return f"[{self.get_feedback_type_display()}] {self.title[:50]}..."
+
+
+class FeedbackAttachment(models.Model):
+    """
+    Model for storing additional attachments to feedback (multiple files support)
+    """
+    class Meta:
+        app_label = 'authentication'
+        verbose_name = "Feedback Attachment"
+        verbose_name_plural = "Feedback Attachments"
+        ordering = ['-uploaded_at']
+
+    feedback = models.ForeignKey(
+        UserFeedback,
+        on_delete=models.CASCADE,
+        related_name='attachments'
+    )
+    file = models.FileField(
+        upload_to='feedback_attachments/%Y/%m/',
+        help_text="Additional file attachment (images, logs, etc.)"
+    )
+    filename = models.CharField(
+        max_length=255,
+        help_text="Original filename"
+    )
+    file_size = models.PositiveIntegerField(
+        help_text="File size in bytes"
+    )
+    content_type = models.CharField(
+        max_length=100,
+        help_text="MIME type of the file"
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if self.file:
+            self.filename = self.file.name
+            self.file_size = self.file.size
+            # Content type would be set by the form/view
+        super().save(*args, **kwargs)
+
+    def get_file_size_display(self):
+        """Return human-readable file size"""
+        if self.file_size < 1024:
+            return f"{self.file_size} B"
+        elif self.file_size < 1024 * 1024:
+            return f"{self.file_size / 1024:.1f} KB"
+        else:
+            return f"{self.file_size / (1024 * 1024):.1f} MB"
+
+    def __str__(self):
+        return f"{self.filename} ({self.get_file_size_display()})"
+
+
+class FeedbackResponse(models.Model):
+    """
+    Model for admin responses to user feedback
+    """
+    class Meta:
+        app_label = 'authentication'
+        verbose_name = "Feedback Response"
+        verbose_name_plural = "Feedback Responses"
+        ordering = ['-created_at']
+
+    feedback = models.ForeignKey(
+        UserFeedback,
+        on_delete=models.CASCADE,
+        related_name='responses'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        limit_choices_to={'is_staff': True},
+        help_text="Staff member who wrote the response"
+    )
+    message = models.TextField(
+        help_text="Response message to the user"
+    )
+    is_internal = models.BooleanField(
+        default=False,
+        help_text="Internal note (not visible to user)"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        visibility = "Internal" if self.is_internal else "Public"
+        return f"{visibility} response by {self.author.username} on {self.created_at.date()}"
 
 
 # Cookie Consent Management Models

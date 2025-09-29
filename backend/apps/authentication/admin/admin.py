@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.db.models import Avg
 from django.utils import timezone
 from datetime import timedelta
-from ..models import User, CoachProfile, Review, UserFeedback, CookieConsent, CookieConsentLog
+from ..models import User, CoachProfile, Review, UserFeedback, FeedbackAttachment, FeedbackResponse, CookieConsent, CookieConsentLog
 
 class CoachProfileInline(admin.StackedInline):
     model = CoachProfile
@@ -305,22 +305,594 @@ class ReviewAdmin(admin.ModelAdmin):
         return obj.comment or "No comment"
     comment_preview.short_description = "Comment"
 
+# ============================================================================
+# Enhanced Feedback Management System
+# ============================================================================
+
+class FeedbackAttachmentInline(admin.TabularInline):
+    """Inline for managing feedback attachments"""
+    model = FeedbackAttachment
+    extra = 0
+    fields = ('file', 'filename', 'file_size_display', 'content_type', 'uploaded_at')
+    readonly_fields = ('filename', 'file_size_display', 'content_type', 'uploaded_at')
+
+    def file_size_display(self, obj):
+        """Display file size in human-readable format"""
+        if obj and obj.file_size:
+            return obj.get_file_size_display()
+        return '-'
+    file_size_display.short_description = 'Size'
+
+
+class FeedbackResponseInline(admin.StackedInline):
+    """Inline for managing feedback responses"""
+    model = FeedbackResponse
+    extra = 0
+    fields = ('author', 'message', 'is_internal', 'created_at')
+    readonly_fields = ('created_at',)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "author":
+            kwargs["queryset"] = User.objects.filter(is_staff=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class FeedbackTypeFilter(admin.SimpleListFilter):
+    """Custom filter for feedback types"""
+    title = 'Feedback Type'
+    parameter_name = 'type_filter'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('bug_report', '🐛 Bug Reports'),
+            ('feature_request', '💡 Feature Requests'),
+            ('improvement', '⭐ Improvements'),
+            ('compliment', '👍 Compliments'),
+            ('complaint', '👎 Complaints'),
+            ('question', '❓ Questions'),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(feedback_type=self.value())
+        return queryset
+
+
+class FeedbackStatusFilter(admin.SimpleListFilter):
+    """Custom filter for feedback status"""
+    title = 'Status'
+    parameter_name = 'status_filter'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('new', '🆕 New'),
+            ('in_progress', '🔄 In Progress'),
+            ('resolved', '✅ Resolved'),
+            ('closed', '🔒 Closed'),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(status=self.value())
+        return queryset
+
+
+class FeedbackPriorityFilter(admin.SimpleListFilter):
+    """Custom filter for feedback priority"""
+    title = 'Priority'
+    parameter_name = 'priority_filter'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('critical', '🚨 Critical'),
+            ('high', '🔴 High'),
+            ('medium', '🟡 Medium'),
+            ('low', '🟢 Low'),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(priority=self.value())
+        return queryset
+
+
 @admin.register(UserFeedback)
 class UserFeedbackAdmin(admin.ModelAdmin):
-    list_display = ('user_link', 'feedback_type', 'feedback_preview', 'feedback_date')
-    list_filter = ('feedback_type', 'feedback_date')
-    search_fields = ('user__username', 'user__email', 'feedback_content')
-    
+    """Comprehensive admin interface for user feedback and bug tracking"""
+
+    list_display = (
+        'title_display', 'user_link', 'feedback_type_display', 'category_display',
+        'priority_display', 'status_display', 'days_since_created', 'assigned_to_display',
+        'responses_count', 'attachments_count'
+    )
+    list_filter = (
+        FeedbackTypeFilter, FeedbackStatusFilter, FeedbackPriorityFilter,
+        'category', 'assigned_to', 'created_at', 'resolved_at'
+    )
+    search_fields = (
+        'title', 'user__username', 'user__email', 'user__first_name', 'user__last_name',
+        'description', 'admin_notes', 'page_url'
+    )
+    readonly_fields = (
+        'created_at', 'updated_at', 'resolved_at', 'days_since_created',
+        'days_since_updated', 'user_info_display', 'technical_info_display',
+        'legacy_data_display'
+    )
+
+    fieldsets = (
+        ('📋 Basic Information', {
+            'fields': ('title', 'user_info_display', 'feedback_type', 'category')
+        }),
+        ('🎯 Priority & Assignment', {
+            'fields': ('priority', 'status', 'assigned_to')
+        }),
+        ('📝 Description & Details', {
+            'fields': ('description', 'steps_to_reproduce', 'expected_behavior', 'actual_behavior'),
+            'classes': ('wide',)
+        }),
+        ('💻 Technical Information', {
+            'fields': ('technical_info_display', 'page_url', 'screenshot'),
+            'classes': ('collapse',)
+        }),
+        ('👨‍💼 Admin Section', {
+            'fields': ('admin_notes',),
+            'classes': ('collapse',)
+        }),
+        ('⏱️ Timestamps', {
+            'fields': ('created_at', 'updated_at', 'resolved_at', 'days_since_created', 'days_since_updated'),
+            'classes': ('collapse',)
+        }),
+        ('📁 Legacy Data', {
+            'fields': ('legacy_data_display',),
+            'classes': ('collapse',),
+            'description': 'Legacy fields for backward compatibility - data automatically migrated to new fields.'
+        })
+    )
+
+    inlines = [FeedbackAttachmentInline, FeedbackResponseInline]
+
+    actions = [
+        'mark_as_new', 'mark_as_in_progress', 'mark_as_resolved', 'mark_as_closed',
+        'set_priority_high', 'set_priority_critical', 'assign_to_me',
+        'export_feedback_report', 'send_user_update'
+    ]
+
+    list_per_page = 25
+    date_hierarchy = 'created_at'
+
+    def get_queryset(self, request):
+        """Optimize queryset with select_related and prefetch_related"""
+        return super().get_queryset(request).select_related(
+            'user', 'assigned_to'
+        ).prefetch_related(
+            'attachments', 'responses'
+        )
+
+    # ===== CUSTOM DISPLAY METHODS =====
+
+    def title_display(self, obj):
+        """Enhanced title display with type icon"""
+        type_icons = {
+            'bug_report': '🐛',
+            'feature_request': '💡',
+            'improvement': '⭐',
+            'compliment': '👍',
+            'complaint': '👎',
+            'question': '❓',
+            'other': '📝'
+        }
+        icon = type_icons.get(obj.feedback_type, '📝')
+
+        # Truncate long titles
+        title = obj.title[:60] + '...' if len(obj.title) > 60 else obj.title
+
+        return format_html(
+            '{} <strong>{}</strong>',
+            icon, title
+        )
+    title_display.short_description = '📋 Title'
+    title_display.admin_order_field = 'title'
+
     def user_link(self, obj):
+        """Enhanced user display with avatar placeholder"""
         url = reverse("admin:authentication_user_change", args=[obj.user.id])
-        return format_html('<a href="{}">{}</a>', url, obj.user.username)
-    user_link.short_description = "User"
-    
-    def feedback_preview(self, obj):
-        if hasattr(obj, 'feedback_content') and obj.feedback_content and len(obj.feedback_content) > 50:
-            return f"{obj.feedback_content[:50]}..."
-        return getattr(obj, 'feedback_content', '') or "No content"
-    feedback_preview.short_description = "Feedback"
+        user_name = obj.user.get_full_name() or obj.user.username
+
+        return format_html(
+            '<a href="{}" title="View user details">'
+            '👤 <strong>{}</strong><br>'
+            '<small style="color: #666;">{}</small>'
+            '</a>',
+            url, user_name, obj.user.email
+        )
+    user_link.short_description = '👤 User'
+    user_link.admin_order_field = 'user__username'
+
+    def feedback_type_display(self, obj):
+        """Display feedback type with color coding"""
+        type_colors = {
+            'bug_report': '#dc3545',
+            'feature_request': '#007bff',
+            'improvement': '#28a745',
+            'compliment': '#17a2b8',
+            'complaint': '#fd7e14',
+            'question': '#6f42c1',
+            'other': '#6c757d'
+        }
+
+        color = type_colors.get(obj.feedback_type, '#6c757d')
+        display_name = obj.get_feedback_type_display()
+
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">{}</span>',
+            color, display_name
+        )
+    feedback_type_display.short_description = '🏷️ Type'
+    feedback_type_display.admin_order_field = 'feedback_type'
+
+    def category_display(self, obj):
+        """Display category with icon"""
+        category_icons = {
+            'ui_ux': '🎨',
+            'performance': '⚡',
+            'functionality': '⚙️',
+            'content': '📝',
+            'mobile': '📱',
+            'desktop': '🖥️',
+            'account': '👤',
+            'payment': '💳',
+            'language_learning': '🎓',
+            'other': '📂'
+        }
+
+        icon = category_icons.get(obj.category, '📂')
+        display_name = obj.get_category_display()
+
+        return format_html(
+            '{} {}',
+            icon, display_name
+        )
+    category_display.short_description = '📂 Category'
+    category_display.admin_order_field = 'category'
+
+    def priority_display(self, obj):
+        """Display priority with color and visual indicator"""
+        priority_info = obj.get_priority_display_with_color()
+        priority_text = priority_info['priority']
+        color = priority_info['color']
+
+        priority_icons = {
+            'critical': '🚨',
+            'high': '🔴',
+            'medium': '🟡',
+            'low': '🟢'
+        }
+
+        icon = priority_icons.get(obj.priority, '⚪')
+
+        return format_html(
+            '<span style="color: {}; font-weight: bold;">{} {}</span>',
+            color, icon, priority_text
+        )
+    priority_display.short_description = '🎯 Priority'
+    priority_display.admin_order_field = 'priority'
+
+    def status_display(self, obj):
+        """Display status with color and progress indicator"""
+        status_info = obj.get_status_display_with_color()
+        status_text = status_info['status']
+        color = status_info['color']
+
+        status_icons = {
+            'new': '🆕',
+            'in_progress': '🔄',
+            'resolved': '✅',
+            'closed': '🔒',
+            'duplicate': '👯',
+            'wont_fix': '❌'
+        }
+
+        icon = status_icons.get(obj.status, '❓')
+
+        return format_html(
+            '<span style="color: {}; font-weight: bold;">{} {}</span>',
+            color, icon, status_text
+        )
+    status_display.short_description = '📊 Status'
+    status_display.admin_order_field = 'status'
+
+    def assigned_to_display(self, obj):
+        """Display assigned staff member"""
+        if obj.assigned_to:
+            url = reverse("admin:authentication_user_change", args=[obj.assigned_to.id])
+            name = obj.assigned_to.get_full_name() or obj.assigned_to.username
+            return format_html(
+                '<a href="{}" title="View staff member">👨‍💼 {}</a>',
+                url, name
+            )
+        return format_html('<span style="color: #6c757d;">⚪ Unassigned</span>')
+    assigned_to_display.short_description = '👨‍💼 Assigned To'
+    assigned_to_display.admin_order_field = 'assigned_to__username'
+
+    def responses_count(self, obj):
+        """Display number of responses"""
+        count = obj.responses.count()
+        if count > 0:
+            public_count = obj.responses.filter(is_internal=False).count()
+            internal_count = obj.responses.filter(is_internal=True).count()
+            return format_html(
+                '<span title="{} public, {} internal responses">💬 {}</span>',
+                public_count, internal_count, count
+            )
+        return format_html('<span style="color: #6c757d;">💬 0</span>')
+    responses_count.short_description = '💬 Responses'
+
+    def attachments_count(self, obj):
+        """Display number of attachments"""
+        count = obj.attachments.count()
+        if count > 0:
+            return format_html('<span style="color: #007bff;">📎 {}</span>', count)
+        return format_html('<span style="color: #6c757d;">📎 0</span>')
+    attachments_count.short_description = '📎 Files'
+
+    def user_info_display(self, obj):
+        """Display detailed user information"""
+        user = obj.user
+        return format_html(
+            '<div style="line-height: 1.6;">'
+            '<h4 style="margin: 0 0 10px 0; color: #495057;">👤 User Information</h4>'
+            '<table style="width: 100%; font-size: 12px;">'
+            '<tr><td><strong>Name:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Email:</strong></td><td><a href="mailto:{}">{}</a></td></tr>'
+            '<tr><td><strong>Username:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Joined:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Last Login:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Active:</strong></td><td>{}</td></tr>'
+            '</table>'
+            '</div>',
+            user.get_full_name() or 'N/A',
+            user.email, user.email,
+            user.username,
+            user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else 'N/A',
+            user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never',
+            '✅ Yes' if user.is_active else '❌ No'
+        )
+    user_info_display.short_description = '👤 User Details'
+
+    def technical_info_display(self, obj):
+        """Display technical information"""
+        return format_html(
+            '<div style="font-size: 12px; line-height: 1.6;">'
+            '<h4 style="margin: 0 0 10px 0; color: #495057;">💻 Technical Information</h4>'
+            '<table style="width: 100%; font-size: 11px;">'
+            '<tr><td><strong>Browser/System:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Page URL:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Has Screenshot:</strong></td><td>{}</td></tr>'
+            '</table>'
+            '</div>',
+            obj.browser_info[:100] + '...' if obj.browser_info and len(obj.browser_info) > 100 else obj.browser_info or 'Not provided',
+            f'<a href="{obj.page_url}" target="_blank">{obj.page_url}</a>' if obj.page_url else 'Not provided',
+            '✅ Yes' if obj.screenshot else '❌ No'
+        )
+    technical_info_display.short_description = '💻 Technical Info'
+
+    def legacy_data_display(self, obj):
+        """Display legacy data for migration reference"""
+        return format_html(
+            '<div style="font-size: 12px; line-height: 1.6;">'
+            '<h4 style="margin: 0 0 10px 0; color: #495057;">📁 Legacy Data</h4>'
+            '<table style="width: 100%; font-size: 11px;">'
+            '<tr><td><strong>Legacy Content:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Legacy Date:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Migration Status:</strong></td><td>✅ Migrated to new fields</td></tr>'
+            '</table>'
+            '</div>',
+            obj.feedback_content[:100] + '...' if obj.feedback_content and len(obj.feedback_content) > 100 else obj.feedback_content or 'None',
+            obj.feedback_date.strftime('%Y-%m-%d %H:%M') if obj.feedback_date else 'None'
+        )
+    legacy_data_display.short_description = '📁 Legacy Data'
+
+    # ===== ADMIN ACTIONS =====
+
+    def mark_as_new(self, request, queryset):
+        """Mark selected feedback as new"""
+        count = queryset.update(status='new', resolved_at=None)
+        self.message_user(request, f'Marked {count} feedback(s) as new.')
+    mark_as_new.short_description = '🆕 Mark as new'
+
+    def mark_as_in_progress(self, request, queryset):
+        """Mark selected feedback as in progress"""
+        count = queryset.update(status='in_progress', resolved_at=None)
+        self.message_user(request, f'Marked {count} feedback(s) as in progress.')
+    mark_as_in_progress.short_description = '🔄 Mark as in progress'
+
+    def mark_as_resolved(self, request, queryset):
+        """Mark selected feedback as resolved"""
+        from django.utils import timezone
+        count = queryset.filter(status__in=['new', 'in_progress']).update(
+            status='resolved', resolved_at=timezone.now()
+        )
+        self.message_user(request, f'Marked {count} feedback(s) as resolved.')
+    mark_as_resolved.short_description = '✅ Mark as resolved'
+
+    def mark_as_closed(self, request, queryset):
+        """Mark selected feedback as closed"""
+        count = queryset.update(status='closed')
+        self.message_user(request, f'Closed {count} feedback(s).')
+    mark_as_closed.short_description = '🔒 Mark as closed'
+
+    def set_priority_high(self, request, queryset):
+        """Set priority to high"""
+        count = queryset.update(priority='high')
+        self.message_user(request, f'Set {count} feedback(s) to high priority.')
+    set_priority_high.short_description = '🔴 Set priority: High'
+
+    def set_priority_critical(self, request, queryset):
+        """Set priority to critical"""
+        count = queryset.update(priority='critical')
+        self.message_user(request, f'Set {count} feedback(s) to critical priority.')
+    set_priority_critical.short_description = '🚨 Set priority: Critical'
+
+    def assign_to_me(self, request, queryset):
+        """Assign selected feedback to current user"""
+        if request.user.is_staff:
+            count = queryset.update(assigned_to=request.user)
+            self.message_user(request, f'Assigned {count} feedback(s) to you.')
+        else:
+            self.message_user(request, 'Only staff members can be assigned feedback.', level='ERROR')
+    assign_to_me.short_description = '👨‍💼 Assign to me'
+
+    def export_feedback_report(self, request, queryset):
+        """Export detailed feedback report as CSV"""
+        import csv
+        from django.http import HttpResponse
+
+        response = HttpResponse(content_type='text/csv')
+        timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+        response['Content-Disposition'] = f'attachment; filename="feedback_report_{timestamp}.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'ID', 'Title', 'User Email', 'User Name', 'Type', 'Category', 'Priority', 'Status',
+            'Description', 'Page URL', 'Browser Info', 'Assigned To', 'Created At', 'Updated At',
+            'Resolved At', 'Days Open', 'Responses Count', 'Attachments Count'
+        ])
+
+        for feedback in queryset.select_related('user', 'assigned_to').prefetch_related('responses', 'attachments'):
+            days_open = (timezone.now() - feedback.created_at).days if not feedback.resolved_at else (feedback.resolved_at - feedback.created_at).days
+
+            writer.writerow([
+                feedback.id,
+                feedback.title,
+                feedback.user.email,
+                feedback.user.get_full_name() or feedback.user.username,
+                feedback.get_feedback_type_display(),
+                feedback.get_category_display(),
+                feedback.get_priority_display(),
+                feedback.get_status_display(),
+                feedback.description[:500] + '...' if len(feedback.description) > 500 else feedback.description,
+                feedback.page_url or '',
+                feedback.browser_info[:200] + '...' if feedback.browser_info and len(feedback.browser_info) > 200 else feedback.browser_info or '',
+                feedback.assigned_to.get_full_name() if feedback.assigned_to else '',
+                feedback.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                feedback.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+                feedback.resolved_at.strftime('%Y-%m-%d %H:%M:%S') if feedback.resolved_at else '',
+                days_open,
+                feedback.responses.count(),
+                feedback.attachments.count()
+            ])
+
+        return response
+    export_feedback_report.short_description = '📊 Export detailed report'
+
+    def send_user_update(self, request, queryset):
+        """Send update notification to users (placeholder)"""
+        # This would integrate with your notification system
+        count = queryset.count()
+        self.message_user(
+            request,
+            f'Would send update notifications for {count} feedback(s) (feature not implemented yet).',
+            level='INFO'
+        )
+    send_user_update.short_description = '📧 Send user updates'
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Customize foreign key fields"""
+        if db_field.name == "assigned_to":
+            kwargs["queryset"] = User.objects.filter(is_staff=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def changelist_view(self, request, extra_context=None):
+        """Add summary statistics to changelist"""
+        extra_context = extra_context or {}
+
+        # Get queryset for statistics
+        qs = self.get_queryset(request)
+
+        # Calculate statistics
+        stats = {
+            'total': qs.count(),
+            'new': qs.filter(status='new').count(),
+            'in_progress': qs.filter(status='in_progress').count(),
+            'resolved': qs.filter(status='resolved').count(),
+            'closed': qs.filter(status='closed').count(),
+            'critical': qs.filter(priority='critical').count(),
+            'high': qs.filter(priority='high').count(),
+            'bugs': qs.filter(feedback_type='bug_report').count(),
+            'features': qs.filter(feedback_type='feature_request').count(),
+            'unassigned': qs.filter(assigned_to__isnull=True).count(),
+            'with_attachments': qs.filter(attachments__isnull=False).distinct().count(),
+        }
+
+        extra_context['feedback_stats'] = stats
+
+        return super().changelist_view(request, extra_context)
+
+
+@admin.register(FeedbackAttachment)
+class FeedbackAttachmentAdmin(admin.ModelAdmin):
+    """Admin interface for feedback attachments"""
+
+    list_display = ('feedback_title', 'filename', 'file_size_display', 'content_type', 'uploaded_at')
+    list_filter = ('content_type', 'uploaded_at')
+    search_fields = ('feedback__title', 'filename', 'feedback__user__email')
+    readonly_fields = ('filename', 'file_size', 'content_type', 'uploaded_at')
+
+    def feedback_title(self, obj):
+        """Display related feedback title with link"""
+        url = reverse("admin:authentication_userfeedback_change", args=[obj.feedback.id])
+        return format_html(
+            '<a href="{}">{}</a>',
+            url, obj.feedback.title[:50] + '...' if len(obj.feedback.title) > 50 else obj.feedback.title
+        )
+    feedback_title.short_description = 'Feedback'
+    feedback_title.admin_order_field = 'feedback__title'
+
+    def file_size_display(self, obj):
+        """Display file size in human-readable format"""
+        return obj.get_file_size_display()
+    file_size_display.short_description = 'Size'
+    file_size_display.admin_order_field = 'file_size'
+
+
+@admin.register(FeedbackResponse)
+class FeedbackResponseAdmin(admin.ModelAdmin):
+    """Admin interface for feedback responses"""
+
+    list_display = ('feedback_title', 'author', 'message_preview', 'visibility', 'created_at')
+    list_filter = ('is_internal', 'author', 'created_at')
+    search_fields = ('feedback__title', 'message', 'author__username', 'feedback__user__email')
+    readonly_fields = ('created_at',)
+
+    def feedback_title(self, obj):
+        """Display related feedback title with link"""
+        url = reverse("admin:authentication_userfeedback_change", args=[obj.feedback.id])
+        return format_html(
+            '<a href="{}">{}</a>',
+            url, obj.feedback.title[:50] + '...' if len(obj.feedback.title) > 50 else obj.feedback.title
+        )
+    feedback_title.short_description = 'Feedback'
+    feedback_title.admin_order_field = 'feedback__title'
+
+    def message_preview(self, obj):
+        """Display message preview"""
+        return obj.message[:100] + '...' if len(obj.message) > 100 else obj.message
+    message_preview.short_description = 'Message'
+
+    def visibility(self, obj):
+        """Display visibility status"""
+        if obj.is_internal:
+            return format_html('<span style="color: #fd7e14;">🔒 Internal</span>')
+        else:
+            return format_html('<span style="color: #28a745;">👁️ Public</span>')
+    visibility.short_description = 'Visibility'
+    visibility.admin_order_field = 'is_internal'
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Customize foreign key fields"""
+        if db_field.name == "author":
+            kwargs["queryset"] = User.objects.filter(is_staff=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 # Enhance the admin interface with additional features
 try:
