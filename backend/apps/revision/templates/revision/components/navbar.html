@@ -145,24 +145,6 @@
                 <!-- Tags will be dynamically loaded here -->
             </ul>
         </div>
-        
-        <!-- View Toggle - Only show on Card List page -->
-        <div id="viewToggleGroup" class="navbar-actions-group">
-            <div class="btn-group" role="group" aria-label="{% trans 'Display mode' %}">
-                <button id="listViewBtn" class="btn-navbar btn-navbar-outline active" 
-                        title="{% trans 'List view' %}"
-                        onclick="toggleViewMode('list')">
-                    <i class="bi bi-list-ul"></i>
-                    <span class="d-none d-xl-inline">{% trans "List" %}</span>
-                </button>
-                <button id="tableViewBtn" class="btn-navbar btn-navbar-outline" 
-                        title="{% trans 'Table view' %}"
-                        onclick="toggleViewMode('table')">
-                    <i class="bi bi-table"></i>
-                    <span class="d-none d-xl-inline">{% trans "Board" %}</span>
-                </button>
-            </div>
-        </div>
 
         <!-- Actions - Only show when no deck is selected -->
         <div id="generalActions" class="navbar-actions-group">
@@ -252,16 +234,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle sidebar toggle
+    // Handle sidebar toggle for Explore and Stats pages only
+    // (Card List page has its own handler in revision-main.js)
     const toggleSidebar = document.getElementById('toggleSidebar');
-    if (toggleSidebar) {
-        toggleSidebar.addEventListener('click', function() {
-            // Universal sidebar toggle that works on all pages
-            const revisionSidebar = document.getElementById('revisionSidebar');
-            const exploreSidebar = document.getElementById('exploreSidebar');
-            const statsSidebar = document.getElementById('statsSidebar');
+    const exploreSidebar = document.getElementById('exploreSidebar');
+    const statsSidebar = document.getElementById('statsSidebar');
 
-            const sidebar = revisionSidebar || exploreSidebar || statsSidebar;
+    if (toggleSidebar && (exploreSidebar || statsSidebar)) {
+        toggleSidebar.addEventListener('click', function() {
+            const sidebar = exploreSidebar || statsSidebar;
 
             if (sidebar) {
                 const isCurrentlyVisible = sidebar.classList.contains('show');
@@ -306,10 +287,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         toggleSidebar.title = toggleSidebar.dataset.showText;
                     }
                 }
-
-                console.log('Sidebar toggled:', sidebar.id, 'Show:', sidebar.classList.contains('show'));
-            } else {
-                console.error('No sidebar found on this page');
             }
         });
     }

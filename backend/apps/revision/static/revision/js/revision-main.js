@@ -4100,10 +4100,35 @@ function selectSortFilter(value, text) {
 function toggleSidebar() {
     const elements = getElements();
     const isVisible = elements.sidebar.classList.contains('show');
-    
-    // Toggle sidebar visibility
-    elements.sidebar.classList.toggle('show');
-    
+
+    if (isVisible) {
+        // Hide sidebar
+        elements.sidebar.classList.remove('show');
+        elements.sidebar.style.width = '0px';
+        elements.sidebar.style.minWidth = '0px';
+        elements.sidebar.style.maxWidth = '0px';
+        elements.sidebar.style.padding = '0px';
+        elements.sidebar.style.margin = '0px';
+        elements.sidebar.style.border = 'none';
+        elements.sidebar.style.overflow = 'hidden';
+        elements.sidebar.style.flex = '0 0 0px';
+        elements.sidebar.style.opacity = '0';
+        elements.sidebar.style.visibility = 'hidden';
+    } else {
+        // Show sidebar
+        elements.sidebar.classList.add('show');
+        elements.sidebar.style.removeProperty('width');
+        elements.sidebar.style.removeProperty('minWidth');
+        elements.sidebar.style.removeProperty('maxWidth');
+        elements.sidebar.style.removeProperty('padding');
+        elements.sidebar.style.removeProperty('margin');
+        elements.sidebar.style.removeProperty('border');
+        elements.sidebar.style.removeProperty('overflow');
+        elements.sidebar.style.removeProperty('flex');
+        elements.sidebar.style.removeProperty('opacity');
+        elements.sidebar.style.removeProperty('visibility');
+    }
+
     // Update button icon and accessibility attributes based on new state
     const toggleBtn = document.getElementById('toggleSidebar');
     const icon = toggleBtn?.querySelector('i');
@@ -4111,12 +4136,12 @@ function toggleSidebar() {
         if (isVisible) {
             // Sidebar will be hidden - show "expand" icon
             icon.className = 'bi bi-layout-sidebar-inset-reverse';
-            toggleBtn.title = 'Afficher la barre latérale';
+            toggleBtn.title = toggleBtn.dataset.showText || 'Afficher la barre latérale';
             toggleBtn.setAttribute('aria-expanded', 'false');
         } else {
             // Sidebar will be shown - show "collapse" icon
             icon.className = 'bi bi-layout-sidebar-inset';
-            toggleBtn.title = 'Masquer la barre latérale';
+            toggleBtn.title = toggleBtn.dataset.hideText || 'Masquer la barre latérale';
             toggleBtn.setAttribute('aria-expanded', 'true');
         }
     }
