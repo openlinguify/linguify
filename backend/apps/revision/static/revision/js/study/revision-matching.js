@@ -520,7 +520,7 @@ class MatchingStudyMode {
 
             const data = await response.json();
             console.log('[MatchMode] User settings loaded:', data);
-            return data;
+            return data.settings || data;
 
         } catch (error) {
             console.error('[MatchMode] Error fetching user settings:', error);

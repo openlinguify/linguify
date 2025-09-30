@@ -542,7 +542,7 @@ class WriteStudyMode {
 
             const data = await response.json();
             console.log('[WriteMode] User settings loaded:', data);
-            return data;
+            return data.settings || data;
 
         } catch (error) {
             console.error('[WriteMode] Error fetching user settings:', error);

@@ -59,19 +59,11 @@ class SpacedRepetitionMixin:
             revision_settings, created = RevisionSettings.objects.get_or_create(user=user)
             
             # Map existing settings to spaced repetition preferences
-            difficulty_perception_map = {
-                'beginner': 0.5,
-                'intermediate': 1.0,
-                'advanced': 1.5
-            }
-            
             return {
-                'max_cards_per_session': revision_settings.max_cards_per_session or 20,
-                'difficulty_preference': difficulty_perception_map.get(
-                    revision_settings.difficulty_preference or 'intermediate', 1.0
-                ),
-                'time_limit_minutes': revision_settings.time_limit_minutes or 30,
-                'show_hints': revision_settings.show_hints,
+                'max_cards_per_session': revision_settings.cards_per_session or 20,
+                'difficulty_preference': 1.0,  # Default difficulty
+                'time_limit_minutes': revision_settings.default_session_duration or 30,
+                'show_hints': True,  # Default show hints
                 'auto_advance': revision_settings.auto_advance,
                 'learning_steps': [1, 10, 1440],  # 1min, 10min, 1day in minutes
                 'graduating_interval': 4,  # days

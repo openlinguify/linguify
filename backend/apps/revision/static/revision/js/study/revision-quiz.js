@@ -496,7 +496,7 @@ class QuizStudyMode {
 
             const data = await response.json();
             console.log('[QuizMode] User settings loaded:', data);
-            return data;
+            return data.settings || data;
 
         } catch (error) {
             console.error('[QuizMode] Error fetching user settings:', error);

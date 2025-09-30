@@ -134,6 +134,7 @@ urlpatterns = [
 
     # Settings API
     path('api/settings/', include(settings_router.urls)),
+    path('api/settings/user/', get_user_revision_settings, name='settings-user'),  # Alias for user-settings
     path('api/settings/config/', RevisionSettingsViewSet.as_view({
         'get': 'list',
         'post': 'update',

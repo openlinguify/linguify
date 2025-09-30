@@ -358,8 +358,13 @@ class FlashcardDeckViewSet(DeckPermissionMixin, OptimizedQuerysetMixin, viewsets
                 user_prefs = sr_mixin._get_user_preferences(request.user)
                 
                 # Build session config from query parameters
+                max_cards_value = int(request.query_params.get('max_cards', user_prefs.get('max_cards_per_session', 20)))
+                print(f"🔍 [FLASHCARD DEBUG] user_prefs: {user_prefs}")
+                print(f"🔍 [FLASHCARD DEBUG] max_cards_per_session from prefs: {user_prefs.get('max_cards_per_session', 'NOT FOUND')}")
+                print(f"🔍 [FLASHCARD DEBUG] final max_cards value: {max_cards_value}")
+
                 session_config = {
-                    'max_cards': int(request.query_params.get('max_cards', user_prefs.get('session_size', 20))),
+                    'max_cards': max_cards_value,
                     'new_cards_limit': int(request.query_params.get('new_cards', user_prefs.get('new_cards_per_day', 10))),
                     'review_ahead_days': int(request.query_params.get('ahead_days', user_prefs.get('review_ahead_days', 1))),
                     'prioritize_overdue': request.query_params.get('prioritize_overdue', 'true') == 'true',
