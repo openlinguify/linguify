@@ -15,7 +15,7 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <!-- Brand -->
-            <a class="navbar-brand app-brand-icon" href="{% if show_feedback_only %}{% url 'authentication:feedback_dashboard' %}{% else %}{% url 'saas_web:dashboard' %}{% endif %}" aria-label="{% trans 'Return to dashboard' %}">
+            <a class="navbar-brand app-brand-icon" href="{% url 'saas_web:dashboard' %}" aria-label="{% trans 'Return to dashboard' %}">
                 {% if show_feedback_only %}
                     <i class="bi bi-bug" style="font-size: 1.5rem;" aria-hidden="true"></i>
                 {% elif current_app.static_icon %}
@@ -43,10 +43,16 @@
                         <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
                     </a>
                     {% else %}
-                    <a href="{% url 'authentication:feedback_dashboard' %}"
+                    <a href="{% url 'saas_web:dashboard' %}"
                        class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
-                       aria-label="{% trans 'Bugs & Feedbacks' %}">
-                        <i class="bi bi-bug" aria-hidden="true"></i>
+                       aria-label="{% trans 'Go to dashboard' %}">
+                        <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
+                    </a>
+
+                    <a href="{% url 'saas_web:app_store' %}"
+                       class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
+                       aria-label="{% trans 'Browse app store' %}">
+                        <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
                     </a>
                     {% endif %}
                 </div>
