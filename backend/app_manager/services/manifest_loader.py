@@ -1,10 +1,13 @@
 # app_manager/services/manifest_loader.py
 import os
+import importlib
 import importlib.util
 from pathlib import Path
 from django.conf import settings
+from django.utils import translation
 from typing import Dict, Any, List
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +22,7 @@ class ManifestLoader:
         """Charge tous les manifests des apps disponibles"""
         if self._manifests_cache is not None:
             return self._manifests_cache
-            
+
         manifests = {}
         
         if not self.apps_path.exists():
@@ -38,13 +41,13 @@ class ManifestLoader:
             try:
                 # Charger le manifest dynamiquement
                 spec = importlib.util.spec_from_file_location(
-                    f"{app_dir.name}_manifest", 
+                    f"{app_dir.name}_manifest",
                     manifest_path
                 )
                 if spec and spec.loader:
                     manifest_module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(manifest_module)
-                    
+
                     # Récupérer le dictionnaire du manifest
                     if hasattr(manifest_module, '__manifest__'):
                         manifests[app_dir.name] = manifest_module.__manifest__
@@ -53,7 +56,7 @@ class ManifestLoader:
             except Exception as e:
                 logger.error(f"Error loading manifest for {app_dir.name}: {e}")
                 continue
-        
+
         self._manifests_cache = manifests
         return manifests
     
@@ -101,12 +104,14 @@ class ManifestLoader:
     
     def get_app_info(self, app_code: str) -> Dict[str, Any]:
         """Retourne toutes les infos d'une app depuis son manifest"""
+        from django.utils.translation import get_language, activate
+
         manifests = self.get_all_manifests()
         manifest = manifests.get(app_code, {})
-        
+
         frontend = manifest.get('frontend_components', {})
         technical = manifest.get('technical_info', {})
-        
+
         # Utiliser summary pour l'app-store (court), description pour la doc (long)
         short_description = manifest.get('summary', '')
         if not short_description:
@@ -116,13 +121,18 @@ class ManifestLoader:
                 short_description = full_description.split('\n')[0].strip()
             else:
                 short_description = full_description
-        
+
+        # Force string conversion to evaluate gettext_lazy with current active language
+        # The language should already be activated by Django's LocaleMiddleware
+        name = manifest.get('name', app_code.title())
+        category_label = frontend.get('category_label', 'Application')
+
         return {
-            'display_name': manifest.get('name', app_code.title()),
-            'description': short_description,  # Description courte pour l'app-store
-            'full_description': manifest.get('description', ''),  # Description complète pour la documentation
+            'display_name': str(name) if name else app_code.title(),
+            'description': str(short_description) if short_description else '',  # Description courte pour l'app-store
+            'full_description': str(manifest.get('description', '')),  # Description complète pour la documentation
             'category': frontend.get('display_category', 'other'),
-            'category_label': frontend.get('category_label', 'Application'),
+            'category_label': str(category_label) if category_label else 'Application',
             'category_icon': frontend.get('category_icon', 'bi-app'),
             'route_path': technical.get('web_url', f'/{app_code}/'),
             'has_static_icon': bool(frontend.get('static_icon', '') and 'icon.png' in frontend.get('static_icon', '')),
@@ -143,8 +153,15 @@ class ManifestLoader:
         ]
     
     def clear_cache(self):
-        """Vide le cache des manifests"""
+        """Vide le cache des manifests et force le rechargement des modules"""
         self._manifests_cache = None
+
+        # Also clear Python module cache for manifest modules to force reload
+        # This ensures gettext_lazy translations are re-evaluated with new language
+        modules_to_remove = [key for key in sys.modules.keys() if key.endswith('_manifest')]
+        for module_name in modules_to_remove:
+            del sys.modules[module_name]
+            logger.debug(f"Removed manifest module from cache: {module_name}")
 
 # Instance globale
 manifest_loader = ManifestLoader()

@@ -137,27 +137,29 @@ class UserAppService:
     @classmethod
     def _format_app_data(cls, app):
         """
-        Format app data for display using database data primarily.
-        
+        Format app data for display using manifest data for translations.
+
         Args:
             app: App model instance
-            
+
         Returns:
             dict: Formatted app data
         """
+        # Get app info from manifest for translations
+        app_info = manifest_loader.get_app_info(app.code)
+
         # Use database route_path primarily, fall back to manifest if empty
         route_path = app.route_path
         if not route_path:
-            app_info = manifest_loader.get_app_info(app.code)
             route_path = app_info.get('route_path', f'/{app.code}/')
-        
+
         # Ensure route_path ends with slash for consistency
         if not route_path.endswith('/'):
             route_path += '/'
-        
+
         return {
             'name': app.code,
-            'display_name': app.display_name,
+            'display_name': app_info.get('display_name', app.display_name),
             'url': route_path,
             'icon': app.icon_name,
             'static_icon': AppIconService.get_static_icon_url(app.code),

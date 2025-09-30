@@ -286,6 +286,17 @@ class UserSettingsView(View):
                     LANGUAGE_SESSION_KEY = settings.LANGUAGE_COOKIE_NAME
                     request.session[LANGUAGE_SESSION_KEY] = interface_language
 
+                    # Clear manifest cache to reload translations with new language
+                    from app_manager.services.manifest_loader import manifest_loader
+                    manifest_loader.clear_cache()
+
+                    # Clear user apps cache to reload app names with new language
+                    from app_manager.services.cache_service import UserAppCacheService
+                    UserAppCacheService.clear_user_apps_cache_for_user(request.user)
+
+                    # Clear app store cache to reload app store with new language
+                    UserAppCacheService.clear_app_store_cache()
+
                     if is_ajax:
                         # Check if it's an HTMX request
                         if request.headers.get('HX-Request'):
