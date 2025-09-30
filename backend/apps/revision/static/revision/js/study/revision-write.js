@@ -469,27 +469,42 @@ class WriteStudyMode {
         }
     }
 
-    async updateCardProgress(cardId, isCorrect) {
+    async updateCardProgress(cardId, isCorrect, responseTime = null) {
         /**
-         * Met à jour les statistiques de la carte dans le backend
+         * Met à jour les statistiques de la carte dans le backend avec l'algorithme adaptatif
          */
         try {
+            const requestData = {
+                is_correct: isCorrect,
+                study_mode: 'write',  // Mode d'étude "Écrire"
+                difficulty: isCorrect ? 'medium' : 'wrong'  // Difficulté déduite
+            };
+
+            // Ajouter le temps de réponse si disponible
+            if (responseTime !== null) {
+                requestData.response_time = responseTime;
+            }
+
             const response = await window.apiService.request(
                 `/api/v1/revision/api/flashcards/${cardId}/update_review_progress/`,
                 {
                     method: 'POST',
-                    body: JSON.stringify({
-                        is_correct: isCorrect
-                    }),
+                    body: JSON.stringify(requestData),
                     headers: {
                         'Content-Type': 'application/json',
                     }
                 }
             );
-            
-            console.log(`✅ Stats mises à jour pour la carte ${cardId}: ${isCorrect ? 'correct' : 'incorrect'}`);
+
+            console.log(`✅ Stats mises à jour pour la carte ${cardId}:`, {
+                is_correct: isCorrect,
+                confidence: response.adaptive_learning?.confidence_score,
+                mastery_level: response.adaptive_learning?.mastery_level,
+                confidence_change: response.adaptive_learning?.confidence_change
+            });
+
             return response;
-            
+
         } catch (error) {
             console.error(`❌ Erreur lors de la mise à jour des stats pour la carte ${cardId}:`, error);
             // Ne pas bloquer l'exercice si l'API échoue
