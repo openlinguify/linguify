@@ -1,5 +1,5 @@
 {% extends 'saas_web/base.html' %}
-{% load static %}
+{% load static i18n %}
 
 {% block title %}App Store - Open Linguify{% endblock %}
 
@@ -28,17 +28,17 @@
     <!-- Sidebar -->
     <aside class="app-store-sidebar">
         <div class="category-list">
-            <h6 class="text-muted text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 600;">Catégories</h6>
-            
+            <h6 class="text-muted text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 600;">{% trans "Categories" %}</h6>
+
             <button class="category-item active" data-category="all">
                 <div class="d-flex align-items-center">
                     <i class="bi bi-grid-3x3-gap category-icon"></i>
-                    <span>Toutes les apps</span>
+                    <span>{% trans "All apps" %}</span>
                 </div>
                 <span class="category-count" id="count-all">{{ total_apps }}</span>
             </button>
             
-            <!-- Catégories dynamiques depuis les manifests -->
+            <!-- Dynamic categories from manifests -->
             {% for category_id, definition in category_definitions.items %}
             <button class="category-item" data-category="{{ category_id }}">
                 <div class="d-flex align-items-center">
@@ -60,7 +60,7 @@
         <!-- Search Bar -->
         <div class="search-bar">
             <i class="bi bi-search"></i>
-            <input type="text" placeholder="Rechercher une application..." id="searchInput">
+            <input type="text" placeholder="{% trans 'Search for an application...' %}" id="searchInput">
         </div>
 
         <!-- Apps Grid -->
@@ -87,20 +87,20 @@
                 </div>
 
                 <!-- App Description -->
-                <p class="app-description">{{ app.description|default:'Description de l\'application.' }}</p>
+                <p class="app-description">{{ app.description|default:_('Application description.') }}</p>
 
                 <!-- App Footer -->
                 <div class="app-footer">
                     <div class="install-status {% if app.id in enabled_app_ids %}installed{% endif %}">
                         {% if app.id in enabled_app_ids %}
-                            <i class="bi bi-check-circle me-1"></i>Installée
+                            <i class="bi bi-check-circle me-1"></i>{% trans "Installed" %}
                         {% else %}
-                            <i class="bi bi-download me-1"></i>Non installée
+                            <i class="bi bi-download me-1"></i>{% trans "Not installed" %}
                         {% endif %}
                     </div>
                     {% if app.id in enabled_app_ids %}
                     <a href="{{ app.route_path }}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-box-arrow-up-right me-1"></i>Ouvrir
+                        <i class="bi bi-box-arrow-up-right me-1"></i>{% trans "Open" %}
                     </a>
                     {% endif %}
                 </div>
@@ -108,24 +108,24 @@
                 <!-- Loading Overlay -->
                 <div class="loading-overlay" style="display: none;">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Chargement...</span>
+                        <span class="visually-hidden">{% trans "Loading..." %}</span>
                     </div>
                 </div>
             </div>
             {% empty %}
             <div class="empty-state">
                 <i class="bi bi-app-indicator"></i>
-                <h5 class="mb-2">Aucune application disponible</h5>
-                <p>Les applications seront bientôt disponibles.</p>
+                <h5 class="mb-2">{% trans "No applications available" %}</h5>
+                <p>{% trans "Applications will be available soon." %}</p>
             </div>
             {% endfor %}
         </div>
 
-        <!-- Empty State (pour les recherches) -->
+        <!-- Empty State (for searches) -->
         <div class="empty-state" id="emptyState" style="display: none;">
             <i class="bi bi-search"></i>
-            <h5 class="mb-2">Aucune application trouvée</h5>
-            <p>Essayez avec d'autres mots-clés</p>
+            <h5 class="mb-2">{% trans "No applications found" %}</h5>
+            <p>{% trans "Try with other keywords" %}</p>
         </div>
     </main>
 </div>
@@ -140,28 +140,28 @@
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title" id="uninstallModalLabel">
                     <i class="bi bi-exclamation-triangle text-warning me-2"></i>
-                    Désinstaller l'application
+                    {% trans "Uninstall application" %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
             </div>
             <div class="modal-body">
                 <div class="text-center mb-4">
                     <div class="app-icon-large mb-3" id="modalAppIcon">
                         <i class="bi bi-app"></i>
                     </div>
-                    <h6 class="fw-bold mb-3" id="modalAppName">Nom de l'application</h6>
+                    <h6 class="fw-bold mb-3" id="modalAppName">{% trans "Application name" %}</h6>
                 </div>
-                
+
                 <div class="alert alert-info border-0" style="background: #f0f9ff; color: #0369a1;">
                     <div class="d-flex">
                         <i class="bi bi-info-circle me-3 mt-1 flex-shrink-0"></i>
                         <div>
-                            <p class="mb-2"><strong>Que se passe-t-il lors de la désinstallation ?</strong></p>
+                            <p class="mb-2"><strong>{% trans "What happens during uninstallation?" %}</strong></p>
                             <ul class="mb-0 ps-0" style="list-style: none;">
-                                <li class="mb-1"><i class="bi bi-check2 text-primary me-2"></i>L'application disparaîtra de votre dashboard</li>
-                                <li class="mb-1"><i class="bi bi-shield-check text-primary me-2"></i>Vos données seront conservées pendant <strong>30 jours</strong></li>
-                                <li class="mb-1"><i class="bi bi-arrow-clockwise text-primary me-2"></i>Vous pouvez réinstaller à tout moment</li>
-                                <li><i class="bi bi-clock text-muted me-2"></i>Suppression automatique après 30 jours d'inactivité</li>
+                                <li class="mb-1"><i class="bi bi-check2 text-primary me-2"></i>{% trans "The application will disappear from your dashboard" %}</li>
+                                <li class="mb-1"><i class="bi bi-shield-check text-primary me-2"></i>{% trans "Your data will be kept for" %} <strong>{% trans "30 days" %}</strong></li>
+                                <li class="mb-1"><i class="bi bi-arrow-clockwise text-primary me-2"></i>{% trans "You can reinstall at any time" %}</li>
+                                <li><i class="bi bi-clock text-muted me-2"></i>{% trans "Automatic deletion after 30 days of inactivity" %}</li>
                             </ul>
                         </div>
                     </div>
@@ -169,10 +169,10 @@
             </div>
             <div class="modal-footer border-0 pt-0">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-2"></i>Annuler
+                    <i class="bi bi-x-circle me-2"></i>{% trans "Cancel" %}
                 </button>
                 <button type="button" class="btn btn-danger" id="confirmUninstall">
-                    <i class="bi bi-trash me-2"></i>Désinstaller
+                    <i class="bi bi-trash me-2"></i>{% trans "Uninstall" %}
                 </button>
             </div>
         </div>

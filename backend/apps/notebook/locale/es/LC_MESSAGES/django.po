@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 19:44+0200\n"
+"POT-Creation-Date: 2025-09-30 20:17+0200\n"
 "PO-Revision-Date: 2025-09-30 19:15+0200\n"
 "Last-Translator: Linguify Team\n"
 "Language-Team: Spanish\n"
@@ -14,504 +14,504 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
 
-#: .\apps\notebook\__manifest__.py:5 .\apps\notebook\apps.py:11
-#: .\apps\notebook\templates\components\notebook_navbar.html:55
+#: .\backend\apps\notebook\__manifest__.py:5 .\backend\apps\notebook\apps.py:11
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:55
 msgid "Notes"
 msgstr "Notas"
 
-#: .\apps\notebook\__manifest__.py:8
+#: .\backend\apps\notebook\__manifest__.py:8
 msgid "Take personalized notes for your courses and organize your ideas."
 msgstr "Toma notas personalizadas para tus cursos y organiza tus ideas."
 
-#: .\apps\notebook\__manifest__.py:44
+#: .\backend\apps\notebook\__manifest__.py:44
 msgid "Productivity"
 msgstr "Productividad"
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:21
+#: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:21
 msgid "Delete Confirmation"
 msgstr ""
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:37
+#: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:37
 msgid "Are you sure you want to delete this note?"
 msgstr ""
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:48
+#: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:48
 msgid "Are you sure you want to delete"
 msgstr ""
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:48
+#: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:48
 msgid "selected notes?"
 msgstr ""
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:53
+#: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:53
 msgid "This action cannot be undone."
 msgstr ""
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:59
+#: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:59
 msgid "This action is permanent and cannot be reversed."
 msgstr ""
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:68
+#: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:68
 msgid "Cancel"
 msgstr ""
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:74
-#: .\apps\notebook\templates\components\notebook_navbar.html:149
+#: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:74
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:149
 msgid "Delete"
 msgstr ""
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:74
+#: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:74
 #, fuzzy
 #| msgid "Notes"
 msgid "notes"
 msgstr "Notas"
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:74
+#: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:74
 msgid "Delete Note"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:8
-#: .\apps\notebook\templates\components\notebook_editor.html:8
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:8
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:8
 msgid "Select a note to view"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:9
-#: .\apps\notebook\templates\components\notebook_editor.html:9
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:9
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:9
 msgid "Choose a note from the sidebar or create a new one"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:12
-#: .\apps\notebook\templates\components\notebook_editor.html:12
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:12
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:12
 msgid "Create New Note"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:24
-#: .\apps\notebook\templates\components\notebook_editor.html:27
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:24
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:27
 msgid "Note title"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:28
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:28
 msgid "Unpin"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:28
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:28
 msgid "Pin"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:40
-#: .\apps\notebook\templates\components\notebook_editor.html:33
-#: .\apps\notebook\templates\notebook\notebook_settings.html:171
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:40
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:33
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:171
 msgid "Language"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:41
-#: .\apps\notebook\templates\components\notebook_navbar.html:90
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:41
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:90
 msgid "French"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:42
-#: .\apps\notebook\templates\components\notebook_navbar.html:91
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:42
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:91
 msgid "English"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:43
-#: .\apps\notebook\templates\components\notebook_navbar.html:92
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:43
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:92
 msgid "Spanish"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:44
-#: .\apps\notebook\templates\components\notebook_navbar.html:93
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:44
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:93
 msgid "Dutch"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:50
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:50
 msgid "Content"
 msgstr ""
 
-#: .\apps\notebook\templates\components\modals_delete_note.html:53
+#: .\backend\apps\notebook\templates\components\modals_delete_note.html:53
 msgid "Write your note here..."
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_editor.html:8
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:8
 msgid "No archived notes"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_editor.html:9
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:9
 msgid "You have no archived notes yet"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_editor.html:46
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:46
 msgid "Pin note"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_editor.html:49
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:49
 msgid "Copy content"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_editor.html:52
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:52
 msgid "Export note"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_editor.html:55
+#: .\backend\apps\notebook\templates\components\notebook_editor.html:55
 msgid "Delete note"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:11
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:11
 msgid "Hide/Show sidebar"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:12
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:12
 msgid "Toggle sidebar"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:29
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:29
 msgid "Hide sidebar"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:32
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:32
 msgid "Show sidebar"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:46
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:46
 #, fuzzy
 #| msgid "Notes"
 msgid "New Note"
 msgstr "Notas"
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:61
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:61
 msgid "Archives"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:72
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:72
 msgid "Search in notes..."
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:89
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:89
 msgid "All languages"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:107
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:107
 msgid "Most recent"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:108
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:108
 msgid "Oldest"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:109
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:109
 msgid "Title A-Z"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:110
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:110
 msgid "Title Z-A"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:117
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:117
 msgid "Select all notes"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:119
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:119
 msgid "Select All"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:124
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:124
 msgid "selected"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:128
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:128
 msgid "Clear selection"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:130
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:130
 msgid "Clear"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:135
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:135
 msgid "Archive selection"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:137
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:137
 msgid "Archive"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:141
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:141
 msgid "Unarchive selection"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:143
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:143
 msgid "Unarchive"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:147
+#: .\backend\apps\notebook\templates\components\notebook_navbar.html:147
 msgid "Delete selection"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_sidebar.html:14
+#: .\backend\apps\notebook\templates\components\notebook_sidebar.html:14
 msgid "No notes found"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_sidebar.html:15
+#: .\backend\apps\notebook\templates\components\notebook_sidebar.html:15
 msgid "Start by creating your first note!"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_sidebar.html:18
+#: .\backend\apps\notebook\templates\components\notebook_sidebar.html:18
 msgid "Create a note"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_sidebar.html:39
+#: .\backend\apps\notebook\templates\components\notebook_sidebar.html:39
 msgid "Untitled"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_sidebar.html:60
+#: .\backend\apps\notebook\templates\components\notebook_sidebar.html:60
 msgid "Load more"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:10
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:10
 msgid "Editor"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:26
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:26
 msgid "Auto-save"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:28
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:28
 msgid "Automatically save changes while you type"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:34
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:34
 msgid "Markdown preview"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:36
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:36
 msgid "Show a live preview of markdown formatting"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:42
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:42
 msgid "Spell check"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:44
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:44
 msgid "Check spelling as you type"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:50
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:50
 msgid "Version history"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:52
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:52
 msgid "Keep track of changes to your notes"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:56
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:56
 msgid "Auto-save interval (seconds)"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:61
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:61
 msgid "Time between auto-saves"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:72
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:72
 msgid "Appearance"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:87
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:87
 msgid "Font family"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:89
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:89
 msgid "System"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:90
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:90
 msgid "Serif"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:91
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:91
 msgid "Sans-serif"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:92
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:92
 msgid "Monospace"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:94
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:94
 msgid "Font style for your notes"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:98
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:98
 msgid "Font size"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:100
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:100
 msgid "Small"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:101
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:101
 msgid "Medium"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:102
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:102
 msgid "Large"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:103
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:103
 msgid "Extra large"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:105
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:105
 msgid "Text size in editor"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:117
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:117
 msgid "Organization"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:133
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:133
 msgid "Auto-categorize"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:135
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:135
 msgid "Automatically categorize notes by content"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:141
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:141
 msgid "Show tags"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:143
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:143
 msgid "Display tags on notes"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:149
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:149
 msgid "Recent notes"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:151
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:151
 msgid "Show recently viewed notes"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:156
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:156
 msgid "Default view"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:158
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:158
 msgid "List"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:159
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:159
 msgid "Grid"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:160
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:160
 msgid "Cards"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:162
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:162
 msgid "How notes are displayed"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:166
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:166
 msgid "Default sort"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:168
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:168
 msgid "Creation date"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:169
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:169
 msgid "Last modified"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:170
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:170
 msgid "Title"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:173
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:173
 msgid "Default sorting order"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:178
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:178
 msgid "Notes per page"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:183
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:183
 msgid "Number of notes displayed per page"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:194
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:194
 msgid "Sharing"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:210
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:210
 msgid "Allow sharing"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:212
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:212
 msgid "Enable sharing notes with others"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:218
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:218
 msgid "Public notes"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:220
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:220
 msgid "Allow notes to be publicly visible"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:226
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:226
 msgid "Collaborative editing"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:228
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:228
 msgid "Allow others to edit shared notes"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:232
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:232
 msgid "Default permissions"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:234
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:234
 msgid "Private"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:235
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:235
 msgid "View only"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:236
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:236
 msgid "Can edit"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:238
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:238
 msgid "Default permission level for new shares"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:247
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:247
 msgid "Save all notebook settings"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:251
-#: .\apps\notebook\templates\notebook\notebook_settings.html:413
-#: .\apps\notebook\templates\notebook\notebook_settings.html:427
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:251
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:413
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:427
 msgid "Save all settings"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:387
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:387
 msgid "Saving..."
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:408
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:408
 msgid "Saved!"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:410
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:410
 msgid "Settings saved successfully"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:422
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:422
 msgid "Error"
 msgstr ""
 
-#: .\apps\notebook\templates\notebook\notebook_settings.html:424
+#: .\backend\apps\notebook\templates\notebook\notebook_settings.html:424
 msgid "Error while saving"
 msgstr ""

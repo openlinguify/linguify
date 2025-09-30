@@ -1,8 +1,2476 @@
 # Translation file for public_web
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-30 20:17+0200\n"
 "Language: nl\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
+#: .\portal\public_web\templates\components\dynamic_apps_dropdown.html:8
+msgid "No apps available"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:9
+#: .\portal\public_web\templates\public_web\landing.html:142
+msgid "Open Source Education Apps"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:34
+msgid "Product"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:36
+msgid "Features"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:37
+#: .\portal\public_web\templates\components\public_header.html:23
+msgid "Apps"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:42
+msgid "Resources"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:44
+#: .\portal\public_web\templates\components\public_header.html:44
+msgid "Blog"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:45
+msgid "Contribute"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:47
+#: .\portal\public_web\templates\public_web\landing.html:186
+msgid "Sponsor"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:53
+msgid "Company"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:55
+#: .\portal\public_web\templates\components\public_header.html:49
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:59
+msgid "About"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:56
+msgid "Brand"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:57
+msgid "Careers"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:58
+#: .\portal\public_web\templates\components\public_header.html:54
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:40
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:287
+#: .\portal\public_web\templates\public_web\apps\app_course.html:40
+#: .\portal\public_web\templates\public_web\apps\app_course.html:248
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:40
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:465
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:40
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:358
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:40
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:468
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:46
+#: .\portal\public_web\templates\public_web\contact.html:10
+msgid "Contact"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:63
+msgid "Support"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:65
+msgid "Report a bug"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:66
+#: .\portal\public_web\templates\public_web\apps\app_community.html:40
+#: .\portal\public_web\templates\public_web\apps\app_community.html:340
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:39
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:114
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:40
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:340
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:40
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:391
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:146
+msgid "Contact us"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:76
+msgid "© 2025 Open Linguify. All rights reserved."
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:82
+msgid "Privacy"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:85
+msgid "Terms"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_footer.html:88
+msgid "Cookies"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_header.html:27
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:70
+#: .\portal\public_web\templates\public_web\landing.html:217
+#: .\portal\public_web\templates\public_web\landing.html:361
+msgid "Todo"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_header.html:30
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:64
+#: .\portal\public_web\templates\public_web\landing.html:230
+#: .\portal\public_web\templates\public_web\landing.html:378
+msgid "Revision"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_header.html:33
+#: .\portal\public_web\templates\public_web\landing.html:243
+#: .\portal\public_web\templates\public_web\landing.html:395
+msgid "Notebook"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_header.html:37
+msgid "View all apps"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_header.html:59
+msgid "Requests"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_header.html:106
+msgid "Language"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_header.html:164
+#: .\portal\public_web\templates\components\public_header.html:209
+msgid "Log In"
+msgstr ""
+
+#: .\portal\public_web\templates\components\public_header.html:167
+#: .\portal\public_web\templates\components\public_header.html:212
+msgid "Sign Up"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:6
+msgid "About Open Linguify"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:7
+msgid ""
+"Discover Open Linguify's mission to democratize language learning through AI "
+"technology, open-source education, and innovative learning tools."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:16
+msgid "Democratizing Language Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:18
+msgid ""
+"Open Linguify is on a mission to break down language barriers worldwide "
+"through innovative AI technology and open-source education."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:22
+msgid "Discover Our Story"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:25
+#: .\portal\public_web\templates\public_web\landing.html:551
+msgid "View on GitHub"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:40
+msgid "Trusted by learners worldwide"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:45
+#: .\portal\public_web\templates\public_web\brand.html:142
+msgid "Active Learners"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:49
+#: .\portal\public_web\templates\public_web\brand.html:154
+msgid "Languages Supported"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:53
+#: .\portal\public_web\templates\public_web\about.html:214
+#: .\portal\public_web\templates\public_web\about.html:396
+#: .\portal\public_web\templates\public_web\brand.html:119
+#: .\portal\public_web\templates\public_web\landing.html:312
+#: .\portal\public_web\templates\public_web\landing.html:705
+msgid "Open Source"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:57
+#: .\portal\public_web\templates\public_web\about.html:404
+msgid "AI Support"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:66
+msgid "Our Story"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:68
+msgid ""
+"From a simple idea to a global movement - discover how Open Linguify is "
+"revolutionizing language education."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:81
+msgid "The Vision"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:83
+msgid ""
+"Open Linguify was born from a simple observation: traditional language "
+"learning methods weren't keeping up with the digital age."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:86
+msgid ""
+"We envisioned a world where AI could make personalized language learning "
+"accessible to everyone, regardless of their background or resources."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:101
+msgid "The Launch"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:103
+msgid ""
+"Founded in 2024, we launched with a commitment to open-source development "
+"and community-driven innovation."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:106
+msgid ""
+"Our platform combines cutting-edge AI technology with proven pedagogical "
+"methods to create an effective learning experience."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:121
+msgid "The Growth"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:123
+msgid ""
+"Today, we support multiple languages and serve thousands of learners "
+"worldwide, with our community growing every day."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:126
+msgid ""
+"Our open-source approach has attracted contributors from around the globe, "
+"making language learning truly collaborative."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:139
+msgid "Our Core Values"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:141
+msgid "The principles that guide everything we do at Open Linguify."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:149
+msgid "Accessibility"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:151
+msgid ""
+"Quality language education should be available to everyone, regardless of "
+"economic background or geographic location."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:158
+msgid "Innovation"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:160
+msgid ""
+"We constantly push the boundaries of what's possible in language learning "
+"through AI and modern technology."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:167
+#: .\portal\public_web\templates\public_web\apps\app_community.html:6
+#: .\portal\public_web\templates\public_web\apps\app_community.html:23
+#: .\portal\public_web\templates\public_web\apps\app_course.html:213
+#: .\portal\public_web\templates\public_web\landing.html:452
+msgid "Community"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:169
+msgid ""
+"Language learning is a social experience. We foster connections between "
+"learners worldwide."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:179
+msgid "Powered by Modern Technology"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:181
+msgid ""
+"Built with cutting-edge technologies to deliver the best learning experience."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:191
+msgid "Robust backend framework for scalable applications"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:199
+msgid "Modern frontend framework for fast, interactive experiences"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:206
+msgid "AI Models"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:207
+msgid "Advanced language processing for personalized learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:215
+msgid "Transparent development, community-driven innovation"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:224
+msgid "What Makes Us Different"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:226
+msgid ""
+"Discover the innovative features that set Open Linguify apart from "
+"traditional language learning platforms."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:235
+msgid "AI-Powered Personalization"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:237
+msgid ""
+"Our AI adapts to your learning style, pace, and preferences to create a "
+"truly personalized experience that evolves with you."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:246
+msgid "Expert-Designed Curriculum"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:248
+msgid ""
+"Our courses are designed by language experts and linguists using proven "
+"pedagogical methods for effective learning outcomes."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:257
+msgid "Advanced Progress Tracking"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:259
+msgid ""
+"Detailed analytics and insights help you understand your learning progress "
+"and identify areas for improvement with precision."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:268
+msgid "Cross-Platform Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:270
+msgid ""
+"Seamlessly learn anywhere with our responsive web platform that works "
+"perfectly on desktop, tablet, and mobile devices."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:281
+msgid "Built by Language Enthusiasts"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:283
+msgid ""
+"Our diverse team combines expertise in linguistics, technology, and "
+"education to create the ultimate learning experience."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:291
+msgid "Linguists & Educators"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:292
+msgid "Language experts who understand how people learn"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:298
+msgid "Developers & Engineers"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:299
+msgid "Tech experts building scalable, user-friendly platforms"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:305
+msgid "Community Contributors"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:306
+msgid "Passionate volunteers from around the world"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:316
+msgid "Making a Real Impact"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:318
+msgid ""
+"Every day, thousands of learners use Open Linguify to break down language "
+"barriers and connect with the world."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:323
+msgid "Completion Rate"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:327
+#: .\portal\public_web\templates\public_web\about.html:400
+msgid "User Rating"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:331
+msgid "Countries"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:335
+msgid "AI Tutoring"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:346
+msgid ""
+"Open Linguify has transformed how I learn languages. The AI personalization "
+"is incredible, and being open-source means I can trust the platform "
+"completely."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:349
+msgid "Maria, Language Learner from Spain"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:366
+msgid "Ready to Start Your Language Journey?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:369
+msgid ""
+"Join thousands of learners worldwide and experience the future of language "
+"education with Open Linguify."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:376
+msgid "Start Learning Free"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:381
+#: .\portal\public_web\templates\public_web\brand.html:30
+msgid "Explore Our Apps"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:385
+#: .\portal\public_web\templates\public_web\landing.html:179
+msgid "View Source Code"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\about.html:392
+msgid "Active Users"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:32
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:279
+msgid "Rejoindre gratuitement"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:36
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:283
+msgid "Commencer à discuter"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:67
+msgid "Communication en Temps Réel"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:185
+#: .\portal\public_web\templates\public_web\apps\app_community.html:172
+#: .\portal\public_web\templates\public_web\apps\app_course.html:146
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:75
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:172
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:172
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:289
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:198
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:300
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:286
+msgid "Category"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:192
+#: .\portal\public_web\templates\public_web\apps\app_community.html:179
+#: .\portal\public_web\templates\public_web\apps\app_course.html:153
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:82
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:179
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:179
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:296
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:205
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:307
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:293
+msgid "Version"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:199
+#: .\portal\public_web\templates\public_web\apps\app_community.html:186
+#: .\portal\public_web\templates\public_web\apps\app_course.html:160
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:89
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:186
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:186
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:303
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:212
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:314
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:300
+msgid "Author"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:270
+msgid "Prêt à rejoindre la communauté ?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_chat.html:273
+msgid ""
+"Commencez à discuter et collaborer avec des milliers d'apprenants dès "
+"maintenant."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:8
+#: .\portal\public_web\templates\public_web\landing.html:454
+msgid ""
+"Connect with other learners, share progress and discover content created by "
+"the community."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:25
+msgid "Connect with fellow learners worldwide"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:32
+#: .\portal\public_web\templates\public_web\apps\app_community.html:332
+msgid "Join Community"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:36
+#: .\portal\public_web\templates\public_web\apps\app_community.html:336
+#: .\portal\public_web\templates\public_web\apps\app_course.html:36
+#: .\portal\public_web\templates\public_web\apps\app_course.html:244
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:35
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:118
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:36
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:336
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:36
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:387
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:29
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:150
+msgid "Go to Dashboard"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:67
+msgid "Connect and Learn Together"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:71
+msgid ""
+"Join a vibrant community of learners, share your progress, and discover "
+"amazing content created by fellow students. Connect with people who share "
+"your passion for learning."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:82
+#: .\portal\public_web\templates\public_web\apps\app_community.html:212
+msgid "Study Groups"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:83
+msgid "Join learners with shared goals"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:95
+msgid "Share Content"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:96
+msgid "Flashcards, notes & materials"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:108
+msgid "Progress Sharing"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:109
+msgid "Showcase achievements"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:121
+msgid "Discover Resources"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:122
+msgid "Quality community content"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:134
+msgid "Ask Questions"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:135
+msgid "Get help from experts"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:147
+msgid "Rate & Review"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:148
+msgid "Help others find quality"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:158
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:158
+msgid "Tip"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:159
+msgid ""
+"Join study groups based on your learning level and goals to maximize your "
+"progress!"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:173
+msgid "Social Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:202
+msgid "Community Features"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:203
+msgid "Everything you need to connect and learn together"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:213
+msgid "Join focused study groups with shared learning goals"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:221
+msgid "Content Sharing"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:222
+msgid "Share and discover quality learning materials"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:230
+#: .\portal\public_web\templates\public_web\apps\app_course.html:108
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:147
+msgid "Progress Tracking"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:231
+msgid "Showcase achievements and motivate others"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:239
+msgid "Q&A Support"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:240
+msgid "Get help from experienced community members"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:252
+msgid "Why Join Our Community?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:253
+msgid ""
+"Experience the power of collaborative learning with thousands of motivated "
+"learners"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:264
+msgid "Accelerated Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:266
+msgid ""
+"Learn faster by leveraging the collective knowledge and experience of the "
+"community."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:277
+msgid "Motivation & Support"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:279
+msgid ""
+"Stay motivated with encouragement and support from fellow learners on "
+"similar journeys."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:290
+msgid "Global Perspectives"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:292
+msgid ""
+"Connect with learners from around the world and gain diverse perspectives on "
+"learning."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:303
+msgid "Quality Content"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:305
+msgid ""
+"Access high-quality learning materials curated and verified by the community."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:323
+msgid "Ready to join our learning community?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_community.html:326
+msgid ""
+"Connect with thousands of learners and accelerate your learning journey "
+"together."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:6
+#: .\portal\public_web\templates\public_web\apps\app_course.html:23
+#: .\portal\public_web\templates\public_web\landing.html:256
+#: .\portal\public_web\templates\public_web\landing.html:422
+msgid "Courses"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:8
+msgid ""
+"Structured courses with progressive lessons, interactive exercises and "
+"personalized assessments for effective learning."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:25
+msgid "Structured learning with progressive lessons"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:32
+#: .\portal\public_web\templates\public_web\apps\app_course.html:240
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:31
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:111
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:32
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:332
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:32
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:457
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:32
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:460
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:38
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:25
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:143
+msgid "Start for free"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:67
+msgid "Structured Learning Experience"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:71
+msgid ""
+"Progressive courses with interactive exercises and personalized assessments "
+"to guide your learning journey step by step."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:82
+msgid "Progressive Lessons"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:83
+msgid "Step-by-step learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:95
+msgid "Interactive Exercises"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:96
+msgid "Engaging practice"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:109
+msgid "Monitor your advancement"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:121
+msgid "Personalized Assessments"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:122
+msgid "Adaptive evaluation"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:132
+msgid "Tip:"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:133
+msgid ""
+"Complete lessons in order to unlock advanced topics and build a solid "
+"foundation!"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:147
+msgid "Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:176
+msgid "Why Choose Our Courses?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:177
+msgid "Everything you need for effective structured learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:186
+msgid "Structured Content"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:187
+msgid "Carefully organized lessons for optimal learning progression"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:195
+msgid "Personal Progress"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:196
+msgid "Track your advancement and see your improvement over time"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:204
+msgid "Certifications"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:205
+msgid "Earn certificates as you complete courses and milestones"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:214
+msgid "Learn alongside other students and share experiences"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:231
+msgid "Ready to start your learning journey?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_course.html:234
+msgid ""
+"Join thousands of learners and discover structured courses designed for your "
+"success."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:64
+msgid "This application is part of the Open Linguify educational suite."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:104
+msgid "Ready to try"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:107
+msgid ""
+"Start using this application now and discover how it can enhance your "
+"learning experience."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_detail.html:121
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:153
+msgid "Explore App Store"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:6
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:23
+#: .\portal\public_web\templates\public_web\landing.html:482
+msgid "Documents"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:8
+#: .\portal\public_web\templates\public_web\landing.html:484
+msgid ""
+"Real-time collaborative documents with rich text editing, version control, "
+"and sharing capabilities for educational content."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:25
+msgid "Real-time collaborative documents with rich text editing"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:67
+msgid "Collaborative Document Creation"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:71
+msgid ""
+"Create, edit, and share educational documents with real-time collaboration "
+"features. Perfect for team projects, research papers, and educational "
+"content creation."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:82
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:212
+msgid "Rich Text Editor"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:83
+msgid "Advanced formatting options"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:95
+msgid "Real-time Collaboration"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:96
+msgid "Live editing with team"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:108
+msgid "Version Control"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:109
+msgid "Track changes & history"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:121
+msgid "Smart Sharing"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:122
+msgid "Customizable permissions"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:134
+msgid "Organization"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:135
+msgid "Folders, tags & categories"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:147
+msgid "Export Options"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:148
+msgid "PDF, Word & more"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:159
+msgid ""
+"Use collaborative comments and suggestions to provide feedback on documents "
+"in real-time!"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:173
+msgid "Productivity & Collaboration"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:202
+msgid "Powerful Document Features"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:203
+msgid ""
+"Everything you need for professional document creation and collaboration"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:213
+msgid "Advanced formatting with images, tables, and more"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:221
+msgid "Live Collaboration"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:222
+msgid "Work together with real-time synchronization"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:230
+msgid "Version History"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:231
+msgid "Track changes and restore previous versions"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:239
+msgid "Export Formats"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:240
+msgid "Export to PDF, Word, and other formats"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:252
+msgid "Perfect for Education"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:253
+msgid ""
+"Designed specifically for educational content creation and collaboration"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:264
+msgid "Course Materials"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:266
+msgid ""
+"Create and share lesson plans, course notes, and educational resources with "
+"students and colleagues."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:277
+msgid "Group Projects"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:279
+msgid ""
+"Enable students to collaborate on assignments and projects with real-time "
+"editing and feedback."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:290
+msgid "Research Papers"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:292
+msgid ""
+"Write and collaborate on research papers with citation management and "
+"academic formatting."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:303
+msgid "Study Guides"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:305
+msgid ""
+"Create comprehensive study guides and share them with classmates for "
+"collaborative learning."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:323
+msgid "Ready to start collaborating?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_documents.html:326
+msgid ""
+"Join thousands of educators and students using our collaborative document "
+"platform."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:6
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:23
+#: .\portal\public_web\templates\public_web\landing.html:497
+msgid "Language AI"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:8
+msgid ""
+"AI assistant for natural conversations and intelligent real-time corrections "
+"to improve your language skills."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:25
+msgid "Your AI-powered language learning companion"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:32
+#: .\portal\public_web\templates\public_web\landing.html:161
+msgid "Start Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:67
+msgid "AI-Powered Language Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:71
+msgid ""
+"Experience the future of language learning with our intelligent AI assistant "
+"that adapts to your learning style. Practice natural conversations and get "
+"real-time feedback."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:82
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:212
+msgid "Natural Conversations"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:83
+msgid "Authentic & engaging dialogue"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:95
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:221
+msgid "Speech Recognition"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:96
+msgid "Advanced pronunciation analysis"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:108
+msgid "Real-time Corrections"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:109
+msgid "Instant grammar & vocabulary feedback"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:121
+msgid "Multi-language Support"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:122
+msgid "Native-level AI assistants"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:134
+msgid "Personalized Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:135
+msgid "Adapts to your pace & goals"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:148
+msgid "Detailed analytics & reports"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:158
+msgid "AI Tip"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:159
+msgid ""
+"Practice daily conversations with your AI tutor to see dramatic improvements "
+"in just weeks!"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:173
+msgid "AI & Language Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:202
+msgid "AI Features"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:203
+msgid "Cutting-edge AI technology for effective language learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:213
+msgid "Practice with AI that feels authentic and engaging"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:222
+msgid "Advanced technology for pronunciation improvement"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:230
+msgid "Real-time Feedback"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:231
+msgid "Instant corrections for faster improvement"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:239
+msgid "Personalized"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:240
+msgid "Adapts to your unique learning style"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:253
+msgid "Advanced AI Capabilities"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:254
+msgid ""
+"Powered by cutting-edge AI technology to provide the most effective language "
+"learning experience."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:264
+msgid "Contextual Understanding"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:265
+msgid ""
+"AI understands context and nuance, providing relevant responses and "
+"corrections based on the conversation flow."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:276
+msgid "Pronunciation Analysis"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:277
+msgid ""
+"Advanced phonetic analysis helps you perfect your pronunciation with "
+"detailed feedback on accent and intonation."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:288
+msgid "Grammar Coaching"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:289
+msgid ""
+"Intelligent grammar correction with explanations to help you understand and "
+"remember the rules."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:300
+msgid "Vocabulary Building"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:301
+msgid ""
+"Smart vocabulary suggestions and contextual learning to expand your word "
+"knowledge naturally."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:317
+msgid "Diverse Conversation Topics"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:318
+msgid ""
+"Practice speaking about topics that interest you with our variety of "
+"conversation scenarios."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:325
+msgid "Business & Career"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:331
+msgid "Travel & Culture"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:337
+msgid "Daily Life"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:343
+msgid "Education"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:349
+msgid "Arts & Entertainment"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:355
+msgid "Nature & Environment"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:374
+msgid "Ready to start conversing with AI?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:377
+msgid ""
+"Join thousands of learners who are improving their language skills with our "
+"AI-powered conversations."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_language_ai.html:383
+msgid "Start AI Conversation"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:25
+msgid "Organize your learning intelligently"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:36
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:461
+msgid "Create my notes"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:55
+msgid "Notebook - Open Linguify"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:65
+msgid "Notes"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:73
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:108
+msgid "French Grammar"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:74
+msgid "French verb tenses and conjugations..."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:76
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:95
+msgid "Today"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:78
+msgid "Grammar"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:83
+msgid "Spanish Vocabulary"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:84
+msgid "New words from chapter 5..."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:86
+msgid "Yesterday"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:88
+msgid "Vocabulary"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:93
+msgid "Research Project"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:94
+msgid "Ideas and references..."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:98
+msgid "Research"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:158
+msgid "Smart Note Organization"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:448
+msgid "Ready to organize your learning?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_notebook.html:451
+msgid "Start taking smart notes and keep track of your progress."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:32
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:350
+msgid "Commencer gratuitement"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:36
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:354
+msgid "Créer un quiz"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:67
+msgid "Système de Quiz Interactif"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:341
+msgid "Prêt à tester vos connaissances ?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_quizz.html:344
+msgid ""
+"Créez votre premier quiz et découvrez une nouvelle façon d'apprendre et de "
+"réviser."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:25
+msgid "Spaced repetition flashcard system"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:36
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:464
+msgid "Start studying"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:55
+msgid "Revision - Open Linguify"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:68
+msgid "Flashcards"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:71
+msgid "Progress"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:81
+msgid "English Vocabulary"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:93
+msgid "Mastered"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:97
+msgid "Review"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:101
+msgid "New"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:112
+msgid "Beautiful"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:121
+msgid "Beautiful, magnificent"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:123
+msgid "She has beautiful eyes"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:169
+msgid "Smart Flashcard System"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:173
+msgid ""
+"Our revision system uses scientific principles of spaced repetition to "
+"optimize your memorization. Create your flashcard decks and let the "
+"algorithm guide you toward lasting memorization."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:184
+msgid "Spaced repetition algorithm"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:185
+msgid "Optimal memorization"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:197
+msgid "Custom decks"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:198
+msgid "Create your content"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:341
+#: .\portal\public_web\templates\public_web\brand.html:71
+msgid "Smart Flashcards"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:342
+msgid "Adaptive cards that adjust to your pace"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:352
+msgid "Optimal Timing"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:353
+msgid "Review at the perfect moment for memorization"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:363
+msgid "Long-lasting Memorization"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:451
+msgid "Ready to optimize your memorization?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_revision.html:454
+msgid ""
+"Discover the power of spaced repetition and transform the way you learn."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:6
+msgid "Todo & Productivity"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:8
+msgid ""
+"Advanced productivity workspace with task management, note-taking, projects, "
+"Kanban boards and collaboration. Intuitive interface with multiple views."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:10
+msgid ""
+"todo app, task management, productivity, project management, note taking, "
+"kanban board, workspace, open source"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:12
+msgid "Todo & Productivity - Advanced Productivity Workspace"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:14
+msgid ""
+"Complete productivity workspace with task management, note-taking, "
+"hierarchical projects, Kanban boards and team collaboration."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:31
+msgid "Advanced productivity workspace"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:42
+msgid "Start organizing"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:61
+msgid "Todo & Productivity - Open Linguify"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:74
+msgid "Kanban"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:77
+msgid "List"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:80
+msgid "Activity"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:89
+msgid "To Do"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:93
+msgid "Review course"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:99
+msgid "Assignment"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:101
+msgid "Urgent"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:108
+msgid "In Progress"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:112
+msgid "Essay"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:122
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:128
+msgid "Done"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:126
+msgid "Setup"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:155
+msgid "Smart Productivity System"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:159
+msgid ""
+"Our productivity system uses advanced organizational principles to optimize "
+"your workflow. Create your projects and tasks and let the algorithm guide "
+"you towards maximum productivity."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:170
+msgid "Kanban boards"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:171
+msgid "Visual workflow"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:183
+msgid "Task management"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:327
+msgid "Visual Workflow"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:328
+msgid "Kanban boards that adapt to your process"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:338
+msgid "Smart Scheduling"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:339
+msgid "Deadline management with intelligent reminders"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:349
+msgid "Project Organization"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:360
+msgid "Progress Analytics"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:361
+msgid "Detailed insights into your productivity"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:426
+msgid "Ready to get organized?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:427
+msgid ""
+"Join thousands of users who have transformed their productivity with our "
+"todo app."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:431
+msgid "Start Now - It's Free"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\app_todo.html:434
+msgid "Explore All Apps"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:6
+msgid "Applications"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:8
+msgid "Discover all Open Linguify applications"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:17
+msgid "Our Applications"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:20
+msgid ""
+"Discover our complete suite of educational applications designed to enhance "
+"your learning experience."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:49
+#: .\portal\public_web\templates\public_web\landing.html:350
+msgid "Available Now"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:70
+#: .\portal\public_web\templates\public_web\landing.html:366
+#: .\portal\public_web\templates\public_web\landing.html:383
+#: .\portal\public_web\templates\public_web\landing.html:400
+msgid "Ready"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:73
+msgid "Use now"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:85
+#: .\portal\public_web\templates\public_web\landing.html:411
+msgid "Coming Soon"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:87
+#: .\portal\public_web\templates\public_web\landing.html:413
+msgid "These exciting apps are in active development"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:107
+#: .\portal\public_web\templates\public_web\landing.html:427
+#: .\portal\public_web\templates\public_web\landing.html:442
+#: .\portal\public_web\templates\public_web\landing.html:457
+#: .\portal\public_web\templates\public_web\landing.html:472
+#: .\portal\public_web\templates\public_web\landing.html:487
+#: .\portal\public_web\templates\public_web\landing.html:502
+msgid "Soon"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:110
+msgid "Coming soon"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:124
+msgid "No applications available"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:125
+msgid "Applications will appear here once they are configured."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:136
+msgid "Ready to start learning?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\apps\apps_list.html:139
+msgid ""
+"Join our community and access all these amazing educational applications."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:5
+#: .\portal\public_web\templates\public_web\landing.html:12
+#: .\portal\public_web\templates\public_web\public_base.html:52
+msgid "OpenLinguify - Open source educational apps platform"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:7
+msgid ""
+"OpenLinguify is an open source educational apps platform. Discover our "
+"complete suite of learning tools and educational applications."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:9
+msgid ""
+"openlinguify, OpenLinguify, Open Linguify, openlinguify.com, linguify "
+"platform, linguify educational apps, linguify open source, brand "
+"information, educational platform, learning tools"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:26
+msgid "Revolutionizing education through open source technology"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:33
+#: .\portal\public_web\templates\public_web\landing.html:163
+msgid "Learn More"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:46
+msgid "Why Choose OpenLinguify?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:48
+msgid ""
+"Our comprehensive platform offers cutting-edge educational tools designed "
+"for modern learners"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:59
+msgid "AI-Powered Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:61
+msgid ""
+"Advanced artificial intelligence adapts to your learning style and pace for "
+"personalized education"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:73
+msgid ""
+"Spaced repetition algorithms optimize your memory retention with intelligent "
+"review scheduling"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:83
+msgid "Digital Notebooks"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:85
+msgid ""
+"Organize your thoughts and knowledge with our comprehensive note-taking "
+"system"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:95
+msgid "Adaptive Quizzes"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:97
+msgid ""
+"Interactive assessments that adjust difficulty based on your progress and "
+"understanding"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:107
+msgid "Collaborative Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:109
+msgid ""
+"Connect with learners worldwide through our social learning features and "
+"study groups"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:121
+msgid ""
+"Transparent, community-driven development ensuring privacy and continuous "
+"innovation"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:134
+msgid "Trusted by Learners Worldwide"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:148
+msgid "Flashcards Created"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:160
+msgid "User Satisfaction"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:171
+msgid "Our Mission"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:173
+msgid ""
+"We believe education should be accessible to everyone, everywhere. "
+"OpenLinguify democratizes learning through innovative open source "
+"technology, providing powerful educational tools that help millions of "
+"learners worldwide achieve their goals and unlock their potential."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:182
+msgid "Accessibility First"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:183
+msgid ""
+"Free, open source tools available to learners regardless of their background "
+"or location"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:193
+msgid "Innovation Driven"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:194
+msgid ""
+"Cutting-edge AI and learning science research integrated into practical tools"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:204
+msgid "Community Powered"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:205
+msgid "Built by educators and learners, for educators and learners worldwide"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:215
+msgid "Privacy Focused"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:216
+msgid ""
+"Your data belongs to you - transparent, secure, and privacy-first approach"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:230
+msgid "Ready to Transform Your Learning?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:232
+msgid ""
+"Join thousands of learners who have already discovered the power of "
+"OpenLinguify's educational tools"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:236
+msgid "Get Started Free"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\brand.html:239
+msgid "Contact Us"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:11
+msgid "Get in touch with our support team"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:21
+msgid "Contact Information"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:24
+msgid "Email Support"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:25
+msgid "General inquiries and support"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:30
+msgid "GitHub"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:31
+#, fuzzy
+#| msgid "Open source alternative to Quizlet"
+msgid "Open source repository"
+msgstr "Open source alternatief voor Quizlet"
+
+#: .\portal\public_web\templates\public_web\contact.html:36
+msgid "LinkedIn"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:37
+msgid "Professional updates"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:45
+msgid "Send us a Message"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:58
+msgid "Name"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:63
+msgid "Email"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:68
+msgid "Subject"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:70
+msgid "Select a topic"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:71
+msgid "General Inquiry"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:72
+msgid "Technical Support"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:73
+msgid "Bug Report"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:74
+msgid "Partnership"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:75
+msgid "Feedback"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:76
+msgid "Other"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:81
+msgid "Message"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:82
+msgid "Tell us more about your inquiry..."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:85
+msgid "Send Message"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:99
+#: .\portal\public_web\templates\public_web\landing.html:620
+msgid "Frequently Asked Questions"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:106
+msgid "How can I contribute to Open Linguify?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:111
+msgid ""
+"You can contribute by visiting our GitHub repository, reporting bugs, "
+"suggesting features, or submitting pull requests. We welcome all forms of "
+"contribution!"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:119
+msgid "What is the typical response time for support?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:124
+msgid ""
+"We aim to respond to all inquiries within 24-48 hours during business days. "
+"Complex technical issues may require additional time for proper "
+"investigation."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:132
+msgid "Is Open Linguify really free?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\contact.html:137
+msgid ""
+"Yes! Open Linguify is completely open source and free to use. You can access "
+"all features without any cost, and even host your own instance."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:6
+#: .\portal\public_web\templates\public_web\public_base.html:9
+msgid "Open Linguify | Open Source Education Apps"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:8
+#: .\portal\public_web\templates\public_web\public_base.html:19
+msgid ""
+"OpenLinguify is an open source educational apps platform: memorization "
+"system, flashcards, note-taking, quizzes, collaborative chat, classrooms and "
+"much more. Discover our tools to revolutionize learning."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:10
+msgid ""
+"openlinguify, open linguify, OpenLinguify, Open Linguify, openlinguify.com, "
+"linguify apprendre langues, linguify AI, linguify, educational apps, "
+"flashcards, memorization, note-taking, quizzes, collaborative chat, "
+"classrooms, open source, education, learning, apprentissage"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:14
+#: .\portal\public_web\templates\public_web\public_base.html:54
+msgid ""
+"Discover OpenLinguify, a complete suite of open source educational apps: "
+"smart memorization, flashcards, note-taking, interactive quizzes, "
+"collaborative chat, virtual classrooms and much more. Revolutionize the way "
+"you learn."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:40
+msgid "AI-powered lessons"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:41
+msgid "Interactive flashcards"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:42
+msgid "Speech recognition"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:43
+msgid "Progress tracking"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:44
+msgid "Multi-language support"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:45
+msgid "Offline mode"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:57
+msgid "What is OpenLinguify?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:60
+msgid ""
+"OpenLinguify is an open source educational platform offering AI-powered "
+"language learning tools including flashcards, quizzes, note-taking, and "
+"interactive courses."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:65
+msgid "Is OpenLinguify really free?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:68
+msgid ""
+"Yes! OpenLinguify is currently completely free to use. All educational apps "
+"are available at no cost. Our business model may evolve in the future to "
+"ensure platform sustainability."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:73
+msgid "Which languages can I learn with OpenLinguify?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:76
+msgid ""
+"OpenLinguify supports learning multiple languages including English, French, "
+"Spanish, Dutch, and many more. Our AI adapts to your target language."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:88
+msgid "Full access to all OpenLinguify educational apps"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:98
+msgid "Currently free - business model may evolve for sustainability"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:145
+msgid ""
+"A complete suite of open source educational apps: memorization, flashcards, "
+"note-taking, to-do and much more."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:150
+msgid "Choose your Linguify product:"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:175
+msgid "Discover our apps"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:218
+msgid "Productivity"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:231
+msgid "Spaced Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:244
+msgid "Note Taking"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:257
+msgid "Structured Learning"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:269
+#: .\portal\public_web\templates\public_web\landing.html:437
+msgid "Quiz"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:270
+msgid "Assessment"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:282
+#: .\portal\public_web\templates\public_web\landing.html:467
+msgid "Chat"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:283
+msgid "Collaboration"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:291
+msgid "Access all your apps from a unified dashboard"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:306
+msgid "Educational Useful Apps for the students"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:323
 msgid "Open source alternative to Quizlet"
 msgstr "Open source alternatief voor Quizlet"
+
+#: .\portal\public_web\templates\public_web\landing.html:326
+#: .\portal\public_web\templates\public_web\landing.html:339
+msgid ""
+"Discover our complete suite of educational apps designed to transform your "
+"learning experience. Currently all apps are completely free to use."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:337
+msgid "Our Educational Apps"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:343
+msgid ""
+"🎉 All features are currently free • We're exploring sustainable business "
+"models for long-term platform development"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:363
+msgid ""
+"Organize your tasks and boost your productivity with intelligent task "
+"management."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:380
+msgid ""
+"Spaced repetition system with smart flashcards for optimal memorization."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:397
+msgid ""
+"Centralized note-taking with intelligent organization and advanced search."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:424
+msgid ""
+"Structured courses with progressive lessons, interactive exercises and "
+"personalized assessments."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:439
+msgid "Adaptive quiz system to test your knowledge and identify weak points."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:469
+msgid ""
+"Real-time collaborative chat for study groups and language exchange with "
+"other learners."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:499
+msgid ""
+"AI assistant for natural conversations and intelligent real-time corrections."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:519
+msgid "Join the Open Source Revolution"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:522
+msgid ""
+"Open Linguify is built by the community, for the community. Help us create "
+"the future of education by contributing to our open source project."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:530
+msgid "Contribute code and new features"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:536
+msgid "Report bugs and suggest improvements"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:542
+msgid "Help with translations and documentation"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:548
+msgid "Start Contributing"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:554
+#: .\portal\public_web\templates\public_web\landing.html:675
+msgid "Report Issues"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:564
+msgid "Open Source Stats"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:565
+msgid "Growing community of contributors"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:571
+msgid "Contributors"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:575
+msgid "Commits"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:579
+msgid "License"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:584
+msgid "Latest Release"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:599
+msgid "Help Keep Education Free"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:602
+#, python-format
+msgid ""
+"Open Linguify is 100%% free and open source. Your support enables us to "
+"maintain servers, develop new features, and keep education accessible to "
+"everyone, everywhere."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:609
+msgid "Become a Sponsor"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:622
+msgid ""
+"Everything you need to know about OpenLinguify and our educational platform."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:631
+msgid ""
+"What makes OpenLinguify different from other language learning platforms?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:636
+msgid ""
+"OpenLinguify is completely open source, meaning our code is transparent and "
+"constantly improved by the community. We offer a complete suite of "
+"educational apps including spaced repetition, AI conversations, "
+"collaborative tools, and more - all designed to work together seamlessly."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:644
+msgid "Is OpenLinguify really free to use?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:649
+msgid ""
+"Yes! OpenLinguify is currently completely free to use. All educational apps "
+"are available at no cost. As an open source project, you can also self-host "
+"the entire platform. While we're committed to keeping our core features "
+"free, our business model may evolve in the future to ensure the "
+"sustainability and continued development of the platform."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:657
+msgid "Can I contribute to the OpenLinguify project?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:662
+msgid ""
+"Absolutely! As an open source project, we welcome contributions from "
+"developers, translators, educators, and users. You can contribute code, "
+"report bugs, suggest features, help with translations, or create educational "
+"content."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:667
+msgid "Open Source Guide"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:671
+msgid "GitHub Repository"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:690
+msgid "Ready to revolutionize your learning?"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:693
+msgid ""
+"Join our community and access a complete suite of open source educational "
+"apps."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:696
+#, python-format
+msgid ""
+"✨ Currently 100%% free • Open Source • Future business model under "
+"development for platform sustainability"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\landing.html:701
+msgid "Start Your Learning Journey"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\public_base.html:63
+msgid "OpenLinguify - Open source platform for modern education"
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\public_base.html:65
+msgid ""
+"OpenLinguify: Complete suite of open source educational apps: memorization, "
+"flashcards, notes, quizzes, collaborative chat and much more."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\public_base.html:113
+msgid ""
+"OpenLinguify is an open source educational platform offering AI-powered "
+"language learning tools, flashcards, quizzes, and collaborative learning "
+"features."
+msgstr ""
+
+#: .\portal\public_web\templates\public_web\public_base.html:135
+msgid "Open source educational platform for language learning"
+msgstr ""
+
+#: .\portal\public_web\views.py:181 .\portal\public_web\views.py:195
+#: .\portal\public_web\views.py:239
+msgid "Contact - Open Linguify Support & Information"
+msgstr ""
+
+#: .\portal\public_web\views.py:182
+msgid ""
+"Contact the Open Linguify team for support, partnerships, or questions about "
+"our educational platform."
+msgstr ""
+
+#: .\portal\public_web\views.py:183
+msgid "contact, support, partnerships, help, customer service"
+msgstr ""
+
+#: .\portal\public_web\views.py:196
+msgid "Please fill in all required fields."
+msgstr ""
+
+#: .\portal\public_web\views.py:231
+msgid "Message Sent - Open Linguify"
+msgstr ""
+
+#: .\portal\public_web\views.py:232
+msgid "Thank you for your message. We will get back to you soon."
+msgstr ""
+
+#: .\portal\public_web\views.py:240
+msgid "An error occurred while sending your message. Please try again later."
+msgstr ""
+
+#: .\portal\public_web\views.py:418
+msgid "Applications - Open Linguify Educational Tools"
+msgstr ""
+
+#: .\portal\public_web\views.py:419
+msgid ""
+"Discover all Open Linguify applications: AI tutors, flashcards, quizzes, "
+"note-taking and more educational tools."
+msgstr ""
+
+#: .\portal\public_web\views.py:420
+msgid ""
+"applications, educational tools, AI tutors, flashcards, quizzes, learning "
+"apps"
+msgstr ""
+
+#: .\portal\public_web\views.py:427
+msgid "Applications - Open Linguify"
+msgstr ""
+
+#: .\portal\public_web\views.py:428
+msgid "Educational applications"
+msgstr ""
+
+#: .\portal\public_web\views.py:449 .\portal\public_web\views.py:468
+msgid "Application not found"
+msgstr ""

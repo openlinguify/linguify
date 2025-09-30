@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 05:57+0200\n"
+"POT-Creation-Date: 2025-09-30 20:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,486 +18,486 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\portal\blog\templates\blog\blog_category.html:18
-#: .\portal\blog\templates\blog\blog_tag.html:19
+#: .\portal\core\blog\templates\blog\blog_category.html:18
+#: .\portal\core\blog\templates\blog\blog_tag.html:19
 msgid "Blog"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:48
-#: .\portal\blog\templates\blog\blog_list.html:64
-#: .\portal\blog\templates\blog\blog_tag.html:60
+#: .\portal\core\blog\templates\blog\blog_category.html:48
+#: .\portal\core\blog\templates\blog\blog_list.html:64
+#: .\portal\core\blog\templates\blog\blog_tag.html:60
 msgid "By"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:51
-#: .\portal\blog\templates\blog\blog_list.html:67
-#: .\portal\blog\templates\blog\blog_tag.html:63
+#: .\portal\core\blog\templates\blog\blog_category.html:51
+#: .\portal\core\blog\templates\blog\blog_list.html:67
+#: .\portal\core\blog\templates\blog\blog_tag.html:63
 msgid "Read More"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:65
-#: .\portal\blog\templates\blog\blog_list.html:81
-#: .\portal\blog\templates\blog\blog_tag.html:77
+#: .\portal\core\blog\templates\blog\blog_category.html:65
+#: .\portal\core\blog\templates\blog\blog_list.html:81
+#: .\portal\core\blog\templates\blog\blog_tag.html:77
 msgid "First"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:68
-#: .\portal\blog\templates\blog\blog_list.html:84
-#: .\portal\blog\templates\blog\blog_tag.html:80
+#: .\portal\core\blog\templates\blog\blog_category.html:68
+#: .\portal\core\blog\templates\blog\blog_list.html:84
+#: .\portal\core\blog\templates\blog\blog_tag.html:80
 msgid "Previous"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:73
-#: .\portal\blog\templates\blog\blog_list.html:89
-#: .\portal\blog\templates\blog\blog_tag.html:85
+#: .\portal\core\blog\templates\blog\blog_category.html:73
+#: .\portal\core\blog\templates\blog\blog_list.html:89
+#: .\portal\core\blog\templates\blog\blog_tag.html:85
 msgid "of"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:78
-#: .\portal\blog\templates\blog\blog_list.html:94
-#: .\portal\blog\templates\blog\blog_tag.html:90
+#: .\portal\core\blog\templates\blog\blog_category.html:78
+#: .\portal\core\blog\templates\blog\blog_list.html:94
+#: .\portal\core\blog\templates\blog\blog_tag.html:90
 msgid "Next"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:81
-#: .\portal\blog\templates\blog\blog_list.html:97
-#: .\portal\blog\templates\blog\blog_tag.html:93
+#: .\portal\core\blog\templates\blog\blog_category.html:81
+#: .\portal\core\blog\templates\blog\blog_list.html:97
+#: .\portal\core\blog\templates\blog\blog_tag.html:93
 msgid "Last"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:89
+#: .\portal\core\blog\templates\blog\blog_category.html:89
 msgid "No articles found in this category"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:90
+#: .\portal\core\blog\templates\blog\blog_category.html:90
 msgid "We're working on creating content for this category. Check back soon!"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:91
-#: .\portal\blog\templates\blog\blog_tag.html:103
+#: .\portal\core\blog\templates\blog\blog_category.html:91
+#: .\portal\core\blog\templates\blog\blog_tag.html:103
 msgid "View All Articles"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:103
-#: .\portal\blog\templates\blog\blog_tag.html:115
+#: .\portal\core\blog\templates\blog\blog_category.html:103
+#: .\portal\core\blog\templates\blog\blog_tag.html:115
 msgid "All Blog Posts"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_category.html:111
+#: .\portal\core\blog\templates\blog\blog_category.html:111
 msgid "About"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:162
+#: .\portal\core\blog\templates\blog\blog_detail.html:162
 msgid "Discussion"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:177
+#: .\portal\core\blog\templates\blog\blog_detail.html:177
 msgid "Sort by:"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:182
+#: .\portal\core\blog\templates\blog\blog_detail.html:182
 msgid "Newest"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:186
+#: .\portal\core\blog\templates\blog\blog_detail.html:186
 msgid "Oldest"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:190
+#: .\portal\core\blog\templates\blog\blog_detail.html:190
 msgid "Most Liked"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:196
+#: .\portal\core\blog\templates\blog\blog_detail.html:196
 msgid "participants"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:211
+#: .\portal\core\blog\templates\blog\blog_detail.html:211
 msgid "Start the Conversation"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:212
+#: .\portal\core\blog\templates\blog\blog_detail.html:212
 msgid ""
 "Be the first to share your thoughts on this article. Your insights could "
 "spark an interesting discussion!"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:215
+#: .\portal\core\blog\templates\blog\blog_detail.html:215
 msgid "Write First Comment"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:227
+#: .\portal\core\blog\templates\blog\blog_detail.html:227
 msgid "Join the Conversation"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:233
-#: .\portal\blog\templates\blog\report_modal.html:14
-#: .\portal\blog\templates\blog\report_modal_modern.html:26
+#: .\portal\core\blog\templates\blog\blog_detail.html:233
+#: .\portal\core\blog\templates\blog\report_modal.html:14
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:26
 msgid "Your Name"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:238
-#: .\portal\blog\templates\blog\report_modal_modern.html:33
+#: .\portal\core\blog\templates\blog\blog_detail.html:238
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:33
 msgid "Enter your full name"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:244
-#: .\portal\blog\templates\blog\report_modal.html:19
-#: .\portal\blog\templates\blog\report_modal_modern.html:37
+#: .\portal\core\blog\templates\blog\blog_detail.html:244
+#: .\portal\core\blog\templates\blog\report_modal.html:19
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:37
 msgid "Your Email"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:249
-#: .\portal\blog\templates\blog\report_modal_modern.html:43
+#: .\portal\core\blog\templates\blog\blog_detail.html:249
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:43
 msgid "your.email@example.com"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:253
+#: .\portal\core\blog\templates\blog\blog_detail.html:253
 msgid "Your email will never be shared publicly"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:258
+#: .\portal\core\blog\templates\blog\blog_detail.html:258
 msgid "Your Comment"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:262
+#: .\portal\core\blog\templates\blog\blog_detail.html:262
 msgid "Share your thoughts, ask questions, or contribute to the discussion..."
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:268
+#: .\portal\core\blog\templates\blog\blog_detail.html:268
 msgid "characters"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:269
+#: .\portal\core\blog\templates\blog\blog_detail.html:269
 msgid "minimum 10 characters required"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:275
+#: .\portal\core\blog\templates\blog\blog_detail.html:275
 msgid "Comments are published immediately if they follow our guidelines"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:279
+#: .\portal\core\blog\templates\blog\blog_detail.html:279
 msgid "Post Comment"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:293
+#: .\portal\core\blog\templates\blog\blog_detail.html:293
 msgid "About the Author"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:297
+#: .\portal\core\blog\templates\blog\blog_detail.html:297
 msgid ""
 "OpenLinguify team member passionate about language learning and educational "
 "technology."
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:304
+#: .\portal\core\blog\templates\blog\blog_detail.html:304
 msgid "Recent Posts"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:308
+#: .\portal\core\blog\templates\blog\blog_detail.html:308
 msgid "View All Posts"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:315
+#: .\portal\core\blog\templates\blog\blog_detail.html:315
 msgid "Stay Updated"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:318
+#: .\portal\core\blog\templates\blog\blog_detail.html:318
 msgid ""
 "Get the latest OpenLinguify updates and language learning tips delivered to "
 "your inbox."
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_detail.html:319
+#: .\portal\core\blog\templates\blog\blog_detail.html:319
 msgid "Subscribe"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:5
-#: .\portal\blog\templates\blog\blog_list_enhanced.html:5
+#: .\portal\core\blog\templates\blog\blog_list.html:5
+#: .\portal\core\blog\templates\blog\blog_list_enhanced.html:5
 msgid "Language Learning Tips & Updates"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:7
-#: .\portal\blog\templates\blog\blog_list_enhanced.html:7
+#: .\portal\core\blog\templates\blog\blog_list.html:7
+#: .\portal\core\blog\templates\blog\blog_list_enhanced.html:7
 msgid "Language learning tips, AI insights, and platform updates"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:29
+#: .\portal\core\blog\templates\blog\blog_list.html:29
 msgid "OpenLinguify Blog"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:30
+#: .\portal\core\blog\templates\blog\blog_list.html:30
 msgid "Language learning tips, AI insights, and OpenLinguify platform updates"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:37
+#: .\portal\core\blog\templates\blog\blog_list.html:37
 msgid "Search articles..."
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:38
+#: .\portal\core\blog\templates\blog\blog_list.html:38
 msgid "Search"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:105
+#: .\portal\core\blog\templates\blog\blog_list.html:105
 msgid "No blog posts found"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:106
+#: .\portal\core\blog\templates\blog\blog_list.html:106
 msgid "We're working on creating amazing content for you. Check back soon!"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:118
+#: .\portal\core\blog\templates\blog\blog_list.html:118
 msgid "Categories"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:133
+#: .\portal\core\blog\templates\blog\blog_list.html:133
 msgid "Tags"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:147
+#: .\portal\core\blog\templates\blog\blog_list.html:147
 msgid "About OpenLinguify"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:150
+#: .\portal\core\blog\templates\blog\blog_list.html:150
 msgid ""
 "OpenLinguify is an open-source educational platform that combines AI "
 "technology with proven pedagogical methods for effective language learning."
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_list.html:151
+#: .\portal\core\blog\templates\blog\blog_list.html:151
 msgid "Learn More"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_tag.html:26
+#: .\portal\core\blog\templates\blog\blog_tag.html:26
 msgid "Articles tagged with"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_tag.html:101
+#: .\portal\core\blog\templates\blog\blog_tag.html:101
 msgid "No articles found with this tag"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_tag.html:102
+#: .\portal\core\blog\templates\blog\blog_tag.html:102
 msgid "We're working on creating content with this tag. Check back soon!"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_tag.html:123
+#: .\portal\core\blog\templates\blog\blog_tag.html:123
 msgid "Related Tags"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_tag.html:126
+#: .\portal\core\blog\templates\blog\blog_tag.html:126
 msgid "Explore other topics on OpenLinguify Blog"
 msgstr ""
 
-#: .\portal\blog\templates\blog\blog_tag.html:127
+#: .\portal\core\blog\templates\blog\blog_tag.html:127
 msgid "Browse All Tags"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item.html:31
+#: .\portal\core\blog\templates\blog\comment_item.html:31
 msgid "Report"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item.html:58
-#: .\portal\blog\templates\blog\comment_item.html:90
-#: .\portal\blog\templates\blog\comment_item_modern.html:87
+#: .\portal\core\blog\templates\blog\comment_item.html:58
+#: .\portal\core\blog\templates\blog\comment_item.html:90
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:87
 msgid "Reply"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item.html:65
-#: .\portal\blog\templates\blog\comment_item_modern.html:93
+#: .\portal\core\blog\templates\blog\comment_item.html:65
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:93
 msgid "Share"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item.html:71
-#: .\portal\blog\templates\blog\comment_item_modern.html:100
+#: .\portal\core\blog\templates\blog\comment_item.html:71
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:100
 msgid "replies"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item.html:80
-#: .\portal\blog\templates\blog\comment_item_modern.html:112
+#: .\portal\core\blog\templates\blog\comment_item.html:80
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:112
 msgid "Your name"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item.html:83
-#: .\portal\blog\templates\blog\comment_item_modern.html:120
+#: .\portal\core\blog\templates\blog\comment_item.html:83
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:120
 msgid "Your email"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item.html:86
+#: .\portal\core\blog\templates\blog\comment_item.html:86
 msgid "Write a reply..."
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item.html:89
-#: .\portal\blog\templates\blog\comment_item_modern.html:136
-#: .\portal\blog\templates\blog\report_modal.html:79
-#: .\portal\blog\templates\blog\report_modal_modern.html:139
+#: .\portal\core\blog\templates\blog\comment_item.html:89
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:136
+#: .\portal\core\blog\templates\blog\report_modal.html:79
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:139
 msgid "Cancel"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item_modern.html:23
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:23
 msgid "Contributeur populaire"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item_modern.html:27
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:27
 msgid "Bon contributeur"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item_modern.html:60
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:60
 msgid "Report comment"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item_modern.html:128
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:128
 msgid "Write a thoughtful reply..."
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_item_modern.html:139
+#: .\portal\core\blog\templates\blog\comment_item_modern.html:139
 msgid "Post Reply"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_reply.html:7
+#: .\portal\core\blog\templates\blog\comment_reply.html:7
 msgid "Reply Posted"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_reply.html:20
+#: .\portal\core\blog\templates\blog\comment_reply.html:20
 msgid "Reply Posted Successfully!"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_reply.html:23
+#: .\portal\core\blog\templates\blog\comment_reply.html:23
 msgid ""
 "Your reply has been submitted and will appear after moderation approval."
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_reply.html:28
+#: .\portal\core\blog\templates\blog\comment_reply.html:28
 msgid ""
 "Comments are reviewed by our team to ensure quality and respect community "
 "guidelines."
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_reply.html:32
+#: .\portal\core\blog\templates\blog\comment_reply.html:32
 msgid "Redirecting in"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_reply.html:32
+#: .\portal\core\blog\templates\blog\comment_reply.html:32
 msgid "seconds..."
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_reply.html:38
+#: .\portal\core\blog\templates\blog\comment_reply.html:38
 msgid "Back to Article"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_reply.html:42
+#: .\portal\core\blog\templates\blog\comment_reply.html:42
 msgid "All Articles"
 msgstr ""
 
-#: .\portal\blog\templates\blog\comment_reply.html:66
+#: .\portal\core\blog\templates\blog\comment_reply.html:66
 msgid "Auto-redirect paused"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:8
-#: .\portal\blog\templates\blog\report_modal_modern.html:10
+#: .\portal\core\blog\templates\blog\report_modal.html:8
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:10
 msgid "Report Comment"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:21
-#: .\portal\blog\templates\blog\report_modal_modern.html:46
+#: .\portal\core\blog\templates\blog\report_modal.html:21
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:46
 msgid "Your email will be kept confidential"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:25
-#: .\portal\blog\templates\blog\report_modal_modern.html:53
+#: .\portal\core\blog\templates\blog\report_modal.html:25
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:53
 msgid "Reason for reporting"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:29
-#: .\portal\blog\templates\blog\report_modal_modern.html:60
+#: .\portal\core\blog\templates\blog\report_modal.html:29
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:60
 msgid "Spam or unwanted commercial content"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:35
-#: .\portal\blog\templates\blog\report_modal_modern.html:69
+#: .\portal\core\blog\templates\blog\report_modal.html:35
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:69
 msgid "Harassment or bullying"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:41
-#: .\portal\blog\templates\blog\report_modal_modern.html:78
+#: .\portal\core\blog\templates\blog\report_modal.html:41
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:78
 msgid "Hate speech or discrimination"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:47
-#: .\portal\blog\templates\blog\report_modal_modern.html:87
+#: .\portal\core\blog\templates\blog\report_modal.html:47
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:87
 msgid "Inappropriate or offensive content"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:53
-#: .\portal\blog\templates\blog\report_modal_modern.html:96
+#: .\portal\core\blog\templates\blog\report_modal.html:53
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:96
 msgid "False or misleading information"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:59
-#: .\portal\blog\templates\blog\report_modal_modern.html:105
+#: .\portal\core\blog\templates\blog\report_modal.html:59
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:105
 msgid "Copyright violation"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:65
+#: .\portal\core\blog\templates\blog\report_modal.html:65
 msgid "Other (please specify)"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:71
-#: .\portal\blog\templates\blog\report_modal_modern.html:123
+#: .\portal\core\blog\templates\blog\report_modal.html:71
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:123
 msgid "Additional Information"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:71
-#: .\portal\blog\templates\blog\report_modal_modern.html:124
+#: .\portal\core\blog\templates\blog\report_modal.html:71
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:124
 msgid "optional"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:72
+#: .\portal\core\blog\templates\blog\report_modal.html:72
 msgid "Please provide more details about your report..."
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal.html:80
-#: .\portal\blog\templates\blog\report_modal_modern.html:143
+#: .\portal\core\blog\templates\blog\report_modal.html:80
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:143
 msgid "Submit Report"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal_modern.html:20
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:20
 msgid ""
 "Help us maintain a respectful community by reporting inappropriate content. "
 "All reports are reviewed by our moderation team."
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal_modern.html:61
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:61
 msgid "Unsolicited advertising, promotional content, or repetitive posts"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal_modern.html:70
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:70
 msgid "Targeted harassment, intimidation, or cyberbullying"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal_modern.html:79
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:79
 msgid "Content promoting hatred or discrimination based on identity"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal_modern.html:88
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:88
 msgid "Content that violates community standards or is offensive"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal_modern.html:97
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:97
 msgid "Misinformation or deliberately false claims"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal_modern.html:106
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:106
 msgid "Unauthorized use of copyrighted material"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal_modern.html:114
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:114
 msgid "Other"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal_modern.html:115
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:115
 msgid "Please specify in the additional information field"
 msgstr ""
 
-#: .\portal\blog\templates\blog\report_modal_modern.html:130
+#: .\portal\core\blog\templates\blog\report_modal_modern.html:130
 msgid ""
 "Please provide more details about your report. This information helps our "
 "moderation team better understand the issue."

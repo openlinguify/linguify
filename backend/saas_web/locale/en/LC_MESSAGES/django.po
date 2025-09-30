@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify SaaS Web\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 19:36+0200\n"
+"POT-Creation-Date: 2025-09-30 20:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: English\n"
@@ -17,164 +17,164 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 # Navigation
-#: .\saas_web\templates\components\header\app_header.html:18
+#: .\backend\saas_web\templates\components\header\app_header.html:18
 msgid "Return to dashboard"
 msgstr "Return to dashboard"
 
-#: .\saas_web\templates\components\header\app_header.html:33
+#: .\backend\saas_web\templates\components\header\app_header.html:33
 msgid "Go to dashboard"
 msgstr "Go to dashboard"
 
 # Dashboard
-#: .\saas_web\templates\components\header\app_header.html:34
-#: .\saas_web\templates\components\header\app_header.html:198
-#: .\saas_web\templates\saas_web\dashboard.html:5
+#: .\backend\saas_web\templates\components\header\app_header.html:34
+#: .\backend\saas_web\templates\components\header\app_header.html:198
+#: .\backend\saas_web\templates\saas_web\dashboard.html:5
 msgid "Dashboard"
 msgstr "Dashboard"
 
-#: .\saas_web\templates\components\header\app_header.html:39
+#: .\backend\saas_web\templates\components\header\app_header.html:39
 msgid "Browse app store"
 msgstr "Browse app store"
 
 # App Store
-#: .\saas_web\templates\components\header\app_header.html:40
-#: .\saas_web\templates\components\header\app_header.html:202
-#: .\saas_web\templates\saas_web\dashboard.html:52
-#: .\saas_web\templates\saas_web\dashboard.html:54
-#: .\saas_web\templates\saas_web\dashboard.html:75
-#: .\saas_web\templates\saas_web\dashboard.html:77
+#: .\backend\saas_web\templates\components\header\app_header.html:40
+#: .\backend\saas_web\templates\components\header\app_header.html:202
+#: .\backend\saas_web\templates\saas_web\dashboard.html:52
+#: .\backend\saas_web\templates\saas_web\dashboard.html:54
+#: .\backend\saas_web\templates\saas_web\dashboard.html:75
+#: .\backend\saas_web\templates\saas_web\dashboard.html:77
 msgid "App Store"
 msgstr "App Store"
 
-#: .\saas_web\templates\components\header\app_header.html:52
+#: .\backend\saas_web\templates\components\header\app_header.html:52
 msgid "Toggle navigation menu"
 msgstr "Toggle navigation menu"
 
-#: .\saas_web\templates\components\header\app_header.html:64
+#: .\backend\saas_web\templates\components\header\app_header.html:64
 msgid "Select language"
 msgstr "Select language"
 
-#: .\saas_web\templates\components\header\app_header.html:67
-#: .\saas_web\templates\components\header\app_header.html:88
+#: .\backend\saas_web\templates\components\header\app_header.html:67
+#: .\backend\saas_web\templates\components\header\app_header.html:88
 msgid "French"
 msgstr "French"
 
-#: .\saas_web\templates\components\header\app_header.html:69
-#: .\saas_web\templates\components\header\app_header.html:75
-#: .\saas_web\templates\components\header\app_header.html:82
-#: .\saas_web\templates\components\header\app_header.html:83
+#: .\backend\saas_web\templates\components\header\app_header.html:69
+#: .\backend\saas_web\templates\components\header\app_header.html:75
+#: .\backend\saas_web\templates\components\header\app_header.html:82
+#: .\backend\saas_web\templates\components\header\app_header.html:83
 msgid "English"
 msgstr "English"
 
-#: .\saas_web\templates\components\header\app_header.html:71
-#: .\saas_web\templates\components\header\app_header.html:94
+#: .\backend\saas_web\templates\components\header\app_header.html:71
+#: .\backend\saas_web\templates\components\header\app_header.html:94
 msgid "Spanish"
 msgstr "Spanish"
 
-#: .\saas_web\templates\components\header\app_header.html:73
-#: .\saas_web\templates\components\header\app_header.html:100
+#: .\backend\saas_web\templates\components\header\app_header.html:73
+#: .\backend\saas_web\templates\components\header\app_header.html:100
 msgid "Dutch"
 msgstr "Dutch"
 
 # Notifications
-#: .\saas_web\templates\components\header\app_header.html:114
+#: .\backend\saas_web\templates\components\header\app_header.html:114
 msgid "View notifications"
 msgstr "View notifications"
 
-#: .\saas_web\templates\components\header\app_header.html:119
+#: .\backend\saas_web\templates\components\header\app_header.html:119
 msgid "Unread notifications count"
 msgstr "Unread notifications count"
 
-#: .\saas_web\templates\components\header\app_header.html:126
+#: .\backend\saas_web\templates\components\header\app_header.html:126
 msgid "Notifications"
 msgstr "Notifications"
 
-#: .\saas_web\templates\components\header\app_header.html:130
+#: .\backend\saas_web\templates\components\header\app_header.html:130
 msgid "Mark all notifications as read"
 msgstr "Mark all notifications as read"
 
-#: .\saas_web\templates\components\header\app_header.html:131
+#: .\backend\saas_web\templates\components\header\app_header.html:131
 msgid "Mark all as read"
 msgstr "Mark all as read"
 
-#: .\saas_web\templates\components\header\app_header.html:137
+#: .\backend\saas_web\templates\components\header\app_header.html:137
 msgid "No new notifications"
 msgstr "No new notifications"
 
 # User Menu
-#: .\saas_web\templates\components\header\app_header.html:149
+#: .\backend\saas_web\templates\components\header\app_header.html:149
 msgid "User menu"
 msgstr "User menu"
 
-#: .\saas_web\templates\components\header\app_header.html:152
+#: .\backend\saas_web\templates\components\header\app_header.html:152
 msgid "Profile picture"
 msgstr "Profile picture"
 
 # Settings
-#: .\saas_web\templates\components\header\app_header.html:173
-#: .\saas_web\templates\saas_web\dashboard.html:62
-#: .\saas_web\templates\saas_web\dashboard.html:64
-#: .\saas_web\templates\saas_web\dashboard.html:85
-#: .\saas_web\templates\saas_web\dashboard.html:87
-#: .\saas_web\templates\saas_web\settings\settings.html:6
-#: .\saas_web\templates\saas_web\settings\settings.html:16
+#: .\backend\saas_web\templates\components\header\app_header.html:173
+#: .\backend\saas_web\templates\saas_web\dashboard.html:62
+#: .\backend\saas_web\templates\saas_web\dashboard.html:64
+#: .\backend\saas_web\templates\saas_web\dashboard.html:85
+#: .\backend\saas_web\templates\saas_web\dashboard.html:87
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:6
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:16
 msgid "Settings"
 msgstr "Settings"
 
-#: .\saas_web\templates\components\header\app_header.html:179
-#: .\saas_web\templates\components\header\app_header.html:207
+#: .\backend\saas_web\templates\components\header\app_header.html:179
+#: .\backend\saas_web\templates\components\header\app_header.html:207
 msgid "Bugs & Feedbacks"
 msgstr "Bugs & Feedbacks"
 
-#: .\saas_web\templates\components\header\app_header.html:186
+#: .\backend\saas_web\templates\components\header\app_header.html:186
 msgid "Logout"
 msgstr "Logout"
 
 # Mobile Navigation
-#: .\saas_web\templates\components\header\app_header.html:199
+#: .\backend\saas_web\templates\components\header\app_header.html:199
 msgid "Home"
 msgstr "Home"
 
-#: .\saas_web\templates\components\header\app_header.html:203
+#: .\backend\saas_web\templates\components\header\app_header.html:203
 msgid "Store"
 msgstr "Store"
 
-#: .\saas_web\templates\saas_web\base.html:427
-#: .\saas_web\templates\saas_web\base.html:429
+#: .\backend\saas_web\templates\saas_web\base.html:427
+#: .\backend\saas_web\templates\saas_web\base.html:429
 msgid "An error occurred. Please try again."
 msgstr "An error occurred. Please try again."
 
-#: .\saas_web\templates\saas_web\settings\settings.html:17
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:17
 msgid "Customize your Linguify experience"
 msgstr "Customize your Linguify experience"
 
-#: .\saas_web\templates\saas_web\settings\settings.html:22
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:22
 msgid "Search settings..."
 msgstr "Search settings..."
 
-#: .\saas_web\templates\saas_web\settings\settings.html:67
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:67
 msgid "App Manager"
 msgstr "App Manager"
 
-#: .\saas_web\templates\saas_web\settings\settings.html:83
-#: .\saas_web\templates\saas_web\settings\settings.html:85
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:83
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:85
 msgid "Profile & Account"
 msgstr "Profile & Account"
 
-#: .\saas_web\templates\saas_web\settings\settings.html:86
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:86
 msgid "Manage your personal information and account settings"
 msgstr "Manage your personal information and account settings"
 
-#: .\saas_web\templates\saas_web\settings\settings.html:144
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:144
 #, python-format
 msgid "%(name)s settings coming soon..."
 msgstr ""
 
-#: .\saas_web\views\admin.py:18
+#: .\backend\saas_web\views\admin.py:18
 msgid "Fix Apps - Administration"
 msgstr ""
 
-#: .\saas_web\views\dashboard.py:31
+#: .\backend\saas_web\views\dashboard.py:31
 msgid "Dashboard - Open Linguify"
 msgstr ""
 
