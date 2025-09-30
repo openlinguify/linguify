@@ -454,27 +454,37 @@ class Flashcard(models.Model):
     
     def mark_reviewed(self, success=True):
         """
+        [DEPRECATED] Utilisez AdaptiveLearningService.record_performance() à la place.
+
         Marque la carte comme révisée et calcule la prochaine date de révision
         en fonction du succès et du nombre de révisions précédentes.
-        
+
         Args:
             success (bool): Si True, la révision est considérée comme réussie.
         """
+        import warnings
+        warnings.warn(
+            "mark_reviewed() est déprécié. Utilisez AdaptiveLearningService.record_performance() pour "
+            "bénéficier du système d'apprentissage adaptatif cross-modal.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+
         self.last_reviewed = timezone.now()
         self.review_count += 1
-        
+
         if success:
             # Implémentation de l'algorithme de répétition espacée
             interval_key = min(self.review_count, max(self.REVIEW_INTERVALS.keys()))
             interval = self.REVIEW_INTERVALS.get(interval_key, self.REVIEW_INTERVALS[max(self.REVIEW_INTERVALS.keys())])
-            
+
             self.next_review = timezone.now() + interval
             self.learned = True
         else:
             # Si échec, réviser à nouveau dans 1 jour
             self.next_review = timezone.now() + timedelta(days=1)
             self.learned = False
-        
+
         self.save()
     
     def reset_progress(self):

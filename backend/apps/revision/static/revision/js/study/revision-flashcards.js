@@ -255,23 +255,26 @@ class FlashcardStudyMode {
         this.stopSpeech();
 
         const card = this.studyCards[this.currentCardIndex];
-        
+
+        // Track time for response time measurement
+        this.cardStartTime = Date.now();
+
         // Reset card state
         this.isFlipped = false;
         const flashcard = document.getElementById('flashcard');
         if (flashcard) {
             flashcard.classList.remove('flipped');
         }
-        
+
         // Set card content
         const frontElement = document.getElementById('flashcardFront');
         const backElement = document.getElementById('flashcardBack');
         const actionsElement = document.getElementById('studyActions');
         const instructionsElement = document.getElementById('studyInstructions');
-        
+
         if (frontElement) frontElement.textContent = card.front_text;
         if (backElement) backElement.textContent = card.back_text;
-        
+
         // Hide action buttons initially
         if (actionsElement) actionsElement.style.display = 'none';
         
@@ -307,54 +310,105 @@ class FlashcardStudyMode {
 
     async markCard(difficulty) {
         if (this.currentCardIndex >= this.studyCards.length) return;
-        
+
         const card = this.studyCards[this.currentCardIndex];
-        console.log('Marking card as:', difficulty, 'Card ID:', card.id);
-        
+        console.log('[AdaptiveLearning] Marking card as:', difficulty, 'Card ID:', card.id);
+
         try {
-            // Update card based on difficulty
-            let success = false;
-            
+            // Map difficulty to new adaptive system
+            let wasCorrect = false;
+            let adaptiveDifficulty = 'medium';
+
             switch (difficulty) {
                 case 'easy':
-                    success = true;
+                    wasCorrect = true;
+                    adaptiveDifficulty = 'easy';
                     this.studyStats.correct++;
                     break;
                 case 'medium':
-                    success = true;
+                    wasCorrect = true;
+                    adaptiveDifficulty = 'medium';
                     this.studyStats.medium++;
                     break;
                 case 'difficult':
-                    success = false;
+                    wasCorrect = false;
+                    adaptiveDifficulty = 'hard';
                     this.studyStats.difficult++;
                     break;
             }
-            
-            console.log('Updating card progress with success:', success);
-            // Update card progress using new API
-            await window.revisionMain.revisionAPI.updateCardProgress(card.id, success);
-            console.log('Card progress updated successfully');
-            
-            // Mark card as reviewed (you might want to add this to your API)
-            // This would update last_reviewed, review_count, next_review
-            
+
+            console.log('[AdaptiveLearning] Calling adaptive API with:', {
+                study_mode: 'flashcards',
+                difficulty: adaptiveDifficulty,
+                was_correct: wasCorrect
+            });
+
+            // Use new adaptive learning API
+            const response = await fetch(`/revision/api/adaptive/card/${card.id}/review/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({
+                    study_mode: 'flashcards',
+                    difficulty: adaptiveDifficulty,
+                    was_correct: wasCorrect,
+                    response_time_seconds: this.getResponseTime()
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('[AdaptiveLearning] Response:', result);
+            console.log(`  Confidence: ${result.confidence_before}% → ${result.confidence_after}%`);
+            console.log(`  Mastery level: ${result.mastery_level}`);
+            console.log(`  Recommended next mode: ${result.recommended_next_mode}`);
+
             // Move to next card
             this.currentCardIndex++;
-            
+
             // Update stats
             this.updateStats();
-            
+
             // Load next card or show completion
             if (this.currentCardIndex < this.studyCards.length) {
                 this.loadCurrentCard();
             } else {
                 this.showCompletionMessage();
             }
-            
+
         } catch (error) {
-            console.error('Error marking card:', error);
+            console.error('[AdaptiveLearning] Error marking card:', error);
             window.notificationService.error('Erreur lors de la sauvegarde');
         }
+    }
+
+    getCSRFToken() {
+        const name = 'csrftoken';
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    getResponseTime() {
+        // Track time since card was shown
+        if (this.cardStartTime) {
+            return (Date.now() - this.cardStartTime) / 1000;
+        }
+        return null;
     }
 
     updateProgress() {

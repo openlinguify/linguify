@@ -13,6 +13,13 @@ from .views.revision_settings_views import *
 from .views.stats_api_views import *
 # Import web views
 from .views.web_views import *
+# Import adaptive learning views
+from .views.adaptive_study_views import (
+    AdaptiveReviewCardView,
+    AdaptiveDeckStatsView,
+    AdaptiveCardsToReviewView,
+    CardMasteryDetailView
+)
 
 app_name = 'revision'
 
@@ -138,4 +145,20 @@ urlpatterns = [
     path('api/settings/stats/', RevisionSettingsViewSet.as_view({
         'get': 'stats'
     }), name='settings-stats'),
+
+    # ==========================================
+    # === ADAPTIVE LEARNING ENDPOINTS =========
+    # ==========================================
+
+    # Review card with adaptive algorithm
+    path('api/adaptive/card/<int:card_id>/review/', AdaptiveReviewCardView.as_view(), name='adaptive-review-card'),
+
+    # Get deck statistics with adaptive algorithm
+    path('api/adaptive/deck/<int:deck_id>/stats/', AdaptiveDeckStatsView.as_view(), name='adaptive-deck-stats'),
+
+    # Get priority cards to review
+    path('api/adaptive/deck/<int:deck_id>/cards-to-review/', AdaptiveCardsToReviewView.as_view(), name='adaptive-cards-to-review'),
+
+    # Get detailed mastery info for a card
+    path('api/adaptive/card/<int:card_id>/mastery/', CardMasteryDetailView.as_view(), name='adaptive-card-mastery'),
 ]

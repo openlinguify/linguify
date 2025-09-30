@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 from .models import (
     FlashcardDeck,
     Flashcard,
+    CardPerformance,
+    CardMastery,
 )
 
 from django.conf import settings
@@ -821,3 +823,116 @@ class FlashcardAdmin(admin.ModelAdmin):
         )
         
         return TemplateResponse(request, 'admin/revision/flashcard/review_card.html', context)
+
+
+@admin.register(CardPerformance)
+class CardPerformanceAdmin(admin.ModelAdmin):
+    list_display = ('card_preview', 'user', 'study_mode', 'difficulty', 'was_correct', 'confidence_after', 'created_at')
+    list_filter = ('study_mode', 'difficulty', 'was_correct', 'created_at')
+    search_fields = ('card__front_text', 'card__back_text', 'user__username', 'session_id')
+    readonly_fields = ('created_at', 'confidence_before', 'confidence_after')
+    date_hierarchy = 'created_at'
+
+    fieldsets = (
+        (_('Performance Info'), {
+            'fields': ('card', 'user', 'study_mode', 'difficulty', 'was_correct')
+        }),
+        (_('Metrics'), {
+            'fields': ('response_time_seconds', 'confidence_before', 'confidence_after')
+        }),
+        (_('Session'), {
+            'fields': ('session_id', 'created_at')
+        }),
+    )
+
+    def card_preview(self, obj):
+        return f"{obj.card.front_text[:30]}..."
+    card_preview.short_description = _('Card')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('card', 'user')
+
+
+@admin.register(CardMastery)
+class CardMasteryAdmin(admin.ModelAdmin):
+    list_display = (
+        'card_preview',
+        'confidence_score_display',
+        'mastery_level',
+        'total_attempts',
+        'success_rate',
+        'modes_practiced',
+        'updated_at'
+    )
+    list_filter = ('mastery_level', 'confidence_score')
+    search_fields = ('card__front_text', 'card__back_text')
+    readonly_fields = (
+        'card',
+        'total_attempts',
+        'successful_attempts',
+        'updated_at',
+        'confidence_score',
+        'success_rate_display'
+    )
+
+    fieldsets = (
+        (_('Card Info'), {
+            'fields': ('card',)
+        }),
+        (_('Overall Performance'), {
+            'fields': ('confidence_score', 'mastery_level', 'total_attempts', 'successful_attempts', 'success_rate_display')
+        }),
+        (_('Per-Mode Scores'), {
+            'fields': ('learn_score', 'flashcards_score', 'write_score', 'match_score', 'review_score')
+        }),
+        (_('Last Practice Dates'), {
+            'fields': ('last_learn', 'last_flashcards', 'last_write', 'last_match', 'last_review')
+        }),
+        (_('Metadata'), {
+            'fields': ('updated_at',)
+        }),
+    )
+
+    def card_preview(self, obj):
+        return f"{obj.card.front_text[:40]}..."
+    card_preview.short_description = _('Card')
+
+    def confidence_score_display(self, obj):
+        score = obj.confidence_score
+        if score >= 85:
+            color = 'green'
+        elif score >= 70:
+            color = 'orange'
+        else:
+            color = 'red'
+        return format_html('<span style="color: {}; font-weight: bold;">{}</span>', color, score)
+    confidence_score_display.short_description = _('Confidence')
+
+    def success_rate(self, obj):
+        if obj.total_attempts == 0:
+            return '0%'
+        rate = (obj.successful_attempts / obj.total_attempts) * 100
+        return f'{rate:.1f}%'
+    success_rate.short_description = _('Success Rate')
+
+    def success_rate_display(self, obj):
+        return self.success_rate(obj)
+    success_rate_display.short_description = _('Success Rate')
+
+    def modes_practiced(self, obj):
+        modes = []
+        if obj.learn_score > 0:
+            modes.append('Learn')
+        if obj.flashcards_score > 0:
+            modes.append('Flash')
+        if obj.write_score > 0:
+            modes.append('Write')
+        if obj.match_score > 0:
+            modes.append('Match')
+        if obj.review_score > 0:
+            modes.append('Review')
+        return ', '.join(modes) if modes else 'None'
+    modes_practiced.short_description = _('Modes')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('card')
