@@ -6,9 +6,23 @@ from rest_framework.response import Response
 from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import redirect, render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.utils import translation
+
+def service_worker(request):
+    """Serve minimal service worker for backend app"""
+    sw_content = """
+// Minimal Service Worker for Backend App
+self.addEventListener('install', function(event) {
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', function(event) {
+    event.waitUntil(clients.claim());
+});
+"""
+    return HttpResponse(sw_content, content_type='application/javascript')
 
 def lms_info(request):
     """Page d'information sur le LMS"""

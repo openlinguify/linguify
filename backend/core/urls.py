@@ -37,6 +37,9 @@ def redirect_to_admin(request):
 
 # URLs without language prefix (for compatibility)
 urlpatterns = [
+    # Service Worker
+    path('sw.js', views.service_worker, name='service_worker'),
+
     # Favicon fallback redirects (temporary until views are deployed)
     path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=False)),
     path('apple-touch-icon.png', RedirectView.as_view(url='/static/images/apple-touch-icon.png', permanent=False)),
