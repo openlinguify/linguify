@@ -102,12 +102,12 @@ body.settings-page {
     font-size: 18px;
     font-weight: 600;
     margin: 0;
-    color: var(--linguify-white);
+    color: var(--linguify-white) !important;
 }
 
 .sidebar-header .subtitle {
     font-size: 13px;
-    color: color-mix(in srgb, var(--linguify-white) 80%, transparent);
+    color: var(--linguify-white) !important;
     margin-top: 4px;
 }
 
