@@ -69,9 +69,12 @@ class QuizStudyMode {
             
             // Show quiz interface
             this.showQuizInterface();
-            
-            // Load first question
-            this.loadCurrentQuestion();
+
+            // Use requestAnimationFrame to ensure DOM is updated before loading question
+            requestAnimationFrame(() => {
+                // Load first question
+                this.loadCurrentQuestion();
+            });
             
         } catch (error) {
             console.error('Error starting quiz:', error);
@@ -164,16 +167,27 @@ class QuizStudyMode {
         }
 
         const quizCard = this.quizCards[this.currentQuestionIndex];
-        
+
         // Reset state
         this.selectedAnswer = null;
         this.hasAnswered = false;
-        
+
         // Set question
-        document.getElementById('quizQuestion').textContent = quizCard.question;
-        
+        const questionElement = document.getElementById('quizQuestion');
+        if (!questionElement) {
+            console.error('❌ Quiz question element not found in DOM');
+            window.notificationService.error('Erreur d\'affichage du questionnaire');
+            return;
+        }
+        questionElement.textContent = quizCard.question;
+
         // Create options
         const optionsContainer = document.getElementById('quizOptions');
+        if (!optionsContainer) {
+            console.error('❌ Quiz options container not found in DOM');
+            window.notificationService.error('Erreur d\'affichage du questionnaire');
+            return;
+        }
         optionsContainer.innerHTML = '';
         
         quizCard.options.forEach((option, index) => {

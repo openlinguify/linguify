@@ -792,14 +792,9 @@ class FlashcardViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-    @action(detail=True, methods=['post'], permission_classes=[])
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def update_review_progress(self, request, pk=None):
         """Mettre à jour le progrès de révision d'une carte."""
-        if not request.user.is_authenticated:
-            return Response(
-                {"detail": "Authentication credentials were not provided."},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
         
         try:
             # Check if card exists first (bypass queryset filtering for proper 403 vs 404)  
