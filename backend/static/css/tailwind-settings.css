@@ -959,19 +959,22 @@ body.settings-page {
     }
 }
 
-/* Dark mode support */
+/* Dark mode support - DÉSACTIVÉ pour éviter les bandes noires sur Firefox */
+/* TODO: Réimplémenter un mode sombre cohérent pour toute la page settings */
+/*
 @media (prefers-color-scheme: dark) {
     .settings-main {
         background: var(--linguify-gray-800);
         color: var(--linguify-gray-50);
     }
-    
+
     .content-section {
         background: var(--linguify-gray-800);
         border-bottom-color: var(--linguify-gray-700);
     }
-    
+
     .content-section:hover {
         background: var(--linguify-gray-900);
     }
 }
+*/

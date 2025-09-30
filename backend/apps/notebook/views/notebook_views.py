@@ -47,6 +47,7 @@ class NotebookMainView(TemplateView):
         current_app_info = {
             'name': 'notebook',
             'display_name': 'Notes',
+            'static_icon': '/app-icons/notebook/icon.png',
             'route_path': '/notebook/'
         }
 
