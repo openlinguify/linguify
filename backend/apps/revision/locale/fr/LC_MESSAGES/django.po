@@ -1670,3 +1670,12 @@ msgstr "Ce deck ne contient aucune carte, ou alors toutes les cartes sont déjà
 
 msgid "Practice with all cards"
 msgstr "S'entraîner avec toutes les cartes"
+
+msgid "Session completed!"
+msgstr "Session terminée !"
+
+msgid "Excellent work! You have completed"
+msgstr "Excellent travail ! Vous avez terminé"
+
+msgid "My decks"
+msgstr "Mes decks"

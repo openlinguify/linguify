@@ -431,60 +431,74 @@ class FlashcardStudyMode {
     }
 
     showCompletionMessage() {
-        const studyArea = document.getElementById('studyArea');
-        
-        // Store original content for restart
-        if (!this.originalStudyAreaContent) {
-            this.originalStudyAreaContent = studyArea.innerHTML;
+        // Hide all study elements using visibility to prevent layout issues
+        const flashcard = document.getElementById('flashcard');
+        const studyInstructions = document.getElementById('studyInstructions');
+        const studyActions = document.getElementById('studyActions');
+        const studyStats = document.querySelector('.study-stats');
+
+        if (flashcard) {
+            flashcard.style.display = 'none';
+            flashcard.style.visibility = 'hidden';
+            flashcard.style.height = '0';
+            flashcard.style.overflow = 'hidden';
         }
-        
-        // Create completion message
-        studyArea.innerHTML = `
-            <div class="empty-state">
-                <i class="bi bi-trophy text-warning" style="font-size: 4rem;"></i>
-                <h4 class="mt-3">Session terminée !</h4>
-                <p class="text-muted">Excellent travail ! Vous avez terminé ${this.studyCards.length} ${window.ngettext('card', 'cards', this.studyCards.length)}.</p>
-                <div class="row text-center mt-4 mb-4">
-                    <div class="col">
-                        <div class="stat-value text-linguify-accent">${this.studyStats.correct}</div>
-                        <div class="stat-label">Faciles</div>
-                    </div>
-                    <div class="col">
-                        <div class="stat-value text-warning">${this.studyStats.medium}</div>
-                        <div class="stat-label">Moyennes</div>
-                    </div>
-                    <div class="col">
-                        <div class="stat-value text-danger">${this.studyStats.difficult}</div>
-                        <div class="stat-label">Difficiles</div>
-                    </div>
-                </div>
-                <div class="d-flex gap-2 justify-content-center">
-                    <button class="btn btn-outline-custom" id="restartStudyBtn">
-                        <i class="bi bi-arrow-clockwise me-1"></i>
-                        Recommencer
-                    </button>
-                    <button class="btn btn-gradient" id="exitStudyModeBtn">
-                        <i class="bi bi-house me-1"></i>
-                        Mes decks
-                    </button>
-                </div>
-            </div>
-        `;
+        if (studyInstructions) {
+            studyInstructions.style.display = 'none';
+            studyInstructions.style.visibility = 'hidden';
+            studyInstructions.style.height = '0';
+            studyInstructions.style.overflow = 'hidden';
+        }
+        if (studyActions) {
+            studyActions.style.display = 'none';
+            studyActions.style.visibility = 'hidden';
+            studyActions.style.height = '0';
+            studyActions.style.overflow = 'hidden';
+        }
+        if (studyStats) {
+            studyStats.style.display = 'none';
+            studyStats.style.visibility = 'hidden';
+            studyStats.style.height = '0';
+            studyStats.style.overflow = 'hidden';
+        }
+
+        // Show completion container
+        const completionContainer = document.getElementById('flashcardCompletionContainer');
+
+        if (completionContainer) {
+            // Update the completion stats
+            document.getElementById('completionCardCount').textContent =
+                `${this.studyCards.length} ${window.ngettext('card', 'cards', this.studyCards.length)}.`;
+            document.getElementById('completionCorrect').textContent = this.studyStats.correct;
+            document.getElementById('completionMedium').textContent = this.studyStats.medium;
+            document.getElementById('completionDifficult').textContent = this.studyStats.difficult;
+
+            // Show completion container
+            completionContainer.style.display = 'block';
+        }
         
         // Add event listeners for the completion buttons
         setTimeout(() => {
             const restartBtn = document.getElementById('restartStudyBtn');
-            const exitBtn = document.getElementById('exitStudyModeBtn');
-            
+            const backToDeckBtn = document.getElementById('backToDeckBtn');
+            const exitToDecksListBtn = document.getElementById('exitToDecksListBtn');
+
             if (restartBtn) {
                 restartBtn.addEventListener('click', () => {
                     console.log('Restart button clicked - restarting study');
                     this.restartStudy();
                 });
             }
-            
-            if (exitBtn) {
-                exitBtn.addEventListener('click', () => {
+
+            if (backToDeckBtn) {
+                backToDeckBtn.addEventListener('click', () => {
+                    console.log('Back to deck button clicked');
+                    this.exitStudyMode();
+                });
+            }
+
+            if (exitToDecksListBtn) {
+                exitToDecksListBtn.addEventListener('click', () => {
                     console.log('Exit to decks list button clicked');
                     this.goToDeckslist();
                 });
@@ -495,26 +509,55 @@ class FlashcardStudyMode {
     async restartStudy() {
         if (this.currentDeck) {
             console.log('Restarting study for deck:', this.currentDeck.name);
-            
-            // Restore the original study area content
-            const studyArea = document.getElementById('studyArea');
-            if (studyArea && this.originalStudyAreaContent) {
-                studyArea.innerHTML = this.originalStudyAreaContent;
-                studyArea.style.display = 'block';
-                
-                // Re-attach event listeners that might have been lost
-                const flashcard = document.getElementById('flashcard');
-                if (flashcard) {
-                    // Remove any existing listeners to avoid duplicates
-                    flashcard.replaceWith(flashcard.cloneNode(true));
-                    const newFlashcard = document.getElementById('flashcard');
-                    newFlashcard.addEventListener('click', () => this.flipCard());
-                }
-                
-                // Re-attach difficulty button listeners
-                this.reattachDifficultyButtons();
+
+            // Hide completion container
+            const completionContainer = document.getElementById('flashcardCompletionContainer');
+            if (completionContainer) {
+                completionContainer.style.display = 'none';
             }
-            
+
+            // Show study elements again and restore their properties
+            const flashcard = document.getElementById('flashcard');
+            const studyInstructions = document.getElementById('studyInstructions');
+            const studyActions = document.getElementById('studyActions');
+            const studyStats = document.querySelector('.study-stats');
+
+            if (flashcard) {
+                flashcard.style.removeProperty('display');
+                flashcard.style.removeProperty('visibility');
+                flashcard.style.removeProperty('height');
+                flashcard.style.removeProperty('overflow');
+            }
+            if (studyInstructions) {
+                studyInstructions.style.removeProperty('display');
+                studyInstructions.style.removeProperty('visibility');
+                studyInstructions.style.removeProperty('height');
+                studyInstructions.style.removeProperty('overflow');
+            }
+            if (studyActions) {
+                studyActions.style.display = 'none'; // Will be shown when card is flipped
+                studyActions.style.removeProperty('visibility');
+                studyActions.style.removeProperty('height');
+                studyActions.style.removeProperty('overflow');
+            }
+            if (studyStats) {
+                studyStats.style.removeProperty('display');
+                studyStats.style.removeProperty('visibility');
+                studyStats.style.removeProperty('height');
+                studyStats.style.removeProperty('overflow');
+            }
+
+            // Re-attach event listeners
+            if (flashcard) {
+                // Remove any existing listeners to avoid duplicates
+                flashcard.replaceWith(flashcard.cloneNode(true));
+                const newFlashcard = document.getElementById('flashcard');
+                newFlashcard.addEventListener('click', () => this.flipCard());
+            }
+
+            // Re-attach difficulty button listeners
+            this.reattachDifficultyButtons();
+
             // Restart the study process normally
             await this.startStudy(this.currentDeck);
         }
@@ -579,10 +622,20 @@ class FlashcardStudyMode {
     goToDeckslist() {
         // Stop any ongoing speech
         this.stopSpeech();
-        
+
         // Hide study mode
-        document.getElementById('flashcardStudyMode').style.display = 'none';
-        
+        const flashcardStudyMode = document.getElementById('flashcardStudyMode');
+        if (flashcardStudyMode) {
+            flashcardStudyMode.style.display = 'none';
+            flashcardStudyMode.classList.add('study-mode-hidden');
+        }
+
+        // Hide completion container
+        const completionContainer = document.getElementById('flashcardCompletionContainer');
+        if (completionContainer) {
+            completionContainer.style.display = 'none';
+        }
+
         // Clear selected deck and show main decks list
         if (window.revisionMain) {
             window.revisionMain.appState.selectedDeck = null;
@@ -590,10 +643,20 @@ class FlashcardStudyMode {
                 window.revisionMain.hideAllSections();
             }
             const elements = window.revisionMain.getElements();
-            if (elements.decksList) {
-                elements.decksList.style.display = 'block';
-            } else if (elements.welcomeState) {
+
+            // Hide deck details
+            if (elements.deckDetails) {
+                elements.deckDetails.style.display = 'none';
+            }
+
+            // Show welcome state with decks list
+            if (elements.welcomeState) {
                 elements.welcomeState.style.display = 'block';
+            }
+
+            // Reload decks to refresh the view
+            if (window.revisionMain.loadDecks) {
+                window.revisionMain.loadDecks(true);
             }
         }
     }

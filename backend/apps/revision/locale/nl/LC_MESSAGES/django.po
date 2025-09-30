@@ -1637,3 +1637,12 @@ msgstr "Dit deck bevat geen kaarten, of alle kaarten zijn al geleerd."
 
 msgid "Practice with all cards"
 msgstr "Oefenen met alle kaarten"
+
+msgid "Session completed!"
+msgstr "Sessie voltooid!"
+
+msgid "Excellent work! You have completed"
+msgstr "Uitstekend werk! Je hebt voltooid"
+
+msgid "My decks"
+msgstr "Mijn decks"

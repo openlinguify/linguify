@@ -1381,3 +1381,15 @@ msgstr "This deck contains no cards, or all cards are already learned."
 
 msgid "Practice with all cards"
 msgstr "Practice with all cards"
+
+msgid "Session completed!"
+msgstr "Session completed!"
+
+msgid "Excellent work! You have completed"
+msgstr "Excellent work! You have completed"
+
+msgid "Restart"
+msgstr "Restart"
+
+msgid "My decks"
+msgstr "My decks"

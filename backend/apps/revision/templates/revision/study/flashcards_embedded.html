@@ -71,6 +71,11 @@
                     {% trans "Back to deck" %}
                 </button>
             </div>
+
+            <!-- Completion State (hidden by default) -->
+            <div id="flashcardCompletionContainer" style="display: none;">
+                {% include 'revision/study/flashcards_completion.html' %}
+            </div>
         </div>
         
         <!-- Study Stats -->

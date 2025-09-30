@@ -1656,3 +1656,12 @@ msgstr "Este mazo no contiene tarjetas, o todas las tarjetas ya están aprendida
 
 msgid "Practice with all cards"
 msgstr "Practicar con todas las tarjetas"
+
+msgid "Session completed!"
+msgstr "¡Sesión completada!"
+
+msgid "Excellent work! You have completed"
+msgstr "¡Excelente trabajo! Has completado"
+
+msgid "My decks"
+msgstr "Mis mazos"
