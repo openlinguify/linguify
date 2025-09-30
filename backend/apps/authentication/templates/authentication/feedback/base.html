@@ -6,7 +6,7 @@
 {% block title %}{% trans "Bugs & Feedbacks" %} | Open Linguify{% endblock %}
 
 {% block header_content %}
-{% include 'components/header/app_header.html' %}
+{% include 'components/header/app_header.html' with page_title="Bugs et commentaires" brand_url="/auth/feedback/" show_feedback_only=True %}
 {% endblock %}
 
 {% block extra_css %}
@@ -22,12 +22,6 @@
     <div class="flex-1 main-content-area" style="overflow-y: auto; height: 100%;">
         <!-- Dashboard Content -->
         <div class="p-6 md:p-8 lg:p-10">
-            <!-- Header Section -->
-            <div class="mb-6">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{% trans "Bugs et commentaires" %}</h1>
-                <p class="text-linguify-gray text-sm md:text-base">{% trans "Gérez et suivez tous vos retours" %}</p>
-            </div>
-
             <!-- Statistiques Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
                 <!-- Total Card -->

@@ -15,8 +15,10 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <!-- Brand -->
-            <a class="navbar-brand app-brand-icon" href="{% url 'saas_web:dashboard' %}" aria-label="{% trans 'Return to dashboard' %}">
-                {% if current_app.static_icon %}
+            <a class="navbar-brand app-brand-icon" href="{% if show_feedback_only %}{% url 'authentication:feedback_dashboard' %}{% else %}{% url 'saas_web:dashboard' %}{% endif %}" aria-label="{% trans 'Return to dashboard' %}">
+                {% if show_feedback_only %}
+                    <i class="bi bi-bug" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                {% elif current_app.static_icon %}
                     <img src="{{ current_app.static_icon }}" alt="{{ current_app.display_name|default:current_app.name }}" class="app-icon">
                 {% else %}
                     <span class="app-brand-gradient">{{ current_app.display_name|default:current_app.name|default:"Linguify" }}</span>
@@ -28,6 +30,7 @@
                 {% block app_navigation %}
                 <!-- Desktop Navigation -->
                 <div class="d-flex align-items-center gap-2">
+                    {% if show_feedback_only %}
                     <a href="{% url 'saas_web:dashboard' %}"
                        class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
                        aria-label="{% trans 'Go to dashboard' %}">
@@ -39,6 +42,13 @@
                        aria-label="{% trans 'Browse app store' %}">
                         <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
                     </a>
+                    {% else %}
+                    <a href="{% url 'authentication:feedback_dashboard' %}"
+                       class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
+                       aria-label="{% trans 'Bugs & Feedbacks' %}">
+                        <i class="bi bi-bug" aria-hidden="true"></i>
+                    </a>
+                    {% endif %}
                 </div>
                 {% endblock %}
                 
@@ -193,6 +203,16 @@
         <!-- Mobile Navigation -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="navbar-nav ms-auto d-lg-none">
+                {% if show_feedback_only %}
+                <a class="nav-link mobile-nav-item" href="{% url 'saas_web:dashboard' %}">
+                    <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
+                    {% trans "Home" %}
+                </a>
+                <a class="nav-link mobile-nav-item" href="{% url 'saas_web:app_store' %}">
+                    <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
+                    {% trans "Store" %}
+                </a>
+                {% else %}
                 <a class="nav-link mobile-nav-item" href="{% url 'saas_web:dashboard' %}">
                     <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
                     {% trans "Home" %}
@@ -205,6 +225,7 @@
                     <i class="bi bi-bug me-2" aria-hidden="true"></i>
                     {% trans "Bugs & Feedbacks" %}
                 </a>
+                {% endif %}
             </div>
         </div>
     </nav>
