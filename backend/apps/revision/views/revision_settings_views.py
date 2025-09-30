@@ -355,18 +355,20 @@ def get_user_revision_settings(request):
             'group_by_deck': False,
         })
         
-        # Récupérer aussi les paramètres audio depuis la base de données
+        # Récupérer aussi les paramètres audio et révision depuis la base de données
         try:
             revision_settings, _ = RevisionSettings.objects.get_or_create(user=request.user)
-            
+
             # DEBUG: Log des valeurs avant mise à jour
             logger.info(f"[USER_SETTINGS] 🎵 BEFORE update - user: {request.user.username}")
             logger.info(f"[USER_SETTINGS] 🎵 DB audio_speed: {revision_settings.audio_speed}")
             logger.info(f"[USER_SETTINGS] 🎵 DB audio_enabled: {revision_settings.audio_enabled}")
             logger.info(f"[USER_SETTINGS] 🎵 DB spanish_gender: {revision_settings.preferred_gender_spanish}")
-            
-            # Ajouter les paramètres audio avec préférences de genre
-            audio_settings = {
+            logger.info(f"[USER_SETTINGS] 📚 DB cards_per_session: {revision_settings.cards_per_session}")
+            logger.info(f"[USER_SETTINGS] ⏱️ DB session_duration: {revision_settings.default_session_duration}")
+
+            # Ajouter les paramètres audio avec préférences de genre ET les paramètres de révision
+            db_settings = {
                 'audio_enabled': revision_settings.audio_enabled,
                 'audio_speed': revision_settings.audio_speed,
                 'preferred_gender_french': revision_settings.preferred_gender_french,
@@ -374,17 +376,20 @@ def get_user_revision_settings(request):
                 'preferred_gender_spanish': revision_settings.preferred_gender_spanish,
                 'preferred_gender_italian': revision_settings.preferred_gender_italian,
                 'preferred_gender_german': revision_settings.preferred_gender_german,
+                'cards_per_session': revision_settings.cards_per_session,
+                'default_session_duration': revision_settings.default_session_duration,
             }
-            
-            logger.info(f"[USER_SETTINGS] 🎵 Audio settings to add: {audio_settings}")
-            
-            settings.update(audio_settings)
-            
+
+            logger.info(f"[USER_SETTINGS] 🎵 DB settings to add: {db_settings}")
+
+            settings.update(db_settings)
+
             logger.info(f"[USER_SETTINGS] 🎵 AFTER update - settings audio_speed: {settings.get('audio_speed')}")
-            logger.info(f"[USER_SETTINGS] Added audio settings for {request.user.username}")
-            
+            logger.info(f"[USER_SETTINGS] 📚 AFTER update - settings cards_per_session: {settings.get('cards_per_session')}")
+            logger.info(f"[USER_SETTINGS] Added DB settings for {request.user.username}")
+
         except Exception as e:
-            logger.warning(f"[USER_SETTINGS] Could not load audio settings: {e}")
+            logger.warning(f"[USER_SETTINGS] Could not load DB settings: {e}")
         
         logger.info(f"[USER_SETTINGS] Retrieved settings for {request.user.username}: {settings}")
         
