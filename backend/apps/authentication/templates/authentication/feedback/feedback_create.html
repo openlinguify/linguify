@@ -9,37 +9,27 @@
 <link rel="stylesheet" href="{% static 'authentication/css/feedback.css' %}">
 <style>
 .feedback-form-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-}
-
-.form-header {
-    text-align: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #f8f9fa;
-}
-
-.form-header h1 {
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-}
-
-.form-subtitle {
-    color: #6c757d;
-    font-size: 1.1rem;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0.5rem 2rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .feedback-form {
     background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .form-section {
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
 }
 
 .form-section:last-child {
@@ -48,16 +38,16 @@
 
 .section-title {
     color: #2c3e50;
-    font-size: 1.2rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    margin-bottom: 1rem;
+    margin-bottom: 0.4rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.3rem;
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.4rem;
 }
 
 .form-group:last-child {
@@ -67,16 +57,18 @@
 label {
     font-weight: 600;
     color: #2c3e50;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.15rem;
     display: block;
+    font-size: 0.8rem;
 }
 
 .form-control, .form-select {
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    padding: 0.75rem;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 0.35rem 0.5rem;
     transition: all 0.3s ease;
     width: 100%;
+    font-size: 0.85rem;
 }
 
 .form-control:focus, .form-select:focus {
@@ -86,49 +78,56 @@ label {
 }
 
 .form-text {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: #6c757d;
-    margin-top: 0.25rem;
+    margin-top: 0.1rem;
+    display: none; /* Cacher les help texts pour gagner de la place */
 }
 
 .type-help {
     background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
-    border-left: 4px solid #007bff;
+    border-radius: 6px;
+    padding: 0.5rem;
+    margin-top: 0.3rem;
+    border-left: 3px solid #007bff;
 }
 
 .type-help-title {
     font-weight: 600;
     color: #2c3e50;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.15rem;
+    font-size: 0.75rem;
 }
 
 .type-descriptions {
     display: none;
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
+    margin-top: 0.15rem;
+    font-size: 0.75rem;
     color: #6c757d;
 }
 
 .conditional-fields {
     display: none;
-    margin-top: 1rem;
-    padding: 1rem;
+    margin-top: 0.3rem;
+    padding: 0.4rem;
     background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #ffc107;
+    border-radius: 6px;
+    border-left: 3px solid #ffc107;
 }
 
 .conditional-fields.show {
     display: block;
 }
 
+.conditional-fields h4 {
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+}
+
 .file-upload-area {
-    border: 2px dashed #dee2e6;
-    border-radius: 8px;
-    padding: 2rem;
+    border: 1px dashed #dee2e6;
+    border-radius: 6px;
+    padding: 0.6rem;
     text-align: center;
     background: #f8f9fa;
     transition: all 0.3s ease;
@@ -140,14 +139,15 @@ label {
 }
 
 .file-upload-icon {
-    font-size: 2rem;
+    font-size: 1rem;
     color: #6c757d;
-    margin-bottom: 1rem;
+    margin-right: 0.5rem;
 }
 
 .submit-section {
-    text-align: center;
-    padding-top: 2rem;
+    text-align: right;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
     border-top: 1px solid #e9ecef;
 }
 
@@ -155,12 +155,12 @@ label {
     background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
     border: none;
-    padding: 1rem 2rem;
-    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
+    border-radius: 6px;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
-    min-width: 200px;
+    min-width: 120px;
 }
 
 .btn-submit:hover {
@@ -171,13 +171,14 @@ label {
 .btn-cancel {
     background: transparent;
     color: #6c757d;
-    border: 2px solid #dee2e6;
-    padding: 1rem 2rem;
-    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 1.2rem;
+    border-radius: 6px;
     font-weight: 600;
     text-decoration: none;
-    margin-right: 1rem;
+    margin-right: 0.75rem;
     transition: all 0.3s ease;
+    font-size: 0.9rem;
 }
 
 .btn-cancel:hover {
@@ -226,33 +227,6 @@ label {
 
 {% block content %}
 <div class="feedback-form-container">
-    <!-- Bouton de retour -->
-    <div class="mb-4">
-        <a href="{% url 'authentication:feedback_dashboard' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i>
-            {% trans "Retour" %}
-        </a>
-    </div>
-
-    <!-- En-tête -->
-    <div class="form-header">
-        <h1>
-            {% if page_title %}
-                {{ page_title }}
-            {% else %}
-                <i class="bi bi-chat-dots"></i>
-                {% trans "Submit Feedback" %}
-            {% endif %}
-        </h1>
-        {% if form_subtitle %}
-            <p class="form-subtitle">{{ form_subtitle }}</p>
-        {% else %}
-            <p class="form-subtitle">
-                {% trans "Help us improve by sharing your feedback, reporting bugs, or requesting features." %}
-            </p>
-        {% endif %}
-    </div>
-
     <!-- Formulaire -->
     <form method="post" enctype="multipart/form-data" class="feedback-form" id="feedbackForm">
         {% csrf_token %}
@@ -379,20 +353,13 @@ label {
             <div class="form-group">
                 <label for="{{ form.screenshot.id_for_label }}">{{ form.screenshot.label }}</label>
                 <div class="file-upload-area" onclick="document.getElementById('{{ form.screenshot.id_for_label }}').click();">
-                    <div class="file-upload-icon">
-                        <i class="bi bi-cloud-upload"></i>
-                    </div>
-                    <div>
-                        <strong>{% trans "Click to upload a screenshot" %}</strong><br>
-                        <small class="text-muted">{% trans "PNG, JPG or GIF up to 10MB" %}</small>
-                    </div>
+                    <i class="bi bi-cloud-upload file-upload-icon"></i>
+                    <small>{% trans "Click to upload a screenshot" %}</small>
                     {{ form.screenshot }}
                 </div>
-                <div id="filePreview" class="mt-2" style="display: none;">
-                    <div class="alert alert-success">
-                        <i class="bi bi-check-circle"></i>
-                        <span id="fileName"></span>
-                    </div>
+                <div id="filePreview" style="display: none; font-size: 0.8rem; margin-top: 0.25rem;">
+                    <i class="bi bi-check-circle text-success"></i>
+                    <span id="fileName"></span>
                 </div>
             </div>
         </div>

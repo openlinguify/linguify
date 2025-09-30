@@ -47,22 +47,22 @@ class FeedbackForm(ModelForm):
             'priority': Select(attrs={'class': 'form-select'}),
             'description': Textarea(attrs={
                 'class': 'form-control',
-                'rows': 4,
+                'rows': 2,
                 'placeholder': _('Please provide detailed information about your feedback')
             }),
             'steps_to_reproduce': Textarea(attrs={
                 'class': 'form-control',
-                'rows': 3,
+                'rows': 2,
                 'placeholder': _('For bug reports: Step 1, Step 2, Step 3...')
             }),
             'expected_behavior': Textarea(attrs={
                 'class': 'form-control',
-                'rows': 2,
+                'rows': 1,
                 'placeholder': _('What should have happened?')
             }),
             'actual_behavior': Textarea(attrs={
                 'class': 'form-control',
-                'rows': 2,
+                'rows': 1,
                 'placeholder': _('What actually happened?')
             }),
             'page_url': TextInput(attrs={
