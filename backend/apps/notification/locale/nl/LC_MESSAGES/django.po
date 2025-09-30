@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 20:17+0200\n"
+"POT-Creation-Date: 2025-09-30 20:21+0200\n"
 "PO-Revision-Date: 2025-01-16 10:00+0000\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: Dutch\n"
@@ -16,43 +16,42 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\backend\apps\notification\services.py:424
+#: .\apps\notification\services.py:424
 msgid "🔥 REVISION REMINDER"
 msgstr "🔥 REVISIE HERINNERING"
 
-#: .\backend\apps\notification\services.py:425
+#: .\apps\notification\services.py:425
 #, python-format
 msgid "You have %(count)d cards to review today. Keep your streak going!"
 msgstr "Je hebt %(count)d kaarten om vandaag te bekijken. Hou je reeks gaande!"
 
-#: .\backend\apps\notification\services.py:451
+#: .\apps\notification\services.py:451
 msgid "🏆 Achievement Unlocked!"
 msgstr "🏆 Prestatie ontgrendeld!"
 
-#: .\backend\apps\notification\services.py:452
+#: .\apps\notification\services.py:452
 #, python-format
 msgid "You earned: %(achievement)s"
 msgstr "Je hebt verdiend: %(achievement)s"
 
-#: .\backend\apps\notification\services.py:476
+#: .\apps\notification\services.py:476
 msgid "🎉 Course Completed!"
 msgstr "🎉 Cursus voltooid!"
 
-#: .\backend\apps\notification\services.py:477
+#: .\apps\notification\services.py:477
 #, python-format
 msgid "Congratulations! You completed %(course)s"
 msgstr "Gefeliciteerd! Je hebt %(course)s voltooid"
 
-#: .\backend\apps\notification\services.py:501
+#: .\apps\notification\services.py:501
 msgid "System Update"
 msgstr "Systeemupdate"
 
-#: .\backend\apps\notification\services.py:528
-#: .\backend\apps\notification\services.py:560
+#: .\apps\notification\services.py:528 .\apps\notification\services.py:560
 msgid "Action Required: Accept Terms of Use"
 msgstr "Actie vereist: Accepteer de Gebruiksvoorwaarden"
 
-#: .\backend\apps\notification\services.py:529
+#: .\apps\notification\services.py:529
 msgid "Please accept our updated terms of use to continue using Linguify."
 msgstr ""
 "Accepteer onze bijgewerkte gebruiksvoorwaarden om Linguify te blijven "

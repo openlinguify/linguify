@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 20:17+0200\n"
+"POT-Creation-Date: 2025-09-30 20:21+0200\n"
 "PO-Revision-Date: 2025-09-29 20:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -17,474 +17,473 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\backend\apps\revision\__manifest__.py:5
-#: .\backend\apps\revision\__manifest__.py:46
-#: .\backend\apps\revision\apps.py:11
+#: .\apps\revision\__manifest__.py:5 .\apps\revision\__manifest__.py:46
+#: .\apps\revision\apps.py:11
 msgid "Revision"
 msgstr "Herhaling"
 
-#: .\backend\apps\revision\__manifest__.py:8
+#: .\apps\revision\__manifest__.py:8
 msgid "Memorize effectively with smart flashcards and spaced repetition."
 msgstr "Memoriseer effectief met slimme flashcards en gespreide herhaling."
 
-#: .\backend\apps\revision\__manifest__.py:47
+#: .\apps\revision\__manifest__.py:47
 msgid "Review your knowledge with flashcards"
 msgstr "Herhaal je kennis met flashcards"
 
-#: .\backend\apps\revision\__manifest__.py:49
+#: .\apps\revision\__manifest__.py:49
 msgid "Productivity"
 msgstr "Productiviteit"
 
-#: .\backend\apps\revision\__manifest__.py:74
+#: .\apps\revision\__manifest__.py:74
 msgid "Revision Settings"
 msgstr "Herhalingsinstellingen"
 
-#: .\backend\apps\revision\__manifest__.py:75
+#: .\apps\revision\__manifest__.py:75
 msgid "Specific Revision settings to be developed..."
 msgstr "Specifieke herhalingsinstellingen om te ontwikkelen..."
 
-#: .\backend\apps\revision\__manifest__.py:80
+#: .\apps\revision\__manifest__.py:80
 msgid "Learning"
 msgstr "Leren"
 
-#: .\backend\apps\revision\__manifest__.py:81
+#: .\apps\revision\__manifest__.py:81
 msgid "Learning and revision settings"
 msgstr "Leer- en herhalingsinstellingen"
 
-#: .\backend\apps\revision\__manifest__.py:85
+#: .\apps\revision\__manifest__.py:85
 msgid "Sessions"
 msgstr "Sessies"
 
-#: .\backend\apps\revision\__manifest__.py:86
+#: .\apps\revision\__manifest__.py:86
 msgid "Revision session configuration"
 msgstr "Configuratie van herhalingssessies"
 
-#: .\backend\apps\revision\__manifest__.py:90
+#: .\apps\revision\__manifest__.py:90
 msgid "Notifications"
 msgstr "Meldingen"
 
-#: .\backend\apps\revision\__manifest__.py:91
+#: .\apps\revision\__manifest__.py:91
 msgid "Reminders and notifications"
 msgstr "Herinneringen en meldingen"
 
-#: .\backend\apps\revision\admin.py:32
+#: .\apps\revision\admin.py:32
 msgid "Due for review"
 msgstr "Te beoordelen"
 
-#: .\backend\apps\revision\admin.py:37
+#: .\apps\revision\admin.py:37
 msgid "Due today"
 msgstr "Vandaag verschuldigd"
 
-#: .\backend\apps\revision\admin.py:38
+#: .\apps\revision\admin.py:38
 msgid "Due tomorrow"
 msgstr "Morgen verschuldigd"
 
-#: .\backend\apps\revision\admin.py:39
+#: .\apps\revision\admin.py:39
 msgid "Due this week"
 msgstr "Deze week verschuldigd"
 
-#: .\backend\apps\revision\admin.py:40
+#: .\apps\revision\admin.py:40
 msgid "Overdue"
 msgstr "Achterstallig"
 
-#: .\backend\apps\revision\admin.py:60 .\backend\apps\revision\admin.py:668
+#: .\apps\revision\admin.py:60 .\apps\revision\admin.py:668
 msgid "Learning Progress"
 msgstr "Leervoortgang"
 
-#: .\backend\apps\revision\admin.py:65
+#: .\apps\revision\admin.py:65
 msgid "Not started"
 msgstr "Niet gestart"
 
-#: .\backend\apps\revision\admin.py:66
+#: .\apps\revision\admin.py:66
 msgid "In progress"
 msgstr "Bezig"
 
-#: .\backend\apps\revision\admin.py:67 .\backend\apps\revision\admin.py:580
+#: .\apps\revision\admin.py:67 .\apps\revision\admin.py:580
 msgid "Learned"
 msgstr "Geleerd"
 
-#: .\backend\apps\revision\admin.py:105 .\backend\apps\revision\admin.py:504
+#: .\apps\revision\admin.py:105 .\apps\revision\admin.py:504
 msgid "Timestamps"
 msgstr "Tijdstempels"
 
-#: .\backend\apps\revision\admin.py:109
-#: .\backend\apps\revision\templates\components\revision_header.html:27
-#: .\backend\apps\revision\templates\revision\components\navbar.html:34
+#: .\apps\revision\admin.py:109
+#: .\apps\revision\templates\components\revision_header.html:27
+#: .\apps\revision\templates\revision\components\navbar.html:34
 msgid "Statistics"
 msgstr "Statistieken"
 
-#: .\backend\apps\revision\admin.py:155
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:278
+#: .\apps\revision\admin.py:155
+#: .\apps\revision\templates\revision\stats_dashboard.html:278
 msgid "Cards"
 msgstr "Kaarten"
 
-#: .\backend\apps\revision\admin.py:174
+#: .\apps\revision\admin.py:174
 msgid "Completion Rate"
 msgstr "Voltooiingspercentage"
 
-#: .\backend\apps\revision\admin.py:185
+#: .\apps\revision\admin.py:185
 msgid "Never reviewed"
 msgstr "Nooit beoordeeld"
 
-#: .\backend\apps\revision\admin.py:186
+#: .\apps\revision\admin.py:186
 msgid "Last review"
 msgstr "Laatste beoordeling"
 
-#: .\backend\apps\revision\admin.py:191
-#: .\backend\apps\revision\templates\revision\partials\cards_section.html:52
+#: .\apps\revision\admin.py:191
+#: .\apps\revision\templates\revision\partials\cards_section.html:52
 msgid "No cards in this deck"
 msgstr "Geen kaarten in deze lijst"
 
-#: .\backend\apps\revision\admin.py:232
+#: .\apps\revision\admin.py:232
 msgid "Deck statistics"
 msgstr "Lijst statistieken"
 
-#: .\backend\apps\revision\admin.py:238
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:39
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:38
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:51
+#: .\apps\revision\admin.py:238
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:39
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:38
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:51
 msgid "Description"
 msgstr "Beschrijving"
 
-#: .\backend\apps\revision\admin.py:243 .\backend\apps\revision\admin.py:573
+#: .\apps\revision\admin.py:243 .\apps\revision\admin.py:573
 msgid "User"
 msgstr "Gebruiker"
 
-#: .\backend\apps\revision\admin.py:249
+#: .\apps\revision\admin.py:249
 msgid "Mark selected decks as active"
 msgstr "Markeer geselecteerde lijsten als actief"
 
-#: .\backend\apps\revision\admin.py:254
+#: .\apps\revision\admin.py:254
 msgid "Mark selected decks as inactive"
 msgstr "Markeer geselecteerde lijsten als inactief"
 
-#: .\backend\apps\revision\admin.py:275
+#: .\apps\revision\admin.py:275
 msgid "Export selected decks to CSV"
 msgstr "Geselecteerde decks exporteren naar CSV"
 
-#: .\backend\apps\revision\admin.py:283
+#: .\apps\revision\admin.py:283
 msgid "Mark all cards in selected decks as learned"
 msgstr "Markeer alle kaarten in geselecteerde decks als geleerd"
 
-#: .\backend\apps\revision\admin.py:292
+#: .\apps\revision\admin.py:292
 msgid "Reset progress for all cards in selected decks"
 msgstr "Reset voortgang voor alle kaarten in geselecteerde decks"
 
-#: .\backend\apps\revision\admin.py:318
+#: .\apps\revision\admin.py:318
 msgid "Duplicate selected decks"
 msgstr "Dupliceer geselecteerde decks"
 
-#: .\backend\apps\revision\admin.py:324 .\backend\apps\revision\admin.py:347
+#: .\apps\revision\admin.py:324 .\apps\revision\admin.py:347
 msgid "Deck not found."
 msgstr "Deck niet gevonden."
 
-#: .\backend\apps\revision\admin.py:333
+#: .\apps\revision\admin.py:333
 #, python-format
 msgid "Study: %s"
 msgstr "Studeren: %s"
 
-#: .\backend\apps\revision\admin.py:374
+#: .\apps\revision\admin.py:374
 #, python-format
 msgid "Analytics: %s"
 msgstr "Analyse: %s"
 
-#: .\backend\apps\revision\admin.py:394
+#: .\apps\revision\admin.py:394
 msgid "Import Flashcards from CSV"
 msgstr "Flashcards importeren uit CSV"
 
-#: .\backend\apps\revision\admin.py:409
+#: .\apps\revision\admin.py:409
 msgid "Please provide a name for the new deck."
 msgstr "Geef een naam op voor de nieuwe lijst."
 
-#: .\backend\apps\revision\admin.py:413
+#: .\apps\revision\admin.py:413
 msgid "Please select an existing deck."
 msgstr "Selecteer een bestaande lijst."
 
-#: .\backend\apps\revision\admin.py:417
+#: .\apps\revision\admin.py:417
 msgid "Please select a user."
 msgstr "Selecteer een gebruiker."
 
-#: .\backend\apps\revision\admin.py:501
+#: .\apps\revision\admin.py:501
 msgid "Review Information"
 msgstr "Beoordelingsinformatie"
 
-#: .\backend\apps\revision\admin.py:557
-#: .\backend\apps\revision\templates\revision\partials\cards_section.html:13
+#: .\apps\revision\admin.py:557
+#: .\apps\revision\templates\revision\partials\cards_section.html:13
 msgid "Front"
 msgstr "Voorkant"
 
-#: .\backend\apps\revision\admin.py:562
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:354
-#: .\backend\apps\revision\templates\revision\partials\cards_section.html:23
+#: .\apps\revision\admin.py:562
+#: .\apps\revision\templates\revision\components\deck_import.html:354
+#: .\apps\revision\templates\revision\partials\cards_section.html:23
 msgid "Back"
 msgstr "Achterkant"
 
-#: .\backend\apps\revision\admin.py:567
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:277
+#: .\apps\revision\admin.py:567
+#: .\apps\revision\templates\revision\stats_dashboard.html:277
 msgid "Deck"
 msgstr "Lijst"
 
-#: .\backend\apps\revision\admin.py:611
+#: .\apps\revision\admin.py:611
 msgid "Next Review"
 msgstr "Volgende Beoordeling"
 
-#: .\backend\apps\revision\admin.py:641
-#: .\backend\apps\revision\templates\revision\components\navbar.html:134
+#: .\apps\revision\admin.py:641
+#: .\apps\revision\templates\revision\components\navbar.html:134
 msgid "Progress"
 msgstr "Voortgang"
 
-#: .\backend\apps\revision\admin.py:645
+#: .\apps\revision\admin.py:645
 msgid "No review data available"
 msgstr "Geen beoordelingsgegevens beschikbaar"
 
-#: .\backend\apps\revision\admin.py:673
+#: .\apps\revision\admin.py:673
 msgid "Mark selected flashcards as learned"
 msgstr "Markeer geselecteerde flashcards als geleerd"
 
-#: .\backend\apps\revision\admin.py:678
+#: .\apps\revision\admin.py:678
 msgid "Mark selected flashcards as not learned"
 msgstr "Markeer geselecteerde flashcards als niet geleerd"
 
-#: .\backend\apps\revision\admin.py:684
+#: .\apps\revision\admin.py:684
 msgid "Reset review progress for selected flashcards"
 msgstr "Reset beoordelingsvoortgang voor geselecteerde flashcards"
 
-#: .\backend\apps\revision\admin.py:689
+#: .\apps\revision\admin.py:689
 msgid "Schedule selected flashcards for today"
 msgstr "Plan geselecteerde flashcards voor vandaag"
 
-#: .\backend\apps\revision\admin.py:695
+#: .\apps\revision\admin.py:695
 msgid "Schedule selected flashcards for tomorrow"
 msgstr ""
 
-#: .\backend\apps\revision\admin.py:708
+#: .\apps\revision\admin.py:708
 msgid "Distribute selected flashcards over the next week"
 msgstr ""
 
-#: .\backend\apps\revision\admin.py:731
+#: .\apps\revision\admin.py:731
 msgid "Export selected flashcards to CSV"
 msgstr "Geselecteerde flashcards exporteren naar CSV"
 
-#: .\backend\apps\revision\admin.py:738
+#: .\apps\revision\admin.py:738
 msgid "No flashcards selected."
 msgstr "Geen flashcards geselecteerd."
 
-#: .\backend\apps\revision\admin.py:758
+#: .\apps\revision\admin.py:758
 msgid "Invalid date format."
 msgstr "Ongeldig datumformaat."
 
-#: .\backend\apps\revision\admin.py:762
+#: .\apps\revision\admin.py:762
 msgid "Schedule Custom Review"
 msgstr "Aangepaste beoordeling plannen"
 
-#: .\backend\apps\revision\admin.py:773
+#: .\apps\revision\admin.py:773
 msgid "Schedule selected cards for custom date"
 msgstr "Geselecteerde kaarten plannen voor aangepaste datum"
 
-#: .\backend\apps\revision\admin.py:779
+#: .\apps\revision\admin.py:779
 msgid "Flashcard not found."
 msgstr "Flashcard niet gevonden."
 
-#: .\backend\apps\revision\admin.py:789
+#: .\apps\revision\admin.py:789
 msgid "Card marked as successfully reviewed!"
 msgstr "Kaart gemarkeerd als succesvol beoordeeld!"
 
-#: .\backend\apps\revision\admin.py:796
+#: .\apps\revision\admin.py:796
 msgid "Card will be shown again soon."
 msgstr "Kaart wordt binnenkort opnieuw getoond."
 
-#: .\backend\apps\revision\admin.py:817
+#: .\apps\revision\admin.py:817
 msgid "Review Card"
 msgstr "Kaart beoordelen"
 
-#: .\backend\apps\revision\admin.py:837
+#: .\apps\revision\admin.py:837
 #, fuzzy
 #| msgid "Performance Breakdown"
 msgid "Performance Info"
 msgstr "Prestatieoverzicht"
 
-#: .\backend\apps\revision\admin.py:840
+#: .\apps\revision\admin.py:840
 msgid "Metrics"
 msgstr ""
 
-#: .\backend\apps\revision\admin.py:843
+#: .\apps\revision\admin.py:843
 #, fuzzy
 #| msgid "Revision"
 msgid "Session"
 msgstr "Herhaling"
 
-#: .\backend\apps\revision\admin.py:850 .\backend\apps\revision\admin.py:898
+#: .\apps\revision\admin.py:850 .\apps\revision\admin.py:898
 #, fuzzy
 #| msgid "Cards"
 msgid "Card"
 msgstr "Kaarten"
 
-#: .\backend\apps\revision\admin.py:879
+#: .\apps\revision\admin.py:879
 msgid "Card Info"
 msgstr ""
 
-#: .\backend\apps\revision\admin.py:882
+#: .\apps\revision\admin.py:882
 #, fuzzy
 #| msgid "Deck Performance"
 msgid "Overall Performance"
 msgstr "Lijst Prestatie"
 
-#: .\backend\apps\revision\admin.py:885
+#: .\apps\revision\admin.py:885
 msgid "Per-Mode Scores"
 msgstr ""
 
-#: .\backend\apps\revision\admin.py:888
+#: .\apps\revision\admin.py:888
 msgid "Last Practice Dates"
 msgstr ""
 
-#: .\backend\apps\revision\admin.py:891
+#: .\apps\revision\admin.py:891
 msgid "Metadata"
 msgstr ""
 
-#: .\backend\apps\revision\admin.py:909
+#: .\apps\revision\admin.py:909
 msgid "Confidence"
 msgstr ""
 
-#: .\backend\apps\revision\admin.py:916 .\backend\apps\revision\admin.py:920
+#: .\apps\revision\admin.py:916 .\apps\revision\admin.py:920
 #, fuzzy
 #| msgid "Progress Rate"
 msgid "Success Rate"
 msgstr "Voortgangspercentage"
 
-#: .\backend\apps\revision\admin.py:935
+#: .\apps\revision\admin.py:935
 msgid "Modes"
 msgstr ""
 
-#: .\backend\apps\revision\templates\components\revision_header.html:11
+#: .\apps\revision\templates\components\revision_header.html:11
 msgid "Go to dashboard"
 msgstr "Ga naar dashboard"
 
-#: .\backend\apps\revision\templates\components\revision_header.html:13
+#: .\apps\revision\templates\components\revision_header.html:13
 msgid "Dashboard"
 msgstr "Dashboard"
 
-#: .\backend\apps\revision\templates\components\revision_header.html:20
+#: .\apps\revision\templates\components\revision_header.html:20
 msgid "Study modes"
 msgstr "Studiemodi"
 
-#: .\backend\apps\revision\templates\components\revision_header.html:22
+#: .\apps\revision\templates\components\revision_header.html:22
 msgid "Study"
 msgstr "Studeren"
 
-#: .\backend\apps\revision\templates\components\revision_header.html:29
+#: .\apps\revision\templates\components\revision_header.html:29
 msgid "Stats"
 msgstr "Statistieken"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:11
+#: .\apps\revision\templates\revision\components\deck_import.html:11
 #, fuzzy
 #| msgid "Import"
 msgid "Import Deck"
 msgstr "Importeren"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:15
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:147
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:168
-#: .\backend\apps\revision\templates\revision\components\navbar.html:176
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:70
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:145
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:12
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:110
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:12
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:116
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:9
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:53
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:12
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:98
+#: .\apps\revision\templates\revision\components\deck_import.html:15
+#: .\apps\revision\templates\revision\components\deck_import.html:147
+#: .\apps\revision\templates\revision\components\deck_import.html:168
+#: .\apps\revision\templates\revision\components\navbar.html:176
+#: .\apps\revision\templates\revision\components\share_deck.html:70
+#: .\apps\revision\templates\revision\components\share_deck.html:145
+#: .\apps\revision\templates\revision\partials\create_card_form.html:12
+#: .\apps\revision\templates\revision\partials\create_card_form.html:110
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:12
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:116
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:9
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:53
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:12
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:98
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:28
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:23
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:13
+#: .\apps\revision\templates\revision\components\deck_import.html:28
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:23
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:13
 msgid "Deck Name"
 msgstr "Lijstnaam"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:33
+#: .\apps\revision\templates\revision\components\deck_import.html:33
 msgid "Enter the new deck name..."
 msgstr "Voer de nieuwe lijst naam in..."
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:42
+#: .\apps\revision\templates\revision\components\deck_import.html:42
 msgid "This name must be unique among your decks"
 msgstr "Deze naam moet uniek zijn onder je lijsten"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:53
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:181
+#: .\apps\revision\templates\revision\components\deck_import.html:53
+#: .\apps\revision\templates\revision\components\deck_import.html:181
 msgid "Selection"
 msgstr "Selectie"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:60
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:188
-#: .\backend\apps\revision\templates\revision\partials\tags\tag_templates.html:18
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:42
+#: .\apps\revision\templates\revision\components\deck_import.html:60
+#: .\apps\revision\templates\revision\components\deck_import.html:188
+#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:18
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:42
 msgid "Preview"
 msgstr "Voorbeeld"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:80
+#: .\apps\revision\templates\revision\components\deck_import.html:80
 msgid "Drop your file here"
 msgstr "Sleep je bestand hierheen"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:81
+#: .\apps\revision\templates\revision\components\deck_import.html:81
 msgid "or click to select a file"
 msgstr "of klik om een bestand te selecteren"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:86
+#: .\apps\revision\templates\revision\components\deck_import.html:86
 msgid "Browse files"
 msgstr "Bestanden bladeren"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:93
+#: .\apps\revision\templates\revision\components\deck_import.html:93
 msgid "Drop the file here"
 msgstr "Laat het bestand hier vallen"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:120
+#: .\apps\revision\templates\revision\components\deck_import.html:120
 msgid "Supported formats:"
 msgstr "Ondersteunde formaten:"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:135
+#: .\apps\revision\templates\revision\components\deck_import.html:135
 msgid "Minimum 2 columns required for front and back of cards"
 msgstr "Minimaal 2 kolommen vereist voor voor- en achterkant van kaarten"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:151
+#: .\apps\revision\templates\revision\components\deck_import.html:151
 msgid "Next - Preview"
 msgstr "Volgende - Voorbeeld"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:164
+#: .\apps\revision\templates\revision\components\deck_import.html:164
 #, fuzzy
 #| msgid "Import Cards"
 msgid "Import Preview"
 msgstr "Importvoorbeeld"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:195
-#: .\backend\apps\revision\templates\revision\components\navbar.html:153
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:221
+#: .\apps\revision\templates\revision\components\deck_import.html:195
+#: .\apps\revision\templates\revision\components\navbar.html:153
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:221
 msgid "Import"
 msgstr "Importeren"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:208
+#: .\apps\revision\templates\revision\components\deck_import.html:208
 msgid "File"
 msgstr "Bestand"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:221
+#: .\apps\revision\templates\revision\components\deck_import.html:221
 msgid "Rows"
 msgstr "Rijen"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:234
+#: .\apps\revision\templates\revision\components\deck_import.html:234
 msgid "Cards to create"
 msgstr "Kaarten om te maken"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:246
+#: .\apps\revision\templates\revision\components\deck_import.html:246
 msgid "Column configuration"
 msgstr "Kolomconfiguratie"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:258
+#: .\apps\revision\templates\revision\components\deck_import.html:258
 msgid "First row contains headers"
 msgstr "Eerste rij bevat headers"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:261
+#: .\apps\revision\templates\revision\components\deck_import.html:261
 msgid ""
 "Check this option if the first row contains column names and should not be "
 "imported as a card"
@@ -492,1267 +491,1267 @@ msgstr ""
 "Vink deze optie aan als de eerste rij kolomnamen bevat en niet als een kaart "
 "moet worden geïmporteerd"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:272
+#: .\apps\revision\templates\revision\components\deck_import.html:272
 msgid "Front of cards"
 msgstr "Voorkant van kaarten"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:283
+#: .\apps\revision\templates\revision\components\deck_import.html:283
 msgid "Front language (optional)"
 msgstr "Voorkant taal (optioneel)"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:286
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:312
+#: .\apps\revision\templates\revision\components\deck_import.html:286
+#: .\apps\revision\templates\revision\components\deck_import.html:312
 msgid "-- Select a language --"
 msgstr "-- Selecteer een taal --"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:287
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:313
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:39
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:81
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:23
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:39
+#: .\apps\revision\templates\revision\components\deck_import.html:287
+#: .\apps\revision\templates\revision\components\deck_import.html:313
+#: .\apps\revision\templates\revision\partials\create_card_form.html:39
+#: .\apps\revision\templates\revision\partials\create_card_form.html:81
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:23
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:39
 msgid "English"
 msgstr "Engels"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:288
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:314
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:40
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:82
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:22
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:38
+#: .\apps\revision\templates\revision\components\deck_import.html:288
+#: .\apps\revision\templates\revision\components\deck_import.html:314
+#: .\apps\revision\templates\revision\partials\create_card_form.html:40
+#: .\apps\revision\templates\revision\partials\create_card_form.html:82
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:22
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:38
 msgid "French"
 msgstr "Frans"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:289
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:315
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:42
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:84
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:24
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:40
+#: .\apps\revision\templates\revision\components\deck_import.html:289
+#: .\apps\revision\templates\revision\components\deck_import.html:315
+#: .\apps\revision\templates\revision\partials\create_card_form.html:42
+#: .\apps\revision\templates\revision\partials\create_card_form.html:84
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:24
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:40
 msgid "Spanish"
 msgstr "Spaans"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:290
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:316
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:43
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:85
+#: .\apps\revision\templates\revision\components\deck_import.html:290
+#: .\apps\revision\templates\revision\components\deck_import.html:316
+#: .\apps\revision\templates\revision\partials\create_card_form.html:43
+#: .\apps\revision\templates\revision\partials\create_card_form.html:85
 msgid "Dutch"
 msgstr "Nederlands"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:298
+#: .\apps\revision\templates\revision\components\deck_import.html:298
 msgid "Back of cards"
 msgstr "Achterkant van kaarten"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:309
+#: .\apps\revision\templates\revision\components\deck_import.html:309
 msgid "Back language (optional)"
 msgstr "Achterkant taal (optioneel)"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:325
+#: .\apps\revision\templates\revision\components\deck_import.html:325
 msgid "Change the selection to see the preview updated in real time"
 msgstr "Wijzig de selectie om het voorbeeld realtime bijgewerkt te zien"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:336
+#: .\apps\revision\templates\revision\components\deck_import.html:336
 msgid "Card preview (first 5)"
 msgstr "Kaartvoorbeeld (eerste 5)"
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:340
+#: .\apps\revision\templates\revision\components\deck_import.html:340
 msgid "Updating..."
 msgstr "Bijwerken..."
 
-#: .\backend\apps\revision\templates\revision\components\deck_import.html:358
+#: .\apps\revision\templates\revision\components\deck_import.html:358
 msgid "Confirm import"
 msgstr "Import bevestigen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:10
+#: .\apps\revision\templates\revision\components\navbar.html:10
 msgid "Hide/Show sidebar"
 msgstr "Zijbalk verbergen/tonen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:11
+#: .\apps\revision\templates\revision\components\navbar.html:11
 msgid "Toggle sidebar"
 msgstr "Zijbalk schakelen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:13
+#: .\apps\revision\templates\revision\components\navbar.html:13
 msgid "Hide sidebar"
 msgstr "Zijbalk verbergen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:14
+#: .\apps\revision\templates\revision\components\navbar.html:14
 msgid "Show sidebar"
 msgstr "Zijbalk tonen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:24
+#: .\apps\revision\templates\revision\components\navbar.html:24
 msgid "Card List"
 msgstr "Kaartenlijst"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:29
+#: .\apps\revision\templates\revision\components\navbar.html:29
 msgid "Explore"
 msgstr "Verkennen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:40
+#: .\apps\revision\templates\revision\components\navbar.html:40
 msgid "Refresh"
 msgstr "Verversen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:54
+#: .\apps\revision\templates\revision\components\navbar.html:54
 msgid "7 last days"
 msgstr "Laatste 7 dagen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:55
+#: .\apps\revision\templates\revision\components\navbar.html:55
 msgid "30 last days"
 msgstr "Laatste 30 dagen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:56
+#: .\apps\revision\templates\revision\components\navbar.html:56
 msgid "3 last months"
 msgstr "Laatste 3 maanden"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:61
+#: .\apps\revision\templates\revision\components\navbar.html:61
 msgid "Export statistics"
 msgstr "Statistieken exporteren"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:63
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:58
+#: .\apps\revision\templates\revision\components\navbar.html:63
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:58
 msgid "Export"
 msgstr "Exporteren"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:68
+#: .\apps\revision\templates\revision\components\navbar.html:68
 msgid "Research in progress ..."
 msgstr "Onderzoek bezig..."
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:73
-#: .\backend\apps\revision\templates\revision\components\navbar.html:76
+#: .\apps\revision\templates\revision\components\navbar.html:73
+#: .\apps\revision\templates\revision\components\navbar.html:76
 msgid "All statuses"
 msgstr "Alle statussen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:77
+#: .\apps\revision\templates\revision\components\navbar.html:77
 msgid "Recent"
 msgstr "Recent"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:78
+#: .\apps\revision\templates\revision\components\navbar.html:78
 msgid "Popular"
 msgstr "Populair"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:79
-#: .\backend\apps\revision\templates\revision\components\navbar.html:121
-#: .\backend\apps\revision\templates\revision\components\navbar.html:174
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:100
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:109
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:160
+#: .\apps\revision\templates\revision\components\navbar.html:79
+#: .\apps\revision\templates\revision\components\navbar.html:121
+#: .\apps\revision\templates\revision\components\navbar.html:174
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:100
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:109
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:160
 msgid "Public"
 msgstr "Openbaar"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:86
-#: .\backend\apps\revision\templates\revision\components\navbar.html:89
-#: .\backend\apps\revision\templates\revision\components\navbar.html:131
+#: .\apps\revision\templates\revision\components\navbar.html:86
+#: .\apps\revision\templates\revision\components\navbar.html:89
+#: .\apps\revision\templates\revision\components\navbar.html:131
 msgid "Most recent"
 msgstr "Meest recent"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:91
+#: .\apps\revision\templates\revision\components\navbar.html:91
 msgid "Popularity"
 msgstr "Populariteit"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:92
+#: .\apps\revision\templates\revision\components\navbar.html:92
 msgid "Number of cards"
 msgstr "Aantal kaarten"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:99
-#: .\backend\apps\revision\templates\revision\components\navbar.html:103
-#: .\backend\apps\revision\templates\revision\components\navbar.html:141
+#: .\apps\revision\templates\revision\components\navbar.html:99
+#: .\apps\revision\templates\revision\components\navbar.html:103
+#: .\apps\revision\templates\revision\components\navbar.html:141
 msgid "All tags"
 msgstr "Alle tags"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:102
-#: .\backend\apps\revision\templates\revision\components\navbar.html:144
+#: .\apps\revision\templates\revision\components\navbar.html:102
+#: .\apps\revision\templates\revision\components\navbar.html:144
 msgid "No tags available"
 msgstr "Geen tags beschikbaar"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:110
+#: .\apps\revision\templates\revision\components\navbar.html:110
 msgid "Search..."
 msgstr "Zoeken..."
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:115
-#: .\backend\apps\revision\templates\revision\components\navbar.html:118
+#: .\apps\revision\templates\revision\components\navbar.html:115
+#: .\apps\revision\templates\revision\components\navbar.html:118
 msgid "All status"
 msgstr "Alle statussen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:119
+#: .\apps\revision\templates\revision\components\navbar.html:119
 msgid "Active"
 msgstr "Actief"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:120
+#: .\apps\revision\templates\revision\components\navbar.html:120
 msgid "Archived"
 msgstr "Gearchiveerd"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:128
+#: .\apps\revision\templates\revision\components\navbar.html:128
 msgid "Filter"
 msgstr "Filter"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:132
+#: .\apps\revision\templates\revision\components\navbar.html:132
 msgid "Less recent"
 msgstr "Minder recent"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:158
+#: .\apps\revision\templates\revision\components\navbar.html:158
 msgid "New list"
 msgstr "Nieuwe lijst"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:168
+#: .\apps\revision\templates\revision\components\navbar.html:168
 msgid "Share"
 msgstr "Delen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:169
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:73
+#: .\apps\revision\templates\revision\components\navbar.html:169
+#: .\apps\revision\templates\revision\components\share_deck.html:73
 msgid "Make public"
 msgstr "Openbaar maken"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:170
+#: .\apps\revision\templates\revision\components\navbar.html:170
 msgid "Loading decks"
 msgstr "Lijsten laden..."
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:171
+#: .\apps\revision\templates\revision\components\navbar.html:171
 msgid "Unnamed"
 msgstr "Naamloos"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:172
+#: .\apps\revision\templates\revision\components\navbar.html:172
 msgid "No description"
 msgstr "Geen beschrijving"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:173
+#: .\apps\revision\templates\revision\components\navbar.html:173
 msgid "Add tags"
 msgstr "Tags toevoegen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:175
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:57
+#: .\apps\revision\templates\revision\components\navbar.html:175
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:57
 msgid "Save"
 msgstr "Opslaan"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:177
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:71
-#: .\backend\apps\revision\templates\revision\partials\tags\tag_templates.html:43
+#: .\apps\revision\templates\revision\components\navbar.html:177
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:71
+#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:43
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:178
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:33
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:75
-#: .\backend\apps\revision\templates\revision\partials\tags\tag_templates.html:40
+#: .\apps\revision\templates\revision\components\navbar.html:178
+#: .\apps\revision\templates\revision\partials\create_card_form.html:33
+#: .\apps\revision\templates\revision\partials\create_card_form.html:75
+#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:40
 msgid "Edit"
 msgstr "Bewerken"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:179
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:45
+#: .\apps\revision\templates\revision\components\navbar.html:179
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:45
 msgid "Create"
 msgstr "Maken"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:180
+#: .\apps\revision\templates\revision\components\navbar.html:180
 msgid "New"
 msgstr "Nieuw"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:181
+#: .\apps\revision\templates\revision\components\navbar.html:181
 msgid "Error"
 msgstr "Fout"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:182
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:31
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:73
+#: .\apps\revision\templates\revision\components\navbar.html:182
+#: .\apps\revision\templates\revision\partials\create_card_form.html:31
+#: .\apps\revision\templates\revision\partials\create_card_form.html:73
 msgid "Edit language for this card"
 msgstr "Bewerk taal voor deze kaart"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:183
+#: .\apps\revision\templates\revision\components\navbar.html:183
 msgid "Error loading deck"
 msgstr "Fout bij laden van deck"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:184
+#: .\apps\revision\templates\revision\components\navbar.html:184
 msgid "Error creating card"
 msgstr "Fout bij maken van kaart"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:185
+#: .\apps\revision\templates\revision\components\navbar.html:185
 msgid "Error loading cards"
 msgstr "Fout bij laden van kaarten"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:186
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:167
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:143
+#: .\apps\revision\templates\revision\components\navbar.html:186
+#: .\apps\revision\templates\revision\components\share_deck.html:167
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:143
 msgid "Share this deck"
 msgstr "Deze lijst delen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:187
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:198
+#: .\apps\revision\templates\revision\components\navbar.html:187
+#: .\apps\revision\templates\revision\components\share_deck.html:198
 msgid "Share quickly"
 msgstr "Snel delen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:188
+#: .\apps\revision\templates\revision\components\navbar.html:188
 msgid "Column"
 msgstr "Kolom"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:189
+#: .\apps\revision\templates\revision\components\navbar.html:189
 msgid "To learn"
 msgstr "Te leren"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:190
+#: .\apps\revision\templates\revision\components\navbar.html:190
 msgid "Created on"
 msgstr "Gemaakt op"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:191
-#: .\backend\apps\revision\templates\revision\partials\tags\tag_templates.html:7
+#: .\apps\revision\templates\revision\components\navbar.html:191
+#: .\apps\revision\templates\revision\partials\tags\tag_templates.html:7
 msgid "No tags - Click on 🏷️ to add some"
 msgstr "Geen tags - Klik op 🏷️ om toe te voegen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:192
+#: .\apps\revision\templates\revision\components\navbar.html:192
 msgid "Deck imported from"
 msgstr "Deck geïmporteerd uit"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:193
-#: .\backend\apps\revision\templates\revision\partials\cards_section.html:56
+#: .\apps\revision\templates\revision\components\navbar.html:193
+#: .\apps\revision\templates\revision\partials\cards_section.html:56
 #, fuzzy
 #| msgid "Add Card"
 msgid "Add a card"
 msgstr "Kaart toevoegen"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:194
-#: .\backend\apps\revision\templates\revision\partials\cards_section.html:5
+#: .\apps\revision\templates\revision\components\navbar.html:194
+#: .\apps\revision\templates\revision\partials\cards_section.html:5
 msgid "Deck cards"
 msgstr "Kaarten van het deck"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:195
+#: .\apps\revision\templates\revision\components\navbar.html:195
 msgid "No cards to review!"
 msgstr "Geen kaarten om te beoordelen!"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:196
+#: .\apps\revision\templates\revision\components\navbar.html:196
 msgid "This deck contains no cards, or all cards are already learned."
 msgstr "Dit deck bevat geen kaarten, of alle kaarten zijn al geleerd."
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:197
+#: .\apps\revision\templates\revision\components\navbar.html:197
 msgid "Practice with all cards"
 msgstr "Oefenen met alle kaarten"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:198
-#: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:30
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:11
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:71
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:12
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:145
+#: .\apps\revision\templates\revision\components\navbar.html:198
+#: .\apps\revision\templates\revision\study\flashcards_completion.html:30
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:11
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:71
+#: .\apps\revision\templates\revision\study\write_embedded.html:12
+#: .\apps\revision\templates\revision\study\write_embedded.html:145
 msgid "Back to deck"
 msgstr "Terug naar deck"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:199
-#: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:4
+#: .\apps\revision\templates\revision\components\navbar.html:199
+#: .\apps\revision\templates\revision\study\flashcards_completion.html:4
 msgid "Session completed!"
 msgstr "Sessie voltooid!"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:200
-#: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:6
+#: .\apps\revision\templates\revision\components\navbar.html:200
+#: .\apps\revision\templates\revision\study\flashcards_completion.html:6
 msgid "Excellent work! You have completed"
 msgstr "Uitstekend werk! Je hebt voltooid"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:201
-#: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:12
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:61
+#: .\apps\revision\templates\revision\components\navbar.html:201
+#: .\apps\revision\templates\revision\study\flashcards_completion.html:12
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:61
 msgid "Easy"
 msgstr "Makkelijk"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:202
-#: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:16
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:57
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:90
+#: .\apps\revision\templates\revision\components\navbar.html:202
+#: .\apps\revision\templates\revision\study\flashcards_completion.html:16
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:57
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:90
 msgid "Medium"
 msgstr "Gemiddeld"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:203
-#: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:20
+#: .\apps\revision\templates\revision\components\navbar.html:203
+#: .\apps\revision\templates\revision\study\flashcards_completion.html:20
 msgid "Hard"
 msgstr ""
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:204
-#: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:26
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:141
+#: .\apps\revision\templates\revision\components\navbar.html:204
+#: .\apps\revision\templates\revision\study\flashcards_completion.html:26
+#: .\apps\revision\templates\revision\study\write_embedded.html:141
 msgid "Restart"
 msgstr "Herstarten"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:205
-#: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:34
+#: .\apps\revision\templates\revision\components\navbar.html:205
+#: .\apps\revision\templates\revision\study\flashcards_completion.html:34
 msgid "My decks"
 msgstr "Mijn decks"
 
-#: .\backend\apps\revision\templates\revision\components\navbar.html:211
-#: .\backend\apps\revision\templates\revision\components\navbar.html:212
+#: .\apps\revision\templates\revision\components\navbar.html:211
+#: .\apps\revision\templates\revision\components\navbar.html:212
 msgid "card"
 msgid_plural "cards"
 msgstr[0] "kaart"
 msgstr[1] "kaarten"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:17
+#: .\apps\revision\templates\revision\components\share_deck.html:17
 #, fuzzy
 #| msgid "Make Public"
 msgid "Make your list public"
 msgstr "Openbaar maken"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:18
+#: .\apps\revision\templates\revision\components\share_deck.html:18
 msgid "Allow other users to discover and use it"
 msgstr "Sta andere gebruikers toe om het te ontdekken en gebruiken"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:34
+#: .\apps\revision\templates\revision\components\share_deck.html:34
 msgid "Currently private deck"
 msgstr "Momenteel privélijst"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:35
+#: .\apps\revision\templates\revision\components\share_deck.html:35
 msgid ""
 "This deck is only visible to you. Make it public to share it with others."
 msgstr ""
 "Deze lijst is alleen zichtbaar voor jou. Maak het openbaar om het met "
 "anderen te delen."
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:43
+#: .\apps\revision\templates\revision\components\share_deck.html:43
 msgid "What will happen when making this deck public:"
 msgstr "Wat er gebeurt wanneer je deze lijst openbaar maakt:"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:48
+#: .\apps\revision\templates\revision\components\share_deck.html:48
 msgid "It will appear in the 'Explore' section for everyone"
 msgstr "Het verschijnt in de 'Verkennen' sectie voor iedereen"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:52
+#: .\apps\revision\templates\revision\components\share_deck.html:52
 msgid "You will get a shareable link"
 msgstr "Je krijgt een deelbare link"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:56
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:131
+#: .\apps\revision\templates\revision\components\share_deck.html:56
+#: .\apps\revision\templates\revision\components\share_deck.html:131
 msgid "You remain the owner and keep all your rights"
 msgstr "Je blijft de eigenaar en behoudt al je rechten"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:63
+#: .\apps\revision\templates\revision\components\share_deck.html:63
 msgid "You can always make your deck private later with one click."
 msgstr "Je kunt je lijst altijd later privé maken met één klik."
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:92
+#: .\apps\revision\templates\revision\components\share_deck.html:92
 #, fuzzy
 #| msgid "Make Private"
 msgid "Make your deck private"
 msgstr "Privé maken"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:93
+#: .\apps\revision\templates\revision\components\share_deck.html:93
 msgid "Remove this deck from the public section"
 msgstr "Verwijder deze lijst uit de openbare sectie"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:109
+#: .\apps\revision\templates\revision\components\share_deck.html:109
 msgid "Warning"
 msgstr "Waarschuwing"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:110
+#: .\apps\revision\templates\revision\components\share_deck.html:110
 msgid ""
 "This action will make your deck private. It will no longer be publicly "
 "accessible."
 msgstr ""
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:118
+#: .\apps\revision\templates\revision\components\share_deck.html:118
 msgid "What will change:"
 msgstr "Wat er verandert:"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:123
+#: .\apps\revision\templates\revision\components\share_deck.html:123
 msgid "It will no longer be visible in the 'Explore' section"
 msgstr "Het is niet langer zichtbaar in de 'Verkennen' sectie"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:127
+#: .\apps\revision\templates\revision\components\share_deck.html:127
 msgid "Existing sharing links will no longer work"
 msgstr "Bestaande deel-links werken niet meer"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:138
+#: .\apps\revision\templates\revision\components\share_deck.html:138
 msgid "You can make this deck public again later if you wish."
 msgstr "Je kunt deze lijst later weer openbaar maken als je wilt."
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:148
+#: .\apps\revision\templates\revision\components\share_deck.html:148
 msgid "Make private"
 msgstr "Privé maken"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:168
+#: .\apps\revision\templates\revision\components\share_deck.html:168
 #, fuzzy
 #| msgid "Card List"
 msgid "Card set name"
 msgstr "Kaartenlijst"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:178
+#: .\apps\revision\templates\revision\components\share_deck.html:178
 msgid "Your deck is public! Share this link with whoever you want:"
 msgstr ""
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:182
+#: .\apps\revision\templates\revision\components\share_deck.html:182
 msgid "Sharing link"
 msgstr "Deel-link"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:187
+#: .\apps\revision\templates\revision\components\share_deck.html:187
 msgid "Copy"
 msgstr "Kopiëren"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:191
+#: .\apps\revision\templates\revision\components\share_deck.html:191
 msgid "The link has been copied!"
 msgstr "De link is gekopieerd!"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:219
+#: .\apps\revision\templates\revision\components\share_deck.html:219
 msgid "Social networks"
 msgstr "Sociale netwerken"
 
-#: .\backend\apps\revision\templates\revision\components\share_deck.html:241
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:47
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:82
+#: .\apps\revision\templates\revision\components\share_deck.html:241
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:47
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:82
 msgid "Close"
 msgstr "Sluiten"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:7
-#: .\backend\apps\revision\templates\revision\explore\partials\popular_decks.html:39
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:7
+#: .\apps\revision\templates\revision\explore\partials\popular_decks.html:39
 msgid "By"
 msgstr "Door"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:12
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:198
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:12
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:198
 msgid "cards"
 msgstr "kaarten"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:13
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:13
 msgid "users"
 msgstr "gebruikers"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:25
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:25
 msgid "Do you want to import this deck into your collection?"
 msgstr "Wil je deze lijst importeren in je collectie?"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:27
-#: .\backend\apps\revision\templates\revision\explore\partials\popular_decks.html:64
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:27
+#: .\apps\revision\templates\revision\explore\partials\popular_decks.html:64
 #, fuzzy
 #| msgid "Import"
 msgid "Import this deck"
 msgstr "Importeren"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:46
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:46
 #, fuzzy
 #| msgid "Card preview (first 5)"
 msgid "Cards preview"
 msgstr "Kaartvoorbeeld (eerste 5)"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:65
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:65
 msgid "This deck contains no visible cards."
 msgstr "Deze lijst bevat geen zichtbare kaarten."
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:73
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:73
 msgid "And"
 msgstr "En"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:73
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:73
 msgid "more cards..."
 msgstr "meer kaarten..."
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:83
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:83
 msgid "Information"
 msgstr "Informatie"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:87
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:87
 msgid "Created:"
 msgstr "Gemaakt:"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:92
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:92
 msgid "Modified:"
 msgstr "Gewijzigd:"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:98
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:98
 msgid "Category:"
 msgstr "Categorie:"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:105
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:105
 msgid "Language:"
 msgstr "Taal:"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:112
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:112
 msgid "Level:"
 msgstr "Niveau:"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:122
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:59
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:122
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:59
 msgid "Actions"
 msgstr "Acties"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:129
-#: .\backend\apps\revision\templates\revision\explore\partials\popular_decks.html:70
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:184
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:129
+#: .\apps\revision\templates\revision\explore\partials\popular_decks.html:70
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:184
 msgid "Add to favorites"
 msgstr "Toevoegen aan favorieten"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:138
+#: .\apps\revision\templates\revision\explore\partials\deck_details.html:138
 msgid "Add to collection"
 msgstr "Toevoegen aan collectie"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\popular_decks.html:7
+#: .\apps\revision\templates\revision\explore\partials\popular_decks.html:7
 #, fuzzy
 #| msgid "Popular"
 msgid "Popular decks"
 msgstr "Populair"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:6
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:6
 msgid "Discover thousands of decks"
 msgstr "Ontdek duizenden lijsten"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:7
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:7
 msgid "More than"
 msgstr "Meer dan"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:7
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:7
 msgid "decks created by the community"
 msgstr "lijsten gemaakt door de gemeenschap"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:10
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:10
 #, fuzzy
 #| msgid "Preview"
 msgid "Grid view"
 msgstr "Voorbeeld"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:13
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:13
 msgid "List view"
 msgstr "Lijstweergave"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:16
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:16
 #, fuzzy
 #| msgid "Import Cards"
 msgid "Compact view"
 msgstr "Importvoorbeeld"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:33
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:33
 msgid "Search by title, subject, creator..."
 msgstr "Zoek op titel, onderwerp, maker..."
 
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:48
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:48
 msgid "Intelligent search"
 msgstr "Intelligente zoekfunctie"
 
-#: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:50
+#: .\apps\revision\templates\revision\explore\partials\search_results.html:50
 msgid "AI"
 msgstr "AI"
 
-#: .\backend\apps\revision\templates\revision\partials\cards_section.html:6
+#: .\apps\revision\templates\revision\partials\cards_section.html:6
 msgid "0 card(s)"
 msgstr "0 kaart(en)"
 
-#: .\backend\apps\revision\templates\revision\partials\cards_section.html:36
+#: .\apps\revision\templates\revision\partials\cards_section.html:36
 msgid "Apply"
 msgstr "Toepassen"
 
-#: .\backend\apps\revision\templates\revision\partials\cards_section.html:40
+#: .\apps\revision\templates\revision\partials\cards_section.html:40
 msgid "Default"
 msgstr "Standaard"
 
-#: .\backend\apps\revision\templates\revision\partials\cards_section.html:53
+#: .\apps\revision\templates\revision\partials\cards_section.html:53
 msgid "Start by adding some cards to review!"
 msgstr "Begin met het toevoegen van kaarten om te bestuderen!"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:8
+#: .\apps\revision\templates\revision\partials\create_card_form.html:8
 #, fuzzy
 #| msgid "Add Card"
 msgid "Add a new card"
 msgstr "Kaart toevoegen"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:22
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:18
+#: .\apps\revision\templates\revision\partials\create_card_form.html:22
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:18
 msgid "Front (Question)"
 msgstr "Voorkant (Vraag)"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:28
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:70
+#: .\apps\revision\templates\revision\partials\create_card_form.html:28
+#: .\apps\revision\templates\revision\partials\create_card_form.html:70
 msgid "Default deck language"
 msgstr "Standaard deck taal"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:38
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:80
+#: .\apps\revision\templates\revision\partials\create_card_form.html:38
+#: .\apps\revision\templates\revision\partials\create_card_form.html:80
 msgid "Use default deck language"
 msgstr "Gebruik standaard deck taal"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:49
+#: .\apps\revision\templates\revision\partials\create_card_form.html:49
 msgid "Ex: How do you say hello in English?"
 msgstr "Bv: Hoe zeg je hallo in het Engels?"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:54
+#: .\apps\revision\templates\revision\partials\create_card_form.html:54
 msgid "Translate automatically to back language"
 msgstr "Automatisch vertalen naar volgende taal"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:57
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:98
+#: .\apps\revision\templates\revision\partials\create_card_form.html:57
+#: .\apps\revision\templates\revision\partials\create_card_form.html:98
 msgid "Translate"
 msgstr "Vertaal"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:64
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:34
+#: .\apps\revision\templates\revision\partials\create_card_form.html:64
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:34
 msgid "Back (Answer)"
 msgstr "Achterkant (Antwoord)"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:90
+#: .\apps\revision\templates\revision\partials\create_card_form.html:90
 msgid "Ex: Hello"
 msgstr "Bv: Hallo"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:95
+#: .\apps\revision\templates\revision\partials\create_card_form.html:95
 msgid "Translate automatically to front language"
 msgstr "Automatisch vertalen naar hoofdtaal"
 
-#: .\backend\apps\revision\templates\revision\partials\create_card_form.html:107
+#: .\apps\revision\templates\revision\partials\create_card_form.html:107
 #, fuzzy
 #| msgid "Add Card"
 msgid "Add the card"
 msgstr "Kaart toevoegen"
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:8
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:8
 msgid "Create New Deck"
 msgstr "Nieuwe lijst maken"
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:29
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:29
 msgid "Ex: English Vocabulary Level B2"
 msgstr "Bijv: Engels vocabulaire niveau B2"
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:46
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:46
 msgid "Briefly describe the content of this deck..."
 msgstr "Beschrijf kort de inhoud van deze lijst..."
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:53
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:75
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:53
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:75
 msgid "Tags"
 msgstr "Tags"
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:61
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:61
 msgid "No tags - Add them in the field below"
 msgstr ""
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:68
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:68
 msgid "Add tags (press Enter)"
 msgstr "Tags toevoegen (druk op Enter)"
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:77
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:137
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:77
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:137
 msgid "Visibility"
 msgstr "Zichtbaarheid"
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:87
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:108
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:147
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:87
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:108
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:147
 msgid "Private"
 msgstr "Privé"
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:88
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:148
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:88
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:148
 msgid "Visible by you only"
 msgstr "Alleen zichtbaar voor jou"
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:101
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:161
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:101
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:161
 msgid "Visible by everyone"
 msgstr "Zichtbaar voor iedereen"
 
-#: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:120
+#: .\apps\revision\templates\revision\partials\create_deck_form.html:120
 msgid "Create Deck"
 msgstr "Lijst maken"
 
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:14
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:14
 msgid "Deck Description"
 msgstr "Lijst Beschrijving"
 
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:32
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:32
 msgid "Add Card"
 msgstr "Kaart toevoegen"
 
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:37
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:37
 msgid "Review Difficult"
 msgstr "Moeilijke Beoordelen"
 
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:42
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:42
 msgid "Reset"
 msgstr "Resetten"
 
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:52
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:52
 msgid "Edit Deck"
 msgstr "Lijst bewerken"
 
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:55
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:55
 msgid "Import Cards"
 msgstr "Kaarten importeren"
 
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:61
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:61
 msgid "Make Public"
 msgstr "Openbaar maken"
 
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:64
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:64
 msgid "Make Private"
 msgstr "Privé maken"
 
-#: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:68
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:68
 msgid "Archive"
 msgstr "Archiveren"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:6
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:6
 msgid "Edit Card"
 msgstr "Kaart Bewerken"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:21
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:37
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:21
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:37
 msgid "Auto"
 msgstr "Automatisch"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:25
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:41
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:25
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:41
 msgid "Italian"
 msgstr "Italiaans"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:26
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:42
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:26
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:42
 msgid "German"
 msgstr "Duits"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:27
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:43
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:27
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:43
 msgid "Portuguese"
 msgstr "Portugees"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:29
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:29
 msgid "Front language"
 msgstr "Voorkant taal"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:45
+#: .\apps\revision\templates\revision\partials\edit_card_form.html:45
 msgid "Back language"
 msgstr "Achterkant taal"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:8
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:8
 #, fuzzy
 #| msgid "Edit Deck"
 msgid "Edit deck"
 msgstr "Lijst bewerken"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:24
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:24
 #, fuzzy
 #| msgid "Deck Name"
 msgid "Deck name"
 msgstr "Lijstnaam"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:29
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:29
 #, fuzzy
 #| msgid "Ex: English Vocabulary Level B2"
 msgid "Ex: English vocabulary level B2"
 msgstr "Bijv: Engels vocabulaire niveau B2"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:43
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:43
 msgid "The name must be unique among your decks"
 msgstr "De naam moet uniek zijn onder je lijsten"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:57
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:57
 msgid "Describe the content of your deck..."
 msgstr "Beschrijf de inhoud van je lijst..."
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:76
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:76
 msgid "Click to type"
 msgstr "Klik om te typen"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:93
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:93
 msgid "Type to add tags..."
 msgstr "Typ om tags toe te voegen..."
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:99
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:99
 msgid "Click here to start adding tags..."
 msgstr "Klik hier om tags toe te voegen..."
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:115
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:115
 msgid "Max 10 tags, press Enter to add"
 msgstr "Max 10 tags, druk op Enter om toe te voegen"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:119
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:119
 msgid "Saved"
 msgstr "Opgeslagen"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:126
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:126
 msgid "0/10 tags"
 msgstr "0/10 tags"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:168
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:168
 msgid "Private - Visible by you only"
 msgstr "Privé - Alleen zichtbaar voor jou"
 
-#: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:169
+#: .\apps\revision\templates\revision\partials\edit_deck_form.html:169
 msgid "Public - Visible by all users"
 msgstr "Openbaar - Zichtbaar voor alle gebruikers"
 
 # Reset Progress Modal translations
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:43
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:102
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:43
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:102
 msgid "Reset Progress"
 msgstr "Voortgang Resetten"
 
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:44
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:44
 msgid "This action will reset the progress of all cards in the deck."
 msgstr "Deze actie zal de voortgang van alle kaarten in het deck resetten."
 
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:57
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:57
 msgid "Deck:"
 msgstr "Deck:"
 
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:61
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:61
 msgid "Affected cards:"
 msgstr "Beïnvloede kaarten:"
 
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:63
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:63
 msgid "card(s)"
 msgstr "kaart(en)"
 
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:69
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:69
 msgid "After reset:"
 msgstr "Na reset:"
 
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:73
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:73
 msgid "All cards will be marked as 'not learned'"
 msgstr "Alle kaarten zullen gemarkeerd worden als 'niet geleerd'"
 
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:77
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:77
 msgid "The review counter will be reset to zero"
 msgstr "De herziening teller zal gereset worden naar nul"
 
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:81
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:81
 msgid "Learning history will be erased"
 msgstr "Leergeschiedenis zal gewist worden"
 
-#: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:90
+#: .\apps\revision\templates\revision\partials\reset_progress_modal.html:90
 msgid "This action is irreversible."
 msgstr "Deze actie is onomkeerbaar."
 
-#: .\backend\apps\revision\templates\revision\partials\sidebar_section.html:11
+#: .\apps\revision\templates\revision\partials\sidebar_section.html:11
 msgid "No decks"
 msgstr "Geen lijsten"
 
-#: .\backend\apps\revision\templates\revision\partials\sidebar_section.html:12
+#: .\apps\revision\templates\revision\partials\sidebar_section.html:12
 msgid "Create your first flashcard deck to start studying"
 msgstr "Maak je eerste flashcard lijst om te beginnen met studeren"
 
-#: .\backend\apps\revision\templates\revision\partials\sidebar_section.html:15
-#: .\backend\apps\revision\templates\revision\partials\welcome_section.html:12
+#: .\apps\revision\templates\revision\partials\sidebar_section.html:15
+#: .\apps\revision\templates\revision\partials\welcome_section.html:12
 msgid "Create deck"
 msgstr "Lijst maken"
 
-#: .\backend\apps\revision\templates\revision\partials\sidebar_section.html:23
+#: .\apps\revision\templates\revision\partials\sidebar_section.html:23
 msgid "Load more"
 msgstr "Meer laden"
 
-#: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:10
+#: .\apps\revision\templates\revision\partials\study_modes_section.html:10
 msgid "Learn"
 msgstr "Leren"
 
-#: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:12
+#: .\apps\revision\templates\revision\partials\study_modes_section.html:12
 msgid "Interactive multiple choice quizzes."
 msgstr "Interactieve meerkeuzequizzes."
 
-#: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:23
+#: .\apps\revision\templates\revision\partials\study_modes_section.html:23
 msgid "Flashcards"
 msgstr "Flashcards"
 
-#: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:25
+#: .\apps\revision\templates\revision\partials\study_modes_section.html:25
 msgid "Traditional cards for memorizing vocabulary."
 msgstr "Traditionele kaarten voor het memoriseren van vocabulaire."
 
-#: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:36
+#: .\apps\revision\templates\revision\partials\study_modes_section.html:36
 msgid "Writing"
 msgstr "Schrijven"
 
-#: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:38
+#: .\apps\revision\templates\revision\partials\study_modes_section.html:38
 msgid "Writing and translation exercises."
 msgstr "Schrijf- en vertaaloefeningen."
 
-#: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:49
+#: .\apps\revision\templates\revision\partials\study_modes_section.html:49
 msgid "Match"
 msgstr "Matchen"
 
-#: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:51
+#: .\apps\revision\templates\revision\partials\study_modes_section.html:51
 msgid "Match terms and definitions in pairs."
 msgstr "Match termen en definities in paren."
 
-#: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:62
+#: .\apps\revision\templates\revision\partials\study_modes_section.html:62
 msgid "Quick Review"
 msgstr "Snelle Beoordeling"
 
-#: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:64
+#: .\apps\revision\templates\revision\partials\study_modes_section.html:64
 msgid "Quick review with spaced repetition."
 msgstr "Snelle beoordeling met gespreide herhaling."
 
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:15
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:15
 msgid "My tags"
 msgstr "Mijn tags"
 
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:16
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:16
 msgid "Organize your decks with custom tags"
 msgstr ""
 
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:29
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:29
 #, fuzzy
 #| msgid "Search..."
 msgid "Search for a tag..."
 msgstr "Zoeken..."
 
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:37
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:56
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:37
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:56
 msgid "Tag name"
 msgstr ""
 
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:57
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:57
 msgid "Usage"
 msgstr ""
 
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:58
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:58
 msgid "Created"
 msgstr "Gemaakt"
 
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:71
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:71
 msgid "No tags found"
 msgstr "Geen tags gevonden"
 
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:72
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:72
 msgid "Start by creating your first tag to organize your decks"
 msgstr ""
 
-#: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:79
+#: .\apps\revision\templates\revision\partials\tags\tags_management.html:79
 msgid "tag(s)"
 msgstr ""
 
-#: .\backend\apps\revision\templates\revision\partials\welcome_section.html:5
+#: .\apps\revision\templates\revision\partials\welcome_section.html:5
 msgid "Welcome to your study space"
 msgstr "Welkom in je studieruimte"
 
-#: .\backend\apps\revision\templates\revision\partials\welcome_section.html:7
+#: .\apps\revision\templates\revision\partials\welcome_section.html:7
 msgid ""
 "Select a deck from the list or create a new one to start studying with "
 "flashcards"
 msgstr ""
 
-#: .\backend\apps\revision\templates\revision\partials\welcome_section.html:16
+#: .\apps\revision\templates\revision\partials\welcome_section.html:16
 msgid "Explore public decks"
 msgstr "Verken openbare lijsten"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:5
+#: .\apps\revision\templates\revision\stats_dashboard.html:5
 msgid "Statistics - Revision"
 msgstr "Statistieken - Revisie"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:97
+#: .\apps\revision\templates\revision\stats_dashboard.html:97
 msgid "Total Decks"
 msgstr "Totaal Lijsten"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:111
+#: .\apps\revision\templates\revision\stats_dashboard.html:111
 msgid "Total Cards"
 msgstr "Totaal Kaarten"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:125
+#: .\apps\revision\templates\revision\stats_dashboard.html:125
 msgid "Cards Learned"
 msgstr "Kaarten Geleerd"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:139
+#: .\apps\revision\templates\revision\stats_dashboard.html:139
 msgid "Progress Rate"
 msgstr "Voortgangspercentage"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:161
+#: .\apps\revision\templates\revision\stats_dashboard.html:161
 msgid "Cards Studied"
 msgstr "Kaarten Bestudeerd"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:180
+#: .\apps\revision\templates\revision\stats_dashboard.html:180
 msgid "Accuracy Rate"
 msgstr "Nauwkeurigheidspercentage"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:199
+#: .\apps\revision\templates\revision\stats_dashboard.html:199
 msgid "Study Time"
 msgstr "Studietijd"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:218
+#: .\apps\revision\templates\revision\stats_dashboard.html:218
 msgid "Current Streak"
 msgstr "Huidige Reeks"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:236
+#: .\apps\revision\templates\revision\stats_dashboard.html:236
 msgid "Study Activity"
 msgstr "Studieactiviteit"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:250
+#: .\apps\revision\templates\revision\stats_dashboard.html:250
 msgid "Performance Breakdown"
 msgstr "Prestatieoverzicht"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:267
+#: .\apps\revision\templates\revision\stats_dashboard.html:267
 msgid "Deck Performance"
 msgstr "Lijst Prestatie"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:279
+#: .\apps\revision\templates\revision\stats_dashboard.html:279
 msgid "Mastered"
 msgstr "Beheerst"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:280
+#: .\apps\revision\templates\revision\stats_dashboard.html:280
 msgid "Accuracy"
 msgstr "Nauwkeurigheid"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:287
+#: .\apps\revision\templates\revision\stats_dashboard.html:287
 msgid "Loading deck statistics..."
 msgstr "Lijst statistieken laden..."
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:301
+#: .\apps\revision\templates\revision\stats_dashboard.html:301
 msgid "Recent Activity"
 msgstr "Recente Activiteit"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:306
+#: .\apps\revision\templates\revision\stats_dashboard.html:306
 msgid "Loading recent activity..."
 msgstr "Recente activiteit laden..."
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:385
+#: .\apps\revision\templates\revision\stats_dashboard.html:385
 msgid "Study Goals"
 msgstr "Studiedoelen"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:387
+#: .\apps\revision\templates\revision\stats_dashboard.html:387
 msgid "Set Goal"
 msgstr "Doel Instellen"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:393
+#: .\apps\revision\templates\revision\stats_dashboard.html:393
 msgid "Daily Cards Goal"
 msgstr "Dagelijks Kaarten Doel"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:405
+#: .\apps\revision\templates\revision\stats_dashboard.html:405
 msgid "Weekly Study Time"
 msgstr "Wekelijkse Studietijd"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:417
+#: .\apps\revision\templates\revision\stats_dashboard.html:417
 msgid "Accuracy Target"
 msgstr "Nauwkeurigheidsdoel"
 
-#: .\backend\apps\revision\templates\revision\stats_dashboard.html:421
+#: .\apps\revision\templates\revision\stats_dashboard.html:421
 msgid "Target"
 msgstr "Doel"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:6
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:6
 msgid "Flashcards Mode"
 msgstr "Flashcards Modus"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:24
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:24
 msgid "Click to start"
 msgstr "Klik om te starten"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:27
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:27
 msgid "Read the front of the card aloud"
 msgstr "Lees de voorkant van de kaart hardop"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:28
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:37
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:35
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:28
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:37
+#: .\apps\revision\templates\revision\study\write_embedded.html:35
 msgid "Read aloud"
 msgstr "Hardop lezen"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:33
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:33
 msgid "Answer"
 msgstr "Antwoord"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:36
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:36
 msgid "Read the back of the card aloud"
 msgstr "Lees de achterkant van de kaart hardop"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:46
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:46
 msgid "Click on the card to see the answer, then evaluate your knowledge"
 msgstr "Klik op de kaart om het antwoord te zien, evalueer dan je kennis"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:53
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:94
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:53
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:94
 msgid "Difficult"
 msgstr "Moeilijk"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:68
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:68
 msgid "Congratulations!"
 msgstr "Gefeliciteerd!"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:69
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:69
 msgid "You have completed all the cards in this deck for today."
 msgstr "Je hebt alle kaarten in deze lijst voor vandaag voltooid."
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:86
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:86
 msgid "Correct"
 msgstr "Correct"
 
-#: .\backend\apps\revision\templates\revision\study\flashcards_embedded.html:98
+#: .\apps\revision\templates\revision\study\flashcards_embedded.html:98
 msgid "Remaining"
 msgstr "Resterend"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:6
+#: .\apps\revision\templates\revision\study\write_embedded.html:6
 msgid "Writing Mode"
 msgstr "Schrijfmodus"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:24
+#: .\apps\revision\templates\revision\study\write_embedded.html:24
 msgid "Write the translation of the given word"
 msgstr "Schrijf de vertaling van het gegeven woord"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:32
+#: .\apps\revision\templates\revision\study\write_embedded.html:32
 msgid "Source language"
 msgstr "Brontaal"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:34
+#: .\apps\revision\templates\revision\study\write_embedded.html:34
 msgid "Read the word aloud"
 msgstr "Lees het woord hardop"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:48
+#: .\apps\revision\templates\revision\study\write_embedded.html:48
 msgid "Type your answer..."
 msgstr "Typ je antwoord..."
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:54
+#: .\apps\revision\templates\revision\study\write_embedded.html:54
 msgid "Submit"
 msgstr "Indienen"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:61
+#: .\apps\revision\templates\revision\study\write_embedded.html:61
 msgid "Show hint (-2 points)"
 msgstr "Toon hint (-2 punten)"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:63
+#: .\apps\revision\templates\revision\study\write_embedded.html:63
 msgid "Hint (-2 pts)"
 msgstr "Hint (-2 pnt)"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:65
+#: .\apps\revision\templates\revision\study\write_embedded.html:65
 msgid "Skip this card (-5 points)"
 msgstr "Sla deze kaart over (-5 punten)"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:67
+#: .\apps\revision\templates\revision\study\write_embedded.html:67
 msgid "Skip (-5 pts)"
 msgstr "Overslaan (-5 pnt)"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:85
+#: .\apps\revision\templates\revision\study\write_embedded.html:85
 msgid "Correct answer:"
 msgstr "Juiste antwoord:"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:89
+#: .\apps\revision\templates\revision\study\write_embedded.html:89
 msgid "Next card"
 msgstr "Volgende kaart"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:110
+#: .\apps\revision\templates\revision\study\write_embedded.html:110
 msgid "Writing session completed!"
 msgstr "Schrijfsessie voltooid!"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:119
+#: .\apps\revision\templates\revision\study\write_embedded.html:119
 msgid "Correct answers"
 msgstr "Juiste antwoorden"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:127
+#: .\apps\revision\templates\revision\study\write_embedded.html:127
 msgid "Points earned"
 msgstr "Verdiende punten"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:133
+#: .\apps\revision\templates\revision\study\write_embedded.html:133
 msgid "Total time:"
 msgstr "Totale tijd:"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:134
+#: .\apps\revision\templates\revision\study\write_embedded.html:134
 msgid "Hints used:"
 msgstr "Hints gebruikt:"
 
-#: .\backend\apps\revision\templates\revision\study\write_embedded.html:135
+#: .\apps\revision\templates\revision\study\write_embedded.html:135
 msgid "Accuracy:"
 msgstr "Nauwkeurigheid:"
 
-#: .\backend\apps\revision\views\revision_settings_views.py:118
+#: .\apps\revision\views\revision_settings_views.py:118
 msgid "Paramètres Révision - Linguify"
 msgstr "Revisie Instellingen - Linguify"
 
-#: .\backend\apps\revision\views\revision_settings_views.py:129
+#: .\apps\revision\views\revision_settings_views.py:129
 msgid "Erreur lors de la récupération des paramètres"
 msgstr "Fout bij het ophalen van instellingen"
 
-#: .\backend\apps\revision\views\revision_settings_views.py:132
+#: .\apps\revision\views\revision_settings_views.py:132
 msgid "Erreur lors du chargement des paramètres de révision"
 msgstr "Fout bij het laden van revisie-instellingen"
 
-#: .\backend\apps\revision\views\revision_settings_views.py:301
-#: .\backend\apps\revision\views\revision_settings_views.py:305
+#: .\apps\revision\views\revision_settings_views.py:301
+#: .\apps\revision\views\revision_settings_views.py:305
 msgid "Paramètres de révision mis à jour avec succès"
 msgstr "Revisie-instellingen succesvol bijgewerkt"
 
-#: .\backend\apps\revision\views\revision_settings_views.py:311
+#: .\apps\revision\views\revision_settings_views.py:311
 msgid "Valeur invalide dans les paramètres"
 msgstr "Ongeldige waarde in instellingen"
 
-#: .\backend\apps\revision\views\revision_settings_views.py:324
+#: .\apps\revision\views\revision_settings_views.py:324
 msgid "Erreur lors de la mise à jour des paramètres de révision"
 msgstr "Fout bij het bijwerken van revisie-instellingen"
 
