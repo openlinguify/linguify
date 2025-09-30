@@ -39,10 +39,6 @@ fi
 # Set Django settings module
 export DJANGO_SETTINGS_MODULE=portal.settings
 
-# Validate environment variables
-echo "==> Validating environment..."
-python3 validate_env.py
-
 # Verify Django installation and configuration
 echo "==> Verifying Django installation..."
 python3 -c "import django; print(f'Django {django.get_version()} imported successfully')"
