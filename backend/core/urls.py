@@ -5,6 +5,7 @@ from django.urls import path, include
 from django.conf.urls.i18n import i18n_patterns
 from . import utils
 from . import views
+from .views_legacy import service_worker
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import (
@@ -38,7 +39,7 @@ def redirect_to_admin(request):
 # URLs without language prefix (for compatibility)
 urlpatterns = [
     # Service Worker
-    path('sw.js', views.service_worker, name='service_worker'),
+    path('sw.js', service_worker, name='service_worker'),
 
     # Favicon fallback redirects (temporary until views are deployed)
     path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=False)),
