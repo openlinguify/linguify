@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 19:40+0200\n"
+"POT-Creation-Date: 2025-09-30 19:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,8 +24,8 @@ msgid "To-do"
 msgstr "Tareas"
 
 #: .\apps\todo\__manifest__.py:15
-msgid "Organize your tasks and ideas like in Notion"
-msgstr "Organiza tus tareas e ideas como en Notion"
+msgid "Organize your tasks and ideas efficiently."
+msgstr "Organiza tus tareas e ideas de forma eficiente."
 
 #: .\apps\todo\__manifest__.py:89
 msgid "Productivity"

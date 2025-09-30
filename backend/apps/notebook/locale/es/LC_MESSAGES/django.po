@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 19:36+0200\n"
+"POT-Creation-Date: 2025-09-30 19:44+0200\n"
 "PO-Revision-Date: 2025-09-30 19:15+0200\n"
 "Last-Translator: Linguify Team\n"
 "Language-Team: Spanish\n"
@@ -20,10 +20,12 @@ msgid "Notes"
 msgstr "Notas"
 
 #: .\apps\notebook\__manifest__.py:8
-msgid ""
-"Prenez des notes personnalisées et organisez votre vocabulaire de manière "
-"efficace."
-msgstr ""
+msgid "Take personalized notes for your courses and organize your ideas."
+msgstr "Toma notas personalizadas para tus cursos y organiza tus ideas."
+
+#: .\apps\notebook\__manifest__.py:44
+msgid "Productivity"
+msgstr "Productividad"
 
 #: .\apps\notebook\templates\components\delete_confirmation_modal.html:21
 msgid "Delete Confirmation"

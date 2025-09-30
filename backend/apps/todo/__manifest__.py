@@ -12,7 +12,7 @@ __manifest__ = {
     'name': _('To-do'),
     'version': '1.0.0',
     'category': 'Productivity',
-    'summary': _('Organize your tasks and ideas like in Notion'),
+    'summary': _('Organize your tasks and ideas efficiently.'),
     'description': '''
 Todo & Productivity Module for Open Linguify
 ==========================================
