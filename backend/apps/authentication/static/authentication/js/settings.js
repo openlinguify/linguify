@@ -278,7 +278,7 @@ function initDashboardBackgroundOptions() {
                 
                 // Show success message
                 if (typeof showTemporaryMessage === 'function') {
-                    showTemporaryMessage('Arrière-plan modifié avec succès! 🎨', 'success');
+                    console.log('Arrière-plan modifié avec succès! 🎨', 'success');
                 }
             }, 150);
         });
@@ -357,3 +357,4 @@ window.suspendAccount = suspendAccount;
 window.exportData = exportData;
 window.deleteAccount = deleteAccount;
 window.validateProfilePicture = validateProfilePicture;
+window.initDashboardBackgroundOptions = initDashboardBackgroundOptions;

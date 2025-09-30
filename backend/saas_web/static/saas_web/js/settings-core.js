@@ -165,6 +165,12 @@ class SettingsManager {
         // Réinitialiser les event listeners pour les formulaires
         this.setupAutoSave();
 
+        // Réinitialiser les options de background si elles existent
+        if (typeof window.initDashboardBackgroundOptions === 'function') {
+            console.log('[Settings Core] Reinitializing dashboard background options');
+            window.initDashboardBackgroundOptions();
+        }
+
         // Déclencher un événement personnalisé pour que d'autres scripts puissent réagir
         document.dispatchEvent(new CustomEvent('settingsContentLoaded'));
     }

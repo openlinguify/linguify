@@ -162,11 +162,12 @@
 
 {% block extra_js %}
 <!-- Load settings scripts for AJAX navigation -->
-<script src="{% static 'saas_web/js/settings-utils.js' %}?v=20250930.1730"></script>
-<script src="{% static 'saas_web/js/settings-core.js' %}?v=20250930.1730"></script>
+<script src="{% static 'saas_web/js/settings-utils.js' %}"></script>
+<script src="{% static 'saas_web/js/settings-core.js' %}"></script>
+<script src="{% static 'authentication/js/settings.js' %}"></script>
 <script>
-// Debug: Vérifier que le nouveau script est chargé
-console.log('[Settings] Script version: 20250930.1730 loaded - AJAX headers removed');
+console.log('[Settings] Script version: 20250930.2110 loaded - Dashboard background reinit added');
 console.log('[Settings] settingsManager exists:', typeof window.settingsManager !== 'undefined');
+console.log('[Settings] Dashboard background handler loaded:', typeof window.initDashboardBackgroundOptions !== 'undefined');
 </script>
 {% endblock %}
