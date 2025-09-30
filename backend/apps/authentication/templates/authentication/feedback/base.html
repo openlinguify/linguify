@@ -22,28 +22,93 @@
 
     <!-- Main Content Area -->
     <div class="flex-1 main-content-area" style="overflow-y: auto; height: 100%;">
+        <!-- Dashboard Header with Stats -->
+        <div class="p-8">
+            <div class="mb-6">
+                <h1 class="text-4xl font-bold text-gray-900 mb-2">{% trans "Bugs & Feedbacks" %}</h1>
+                <p class="text-linguify-gray">{% trans "Gérez et suivez tous vos retours" %}</p>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="card-linguify cursor-pointer hover:shadow-lg transition-all" onclick="window.location.href='{% url 'authentication:feedback_list' %}'">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg bg-accent-100 flex items-center justify-center">
+                            <i class="bi bi-folder text-linguify-accent text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-linguify-gray">{% trans "Total" %}</div>
+                            <div class="text-2xl font-bold text-gray-900">{{ stats.total }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-linguify cursor-pointer hover:shadow-lg transition-all" onclick="window.location.href='{% url 'authentication:feedback_list' %}?status=new'">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center">
+                            <i class="bi bi-inbox text-linguify-primary text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-linguify-gray">{% trans "Nouveau" %}</div>
+                            <div class="text-2xl font-bold text-gray-900">{{ stats.new }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-linguify cursor-pointer hover:shadow-lg transition-all" onclick="window.location.href='{% url 'authentication:feedback_list' %}?status=in_progress'">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg bg-warning-100 flex items-center justify-center">
+                            <i class="bi bi-hourglass-split text-linguify-warning text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-linguify-gray">{% trans "En cours" %}</div>
+                            <div class="text-2xl font-bold text-gray-900">{{ stats.in_progress }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-linguify cursor-pointer hover:shadow-lg transition-all" onclick="window.location.href='{% url 'authentication:feedback_list' %}?status=resolved'">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg bg-success-100 flex items-center justify-center">
+                            <i class="bi bi-check-circle text-linguify-success text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-linguify-gray">{% trans "Résolu" %}</div>
+                            <div class="text-2xl font-bold text-gray-900">{{ stats.resolved }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Welcome State (when no feedbacks) -->
         {% if not recent_feedbacks %}
-        <div id="welcomeState" class="welcome-state">
-            <i class="bi bi-chat-dots welcome-state-icon"></i>
-            <div class="welcome-state-title">{% trans "Bienvenue dans Bugs et commentaires" %}</div>
-            <div class="welcome-state-description">
-                {% trans "Aidez-nous à améliorer Linguify en signalant des bugs, en suggérant des fonctionnalités ou en partageant vos commentaires" %}
+        <div class="text-center py-12 px-8">
+            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary-50 mb-6">
+                <i class="bi bi-chat-dots text-linguify-primary" style="font-size: 3rem;"></i>
             </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-3">{% trans "Aucun feedback pour le moment" %}</h2>
+            <p class="text-linguify-gray text-lg mb-8 max-w-2xl mx-auto">
+                {% trans "Commencez à contribuer en signalant des bugs, en suggérant des améliorations ou en partageant vos idées" %}
+            </p>
             <div class="flex flex-wrap gap-4 justify-center">
                 <a href="{% url 'authentication:feedback_create' %}" class="btn-linguify btn-lg">
                     <i class="bi bi-plus-lg mr-2"></i>
                     {% trans "Soumettre un feedback" %}
                 </a>
-                <a href="{% url 'authentication:feedback_bug_report' %}" class="btn-linguify-secondary btn-lg">
+                <a href="{% url 'authentication:feedback_bug_report' %}" class="btn-linguify-outline btn-lg">
                     <i class="bi bi-bug mr-2"></i>
                     {% trans "Signaler un bug" %}
+                </a>
+                <a href="{% url 'authentication:feedback_feature_request' %}" class="btn-linguify-outline btn-lg">
+                    <i class="bi bi-lightbulb mr-2"></i>
+                    {% trans "Nouvelle fonctionnalité" %}
                 </a>
             </div>
         </div>
         {% else %}
         <!-- Feedbacks List -->
-        <div class="p-8">
+        <div class="px-8 pb-8">
             <!-- Header -->
             <div class="mb-6">
                 <div class="flex items-center justify-between mb-4">
@@ -193,58 +258,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Status filter dropdown
-    const statusDropdown = document.getElementById('statusFilterDropdown');
-    if (statusDropdown) {
-        statusDropdown.querySelectorAll('a').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const status = this.dataset.status;
-                const text = this.textContent.trim();
-                document.getElementById('statusFilterText').textContent = text;
-                console.log('Status filter:', status);
-                // TODO: Implement filtering logic
-            });
-        });
-    }
-
-    // Type filter dropdown
-    const typeDropdown = document.getElementById('typeFilterDropdown');
-    if (typeDropdown) {
-        typeDropdown.querySelectorAll('a').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const type = this.dataset.type;
-                const text = this.textContent.trim();
-                document.getElementById('typeFilterText').textContent = text;
-                console.log('Type filter:', type);
-                // TODO: Implement filtering logic
-            });
-        });
-    }
-
-    // Sort filter dropdown
-    const sortDropdown = document.getElementById('sortFilterDropdown');
-    if (sortDropdown) {
-        sortDropdown.querySelectorAll('a').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const sort = this.dataset.sort;
-                const text = this.textContent.trim();
-                document.getElementById('sortFilterText').textContent = text;
-                console.log('Sort filter:', sort);
-                // TODO: Implement sorting logic
-            });
-        });
-    }
-
     // Search functionality
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             const query = this.value.toLowerCase();
-            console.log('Search query:', query);
-            // TODO: Implement search logic
+            // Filter feedback items in real-time
+            const feedbackItems = document.querySelectorAll('.card-linguify[onclick*="feedback_detail"]');
+            feedbackItems.forEach(item => {
+                const title = item.querySelector('.font-semibold')?.textContent.toLowerCase() || '';
+                if (title.includes(query)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         });
     }
 });

@@ -1,7 +1,7 @@
 {% load i18n %}
 <!-- Navbar -->
 <div class="navbar-linguify">
-    <!-- Left: Navigation + Main Actions -->
+    <!-- Left: Main Actions -->
     <div class="navbar-section">
         <!-- Sidebar toggle button -->
         <div>
@@ -14,20 +14,6 @@
             </button>
         </div>
 
-        <!-- Navigation tabs -->
-        <div class="nav-tabs-group">
-            <a href="{% url 'authentication:feedback_dashboard' %}"
-               class="nav-tab active">
-                <i class="bi bi-house-door"></i>
-                {% trans "Tableau de bord" %}
-            </a>
-            <a href="{% url 'authentication:feedback_list' %}"
-               class="nav-tab">
-                <i class="bi bi-list-ul"></i>
-                {% trans "Tous les feedbacks" %}
-            </a>
-        </div>
-
         <!-- Refresh -->
         <div class="container-extra">
             <button class="btn-sb" title="{% trans 'Actualiser' %}" onclick="location.reload()">
@@ -36,56 +22,16 @@
         </div>
     </div>
 
-    <!-- Right: Actions and filters -->
+    <!-- Right: Search and Actions -->
     <div class="navbar-section-right">
         <!-- Search -->
-        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Rechercher...' %}" style="width: 140px; min-width: 100px;">
-
-        <!-- Status Filter -->
-        <div class="dropdown">
-            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 140px; min-width: 120px;" data-bs-toggle="dropdown">
-                <span id="statusFilterText">{% trans "Tous les statuts" %}</span>
-            </button>
-            <ul id="statusFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" data-status="">{% trans "Tous les statuts" %}</a></li>
-                <li><a class="dropdown-item" href="#" data-status="new">{% trans "Nouveau" %}</a></li>
-                <li><a class="dropdown-item" href="#" data-status="in_progress">{% trans "En cours" %}</a></li>
-                <li><a class="dropdown-item" href="#" data-status="resolved">{% trans "Résolu" %}</a></li>
-                <li><a class="dropdown-item" href="#" data-status="closed">{% trans "Fermé" %}</a></li>
-            </ul>
-        </div>
-
-        <!-- Type Filter -->
-        <div class="dropdown">
-            <button id="typeFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 140px; min-width: 120px;" data-bs-toggle="dropdown">
-                <span id="typeFilterText">{% trans "Tous les types" %}</span>
-            </button>
-            <ul id="typeFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" data-type="">{% trans "Tous les types" %}</a></li>
-                <li><a class="dropdown-item" href="#" data-type="bug_report">{% trans "Bug" %}</a></li>
-                <li><a class="dropdown-item" href="#" data-type="feature_request">{% trans "Fonctionnalité" %}</a></li>
-                <li><a class="dropdown-item" href="#" data-type="improvement">{% trans "Amélioration" %}</a></li>
-                <li><a class="dropdown-item" href="#" data-type="question">{% trans "Question" %}</a></li>
-            </ul>
-        </div>
-
-        <!-- Sort Filter -->
-        <div class="dropdown">
-            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 140px; min-width: 120px;" data-bs-toggle="dropdown">
-                <span id="sortFilterText">{% trans "Plus récent" %}</span>
-            </button>
-            <ul id="sortFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" data-sort="recent">{% trans "Plus récent" %}</a></li>
-                <li><a class="dropdown-item" href="#" data-sort="oldest">{% trans "Plus ancien" %}</a></li>
-                <li><a class="dropdown-item" href="#" data-sort="most_responses">{% trans "Plus de réponses" %}</a></li>
-            </ul>
-        </div>
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Rechercher...' %}" style="width: 200px; min-width: 150px;">
 
         <!-- Actions -->
         <div class="navbar-actions-group">
             <a href="{% url 'authentication:feedback_create' %}" class="btn-navbar btn-navbar-primary">
                 <i class="bi bi-plus-lg"></i>
-                <span class="d-none d-xxl-inline">{% trans "Nouveau feedback" %}</span>
+                <span class="d-none d-xl-inline">{% trans "Nouveau feedback" %}</span>
             </a>
         </div>
     </div>
