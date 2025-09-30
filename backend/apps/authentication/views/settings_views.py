@@ -349,31 +349,27 @@ class UserSettingsView(View):
                     'preferred_gender_german': request.POST.get('preferred_gender_german', 'female'),
                 }
                 
-                # Create a temporary request for the revision viewset
-                from django.test import RequestFactory
-                factory = RequestFactory()
-                revision_request = factory.post('/api/v1/revision/api/user-settings/', data=audio_data)
-                revision_request.user = request.user
-                revision_request.META = request.META
-                
-                # Call the revision settings update
-                viewset = RevisionSettingsViewSet()
-                viewset.request = revision_request
-                viewset.format_kwarg = None
-                
-                # Update the settings
-                response = viewset.update_user_settings(revision_request)
-                
-                if hasattr(response, 'data') and response.data.get('success', False):
-                    return JsonResponse({
-                        'success': True,
-                        'message': 'Paramètres audio mis à jour avec succès'
-                    })
-                else:
-                    return JsonResponse({
-                        'success': False,
-                        'message': 'Erreur lors de la mise à jour des paramètres audio'
-                    }, status=status.HTTP_400_BAD_REQUEST)
+                # Direct update via RevisionSettings model
+                from apps.revision.models.settings_models import RevisionSettings
+
+                revision_settings, created = RevisionSettings.objects.get_or_create(user=request.user)
+
+                # Update audio settings
+                revision_settings.audio_enabled = audio_data['audio_enabled']
+                revision_settings.audio_speed = audio_data['audio_speed']
+                revision_settings.preferred_gender_french = audio_data['preferred_gender_french']
+                revision_settings.preferred_gender_english = audio_data['preferred_gender_english']
+                revision_settings.preferred_gender_spanish = audio_data['preferred_gender_spanish']
+                revision_settings.preferred_gender_italian = audio_data['preferred_gender_italian']
+                revision_settings.preferred_gender_german = audio_data['preferred_gender_german']
+                revision_settings.save()
+
+                logger.info(f"Audio settings updated successfully for user {request.user.username}")
+
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Paramètres audio mis à jour avec succès'
+                })
                     
             except Exception as e:
                 logger.error(f"Error updating audio settings: {e}")

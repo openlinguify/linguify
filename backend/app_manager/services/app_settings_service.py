@@ -50,6 +50,7 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.core.exceptions import ImproperlyConfigured
 from django.utils import timezone
+from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
@@ -136,39 +137,53 @@ class AppSettingsService:
     @classmethod
     def get_all_settings_tabs(cls, user=None) -> Tuple[Dict, List]:
         """
-        Récupère tous les onglets de paramètres disponibles.
-        
+        Récupère tous les onglets de paramètres disponibles avec cache pour améliorer les performances.
+
         Args:
             user: L'utilisateur actuel pour filtrer les apps activées
-        
+
         Returns:
             Tuple[Dict, List]: (categories_dict, tabs_list)
         """
+        # Clé de cache basée sur l'utilisateur pour éviter les conflits
+        cache_key = f'settings_tabs_user_{user.id if user else "anonymous"}'
+
+        # Essayer de récupérer depuis le cache
+        cached_result = cache.get(cache_key)
+        if cached_result:
+            logger.debug(f"Returning cached settings tabs for user {user.id if user else 'anonymous'}")
+            return cached_result
+
         categories = cls.DEFAULT_CATEGORIES.copy()
         all_tabs = []
-        
+
         try:
             # 1. Charger les paramètres système (toujours visibles)
             system_tabs = cls._load_system_settings()
             all_tabs.extend(system_tabs)
-            
+
             # 2. Découvrir dynamiquement les settings depuis les apps installées
             if user:
                 dynamic_tabs = cls._discover_dynamic_app_settings(user)
                 all_tabs.extend(dynamic_tabs)
-            
+
             # 3. Les apps sont déjà filtrées lors de la découverte dynamique
             # Pas besoin de filtrage supplémentaire
-            
+
             # 4. Trier les onglets par catégorie et ordre
             all_tabs.sort(key=lambda x: (x.get('category', 'applications'), x.get('order', 999)))
-            
+
             # 5. Organiser par catégories
             categorized_tabs = cls._organize_tabs_by_category(all_tabs, categories)
-            
-            logger.info(f"Loaded {len(all_tabs)} settings tabs across {len(categories)} categories")
-            return categorized_tabs, all_tabs
-            
+
+            result = (categorized_tabs, all_tabs)
+
+            # Mettre en cache pour 5 minutes (300 secondes)
+            cache.set(cache_key, result, 300)
+
+            logger.info(f"Loaded and cached {len(all_tabs)} settings tabs across {len(categories)} categories")
+            return result
+
         except Exception as e:
             logger.error(f"Error loading settings tabs: {e}")
             # Fallback to system settings only

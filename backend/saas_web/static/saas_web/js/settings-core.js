@@ -43,24 +43,119 @@ class SettingsManager {
     }
 
     setupNavigation() {
-        // Disable JavaScript navigation entirely to allow normal href navigation
-        console.log('[Settings Core] JavaScript navigation disabled - using normal href navigation');
-        
-        // Optional: Add hover effects or other non-interfering interactions
+        console.log('[Settings Core] Setting up AJAX navigation...');
+
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
-            item.addEventListener('mouseenter', () => {
-                console.log(`[Settings Core] Hovering over: ${item.getAttribute('href')}`);
+            item.addEventListener('click', (e) => {
+                const targetUrl = item.getAttribute('href');
+
+                // Ignorer les liens vides, invalides ou les ancres
+                if (!targetUrl || targetUrl === '#' || targetUrl === '' || targetUrl.startsWith('javascript:')) {
+                    console.log('[Settings Core] Ignoring invalid/empty link');
+                    return;
+                }
+
+                e.preventDefault(); // Empêcher le rechargement de page
+
+                console.log(`[Settings Core] Loading settings via AJAX: ${targetUrl}`);
+
+                // Retirer la classe active de tous les items
+                navItems.forEach(nav => nav.classList.remove('active'));
+                // Ajouter la classe active à l'item cliqué
+                item.classList.add('active');
+
+                // Charger le contenu via AJAX
+                this.loadSettingsContent(targetUrl);
+
+                // Mettre à jour l'URL sans recharger
+                window.history.pushState({}, '', targetUrl);
             });
+        });
+
+        // Gérer le bouton retour du navigateur
+        window.addEventListener('popstate', () => {
+            this.loadSettingsContent(window.location.pathname);
         });
     }
 
+    async loadSettingsContent(url) {
+        const mainContent = document.querySelector('.main-content-body');
+        const headerContent = document.querySelector('.main-content-header');
+        if (!mainContent) return;
+
+        console.log(`[Settings Core] 🚀 Loading content via AJAX: ${url}`);
+        const startTime = performance.now();
+
+        try {
+            // Afficher un loader avec animation
+            mainContent.style.transition = 'opacity 0.15s ease';
+            mainContent.style.opacity = '0.3';
+            mainContent.style.pointerEvents = 'none';
+
+            const response = await fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) throw new Error('Failed to load content');
+
+            const html = await response.text();
+
+            // Parser le HTML pour extraire le contenu
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Mettre à jour le contenu principal
+            const newContent = doc.querySelector('.main-content-body');
+            if (newContent) {
+                // IMPORTANT: Remplacer tout le innerHTML pour avoir le bon contenu
+                mainContent.innerHTML = newContent.innerHTML;
+                console.log('[Settings Core] 📝 Content updated from new page');
+            } else {
+                console.warn('[Settings Core] ⚠️ No .main-content-body found in response');
+            }
+
+            // Mettre à jour le header (titre, breadcrumb)
+            const newHeader = doc.querySelector('.main-content-header');
+            if (newHeader && headerContent) {
+                headerContent.innerHTML = newHeader.innerHTML;
+                console.log('[Settings Core] 📝 Header updated');
+            }
+
+            // Scroll vers le haut
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Réinitialiser les scripts pour le nouveau contenu
+            this.reinitializeContentScripts();
+
+            // Retirer le loader avec animation
+            mainContent.style.opacity = '1';
+            mainContent.style.pointerEvents = 'auto';
+
+            const loadTime = (performance.now() - startTime).toFixed(2);
+            console.log(`[Settings Core] ✅ Content loaded in ${loadTime}ms`);
+
+        } catch (error) {
+            console.error('[Settings Core] ❌ Error loading content:', error);
+            // Fallback: recharger la page normalement
+            console.log('[Settings Core] Falling back to normal navigation');
+            window.location.href = url;
+        }
+    }
+
+    reinitializeContentScripts() {
+        // Réinitialiser les event listeners pour les formulaires
+        this.setupAutoSave();
+
+        // Déclencher un événement personnalisé pour que d'autres scripts puissent réagir
+        document.dispatchEvent(new CustomEvent('settingsContentLoaded'));
+    }
+
     switchTab(tabId) {
-        console.log(`[Settings Core] switchTab() called with: ${tabId} - but JavaScript navigation is disabled`);
-        console.log(`[Settings Core] Use normal navigation instead: navigate to appropriate URL`);
-        
-        // Do nothing - let normal navigation work
-        return;
+        console.log(`[Settings Core] switchTab() called with: ${tabId}`);
+        // Cette méthode est maintenant gérée par loadSettingsContent
     }
 
     updatePageTitle(tabId) {
@@ -172,20 +267,34 @@ class SettingsManager {
     }
 
     async autoSave(form) {
-        // Skip auto-save if form doesn't have a valid action or if we're on app manager page
-        if (!form.action || form.action.includes('app-manager')) {
+        // Skip auto-save if form doesn't have a valid action
+        if (!form.action) {
             return;
         }
-        
+
+        // Liste des URLs à exclure de l'auto-save
+        const excludedUrls = [
+            'app-manager',
+            'profile',      // Exclure la page profile qui a son propre système de sauvegarde
+            'interface'     // Exclure interface aussi
+        ];
+
+        // Vérifier si l'URL contient une des patterns à exclure
+        const shouldSkip = excludedUrls.some(pattern => form.action.includes(pattern));
+        if (shouldSkip) {
+            console.log('[Settings Core] Skipping auto-save for excluded page');
+            return;
+        }
+
         const indicator = this.showAutoSaveIndicator('Sauvegarde...');
-        
+
         try {
             const formData = new FormData(form);
-            
+
             // Get CSRF token
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
                              document.cookie.match(/csrftoken=([^;]+)/)?.[1];
-            
+
             const response = await fetch(form.action, {
                 method: 'POST',
                 body: formData,
@@ -194,12 +303,12 @@ class SettingsManager {
                     'X-CSRFToken': csrfToken
                 }
             });
-            
+
             if (response.ok) {
                 const result = await response.json();
                 this.updateAutoSaveIndicator(indicator, 'Sauvegardé', 'success');
                 console.log('[Settings Core] Auto-save successful:', result);
-                
+
                 // Handle profile picture update if present
                 if (result.profile_picture_url && window.updateAllProfilePictures) {
                     window.updateAllProfilePictures(result.profile_picture_url);
@@ -272,10 +381,16 @@ class SettingsManager {
     }
 }
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.settingsManager = new SettingsManager();
-});
+// Initialize when DOM is ready (only once)
+if (!window.settingsManagerInitialized) {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!window.settingsManager) {
+            console.log('[Settings Core] Initializing SettingsManager...');
+            window.settingsManager = new SettingsManager();
+            window.settingsManagerInitialized = true;
+        }
+    });
+}
 
 // Export for potential external use
 window.SettingsManager = SettingsManager;

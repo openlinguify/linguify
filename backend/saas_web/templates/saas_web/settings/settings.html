@@ -161,26 +161,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Conditionally load settings scripts based on active tab -->
-<script>
-  // Prevent multiple loads of settings scripts
-  if (typeof window.settingsScriptsLoaded === 'undefined') {
-    window.settingsScriptsLoaded = true;
-
-    // Check if we're on the profile page
-    const isProfilePage = window.location.pathname.includes('/profile') ||
-                         document.querySelector('#profile.tab-content.active');
-
-    if (!isProfilePage) {
-      // Only load auto-save scripts for non-profile pages
-      const utilsScript = document.createElement('script');
-      utilsScript.src = '{% static "saas_web/js/settings-utils.js" %}?v=2025.2';
-      document.head.appendChild(utilsScript);
-
-      const coreScript = document.createElement('script');
-      coreScript.src = '{% static "saas_web/js/settings-core.js" %}?v=2025.2';
-      document.head.appendChild(coreScript);
-    }
-  }
-</script>
+<!-- Load settings scripts for AJAX navigation -->
+<script src="{% static 'saas_web/js/settings-utils.js' %}?v=2025.5"></script>
+<script src="{% static 'saas_web/js/settings-core.js' %}?v=2025.5"></script>
 {% endblock %}
