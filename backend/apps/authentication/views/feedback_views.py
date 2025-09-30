@@ -101,7 +101,7 @@ class FeedbackForm(ModelForm):
 class FeedbackListView(ListView):
     """Vue liste des feedbacks de l'utilisateur"""
     model = UserFeedback
-    template_name = 'authentication/feedback/feedback_list.html'
+    template_name = 'authentication/feedback/base.html'
     context_object_name = 'feedbacks'
     paginate_by = 10
 
@@ -292,7 +292,7 @@ class FeedbackDashboardView(View):
             'page_title': _('Bugs & Feedbacks'),
         }
 
-        return render(request, 'authentication/feedback/feedback_dashboard.html', context)
+        return render(request, 'authentication/feedback/base.html', context)
 
 
 @login_required
