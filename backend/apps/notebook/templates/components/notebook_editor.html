@@ -1,0 +1,69 @@
+{% load static %}
+{% load i18n %}
+<!-- Notebook Editor Component -->
+<div class="note-content-area">
+    <!-- Pas de note sélectionnée -->
+    <div x-show="!currentNote" class="note-editor empty-state">
+        <i class="fas fa-file-alt" style="font-size: 3rem; color: #d1d5db;"></i>
+        <h2 style="color: #6b7280; margin-top: 1rem;" x-text="archiveStatus === 'archived' && notes.length === 0 ? '{% trans 'No archived notes' %}' : '{% trans 'Select a note to view' %}'"></h2>
+        <p style="color: #9ca3af;" x-text="archiveStatus === 'archived' && notes.length === 0 ? '{% trans 'You have no archived notes yet' %}' : '{% trans 'Choose a note from the sidebar or create a new one' %}'"></p>
+        <button x-show="archiveStatus !== 'archived'" @click="createNewNote()" class="btn-linguify" style="margin-top: 1rem; width: auto; display: inline-block;">
+            <i class="fas fa-plus"></i>
+            {% trans 'Create New Note' %}
+        </button>
+    </div>
+
+    <!-- Note sélectionnée -->
+    <div x-show="currentNote" class="note-editor-modern">
+        <!-- Header compact avec titre et actions -->
+        <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50 sticky top-0 z-10">
+            <div class="flex-1">
+                <div class="flex gap-3 items-center">
+                    <input x-show="currentNote"
+                           :value="currentNote ? currentNote.title : ''"
+                           @input="currentNote.title = $event.target.value; debouncedSave()"
+                           @blur="updateNote()"
+                           type="text"
+                           placeholder="{% trans 'Note title' %}"
+                           class="text-lg font-semibold border-none bg-transparent text-slate-800 p-2 min-w-80 outline-none focus:border-b-2 focus:border-blue-500">
+                    <select x-show="currentNote"
+                            :value="currentNote ? currentNote.language : ''"
+                            @change="currentNote.language = $event.target.value; debouncedSave()"
+                            class="px-3 py-1.5 border border-gray-200 rounded-md bg-white text-sm text-slate-600">
+                        <option value="">{% trans 'Language' %}</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="en">🇬🇧 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="nl">🇳🇱 Nederlands</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button @click="currentNote.is_pinned = !currentNote.is_pinned; updateNote()"
+                        class="btn-icon btn-icon-indigo"
+                        :class="{'btn-icon-active': currentNote && currentNote.is_pinned}"
+                        title="{% trans 'Pin note' %}">
+                    <i class="bi bi-pin-angle"></i>
+                </button>
+                <button @click="copyNoteContent()" class="btn-icon btn-icon-emerald" title="{% trans 'Copy content' %}">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+                <button @click="exportNote()" class="btn-icon btn-icon-violet" title="{% trans 'Export note' %}">
+                    <i class="bi bi-download"></i>
+                </button>
+                <button @click="deleteNote(currentNote.id)" class="btn-icon btn-icon-red" title="{% trans 'Delete note' %}">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Zone de contenu principal -->
+        <div class="h-screen-editor overflow-hidden flex flex-col">
+            <div class="flex-1 overflow-hidden">
+                <!-- Editor.js Container -->
+                <div id="editorjs-container" class="editorjs-container"></div>
+            </div>
+        </div>
+    </div>
+</div>

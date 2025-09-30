@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify SaaS Web\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"POT-Creation-Date: 2025-09-30 05:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: Spanish\n"
@@ -16,105 +16,236 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+# Navigation
+#: .\backend\saas_web\templates\components\header\app_header.html:18
+msgid "Return to dashboard"
+msgstr "Volver al panel"
+
+#: .\backend\saas_web\templates\components\header\app_header.html:33
+msgid "Go to dashboard"
+msgstr "Ir al panel"
+
 # Dashboard
+#: .\backend\saas_web\templates\components\header\app_header.html:34
+#: .\backend\saas_web\templates\components\header\app_header.html:198
+#: .\backend\saas_web\templates\saas_web\dashboard.html:5
 msgid "Dashboard"
 msgstr "Panel de control"
 
-msgid "Welcome back"
-msgstr "Bienvenido de vuelta"
-
-msgid "Your Apps"
-msgstr "Tus aplicaciones"
-
-msgid "Recent Activity"
-msgstr "Actividad reciente"
-
-msgid "Statistics"
-msgstr "Estadísticas"
-
-msgid "No applications installed"
-msgstr "No hay aplicaciones instaladas"
-
-msgid "Explore the App Store to discover and install learning applications."
-msgstr "Explora la App Store para descubrir e instalar aplicaciones de aprendizaje."
-
-msgid "Explore App Store"
-msgstr "Explorar App Store"
+#: .\backend\saas_web\templates\components\header\app_header.html:39
+msgid "Browse app store"
+msgstr "Explorar la tienda"
 
 # App Store
+#: .\backend\saas_web\templates\components\header\app_header.html:40
+#: .\backend\saas_web\templates\components\header\app_header.html:202
+#: .\backend\saas_web\templates\saas_web\dashboard.html:52
+#: .\backend\saas_web\templates\saas_web\dashboard.html:54
+#: .\backend\saas_web\templates\saas_web\dashboard.html:75
+#: .\backend\saas_web\templates\saas_web\dashboard.html:77
 msgid "App Store"
 msgstr "Tienda de aplicaciones"
 
-msgid "All Apps"
-msgstr "Todas las aplicaciones"
+#: .\backend\saas_web\templates\components\header\app_header.html:52
+msgid "Toggle navigation menu"
+msgstr "Alternar menú de navegación"
 
-msgid "Installed"
-msgstr "Instaladas"
+#: .\backend\saas_web\templates\components\header\app_header.html:64
+msgid "Select language"
+msgstr "Seleccionar idioma"
 
-msgid "Install"
-msgstr "Instalar"
+#: .\backend\saas_web\templates\components\header\app_header.html:67
+#: .\backend\saas_web\templates\components\header\app_header.html:88
+msgid "French"
+msgstr "Francés"
 
-msgid "Uninstall"
-msgstr "Desinstalar"
+#: .\backend\saas_web\templates\components\header\app_header.html:69
+#: .\backend\saas_web\templates\components\header\app_header.html:75
+#: .\backend\saas_web\templates\components\header\app_header.html:82
+#: .\backend\saas_web\templates\components\header\app_header.html:83
+msgid "English"
+msgstr "Inglés"
 
-msgid "Free"
-msgstr "Gratis"
+#: .\backend\saas_web\templates\components\header\app_header.html:71
+#: .\backend\saas_web\templates\components\header\app_header.html:94
+msgid "Spanish"
+msgstr "Español"
 
-msgid "Premium"
-msgstr "Premium"
+#: .\backend\saas_web\templates\components\header\app_header.html:73
+#: .\backend\saas_web\templates\components\header\app_header.html:100
+msgid "Dutch"
+msgstr "Holandés"
+
+# Notifications
+#: .\backend\saas_web\templates\components\header\app_header.html:114
+msgid "View notifications"
+msgstr "Ver notificaciones"
+
+#: .\backend\saas_web\templates\components\header\app_header.html:119
+msgid "Unread notifications count"
+msgstr "Número de notificaciones no leídas"
+
+#: .\backend\saas_web\templates\components\header\app_header.html:126
+msgid "Notifications"
+msgstr "Notificaciones"
+
+#: .\backend\saas_web\templates\components\header\app_header.html:130
+msgid "Mark all notifications as read"
+msgstr "Marcar todas las notificaciones como leídas"
+
+#: .\backend\saas_web\templates\components\header\app_header.html:131
+msgid "Mark all as read"
+msgstr "Marcar todo como leído"
+
+#: .\backend\saas_web\templates\components\header\app_header.html:137
+msgid "No new notifications"
+msgstr "No hay nuevas notificaciones"
+
+# User Menu
+#: .\backend\saas_web\templates\components\header\app_header.html:149
+msgid "User menu"
+msgstr "Menú de usuario"
+
+#: .\backend\saas_web\templates\components\header\app_header.html:152
+msgid "Profile picture"
+msgstr "Foto de perfil"
 
 # Settings
+#: .\backend\saas_web\templates\components\header\app_header.html:173
+#: .\backend\saas_web\templates\saas_web\dashboard.html:62
+#: .\backend\saas_web\templates\saas_web\dashboard.html:64
+#: .\backend\saas_web\templates\saas_web\dashboard.html:85
+#: .\backend\saas_web\templates\saas_web\dashboard.html:87
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:6
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:16
 msgid "Settings"
 msgstr "Configuración"
 
-msgid "Profile"
-msgstr "Perfil"
+#: .\backend\saas_web\templates\components\header\app_header.html:179
+#: .\backend\saas_web\templates\components\header\app_header.html:207
+msgid "Bugs & Feedbacks"
+msgstr "Errores y comentarios"
 
-msgid "Account"
-msgstr "Cuenta"
-
-msgid "Preferences"
-msgstr "Preferencias"
-
-msgid "Language"
-msgstr "Idioma"
-
-msgid "Theme"
-msgstr "Tema"
-
-msgid "Save changes"
-msgstr "Guardar cambios"
-
-msgid "Customize your Linguify experience"
-msgstr "Personaliza tu experiencia Linguify"
-
-msgid "Search settings..."
-msgstr "Buscar configuración..."
-
-msgid "App Manager"
-msgstr "Gestor de aplicaciones"
-
-msgid "Profile & Account"
-msgstr "Perfil y cuenta"
-
-msgid "Manage your personal information and account settings"
-msgstr "Gestiona tu información personal y configuración de cuenta"
-
-# Common
-msgid "Search"
-msgstr "Buscar"
-
+#: .\backend\saas_web\templates\components\header\app_header.html:186
 msgid "Logout"
 msgstr "Cerrar sesión"
 
-msgid "Help"
-msgstr "Ayuda"
+# Mobile Navigation
+#: .\backend\saas_web\templates\components\header\app_header.html:199
+msgid "Home"
+msgstr "Inicio"
 
-msgid "Support"
-msgstr "Soporte"
+#: .\backend\saas_web\templates\components\header\app_header.html:203
+msgid "Store"
+msgstr "Tienda"
 
+#: .\backend\saas_web\templates\saas_web\base.html:428
+#: .\backend\saas_web\templates\saas_web\base.html:430
 msgid "An error occurred. Please try again."
 msgstr "Se produjo un error. Por favor, inténtalo de nuevo."
 
-msgid "Open chat"
-msgstr "Abrir chat"
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:17
+msgid "Customize your Linguify experience"
+msgstr "Personaliza tu experiencia Linguify"
+
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:22
+msgid "Search settings..."
+msgstr "Buscar configuración..."
+
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:67
+msgid "App Manager"
+msgstr "Gestor de aplicaciones"
+
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:83
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:85
+msgid "Profile & Account"
+msgstr "Perfil y cuenta"
+
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:86
+msgid "Manage your personal information and account settings"
+msgstr "Gestiona tu información personal y configuración de cuenta"
+
+#: .\backend\saas_web\templates\saas_web\settings\settings.html:144
+#, python-format
+msgid "%(name)s settings coming soon..."
+msgstr ""
+
+#: .\backend\saas_web\views\admin.py:18
+msgid "Fix Apps - Administration"
+msgstr ""
+
+#: .\backend\saas_web\views\dashboard.py:31
+msgid "Dashboard - Open Linguify"
+msgstr ""
+
+#~ msgid "Welcome back"
+#~ msgstr "Bienvenido de vuelta"
+
+#~ msgid "Your Apps"
+#~ msgstr "Tus aplicaciones"
+
+#~ msgid "Recent Activity"
+#~ msgstr "Actividad reciente"
+
+#~ msgid "Statistics"
+#~ msgstr "Estadísticas"
+
+#~ msgid "No applications installed"
+#~ msgstr "No hay aplicaciones instaladas"
+
+#~ msgid "Explore the App Store to discover and install learning applications."
+#~ msgstr ""
+#~ "Explora la App Store para descubrir e instalar aplicaciones de "
+#~ "aprendizaje."
+
+#~ msgid "Explore App Store"
+#~ msgstr "Explorar App Store"
+
+#~ msgid "All Apps"
+#~ msgstr "Todas las aplicaciones"
+
+#~ msgid "Installed"
+#~ msgstr "Instaladas"
+
+#~ msgid "Install"
+#~ msgstr "Instalar"
+
+#~ msgid "Uninstall"
+#~ msgstr "Desinstalar"
+
+#~ msgid "Free"
+#~ msgstr "Gratis"
+
+#~ msgid "Premium"
+#~ msgstr "Premium"
+
+#~ msgid "Profile"
+#~ msgstr "Perfil"
+
+#~ msgid "Account"
+#~ msgstr "Cuenta"
+
+#~ msgid "Preferences"
+#~ msgstr "Preferencias"
+
+#~ msgid "Language"
+#~ msgstr "Idioma"
+
+#~ msgid "Theme"
+#~ msgstr "Tema"
+
+#~ msgid "Save changes"
+#~ msgstr "Guardar cambios"
+
+# Common
+#~ msgid "Search"
+#~ msgstr "Buscar"
+
+#~ msgid "Help"
+#~ msgstr "Ayuda"
+
+#~ msgid "Support"
+#~ msgstr "Soporte"
+
+#~ msgid "Open chat"
+#~ msgstr "Abrir chat"

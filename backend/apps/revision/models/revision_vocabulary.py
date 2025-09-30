@@ -35,6 +35,18 @@ class VocabularyWord(models.Model):
         return f"{self.word} ({self.source_language}) -> {self.translation} ({self.target_language})"
 
     def mark_reviewed(self, success=True):
+        """
+        [DEPRECATED] Cette méthode utilise l'ancien système de mastery_level.
+        Pour les flashcards, utilisez AdaptiveLearningService.record_performance().
+        """
+        import warnings
+        warnings.warn(
+            "mark_reviewed() pour VocabularyWord est déprécié. "
+            "Utilisez le système adaptatif pour les flashcards.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+
         self.last_reviewed = timezone.now()
         self.review_count += 1
         if success:

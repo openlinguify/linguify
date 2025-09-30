@@ -2,3 +2,4 @@
 # Part of Linguify. See LICENSE file for full copyright and licensing details.
 
 from . import admin  # Configuration admin principale avec dashboard et statistiques
+from . import email_admin  # Configuration admin pour la gestion des emails

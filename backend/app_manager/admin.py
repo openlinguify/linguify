@@ -130,8 +130,9 @@ class AppAdmin(admin.ModelAdmin):
     def active_users_7d(self, obj):
         """Get users who were active in the last 7 days"""
         seven_days_ago = timezone.now() - timedelta(days=7)
+        # enabled_users is a reverse FK to UserAppSettings, so we need to access the user field
         count = obj.enabled_users.filter(
-            last_login__gte=seven_days_ago
+            user__last_login__gte=seven_days_ago
         ).count()
         return format_html(
             '<span style="color: #00b894;">{}</span> active',
@@ -150,8 +151,8 @@ class AppAdmin(admin.ModelAdmin):
 
         color = '#28a745' if percentage > 50 else '#ffc107' if percentage > 25 else '#dc3545'
         return format_html(
-            '<div style="background: linear-gradient(90deg, {} {}%, #e9ecef {}%); padding: 4px; border-radius: 4px; text-align: center; color: white; font-weight: bold;">{:.1f}%</div>',
-            color, percentage, percentage, percentage
+            '<div style="background: linear-gradient(90deg, {} {}%, #e9ecef {}%); padding: 4px; border-radius: 4px; text-align: center; color: white; font-weight: bold;">{}%</div>',
+            color, percentage, percentage, round(percentage, 1)
         )
     usage_percentage.short_description = '📊 Usage %'
 
@@ -194,17 +195,20 @@ class AppAdmin(admin.ModelAdmin):
         app_users = obj.enabled_users.count()
         retention_records = obj.data_retentions.filter(data_deleted=False).count()
 
-        analytics_html = f"""
-        <div style="font-size: 12px; line-height: 1.4;">
-            <strong>📊 Analytics Summary:</strong><br>
-            • Total users who enabled: {app_users}<br>
-            • Platform penetration: {(app_users/total_users*100) if total_users > 0 else 0:.1f}%<br>
-            • Data retention records: {retention_records}<br>
-            • Created: {obj.created_at.strftime('%Y-%m-%d')}<br>
-            • Last updated: {obj.updated_at.strftime('%Y-%m-%d %H:%M')}
-        </div>
-        """
-        return format_html(analytics_html)
+        penetration = round((app_users/total_users*100) if total_users > 0 else 0, 1)
+        return format_html(
+            '<div style="font-size: 12px; line-height: 1.4;">'
+            '<strong>📊 Analytics Summary:</strong><br>'
+            '• Total users who enabled: {}<br>'
+            '• Platform penetration: {}%<br>'
+            '• Data retention records: {}<br>'
+            '• Created: {}<br>'
+            '• Last updated: {}'
+            '</div>',
+            app_users, penetration, retention_records,
+            obj.created_at.strftime('%Y-%m-%d'),
+            obj.updated_at.strftime('%Y-%m-%d %H:%M')
+        )
     usage_analytics.short_description = '📈 Analytics'
 
     # ===== CUSTOM VIEWS =====
@@ -327,7 +331,7 @@ class AppAdmin(admin.ModelAdmin):
         for app in App.objects.all():
             users_count = app.enabled_users.count()
             active_users = app.enabled_users.filter(
-                last_login__gte=timezone.now() - timedelta(days=7)
+                user__last_login__gte=timezone.now() - timedelta(days=7)
             ).count()
             retention_count = app.data_retentions.filter(data_deleted=False).count()
 
@@ -339,7 +343,7 @@ class AppAdmin(admin.ModelAdmin):
                 'Yes' if app.is_enabled else 'No',
                 users_count,
                 active_users,
-                f"{(users_count/total_users*100) if total_users > 0 else 0:.1f}%",
+                f"{round((users_count/total_users*100) if total_users > 0 else 0, 1)}%",
                 retention_count,
                 app.created_at.strftime('%Y-%m-%d'),
                 app.updated_at.strftime('%Y-%m-%d %H:%M')
@@ -685,17 +689,17 @@ class UserAppSettingsAdmin(admin.ModelAdmin):
 
         color = '#28a745' if percentage > 75 else '#ffc107' if percentage > 50 else '#fd79a8' if percentage > 25 else '#dc3545'
 
-        chart_html = f"""
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="width: 60px; height: 12px; background-color: #e9ecef; border-radius: 6px; overflow: hidden;">
-                <div style="width: {percentage}%; height: 100%; background-color: {color}; border-radius: 6px;"></div>
-            </div>
-            <span style="font-weight: bold; color: {color};">{user_apps}/{total_apps}</span>
-            <span style="font-size: 11px; color: #6c757d;">({percentage:.0f}%)</span>
-        </div>
-        """
-        return format_html(chart_html)
-    apps_count_chart.short_description = '📊 Apps Usage'
+        return format_html(
+            '<div style="display: flex; align-items: center; gap: 8px;">'
+            '<div style="width: 60px; height: 12px; background-color: #e9ecef; border-radius: 6px; overflow: hidden;">'
+            '<div style="width: {}%; height: 100%; background-color: {}; border-radius: 6px;"></div>'
+            '</div>'
+            '<span style="font-weight: bold; color: {};">{}/{}</span>'
+            '<span style="font-size: 11px; color: #6c757d;">({}%)</span>'
+            '</div>',
+            percentage, color, color, user_apps, total_apps, int(percentage)
+        )
+    apps_count_chart.short_description = 'Apps Usage'
 
     def last_activity(self, obj):
         """Show user's last activity"""
@@ -762,10 +766,10 @@ class UserAppSettingsAdmin(admin.ModelAdmin):
 
         return format_html(
             '<div style="text-align: center;">'
-            '<div style="font-weight: bold; color: {};">{:.0f}/100</div>'
+            '<div style="font-weight: bold; color: {};">{}/100</div>'
             '<div style="font-size: 10px; color: #6c757d;">Engagement</div>'
             '</div>',
-            color, score
+            color, int(score)
         )
     engagement_score.short_description = '🎯 Score'
 
@@ -790,19 +794,21 @@ class UserAppSettingsAdmin(admin.ModelAdmin):
         days_since_join = (timezone.now() - user.date_joined).days
         days_since_login = (timezone.now() - user.last_login).days if user.last_login else 'N/A'
 
-        analytics_html = f"""
-        <div style="font-size: 12px; line-height: 1.6;">
-            <h4 style="margin: 0 0 10px 0; color: #495057;">📊 User Engagement Analytics</h4>
-            <table style="width: 100%; font-size: 11px;">
-                <tr><td><strong>App Adoption Rate:</strong></td><td>{adoption_rate:.1f}% ({apps_count}/{total_apps})</td></tr>
-                <tr><td><strong>Account Age:</strong></td><td>{days_since_join} days</td></tr>
-                <tr><td><strong>Last Login:</strong></td><td>{days_since_login} days ago</td></tr>
-                <tr><td><strong>Custom Order:</strong></td><td>{'Yes' if obj.app_order else 'No'}</td></tr>
-                <tr><td><strong>Settings Updated:</strong></td><td>{obj.updated_at.strftime('%Y-%m-%d %H:%M')}</td></tr>
-            </table>
-        </div>
-        """
-        return format_html(analytics_html)
+        return format_html(
+            '<div style="font-size: 12px; line-height: 1.6;">'
+            '<h4 style="margin: 0 0 10px 0; color: #495057;">📊 User Engagement Analytics</h4>'
+            '<table style="width: 100%; font-size: 11px;">'
+            '<tr><td><strong>App Adoption Rate:</strong></td><td>{}% ({}/{})</td></tr>'
+            '<tr><td><strong>Account Age:</strong></td><td>{} days</td></tr>'
+            '<tr><td><strong>Last Login:</strong></td><td>{} days ago</td></tr>'
+            '<tr><td><strong>Custom Order:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Settings Updated:</strong></td><td>{}</td></tr>'
+            '</table>'
+            '</div>',
+            round(adoption_rate, 1), apps_count, total_apps, days_since_join,
+            days_since_login, 'Yes' if obj.app_order else 'No',
+            obj.updated_at.strftime('%Y-%m-%d %H:%M')
+        )
     user_engagement_analytics.short_description = '📈 Engagement Analytics'
 
     def app_usage_timeline(self, obj):
@@ -1041,15 +1047,15 @@ class AppDataRetentionAdmin(admin.ModelAdmin):
                 color = '#dc3545'
             status = f'{days_remaining}d left'
 
-        chart_html = f"""
-        <div style="display: flex; align-items: center; gap: 8px; width: 120px;">
-            <div style="width: 60px; height: 8px; background-color: #e9ecef; border-radius: 4px; overflow: hidden;">
-                <div style="width: {percentage}%; height: 100%; background-color: {color}; border-radius: 4px;"></div>
-            </div>
-            <span style="font-size: 11px; font-weight: bold; color: {color};">{status}</span>
-        </div>
-        """
-        return format_html(chart_html)
+        return format_html(
+            '<div style="display: flex; align-items: center; gap: 8px; width: 120px;">'
+            '<div style="width: 60px; height: 8px; background-color: #e9ecef; border-radius: 4px; overflow: hidden;">'
+            '<div style="width: {}%; height: 100%; background-color: {}; border-radius: 4px;"></div>'
+            '</div>'
+            '<span style="font-size: 11px; font-weight: bold; color: {};">{}</span>'
+            '</div>',
+            percentage, color, color, status
+        )
     days_remaining_chart.short_description = '⏰ Time Left'
 
     def data_size_estimate(self, obj):
@@ -1116,34 +1122,44 @@ class AppDataRetentionAdmin(admin.ModelAdmin):
         days_since_disabled = (timezone.now() - obj.disabled_at).days
         days_remaining = obj.days_until_deletion
 
-        analytics_html = f"""
-        <div style="font-size: 12px; line-height: 1.6;">
-            <h4 style="margin: 0 0 10px 0; color: #495057;">📊 Retention Analytics</h4>
-            <table style="width: 100%; font-size: 11px;">
-                <tr><td><strong>Days since disabled:</strong></td><td>{days_since_disabled}</td></tr>
-                <tr><td><strong>Days remaining:</strong></td><td>{days_remaining}</td></tr>
-                <tr><td><strong>Expiry date:</strong></td><td>{obj.data_expires_at.strftime('%Y-%m-%d %H:%M')}</td></tr>
-                <tr><td><strong>Data deleted:</strong></td><td>{'Yes' if obj.data_deleted else 'No'}</td></tr>
-                <tr><td><strong>App category:</strong></td><td>{obj.app.category}</td></tr>
-            </table>
-        </div>
-        """
-        return format_html(analytics_html)
+        return format_html(
+            '<div style="font-size: 12px; line-height: 1.6;">'
+            '<h4 style="margin: 0 0 10px 0; color: #495057;">📊 Retention Analytics</h4>'
+            '<table style="width: 100%; font-size: 11px;">'
+            '<tr><td><strong>Days since disabled:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Days remaining:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Expiry date:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>Data deleted:</strong></td><td>{}</td></tr>'
+            '<tr><td><strong>App category:</strong></td><td>{}</td></tr>'
+            '</table>'
+            '</div>',
+            days_since_disabled, days_remaining,
+            obj.data_expires_at.strftime('%Y-%m-%d %H:%M'),
+            'Yes' if obj.data_deleted else 'No',
+            obj.app.category
+        )
     retention_analytics.short_description = '📈 Analytics'
 
     def data_cleanup_log(self, obj):
         """Log of data cleanup activities"""
-        log_html = f"""
-        <div style="font-size: 12px;">
-            <h4 style="margin: 0 0 10px 0;">📋 Cleanup Log</h4>
-            <div style="background-color: #f8f9fa; padding: 8px; border-radius: 4px;">
-                <p style="margin: 0;"><strong>Status:</strong> {'Deleted' if obj.data_deleted else 'Pending'}</p>
-                {f'<p style="margin: 0;"><strong>Deleted at:</strong> {obj.data_deleted_at.strftime("%Y-%m-%d %H:%M")}</p>' if obj.data_deleted_at else '<p style="margin: 0; color: #6c757d;"><em>No deletion date</em></p>'}
-                <p style="margin: 0;"><strong>Created:</strong> {obj.created_at.strftime('%Y-%m-%d %H:%M')}</p>
-            </div>
-        </div>
-        """
-        return format_html(log_html)
+        status = 'Deleted' if obj.data_deleted else 'Pending'
+        deletion_info = (
+            f'<p style="margin: 0;"><strong>Deleted at:</strong> {obj.data_deleted_at.strftime("%Y-%m-%d %H:%M")}</p>'
+            if obj.data_deleted_at else
+            '<p style="margin: 0; color: #6c757d;"><em>No deletion date</em></p>'
+        )
+
+        return format_html(
+            '<div style="font-size: 12px;">'
+            '<h4 style="margin: 0 0 10px 0;">📋 Cleanup Log</h4>'
+            '<div style="background-color: #f8f9fa; padding: 8px; border-radius: 4px;">'
+            '<p style="margin: 0;"><strong>Status:</strong> {}</p>'
+            '{}'
+            '<p style="margin: 0;"><strong>Created:</strong> {}</p>'
+            '</div>'
+            '</div>',
+            status, deletion_info, obj.created_at.strftime('%Y-%m-%d %H:%M')
+        )
     data_cleanup_log.short_description = '📋 Cleanup Log'
 
     # ===== CUSTOM VIEWS =====
@@ -1499,9 +1515,9 @@ class AppManagerMonitoringAdmin:
 
 
 # Register a custom admin site change for better organization
-admin.site.site_header = "🔧 Linguify App Manager Administration"
+admin.site.site_header = "Linguify App Manager Administration"
 admin.site.site_title = "App Manager Admin"
-admin.site.index_title = "📊 App Manager Dashboard"
+admin.site.index_title = "App Manager Dashboard"
 
 # Add monitoring utilities to admin site
 def admin_monitoring_context(request):

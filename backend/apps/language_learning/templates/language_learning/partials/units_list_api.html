@@ -1,0 +1,59 @@
+<!-- Units List - API Version -->
+<div x-show="currentView === 'units'" x-transition class="fade-in" style="background: var(--linguify-gray-50); min-height: 100vh; padding: 1.5rem;">
+    <div style="width: 100%;">
+
+    <!-- Units List -->
+    <div x-show="courseUnits.length > 0" style="width: 100%;">
+        <template x-for="unit in courseUnits" :key="unit.id">
+            <div x-data="unitCard(unit, $data)"
+                 class="unit-card"
+                 style="width: 100%; margin-bottom: 1rem;"
+                 :class="{
+                     'completed': unit.progress_percentage === 100,
+                     'active': unit.progress_percentage > 0 && unit.progress_percentage < 100
+                 }"
+                 @click="selectUnit()">
+
+                <!-- Unit Header -->
+                <div class="unit-header">
+                    <div class="unit-number" x-text="'Unité ' + unit.unit_number"></div>
+                    <div class="unit-modules-count">
+                        <i class="bi bi-collection"></i>
+                        <span x-text="unit.completed_modules + '/' + unit.modules_count"></span>
+                    </div>
+                </div>
+
+                <!-- Unit Content -->
+                <div class="unit-title" x-text="unit.title"></div>
+                <div class="unit-description" x-text="unit.description"></div>
+
+                <!-- Progress Bar -->
+                <div class="unit-progress">
+                    <div class="unit-progress-bar"
+                         :style="'width: ' + unit.progress_percentage + '%'"></div>
+                </div>
+
+                <!-- Progress Text -->
+                <div class="unit-progress-text">
+                    <template x-if="unit.progress_percentage === 100">
+                        <span><i class="bi bi-check-circle-fill"></i> Terminé</span>
+                    </template>
+                    <template x-if="unit.progress_percentage > 0 && unit.progress_percentage < 100">
+                        <span><i class="bi bi-clock-history"></i> <span x-text="unit.progress_percentage + '%'"></span> terminé</span>
+                    </template>
+                    <template x-if="unit.progress_percentage === 0">
+                        <span><i class="bi bi-star"></i> Nouveau</span>
+                    </template>
+                </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Empty State -->
+    <div x-show="courseUnits.length === 0" class="text-center p-4">
+        <i class="bi bi-collection fs-1" style="color: var(--linguify-gray-400);"></i>
+        <p class="mt-2" style="color: var(--linguify-gray-600);">Aucune unité de cours disponible pour cette langue.</p>
+    </div>
+    </div>
+</div>

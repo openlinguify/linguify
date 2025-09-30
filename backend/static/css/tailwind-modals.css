@@ -4244,6 +4244,18 @@ button.bg-linguify-gradient:hover,
   background-color: rgba(45, 91, 186, 0.05);
 }
 
+/* Emphasize primary study mode (Learn) */
+.study-mode-card-linguify.study-mode-primary {
+  border-color: var(--linguify-primary, #2D5BBA);
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.05), rgba(1, 126, 132, 0.05));
+  box-shadow: 0 2px 4px rgba(45, 91, 186, 0.1);
+}
+
+.study-mode-card-linguify.study-mode-primary:hover {
+  background: linear-gradient(135deg, rgba(45, 91, 186, 0.1), rgba(1, 126, 132, 0.1));
+  box-shadow: 0 6px 12px rgba(45, 91, 186, 0.15);
+}
+
 /* Badge Component - Updated for Linguify */
 .badge-linguify {
   display: inline-flex;
@@ -7818,7 +7830,7 @@ input#importDeckName:focus {
     transform: scale(1.02);
 }
 
-/* CLEAN ODOO STYLE KANBAN COLUMNS */
+/* CLEAN hopla STYLE KANBAN COLUMNS */
 .kanban-columns {
     display: flex !important;
     gap: 0 !important;
@@ -7857,7 +7869,7 @@ input#importDeckName:focus {
     overflow: hidden !important;
 }
 
-/* CLEAN ODOO STYLE FOLDED COLUMN - MAXIMUM SPECIFICITY */
+/* CLEAN hopla STYLE FOLDED COLUMN - MAXIMUM SPECIFICITY */
 .kanban-columns .kanban-column.o_column_folded {
     flex: 0 0 36px !important;
     min-width: 36px !important;

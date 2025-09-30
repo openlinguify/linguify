@@ -17,29 +17,38 @@ from .admin_filters import RegistrationDateFilter, AccountStatusFilter, ProfileC
 def enhance_user_admin(UserAdmin):
     """
     Enhances the UserAdmin class with additional functionality.
-    
+
     This function adds:
     - Additional list display fields
     - Custom filters
     - Account deletion section
     - Export functionality
     - Notification sending
-    
+    - Language learning profile inline
+
     Args:
         UserAdmin: The existing UserAdmin class to enhance
     """
-    
+
     # Add to list_display
     if 'deletion_status' not in UserAdmin.list_display:
         UserAdmin.list_display = list(UserAdmin.list_display) + ['deletion_status']
-    
+
     # Add custom filters
     UserAdmin.list_filter = list(UserAdmin.list_filter) + [
-        AccountStatusFilter, 
+        AccountStatusFilter,
         ProfileCompletionFilter,
-        RegistrationDateFilter, 
-        'language_level'
+        RegistrationDateFilter
     ]
+
+    # Add UserLearningProfileInline from language_learning app
+    try:
+        from apps.language_learning.admin import UserLearningProfileInline
+        if UserLearningProfileInline not in UserAdmin.inlines:
+            UserAdmin.inlines = list(UserAdmin.inlines) + [UserLearningProfileInline]
+    except ImportError:
+        # Language learning app not available, skip adding the inline
+        pass
     
     # Add readonly fields
     UserAdmin.readonly_fields = list(UserAdmin.readonly_fields) + [
@@ -229,9 +238,7 @@ def export_user_data(self, request, queryset):
             user.username,
             user.first_name,
             user.last_name,
-            user.get_native_language_display(),
-            user.get_target_language_display(),
-            user.language_level,
+            # Note: Champs de langue supprimés - voir UserLearningProfile
             'Yes' if user.is_active else 'No',
             'Yes' if user.is_coach else 'No',
             user.created_at.strftime('%Y-%m-%d'),

@@ -1,13 +1,159 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
+import datetime
 import logging
 
 # Les imports des modèles de cours se feront via __init__.py pour éviter l'import cyclique
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
+
+# =============================================================================
+# CHOIX ET CONSTANTES
+# =============================================================================
+
+LANGUAGE_CHOICES = [
+    ('EN', 'English'),
+    ('FR', 'French'),
+    ('NL', 'Dutch'),
+    ('ES', 'Spanish'),
+]
+
+LEVEL_CHOICES = [
+    ('A1', 'A1'),
+    ('A2', 'A2'),
+    ('B1', 'B1'),
+    ('B2', 'B2'),
+    ('C1', 'C1'),
+    ('C2', 'C2'),
+]
+
+OBJECTIVES_CHOICES = [
+    ('Travel', 'Travel'),
+    ('Business', 'Business'),
+    ('Live Abroad', 'Live Abroad'),
+    ('Exam', 'Exam'),
+    ('For Fun', 'For Fun'),
+    ('Work', 'Work'),
+    ('School', 'School'),
+    ('Study', 'Study'),
+    ('Personal', 'Personal'),
+]
+
+PROFICIENCY_LEVELS = LEVEL_CHOICES  # Alias pour compatibilité
+
+# =============================================================================
+# PROFIL D'APPRENTISSAGE
+# =============================================================================
+
+class UserLearningProfile(models.Model):
+    """
+    Profil d'apprentissage des langues pour un utilisateur.
+    Regroupe tous les paramètres et préférences liés à l'apprentissage.
+    """
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='learning_profile',
+        primary_key=True
+    )
+
+    # Langues et objectifs
+    native_language = models.CharField(
+        max_length=20,
+        choices=LANGUAGE_CHOICES,
+        default=LANGUAGE_CHOICES[0][0],
+        help_text="Your native language"
+    )
+    target_language = models.CharField(
+        max_length=20,
+        choices=LANGUAGE_CHOICES,
+        default=LANGUAGE_CHOICES[1][0],
+        help_text="The language you want to learn"
+    )
+    language_level = models.CharField(
+        max_length=2,
+        choices=LEVEL_CHOICES,
+        default=LEVEL_CHOICES[0][0],
+        help_text="Your current language level"
+    )
+    objectives = models.CharField(
+        max_length=20,
+        choices=OBJECTIVES_CHOICES,
+        default=OBJECTIVES_CHOICES[0][0],
+        help_text="Your learning objectives"
+    )
+
+    # Paramètres d'exercices
+    speaking_exercises = models.BooleanField(default=True)
+    listening_exercises = models.BooleanField(default=True)
+    reading_exercises = models.BooleanField(default=True)
+    writing_exercises = models.BooleanField(default=True)
+
+    # Objectifs quotidiens
+    daily_goal = models.IntegerField(
+        default=15,
+        validators=[MinValueValidator(1)],
+        help_text="Daily goal in minutes"
+    )
+
+    # Rappels et notifications
+    weekday_reminders = models.BooleanField(default=True)
+    weekend_reminders = models.BooleanField(default=False)
+    reminder_time = models.TimeField(default=datetime.time(18, 0))
+
+    # Statistiques de progression
+    streak_count = models.PositiveIntegerField(default=0)
+    total_time_spent = models.PositiveIntegerField(default=0, help_text="Total minutes spent")
+    lessons_completed = models.PositiveIntegerField(default=0)
+
+    # Métadonnées
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    last_activity = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "User Learning Profile"
+        verbose_name_plural = "User Learning Profiles"
+        app_label = 'language_learning'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.target_language} ({self.language_level})"
+
+    def clean(self):
+        """Valider que les langues source et cible sont différentes"""
+        from django.core.exceptions import ValidationError
+        if self.native_language == self.target_language:
+            raise ValidationError("Native language and target language cannot be the same.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def get_progress_summary(self):
+        """Retourne un résumé de la progression"""
+        return {
+            'streak': self.streak_count,
+            'total_time': self.total_time_spent,
+            'lessons': self.lessons_completed,
+            'level': self.language_level,
+            'target_language': self.get_target_language_display()
+        }
+
+    def update_streak(self):
+        """Met à jour le streak basé sur la dernière activité"""
+        if not self.last_activity:
+            self.streak_count = 1
+        else:
+            days_diff = (timezone.now().date() - self.last_activity.date()).days
+            if days_diff == 1:
+                self.streak_count += 1
+            elif days_diff > 1:
+                self.streak_count = 1
+
+        self.last_activity = timezone.now()
+        self.save()
 
 
 # Exemple de modèle pour Language Learning
@@ -29,7 +175,7 @@ class LanguagelearningItem(models.Model):
         ('speaking', 'Expression orale'),
     ]
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='language_learning_items')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='language_learning_items')
     title = models.CharField(max_length=200, verbose_name="Titre")
     description = models.TextField(blank=True, verbose_name="Description")
     content = models.TextField(blank=True, verbose_name="Contenu")
@@ -54,22 +200,6 @@ class LanguagelearningItem(models.Model):
     def __str__(self):
         return self.title
 
-LANGUAGE_CHOICES = [
-    ('en', 'English'),
-    ('fr', 'French'),
-    ('es', 'Spanish'),
-    ('nl', 'Dutch'),
-]
-
-PROFICIENCY_LEVELS = [
-    ('beginner', 'Beginner'),
-    ('elementary', 'Elementary'),
-    ('intermediate', 'Intermediate'),
-    ('upper_intermediate', 'Upper Intermediate'),
-    ('advanced', 'Advanced'),
-    ('proficient', 'Proficient'),
-]
-
 class Language(models.Model):
     """Model representing a language that can be learned"""
     code = models.CharField(max_length=5, choices=LANGUAGE_CHOICES, unique=True)
@@ -77,21 +207,22 @@ class Language(models.Model):
     native_name = models.CharField(max_length=50, blank=True)
     flag_emoji = models.CharField(max_length=10, blank=True)
     is_active = models.BooleanField(default=True)
-    
+
     class Meta:
         verbose_name = "Language"
         verbose_name_plural = "Languages"
         ordering = ['name']
-    
+
     def __str__(self):
         return self.name
 
 class UserLanguage(models.Model):
     """Model representing a user's language learning journey"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='learning_languages')
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
-    proficiency_level = models.CharField(max_length=20, choices=PROFICIENCY_LEVELS, default='beginner')
-    target_level = models.CharField(max_length=20, choices=PROFICIENCY_LEVELS, default='intermediate')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='learning_languages')
+    language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='learners')
+    is_native = models.BooleanField(default=False, help_text="Is this the user's native language?")
+    language_level = models.CharField(max_length=2, choices=LEVEL_CHOICES, default=LEVEL_CHOICES[0][0], help_text="Your language level")
+    target_level = models.CharField(max_length=2, choices=LEVEL_CHOICES, default='B2')
     daily_goal = models.PositiveIntegerField(default=15, help_text="Minutes per day")
     streak_count = models.PositiveIntegerField(default=0)
     total_time_spent = models.PositiveIntegerField(default=0, help_text="Total minutes spent")
@@ -100,13 +231,13 @@ class UserLanguage(models.Model):
     started_at = models.DateTimeField(auto_now_add=True)
     last_activity = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
-    
+
     class Meta:
         verbose_name = "User Language"
         verbose_name_plural = "User Languages"
         unique_together = ['user', 'language']
         ordering = ['-last_activity']
-    
+
     def __str__(self):
         return f"{self.user.username} learning {self.language.name}"
 
@@ -134,7 +265,7 @@ class Lesson(models.Model):
 
 class UserLessonProgress(models.Model):
     """Model tracking user progress through lessons"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     is_completed = models.BooleanField(default=False)
     score = models.FloatField(null=True, blank=True, help_text="Lesson score (0-100)")
@@ -183,8 +314,8 @@ class LanguageLearningSettings(models.Model):
     ]
     
     user = models.OneToOneField(
-        User, 
-        on_delete=models.CASCADE, 
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
         related_name='language_learning_settings'
     )
     
@@ -380,7 +511,7 @@ class ModuleProgress(models.Model):
     """
     Suivi de la progression d'un utilisateur sur un module
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='module_progress')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='module_progress')
     module = models.ForeignKey(CourseModule, on_delete=models.CASCADE, related_name='progress_records')
     is_completed = models.BooleanField(default=False)
     completion_date = models.DateTimeField(null=True, blank=True)
@@ -410,7 +541,7 @@ class UserCourseProgress(models.Model):
     """
     Progression globale d'un utilisateur dans un cours de langue
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='language_course_progress')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='language_course_progress')
     language = models.ForeignKey('Language', on_delete=models.CASCADE)
     current_unit = models.ForeignKey(CourseUnit, on_delete=models.SET_NULL, null=True, blank=True)
     current_module = models.ForeignKey(CourseModule, on_delete=models.SET_NULL, null=True, blank=True)

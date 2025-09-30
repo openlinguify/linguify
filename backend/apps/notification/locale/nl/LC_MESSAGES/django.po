@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-16 10:00+0000\n"
+"POT-Creation-Date: 2025-09-29 20:30+0200\n"
 "PO-Revision-Date: 2025-01-16 10:00+0000\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: Dutch\n"
@@ -16,123 +16,154 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: .\apps\notification\services.py:424
 msgid "🔥 REVISION REMINDER"
 msgstr "🔥 REVISIE HERINNERING"
 
+#: .\apps\notification\services.py:425
+#, python-format
 msgid "You have %(count)d cards to review today. Keep your streak going!"
 msgstr "Je hebt %(count)d kaarten om vandaag te bekijken. Hou je reeks gaande!"
 
+#: .\apps\notification\services.py:451
 msgid "🏆 Achievement Unlocked!"
 msgstr "🏆 Prestatie ontgrendeld!"
 
+#: .\apps\notification\services.py:452
+#, python-format
 msgid "You earned: %(achievement)s"
 msgstr "Je hebt verdiend: %(achievement)s"
 
+#: .\apps\notification\services.py:476
 msgid "🎉 Course Completed!"
 msgstr "🎉 Cursus voltooid!"
 
+#: .\apps\notification\services.py:477
+#, python-format
 msgid "Congratulations! You completed %(course)s"
 msgstr "Gefeliciteerd! Je hebt %(course)s voltooid"
 
+#: .\apps\notification\services.py:501
 msgid "System Update"
 msgstr "Systeemupdate"
 
+#: .\apps\notification\services.py:528 .\apps\notification\services.py:560
 msgid "Action Required: Accept Terms of Use"
 msgstr "Actie vereist: Accepteer de Gebruiksvoorwaarden"
 
+#: .\apps\notification\services.py:529
 msgid "Please accept our updated terms of use to continue using Linguify."
-msgstr "Accepteer onze bijgewerkte gebruiksvoorwaarden om Linguify te blijven gebruiken."
+msgstr ""
+"Accepteer onze bijgewerkte gebruiksvoorwaarden om Linguify te blijven "
+"gebruiken."
 
-msgid "Welcome to Open Linguify!"
-msgstr "Welkom bij Open Linguify!"
+#~ msgid "Welcome to Open Linguify!"
+#~ msgstr "Welkom bij Open Linguify!"
 
-msgid "Start your language learning journey today"
-msgstr "Begin vandaag je taalreis"
+#~ msgid "Start your language learning journey today"
+#~ msgstr "Begin vandaag je taalreis"
 
-msgid "📚 Study Time"
-msgstr "📚 Studietijd"
+#~ msgid "📚 Study Time"
+#~ msgstr "📚 Studietijd"
 
-msgid "You have flashcards ready for review"
-msgstr "Je hebt flashcards klaar voor revisie"
+#~ msgid "You have flashcards ready for review"
+#~ msgstr "Je hebt flashcards klaar voor revisie"
 
 # Email translations
-msgid "Action Required: Terms of Use"
-msgstr "Actie vereist: Accepteer de Gebruiksvoorwaarden"
+#~ msgid "Action Required: Terms of Use"
+#~ msgstr "Actie vereist: Accepteer de Gebruiksvoorwaarden"
 
-msgid "Hello %(name)s,"
-msgstr "Hallo %(name)s,"
+#~ msgid "Hello %(name)s,"
+#~ msgstr "Hallo %(name)s,"
 
-msgid "We have updated our <strong>Terms of Use</strong> to improve your experience on %(app_name)s."
-msgstr "We hebben onze <strong>Gebruiksvoorwaarden</strong> bijgewerkt om je ervaring op %(app_name)s te verbeteren."
+#~ msgid ""
+#~ "We have updated our <strong>Terms of Use</strong> to improve your "
+#~ "experience on %(app_name)s."
+#~ msgstr ""
+#~ "We hebben onze <strong>Gebruiksvoorwaarden</strong> bijgewerkt om je "
+#~ "ervaring op %(app_name)s te verbeteren."
 
-msgid "To continue enjoying our language learning platform, we need your agreement on these new terms."
-msgstr "Om te blijven genieten van ons taallearplatform, hebben we je akkoord nodig met deze nieuwe voorwaarden."
+#~ msgid ""
+#~ "To continue enjoying our language learning platform, we need your "
+#~ "agreement on these new terms."
+#~ msgstr ""
+#~ "Om te blijven genieten van ons taallearplatform, hebben we je akkoord "
+#~ "nodig met deze nieuwe voorwaarden."
 
-msgid "Key Updates:"
-msgstr "Belangrijkste updates:"
+#~ msgid "Key Updates:"
+#~ msgstr "Belangrijkste updates:"
 
-msgid "Clarification of personal data usage"
-msgstr "Verduidelijking van persoonlijke gegevensgebruik"
+#~ msgid "Clarification of personal data usage"
+#~ msgstr "Verduidelijking van persoonlijke gegevensgebruik"
 
-msgid "New collaboration features"
-msgstr "Nieuwe samenwerkingsfuncties"
+#~ msgid "New collaboration features"
+#~ msgstr "Nieuwe samenwerkingsfuncties"
 
-msgid "Enhanced security and privacy"
-msgstr "Verbeterde beveiliging en privacy"
+#~ msgid "Enhanced security and privacy"
+#~ msgstr "Verbeterde beveiliging en privacy"
 
-msgid "Updated rights and responsibilities"
-msgstr "Bijgewerkte rechten en verantwoordelijkheden"
+#~ msgid "Updated rights and responsibilities"
+#~ msgstr "Bijgewerkte rechten en verantwoordelijkheden"
 
-msgid "Review and Accept Terms"
-msgstr "Bekijk en Accepteer Voorwaarden"
+#~ msgid "Review and Accept Terms"
+#~ msgstr "Bekijk en Accepteer Voorwaarden"
 
-msgid "You can also copy this link to your browser:"
-msgstr "Je kunt deze link ook naar je browser kopiëren:"
+#~ msgid "You can also copy this link to your browser:"
+#~ msgstr "Je kunt deze link ook naar je browser kopiëren:"
 
-msgid "Important:"
-msgstr "Belangrijk:"
+#~ msgid "Important:"
+#~ msgstr "Belangrijk:"
 
-msgid "Accepting these terms is necessary to continue using %(app_name)s."
-msgstr "Het accepteren van deze voorwaarden is noodzakelijk om %(app_name)s te blijven gebruiken."
+#~ msgid "Accepting these terms is necessary to continue using %(app_name)s."
+#~ msgstr ""
+#~ "Het accepteren van deze voorwaarden is noodzakelijk om %(app_name)s te "
+#~ "blijven gebruiken."
 
-msgid "If you have any questions about these changes, feel free to contact us at"
-msgstr "Als je vragen hebt over deze wijzigingen, neem dan gerust contact met ons op via"
+#~ msgid ""
+#~ "If you have any questions about these changes, feel free to contact us at"
+#~ msgstr ""
+#~ "Als je vragen hebt over deze wijzigingen, neem dan gerust contact met ons "
+#~ "op via"
 
-msgid "Thank you for being part of our learning community!"
-msgstr "Bedankt dat je deel uitmaakt van onze leergemeenschap!"
+#~ msgid "Thank you for being part of our learning community!"
+#~ msgstr "Bedankt dat je deel uitmaakt van onze leergemeenschap!"
 
-msgid "Best regards,"
-msgstr "Met vriendelijke groet,"
+#~ msgid "Best regards,"
+#~ msgstr "Met vriendelijke groet,"
 
-msgid "The %(app_name)s Team"
-msgstr "Het %(app_name)s Team"
+#~ msgid "The %(app_name)s Team"
+#~ msgstr "Het %(app_name)s Team"
 
-msgid "Your language learning platform"
-msgstr "Jouw taallearplatform"
+#~ msgid "Your language learning platform"
+#~ msgstr "Jouw taallearplatform"
 
-msgid "Terms of Use"
-msgstr "Gebruiksvoorwaarden"
+#~ msgid "Terms of Use"
+#~ msgstr "Gebruiksvoorwaarden"
 
-msgid "Privacy"
-msgstr "Privacy"
+#~ msgid "Privacy"
+#~ msgstr "Privacy"
 
-msgid "Contact"
-msgstr "Contact"
+#~ msgid "Contact"
+#~ msgstr "Contact"
 
-msgid "This email was sent to %(email)s"
-msgstr "Deze email werd verstuurd naar %(email)s"
+#~ msgid "This email was sent to %(email)s"
+#~ msgstr "Deze email werd verstuurd naar %(email)s"
 
-msgid "© %(year)s %(app_name)s. All rights reserved."
-msgstr "© %(year)s %(app_name)s. Alle rechten voorbehouden."
+#~ msgid "© %(year)s %(app_name)s. All rights reserved."
+#~ msgstr "© %(year)s %(app_name)s. Alle rechten voorbehouden."
 
-msgid "To stop receiving these emails, log in to your account and modify your notification preferences."
-msgstr "Om deze emails niet meer te ontvangen, log in op je account en wijzig je notificatievoorkeuren."
+#~ msgid ""
+#~ "To stop receiving these emails, log in to your account and modify your "
+#~ "notification preferences."
+#~ msgstr ""
+#~ "Om deze emails niet meer te ontvangen, log in op je account en wijzig je "
+#~ "notificatievoorkeuren."
 
-msgid "KEY UPDATES:"
-msgstr "BELANGRIJKSTE UPDATES:"
+#~ msgid "KEY UPDATES:"
+#~ msgstr "BELANGRIJKSTE UPDATES:"
 
-msgid "REVIEW AND ACCEPT TERMS:"
-msgstr "BEKIJK EN ACCEPTEER VOORWAARDEN:"
+#~ msgid "REVIEW AND ACCEPT TERMS:"
+#~ msgstr "BEKIJK EN ACCEPTEER VOORWAARDEN:"
 
-msgid "All rights reserved."
-msgstr "Alle rechten voorbehouden."
+#~ msgid "All rights reserved."
+#~ msgstr "Alle rechten voorbehouden."

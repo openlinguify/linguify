@@ -1,0 +1,59 @@
+{% load static %}
+{% load i18n %}
+<!-- Notebook Editor Component -->
+<div class="note-content-area">
+    <!-- Pas de note sélectionnée -->
+    <div x-show="!currentNote" class="note-editor empty-state">
+        <i class="fas fa-file-alt" style="font-size: 3rem; color: #d1d5db;"></i>
+        <h2 style="color: #6b7280; margin-top: 1rem;">{% trans 'Select a note to view' %}</h2>
+        <p style="color: #9ca3af;">{% trans 'Choose a note from the sidebar or create a new one' %}</p>
+        <button @click="createNewNote()" class="btn-linguify" style="margin-top: 1rem; width: auto; display: inline-block;">
+            <i class="fas fa-plus"></i>
+            {% trans 'Create New Note' %}
+        </button>
+    </div>
+
+    <!-- Note sélectionnée -->
+    <div x-show="currentNote" class="note-editor">
+        <!-- Header de la note -->
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 2rem;">
+            <div style="flex: 1;">
+                <input x-model="currentNote.title"
+                       @blur="updateNote()"
+                       type="text"
+                       placeholder="{% trans 'Note title' %}"
+                       style="font-size: 2rem; font-weight: bold; border: none; outline: none; width: 100%; background: transparent;">
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button @click="togglePin(currentNote)" class="btn btn-outline" :title="currentNote.is_pinned ? '{% trans 'Unpin' %}' : '{% trans 'Pin' %}'">
+                    <i :class="currentNote.is_pinned ? 'fas fa-thumbtack' : 'far fa-thumbtack'"></i>
+                </button>
+                <button @click="deleteNote(currentNote.id)" class="btn btn-outline">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Métadonnées -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <select x-model="currentNote.language" @change="updateNote()" style="padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;">
+                <option value="">{% trans 'Language' %}</option>
+                <option value="fr">{% trans 'French' %}</option>
+                <option value="en">{% trans 'English' %}</option>
+                <option value="es">{% trans 'Spanish' %}</option>
+                <option value="nl">{% trans 'Dutch' %}</option>
+            </select>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="content-section">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">{% trans 'Content' %}</label>
+            <textarea x-model="currentNote.content"
+                      @blur="updateNote()"
+                      placeholder="{% trans 'Write your note here...' %}"
+                      style="width: 100%; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical;">
+            </textarea>
+        </div>
+
+    </div>
+</div>

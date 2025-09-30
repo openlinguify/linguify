@@ -1,9 +1,10 @@
-<!-- Decks populaires -->
+{% load i18n %}
+<!-- Popular decks -->
 <div class="popular-decks-section">
     <div class="section-header">
         <h5 class="section-title">
             <i class="bi bi-fire text-warning me-2"></i>
-            Decks populaires
+            {% trans "Popular decks" %}
         </h5>
         {% if category and category != 'all' %}
         <span class="category-badge">{{ category|title }}</span>
@@ -35,7 +36,7 @@
             
             <div class="deck-content">
                 <h6 class="deck-title">{{ deck.name }}</h6>
-                <p class="deck-author">Par {{ deck.user.username }}</p>
+                <p class="deck-author">{% trans "By" %} {{ deck.user.username }}</p>
                 <p class="deck-description">{{ deck.description|truncatechars:80 }}</p>
                 
                 <div class="deck-metrics">
@@ -60,13 +61,13 @@
                         hx-post="{% url 'revision_web:explore_import_deck' deck.id %}"
                         hx-trigger="click consume"
                         hx-swap="none"
-                        title="Importer ce deck">
+                        title="{% trans 'Import this deck' %}">
                     <i class="bi bi-download"></i>
                 </button>
                 <button class="action-btn favorite-btn" 
                         hx-post="{% url 'revision_web:explore_toggle_favorite' deck.id %}"
                         hx-trigger="click consume"
-                        title="Ajouter aux favoris">
+                        title="{% trans 'Add to favorites' %}">
                     <i class="bi bi-heart"></i>
                 </button>
             </div>

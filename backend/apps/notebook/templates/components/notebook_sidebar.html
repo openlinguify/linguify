@@ -1,0 +1,64 @@
+{% load static %}
+{% load i18n %}
+<!-- Notebook Sidebar Component -->
+<div id="notebookSidebar" class="sidebar-linguify show" :class="{ 'archived-mode': archiveStatus === 'archived' }">
+    <div class="sidebar-content">
+        <!-- Header de la sidebar -->
+
+        <!-- Liste des notes -->
+            <div class="notes-list">
+
+            <!-- Empty state -->
+            <div class="empty-state" x-show="!isLoading && notes.length === 0">
+                <i class="fas fa-sticky-note"></i>
+                <h3>{% trans 'No notes found' %}</h3>
+                <p>{% trans 'Start by creating your first note!' %}</p>
+                <button @click="createNewNote()" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    {% trans 'Create a note' %}
+                </button>
+            </div>
+
+
+            <!-- Notes loop for sidebar -->
+            <template x-for="note in notes" :key="note.id">
+                <div class="note-list-item"
+                    :class="{ 'selected': currentNote && currentNote.id === note.id, 'pinned': note.is_pinned, 'bulk-selected': selectedNotes.includes(note.id) }"
+                    @click="openNote(note)">
+
+                    <!-- Checkbox pour sélection multiple -->
+                    <div class="note-selection" @click.stop>
+                        <input type="checkbox"
+                            :checked="selectedNotes.includes(note.id)"
+                            @change="toggleSelection(note.id)"
+                            class="form-check-input">
+                    </div>
+
+                    <!-- Titre de la note -->
+                    <div class="note-list-title">
+                        <span x-text="note.title || '{% trans 'Untitled' %}'"></span>
+                        <span x-show="archiveStatus === 'archived'" class="archived-indicator">
+                            <i class="bi bi-archive-fill"></i>
+                        </span>
+                    </div>
+
+
+                    <!-- Métadonnées -->
+                    <div class="note-list-meta">
+                        <div class="note-tags">
+                            <span x-show="note.note_type" class="note-tag type" x-text="note.note_type"></span>
+                        </div>
+                        <span class="note-date" x-text="timeAgo(note.updated_at)"></span>
+                    </div>
+                </div>
+            </template>
+        </div>
+                <!-- Load more -->
+        <div id="loadMoreContainer" class="text-center load-more-container">
+            <button id="loadMoreBtn" class="btn-linguify-secondary">
+                <i class="bi bi-arrow-down-circle mr-2"></i>
+                {% trans "Load more" %}
+            </button>
+        </div>
+    </div>
+</div>

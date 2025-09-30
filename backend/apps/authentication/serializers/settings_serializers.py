@@ -35,9 +35,8 @@ class UserSerializer(serializers.ModelSerializer):
         # Expose only necessary fields for viewing
         fields = [
             'public_id', 'username', 'first_name', 'last_name', 'email', 'birthday', 'gender',
-            'profile_picture', 'picture', 'bio', 'native_language', 'target_language',
-            'language_level', 'objectives', 'is_active', 'is_coach', 'is_subscribed',
-            'is_superuser', 'is_staff', 'created_at', 'updated_at', 'name'
+            'profile_picture', 'picture', 'bio', 'is_active', 'is_coach', 'is_subscribed',
+            'is_superuser', 'is_staff', 'created_at', 'updated_at', 'name', 'interface_language'
         ]
         # Mark sensitive fields as read-only
         read_only_fields = [
@@ -77,8 +76,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'username', 'first_name', 'last_name', 'email', 'birthday', 'gender',
-            'profile_picture', 'bio', 'native_language', 'target_language',
-            'language_level', 'objectives', 'password', 'password2'
+            'profile_picture', 'bio', 'interface_language', 'password', 'password2'
         ]
 
 
@@ -96,13 +94,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         """
-        Validate the password and target language fields.
+        Validate the password fields.
 
         """
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Your passwords must be the same."})
-        if attrs['native_language'] == attrs['target_language']:
-            raise serializers.ValidationError({"target_language": "Your target language must be different from your native language."})
         return attrs
 
     def create(self, validated_data):
@@ -121,10 +117,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             gender=validated_data.get('gender'),
             profile_picture=validated_data.get('profile_picture'),
             bio=validated_data.get('bio'),
-            native_language=validated_data.get('native_language'),
-            target_language=validated_data.get('target_language'),
-            language_level=validated_data.get('language_level'),
-            objectives=validated_data.get('objectives'),
+            interface_language=validated_data.get('interface_language', 'en'),
         )
         return user
 
@@ -148,15 +141,12 @@ class MeSerializer(serializers.ModelSerializer):
             'name',  # Full name
             'birthday',
             'gender',
-            'native_language',
-            'target_language',
-            'language_level',
-            'objectives',
             'is_coach',
             'is_active',
             'is_subscribed',
             'profile_picture',
             'bio',
+            'interface_language',
             'created_at',
             'updated_at',
             'terms_accepted',
@@ -219,8 +209,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'phone_number', 'bio',
-                 'birthday', 'native_language', 'target_language',
-                 'language_level', 'objectives', 'gender', 'profile_picture']
+                 'birthday', 'gender', 'profile_picture', 'interface_language']
         
     def update(self, instance, validated_data):
         logger.info(f"Updating user profile with data: {validated_data}")
@@ -276,14 +265,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         """
         logger.info(f"Validating profile update data: {data}")
 
-        # Vérification complète des langues qui prend en compte toutes les situations
-        native_lang = data.get('native_language', getattr(self.instance, 'native_language', None))
-        target_lang = data.get('target_language', getattr(self.instance, 'target_language', None))
-        
-        if native_lang and target_lang and native_lang == target_lang:
-            raise serializers.ValidationError({
-                'target_language': 'Target language cannot be the same as native language'
-            })
+        # Profile validation can be added here if needed
 
         return data
 
@@ -479,28 +461,16 @@ class LearningSettingsSerializer(serializers.ModelSerializer):
         fields = [
             'daily_goal',
             'weekday_reminders',
-            'weekend_reminders', 
+            'weekend_reminders',
             'reminder_time',
             'speaking_exercises',
             'listening_exercises',
             'reading_exercises',
             'writing_exercises',
-            'native_language',
-            'target_language',
-            'language_level',
-            'objectives',
         ]
         
     def validate(self, data):
-        """Validate that native and target languages are different"""
-        native_lang = data.get('native_language', self.instance.native_language if self.instance else None)
-        target_lang = data.get('target_language', self.instance.target_language if self.instance else None)
-        
-        if native_lang and target_lang and native_lang == target_lang:
-            raise serializers.ValidationError(
-                "Native language and target language must be different"
-            )
-        
+        """Validate learning settings data"""
         return data
 
 
@@ -542,11 +512,7 @@ class GeneralSettingsSerializer(serializers.ModelSerializer):
             'gender',
             'birthday',
             
-            # Language settings
-            'native_language',
-            'target_language',
-            'language_level',
-            'objectives',
+            # Interface settings
             'interface_language',
             
             # Notification settings
@@ -566,15 +532,6 @@ class GeneralSettingsSerializer(serializers.ModelSerializer):
         
     def validate(self, data):
         """Validate settings data"""
-        # Validate language differences
-        native_lang = data.get('native_language', self.instance.native_language if self.instance else None)
-        target_lang = data.get('target_language', self.instance.target_language if self.instance else None)
-        
-        if native_lang and target_lang and native_lang == target_lang:
-            raise serializers.ValidationError({
-                'target_language': "Target language and native language must be different"
-            })
-        
         return data
 
 

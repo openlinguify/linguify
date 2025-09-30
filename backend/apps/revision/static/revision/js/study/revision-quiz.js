@@ -45,14 +45,23 @@ class QuizStudyMode {
             
             // Load cards for this deck
             const response = await window.revisionMain.revisionAPI.getCards(deck.id);
-            const allCards = response.results || response || [];
-            
+            let allCards = response.results || response || [];
+
+            // Apply user's session size limit
+            const userSettings = await this.getUserSettings();
+            const maxCards = userSettings.cards_per_session || 20;
+            if (allCards.length > maxCards) {
+                console.log(`📊 [Quiz] Limiting session to ${maxCards} cards (from ${allCards.length} total)`);
+                // Shuffle first, then limit
+                allCards = allCards.sort(() => Math.random() - 0.5).slice(0, maxCards);
+            }
+
             // Need at least 4 cards for multiple choice (1 correct + 3 distractors)
             if (allCards.length < 4) {
                 window.notificationService.error('Ce deck doit contenir au moins 4 cartes pour le mode questionnaire');
                 return;
             }
-            
+
             // Prepare quiz cards
             this.quizCards = this.prepareQuizCards(allCards);
             
@@ -69,9 +78,12 @@ class QuizStudyMode {
             
             // Show quiz interface
             this.showQuizInterface();
-            
-            // Load first question
-            this.loadCurrentQuestion();
+
+            // Use requestAnimationFrame to ensure DOM is updated before loading question
+            requestAnimationFrame(() => {
+                // Load first question
+                this.loadCurrentQuestion();
+            });
             
         } catch (error) {
             console.error('Error starting quiz:', error);
@@ -164,16 +176,27 @@ class QuizStudyMode {
         }
 
         const quizCard = this.quizCards[this.currentQuestionIndex];
-        
+
         // Reset state
         this.selectedAnswer = null;
         this.hasAnswered = false;
-        
+
         // Set question
-        document.getElementById('quizQuestion').textContent = quizCard.question;
-        
+        const questionElement = document.getElementById('quizQuestion');
+        if (!questionElement) {
+            console.error('❌ Quiz question element not found in DOM');
+            window.notificationService.error('Erreur d\'affichage du questionnaire');
+            return;
+        }
+        questionElement.textContent = quizCard.question;
+
         // Create options
         const optionsContainer = document.getElementById('quizOptions');
+        if (!optionsContainer) {
+            console.error('❌ Quiz options container not found in DOM');
+            window.notificationService.error('Erreur d\'affichage du questionnaire');
+            return;
+        }
         optionsContainer.innerHTML = '';
         
         quizCard.options.forEach((option, index) => {
@@ -448,6 +471,40 @@ class QuizStudyMode {
             }
             const elements = window.revisionMain.getElements();
             elements.welcomeState.style.display = 'block';
+        }
+    }
+
+    async getUserSettings() {
+        /**
+         * Récupère les paramètres utilisateur depuis l'API
+         */
+        try {
+            const response = await fetch('/api/v1/revision/api/settings/user/', {
+                headers: {
+                    'X-CSRFToken': window.apiService.getCSRFToken(),
+                }
+            });
+
+            if (!response.ok) {
+                console.warn('[QuizMode] Could not fetch user settings, using defaults');
+                return {
+                    cards_per_session: 20,
+                    default_session_duration: 20,
+                    required_reviews_to_learn: 3
+                };
+            }
+
+            const data = await response.json();
+            console.log('[QuizMode] User settings loaded:', data);
+            return data.settings || data;
+
+        } catch (error) {
+            console.error('[QuizMode] Error fetching user settings:', error);
+            return {
+                cards_per_session: 20,
+                default_session_duration: 20,
+                required_reviews_to_learn: 3
+            };
         }
     }
 }

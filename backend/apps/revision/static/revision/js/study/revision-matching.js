@@ -42,8 +42,16 @@ class MatchingStudyMode {
             
             // Load cards for this deck
             const response = await window.revisionMain.revisionAPI.getCards(deck.id);
-            const allCards = response.results || response || [];
-            
+            let allCards = response.results || response || [];
+
+            // Apply user's session size limit
+            const userSettings = await this.getUserSettings();
+            const maxCards = Math.min(userSettings.cards_per_session || 20, 12); // Match game works best with max 12 cards
+            if (allCards.length > maxCards) {
+                console.log(`📊 [Match] Limiting session to ${maxCards} cards (from ${allCards.length} total)`);
+                allCards = allCards.sort(() => Math.random() - 0.5).slice(0, maxCards);
+            }
+
             // Need at least 3 cards for matching game
             if (allCards.length < 3) {
                 this.showNoCardsMessage();
@@ -67,7 +75,7 @@ class MatchingStudyMode {
             if (unlearnedCards.length >= 6) {
                 // Priorité absolue aux cartes non-apprises (6 cartes)
                 cardsToUse = unlearnedCards.slice(0, 6);
-                console.log(`🎯 Mode focus: ${cardsToUse.length} cartes non-apprises uniquement`);
+                console.log(`🎯 Mode focus: ${cardsToUse.length} ${window.ngettext('card', 'cards', cardsToUse.length)} non-apprises uniquement`);
             } else if (unlearnedCards.length >= 3) {
                 // Mélanger cartes non-apprises avec quelques apprises (max 8 total)
                 cardsToUse = [...unlearnedCards];
@@ -82,7 +90,7 @@ class MatchingStudyMode {
             } else {
                 // Toutes apprises - mode révision (max 6 pour garder de la difficulté)
                 cardsToUse = learnedCards.slice(0, 6);
-                console.log(`📚 Mode révision: ${cardsToUse.length} cartes apprises (révision)`);
+                console.log(`📚 Mode révision: ${cardsToUse.length} ${window.ngettext('card', 'cards', cardsToUse.length)} apprises (révision)`);
             }
             
             // Préparer les cartes matching (mélanger l'ordre)
@@ -487,6 +495,40 @@ class MatchingStudyMode {
             }
             const elements = window.revisionMain.getElements();
             elements.welcomeState.style.display = 'block';
+        }
+    }
+
+    async getUserSettings() {
+        /**
+         * Récupère les paramètres utilisateur depuis l'API
+         */
+        try {
+            const response = await fetch('/api/v1/revision/api/settings/user/', {
+                headers: {
+                    'X-CSRFToken': window.apiService.getCSRFToken(),
+                }
+            });
+
+            if (!response.ok) {
+                console.warn('[MatchMode] Could not fetch user settings, using defaults');
+                return {
+                    cards_per_session: 20,
+                    default_session_duration: 20,
+                    required_reviews_to_learn: 3
+                };
+            }
+
+            const data = await response.json();
+            console.log('[MatchMode] User settings loaded:', data);
+            return data.settings || data;
+
+        } catch (error) {
+            console.error('[MatchMode] Error fetching user settings:', error);
+            return {
+                cards_per_session: 20,
+                default_session_duration: 20,
+                required_reviews_to_learn: 3
+            };
         }
     }
 }

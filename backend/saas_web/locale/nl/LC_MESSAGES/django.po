@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify SaaS Web\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-17 00:00+0000\n"
+"POT-Creation-Date: 2025-09-29 20:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: Dutch\n"
@@ -16,105 +16,235 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+# Navigation
+#: .\saas_web\templates\components\header\app_header.html:18
+msgid "Return to dashboard"
+msgstr "Terug naar dashboard"
+
+#: .\saas_web\templates\components\header\app_header.html:33
+msgid "Go to dashboard"
+msgstr "Ga naar dashboard"
+
 # Dashboard
+#: .\saas_web\templates\components\header\app_header.html:34
+#: .\saas_web\templates\components\header\app_header.html:198
+#: .\saas_web\templates\saas_web\dashboard.html:5
 msgid "Dashboard"
 msgstr "Dashboard"
 
-msgid "Welcome back"
-msgstr "Welkom terug"
-
-msgid "Your Apps"
-msgstr "Jouw apps"
-
-msgid "Recent Activity"
-msgstr "Recente activiteit"
-
-msgid "Statistics"
-msgstr "Statistieken"
-
-msgid "No applications installed"
-msgstr "Geen applicaties geïnstalleerd"
-
-msgid "Explore the App Store to discover and install learning applications."
-msgstr "Verken de App Store om leerapplicaties te ontdekken en te installeren."
-
-msgid "Explore App Store"
-msgstr "Verken App Store"
+#: .\saas_web\templates\components\header\app_header.html:39
+msgid "Browse app store"
+msgstr "Blader door de winkel"
 
 # App Store
+#: .\saas_web\templates\components\header\app_header.html:40
+#: .\saas_web\templates\components\header\app_header.html:202
+#: .\saas_web\templates\saas_web\dashboard.html:52
+#: .\saas_web\templates\saas_web\dashboard.html:54
+#: .\saas_web\templates\saas_web\dashboard.html:75
+#: .\saas_web\templates\saas_web\dashboard.html:77
 msgid "App Store"
 msgstr "App Store"
 
-msgid "All Apps"
-msgstr "Alle apps"
+#: .\saas_web\templates\components\header\app_header.html:52
+msgid "Toggle navigation menu"
+msgstr "Navigatiemenu schakelen"
 
-msgid "Installed"
-msgstr "Geïnstalleerd"
+#: .\saas_web\templates\components\header\app_header.html:64
+msgid "Select language"
+msgstr "Taal selecteren"
 
-msgid "Install"
-msgstr "Installeren"
+#: .\saas_web\templates\components\header\app_header.html:67
+#: .\saas_web\templates\components\header\app_header.html:88
+msgid "French"
+msgstr "Frans"
 
-msgid "Uninstall"
-msgstr "Verwijderen"
+#: .\saas_web\templates\components\header\app_header.html:69
+#: .\saas_web\templates\components\header\app_header.html:75
+#: .\saas_web\templates\components\header\app_header.html:82
+#: .\saas_web\templates\components\header\app_header.html:83
+msgid "English"
+msgstr "Engels"
 
-msgid "Free"
-msgstr "Gratis"
+#: .\saas_web\templates\components\header\app_header.html:71
+#: .\saas_web\templates\components\header\app_header.html:94
+msgid "Spanish"
+msgstr "Spaans"
 
-msgid "Premium"
-msgstr "Premium"
+#: .\saas_web\templates\components\header\app_header.html:73
+#: .\saas_web\templates\components\header\app_header.html:100
+msgid "Dutch"
+msgstr "Nederlands"
+
+# Notifications
+#: .\saas_web\templates\components\header\app_header.html:114
+msgid "View notifications"
+msgstr "Bekijk meldingen"
+
+#: .\saas_web\templates\components\header\app_header.html:119
+msgid "Unread notifications count"
+msgstr "Aantal ongelezen meldingen"
+
+#: .\saas_web\templates\components\header\app_header.html:126
+msgid "Notifications"
+msgstr "Meldingen"
+
+#: .\saas_web\templates\components\header\app_header.html:130
+msgid "Mark all notifications as read"
+msgstr "Markeer alle meldingen als gelezen"
+
+#: .\saas_web\templates\components\header\app_header.html:131
+msgid "Mark all as read"
+msgstr "Alles als gelezen markeren"
+
+#: .\saas_web\templates\components\header\app_header.html:137
+msgid "No new notifications"
+msgstr "Geen nieuwe meldingen"
+
+# User Menu
+#: .\saas_web\templates\components\header\app_header.html:149
+msgid "User menu"
+msgstr "Gebruikersmenu"
+
+#: .\saas_web\templates\components\header\app_header.html:152
+msgid "Profile picture"
+msgstr "Profielfoto"
 
 # Settings
+#: .\saas_web\templates\components\header\app_header.html:173
+#: .\saas_web\templates\saas_web\dashboard.html:62
+#: .\saas_web\templates\saas_web\dashboard.html:64
+#: .\saas_web\templates\saas_web\dashboard.html:85
+#: .\saas_web\templates\saas_web\dashboard.html:87
+#: .\saas_web\templates\saas_web\settings\settings.html:6
+#: .\saas_web\templates\saas_web\settings\settings.html:16
 msgid "Settings"
 msgstr "Instellingen"
 
-msgid "Profile"
-msgstr "Profiel"
+#: .\saas_web\templates\components\header\app_header.html:179
+#: .\saas_web\templates\components\header\app_header.html:207
+msgid "Bugs & Feedbacks"
+msgstr "Bugs en feedback"
 
-msgid "Account"
-msgstr "Account"
-
-msgid "Preferences"
-msgstr "Voorkeuren"
-
-msgid "Language"
-msgstr "Taal"
-
-msgid "Theme"
-msgstr "Thema"
-
-msgid "Save changes"
-msgstr "Wijzigingen opslaan"
-
-msgid "Customize your Linguify experience"
-msgstr "Pas je Linguify-ervaring aan"
-
-msgid "Search settings..."
-msgstr "Zoek instellingen..."
-
-msgid "App Manager"
-msgstr "App-beheer"
-
-msgid "Profile & Account"
-msgstr "Profiel & Account"
-
-msgid "Manage your personal information and account settings"
-msgstr "Beheer je persoonlijke informatie en accountinstellingen"
-
-# Common
-msgid "Search"
-msgstr "Zoeken"
-
+#: .\saas_web\templates\components\header\app_header.html:186
 msgid "Logout"
 msgstr "Uitloggen"
 
-msgid "Help"
-msgstr "Hulp"
+# Mobile Navigation
+#: .\saas_web\templates\components\header\app_header.html:199
+msgid "Home"
+msgstr "Home"
 
-msgid "Support"
-msgstr "Ondersteuning"
+#: .\saas_web\templates\components\header\app_header.html:203
+msgid "Store"
+msgstr "Winkel"
 
+#: .\saas_web\templates\saas_web\base.html:428
+#: .\saas_web\templates\saas_web\base.html:430
 msgid "An error occurred. Please try again."
 msgstr "Er is een fout opgetreden. Probeer het opnieuw."
 
-msgid "Open chat"
-msgstr "Chat openen"
+#: .\saas_web\templates\saas_web\settings\settings.html:17
+msgid "Customize your Linguify experience"
+msgstr "Pas je Linguify-ervaring aan"
+
+#: .\saas_web\templates\saas_web\settings\settings.html:22
+msgid "Search settings..."
+msgstr "Zoek instellingen..."
+
+#: .\saas_web\templates\saas_web\settings\settings.html:67
+msgid "App Manager"
+msgstr "App-beheer"
+
+#: .\saas_web\templates\saas_web\settings\settings.html:83
+#: .\saas_web\templates\saas_web\settings\settings.html:85
+msgid "Profile & Account"
+msgstr "Profiel & Account"
+
+#: .\saas_web\templates\saas_web\settings\settings.html:86
+msgid "Manage your personal information and account settings"
+msgstr "Beheer je persoonlijke informatie en accountinstellingen"
+
+#: .\saas_web\templates\saas_web\settings\settings.html:144
+#, python-format
+msgid "%(name)s settings coming soon..."
+msgstr ""
+
+#: .\saas_web\views\admin.py:18
+msgid "Fix Apps - Administration"
+msgstr ""
+
+#: .\saas_web\views\dashboard.py:31
+msgid "Dashboard - Open Linguify"
+msgstr ""
+
+#~ msgid "Welcome back"
+#~ msgstr "Welkom terug"
+
+#~ msgid "Your Apps"
+#~ msgstr "Jouw apps"
+
+#~ msgid "Recent Activity"
+#~ msgstr "Recente activiteit"
+
+#~ msgid "Statistics"
+#~ msgstr "Statistieken"
+
+#~ msgid "No applications installed"
+#~ msgstr "Geen applicaties geïnstalleerd"
+
+#~ msgid "Explore the App Store to discover and install learning applications."
+#~ msgstr ""
+#~ "Verken de App Store om leerapplicaties te ontdekken en te installeren."
+
+#~ msgid "Explore App Store"
+#~ msgstr "Verken App Store"
+
+#~ msgid "All Apps"
+#~ msgstr "Alle apps"
+
+#~ msgid "Installed"
+#~ msgstr "Geïnstalleerd"
+
+#~ msgid "Install"
+#~ msgstr "Installeren"
+
+#~ msgid "Uninstall"
+#~ msgstr "Verwijderen"
+
+#~ msgid "Free"
+#~ msgstr "Gratis"
+
+#~ msgid "Premium"
+#~ msgstr "Premium"
+
+#~ msgid "Profile"
+#~ msgstr "Profiel"
+
+#~ msgid "Account"
+#~ msgstr "Account"
+
+#~ msgid "Preferences"
+#~ msgstr "Voorkeuren"
+
+#~ msgid "Language"
+#~ msgstr "Taal"
+
+#~ msgid "Theme"
+#~ msgstr "Thema"
+
+#~ msgid "Save changes"
+#~ msgstr "Wijzigingen opslaan"
+
+# Common
+#~ msgid "Search"
+#~ msgstr "Zoeken"
+
+#~ msgid "Help"
+#~ msgstr "Hulp"
+
+#~ msgid "Support"
+#~ msgstr "Ondersteuning"
+
+#~ msgid "Open chat"
+#~ msgstr "Chat openen"

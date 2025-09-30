@@ -91,9 +91,12 @@ class UserSettingsView(View):
                 settings_categories['applications']['tabs'].append(revision_tab)
             
             
-            # Mark the profile tab as active by default (since this is the main settings view)
+            # Get the active tab from URL parameter or default to profile
+            active_tab_id = request.GET.get('tab', 'profile')
+
+            # Mark the appropriate tab as active
             for tab in settings_tabs:
-                tab['active'] = tab.get('id') == 'profile'
+                tab['active'] = tab.get('id') == active_tab_id
             
             # Get serializers for settings forms
             general_serializer = GeneralSettingsSerializer(instance=request.user)
@@ -120,6 +123,7 @@ class UserSettingsView(View):
                 'revision': 'saas_web:revision_settings',
                 'language_ai': 'saas_web:language_ai_settings',
                 'language-ai': 'saas_web:language_ai_settings',
+                'language_learning': 'saas_web:language_learning_settings',
                 'notifications': 'saas_web:notification_settings',
                 'notification': 'saas_web:notification_settings',
                 'documents': 'saas_web:documents_settings',
@@ -132,6 +136,11 @@ class UserSettingsView(View):
                     logger.warning(f"Could not reverse URL {url_name}: {e}")
                     settings_urls[key] = f'/settings/{key}/'
             
+            # Get active tab info for page title and breadcrumb
+            active_tab = next((tab for tab in settings_tabs if tab.get('active')), None)
+            page_title = active_tab['name'] if active_tab else _('Profile & Account')
+            breadcrumb_active = active_tab['name'] if active_tab else _('Profile & Account')
+
             context = {
                 'title': _('Paramètres - Open Linguify'),
                 'user': request.user,
@@ -140,6 +149,8 @@ class UserSettingsView(View):
                 'settings_categories': settings_categories,
                 'settings_tabs': settings_tabs,
                 'settings_urls': settings_urls,
+                'page_title': page_title,
+                'breadcrumb_active': breadcrumb_active,
                 'general_form': general_serializer,
                 'notification_form': notification_serializer,
                 'learning_form': learning_serializer,
@@ -341,7 +352,7 @@ class UserSettingsView(View):
                 # Create a temporary request for the revision viewset
                 from django.test import RequestFactory
                 factory = RequestFactory()
-                revision_request = factory.post('/api/v1/revision/user-settings/', data=audio_data)
+                revision_request = factory.post('/api/v1/revision/api/user-settings/', data=audio_data)
                 revision_request.user = request.user
                 revision_request.META = request.META
                 

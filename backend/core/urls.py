@@ -15,7 +15,8 @@ from drf_spectacular.views import (
 from apps.authentication.views.terms_views import accept_terms, terms_status
 from tests.test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
-from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
+# SEO moved to portal
+# from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
 from rest_framework.routers import DefaultRouter
 from .views.tag_views import TagViewSet, TagRelationViewSet, ObjectTagsViewSet
 
@@ -80,6 +81,9 @@ urlpatterns = [
     path('csrf/', utils.get_csrf_token, name='get_csrf_token'),
     path('api/', include('rest_framework.urls')),
     path('api/auth/', include('apps.authentication.urls.main')),
+
+    # Authentication app features (feedback system)
+    path('auth/', include('apps.authentication.urls_feedback')),
     # Test settings interface
     path('test-settings/', test_settings, name='test_settings'),
     # Terms and conditions endpoints
@@ -88,8 +92,7 @@ urlpatterns = [
     path('api/v1/revision/', include('apps.revision.urls', namespace='revision')),
     path('api/v1/notebook/', include('apps.notebook.urls', namespace='notebook')),
     path('documents/', include('apps.documents.urls', namespace='documents')),
-    path('notebook/', include('apps.notebook.urls_web', namespace='notebook_web')),
-    path('revision/', include('apps.revision.urls_web', namespace='revision_web')),
+    path('revision/', include('apps.revision.urls', namespace='revision_web')),
     path('learning/', include('apps.course.urls', namespace='course')),
     path('quizz/', include('apps.quizz.urls_web', namespace='quizz_web')),
     path('todo/', include('apps.todo.urls', namespace='todo_web')),
@@ -126,24 +129,25 @@ urlpatterns = [
     path('community/', include('apps.community.urls', namespace='community')),
     # path('teaching/', include('apps.teaching.urls', namespace='teaching')),  # App temporarily hidden
     path('api/cms-sync/', include('apps.cms_sync.urls', namespace='cms_sync')),
-    # path('language_learning/', include('apps.language_learning.urls', namespace='language_learning')),  # App temporarily hidden
-    # SEO URLs - Organized sitemap serving
-    path('robots.txt', serve_robots_txt, name='robots_txt'),
-    path('sitemap.xml', serve_sitemap, {'sitemap_name': 'sitemap'}, name='sitemap_main'),
-    path('sitemap-index.xml', serve_sitemap, {'sitemap_name': 'sitemap-index'}, name='sitemap_index'),
-    path('sitemap-static.xml', serve_sitemap, {'sitemap_name': 'sitemap-static'}, name='sitemap_static'),
-    path('sitemap-courses.xml', serve_sitemap, {'sitemap_name': 'sitemap-courses'}, name='sitemap_courses'),
-    path('sitemap-learning.xml', serve_sitemap, {'sitemap_name': 'sitemap-learning'}, name='sitemap_learning'),
-    path('sitemap-ugc.xml', serve_sitemap, {'sitemap_name': 'sitemap-ugc'}, name='sitemap_ugc'),
-    path('sitemap-images.xml', serve_sitemap, {'sitemap_name': 'sitemap-images'}, name='sitemap_images'),
-    path('sitemap-videos.xml', serve_sitemap, {'sitemap_name': 'sitemap-videos'}, name='sitemap_videos'),
-    path('sitemap-en.xml', serve_sitemap, {'sitemap_name': 'sitemap-en'}, name='sitemap_en'),
-    path('sitemap-fr.xml', serve_sitemap, {'sitemap_name': 'sitemap-fr'}, name='sitemap_fr'),
-    path('sitemap-es.xml', serve_sitemap, {'sitemap_name': 'sitemap-es'}, name='sitemap_es'),
-    path('sitemap-nl.xml', serve_sitemap, {'sitemap_name': 'sitemap-nl'}, name='sitemap_nl'),
-    
-    # SEO Status and Management
-    path('seo/status/', sitemap_status, name='seo_status'),
+    path('language_learning/', include('apps.language_learning.urls', namespace='language_learning')),
+    path('notebook/', include('apps.notebook.urls', namespace='notebook_web')),
+    # SEO URLs - Moved to portal
+    # path('robots.txt', serve_robots_txt, name='robots_txt'),
+    # path('sitemap.xml', serve_sitemap, {'sitemap_name': 'sitemap'}, name='sitemap_main'),
+    # path('sitemap-index.xml', serve_sitemap, {'sitemap_name': 'sitemap-index'}, name='sitemap_index'),
+    # path('sitemap-static.xml', serve_sitemap, {'sitemap_name': 'sitemap-static'}, name='sitemap_static'),
+    # path('sitemap-courses.xml', serve_sitemap, {'sitemap_name': 'sitemap-courses'}, name='sitemap_courses'),
+    # path('sitemap-learning.xml', serve_sitemap, {'sitemap_name': 'sitemap-learning'}, name='sitemap_learning'),
+    # path('sitemap-ugc.xml', serve_sitemap, {'sitemap_name': 'sitemap-ugc'}, name='sitemap_ugc'),
+    # path('sitemap-images.xml', serve_sitemap, {'sitemap_name': 'sitemap-images'}, name='sitemap_images'),
+    # path('sitemap-videos.xml', serve_sitemap, {'sitemap_name': 'sitemap-videos'}, name='sitemap_videos'),
+    # path('sitemap-en.xml', serve_sitemap, {'sitemap_name': 'sitemap-en'}, name='sitemap_en'),
+    # path('sitemap-fr.xml', serve_sitemap, {'sitemap_name': 'sitemap-fr'}, name='sitemap_fr'),
+    # path('sitemap-es.xml', serve_sitemap, {'sitemap_name': 'sitemap-es'}, name='sitemap_es'),
+    # path('sitemap-nl.xml', serve_sitemap, {'sitemap_name': 'sitemap-nl'}, name='sitemap_nl'),
+
+    # SEO Status and Management - Moved to portal
+    # path('seo/status/', sitemap_status, name='seo_status'),
     
     # LMS info page  
     # path('lms/', views.lms_info, name='lms_info'),
@@ -154,8 +158,8 @@ urlpatterns += i18n_patterns(
     # Authentication (login/register pages) - with language prefix
     path('auth/', include('apps.authentication.urls.auth', namespace='auth')),
 
-    # Redirect to dashboard for authenticated users, or to portal for others
-    path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
+    # Redirect to dashboard (will handle authentication there)
+    path('', RedirectView.as_view(url='/dashboard/', permanent=False), name='home'),
     prefix_default_language=True,  # Add language prefix even for default language
 )
 

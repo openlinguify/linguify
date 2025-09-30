@@ -1,0 +1,78 @@
+{% load static %}
+{% load i18n %}
+<!-- Delete Confirmation Modal - Linguify Style -->
+<div x-show="showDeleteModal"
+     class="fixed inset-0 flex items-center justify-center"
+     style="background-color: rgba(0, 0, 0, 0.5); z-index: 99999;"
+     @click="showDeleteModal = false">
+
+    <div class="modal-content bg-white rounded-lg shadow-xl w-96 max-h-[90vh] overflow-y-auto"
+         style="max-width: 28rem; z-index: 100000;"
+         @click.stop>
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <div class="modal-header-content">
+                <div class="modal-icon-danger">
+                    <i class="bi bi-trash3"></i>
+                </div>
+                <div style="margin-left: 0.875rem;">
+                    <div class="modal-title" x-text="deleteModalTitle">
+                        {% trans 'Delete Confirmation' %}
+                    </div>
+                </div>
+            </div>
+            <button type="button"
+                    class="rounded-full w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-red-600 transition-all duration-200 border-0"
+                    @click="showDeleteModal = false">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body space-y-5">
+            <!-- Single note deletion -->
+            <div x-show="deleteModalType === 'single'">
+                <p class="text-gray-600 mb-4">
+                    {% trans 'Are you sure you want to delete this note?' %}
+                </p>
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <h4 class="font-medium text-gray-900" x-text="deleteModalData?.title || 'Untitled'"></h4>
+                    <p class="text-sm text-gray-500 mt-1" x-text="deleteModalData?.updated_at ? new Date(deleteModalData.updated_at).toLocaleDateString() : ''"></p>
+                </div>
+            </div>
+
+            <!-- Bulk deletion -->
+            <div x-show="deleteModalType === 'bulk'">
+                <p class="text-gray-600 mb-4">
+                    {% trans 'Are you sure you want to delete' %} <span class="font-semibold" x-text="selectedNotes.length"></span> {% trans 'selected notes?' %}
+                </p>
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-gray-600">
+                        <i class="bi bi-info-circle mr-2"></i>
+                        {% trans 'This action cannot be undone.' %}
+                    </p>
+                </div>
+            </div>
+
+            <p class="text-xs text-gray-500">
+                {% trans 'This action is permanent and cannot be reversed.' %}
+            </p>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+            <button type="button"
+                    class="btn-linguify-secondary"
+                    @click="showDeleteModal = false">
+                {% trans 'Cancel' %}
+            </button>
+            <button type="button"
+                    class="btn-linguify-danger"
+                    @click="confirmDelete()">
+                <i class="bi bi-trash3"></i>
+                <span x-text="deleteModalType === 'bulk' ? `{% trans 'Delete' %} ${selectedNotes.length} {% trans 'notes' %}` : '{% trans 'Delete Note' %}'"></span>
+            </button>
+        </div>
+    </div>
+</div>

@@ -124,38 +124,38 @@ const exploreAPI = {
             ...filters
         });
         
-        return await window.apiService.request(`/api/v1/revision/public/?${params}`);
+        return await window.apiService.request(`/api/v1/revision/api/public/?${params}`);
     },
     
     async getPublicDeck(id) {
-        return await window.apiService.request(`/api/v1/revision/public/${id}/`);
+        return await window.apiService.request(`/api/v1/revision/api/public/${id}/`);
     },
     
     async getPublicDeckCards(id) {
-        return await window.apiService.request(`/api/v1/revision/public/${id}/cards/`);
+        return await window.apiService.request(`/api/v1/revision/api/public/${id}/cards/`);
     },
     
     async clonePublicDeck(id, data = {}) {
-        return await window.apiService.request(`/api/v1/revision/public/${id}/clone/`, {
+        return await window.apiService.request(`/api/v1/revision/api/public/${id}/clone/`, {
             method: 'POST',
             body: JSON.stringify(data)
         });
     },
     
     async getPublicStats() {
-        return await window.apiService.request('/api/v1/revision/public/stats/');
+        return await window.apiService.request('/api/v1/revision/api/public/stats/');
     },
 
     async getTrendingDecks() {
-        return await window.apiService.request('/api/v1/revision/public/trending/');
+        return await window.apiService.request('/api/v1/revision/api/public/trending/');
     },
 
     async getPopularDecks() {
-        return await window.apiService.request('/api/v1/revision/public/popular/');
+        return await window.apiService.request('/api/v1/revision/api/public/popular/');
     },
 
     async rateDeck(deckId, rating) {
-        return await window.apiService.request(`/api/v1/revision/public/${deckId}/rate/`, {
+        return await window.apiService.request(`/api/v1/revision/api/public/${deckId}/rate/`, {
             method: 'POST',
             body: JSON.stringify({ rating })
         });
@@ -163,8 +163,8 @@ const exploreAPI = {
 
     async getRecommendations(deckId = null) {
         const url = deckId 
-            ? `/api/v1/revision/public/recommendations/?based_on=${deckId}`
-            : '/api/v1/revision/public/recommendations/';
+            ? `/api/v1/revision/api/public/recommendations/?based_on=${deckId}`
+            : '/api/v1/revision/api/public/recommendations/';
         return await window.apiService.request(url);
     },
 
@@ -173,19 +173,19 @@ const exploreAPI = {
             search: query,
             ...filters
         });
-        return await window.apiService.request(`/api/v1/revision/public/search/?${params}`);
+        return await window.apiService.request(`/api/v1/revision/api/public/search/?${params}`);
     },
 
     async getDeckReviews(deckId, page = 1) {
-        return await window.apiService.request(`/api/v1/revision/public/${deckId}/reviews/?page=${page}`);
+        return await window.apiService.request(`/api/v1/revision/api/public/${deckId}/reviews/?page=${page}`);
     },
 
     async getDeckRatingStats(deckId) {
-        return await window.apiService.request(`/api/v1/revision/public/${deckId}/rating-stats/`);
+        return await window.apiService.request(`/api/v1/revision/api/public/${deckId}/rating-stats/`);
     },
 
     async getUserRating(deckId) {
-        return await window.apiService.request(`/api/v1/revision/public/${deckId}/user-rating/`);
+        return await window.apiService.request(`/api/v1/revision/api/public/${deckId}/user-rating/`);
     },
 
     async getAuthorProfile(userId) {
@@ -207,15 +207,15 @@ const exploreAPI = {
             q: query,
             limit: limit
         });
-        return await window.apiService.request(`/api/v1/revision/public/suggest/?${params}`);
+        return await window.apiService.request(`/api/v1/revision/api/public/suggest/?${params}`);
     },
 
     async getPopularSearchTerms() {
-        return await window.apiService.request('/api/v1/revision/public/popular-searches/');
+        return await window.apiService.request('/api/v1/revision/api/public/popular-searches/');
     },
 
     async logSearchQuery(query, resultCount = 0) {
-        return await window.apiService.request('/api/v1/revision/public/log-search/', {
+        return await window.apiService.request('/api/v1/revision/api/public/log-search/', {
             method: 'POST',
             body: JSON.stringify({ 
                 query: query,
@@ -231,68 +231,68 @@ const exploreAPI = {
             types: types.join(','),
             limit: 10
         });
-        return await window.apiService.request(`/api/v1/revision/public/autocomplete/?${params}`);
+        return await window.apiService.request(`/api/v1/revision/api/public/autocomplete/?${params}`);
     },
 
     // Favorites API
     async getFavorites() {
-        return await window.apiService.request('/api/v1/revision/favorites/');
+        return await window.apiService.request('/api/v1/revision/api/favorites/');
     },
 
     async addToFavorites(deckId) {
-        return await window.apiService.request('/api/v1/revision/favorites/', {
+        return await window.apiService.request('/api/v1/revision/api/favorites/', {
             method: 'POST',
             body: JSON.stringify({ deck_id: deckId })
         });
     },
 
     async removeFromFavorites(deckId) {
-        return await window.apiService.request(`/api/v1/revision/favorites/${deckId}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/favorites/${deckId}/`, {
             method: 'DELETE'
         });
     },
 
     // Collections API
     async getCollections() {
-        return await window.apiService.request('/api/v1/revision/collections/');
+        return await window.apiService.request('/api/v1/revision/api/collections/');
     },
 
     async createCollection(data) {
-        return await window.apiService.request('/api/v1/revision/collections/', {
+        return await window.apiService.request('/api/v1/revision/api/collections/', {
             method: 'POST',
             body: JSON.stringify(data)
         });
     },
 
     async updateCollection(collectionId, data) {
-        return await window.apiService.request(`/api/v1/revision/collections/${collectionId}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/collections/${collectionId}/`, {
             method: 'PATCH',
             body: JSON.stringify(data)
         });
     },
 
     async deleteCollection(collectionId) {
-        return await window.apiService.request(`/api/v1/revision/collections/${collectionId}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/collections/${collectionId}/`, {
             method: 'DELETE'
         });
     },
 
     async addDeckToCollection(collectionId, deckId) {
-        return await window.apiService.request(`/api/v1/revision/collections/${collectionId}/add-deck/`, {
+        return await window.apiService.request(`/api/v1/revision/api/collections/${collectionId}/add-deck/`, {
             method: 'POST',
             body: JSON.stringify({ deck_id: deckId })
         });
     },
 
     async removeDeckFromCollection(collectionId, deckId) {
-        return await window.apiService.request(`/api/v1/revision/collections/${collectionId}/remove-deck/`, {
+        return await window.apiService.request(`/api/v1/revision/api/collections/${collectionId}/remove-deck/`, {
             method: 'POST',
             body: JSON.stringify({ deck_id: deckId })
         });
     },
 
     async getCollectionDecks(collectionId) {
-        return await window.apiService.request(`/api/v1/revision/collections/${collectionId}/decks/`);
+        return await window.apiService.request(`/api/v1/revision/api/collections/${collectionId}/decks/`);
     },
 
     // Notification API endpoints
@@ -619,7 +619,7 @@ function renderDeckCard(deck) {
                             </div>
                         </div>
                         <span class="deck-stats-badge">
-                            ${deck.cards_count || 0} cartes
+                            ${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)}
                         </span>
                     </div>
                 </div>
@@ -671,7 +671,7 @@ function renderDeckListItem(deck) {
             <div class="deck-list-content">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <h6 class="mb-1 fw-bold">${deck.name}</h6>
-                    <span class="deck-stats-badge">${deck.cards_count || 0} cartes</span>
+                    <span class="deck-stats-badge">${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)}</span>
                 </div>
                 
                 <div class="d-flex align-items-center gap-3 mb-2">
@@ -715,7 +715,7 @@ function renderPublicDeckDetails() {
     
     elements.publicDeckName.textContent = deck.name;
     elements.publicDeckAuthor.textContent = `Par @${deck.user.username}`;
-    elements.publicDeckStats.textContent = `${deck.cards_count || 0} cartes`;
+    elements.publicDeckStats.textContent = `${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)}`;
     
     // Rendu des cartes
     const cardsContainer = elements.publicDeckCardsPreview;
@@ -784,7 +784,7 @@ function renderPopularDecks() {
                 <div class="popular-deck-meta">
                     <div class="popular-deck-stats">
                         <span>${category.icon}</span>
-                        <span>${deck.cards_count || 0} cartes</span>
+                        <span>${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)}</span>
                     </div>
                     <div class="popular-deck-author">@${deck.user.username}</div>
                 </div>
@@ -986,7 +986,7 @@ async function loadAuthorOtherDecks(userId) {
                     <div class="recent-deck-icon">${category.icon}</div>
                     <div class="recent-deck-info">
                         <div class="recent-deck-name">${deck.name}</div>
-                        <div class="recent-deck-meta">${deck.cards_count || 0} cartes • ${formatDate(deck.created_at)}</div>
+                        <div class="recent-deck-meta">${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)} • ${formatDate(deck.created_at)}</div>
                     </div>
                 </div>
             `;
@@ -1485,7 +1485,7 @@ function generateFallbackSuggestions(query) {
             type: 'deck',
             title: deck.title,
             icon: '📚',
-            meta: `${deck.cards} cartes • ${deck.author} • ${deck.rating}⭐`,
+            meta: `${deck.cards} ${window.ngettext('card', 'cards', deck.cards)} • ${deck.author} • ${deck.rating}⭐`,
             action: () => performSearch(deck.title)
         });
     });
@@ -2161,7 +2161,7 @@ function renderFavorites() {
                     <div class="favorite-deck-icon">${category.icon}</div>
                     <div>
                         <div class="favorite-deck-name">${deck.name}</div>
-                        <div class="favorite-deck-meta">${deck.cards_count} cartes</div>
+                        <div class="favorite-deck-meta">${deck.cards_count} ${window.ngettext('card', 'cards', deck.cards_count || 0)}</div>
                     </div>
                 </div>
             </div>
@@ -2291,7 +2291,7 @@ async function showAddToCollectionModal(deckId) {
                 <div class="selected-deck-info">
                     <h6>${deck.name}</h6>
                     <div class="selected-deck-meta">
-                        ${deck.cards_count || 0} cartes • Par @${deck.user.username}
+                        ${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)} • Par @${deck.user.username}
                     </div>
                 </div>
             </div>
@@ -2427,7 +2427,7 @@ async function loadCollectionDecks(collectionId) {
                     <div class="collection-deck-info">
                         <div class="collection-deck-name">${deck.name}</div>
                         <div class="collection-deck-meta">
-                            ${deck.cards_count || 0} cartes • Par @${deck.user.username} • ${formatDate(deck.created_at)}
+                            ${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)} • Par @${deck.user.username} • ${formatDate(deck.created_at)}
                         </div>
                     </div>
                     <div class="collection-deck-actions">
@@ -3848,9 +3848,9 @@ function optimizePerformance() {
 function preloadCriticalResources() {
     // Preload common API endpoints
     const criticalEndpoints = [
-        '/api/v1/revision/public/stats/',
-        '/api/v1/revision/public/trending/',
-        '/api/v1/revision/public/popular/'
+        '/api/v1/revision/api/public/stats/',
+        '/api/v1/revision/api/public/trending/',
+        '/api/v1/revision/api/public/popular/'
     ];
     
     criticalEndpoints.forEach(endpoint => {

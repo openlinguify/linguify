@@ -275,7 +275,7 @@ function forceInitializeCalendar() {
         return html;
     }
     
-    function renderOdooCalendar() {
+    function renderoplaCalendar() {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
         const today = new Date();
@@ -350,7 +350,7 @@ function forceInitializeCalendar() {
     debugElements.forEach(el => el.remove());
     
     // Render openlinguify-style calendar
-    calendarEl.innerHTML = renderOdooCalendar();
+    calendarEl.innerHTML = renderoplaCalendar();
     
     // Create global calendar object
     window.calendar = {
@@ -391,11 +391,11 @@ function forceInitializeCalendar() {
         loadAndRender: async function() {
             try {
                 this.events = await this.loadEvents();
-                calendarEl.innerHTML = renderOdooCalendar();
+                calendarEl.innerHTML = renderoplaCalendar();
                 console.log('[Calendar] Rendered with events:', this.events.length);
             } catch (error) {
                 console.error('[Calendar] Error loading events:', error);
-                calendarEl.innerHTML = renderOdooCalendar();
+                calendarEl.innerHTML = renderoplaCalendar();
             }
         },
         loadEvents: async function() {

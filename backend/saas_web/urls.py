@@ -19,7 +19,7 @@ from apps.notebook.views.notebook_settings_views import NotebookSettingsView
 from apps.quizz.views.quizz_settings_views import QuizSettingsView
 from apps.revision.views.revision_settings_views import RevisionSettingsView
 from apps.language_ai.views.language_ai_settings_views import LanguageAISettingsView
-# from apps.language_learning.views.settings_views import language_learning_settings  # App temporarily hidden
+from apps.language_learning.views.settings_views import language_learning_settings
 from apps.documents.views.documents_settings_views import documents_settings_view
 from apps.todo.views.todo_settings_views import TodoSettingsView
 
@@ -41,7 +41,7 @@ urlpatterns = [
     path('settings/quiz/', QuizSettingsView.as_view(), name='quiz_settings'),
     path('settings/revision/', RevisionSettingsView.as_view(), name='revision_settings'),
     path('settings/language-ai/', LanguageAISettingsView.as_view(), name='language_ai_settings'),
-    # path('settings/language-learning/', language_learning_settings, name='language_learning_settings'),  # App temporarily hidden
+    path('settings/language_learning/', language_learning_settings, name='language_learning_settings'),
     path('settings/notifications/', NotificationSettingsView.as_view(), name='notification_settings'),
     path('settings/documents/', documents_settings_view, name='documents_settings'),
     path('settings/todo/', TodoSettingsView.as_view(), name='todo_settings'),

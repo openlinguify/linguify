@@ -20,6 +20,13 @@ class UserLanguageMiddleware(MiddlewareMixin):
         """
         Set the language for the request based on user preferences
         """
+        # Log incoming request details
+        logger.info(f"REQUEST START: {request.method} {request.path}")
+        logger.info(f"Headers: User-Agent={request.META.get('HTTP_USER_AGENT', 'N/A')[:100]}")
+        logger.info(f"Headers: Accept-Language={request.META.get('HTTP_ACCEPT_LANGUAGE', 'N/A')}")
+        logger.info(f"Headers: Referer={request.META.get('HTTP_REFERER', 'N/A')}")
+        logger.info(f"Query params: {dict(request.GET)}")
+
         # First check if user is authenticated
         if hasattr(request, 'user') and request.user.is_authenticated:
             try:
@@ -32,7 +39,8 @@ class UserLanguageMiddleware(MiddlewareMixin):
                     translation.activate(language)
                     request.session[LANGUAGE_SESSION_KEY] = language
                     request.LANGUAGE_CODE = language
-                    logger.info(f"Language activated: {language} for user {user.username}")
+                    logger.info(f"AUTHENTICATED USER: {user.username} → Language: {language}")
+                    logger.info(f"FINAL LANGUAGE: {language} (from user preference)")
                 else:
                     # Default to session or English if no preference is set
                     language = request.session.get(LANGUAGE_SESSION_KEY, 'en')
@@ -45,7 +53,31 @@ class UserLanguageMiddleware(MiddlewareMixin):
                 translation.activate('en')
                 request.LANGUAGE_CODE = 'en'
         else:
-            # For anonymous users, detect language from multiple sources
+            # For anonymous users, check if LocaleMiddleware already set the language from URL
+            logger.info(f"ANONYMOUS USER - analyzing language detection")
+            current_language = getattr(request, 'LANGUAGE_CODE', None) or translation.get_language()
+            logger.info(f"Current language from request/translation: {current_language}")
+
+            # If URL contains a language prefix (handled by LocaleMiddleware), respect it
+            url_has_language_prefix = any(request.path.startswith(f'/{lang}/') for lang, _ in settings.LANGUAGES)
+            logger.info(f"URL has language prefix: {url_has_language_prefix}")
+
+            if url_has_language_prefix:
+                detected_lang = None
+                for lang_code, _ in settings.LANGUAGES:
+                    if request.path.startswith(f'/{lang_code}/'):
+                        detected_lang = lang_code
+                        break
+                logger.info(f"URL Language detected: {detected_lang}")
+
+            if url_has_language_prefix and current_language in [lang for lang, _ in settings.LANGUAGES]:
+                # URL language takes precedence - don't override it
+                logger.info(f"RESPECTING URL LANGUAGE: {current_language}")
+                logger.info(f"FINAL LANGUAGE: {current_language} (from URL prefix)")
+                request.session[LANGUAGE_SESSION_KEY] = current_language
+                return None
+
+            # For cases without URL language prefix, detect language from other sources
             language = None
 
             # 1. Check URL parameter (from portal links)
@@ -83,6 +115,40 @@ class UserLanguageMiddleware(MiddlewareMixin):
             translation.activate(language)
             request.session[LANGUAGE_SESSION_KEY] = language
             request.LANGUAGE_CODE = language
-            logger.info(f"Anonymous user - final language: {language}")
+            logger.info(f"FINAL LANGUAGE: {language} (anonymous user fallback)")
 
+        logger.info(f"MIDDLEWARE END: Language set to {getattr(request, 'LANGUAGE_CODE', 'N/A')}")
+        return None
+
+    def process_response(self, request, response):
+        """
+        Log response details for debugging
+        """
+        status_emoji = {
+            200: "✅", 201: "✅", 202: "✅", 204: "✅",
+            301: "🔄", 302: "🔄", 303: "🔄", 307: "🔄", 308: "🔄",
+            400: "❌", 401: "🔒", 403: "🚫", 404: "🚯", 405: "🚫",
+            500: "💥", 502: "💥", 503: "💥"
+        }.get(response.status_code, "❓")
+
+        logger.info(f"RESPONSE: {status_emoji} {response.status_code} for {request.method} {request.path}")
+
+        # Log redirects with destination
+        if response.status_code in [301, 302, 303, 307, 308]:
+            location = response.get('Location', 'N/A')
+            logger.warning(f"REDIRECT: {response.status_code} → {location}")
+
+        # Log errors
+        if response.status_code >= 400:
+            logger.error(f"ERROR RESPONSE: {response.status_code} for {request.method} {request.path}")
+            if hasattr(response, 'content') and len(response.content) < 1000:
+                logger.error(f"Error content preview: {response.content.decode('utf-8', errors='ignore')[:200]}")
+
+        return response
+
+    def process_exception(self, request, exception):
+        """
+        Log all exceptions for debugging
+        """
+        logger.error(f"EXCEPTION in {request.method} {request.path}: {type(exception).__name__}: {exception}", exc_info=True)
         return None

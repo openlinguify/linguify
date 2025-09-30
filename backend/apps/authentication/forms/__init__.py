@@ -3,4 +3,4 @@
 
 from . import auth_forms
 from . import profile_forms
-from . import legacy_forms
+# from . import legacy_forms  # Temporairement désactivé car fait référence aux champs supprimés

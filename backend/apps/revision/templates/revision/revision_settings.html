@@ -124,46 +124,6 @@
         </div>
     </div>
 
-    <!-- Quick Configuration Section -->
-    <div class="content-section">
-        <div class="section-header">
-            <h3 class="section-title">
-                <i class="bi bi-lightning-fill"></i>
-                Configuration rapide
-            </h3>
-            <div class="section-actions">
-                <button class="section-toggle">
-                    <i class="bi bi-chevron-up"></i>
-                </button>
-            </div>
-        </div>
-        <div class="section-content">
-            <div class="form-help">Choisissez un profil de révision prédéfini</div>
-            <div class="preset-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px;">
-                <button type="button" class="preset-btn" data-preset="beginner">
-                    <i class="bi bi-star"></i>
-                    <span>Débutant</span>
-                    <small>10 cartes, 15 min</small>
-                </button>
-                <button type="button" class="preset-btn" data-preset="intermediate">
-                    <i class="bi bi-lightning"></i>
-                    <span>Intermédiaire</span>
-                    <small>20 cartes, 20 min</small>
-                </button>
-                <button type="button" class="preset-btn" data-preset="advanced">
-                    <i class="bi bi-fire"></i>
-                    <span>Avancé</span>
-                    <small>30 cartes, 30 min</small>
-                </button>
-                <button type="button" class="preset-btn" data-preset="intensive">
-                    <i class="bi bi-rocket"></i>
-                    <span>Intensif</span>
-                    <small>50 cartes, 45 min</small>
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Learning Settings Section -->
     <div class="content-section">
         <div class="section-header">
@@ -184,34 +144,10 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Mode d'étude par défaut</label>
-                        <select name="default_study_mode" class="form-control">
-                            <option value="spaced">Répétition espacée</option>
-                            <option value="intensive">Révision intensive</option>
-                            <option value="mixed">Mode mixte</option>
-                            <option value="custom">Personnalisé</option>
-                        </select>
-                        <div class="form-help">Algorithme utilisé pour planifier vos révisions</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Difficulté par défaut</label>
-                        <select name="default_difficulty" class="form-control">
-                            <option value="easy">Facile</option>
-                            <option value="normal">Normal</option>
-                            <option value="hard">Difficile</option>
-                            <option value="expert">Expert</option>
-                        </select>
-                        <div class="form-help">Niveau de difficulté pour les nouvelles cartes</div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
                         <label class="form-label">Cartes par session</label>
                         <div class="range-input">
-                            <input type="range" name="cards_per_session" min="5" max="100" value="20" class="form-range">
-                            <span class="range-value">20</span>
+                            <input type="range" name="cards_per_session" min="5" max="50" value="{{ revision_settings.cards_per_session|default:20 }}" class="form-range">
+                            <span class="range-value">{{ revision_settings.cards_per_session|default:20 }}</span>
                         </div>
                         <div class="form-help">Nombre de cartes à réviser par session</div>
                     </div>
@@ -219,29 +155,10 @@
                     <div class="form-group">
                         <label class="form-label">Durée de session (minutes)</label>
                         <div class="range-input">
-                            <input type="range" name="default_session_duration" min="5" max="120" value="20" class="form-range">
-                            <span class="range-value">20</span>
+                            <input type="range" name="default_session_duration" min="5" max="30" value="{{ revision_settings.default_session_duration|default:20 }}" class="form-range">
+                            <span class="range-value">{{ revision_settings.default_session_duration|default:20 }}</span>
                         </div>
                         <div class="form-help">Durée recommandée par session</div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Révisions pour apprendre</label>
-                        <div class="range-input">
-                            <input type="range" name="required_reviews_to_learn" min="1" max="10" value="3" class="form-range">
-                            <span class="range-value">3</span>
-                        </div>
-                        <div class="form-help">Nombre de révisions correctes nécessaires</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            <input type="checkbox" name="auto_advance" checked>
-                            Passage automatique
-                        </label>
-                        <div class="form-help">Passer automatiquement à la carte suivante</div>
                     </div>
                 </div>
 
@@ -269,7 +186,7 @@
             </div>
         </div>
         <div class="section-content">
-            <form method="post">
+            <form id="spaced-repetition-form" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="setting_type" value="spaced_repetition">
                 
@@ -1007,22 +924,137 @@
 
         // Initialize voice settings
         initVoiceSettings();
+
+        // Handle all settings forms submission
+        const formsToHandle = [
+            'revision-settings-form',
+            'spaced-repetition-form'
+        ];
+
+        formsToHandle.forEach(formId => {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    await saveRevisionSettings(this);
+                });
+            }
+        });
     });
 
-    function initRevisionSettings() {
+    async function saveRevisionSettings(form) {
+        const formData = new FormData(form);
+        const data = {};
+
+        // Convert FormData to object
+        for (let [key, value] of formData.entries()) {
+            if (key === 'csrfmiddlewaretoken' || key === 'setting_type') continue;
+
+            // Handle checkboxes
+            if (form.elements[key] && form.elements[key].type === 'checkbox') {
+                data[key] = form.elements[key].checked;
+            } else {
+                // Convert numeric values
+                data[key] = isNaN(value) ? value : parseFloat(value);
+            }
+        }
+
+        console.log('[RevisionSettings] Saving settings:', data);
+
+        try {
+            // Use the config endpoint which accepts POST for updates
+            const response = await fetch('/api/v1/revision/api/settings/config/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Failed to save settings');
+            }
+
+            const result = await response.json();
+            console.log('[RevisionSettings] Settings saved successfully:', result);
+
+            // Show success message
+            if (window.notificationService) {
+                window.notificationService.success('Paramètres sauvegardés avec succès');
+            } else {
+                alert('Paramètres sauvegardés avec succès !');
+            }
+
+            // Reload stats to reflect changes
+            await loadRevisionStats();
+
+        } catch (error) {
+            console.error('[RevisionSettings] Error saving settings:', error);
+            if (window.notificationService) {
+                window.notificationService.error('Erreur lors de la sauvegarde: ' + error.message);
+            } else {
+                alert('Erreur lors de la sauvegarde: ' + error.message);
+            }
+        }
+    }
+
+    async function initRevisionSettings() {
         console.log('[RevisionSettings] Initializing revision settings - VERSION 2.0');
+
+        // Load current settings
+        await loadCurrentSettings();
+
+        // Load stats
         console.log('[RevisionSettings] Calling loadRevisionStats in 1 second...');
         setTimeout(() => {
             loadRevisionStats();
         }, 1000);
     }
 
+    async function loadCurrentSettings() {
+        console.log('[RevisionSettings] Loading current user settings...');
+        try {
+            const response = await fetch('/api/v1/revision/api/settings/');
+            if (!response.ok) {
+                console.warn('[RevisionSettings] Could not load settings, using defaults');
+                return;
+            }
+
+            const settings = await response.json();
+            console.log('[RevisionSettings] Current settings loaded:', settings);
+
+            // Populate form fields
+            const form = document.getElementById('revision-settings-form');
+            if (form) {
+                Object.entries(settings).forEach(([key, value]) => {
+                    const field = form.elements[key];
+                    if (field) {
+                        if (field.type === 'checkbox') {
+                            field.checked = value;
+                        } else if (field.type === 'range') {
+                            field.value = value;
+                            // Update display value
+                            const valueSpan = field.parentElement.querySelector('.range-value');
+                            if (valueSpan) valueSpan.textContent = value;
+                        } else {
+                            field.value = value;
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('[RevisionSettings] Error loading settings:', error);
+        }
+    }
+
     async function loadRevisionStats() {
         console.log('[RevisionSettings] Loading revision statistics from API');
         
         try {
-            console.log('[RevisionSettings] Fetching from /api/v1/revision/settings/api/settings/stats/');
-            const response = await fetch('/api/v1/revision/settings/api/settings/stats/');
+            console.log('[RevisionSettings] Fetching from /api/v1/revision/api/settings/stats/');
+            const response = await fetch('/api/v1/revision/api/settings/stats/');
             console.log('[RevisionSettings] Response status:', response.status);
             
             if (!response.ok) {
@@ -1060,7 +1092,7 @@
     async function testStatsAPI() {
         console.log('[TEST] Testing stats API...');
         try {
-            const response = await fetch('/api/v1/revision/settings/api/settings/test_stats/');
+            const response = await fetch('/api/v1/revision/api/settings/test_stats/');
             const data = await response.json();
             console.log('[TEST] Test API response:', data);
             alert(`Test API: ${data.message}\nCartes: ${data.total_cards}\nApprises: ${data.cards_learned}`);
@@ -1135,7 +1167,7 @@
     function loadWordStats(type) {
         console.log(`[WordStats] Loading ${type} word statistics`);
         
-        const apiUrl = '/api/v1/revision/word-stats/';
+        const apiUrl = '/api/v1/revision/api/word-stats/';
         const params = new URLSearchParams();
         
         if (type === 'known') {
@@ -1278,7 +1310,7 @@
         console.log('[VoiceSettings] 🔄 Loading current voice preferences from server...');
         
         try {
-            const response = await fetch('/api/v1/revision/user-settings/', {
+            const response = await fetch('/api/v1/revision/api/user-settings/', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

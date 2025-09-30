@@ -1,3 +1,4 @@
+{% load i18n %}
 <!-- Modals de partage - intégrées directement -->
 <!-- DEBUG: share_deck.html component is being included -->
 <div id="share-component-debug-marker" style="display: none;">share_deck.html included</div>
@@ -13,8 +14,8 @@
                         <i class="bi bi-globe2 text-linguify-primary text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="modal-title">Rendre votre deck public</h3>
-                        <p class="modal-subtitle">Permettez à d'autres utilisateurs de le découvrir et l'utiliser</p>
+                        <h3 class="modal-title">{% trans "Make your list public" %}</h3>
+                        <p class="modal-subtitle">{% trans "Allow other users to discover and use it" %}</p>
                     </div>
                 </div>
                 <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
@@ -30,8 +31,8 @@
                             <i class="bi bi-info-circle-fill text-linguify-primary text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="text-sm font-medium text-linguify-primary-dark">Deck actuellement privé</h4>
-                            <p class="mt-1 text-sm text-linguify-primary">Ce deck n'est visible que par vous. Rendez-le public pour le partager avec d'autres personnes.</p>
+                            <h4 class="text-sm font-medium text-linguify-primary-dark">{% trans "Currently private deck" %}</h4>
+                            <p class="mt-1 text-sm text-linguify-primary">{% trans "This deck is only visible to you. Make it public to share it with others." %}</p>
                         </div>
                     </div>
                 </div>
@@ -39,37 +40,37 @@
                 <div class="mb-4">
                     <h4 class="section-title">
                         <i class="bi bi-eye text-linguify-primary"></i>
-                        Ce qui se passera en rendant ce deck public :
+                        {% trans "What will happen when making this deck public:" %}
                     </h4>
                     <ul class="feature-list">
                         <li class="feature-item">
                             <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
-                            <span class="feature-text">Il apparaîtra dans la section "Explorer" pour tous</span>
+                            <span class="feature-text">{% trans "It will appear in the 'Explore' section for everyone" %}</span>
                         </li>
                         <li class="feature-item">
                             <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
-                            <span class="feature-text">Vous obtiendrez un lien partageable</span>
+                            <span class="feature-text">{% trans "You will get a shareable link" %}</span>
                         </li>
                         <li class="feature-item">
                             <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
-                            <span class="feature-text">Vous restez propriétaire et gardez tous vos droits</span>
+                            <span class="feature-text">{% trans "You remain the owner and keep all your rights" %}</span>
                         </li>
                     </ul>
                 </div>
-                
+
                 <div class="info-text">
                     <i class="bi bi-shield-check text-linguify-success"></i>
-                    <span>Vous pourrez toujours rendre votre deck privé plus tard en un clic.</span>
+                    <span>{% trans "You can always make your deck private later with one click." %}</span>
                 </div>
             </div>
             
             <!-- Footer -->
             <div class="modal-footer">
                 <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle"></i>Annuler
+                    <i class="bi bi-x-circle"></i>{% trans "Cancel" %}
                 </button>
                 <button type="button" class="btn-linguify" id="makeDeckPublicBtn">
-                    <i class="bi bi-globe2"></i>Rendre public
+                    <i class="bi bi-globe2"></i>{% trans "Make public" %}
                 </button>
             </div>
         </div>
@@ -88,8 +89,8 @@
                         <i class="bi bi-lock text-gray-600 text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="modal-title">Rendre votre deck privé</h3>
-                        <p class="modal-subtitle">Retirer ce deck de la section publique</p>
+                        <h3 class="modal-title">{% trans "Make your deck private" %}</h3>
+                        <p class="modal-subtitle">{% trans "Remove this deck from the public section" %}</p>
                     </div>
                 </div>
                 <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
@@ -105,8 +106,8 @@
                             <i class="bi bi-exclamation-triangle-fill text-linguify-warning text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="text-sm font-medium text-linguify-warning">Attention</h4>
-                            <p class="mt-1 text-sm text-linguify-warning">Cette action rendra votre deck privé. Il ne sera plus accessible publiquement.</p>
+                            <h4 class="text-sm font-medium text-linguify-warning">{% trans "Warning" %}</h4>
+                            <p class="mt-1 text-sm text-linguify-warning">{% trans "This action will make your deck private. It will no longer be publicly accessible." %}</p>
                         </div>
                     </div>
                 </div>
@@ -114,37 +115,37 @@
                 <div class="mb-4">
                     <h4 class="section-title">
                         <i class="bi bi-eye-slash text-linguify-warning"></i>
-                        Ce qui va changer :
+                        {% trans "What will change:" %}
                     </h4>
                     <ul class="feature-list">
                         <li class="feature-item">
                             <i class="bi bi-x-circle text-linguify-error feature-icon"></i>
-                            <span class="feature-text">Il ne sera plus visible dans la section "Explorer"</span>
+                            <span class="feature-text">{% trans "It will no longer be visible in the 'Explore' section" %}</span>
                         </li>
                         <li class="feature-item">
                             <i class="bi bi-x-circle text-linguify-error feature-icon"></i>
-                            <span class="feature-text">Les liens de partage existants ne fonctionneront plus</span>
+                            <span class="feature-text">{% trans "Existing sharing links will no longer work" %}</span>
                         </li>
                         <li class="feature-item">
                             <i class="bi bi-check-circle text-linguify-success feature-icon"></i>
-                            <span class="feature-text">Vous restez propriétaire et gardez tous vos droits</span>
+                            <span class="feature-text">{% trans "You remain the owner and keep all your rights" %}</span>
                         </li>
                     </ul>
                 </div>
-                
+
                 <div class="info-text">
                     <i class="bi bi-shield-check text-linguify-success"></i>
-                    <span>Vous pourrez rendre ce deck public à nouveau plus tard si vous le souhaitez.</span>
+                    <span>{% trans "You can make this deck public again later if you wish." %}</span>
                 </div>
             </div>
             
             <!-- Footer -->
             <div class="modal-footer">
                 <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle"></i>Annuler
+                    <i class="bi bi-x-circle"></i>{% trans "Cancel" %}
                 </button>
                 <button type="button" class="btn-linguify" id="makeDeckPrivateBtn">
-                    <i class="bi bi-lock"></i>Rendre privé
+                    <i class="bi bi-lock"></i>{% trans "Make private" %}
                 </button>
             </div>
         </div>
@@ -163,8 +164,8 @@
                         <i class="bi bi-globe2 text-linguify-accent text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="modal-title">Partager ce deck</h3>
-                        <p class="modal-subtitle" id="shareModalDeckName">"Nom du jeu de cartes"</p>
+                        <h3 class="modal-title">{% trans "Share this deck" %}</h3>
+                        <p class="modal-subtitle" id="shareModalDeckName">{% trans "Card set name" %}</p>
                     </div>
                 </div>
                 <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
@@ -174,27 +175,27 @@
             
             <!-- Body -->
             <div class="modal-body">
-                <p class="mb-4 text-sm text-gray-600">Votre deck est public ! Partagez ce lien avec qui vous voulez :</p>
+                <p class="mb-4 text-sm text-gray-600">{% trans "Your deck is public! Share this link with whoever you want:" %}</p>
                 
                 <div class="mb-4">
                     <label class="input-label">
-                        <i class="bi bi-link-45deg mr-2 text-linguify-accent"></i>Lien de partage
+                        <i class="bi bi-link-45deg mr-2 text-linguify-accent"></i>{% trans "Sharing link" %}
                     </label>
                     <div class="input-group">
                         <input type="text" class="share-url-input" readonly id="shareUrl">
                         <button class="share-copy-btn" id="copyShareUrlBtn" type="button">
-                            <i class="bi bi-clipboard mr-1"></i>Copier
+                            <i class="bi bi-clipboard mr-1"></i>{% trans "Copy" %}
                         </button>
                     </div>
                     <div class="success-message" id="copySuccessMessage">
-                        <i class="bi bi-check-circle mr-1"></i>Le lien a été copié !
+                        <i class="bi bi-check-circle mr-1"></i>{% trans "The link has been copied!" %}
                     </div>
                 </div>
                 
                 <div class="mb-4">
                     <h4 class="section-title">
                         <i class="bi bi-send text-linguify-primary"></i>
-                        Partager rapidement
+                        {% trans "Share quickly" %}
                     </h4>
                     <div class="share-buttons-grid">
                         <button class="share-btn share-btn-success" id="shareByEmailBtn" type="button">
@@ -215,7 +216,7 @@
                 <div class="mb-4">
                     <h4 class="section-title">
                         <i class="bi bi-share text-linguify-accent"></i>
-                        Réseaux sociaux
+                        {% trans "Social networks" %}
                     </h4>
                     <div class="share-buttons-grid">
                         <button class="share-btn share-btn-primary social-share-btn" data-platform="twitter" type="button">
@@ -237,7 +238,7 @@
             <!-- Footer -->
             <div class="modal-footer">
                 <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle"></i>Fermer
+                    <i class="bi bi-x-circle"></i>{% trans "Close" %}
                 </button>
             </div>
         </div>

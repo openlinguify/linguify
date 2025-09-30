@@ -1,3 +1,4 @@
+{% load i18n %}
 <!-- Import Deck Components -->
 <!-- This file contains all the HTML for deck import functionality -->
 
@@ -7,11 +8,11 @@
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <i class="bi bi-upload text-linguify-primary me-2"></i>
-                <h5 class="mb-0 text-linguify-primary">Importer un deck</h5>
+                <h5 class="mb-0 text-linguify-primary">{% trans "Import Deck" %}</h5>
             </div>
             <button id="cancelImport" class="btn-linguify-secondary btn-sm">
                 <i class="bi bi-x-lg"></i>
-                Annuler
+                {% trans "Cancel" %}
             </button>
         </div>
     </div>
@@ -24,12 +25,12 @@
             <div class="mb-4">
                 <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
                     <i class="bi bi-tag me-2"></i>
-                    Nom du deck
+                    {% trans "Deck Name" %}
                 </label>
                 <div class="position-relative">
                     <input type="text" id="importDeckName" 
                            class="form-control rounded" 
-                           placeholder="Entrez le nom du nouveau deck..." 
+                           placeholder="{% trans 'Enter the new deck name...' %}" 
                            maxlength="100"
                            style="padding-right: 2.5rem;">
                     <div class="position-absolute top-50 end-0 translate-middle-y me-2" style="pointer-events: none; z-index: 10;">
@@ -38,7 +39,7 @@
                 </div>
                 <div class="d-flex align-items-center mt-1">
                     <i class="bi bi-info-circle text-linguify-accent me-1" style="font-size: 0.75rem;"></i>
-                    <span class="text-muted" style="font-size: 0.75rem;">Ce nom doit être unique dans vos decks</span>
+                    <span class="text-muted" style="font-size: 0.75rem;">{% trans "This name must be unique among your decks" %}</span>
                 </div>
                 <div class="invalid-feedback" style="display: none;" id="deckNameError"></div>
             </div>
@@ -49,14 +50,14 @@
                     <span class="badge bg-linguify-accent rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
                         <span class="text-white fw-bold">1</span>
                     </span>
-                    <span class="small fw-medium text-linguify-primary">Sélection</span>
+                    <span class="small fw-medium text-linguify-primary">{% trans "Selection" %}</span>
                 </div>
                 <div class="border-top" style="width: 32px;"></div>
                 <div class="d-flex align-items-center mx-3">
                     <span class="badge bg-secondary rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
                         <span class="text-muted fw-bold">2</span>
                     </span>
-                    <span class="small text-muted">Aperçu</span>
+                    <span class="small text-muted">{% trans "Preview" %}</span>
                 </div>
                 <div class="border-top" style="width: 32px;"></div>
                 <div class="d-flex align-items-center ms-3">
@@ -76,20 +77,20 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <h6 class="text-linguify-primary mb-2">Glissez votre fichier ici</h6>
-                        <p class="small text-muted mb-0">ou cliquez pour sélectionner un fichier</p>
+                        <h6 class="text-linguify-primary mb-2">{% trans "Drop your file here" %}</h6>
+                        <p class="small text-muted mb-0">{% trans "or click to select a file" %}</p>
                     </div>
                     <input type="file" id="importFile" class="d-none" accept=".csv,.xlsx,.xls">
                     <button class="btn-linguify" onclick="console.log('🖱️ Clic bouton parcourir'); const input = document.getElementById('importFile'); input.value = ''; input.click();">
                         <i class="bi bi-folder2-open me-2"></i>
-                        Parcourir les fichiers
+                        {% trans "Browse files" %}
                     </button>
                 </div>
                 <div class="position-absolute top-0 start-0 w-100 h-100 bg-linguify-accent rounded d-flex flex-column align-items-center justify-content-center" style="opacity: 0; pointer-events: none; z-index: 1;" id="dropZoneOverlay">
                     <div class="d-flex align-items-center justify-content-center border border-white border-4 rounded-circle mb-3" style="width: 80px; height: 80px;">
                         <i class="bi bi-cloud-upload-fill text-white" style="font-size: 2rem;"></i>
                     </div>
-                    <h6 class="text-white fw-bold mb-0">Déposez le fichier ici</h6>
+                    <h6 class="text-white fw-bold mb-0">{% trans "Drop the file here" %}</h6>
                 </div>
             </div>
 
@@ -116,7 +117,7 @@
             <!-- Enhanced supported formats -->
             <div class="card-linguify p-3 mb-4">
                 <div class="d-flex align-items-center flex-wrap mb-2">
-                    <span class="small fw-medium text-linguify-accent me-3">Formats supportés:</span>
+                    <span class="small fw-medium text-linguify-accent me-3">{% trans "Supported formats:" %}</span>
                     <div class="d-flex align-items-center gap-2">
                         <span class="badge bg-green-100 text-success border border-success border-opacity-25 rounded-pill">
                             <i class="bi bi-file-earmark-excel me-1"></i>
@@ -131,7 +132,7 @@
                 <div class="d-flex align-items-center">
                     <i class="bi bi-info-circle text-linguify-warning me-2"></i>
                     <span class="text-muted" style="font-size: 0.75rem;">
-                        Minimum 2 colonnes requises pour le recto et le verso des cartes
+                        {% trans "Minimum 2 columns required for front and back of cards" %}
                     </span>
                 </div>
             </div>
@@ -143,11 +144,11 @@
         <div class="bg-white border-top p-4 mt-auto shadow-sm" style="flex-shrink: 0;">
             <div class="d-flex gap-3 justify-content-end align-items-center">
                 <button id="cancelImportAlt" class="btn-linguify-secondary">
-                    Annuler
+                    {% trans "Cancel" %}
                 </button>
                 <button id="submitImport" class="btn-linguify d-flex align-items-center" disabled>
                     <i class="bi bi-arrow-right me-2"></i>
-                    Suivant - Aperçu
+                    {% trans "Next - Preview" %}
                 </button>
             </div>
         </div>
@@ -160,11 +161,11 @@
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <i class="bi bi-eye text-linguify-accent me-2"></i>
-                <h5 class="mb-0 text-linguify-accent">Aperçu de l'import</h5>
+                <h5 class="mb-0 text-linguify-accent">{% trans "Import Preview" %}</h5>
             </div>
             <button id="cancelImportPreview" class="btn-linguify-secondary btn-sm">
                 <i class="bi bi-x-lg"></i>
-                Annuler
+                {% trans "Cancel" %}
             </button>
         </div>
     </div>
@@ -177,21 +178,21 @@
                     <span class="badge bg-success rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
                         <i class="bi bi-check text-white fw-bold"></i>
                     </span>
-                    <span class="small fw-medium text-success">Sélection</span>
+                    <span class="small fw-medium text-success">{% trans "Selection" %}</span>
                 </div>
                 <div class="border-top" style="width: 32px;"></div>
                 <div class="d-flex align-items-center mx-3">
                     <span class="badge bg-linguify-accent rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
                         <span class="text-white fw-bold">2</span>
                     </span>
-                    <span class="small fw-medium text-linguify-primary">Aperçu</span>
+                    <span class="small fw-medium text-linguify-primary">{% trans "Preview" %}</span>
                 </div>
                 <div class="border-top" style="width: 32px;"></div>
                 <div class="d-flex align-items-center ms-3">
                     <span class="badge bg-secondary rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
                         <span class="text-muted fw-bold">3</span>
                     </span>
-                    <span class="small text-muted">Import</span>
+                    <span class="small text-muted">{% trans "Import" %}</span>
                 </div>
             </div>
 
@@ -204,7 +205,7 @@
                                 <i class="bi bi-file-earmark text-white"></i>
                             </div>
                             <div>
-                                <p class="text-muted text-uppercase fw-medium mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">Fichier</p>
+                                <p class="text-muted text-uppercase fw-medium mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">{% trans "File" %}</p>
                                 <p class="small fw-semibold text-linguify-primary mb-0" id="previewFileName"></p>
                             </div>
                         </div>
@@ -217,7 +218,7 @@
                                 <i class="bi bi-list-ol text-white"></i>
                             </div>
                             <div>
-                                <p class="text-muted text-uppercase fw-medium mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">Lignes</p>
+                                <p class="text-muted text-uppercase fw-medium mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">{% trans "Rows" %}</p>
                                 <p class="small fw-semibold text-success mb-0" id="previewTotalRows"></p>
                             </div>
                         </div>
@@ -230,7 +231,7 @@
                                 <i class="bi bi-credit-card text-white"></i>
                             </div>
                             <div>
-                                <p class="text-muted text-uppercase fw-medium mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">Cartes à créer</p>
+                                <p class="text-muted text-uppercase fw-medium mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">{% trans "Cards to create" %}</p>
                                 <p class="small fw-semibold text-linguify-accent mb-0" id="previewEstimatedCards">~</p>
                             </div>
                         </div>
@@ -242,7 +243,7 @@
             <div class="card-linguify p-4 mb-4">
                 <h6 class="d-flex align-items-center fs-6 fw-semibold text-linguify-primary mb-4">
                     <i class="bi bi-arrow-left-right me-2"></i>
-                    Configuration des colonnes
+                    {% trans "Column configuration" %}
                 </h6>
                 
                 <!-- Enhanced header option -->
@@ -254,10 +255,10 @@
                         </div>
                         <div>
                             <label class="form-check-label small fw-medium text-linguify-primary" for="hasHeaderCheck">
-                                La première ligne contient des en-têtes
+                                {% trans "First row contains headers" %}
                             </label>
                             <p class="text-muted mt-1" style="font-size: 0.75rem;">
-                                Cochez cette option si la première ligne contient les noms de colonnes et ne doit pas être importée comme une carte
+                                {% trans "Check this option if the first row contains column names and should not be imported as a card" %}
                             </p>
                         </div>
                     </div>
@@ -268,7 +269,7 @@
                         <div class="mb-3">
                             <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
                                 <i class="bi bi-card-text me-2"></i>
-                                Recto des cartes
+                                {% trans "Front of cards" %}
                             </label>
                             <select id="frontColumnSelect" 
                                     class="form-select rounded" 
@@ -279,25 +280,14 @@
                         <div>
                             <label class="form-label d-flex align-items-center small fw-medium text-linguify-accent mb-2">
                                 <i class="bi bi-globe me-2 rounded"></i>
-                                Langue du recto (optionnel)
+                                {% trans "Front language (optional)" %}
                             </label>
                             <select id="frontLanguageSelect" class="form-select rounded">
-                                <option value="">-- Sélectionner une langue --</option>
-                                <option value="fr">🇫🇷 Français</option>
-                                <option value="en">🇺🇸 Anglais</option>
-                                <option value="es">🇪🇸 Espagnol</option>
-                                <option value="de">🇩🇪 Allemand</option>
-                                <option value="it">🇮🇹 Italien</option>
-                                <option value="pt">🇵🇹 Portugais</option>
-                                <option value="ru">🇷🇺 Russe</option>
-                                <option value="zh">🇨🇳 Chinois</option>
-                                <option value="ja">🇯🇵 Japonais</option>
-                                <option value="ko">🇰🇷 Coréen</option>
-                                <option value="ar">🇸🇦 Arabe</option>
-                                <option value="nl">🇳🇱 Néerlandais</option>
-                                <option value="pl">🇵🇱 Polonais</option>
-                                <option value="tr">🇹🇷 Turc</option>
-                                <option value="sv">🇸🇪 Suédois</option>
+                                <option value="">{% trans "-- Select a language --" %}</option>
+                                <option value="en">🇺🇸 {% trans "English" %}</option>
+                                <option value="fr">🇫🇷 {% trans "French" %}</option>
+                                <option value="es">🇪🇸 {% trans "Spanish" %}</option>
+                                <option value="nl">🇳🇱 {% trans "Dutch" %}</option>
                             </select>
                         </div>
                     </div>
@@ -305,7 +295,7 @@
                         <div class="mb-3">
                             <label class="form-label d-flex align-items-center small fw-semibold text-linguify-accent mb-2">
                                 <i class="bi bi-card-text me-2"></i>
-                                Verso des cartes
+                                {% trans "Back of cards" %}
                             </label>
                             <select id="backColumnSelect" 
                                     class="form-select rounded" 
@@ -316,25 +306,14 @@
                         <div>
                             <label class="form-label d-flex align-items-center small fw-medium text-linguify-accent mb-2">
                                 <i class="bi bi-globe me-2"></i>
-                                Langue du verso (optionnel)
+                                {% trans "Back language (optional)" %}
                             </label>
                             <select id="backLanguageSelect" class="form-select rounded">
-                                <option value="">-- Sélectionner une langue --</option>
-                                <option value="fr">🇫🇷 Français</option>
-                                <option value="en">🇺🇸 Anglais</option>
-                                <option value="es">🇪🇸 Espagnol</option>
-                                <option value="de">🇩🇪 Allemand</option>
-                                <option value="it">🇮🇹 Italien</option>
-                                <option value="pt">🇵🇹 Portugais</option>
-                                <option value="ru">🇷🇺 Russe</option>
-                                <option value="zh">🇨🇳 Chinois</option>
-                                <option value="ja">🇯🇵 Japonais</option>
-                                <option value="ko">🇰🇷 Coréen</option>
-                                <option value="ar">🇸🇦 Arabe</option>
-                                <option value="nl">🇳🇱 Néerlandais</option>
-                                <option value="pl">🇵🇱 Polonais</option>
-                                <option value="tr">🇹🇷 Turc</option>
-                                <option value="sv">🇸🇪 Suédois</option>
+                                <option value="">{% trans "-- Select a language --" %}</option>
+                                <option value="en">🇺🇸 {% trans "English" %}</option>
+                                <option value="fr">🇫🇷 {% trans "French" %}</option>
+                                <option value="es">🇪🇸 {% trans "Spanish" %}</option>
+                                <option value="nl">🇳🇱 {% trans "Dutch" %}</option>
                             </select>
                         </div>
                     </div>
@@ -343,7 +322,7 @@
                     <div class="d-flex align-items-start">
                         <i class="bi bi-lightbulb text-linguify-warning flex-shrink-0 mt-1 me-2"></i>
                         <span class="small text-muted">
-                            Modifiez la sélection pour voir l'aperçu mis à jour en temps réel
+                            {% trans "Change the selection to see the preview updated in real time" %}
                         </span>
                     </div>
                 </div>
@@ -354,15 +333,15 @@
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h6 class="d-flex align-items-center fs-6 fw-semibold text-linguify-primary mb-0">
                         <i class="bi bi-stack me-2"></i>
-                        Aperçu des cartes (5 premières)
+                        {% trans "Card preview (first 5)" %}
                     </h6>
                     <span class="badge bg-linguify-warning text-white d-none" id="previewUpdateIndicator">
                         <i class="bi bi-arrow-repeat me-1 spinner-border spinner-border-sm" style="--bs-spinner-width: .75rem; --bs-spinner-height: .75rem;"></i>
-                        Mise à jour...
+                        {% trans "Updating..." %}
                     </span>
                 </div>
                 <div id="previewCardsContainer" class="d-flex flex-column gap-3">
-                    <!-- Les cartes de preview seront ajoutées ici -->
+                    <!-- Preview cards will be added here -->
                 </div>
             </div>
         </div>
@@ -372,11 +351,11 @@
             <div class="d-flex gap-3 justify-content-between align-items-center">
                 <button id="cancelImportPreviewAlt" class="btn-linguify-secondary d-flex align-items-center">
                     <i class="bi bi-arrow-left me-2"></i>
-                    Retour
+                    {% trans "Back" %}
                 </button>
                 <button id="confirmImport" class="btn btn-success d-flex align-items-center">
                     <i class="bi bi-check-circle me-2"></i>
-                    Confirmer l'import
+                    {% trans "Confirm import" %}
                 </button>
             </div>
         </div>

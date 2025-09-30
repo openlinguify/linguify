@@ -161,8 +161,8 @@ class TestUserValidation:
         
         # Les valeurs originales doivent être conservées
         user.refresh_from_db()
-        assert user.native_language == 'FR'
-        assert user.target_language == 'EN'
+        assert user.learning_profile.native_language == 'FR'
+        assert user.learning_profile.target_language == 'EN'
         
         # Tenter de mettre à jour uniquement la langue cible pour qu'elle corresponde à la langue native
         with pytest.raises(ValidationError):

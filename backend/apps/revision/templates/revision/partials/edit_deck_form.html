@@ -1,14 +1,15 @@
+{% load i18n %}
 <!-- Edit Deck Form -->
 <div id="editDeckForm" class="display-none">
     <div class="study-header">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <i class="bi bi-pencil text-linguify-primary me-2"></i>
-                <h5 class="mb-0 text-linguify-primary">Modifier le deck</h5>
+                <h5 class="mb-0 text-linguify-primary">{% trans "Edit deck" %}</h5>
             </div>
             <button id="cancelEditDeck" class="btn-linguify-secondary btn-sm">
                 <i class="bi bi-x-lg"></i>
-                Annuler
+                {% trans "Cancel" %}
             </button>
         </div>
     </div>
@@ -20,12 +21,12 @@
             <div class="mb-4">
                 <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
                     <i class="bi bi-tag me-2"></i>
-                    Nom du deck
+                    {% trans "Deck name" %}
                 </label>
                 <div class="position-relative">
                     <input type="text" id="editDeckName" 
                            class="form-control rounded" 
-                           placeholder="Ex: Vocabulaire anglais niveau B2" 
+                           placeholder="{% trans 'Ex: English vocabulary level B2' %}" 
                            maxlength="100"
                            style="padding-right: 3rem;">
                     <div class="position-absolute top-50 end-0 translate-middle-y me-2" style="pointer-events: none; z-index: 10;">
@@ -39,7 +40,7 @@
                 </div>
                 <div class="d-flex align-items-center mt-1">
                     <i class="bi bi-info-circle text-linguify-accent me-1" style="font-size: 0.75rem;"></i>
-                    <span class="text-muted" style="font-size: 0.75rem;">Le nom doit être unique parmi vos decks</span>
+                    <span class="text-muted" style="font-size: 0.75rem;">{% trans "The name must be unique among your decks" %}</span>
                 </div>
             </div>
 
@@ -47,13 +48,13 @@
             <div class="mb-4">
                 <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
                     <i class="bi bi-card-text me-2"></i>
-                    Description
+                    {% trans "Description" %}
                 </label>
                 <div class="position-relative">
                     <textarea id="editDeckDescription" 
                               class="form-control rounded" 
                               rows="4"
-                              placeholder="Décrivez le contenu de votre deck..." 
+                              placeholder="{% trans 'Describe the content of your deck...' %}" 
                               maxlength="500"
                               style="padding-right: 3rem; resize: vertical;"></textarea>
                     <div class="position-absolute top-0 end-0 mt-2 me-2" style="pointer-events: none; z-index: 10;">
@@ -71,8 +72,8 @@
             <div class="mb-4">
                 <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
                     <i class="bi bi-tags me-2"></i>
-                    Tags
-                    <span class="badge bg-light text-muted ms-2" style="font-size: 0.7rem;">Cliquez pour taper</span>
+                    {% trans "Tags" %}
+                    <span class="badge bg-light text-muted ms-2" style="font-size: 0.7rem;">{% trans "Click to type" %}</span>
                 </label>
                 
                 <!-- Zone d'affichage des tags avec input intégré -->
@@ -89,13 +90,13 @@
                         <input type="text" 
                                id="editDeckTagsInput" 
                                class="tags-inline-input flex-grow-1" 
-                               placeholder="Tapez pour ajouter des tags..."
+                               placeholder="{% trans 'Type to add tags...' %}"
                                style="border: none; outline: none; background: transparent; min-width: 200px; padding: 4px 0;">
                         
                         <!-- Message quand aucun tag -->
                         <div id="noTagsMessage" class="text-muted d-flex align-items-center w-100" style="font-size: 0.85rem; display: none;">
                             <i class="bi bi-tag me-2 text-linguify-accent" style="opacity: 0.6;"></i>
-                            Cliquez ici pour commencer à ajouter des tags...
+                            {% trans "Click here to start adding tags..." %}
                         </div>
                     </div>
                     
@@ -111,18 +112,18 @@
                         <div class="d-flex align-items-center justify-content-between mb-1">
                             <small class="text-muted d-flex align-items-center">
                                 <i class="bi bi-info-circle me-1"></i>
-                                Max 10 tags, appuyez sur Entrée pour ajouter
+                                {% trans "Max 10 tags, press Enter to add" %}
                             </small>
                             <div id="tagsAutoSaveIndicator" class="d-none">
                                 <i class="bi bi-check-circle text-success" style="font-size: 0.9rem;"></i>
-                                <small class="text-success ms-1">Sauvegardé</small>
+                                <small class="text-success ms-1">{% trans "Saved" %}</small>
                             </div>
                         </div>
                         <!-- Compteur -->
                         <div class="d-flex align-items-center">
                             <small class="text-muted d-flex align-items-center">
                                 <i class="bi bi-tag me-1" style="color: #6c757d; font-size: 0.7rem;"></i>
-                                <span id="tagsCount">0/10 tags</span>
+                                <span id="tagsCount">{% trans "0/10 tags" %}</span>
                             </small>
                         </div>
                     </div>
@@ -133,7 +134,7 @@
             <div class="mb-6">
                 <label class="form-label d-flex align-items-center small fw-semibold text-linguify-primary mb-2">
                     <i class="bi bi-eye me-2"></i>
-                    Visibilité
+                    {% trans "Visibility" %}
                 </label>
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -143,8 +144,8 @@
                                     <i class="bi bi-lock text-white"></i>
                                 </div>
                                 <div>
-                                    <p class="small fw-semibold text-linguify-primary mb-1">Privé</p>
-                                    <p class="text-muted mb-0" style="font-size: 0.75rem;">Visible par vous seul</p>
+                                    <p class="small fw-semibold text-linguify-primary mb-1">{% trans "Private" %}</p>
+                                    <p class="text-muted mb-0" style="font-size: 0.75rem;">{% trans "Visible by you only" %}</p>
                                 </div>
                             </div>
                         </div>
@@ -156,16 +157,16 @@
                                     <i class="bi bi-globe text-white"></i>
                                 </div>
                                 <div>
-                                    <p class="small fw-semibold text-linguify-primary mb-1">Public</p>
-                                    <p class="text-muted mb-0" style="font-size: 0.75rem;">Visible par tous</p>
+                                    <p class="small fw-semibold text-linguify-primary mb-1">{% trans "Public" %}</p>
+                                    <p class="text-muted mb-0" style="font-size: 0.75rem;">{% trans "Visible by everyone" %}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <select id="editDeckVisibility" class="form-select d-none">
-                    <option value="private">🔒 Privé - Visible par vous seul</option>
-                    <option value="public">🌍 Public - Visible par tous les utilisateurs</option>
+                    <option value="private">🔒 {% trans "Private - Visible by you only" %}</option>
+                    <option value="public">🌍 {% trans "Public - Visible by all users" %}</option>
                 </select>
                 <div class="d-flex align-items-center justify-content-between mt-1">
                     <div id="visibilityAutoSaveIndicator" class="d-none">

@@ -1,0 +1,153 @@
+{% load static %}
+{% load i18n %}
+<!-- Notebook App Navbar - Linguify Style -->
+<div class="navbar-linguify">
+    <!-- Gauche: Navigation + Actions principales -->
+    <div class="navbar-section">
+        <!-- Bouton toggle sidebar -->
+        <div>
+            <button id="toggleSidebar"
+                class="btn-navbar-outline"
+                title="{% trans 'Hide/Show sidebar' %}"
+                aria-label="{% trans 'Toggle sidebar' %}"
+                aria-expanded="true"
+                onclick="
+                // Toggle sidebar for notebook
+                const sidebar = document.getElementById('notebookSidebar');
+
+                if (sidebar) {
+                    // Simply toggle the show class
+                    sidebar.classList.toggle('show');
+
+                    // Update button icon
+                    const toggleBtn = document.getElementById('toggleSidebar');
+                    const icon = toggleBtn?.querySelector('i');
+                    if (icon) {
+                        const isVisible = sidebar.classList.contains('show');
+                        if (isVisible) {
+                            icon.className = 'bi bi-layout-sidebar-inset';
+                            toggleBtn.title = '{% trans "Hide sidebar" %}';
+                        } else {
+                            icon.className = 'bi bi-layout-sidebar-inset-reverse';
+                            toggleBtn.title = '{% trans "Show sidebar" %}';
+                        }
+                    }
+                } else {
+                    console.error('Sidebar not found');
+                }
+                ">
+            <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <!-- New Note Button -->
+        <button @click="createNewNote()" class="btn-navbar btn-navbar-primary">
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-xl-inline">{% trans 'New Note' %}</span>
+        </button>
+
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <button @click="archiveStatus = 'active'; currentNote = null; loadNotes()"
+                    :class="{ 'active': archiveStatus === 'active' }"
+                    class="nav-tab">
+                <i class="bi bi-journal-text"></i>
+                {% trans 'Notes' %}
+            </button>
+            <button @click="archiveStatus = 'archived'; currentNote = null; loadNotes()"
+                    :class="{ 'active': archiveStatus === 'archived' }"
+                    class="nav-tab">
+                <i class="bi bi-archive"></i>
+                {% trans 'Archives' %}
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Droite: Actions et filtres contextuels -->
+    <div class="navbar-section-right">
+        <!-- Search -->
+        <input
+            type="text"
+            placeholder="{% trans 'Search in notes...' %}"
+            x-model="searchQuery"
+            @input.debounce.300ms="loadNotes()"
+            class="form-control-linguify"
+            style="width: 140px; min-width: 100px;"
+        >
+
+        <!-- Language Filter -->
+        <div class="dropdown">
+            <button class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span x-text="selectedLanguage === '' ? 'All languages' :
+                    (selectedLanguage === 'fr' ? 'French' :
+                     selectedLanguage === 'en' ? 'English' :
+                     selectedLanguage === 'es' ? 'Spanish' :
+                     selectedLanguage === 'nl' ? 'Dutch' : selectedLanguage)">All languages</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = ''; loadNotes()">{% trans 'All languages' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = 'fr'; loadNotes()">{% trans 'French' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = 'en'; loadNotes()">{% trans 'English' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = 'es'; loadNotes()">{% trans 'Spanish' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = 'nl'; loadNotes()">{% trans 'Dutch' %}</a></li>
+            </ul>
+        </div>
+
+
+        <!-- Sort Filter Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
+                <span x-text="sortBy === 'updated_desc' ? 'Most recent' :
+                    (sortBy === 'updated_asc' ? 'Oldest' :
+                     sortBy === 'title_asc' ? 'Title A-Z' :
+                     sortBy === 'title_desc' ? 'Title Z-A' : sortBy)">Most recent</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" @click.prevent="sortBy = 'updated_desc'; loadNotes()">{% trans 'Most recent' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="sortBy = 'updated_asc'; loadNotes()">{% trans 'Oldest' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="sortBy = 'title_asc'; loadNotes()">{% trans 'Title A-Z' %}</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="sortBy = 'title_desc'; loadNotes()">{% trans 'Title Z-A' %}</a></li>
+            </ul>
+        </div>
+
+        <!-- Actions -->
+        <div class="navbar-actions-group">
+            <!-- Select All button (when notes exist) -->
+            <button x-show="notes.length > 0 && selectedNotes.length === 0" @click="selectAll()" class="btn-navbar btn-navbar-outline" title="{% trans 'Select all notes' %}">
+                <i class="bi bi-check-square"></i>
+                <span class="d-none d-xl-inline">{% trans 'Select All' %}</span>
+            </button>
+
+            <!-- Selection counter -->
+            <span x-show="selectedNotes.length > 0" class="selection-counter">
+                <span x-text="selectedNotes.length"></span> {% trans 'selected' %}
+            </span>
+
+            <!-- Clear selection -->
+            <button x-show="selectedNotes.length > 0" @click="clearSelection()" class="btn-navbar btn-navbar-outline" title="{% trans 'Clear selection' %}">
+                <i class="bi bi-x-circle"></i>
+                <span class="d-none d-xl-inline">{% trans 'Clear' %}</span>
+            </button>
+
+            <!-- Bulk Actions (when notes are selected) -->
+            <!-- Archive button - only show when in active notes -->
+            <button x-show="selectedNotes.length > 0 && archiveStatus === 'active'" @click="bulkArchive()" class="btn-navbar btn-navbar-outline" title="{% trans 'Archive selection' %}">
+                <i class="bi bi-archive"></i>
+                <span class="d-none d-xl-inline">{% trans 'Archive' %}</span>
+            </button>
+
+            <!-- Unarchive button - only show when in archived notes -->
+            <button x-show="selectedNotes.length > 0 && archiveStatus === 'archived'" @click="bulkUnarchive()" class="btn-navbar btn-navbar-outline" title="{% trans 'Unarchive selection' %}">
+                <i class="bi bi-archive-fill"></i>
+                <span class="d-none d-xl-inline">{% trans 'Unarchive' %}</span>
+            </button>
+
+            <!-- Delete button - always show when notes are selected -->
+            <button x-show="selectedNotes.length > 0" @click="bulkDelete()" class="btn-navbar btn-navbar-outline" title="{% trans 'Delete selection' %}">
+                <i class="bi bi-trash"></i>
+                <span class="d-none d-xl-inline">{% trans 'Delete' %}</span>
+            </button>
+        </div>
+    </div>
+</div>

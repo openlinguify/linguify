@@ -1,0 +1,107 @@
+{% load i18n %}
+<!-- Reset Progress Modal - Linguify Style -->
+<style>
+@media (max-width: 576px) {
+    #resetProgressModal .modal-header {
+        padding: 1.5rem 1.5rem 0.75rem 1.5rem !important;
+    }
+    #resetProgressModal .modal-body {
+        padding: 0 1.5rem 1.25rem 1.5rem !important;
+    }
+    #resetProgressModal .modal-footer {
+        padding: 1.25rem 1.5rem 1.5rem 1.5rem !important;
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+    #resetProgressModal .modal-icon {
+        width: 3rem !important;
+        height: 3rem !important;
+        margin-right: 0.75rem !important;
+    }
+    #resetProgressModal .modal-icon i {
+        font-size: 1.5rem !important;
+    }
+    #resetProgressModal .modal-title {
+        font-size: 1.125rem !important;
+    }
+    #resetProgressModal .modal-footer button {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+</style>
+<div id="resetProgressModal" class="modal fade" tabindex="-1" aria-labelledby="resetProgressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+        <div class="modal-content" style="border: none; border-radius: 16px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);">
+            <!-- Header moderne avec icône -->
+            <div class="modal-header" style="padding: 2rem 2rem 1rem 2rem; border-bottom: none;">
+                <div class="modal-header-content">
+                    <div class="modal-icon" style="display: flex; align-items: center; justify-content: center; width: 3.5rem; height: 3.5rem; border-radius: 50%; margin-right: 1rem; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);">
+                        <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.75rem; color: var(--linguify-warning);"></i>
+                    </div>
+                    <div>
+                        <h4 class="modal-title" style="font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-bottom: 0.25rem;">{% trans "Reset Progress" %}</h4>
+                        <p class="modal-subtitle" style="font-size: 0.875rem; color: #6b7280; margin: 0;">{% trans "This action will reset the progress of all cards in the deck." %}</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}" style="padding: 0.5rem; border: none; background: none; font-size: 1.25rem; color: #6b7280; cursor: pointer;">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+
+            <!-- Body avec design moderne -->
+            <div class="modal-body" style="padding: 0 2rem 1.5rem 2rem;">
+                <!-- Informations du deck -->
+                <div class="mb-4" style="padding: 1rem; background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.02) 100%); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.15);">
+                    <div style="margin-bottom: 0.5rem;">
+                        <span style="color: #374151; font-weight: 500;">{% trans "Deck:" %}</span>
+                        <span id="resetDeckName" style="color: var(--linguify-primary); font-weight: 600; margin-left: 0.25rem;"></span>
+                    </div>
+                    <div>
+                        <span style="color: #374151; font-weight: 500;">{% trans "Affected cards:" %}</span>
+                        <span id="resetCardCount" style="color: var(--linguify-primary); font-weight: 600; margin-left: 0.25rem;">0</span>
+                        <span style="color: #374151; margin-left: 0.25rem;">{% trans "card(s)" %}</span>
+                    </div>
+                </div>
+
+                <!-- Effets de la réinitialisation -->
+                <div class="mb-4">
+                    <h6 style="font-weight: 600; color: #374151; margin-bottom: 0.75rem; font-size: 0.9375rem;">{% trans "After reset:" %}</h6>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; align-items: flex-start; padding: 0.75rem; background: rgba(245, 158, 11, 0.03); border-radius: 8px; gap: 0.75rem;">
+                            <i class="bi bi-arrow-right" style="color: var(--linguify-warning); margin-top: 0.125rem; font-size: 0.875rem;"></i>
+                            <span style="font-size: 0.875rem; color: #4b5563; line-height: 1.4;">{% trans "All cards will be marked as 'not learned'" %}</span>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; padding: 0.75rem; background: rgba(245, 158, 11, 0.03); border-radius: 8px; gap: 0.75rem;">
+                            <i class="bi bi-arrow-right" style="color: var(--linguify-warning); margin-top: 0.125rem; font-size: 0.875rem;"></i>
+                            <span style="font-size: 0.875rem; color: #4b5563; line-height: 1.4;">{% trans "The review counter will be reset to zero" %}</span>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; padding: 0.75rem; background: rgba(245, 158, 11, 0.03); border-radius: 8px; gap: 0.75rem;">
+                            <i class="bi bi-arrow-right" style="color: var(--linguify-warning); margin-top: 0.125rem; font-size: 0.875rem;"></i>
+                            <span style="font-size: 0.875rem; color: #4b5563; line-height: 1.4;">{% trans "Learning history will be erased" %}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Avertissement final -->
+                <div style="padding: 1rem; background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.15);">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="bi bi-exclamation-circle" style="color: var(--linguify-error); font-size: 1rem;"></i>
+                        <strong style="color: var(--linguify-error); font-size: 0.9375rem;">{% trans "This action is irreversible." %}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer avec boutons modernes -->
+            <div class="modal-footer" style="padding: 1.5rem 2rem 2rem 2rem; border-top: none; display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" class="btn-linguify-secondary" data-bs-dismiss="modal" style="padding: 0.625rem 1.25rem;">
+                    {% trans "Cancel" %}
+                </button>
+                <button type="button" class="btn-linguify" id="confirmResetProgress" style="background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%); padding: 0.625rem 1.25rem;">
+                    <i class="bi bi-arrow-clockwise me-2"></i>
+                    {% trans "Reset Progress" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

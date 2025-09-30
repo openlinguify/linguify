@@ -222,7 +222,7 @@ class RevisionSettingsAPITest(APITestCase):
 
     def test_get_revision_settings(self):
         """Test de recuperation des parametres de revision"""
-        url = '/api/v1/revision/settings/api/settings/'
+        url = '/api/v1/revision/api/settings/settings/'
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -231,7 +231,7 @@ class RevisionSettingsAPITest(APITestCase):
 
     def test_update_revision_settings(self):
         """Test de mise a jour des parametres"""
-        url = '/api/v1/revision/settings/api/settings/1/'
+        url = '/api/v1/revision/api/settings/settings/1/'
         data = {
             'cards_per_session': 15,
             'default_session_duration': 25
@@ -244,7 +244,7 @@ class RevisionSettingsAPITest(APITestCase):
 
     def test_apply_preset(self):
         """Test d'application d'un preset"""
-        url = '/api/v1/revision/settings/api/settings/apply_preset/'
+        url = '/api/v1/revision/api/settings/settings/apply_preset/'
         data = {'preset_name': 'intermediate'}
         response = self.client.post(url, data)
         
@@ -270,7 +270,7 @@ class RevisionSettingsAPITest(APITestCase):
             back_text='Test answer'
         )
         
-        url = '/api/v1/revision/settings/api/settings/stats/'
+        url = '/api/v1/revision/api/settings/settings/stats/'
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -279,7 +279,7 @@ class RevisionSettingsAPITest(APITestCase):
 
     def test_word_stats_settings(self):
         """Test des paramètres de statistiques de mots"""
-        url = '/api/v1/revision/settings/api/settings/1/'
+        url = '/api/v1/revision/api/settings/settings/1/'
         data = {
             'show_word_stats': False,
             'stats_display_mode': 'summary',
@@ -548,7 +548,7 @@ class FlashcardsAudioAPITest(APITestCase):
     
     def test_get_user_audio_settings(self):
         """Test: Récupération des paramètres audio utilisateur"""
-        url = '/api/v1/revision/user-settings/'
+        url = '/api/v1/revision/api/user-settings/'
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -914,7 +914,7 @@ class VoiceParametersAPITest(APITestCase):
             preferred_gender_german='auto'
         )
         
-        url = '/api/v1/revision/user-settings/'
+        url = '/api/v1/revision/api/user-settings/'
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -938,7 +938,7 @@ class VoiceParametersAPITest(APITestCase):
         """Test: Workflow complet de mise à jour des paramètres audio"""
         
         # 1. Récupérer les paramètres initiaux
-        url = '/api/v1/revision/user-settings/'
+        url = '/api/v1/revision/api/user-settings/'
         response = self.client.get(url)
         initial_settings = response.data['settings']
         
@@ -1023,7 +1023,7 @@ class RevisionSettingsViewTest(APITestCase):
             }
         )
         
-        response = self.client.get('/api/v1/revision/user-settings/')
+        response = self.client.get('/api/v1/revision/api/user-settings/')
         
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -1051,7 +1051,7 @@ class RevisionSettingsViewTest(APITestCase):
         )
         
         # Appeler l'API
-        response = self.client.get('/api/v1/revision/user-settings/')
+        response = self.client.get('/api/v1/revision/api/user-settings/')
         
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -1081,7 +1081,7 @@ class RevisionSettingsViewTest(APITestCase):
         RevisionSettings.objects.filter(user=self.user).delete()
         
         # Appeler l'API
-        response = self.client.get('/api/v1/revision/user-settings/')
+        response = self.client.get('/api/v1/revision/api/user-settings/')
         
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -1164,7 +1164,7 @@ class FrontendBackendIntegrationTest(TestCase):
         fresh_client.login(username='integrationuser', password='testpass123')
         
         # Étape 3: L'API est appelée pour charger les paramètres
-        response = fresh_client.get('/api/v1/revision/user-settings/')
+        response = fresh_client.get('/api/v1/revision/api/user-settings/')
         
         if response.status_code == 200:
             data = response.json()
@@ -1296,7 +1296,7 @@ class RevisionSettingsViewSetAdvancedTest(APITestCase):
     
     def test_apply_preset_api(self):
         """Test de l'action apply_preset"""
-        url = '/api/v1/revision/settings/api/settings/apply_preset/'
+        url = '/api/v1/revision/api/settings/settings/apply_preset/'
         data = {'preset_name': 'beginner'}
         
         response = self.client.post(url, data)
@@ -1307,7 +1307,7 @@ class RevisionSettingsViewSetAdvancedTest(APITestCase):
     
     def test_session_config_api(self):
         """Test de l'action session_config"""
-        url = '/api/v1/revision/settings/api/settings/session_config/'
+        url = '/api/v1/revision/api/settings/settings/session_config/'
         
         response = self.client.get(url)
         
@@ -1317,7 +1317,7 @@ class RevisionSettingsViewSetAdvancedTest(APITestCase):
     
     def test_stats_api(self):
         """Test de l'action stats"""
-        url = '/api/v1/revision/settings/api/settings/stats/'
+        url = '/api/v1/revision/api/settings/settings/stats/'
         
         response = self.client.get(url)
         
@@ -1336,7 +1336,7 @@ class RevisionSettingsViewSetAdvancedTest(APITestCase):
             }
         )
         
-        url = f'/api/v1/revision/settings/api/settings/{settings.id}/'
+        url = f'/api/v1/revision/api/settings/settings/{settings.id}/'
         response = self.client.delete(url)
         
         self.assertEqual(response.status_code, 200)
@@ -1447,7 +1447,7 @@ class EnhancedAudioSettingsAPITest(APITestCase):
         )
         
         # Appeler l'endpoint audio_settings
-        url = '/api/v1/revision/settings/api/settings/audio_settings/'
+        url = '/api/v1/revision/api/settings/settings/audio_settings/'
         response = self.client.get(url)
         
         if response.status_code == 200:
@@ -1474,7 +1474,7 @@ class EnhancedAudioSettingsAPITest(APITestCase):
         }
         
         # Appeler l'endpoint en PATCH
-        url = '/api/v1/revision/settings/api/settings/audio_settings/'
+        url = '/api/v1/revision/api/settings/settings/audio_settings/'
         response = self.client.patch(url, update_data)
         
         if response.status_code == 200:
@@ -1494,7 +1494,7 @@ class EnhancedAudioSettingsAPITest(APITestCase):
         settings, created = RevisionSettings.objects.get_or_create(user=self.user)
         
         # Mise à jour via l'API standard avec données audio
-        url = f'/api/v1/revision/settings/api/settings/{settings.id}/'
+        url = f'/api/v1/revision/api/settings/settings/{settings.id}/'
         update_data = {
             'audio_enabled': True,
             'audio_speed': 0.7,
@@ -1518,7 +1518,7 @@ class EnhancedAudioSettingsAPITest(APITestCase):
         
         # Tester vitesse invalide (trop élevée)
         invalid_data = {'audio_speed': 2.5}
-        url = f'/api/v1/revision/settings/api/settings/{settings.id}/'
+        url = f'/api/v1/revision/api/settings/settings/{settings.id}/'
         response = self.client.patch(url, invalid_data)
         
         # Devrait échouer avec une erreur de validation
@@ -1541,7 +1541,7 @@ class EnhancedAudioSettingsAPITest(APITestCase):
         valid_genders = ['male', 'female', 'auto']
         for gender in valid_genders:
             data = {'preferred_gender_french': gender}
-            url = f'/api/v1/revision/settings/api/settings/{settings.id}/'
+            url = f'/api/v1/revision/api/settings/settings/{settings.id}/'
             response = self.client.patch(url, data)
             
             if response.status_code == 200:
@@ -1559,7 +1559,7 @@ class EnhancedAudioSettingsAPITest(APITestCase):
     def test_complete_audio_workflow_via_api(self):
         """Test du workflow complet des paramètres audio via API"""
         # 1. Création initiale avec défauts
-        url = '/api/v1/revision/settings/api/settings/'
+        url = '/api/v1/revision/api/settings/settings/'
         response = self.client.get(url)
         
         if response.status_code == 200:
@@ -1572,7 +1572,7 @@ class EnhancedAudioSettingsAPITest(APITestCase):
         
         # 2. Mise à jour des paramètres audio
         settings = RevisionSettings.objects.get(user=self.user)
-        update_url = f'/api/v1/revision/settings/api/settings/{settings.id}/'
+        update_url = f'/api/v1/revision/api/settings/settings/{settings.id}/'
         update_data = {
             'audio_enabled': False,
             'audio_speed': 1.4,
@@ -1593,7 +1593,7 @@ class EnhancedAudioSettingsAPITest(APITestCase):
             self.assertEqual(updated_settings['preferred_gender_english'], 'male')
         
         # 4. Reset aux défauts
-        reset_url = '/api/v1/revision/settings/api/settings/reset_to_defaults/'
+        reset_url = '/api/v1/revision/api/settings/settings/reset_to_defaults/'
         response = self.client.post(reset_url)
         
         if response.status_code == 200:

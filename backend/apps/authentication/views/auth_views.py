@@ -13,24 +13,60 @@ from ..forms.auth_forms import RegisterForm
 from ..services.email_service import EmailVerificationService
 from ..security.rate_limiter import EmailVerificationRateLimiter, rate_limit_response
 from ..security.audit_logger import SecurityAuditLogger
+from ..models.models import DuplicateEmailError
+from django.urls import reverse
+from django.utils import translation
+import logging
+
+logger = logging.getLogger(__name__)
 
 class LoginView(auth_views.LoginView):
     """Login View"""
     template_name = 'authentication/login.html'
-    
+
+    def get_context_data(self, **kwargs):
+        """Add email from URL parameter to context"""
+        logger.info(f"LOGIN VIEW: GET context for {self.request.path}")
+        context = super().get_context_data(**kwargs)
+
+        # Récupérer l'email depuis les paramètres URL
+        email = self.request.GET.get('email', '')
+        from_register = self.request.GET.get('from', '') == 'register'
+
+        logger.info(f"LOGIN: Email prefill = '{email}', from_register = {from_register}")
+
+        context['prefill_email'] = email
+        context['from_register'] = from_register
+
+        return context
+
+    def get_form(self, form_class=None):
+        """Pre-fill email field if provided in URL"""
+        form = super().get_form(form_class)
+
+        # Pré-remplir l'email si fourni dans l'URL
+        email = self.request.GET.get('email', '')
+        if email:
+            form.fields['username'].initial = email
+
+        return form
+
     def form_valid(self, form):
         """Override to check if user is verified"""
         user = form.get_user()
-        
+        logger.info(f"LOGIN ATTEMPT: User {user.username} (email: {user.email})")
+
         if not user.is_active:
             # User exists but is not verified
+            logger.warning(f"LOGIN BLOCKED: User {user.username} not verified")
             messages.error(
-                self.request, 
+                self.request,
                 _('Your email address is not verified yet. Please check your email and click the verification link.')
             )
             return redirect(f'/auth/email-verification-waiting/?email={user.email}')
-        
+
         # User is verified, proceed with normal login
+        logger.info(f"LOGIN SUCCESS: User {user.username} logged in successfully")
         response = super().form_valid(form)
         messages.success(self.request, _('Welcome back!'))
         return response
@@ -39,39 +75,49 @@ class RegisterView(View):
     """Register View"""
     
     def get(self, request):
+        logger.info(f"REGISTER VIEW: GET for {request.path}")
         form = RegisterForm()
         return render(request, 'authentication/register.html', {'form': form})
     
     def post(self, request):
+        logger.info(f"REGISTER POST: Attempt for {request.path}")
         form = RegisterForm(request.POST)
-        
+
+        # Vérifier si le formulaire indique une redirection vers login
+        if not form.is_valid():
+            logger.warning(f"REGISTER FORM INVALID: {form.errors}")
+            # Vérifier si c'est une erreur d'email dupliqué qui nécessite une redirection
+            if hasattr(form, '_redirect_to_login') and form._redirect_to_login:
+                duplicate_email = getattr(form, '_duplicate_email', '')
+                logger.info(f"DUPLICATE EMAIL REDIRECT: {duplicate_email} → login page")
+                # Rediriger vers la page de connexion avec l'email pré-rempli
+                # Préserver la langue actuelle de l'utilisateur
+                current_language = translation.get_language()
+
+                messages.info(
+                    request,
+                    _('An account with this email already exists. Please login with your existing account.')
+                )
+
+                # Construire l'URL de redirection avec la langue actuelle
+                login_url = reverse('auth:login')
+                redirect_url = f'{login_url}?email={duplicate_email}&from=register'
+                logger.info(f"REDIRECTING TO: {redirect_url}")
+                return redirect(redirect_url)
+
         if form.is_valid():
             client_ip = EmailVerificationRateLimiter.get_client_ip(request)
             user_agent = request.META.get('HTTP_USER_AGENT', '')
             
             try:
                 user = form.save()
-                
+
                 # Log registration
                 SecurityAuditLogger.log_registration(user, client_ip, user_agent)
                 
-                # Set interface language from current session language or native language
-                current_language = getattr(request, 'LANGUAGE_CODE', 'en')
-                native_language = user.native_language or current_language
-                
-                # Map native language codes to interface language codes if needed
-                language_mapping = {
-                    'EN': 'en', 'FR': 'fr', 'ES': 'es', 'NL': 'nl', 
-                    'DE': 'de', 'IT': 'it', 'PT': 'pt'
-                }
-                interface_lang = language_mapping.get(native_language.upper(), current_language)
-                
-                user.interface_language = interface_lang
-                user.save()
+                # The interface_language is already set from the form, no need to modify
 
                 # Log successful registration with terms acceptance
-                import logging
-                logger = logging.getLogger(__name__)
                 logger.info(f'User {user.email} registered successfully with terms accepted: {user.terms_accepted}')
 
                 # Send verification email
@@ -98,11 +144,23 @@ class RegisterView(View):
                     )
                     messages.error(request, _('Account created but failed to send verification email. Please contact support.'))
                     
+            except DuplicateEmailError as e:
+                # Gérer spécifiquement les erreurs d'email dupliqué
+                SecurityAuditLogger.log_suspicious_activity(
+                    e.email,
+                    f'Duplicate email registration attempt: {e.email}',
+                    client_ip,
+                    'WARNING'
+                )
+                messages.error(request, e.message)
+                # Rediriger vers la page de connexion avec l'email pré-rempli
+                return redirect(f'/auth/login/?email={e.email}&duplicate=true')
+
             except Exception as e:
                 SecurityAuditLogger.log_suspicious_activity(
-                    request.POST.get('email', 'unknown'), 
-                    f'Registration failed: {str(e)}', 
-                    client_ip, 
+                    request.POST.get('email', 'unknown'),
+                    f'Registration failed: {str(e)}',
+                    client_ip,
                     'ERROR'
                 )
                 messages.error(request, _('An error occurred while creating your account. Please try again.'))

@@ -109,7 +109,7 @@ class TagsManager {
 
         // 3. Validation finale via l'API (double sécurité)
         try {
-            const response = await window.apiService.request('/api/v1/revision/tags/', {
+            const response = await window.apiService.request('/api/v1/revision/api/tags/', {
                 method: 'POST',
                 body: JSON.stringify({ tag: normalizedTag })
             });
@@ -373,7 +373,7 @@ class TagsManager {
 
     async loadAvailableTags() {
         try {
-            const response = await window.apiService.request('/api/v1/revision/tags/');
+            const response = await window.apiService.request('/api/v1/revision/api/tags/');
             if (response && response.tags) {
                 this.availableTags = new Set(response.tags);
                 console.log(`🔄 Tags disponibles rechargés: ${response.tags.length} tags`);
@@ -448,7 +448,7 @@ function createNoTagsElement(deckId) {
     console.log('Fonction quickEditTags existe:', typeof quickEditTags !== 'undefined');
     
     // Version directe et robuste avec icône plus visible
-    const htmlContent = `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); console.log('Clic sur icône tag, deck:', ${deckId}); if(typeof quickEditTags !== 'undefined') { quickEditTags(${deckId}); } else { console.error('quickEditTags non définie'); }" style="cursor: pointer; color: #2d5bba; font-size: 1rem; margin: 0 4px; font-weight: bold; background: #f0f9ff; padding: 2px 4px; border-radius: 3px;">🏷️</i> pour en ajouter</span>`;
+    const htmlContent = `<span class="no-tags-message" onclick="event.stopPropagation(); console.log('Clic sur icône tag, deck:', ${deckId}); if(typeof quickEditTags !== 'undefined') { quickEditTags(${deckId}); } else { console.error('quickEditTags non définie'); }" style="cursor: pointer; color: #2d5bba;">${_('No tags - Click on 🏷️ to add some')}</span>`;
     
     console.log('HTML généré:', htmlContent);
     return htmlContent;
@@ -528,7 +528,7 @@ function createTagsFilter(containerSelector, onTagsChange) {
 // Fonction pour charger tous les tags disponibles
 async function loadAllTags() {
     try {
-        const response = await window.apiService.request('/api/v1/revision/tags/');
+        const response = await window.apiService.request('/api/v1/revision/api/tags/');
         return response.tags || [];
     } catch (error) {
         console.error('Erreur lors du chargement des tags:', error);

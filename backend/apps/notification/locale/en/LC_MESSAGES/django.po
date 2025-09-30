@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-16 10:00+0000\n"
+"POT-Creation-Date: 2025-09-30 05:57+0200\n"
 "PO-Revision-Date: 2025-01-16 10:00+0000\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: English\n"
@@ -16,123 +16,150 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: .\backend\apps\notification\services.py:424
 msgid "🔥 REVISION REMINDER"
 msgstr "🔥 REVISION REMINDER"
 
+#: .\backend\apps\notification\services.py:425
+#, python-format
 msgid "You have %(count)d cards to review today. Keep your streak going!"
 msgstr "You have %(count)d cards to review today. Keep your streak going!"
 
+#: .\backend\apps\notification\services.py:451
 msgid "🏆 Achievement Unlocked!"
 msgstr "🏆 Achievement Unlocked!"
 
+#: .\backend\apps\notification\services.py:452
+#, python-format
 msgid "You earned: %(achievement)s"
 msgstr "You earned: %(achievement)s"
 
+#: .\backend\apps\notification\services.py:476
 msgid "🎉 Course Completed!"
 msgstr "🎉 Course Completed!"
 
+#: .\backend\apps\notification\services.py:477
+#, python-format
 msgid "Congratulations! You completed %(course)s"
 msgstr "Congratulations! You completed %(course)s"
 
+#: .\backend\apps\notification\services.py:501
 msgid "System Update"
 msgstr "System Update"
 
+#: .\backend\apps\notification\services.py:528
+#: .\backend\apps\notification\services.py:560
 msgid "Action Required: Accept Terms of Use"
 msgstr "Action Required: Accept Terms of Use"
 
+#: .\backend\apps\notification\services.py:529
 msgid "Please accept our updated terms of use to continue using Linguify."
 msgstr "Please accept our updated terms of use to continue using Linguify."
 
-msgid "Welcome to Open Linguify!"
-msgstr "Welcome to Open Linguify!"
+#~ msgid "Welcome to Open Linguify!"
+#~ msgstr "Welcome to Open Linguify!"
 
-msgid "Start your language learning journey today"
-msgstr "Start your language learning journey today"
+#~ msgid "Start your language learning journey today"
+#~ msgstr "Start your language learning journey today"
 
-msgid "📚 Study Time"
-msgstr "📚 Study Time"
+#~ msgid "📚 Study Time"
+#~ msgstr "📚 Study Time"
 
-msgid "You have flashcards ready for review"
-msgstr "You have flashcards ready for review"
+#~ msgid "You have flashcards ready for review"
+#~ msgstr "You have flashcards ready for review"
 
 # Email translations
-msgid "Action Required: Terms of Use"
-msgstr "Action Required: Terms of Use"
+#~ msgid "Action Required: Terms of Use"
+#~ msgstr "Action Required: Terms of Use"
 
-msgid "Hello %(name)s,"
-msgstr "Hello %(name)s,"
+#~ msgid "Hello %(name)s,"
+#~ msgstr "Hello %(name)s,"
 
-msgid "We have updated our <strong>Terms of Use</strong> to improve your experience on %(app_name)s."
-msgstr "We have updated our <strong>Terms of Use</strong> to improve your experience on %(app_name)s."
+#~ msgid ""
+#~ "We have updated our <strong>Terms of Use</strong> to improve your "
+#~ "experience on %(app_name)s."
+#~ msgstr ""
+#~ "We have updated our <strong>Terms of Use</strong> to improve your "
+#~ "experience on %(app_name)s."
 
-msgid "To continue enjoying our language learning platform, we need your agreement on these new terms."
-msgstr "To continue enjoying our language learning platform, we need your agreement on these new terms."
+#~ msgid ""
+#~ "To continue enjoying our language learning platform, we need your "
+#~ "agreement on these new terms."
+#~ msgstr ""
+#~ "To continue enjoying our language learning platform, we need your "
+#~ "agreement on these new terms."
 
-msgid "Key Updates:"
-msgstr "Key Updates:"
+#~ msgid "Key Updates:"
+#~ msgstr "Key Updates:"
 
-msgid "Clarification of personal data usage"
-msgstr "Clarification of personal data usage"
+#~ msgid "Clarification of personal data usage"
+#~ msgstr "Clarification of personal data usage"
 
-msgid "New collaboration features"
-msgstr "New collaboration features"
+#~ msgid "New collaboration features"
+#~ msgstr "New collaboration features"
 
-msgid "Enhanced security and privacy"
-msgstr "Enhanced security and privacy"
+#~ msgid "Enhanced security and privacy"
+#~ msgstr "Enhanced security and privacy"
 
-msgid "Updated rights and responsibilities"
-msgstr "Updated rights and responsibilities"
+#~ msgid "Updated rights and responsibilities"
+#~ msgstr "Updated rights and responsibilities"
 
-msgid "Review and Accept Terms"
-msgstr "Review and Accept Terms"
+#~ msgid "Review and Accept Terms"
+#~ msgstr "Review and Accept Terms"
 
-msgid "You can also copy this link to your browser:"
-msgstr "You can also copy this link to your browser:"
+#~ msgid "You can also copy this link to your browser:"
+#~ msgstr "You can also copy this link to your browser:"
 
-msgid "Important:"
-msgstr "Important:"
+#~ msgid "Important:"
+#~ msgstr "Important:"
 
-msgid "Accepting these terms is necessary to continue using %(app_name)s."
-msgstr "Accepting these terms is necessary to continue using %(app_name)s."
+#~ msgid "Accepting these terms is necessary to continue using %(app_name)s."
+#~ msgstr "Accepting these terms is necessary to continue using %(app_name)s."
 
-msgid "If you have any questions about these changes, feel free to contact us at"
-msgstr "If you have any questions about these changes, feel free to contact us at"
+#~ msgid ""
+#~ "If you have any questions about these changes, feel free to contact us at"
+#~ msgstr ""
+#~ "If you have any questions about these changes, feel free to contact us at"
 
-msgid "Thank you for being part of our learning community!"
-msgstr "Thank you for being part of our learning community!"
+#~ msgid "Thank you for being part of our learning community!"
+#~ msgstr "Thank you for being part of our learning community!"
 
-msgid "Best regards,"
-msgstr "Best regards,"
+#~ msgid "Best regards,"
+#~ msgstr "Best regards,"
 
-msgid "The %(app_name)s Team"
-msgstr "The %(app_name)s Team"
+#~ msgid "The %(app_name)s Team"
+#~ msgstr "The %(app_name)s Team"
 
-msgid "Your language learning platform"
-msgstr "Your language learning platform"
+#~ msgid "Your language learning platform"
+#~ msgstr "Your language learning platform"
 
-msgid "Terms of Use"
-msgstr "Terms of Use"
+#~ msgid "Terms of Use"
+#~ msgstr "Terms of Use"
 
-msgid "Privacy"
-msgstr "Privacy"
+#~ msgid "Privacy"
+#~ msgstr "Privacy"
 
-msgid "Contact"
-msgstr "Contact"
+#~ msgid "Contact"
+#~ msgstr "Contact"
 
-msgid "This email was sent to %(email)s"
-msgstr "This email was sent to %(email)s"
+#~ msgid "This email was sent to %(email)s"
+#~ msgstr "This email was sent to %(email)s"
 
-msgid "© %(year)s %(app_name)s. All rights reserved."
-msgstr "© %(year)s %(app_name)s. All rights reserved."
+#~ msgid "© %(year)s %(app_name)s. All rights reserved."
+#~ msgstr "© %(year)s %(app_name)s. All rights reserved."
 
-msgid "To stop receiving these emails, log in to your account and modify your notification preferences."
-msgstr "To stop receiving these emails, log in to your account and modify your notification preferences."
+#~ msgid ""
+#~ "To stop receiving these emails, log in to your account and modify your "
+#~ "notification preferences."
+#~ msgstr ""
+#~ "To stop receiving these emails, log in to your account and modify your "
+#~ "notification preferences."
 
-msgid "KEY UPDATES:"
-msgstr "KEY UPDATES:"
+#~ msgid "KEY UPDATES:"
+#~ msgstr "KEY UPDATES:"
 
-msgid "REVIEW AND ACCEPT TERMS:"
-msgstr "REVIEW AND ACCEPT TERMS:"
+#~ msgid "REVIEW AND ACCEPT TERMS:"
+#~ msgstr "REVIEW AND ACCEPT TERMS:"
 
-msgid "All rights reserved."
-msgstr "All rights reserved."
+#~ msgid "All rights reserved."
+#~ msgstr "All rights reserved."

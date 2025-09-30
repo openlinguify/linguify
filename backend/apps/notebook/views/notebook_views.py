@@ -13,14 +13,347 @@ from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from datetime import timedelta
 import base64
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse, HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
+from django.views.decorators.csrf import csrf_exempt
+from django.middleware.csrf import get_token
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.http import Http404
+from ..models import Note
+import json
 
-from ..models import Note, NoteCategory, SharedNote
+from ..models import *
 from core.models.tags import Tag
-from ..serializers import (
-    NoteSerializer, NoteCategorySerializer,
-    SharedNoteSerializer, NoteDetailSerializer, NoteListSerializer
-)
+from ..serializers import *
 from core.serializers.tag_serializers import TagSerializer
+
+
+@method_decorator(login_required, name='dispatch')
+class NotebookMainView(TemplateView):
+    """
+    Vue principale pour l'interface notebook moderne avec HTMX et Alpine.js
+    """
+    template_name = 'notebook/notebook_app.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Ajouter les informations de l'app courante pour l'icône du header
+        current_app_info = {
+            'name': 'notebook',
+            'display_name': 'Notes',
+            'route_path': '/notebook/'
+        }
+
+        # Configuration pour l'interface
+        notebook_config = {
+            'api_base_url': '/notebook/',
+            'features': {
+                'sharing': True,
+                'tags': True,
+                'search': True,
+                'export': True,
+                'categories': True,
+            },
+            'limits': {
+                'max_note_size': 1024 * 1024,  # 1MB
+                'max_notes': 1000,
+            },
+            'user_preferences': {
+                'theme': getattr(self.request.user, 'theme', 'light'),
+                'language': getattr(self.request.user, 'language', 'fr'),
+            }
+        }
+
+        context.update({
+            'page_title': 'Notebook - Notes',
+            'current_app': current_app_info,
+            'notebook_config': notebook_config,
+        })
+        return context
+
+
+
+@require_http_methods(["GET"])
+def get_app_config(request):
+    """
+    Retourne la configuration de l'application pour le frontend
+    """
+    config = {
+        'features': {
+            'sharing': True,
+            'tags': True,
+            'search': True,
+            'export': True,
+        },
+        'limits': {
+            'max_note_size': 1024 * 1024,  # 1MB
+            'max_notes': 1000,
+        },
+        'user_preferences': {
+            'theme': request.user.theme if hasattr(request.user, 'theme') else 'light',
+            'language': request.user.language if hasattr(request.user, 'language') else 'fr',
+        }
+    }
+    return JsonResponse(config)
+
+@login_required
+@require_http_methods(["GET"])
+def get_notes(request):
+    """
+    Récupérer les notes avec filtrage et pagination
+    """
+    # Paramètres de filtrage
+    search = request.GET.get('search', '')
+    language = request.GET.get('language', '')
+    archive_status = request.GET.get('archive_status', 'active')
+    sort = request.GET.get('sort', 'updated_desc')
+    page = int(request.GET.get('page', 1))
+    
+    # Query de base
+    queryset = Note.objects.filter(user=request.user)
+    
+    # Filtrage par statut d'archivage
+    if archive_status == 'archived':
+        queryset = queryset.filter(is_archived=True)
+    elif archive_status == 'active':
+        queryset = queryset.filter(is_archived=False)
+    # Si "all", pas de filtre
+    
+    # Filtrage par recherche
+    if search:
+        queryset = queryset.filter(
+            Q(title__icontains=search) | Q(content__icontains=search)
+        )
+    
+    # Filtrage par langue
+    if language:
+        queryset = queryset.filter(language=language)
+    
+    # Tri
+    if sort == 'updated_desc':
+        queryset = queryset.order_by('-is_pinned', '-updated_at')
+    elif sort == 'updated_asc':
+        queryset = queryset.order_by('-is_pinned', 'updated_at')
+    elif sort == 'title_asc':
+        queryset = queryset.order_by('-is_pinned', 'title')
+    elif sort == 'title_desc':
+        queryset = queryset.order_by('-is_pinned', '-title')
+    else:
+        queryset = queryset.order_by('-is_pinned', '-updated_at')
+    
+    # Pagination
+    paginator = Paginator(queryset, 50)
+    page_obj = paginator.get_page(page)
+    
+    # Sérialisation simple des notes
+    notes_data = []
+    for note in page_obj:
+        notes_data.append({
+            'id': note.id,
+            'title': note.title,
+            'content': note.content,
+            'language': note.language,
+            'translation': note.translation,
+            'pronunciation': note.pronunciation,
+            'example_sentences': note.example_sentences,
+            'related_words': note.related_words,
+            'difficulty': note.difficulty,
+            'note_type': note.note_type,
+            'priority': note.priority,
+            'is_pinned': note.is_pinned,
+            'is_archived': note.is_archived,
+            'created_at': note.created_at.isoformat(),
+            'updated_at': note.updated_at.isoformat(),
+            'review_count': note.review_count,
+        })
+    
+    return JsonResponse({
+        'results': notes_data,
+        'count': paginator.count,
+        'total_pages': paginator.num_pages,
+        'current_page': page_obj.number,
+        'has_next': page_obj.has_next(),
+        'has_previous': page_obj.has_previous(),
+    })
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_csrf_token(request):
+    """
+    Récupérer le token CSRF
+    """
+    return JsonResponse({'csrf_token': get_token(request)})
+
+
+@login_required
+@require_http_methods(["POST"])
+def create_note(request):
+    """
+    Créer une nouvelle note
+    """
+    try:
+        data = json.loads(request.body)
+        
+        note = Note.objects.create(
+            user=request.user,
+            title=data.get('title', 'Nouvelle note'),
+            content=data.get('content', ''),
+            language=data.get('language', ''),
+            translation=data.get('translation', ''),
+            pronunciation=data.get('pronunciation', ''),
+            example_sentences=data.get('example_sentences', []),
+            related_words=data.get('related_words', []),
+            difficulty=data.get('difficulty', ''),
+            note_type=data.get('note_type', 'NOTE'),
+            priority=data.get('priority', 'MEDIUM'),
+            is_pinned=data.get('is_pinned', False),
+            is_archived=data.get('is_archived', False),
+        )
+        
+        return JsonResponse({
+            'id': note.id,
+            'title': note.title,
+            'content': note.content,
+            'language': note.language,
+            'translation': note.translation,
+            'pronunciation': note.pronunciation,
+            'example_sentences': note.example_sentences,
+            'related_words': note.related_words,
+            'difficulty': note.difficulty,
+            'note_type': note.note_type,
+            'priority': note.priority,
+            'is_pinned': note.is_pinned,
+            'is_archived': note.is_archived,
+            'created_at': note.created_at.isoformat(),
+            'updated_at': note.updated_at.isoformat(),
+            'review_count': note.review_count,
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+@require_http_methods(["POST"])
+def update_note(request, note_id):
+    """
+    Mettre à jour une note
+    """
+    try:
+        note = get_object_or_404(Note, id=note_id, user=request.user)
+        data = json.loads(request.body)
+        
+        # Mettre à jour les champs
+        note.title = data.get('title', note.title)
+        note.content = data.get('content', note.content)
+        note.language = data.get('language', note.language)
+        note.translation = data.get('translation', note.translation)
+        note.pronunciation = data.get('pronunciation', note.pronunciation)
+        note.example_sentences = data.get('example_sentences', note.example_sentences)
+        note.related_words = data.get('related_words', note.related_words)
+        note.difficulty = data.get('difficulty', note.difficulty)
+        note.note_type = data.get('note_type', note.note_type)
+        note.priority = data.get('priority', note.priority)
+        note.is_pinned = data.get('is_pinned', note.is_pinned)
+        note.is_archived = data.get('is_archived', note.is_archived)
+        
+        note.save()
+        
+        return JsonResponse({
+            'id': note.id,
+            'title': note.title,
+            'content': note.content,
+            'language': note.language,
+            'translation': note.translation,
+            'pronunciation': note.pronunciation,
+            'example_sentences': note.example_sentences,
+            'related_words': note.related_words,
+            'difficulty': note.difficulty,
+            'note_type': note.note_type,
+            'priority': note.priority,
+            'is_pinned': note.is_pinned,
+            'is_archived': note.is_archived,
+            'created_at': note.created_at.isoformat(),
+            'updated_at': note.updated_at.isoformat(),
+            'review_count': note.review_count,
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+@require_http_methods(["POST"])
+def delete_note(request, note_id):
+    """
+    Supprimer une note
+    """
+    try:
+        note = get_object_or_404(Note, id=note_id, user=request.user)
+        note.delete()
+        return JsonResponse({'success': True})
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+@require_http_methods(["POST"])
+def bulk_delete_notes(request):
+    """
+    Supprimer plusieurs notes
+    """
+    try:
+        data = json.loads(request.body)
+        note_ids = data.get('note_ids', [])
+        
+        deleted_count = Note.objects.filter(
+            id__in=note_ids, 
+            user=request.user
+        ).delete()[0]
+        
+        return JsonResponse({
+            'success': True,
+            'deleted_count': deleted_count
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+@require_http_methods(["POST"])
+def bulk_update_notes(request):
+    """
+    Mettre à jour plusieurs notes (archivage/désarchivage en lot)
+    """
+    try:
+        data = json.loads(request.body)
+        note_ids = data.get('note_ids', [])
+        updates = data.get('updates', {})
+        
+        updated_count = Note.objects.filter(
+            id__in=note_ids,
+            user=request.user
+        ).update(**updates)
+        
+        return JsonResponse({
+            'success': True,
+            'updated_count': updated_count
+        })
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+
 
 
 class EnhancedCursorPagination(CursorPagination):
@@ -81,12 +414,12 @@ class EnhancedCursorPagination(CursorPagination):
 
 class StandardResultsSetPagination(PageNumberPagination):
     """
-    Pagination standard par numéro de page, 
+    Pagination standard par numéro de page,
     utilisée pour les endpoints moins critiques en performance
     """
-    page_size = 50
+    page_size = 20  # Réduit pour vitesse Formula 1
     page_size_query_param = 'page_size'
-    max_page_size = 100
+    max_page_size = 50  # Limite réduite aussi
 
 # TagViewSet is now handled by the global tags system in core
 
@@ -176,9 +509,13 @@ class NoteViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # Base queryset with optimized joins
-        queryset = Note.objects.select_related('category').prefetch_related(
-            'sharednote_set__shared_with'
-        )
+        # Pour la liste, on évite les jointures complexes pour plus de vitesse
+        if self.action == 'list':
+            queryset = Note.objects.select_related('category')  # Pas de prefetch pour la liste
+        else:
+            queryset = Note.objects.select_related('category').prefetch_related(
+                'sharednote_set__shared_with'
+            )
         # Tags are now fetched via the global tag system
         
         # Gestion du filtre d'archivage par défaut
@@ -291,6 +628,14 @@ class NoteViewSet(viewsets.ModelViewSet):
             tags = self.request.data.get('tags')
             context['tags'] = tags if tags is not None else []
         return context
+
+    def perform_update(self, serializer):
+        """Update with optimized operations."""
+        with transaction.atomic():
+            note = serializer.save()
+            # Clear cache for review queries
+            cache_key = f'notes_due_review_{self.request.user.id}'
+            cache.delete(cache_key)
 
     @action(detail=True, methods=['post'])
     def mark_reviewed(self, request, pk=None):
@@ -452,6 +797,37 @@ class NoteViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(new_note)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get_object(self):
+        """
+        Custom get_object method that bypasses archive filtering for destroy action.
+        This allows deletion of both active and archived notes.
+        """
+        if self.action == 'destroy':
+            # For destroy action, get the note without archive filtering
+            queryset = Note.objects.select_related('category').prefetch_related(
+                'sharednote_set__shared_with'
+            )
+            # Only filter by ownership or shared access
+            user_id = self.request.user.id
+            note_id = self.kwargs['pk']
+
+            try:
+                note = queryset.get(
+                    Q(id=note_id) & (
+                        Q(user_id=user_id) |
+                        Q(id__in=SharedNote.objects.filter(
+                            shared_with_id=user_id
+                        ).values_list('note_id', flat=True))
+                    )
+                )
+                return note
+            except Note.DoesNotExist:
+                
+                raise Http404("Note not found or you don't have permission to delete it")
+
+        # For other actions, use the default behavior
+        return super().get_object()
 
 class SharedNoteViewSet(viewsets.ModelViewSet):
     serializer_class = SharedNoteSerializer

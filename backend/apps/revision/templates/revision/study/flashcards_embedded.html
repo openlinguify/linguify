@@ -1,13 +1,14 @@
+{% load i18n %}
 <!-- Flashcard Study Mode -->
 <div id="flashcardStudyMode" class="study-mode-hidden">
     <div class="study-header">
         <div class="d-flex align-items-center justify-content-between">
-            <h5 class="mb-0 text-linguify-primary font-weight-600">Mode Flashcards - <span id="studyDeckName"></span></h5>
+            <h5 class="mb-0 text-linguify-primary font-weight-600">{% trans "Flashcards Mode" %} - <span id="studyDeckName"></span></h5>
             <div class="d-flex align-items-center gap-2">
                 <span id="studyProgress" class="badge bg-linguify-gradient text-white px-3 py-2 rounded-lg">0/0</span>
                 <button id="exitStudyMode" class="flashcard-btn-return">
                     <i class="bi bi-arrow-left"></i>
-                    Retour au deck
+                    {% trans "Back to deck" %}
                 </button>
             </div>
         </div>
@@ -20,20 +21,20 @@
             <div id="flashcard" class="flashcard mb-4" onclick="flipCard()">
                 <div class="flashcard-inner">
                     <div class="flashcard-front">
-                        <div class="flashcard-text" id="flashcardFront">Cliquez pour commencer</div>
-                        <button id="speakFrontBtn" class="speak-btn speak-btn-front" 
-                                onclick="event.stopPropagation(); window.flashcardMode.speakText('front')" 
-                                aria-label="Lire le recto de la carte à haute voix"
-                                title="Lire à haute voix">
+                        <div class="flashcard-text" id="flashcardFront">{% trans "Click to start" %}</div>
+                        <button id="speakFrontBtn" class="speak-btn speak-btn-front"
+                                onclick="event.stopPropagation(); window.flashcardMode.speakText('front')"
+                                aria-label="{% trans 'Read the front of the card aloud' %}"
+                                title="{% trans 'Read aloud' %}">
                             <i class="bi bi-volume-up" aria-hidden="true"></i>
                         </button>
                     </div>
                     <div class="flashcard-back">
-                        <div class="flashcard-text" id="flashcardBack">Réponse</div>
-                        <button id="speakBackBtn" class="speak-btn speak-btn-back" 
-                                onclick="event.stopPropagation(); window.flashcardMode.speakText('back')" 
-                                aria-label="Lire le verso de la carte à haute voix"
-                                title="Lire à haute voix">
+                        <div class="flashcard-text" id="flashcardBack">{% trans "Answer" %}</div>
+                        <button id="speakBackBtn" class="speak-btn speak-btn-back"
+                                onclick="event.stopPropagation(); window.flashcardMode.speakText('back')"
+                                aria-label="{% trans 'Read the back of the card aloud' %}"
+                                title="{% trans 'Read aloud' %}">
                             <i class="bi bi-volume-up" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -42,33 +43,38 @@
             
             <!-- Instructions -->
             <div id="studyInstructions" class="text-center mb-4">
-                <p class="text-gray-600">Cliquez sur la carte pour voir la réponse, puis évaluez votre connaissance</p>
+                <p class="text-gray-600">{% trans "Click on the card to see the answer, then evaluate your knowledge" %}</p>
             </div>
             
             <!-- Action Buttons -->
             <div id="studyActions" class="d-flex gap-3 study-actions-hidden">
                 <button id="studyDifficult" class="flashcard-btn-difficult">
                     <i class="bi bi-x-circle"></i>
-                    Difficile
+                    {% trans "Difficult" %}
                 </button>
                 <button id="studyEasy" class="flashcard-btn-medium">
                     <i class="bi bi-dash-circle"></i>
-                    Moyen
+                    {% trans "Medium" %}
                 </button>
                 <button id="studyKnown" class="flashcard-btn-easy">
                     <i class="bi bi-check-circle"></i>
-                    Facile
+                    {% trans "Easy" %}
                 </button>
             </div>
             
             <!-- Empty State -->
             <div id="noCardsToStudy" class="empty-state empty-state-hidden">
                 <i class="bi bi-trophy icon-linguify-warning font-size-4rem"></i>
-                <h4 class="mt-3 text-linguify-primary">Félicitations !</h4>
-                <p class="text-gray-600">Vous avez terminé toutes les cartes de ce deck pour aujourd'hui.</p>
+                <h4 class="mt-3 text-linguify-primary">{% trans "Congratulations!" %}</h4>
+                <p class="text-gray-600">{% trans "You have completed all the cards in this deck for today." %}</p>
                 <button class="btn-linguify" onclick="window.revisionMain.exitStudyMode()">
-                    Retour au deck
+                    {% trans "Back to deck" %}
                 </button>
+            </div>
+
+            <!-- Completion State (hidden by default) -->
+            <div id="flashcardCompletionContainer" style="display: none;">
+                {% include 'revision/study/flashcards_completion.html' %}
             </div>
         </div>
         
@@ -77,19 +83,19 @@
             <div class="row text-center">
                 <div class="col">
                     <div class="stat-value text-linguify-accent" id="studyCorrect">0</div>
-                    <div class="stat-label">Réussies</div>
+                    <div class="stat-label">{% trans "Correct" %}</div>
                 </div>
                 <div class="col">
                     <div class="stat-value text-linguify-warning" id="studyMedium">0</div>
-                    <div class="stat-label">Moyennes</div>
+                    <div class="stat-label">{% trans "Medium" %}</div>
                 </div>
                 <div class="col">
                     <div class="stat-value text-danger" id="studyDifficultCount">0</div>
-                    <div class="stat-label">Difficiles</div>
+                    <div class="stat-label">{% trans "Difficult" %}</div>
                 </div>
                 <div class="col">
                     <div class="stat-value text-linguify-primary" id="studyRemaining">0</div>
-                    <div class="stat-label">Restantes</div>
+                    <div class="stat-label">{% trans "Remaining" %}</div>
                 </div>
             </div>
         </div>

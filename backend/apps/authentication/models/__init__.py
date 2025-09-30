@@ -3,7 +3,9 @@
 
 from . import models
 from . import profile
+from . import email_models
 
 # Export des modèles principaux pour la compatibilité
-from .models import User, CookieConsent, UserManager, CoachProfile, Review, UserFeedback, CookieConsentLog, EmailVerificationToken, validate_profile_picture, LANGUAGE_CHOICES, LEVEL_CHOICES, OBJECTIVES_CHOICES
-from ..utils.validators import validate_username
+from .models import *
+from .email_models import *
+from ..utils.validators import *

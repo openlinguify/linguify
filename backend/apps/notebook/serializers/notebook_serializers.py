@@ -79,8 +79,9 @@ class NoteListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
         fields = [
-            'id', 'title', 'category_name', 'tags', 'note_type',
-            'is_pinned', 'created_at', 'updated_at', 'is_due_for_review'
+            'id', 'title', 'content', 'category_name', 'tags', 'note_type',
+            'is_pinned', 'created_at', 'updated_at', 'is_due_for_review',
+            'language'  # Also add language field
         ]
 
     def get_is_due_for_review(self, obj):
@@ -177,11 +178,11 @@ class NoteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         tags_data = self.context.get('tags', [])
         note = super().update(instance, validated_data)
-        
+
         # Always update tags, using an empty list if tags_data is None
         tags = Tag.objects.filter(id__in=tags_data or [], user=instance.user)
         note.set_tags(tags)
-        
+
         return note
 
 class SharedNoteSerializer(serializers.ModelSerializer):

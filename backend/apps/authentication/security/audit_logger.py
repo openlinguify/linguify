@@ -52,7 +52,7 @@ class SecurityAuditLogger:
         cls.log_event(
             'USER_REGISTRATION',
             user.email,
-            {'username': user.username, 'native_language': user.native_language},
+            {'username': user.username, 'interface_language': user.interface_language},
             ip_address,
             user_agent
         )

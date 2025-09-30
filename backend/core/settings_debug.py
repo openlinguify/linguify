@@ -21,8 +21,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # SEO middleware
-    'core.seo.middleware.simple.SimpleSEOMiddleware',
+    # SEO middleware - moved to portal
+    # 'core.seo.middleware.simple.SimpleSEOMiddleware',
 ]
 
 # Disable locale paths temporarily

@@ -257,15 +257,26 @@ function getNotificationIcon(type) {
     return mapping[type] || 'bi-info-circle';
 }
 
-// Fonction simple pour inverser une carte
-window.flipCard = async function(cardId) {
-    console.log('Inversion carte:', cardId);
-    
-    // Valider l'ID de la carte
-    if (!cardId || cardId === 'undefined' || cardId === 'unknown') {
-        console.error('ID de carte invalide:', cardId);
-        showNotification('Impossible d\'inverser la carte: ID invalide', 'error');
-        return;
+// Fonction pour inverser front/back d'une carte (swap translation)
+// Note: Cette fonction n'est plus utilisée dans l'interface actuelle
+// Elle est conservée pour compatibilité mais ne devrait plus être appelée
+window.flipCardTranslation = async function(cardId, event) {
+    console.log('Inversion carte:', cardId, 'Event:', event);
+
+    // Si cardId n'est pas valide, essayer de le trouver depuis l'élément cliqué
+    if (!cardId || cardId === 'undefined' || cardId === 'unknown' || cardId === undefined) {
+        if (event && event.target) {
+            const button = event.target.closest('button');
+            const cardElement = button?.closest('[data-card-id]');
+            cardId = cardElement?.dataset?.cardId;
+            console.log('ID récupéré depuis le DOM:', cardId);
+        }
+
+        if (!cardId || cardId === 'undefined' || cardId === 'unknown') {
+            console.error('ID de carte invalide:', cardId);
+            showNotification('Impossible d\'inverser la carte: ID invalide', 'error');
+            return;
+        }
     }
     
     // Si c'est un ID temporaire, faire uniquement l'inversion visuelle
@@ -300,7 +311,7 @@ window.flipCard = async function(cardId) {
             await new Promise(resolve => setTimeout(resolve, 200));
         } else {
             // Pour les vraies cartes, appeler l'API
-            const response = await fetch(`/api/v1/revision/flashcards/${cardId}/flip_card/`, {
+            const response = await fetch(`/api/v1/revision/api/flashcards/${cardId}/flip_card/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

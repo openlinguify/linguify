@@ -1,0 +1,47 @@
+<!-- Units List Partial -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="bi bi-book-half me-2"></i>
+            Unités de cours - {{ selected_language_name }}
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if course_units %}
+            {% for unit in course_units %}
+            <div x-data="unitCard({{ unit|safe }})"
+                 class="unit-card card"
+                 hx-get="{% url 'language_learning:home' %}?unit={{ unit.id }}&lang={{ selected_language }}"
+                 hx-target="#main-content"
+                 hx-trigger="click">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="unit-title mb-1">
+                            <span class="unit-badge">
+                                📚 Leçon {{ unit.unit_number }}
+                            </span>
+                            {{ unit.title }}
+                        </h6>
+                        {% if unit.progress_percentage == 100 %}
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                        {% endif %}
+                    </div>
+                    <p class="text-muted small mb-3">{{ unit.description }}</p>
+                    <div class="unit-progress mb-2">
+                        <div class="progress-bar" :class="progressClass" :style="'width: ' + progressWidth"></div>
+                    </div>
+                    <small class="text-muted">
+                        {{ unit.completed_modules }}/{{ unit.modules_count }} modules terminés
+                    </small>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center p-4">
+                <i class="bi bi-book text-muted fs-1"></i>
+                <p class="text-muted mt-2">Aucune unité disponible pour {{ selected_language_name }}.</p>
+                <p class="text-muted small">Les unités de cours seront bientôt disponibles.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>

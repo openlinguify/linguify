@@ -24,14 +24,14 @@ class UserBasicSerializer(serializers.ModelSerializer):
         return None
     
     def get_native_language_display(self, obj):
-        if hasattr(obj, 'get_native_language_display'):
-            return obj.get_native_language_display()
-        return obj.native_language
-    
+        if hasattr(obj, 'learning_profile') and obj.learning_profile:
+            return obj.learning_profile.get_native_language_display()
+        return None
+
     def get_target_language_display(self, obj):
-        if hasattr(obj, 'get_target_language_display'):
-            return obj.get_target_language_display()
-        return obj.target_language
+        if hasattr(obj, 'learning_profile') and obj.learning_profile:
+            return obj.learning_profile.get_target_language_display()
+        return None
 
 
 class ProfileSerializer(serializers.ModelSerializer):

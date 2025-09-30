@@ -28,17 +28,22 @@ def language_learning_settings(request):
             messages.error(request, 'Native and target languages must be different')
             return render(request, 'language_learning/settings.html', {'user': user})
 
-        # Update user fields
-        if native_language:
-            user.native_language = native_language
-        if target_language:
-            user.target_language = target_language
-        if language_level:
-            user.language_level = language_level
-        if objectives:
-            user.objectives = objectives
+        # Update learning profile fields
+        learning_profile, created = user.learning_profile if hasattr(user, 'learning_profile') else None, False
+        if not learning_profile:
+            from ..models.models import UserLearningProfile
+            learning_profile = UserLearningProfile.objects.create(user=user)
 
-        user.save()
+        if native_language:
+            learning_profile.native_language = native_language
+        if target_language:
+            learning_profile.target_language = target_language
+        if language_level:
+            learning_profile.language_level = language_level
+        if objectives:
+            learning_profile.objectives = objectives
+
+        learning_profile.save()
 
         # Handle AJAX request
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -48,11 +53,11 @@ def language_learning_settings(request):
             })
 
         messages.success(request, 'Settings saved successfully!')
-        return redirect('language_learning:settings')
+        return redirect('saas_web:settings')
 
-    return render(request, 'language_learning/language_learning_settings.html', {
-        'user': request.user
-    })
+    # For GET requests, redirect to main settings page with language_learning tab active
+    from django.urls import reverse
+    return redirect(f"{reverse('saas_web:settings')}?tab=language_learning")
 
 
 @login_required
@@ -75,9 +80,9 @@ def get_user_language_learning_settings(request):
         'enable_audio_playback': getattr(user, 'enable_audio_playback', True),
         'show_pronunciation_hints': getattr(user, 'show_pronunciation_hints', True),
         'show_progress_animations': getattr(user, 'show_progress_animations', True),
-        'native_language': getattr(user, 'native_language', 'fr'),
-        'target_language': getattr(user, 'target_language', 'en'),
-        'language_level': getattr(user, 'language_level', 'beginner'),
+        'native_language': getattr(user.learning_profile, 'native_language', 'fr') if hasattr(user, 'learning_profile') else 'fr',
+        'target_language': getattr(user.learning_profile, 'target_language', 'en') if hasattr(user, 'learning_profile') else 'en',
+        'language_level': getattr(user.learning_profile, 'language_level', 'beginner') if hasattr(user, 'learning_profile') else 'beginner',
     }
 
     return JsonResponse({

@@ -1,0 +1,147 @@
+<!-- Lessons View - API Version -->
+<div x-show="currentView === 'lessons'" x-transition class="fade-in" style="background: var(--linguify-gray-50); min-height: 100vh; padding: 1.5rem;">
+    <div style="width: 100%;">
+
+        <!-- Lessons Header -->
+        <div class="d-flex align-items-center justify-content-between mb-4" style="border-bottom: 2px solid var(--linguify-gray-200); padding-bottom: 0.75rem;">
+            <div class="d-flex align-items-center">
+                <div style="background: var(--linguify-gradient); padding: 0.5rem; border-radius: 8px; margin-right: 0.75rem;">
+                    <i class="bi bi-book text-white"></i>
+                </div>
+                <div>
+                    <h4 class="mb-0" style="color: var(--linguify-gray-800); font-weight: 600;">
+                        Lessons
+                    </h4>
+                    <small style="color: var(--linguify-gray-600);" x-show="activeUnit" x-text="'Unité: ' + (activeUnit?.title || '')"></small>
+                </div>
+            </div>
+
+            <!-- Back to Units if needed -->
+            <button @click="currentView = 'units'; activeUnit = null;" class="btn-navbar btn-navbar-outline" x-show="activeUnit">
+                <i class="bi bi-arrow-left me-1"></i>
+                Retour
+            </button>
+        </div>
+
+        <!-- Unit Selection (if no active unit) -->
+        <div x-show="!activeUnit" class="mb-4">
+            <p class="mb-3" style="color: var(--linguify-gray-600);">Sélectionnez une unité pour voir ses lessons :</p>
+            <div style="width: 100%;">
+                <template x-for="unit in courseUnits" :key="unit.id">
+                    <div @click="selectUnitForLessons(unit)"
+                         class="unit-card"
+                         style="cursor: pointer; width: 100%; margin-bottom: 1rem;"
+                         :class="{
+                             'completed': unit.progress_percentage === 100,
+                             'active': unit.progress_percentage > 0 && unit.progress_percentage < 100
+                         }">
+
+                        <!-- Unit Header -->
+                        <div class="unit-header">
+                            <div class="unit-number" x-text="'Unité ' + unit.unit_number"></div>
+                            <div class="unit-modules-count">
+                                <i class="bi bi-collection"></i>
+                                <span x-text="unit.completed_modules + '/' + unit.modules_count"></span>
+                            </div>
+                        </div>
+
+                        <!-- Unit Content -->
+                        <div class="unit-title" x-text="unit.title"></div>
+                        <div class="unit-description" x-text="unit.description"></div>
+
+                        <!-- Progress Bar -->
+                        <div class="unit-progress">
+                            <div class="unit-progress-bar"
+                                 :style="'width: ' + unit.progress_percentage + '%'"></div>
+                        </div>
+
+                        <!-- Progress Text -->
+                        <div class="unit-progress-text">
+                            <template x-if="unit.progress_percentage === 100">
+                                <span><i class="bi bi-check-circle-fill"></i> Terminé</span>
+                            </template>
+                            <template x-if="unit.progress_percentage > 0 && unit.progress_percentage < 100">
+                                <span><i class="bi bi-clock-history"></i> <span x-text="unit.progress_percentage + '%'"></span> terminé</span>
+                            </template>
+                            <template x-if="unit.progress_percentage === 0">
+                                <span><i class="bi bi-star"></i> Nouveau</span>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Lessons/Modules List (when unit is selected) -->
+        <div x-show="activeUnit">
+
+            <!-- Modules Grid -->
+            <div class="module-grid">
+                <template x-for="module in activeUnitModules" :key="module.id">
+                    <div x-data="moduleCard(module)"
+                         class="module-card"
+                         :class="{ 'completed': module.is_completed, 'locked': !module.is_unlocked }">
+
+                        <!-- Module Header -->
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="unit-modules-count">
+                                <i class="bi bi-book-fill"></i>
+                                <span x-text="'Lesson ' + module.module_number"></span>
+                            </span>
+                            <template x-if="module.is_completed">
+                                <i class="bi bi-check-circle-fill" style="color: var(--linguify-success);"></i>
+                            </template>
+                            <template x-if="!module.is_unlocked">
+                                <i class="bi bi-lock" style="color: var(--linguify-gray-400);"></i>
+                            </template>
+                        </div>
+
+                        <!-- Module Content -->
+                        <h6 class="mb-2" x-text="module.title"></h6>
+                        <p class="mb-3 small" style="color: var(--linguify-gray-600);" x-text="module.description"></p>
+
+                        <!-- Module Info -->
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <span style="background: var(--linguify-gray-100); color: var(--linguify-gray-700); padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500;">
+                                <i class="bi bi-clock me-1"></i><span x-text="module.estimated_duration"></span> min
+                            </span>
+                            <span style="background: rgba(45, 91, 186, 0.1); color: var(--linguify-primary); padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500;" x-text="module.module_type_display"></span>
+                            <span style="background: rgba(245, 158, 11, 0.1); color: #d97706; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500;">
+                                <i class="bi bi-star me-1"></i><span x-text="module.xp_reward"></span> XP
+                            </span>
+                        </div>
+
+                        <!-- Module Action -->
+                        <div class="text-center">
+                            <template x-if="module.is_completed">
+                                <div style="color: var(--linguify-success);">
+                                    <div class="small mb-1">Terminé</div>
+                                    <template x-if="module.score > 0">
+                                        <div class="small" style="color: var(--linguify-gray-600);">Score: <span x-text="module.score"></span>%</div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template x-if="!module.is_completed && module.is_unlocked">
+                                <button @click="selectModule()" class="btn-navbar btn-navbar-primary w-100">
+                                    <i class="bi bi-play-circle me-1"></i>
+                                    <span x-text="module.attempts > 0 ? 'Continuer' : 'Commencer'"></span>
+                                </button>
+                            </template>
+                            <template x-if="!module.is_completed && !module.is_unlocked">
+                                <div style="color: var(--linguify-gray-500);">
+                                    <div class="small">Verrouillé</div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Empty State -->
+            <div x-show="activeUnitModules.length === 0" class="text-center p-4">
+                <i class="bi bi-collection fs-1" style="color: var(--linguify-gray-400);"></i>
+                <p class="mt-2" style="color: var(--linguify-gray-600);">Aucune lesson disponible pour cette unité.</p>
+            </div>
+        </div>
+    </div>
+</div>

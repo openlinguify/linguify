@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-16 10:00+0000\n"
+"POT-Creation-Date: 2025-09-30 05:57+0200\n"
 "PO-Revision-Date: 2025-01-16 10:00+0000\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: French\n"
@@ -16,123 +16,156 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: .\backend\apps\notification\services.py:424
 msgid "🔥 REVISION REMINDER"
 msgstr "🔥 RAPPEL DE RÉVISION"
 
+#: .\backend\apps\notification\services.py:425
+#, python-format
 msgid "You have %(count)d cards to review today. Keep your streak going!"
-msgstr "Vous avez %(count)d cartes à réviser aujourd'hui. Continuez votre série !"
+msgstr ""
+"Vous avez %(count)d cartes à réviser aujourd'hui. Continuez votre série !"
 
+#: .\backend\apps\notification\services.py:451
 msgid "🏆 Achievement Unlocked!"
 msgstr "🏆 Succès débloqué !"
 
+#: .\backend\apps\notification\services.py:452
+#, python-format
 msgid "You earned: %(achievement)s"
 msgstr "Vous avez gagné : %(achievement)s"
 
+#: .\backend\apps\notification\services.py:476
 msgid "🎉 Course Completed!"
 msgstr "🎉 Cours terminé !"
 
+#: .\backend\apps\notification\services.py:477
+#, python-format
 msgid "Congratulations! You completed %(course)s"
 msgstr "Félicitations ! Vous avez terminé %(course)s"
 
+#: .\backend\apps\notification\services.py:501
 msgid "System Update"
 msgstr "Mise à jour système"
 
+#: .\backend\apps\notification\services.py:528
+#: .\backend\apps\notification\services.py:560
 msgid "Action Required: Accept Terms of Use"
 msgstr "Action requise : Accepter les Conditions d'Utilisation"
 
+#: .\backend\apps\notification\services.py:529
 msgid "Please accept our updated terms of use to continue using Linguify."
-msgstr "Veuillez accepter nos conditions d'utilisation mises à jour pour continuer à utiliser Linguify."
+msgstr ""
+"Veuillez accepter nos conditions d'utilisation mises à jour pour continuer à "
+"utiliser Linguify."
 
-msgid "Welcome to Open Linguify!"
-msgstr "Bienvenue sur Open Linguify !"
+#~ msgid "Welcome to Open Linguify!"
+#~ msgstr "Bienvenue sur Open Linguify !"
 
-msgid "Start your language learning journey today"
-msgstr "Commencez votre parcours d'apprentissage des langues aujourd'hui"
+#~ msgid "Start your language learning journey today"
+#~ msgstr "Commencez votre parcours d'apprentissage des langues aujourd'hui"
 
-msgid "📚 Study Time"
-msgstr "📚 Temps d'étude"
+#~ msgid "📚 Study Time"
+#~ msgstr "📚 Temps d'étude"
 
-msgid "You have flashcards ready for review"
-msgstr "Vous avez des cartes prêtes à réviser"
+#~ msgid "You have flashcards ready for review"
+#~ msgstr "Vous avez des cartes prêtes à réviser"
 
 # Email translations
-msgid "Action Required: Terms of Use"
-msgstr "Action requise : Conditions d'Utilisation"
+#~ msgid "Action Required: Terms of Use"
+#~ msgstr "Action requise : Conditions d'Utilisation"
 
-msgid "Hello %(name)s,"
-msgstr "Bonjour %(name)s,"
+#~ msgid "Hello %(name)s,"
+#~ msgstr "Bonjour %(name)s,"
 
-msgid "We have updated our <strong>Terms of Use</strong> to improve your experience on %(app_name)s."
-msgstr "Nous avons mis à jour nos <strong>Conditions d'Utilisation</strong> pour améliorer votre expérience sur %(app_name)s."
+#~ msgid ""
+#~ "We have updated our <strong>Terms of Use</strong> to improve your "
+#~ "experience on %(app_name)s."
+#~ msgstr ""
+#~ "Nous avons mis à jour nos <strong>Conditions d'Utilisation</strong> pour "
+#~ "améliorer votre expérience sur %(app_name)s."
 
-msgid "To continue enjoying our language learning platform, we need your agreement on these new terms."
-msgstr "Pour continuer à profiter de notre plateforme d'apprentissage des langues, nous avons besoin de votre accord sur ces nouvelles conditions."
+#~ msgid ""
+#~ "To continue enjoying our language learning platform, we need your "
+#~ "agreement on these new terms."
+#~ msgstr ""
+#~ "Pour continuer à profiter de notre plateforme d'apprentissage des "
+#~ "langues, nous avons besoin de votre accord sur ces nouvelles conditions."
 
-msgid "Key Updates:"
-msgstr "Principales mises à jour :"
+#~ msgid "Key Updates:"
+#~ msgstr "Principales mises à jour :"
 
-msgid "Clarification of personal data usage"
-msgstr "Clarification de l'utilisation des données personnelles"
+#~ msgid "Clarification of personal data usage"
+#~ msgstr "Clarification de l'utilisation des données personnelles"
 
-msgid "New collaboration features"
-msgstr "Nouvelles fonctionnalités de collaboration"
+#~ msgid "New collaboration features"
+#~ msgstr "Nouvelles fonctionnalités de collaboration"
 
-msgid "Enhanced security and privacy"
-msgstr "Amélioration de la sécurité et de la confidentialité"
+#~ msgid "Enhanced security and privacy"
+#~ msgstr "Amélioration de la sécurité et de la confidentialité"
 
-msgid "Updated rights and responsibilities"
-msgstr "Mise à jour des droits et responsabilités"
+#~ msgid "Updated rights and responsibilities"
+#~ msgstr "Mise à jour des droits et responsabilités"
 
-msgid "Review and Accept Terms"
-msgstr "Consulter et Accepter les Conditions"
+#~ msgid "Review and Accept Terms"
+#~ msgstr "Consulter et Accepter les Conditions"
 
-msgid "You can also copy this link to your browser:"
-msgstr "Vous pouvez également copier ce lien dans votre navigateur :"
+#~ msgid "You can also copy this link to your browser:"
+#~ msgstr "Vous pouvez également copier ce lien dans votre navigateur :"
 
-msgid "Important:"
-msgstr "Important :"
+#~ msgid "Important:"
+#~ msgstr "Important :"
 
-msgid "Accepting these terms is necessary to continue using %(app_name)s."
-msgstr "L'acceptation de ces conditions est nécessaire pour continuer à utiliser %(app_name)s."
+#~ msgid "Accepting these terms is necessary to continue using %(app_name)s."
+#~ msgstr ""
+#~ "L'acceptation de ces conditions est nécessaire pour continuer à utiliser %"
+#~ "(app_name)s."
 
-msgid "If you have any questions about these changes, feel free to contact us at"
-msgstr "Si vous avez des questions concernant ces modifications, n'hésitez pas à nous contacter à"
+#~ msgid ""
+#~ "If you have any questions about these changes, feel free to contact us at"
+#~ msgstr ""
+#~ "Si vous avez des questions concernant ces modifications, n'hésitez pas à "
+#~ "nous contacter à"
 
-msgid "Thank you for being part of our learning community!"
-msgstr "Merci de faire partie de notre communauté d'apprentissage !"
+#~ msgid "Thank you for being part of our learning community!"
+#~ msgstr "Merci de faire partie de notre communauté d'apprentissage !"
 
-msgid "Best regards,"
-msgstr "Cordialement,"
+#~ msgid "Best regards,"
+#~ msgstr "Cordialement,"
 
-msgid "The %(app_name)s Team"
-msgstr "L'équipe %(app_name)s"
+#~ msgid "The %(app_name)s Team"
+#~ msgstr "L'équipe %(app_name)s"
 
-msgid "Your language learning platform"
-msgstr "Votre plateforme d'apprentissage des langues"
+#~ msgid "Your language learning platform"
+#~ msgstr "Votre plateforme d'apprentissage des langues"
 
-msgid "Terms of Use"
-msgstr "Conditions d'Utilisation"
+#~ msgid "Terms of Use"
+#~ msgstr "Conditions d'Utilisation"
 
-msgid "Privacy"
-msgstr "Confidentialité"
+#~ msgid "Privacy"
+#~ msgstr "Confidentialité"
 
-msgid "Contact"
-msgstr "Contact"
+#~ msgid "Contact"
+#~ msgstr "Contact"
 
-msgid "This email was sent to %(email)s"
-msgstr "Cet email a été envoyé à %(email)s"
+#~ msgid "This email was sent to %(email)s"
+#~ msgstr "Cet email a été envoyé à %(email)s"
 
-msgid "© %(year)s %(app_name)s. All rights reserved."
-msgstr "© %(year)s %(app_name)s. Tous droits réservés."
+#~ msgid "© %(year)s %(app_name)s. All rights reserved."
+#~ msgstr "© %(year)s %(app_name)s. Tous droits réservés."
 
-msgid "To stop receiving these emails, log in to your account and modify your notification preferences."
-msgstr "Pour ne plus recevoir ces emails, connectez-vous à votre compte et modifiez vos préférences de notification."
+#~ msgid ""
+#~ "To stop receiving these emails, log in to your account and modify your "
+#~ "notification preferences."
+#~ msgstr ""
+#~ "Pour ne plus recevoir ces emails, connectez-vous à votre compte et "
+#~ "modifiez vos préférences de notification."
 
-msgid "KEY UPDATES:"
-msgstr "PRINCIPALES MISES À JOUR :"
+#~ msgid "KEY UPDATES:"
+#~ msgstr "PRINCIPALES MISES À JOUR :"
 
-msgid "REVIEW AND ACCEPT TERMS:"
-msgstr "CONSULTER ET ACCEPTER LES CONDITIONS :"
+#~ msgid "REVIEW AND ACCEPT TERMS:"
+#~ msgstr "CONSULTER ET ACCEPTER LES CONDITIONS :"
 
-msgid "All rights reserved."
-msgstr "Tous droits réservés."
+#~ msgid "All rights reserved."
+#~ msgstr "Tous droits réservés."

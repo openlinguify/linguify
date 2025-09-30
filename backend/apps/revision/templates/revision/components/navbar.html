@@ -1,72 +1,17 @@
-<!-- Interface unifiée Linguify -->
+{% load i18n %}
+<!-- Unified Linguify Navbar -->
 <div class="navbar-linguify">
-    <!-- Gauche: Navigation + Actions principales -->
+    <!-- Left: Navigation + Main Actions -->
     <div class="navbar-section">
-        <!-- Bouton toggle sidebar pour toutes les pages -->
+        <!-- Sidebar toggle button for all pages -->
         <div>
-            <button id="toggleSidebar" 
-                class="btn-navbar-outline" 
-                title="Masquer/Afficher la barre latérale"
-                aria-label="Basculer la barre latérale"
+            <button id="toggleSidebar"
+                class="btn-navbar-outline"
+                title="{% trans 'Hide/Show sidebar' %}"
+                aria-label="{% trans 'Toggle sidebar' %}"
                 aria-expanded="true"
-                onclick="
-                // Universal sidebar toggle that works on all pages
-                const revisionSidebar = document.getElementById('revisionSidebar');
-                const exploreSidebar = document.getElementById('exploreSidebar');  
-                const statsSidebar = document.getElementById('statsSidebar');
-                
-                const sidebar = revisionSidebar || exploreSidebar || statsSidebar;
-                
-                if (sidebar) {
-                    const isCurrentlyVisible = sidebar.classList.contains('show');
-                    
-                    if (isCurrentlyVisible) {
-                        // Hide sidebar
-                        sidebar.classList.remove('show');
-                        sidebar.style.width = '0px';
-                        sidebar.style.minWidth = '0px';
-                        sidebar.style.maxWidth = '0px';
-                        sidebar.style.padding = '0px';
-                        sidebar.style.margin = '0px';
-                        sidebar.style.border = 'none';
-                        sidebar.style.overflow = 'hidden';
-                        sidebar.style.flex = '0 0 0px';
-                        sidebar.style.opacity = '0';
-                        sidebar.style.visibility = 'hidden';
-                    } else {
-                        // Show sidebar
-                        sidebar.classList.add('show');
-                        sidebar.style.removeProperty('width');
-                        sidebar.style.removeProperty('minWidth');
-                        sidebar.style.removeProperty('maxWidth');
-                        sidebar.style.removeProperty('padding');
-                        sidebar.style.removeProperty('margin');
-                        sidebar.style.removeProperty('border');
-                        sidebar.style.removeProperty('overflow');
-                        sidebar.style.removeProperty('flex');
-                        sidebar.style.removeProperty('opacity');
-                        sidebar.style.removeProperty('visibility');
-                    }
-                    
-                    // Update button icon
-                    const toggleBtn = document.getElementById('toggleSidebar');
-                    const icon = toggleBtn?.querySelector('i');
-                    if (icon) {
-                        const nowVisible = sidebar.classList.contains('show');
-                        if (nowVisible) {
-                            icon.className = 'bi bi-layout-sidebar-inset';
-                            toggleBtn.title = 'Masquer la barre latérale';
-                        } else {
-                            icon.className = 'bi bi-layout-sidebar-inset-reverse';
-                            toggleBtn.title = 'Afficher la barre latérale';
-                        }
-                    }
-                    
-                    console.log('Sidebar toggled:', sidebar.id, 'Show:', sidebar.classList.contains('show'));
-                } else {
-                    console.error('No sidebar found on this page');
-                }
-                ">
+                data-hide-text="{% trans 'Hide sidebar' %}"
+                data-show-text="{% trans 'Show sidebar' %}">
             <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
             </button>
         </div>
@@ -76,23 +21,23 @@
             <a href="{% url 'revision_web:main' %}" 
                class="nav-tab {% if app_name == 'revision' and not study_mode and not view_type %}active{% endif %}">
                 <i class="bi bi-stack"></i>
-                Liste de cartes
+                {% trans "Card List" %}
             </a>
             <a href="/revision/explore/" 
                class="nav-tab {% if view_type == 'explore' %}active{% endif %}">
                 <i class="bi bi-globe2"></i>
-                Explorer
+                {% trans "Explore" %}
             </a>
             <a href="{% url 'revision_web:stats_dashboard' %}" 
                class="nav-tab {% if view_type == 'stats' %}active{% endif %}">
                 <i class="bi bi-graph-up"></i>
-                Statistiques
+                {% trans "Statistics" %}
             </a>
         </div>
 
         <!-- Refresh - Always show, universal for all views -->
         <div class="container-extra">
-            <button class="btn-sb" title="Actualiser" onclick="location.reload()">
+            <button class="btn-sb" title="{% trans 'Refresh' %}" onclick="location.reload()">
                 <i class="bi bi-arrow-clockwise"></i>
                 <span class="d-none d-xl-inline"></span>
             </button>
@@ -100,134 +45,261 @@
 
     </div>
     
-    <!-- Droite: Actions et filtres contextuels -->
+    <!-- Right: Actions and contextual filters -->
     <div class="navbar-section-right">
         {% if view_type == 'stats' %}
-        <!-- Filtres pour la page Statistiques - Simplifiés -->
-        <!-- Time Range Filter - Spécifique aux statistiques -->
+        <!-- Filters for Statistics page - Simplified -->
+        <!-- Time Range Filter - Statistics specific -->
         <select id="statsTimeRange" class="form-select-linguify" style="width: 140px; min-width: 120px;">
-            <option value="7">7 derniers jours</option>
-            <option value="30" selected>30 derniers jours</option>
-            <option value="90">3 derniers mois</option>
-            <option value="365">Cette année</option>
-            <option value="all">Toute la période</option>
+            <option value="7">{% trans "7 last days" %}</option>
+            <option value="30" selected>{% trans "30 last days" %}</option>
+            <option value="90">{% trans "3 last months" %}</option>
+            <option value="365">{% trans "This year" %</option>
+            <option value="all">{% trans "All periods" %</option>
         </select>
         
-        <button id="exportStats" class="btn-navbar btn-navbar-outline" title="Exporter les statistiques">
+        <button id="exportStats" class="btn-navbar btn-navbar-outline" title="{% trans 'Export statistics' %}">
             <i class="bi bi-download"></i>
-            <span class="d-none d-lg-inline">Exporter</span>
+            <span class="d-none d-lg-inline">{% trans "Export" %}</span>
         </button>
         
         {% elif view_type == 'explore' %}
-        <!-- Filtres pour la page Explorer - Alignés avec la Liste de cartes -->
-        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
+        <!-- Filters for Explore page - Aligned with Card List -->
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Research in progress ...' %}" style="width: 140px; min-width: 100px;">
         
         <!-- Status Filter Dropdown -->
         <div class="dropdown">
             <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="statusFilterText">Tous les statuts</span>
+                <span id="statusFilterText">{% trans "All statuses" %}</span>
             </button>
             <ul id="statusFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous les statuts')">Tous les statuts</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('new', 'Récents')">Récents</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('popular', 'Populaires')">Populaires</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('public', 'Publics')">Publics</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="" data-text="{% trans 'All statuses'|escapejs %}">{% trans "All statuses" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="new" data-text="{% trans 'Recent'|escapejs %}">{% trans "Recent" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="popular" data-text="{% trans 'Popular'|escapejs %}">{% trans "Popular" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="public" data-text="{% trans 'Public'|escapejs %}">{% trans "Public" %}</a></li>
             </ul>
         </div>
         
         <!-- Sort Filter Dropdown -->
         <div class="dropdown">
             <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="sortFilterText">Plus récents</span>
+                <span id="sortFilterText">{% trans "Most recent" %}</span>
             </button>
             <ul id="sortFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">Plus récents</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('popularity_desc', 'Popularité')">Popularité</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('cards_desc', 'Nb. cartes')">Nb. cartes</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="updated_desc" data-text="{% trans 'Most recent'|escapejs %}">{% trans "Most recent" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="name_asc" data-text="A-Z">A-Z</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="popularity_desc" data-text="{% trans 'Popularity'|escapejs %}">{% trans "Popularity" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="cards_desc" data-text="{% trans 'Number of cards'|escapejs %}">{% trans "Number of cards" %}</a></li>
             </ul>
         </div>
         
         <!-- Tags Filter Dropdown -->
         <div class="dropdown">
-            <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="tagsFilterText">Tous les tags</span>
+            <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 160px; min-width: 140px;" data-bs-toggle="dropdown">
+                <span id="tagsFilterText">{% trans "All tags" %}</span>
             </button>
-            <ul id="tagsFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectTagsFilter('', 'Tous les tags')">Tous les tags</a></li>
+            <ul id="tagsFilterDropdown" class="dropdown-menu"
+                data-empty-text="{% trans 'No tags available' %}">
+                <li><a class="dropdown-item" href="#" data-action="selectTagsFilter" data-value="" data-text="{% trans 'All tags'|escapejs %}">{% trans "All tags" %}</a></li>
                 <!-- More tags will be dynamically loaded here -->
             </ul>
         </div>
         
         {% else %}
-        <!-- Filtres pour les pages personnelles -->
-        <input type="text" id="searchInput" class="form-control-linguify" placeholder="Rechercher..." style="width: 140px; min-width: 100px;">
+        <!-- Filters for personal pages -->
+        <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Search...' %}" style="width: 140px; min-width: 100px;">
         
         <!-- Status Filter Dropdown -->
         <div class="dropdown">
-            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="statusFilterText">Tous les statuts</span>
+            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 140px; min-width: 120px;" data-bs-toggle="dropdown">
+                <span id="statusFilterText">{% trans "All status" %}</span>
             </button>
             <ul id="statusFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('', 'Tous les statuts')">Tous les statuts</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('active', 'Actifs')">Actifs</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('archived', 'Archivés')">Archivés</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectStatusFilter('public', 'Publics')">Publics</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="" data-text="{% trans 'All status'|escapejs %}">{% trans "All status" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="active" data-text="{% trans 'Active'|escapejs %}">{% trans "Active" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="archived" data-text="{% trans 'Archived'|escapejs %}">{% trans "Archived" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectStatusFilter" data-value="public" data-text="{% trans 'Public'|escapejs %}">{% trans "Public" %}</a></li>
             </ul>
         </div>
         
         <!-- Sort Filter Dropdown -->
         <div class="dropdown">
-            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="sortFilterText">Plus récents</span>
+            <button id="sortFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 140px; min-width: 120px;" data-bs-toggle="dropdown">
+                <span id="sortFilterText">{% trans "Filter" %}</span>
             </button>
             <ul id="sortFilterDropdown" class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('updated_desc', 'Plus récents')">Plus récents</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('name_asc', 'A-Z')">A-Z</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortFilter('progress_desc', 'Progression')">Progression</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="updated_desc" data-text="{% trans 'Most recent'|escapejs %}">{% trans "Most recent" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="updated_asc" data-text="{% trans 'Less recent'|escapejs %}">{% trans "Less recent" %}</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="name_asc" data-text="A-Z">A-Z</a></li>
+                <li><a class="dropdown-item" href="#" data-action="selectSortFilter" data-value="progress_desc" data-text="{% trans 'Progress'|escapejs %}">{% trans "Progress" %}</a></li>
             </ul>
         </div>
         
         <!-- Tags Filter Dropdown -->
         <div class="dropdown">
-            <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span id="tagsFilterText">Tous les tags</span>
+            <button id="tagsFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 160px; min-width: 140px;" data-bs-toggle="dropdown">
+                <span id="tagsFilterText">{% trans "All tags" %}</span>
             </button>
-            <ul id="tagsFilterDropdown" class="dropdown-menu">
+            <ul id="tagsFilterDropdown" class="dropdown-menu"
+                data-empty-text="{% trans 'No tags available' %}">
                 <!-- Tags will be dynamically loaded here -->
             </ul>
-        </div>
-        
-        <!-- View Toggle - Only show on Liste de cartes page -->
-        <div id="viewToggleGroup" class="navbar-actions-group">
-            <div class="btn-group" role="group" aria-label="Mode d'affichage">
-                <button id="listViewBtn" class="btn-navbar btn-navbar-outline active" 
-                        title="Vue liste"
-                        onclick="toggleViewMode('list')">
-                    <i class="bi bi-list-ul"></i>
-                    <span class="d-none d-xl-inline">Liste</span>
-                </button>
-                <button id="tableViewBtn" class="btn-navbar btn-navbar-outline" 
-                        title="Vue tableau"
-                        onclick="toggleViewMode('table')">
-                    <i class="bi bi-table"></i>
-                    <span class="d-none d-xl-inline">Tableau</span>
-                </button>
-            </div>
         </div>
 
         <!-- Actions - Only show when no deck is selected -->
         <div id="generalActions" class="navbar-actions-group">
             <button id="importDeck" class="btn-navbar btn-navbar-outline">
                 <i class="bi bi-upload"></i>
-                <span class="d-none d-xxl-inline">Importer</span>
+                <span class="d-none d-xxl-inline">{% trans "Import" %}</span>
             </button>
             
             <button id="createDeck" class="btn-navbar btn-navbar-primary">
                 <i class="bi bi-plus-lg"></i>
-                <span class="d-none d-xxl-inline">Nouveau</span>
+                <span class="d-none d-xxl-inline">{% trans "New list" %}</span>
             </button>
         </div>
         {% endif %}
     </div>
 </div>
+
+<script>
+// Global translations object for JavaScript
+window.translations = {
+    'Share': "{% trans 'Share' %}",
+    'Make public': "{% trans 'Make public' %}",
+    'Loading decks': "{% trans 'Loading decks' %}",
+    'Unnamed': "{% trans 'Unnamed' %}",
+    'No description': "{% trans 'No description' %}",
+    'Add tags': "{% trans 'Add tags' %}",
+    'Public': "{% trans 'Public' %}",
+    'Save': "{% trans 'Save' %}",
+    'Cancel': "{% trans 'Cancel' %}",
+    'Delete': "{% trans 'Delete' %}",
+    'Edit': "{% trans 'Edit' %}",
+    'Create': "{% trans 'Create' %}",
+    'New': "{% trans 'New' %}",
+    'Error': "{% trans 'Error' %}",
+    'Edit language for this card': "{% trans 'Edit language for this card' %}",
+    'Error loading deck': "{% trans 'Error loading deck' %}",
+    'Error creating card': "{% trans 'Error creating card' %}",
+    'Error loading cards': "{% trans 'Error loading cards' %}",
+    'Share this deck': "{% trans 'Share this deck' %}",
+    'Share quickly': "{% trans 'Share quickly' %}",
+    'Column': "{% trans 'Column' %}",
+    'To learn': "{% trans 'To learn' %}",
+    'Created on': "{% trans 'Created on' %}",
+    'No tags - Click on 🏷️ to add some': "{% trans 'No tags - Click on 🏷️ to add some' %}",
+    'Deck imported from': "{% trans 'Deck imported from' %}",
+    'Add a card': "{% trans 'Add a card' %}",
+    'Deck cards': "{% trans 'Deck cards' %}",
+    'No cards to review!': "{% trans 'No cards to review!' %}",
+    'This deck contains no cards, or all cards are already learned.': "{% trans 'This deck contains no cards, or all cards are already learned.' %}",
+    'Practice with all cards': "{% trans 'Practice with all cards' %}",
+    'Back to deck': "{% trans 'Back to deck' %}",
+    'Session completed!': "{% trans 'Session completed!' %}",
+    'Excellent work! You have completed': "{% trans 'Excellent work! You have completed' %}",
+    'Easy': "{% trans 'Easy' %}",
+    'Medium': "{% trans 'Medium' %}",
+    'Hard': "{% trans 'Hard' %}",
+    'Restart': "{% trans 'Restart' %}",
+    'My decks': "{% trans 'My decks' %}"
+};
+
+// Pluralization data
+window.pluralTranslations = {
+    'card': {
+        singular: "{% blocktrans count counter=1 %}card{% plural %}cards{% endblocktrans %}",
+        plural: "{% blocktrans count counter=2 %}card{% plural %}cards{% endblocktrans %}"
+    }
+};
+
+// Pluralization helper - ngettext equivalent
+window.ngettext = function(singular, plural, count) {
+    // Check if we have a translation for this string
+    if (window.pluralTranslations && window.pluralTranslations[singular]) {
+        return count === 1 ?
+            window.pluralTranslations[singular].singular :
+            window.pluralTranslations[singular].plural;
+    }
+    // Fallback: use English plural rules (n != 1)
+    return count === 1 ? singular : plural;
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle dropdown item clicks with data attributes
+    document.querySelectorAll('[data-action]').forEach(function(element) {
+        element.addEventListener('click', function(e) {
+            e.preventDefault();
+            const action = this.dataset.action;
+            const value = this.dataset.value;
+            const text = this.dataset.text;
+
+            // Call the appropriate function based on action
+            if (action === 'selectStatusFilter') {
+                selectStatusFilter(value, text);
+            } else if (action === 'selectSortFilter') {
+                selectSortFilter(value, text);
+            } else if (action === 'selectTagsFilter') {
+                selectTagsFilter(value, text);
+            }
+        });
+    });
+
+    // Handle sidebar toggle for Explore and Stats pages only
+    // (Card List page has its own handler in revision-main.js)
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const exploreSidebar = document.getElementById('exploreSidebar');
+    const statsSidebar = document.getElementById('statsSidebar');
+
+    if (toggleSidebar && (exploreSidebar || statsSidebar)) {
+        toggleSidebar.addEventListener('click', function() {
+            const sidebar = exploreSidebar || statsSidebar;
+
+            if (sidebar) {
+                const isCurrentlyVisible = sidebar.classList.contains('show');
+
+                if (isCurrentlyVisible) {
+                    // Hide sidebar
+                    sidebar.classList.remove('show');
+                    sidebar.style.width = '0px';
+                    sidebar.style.minWidth = '0px';
+                    sidebar.style.maxWidth = '0px';
+                    sidebar.style.padding = '0px';
+                    sidebar.style.margin = '0px';
+                    sidebar.style.border = 'none';
+                    sidebar.style.overflow = 'hidden';
+                    sidebar.style.flex = '0 0 0px';
+                    sidebar.style.opacity = '0';
+                    sidebar.style.visibility = 'hidden';
+                } else {
+                    // Show sidebar
+                    sidebar.classList.add('show');
+                    sidebar.style.removeProperty('width');
+                    sidebar.style.removeProperty('minWidth');
+                    sidebar.style.removeProperty('maxWidth');
+                    sidebar.style.removeProperty('padding');
+                    sidebar.style.removeProperty('margin');
+                    sidebar.style.removeProperty('border');
+                    sidebar.style.removeProperty('overflow');
+                    sidebar.style.removeProperty('flex');
+                    sidebar.style.removeProperty('opacity');
+                    sidebar.style.removeProperty('visibility');
+                }
+
+                // Update button icon and title
+                const icon = toggleSidebar.querySelector('i');
+                if (icon) {
+                    const nowVisible = sidebar.classList.contains('show');
+                    if (nowVisible) {
+                        icon.className = 'bi bi-layout-sidebar-inset';
+                        toggleSidebar.title = toggleSidebar.dataset.hideText;
+                    } else {
+                        icon.className = 'bi bi-layout-sidebar-inset-reverse';
+                        toggleSidebar.title = toggleSidebar.dataset.showText;
+                    }
+                }
+            }
+        });
+    }
+});
+</script>

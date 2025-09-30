@@ -1,0 +1,492 @@
+{% extends 'saas_web/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}{{ page_title|default:"Submit Feedback" }} | Open Linguify{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'authentication/css/feedback.css' %}">
+<style>
+.feedback-form-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.form-header h1 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.form-subtitle {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+.feedback-form {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    outline: none;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.type-help {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-left: 4px solid #007bff;
+}
+
+.type-help-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.type-descriptions {
+    display: none;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.conditional-fields {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+}
+
+.conditional-fields.show {
+    display: block;
+}
+
+.file-upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+    border-color: #007bff;
+    background: #e7f3ff;
+}
+
+.file-upload-icon {
+    font-size: 2rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.submit-section {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+}
+
+.btn-cancel {
+    background: transparent;
+    color: #6c757d;
+    border: 2px solid #dee2e6;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    color: #495057;
+    border-color: #adb5bd;
+    text-decoration: none;
+}
+
+.priority-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.priority-low { background: #28a74520; color: #28a745; }
+.priority-medium { background: #ffc10720; color: #ffc107; }
+.priority-high { background: #fd7e1420; color: #fd7e14; }
+.priority-critical { background: #dc354520; color: #dc3545; }
+
+@media (max-width: 768px) {
+    .feedback-form-container {
+        margin: 1rem auto;
+        padding: 0 0.5rem;
+    }
+
+    .feedback-form {
+        padding: 1.5rem;
+    }
+
+    .submit-section {
+        text-align: center;
+    }
+
+    .btn-cancel {
+        display: block;
+        margin: 0 0 1rem 0;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="feedback-form-container">
+    <!-- En-tête -->
+    <div class="form-header">
+        <h1>
+            {% if page_title %}
+                {{ page_title }}
+            {% else %}
+                <i class="bi bi-chat-dots"></i>
+                {% trans "Submit Feedback" %}
+            {% endif %}
+        </h1>
+        {% if form_subtitle %}
+            <p class="form-subtitle">{{ form_subtitle }}</p>
+        {% else %}
+            <p class="form-subtitle">
+                {% trans "Help us improve by sharing your feedback, reporting bugs, or requesting features." %}
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- Formulaire -->
+    <form method="post" enctype="multipart/form-data" class="feedback-form" id="feedbackForm">
+        {% csrf_token %}
+
+        <!-- Section 1: Informations de base -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="bi bi-info-circle"></i>
+                {% trans "Basic Information" %}
+            </h3>
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                {{ form.title|add_class:"form-control" }}
+                {% if form.title.help_text %}
+                    <div class="form-text">{{ form.title.help_text }}</div>
+                {% endif %}
+                {% if form.title.errors %}
+                    <div class="text-danger mt-1">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 form-group">
+                    <label for="{{ form.feedback_type.id_for_label }}">{{ form.feedback_type.label }}</label>
+                    {{ form.feedback_type|add_class:"form-select" }}
+                    {% if form.feedback_type.errors %}
+                        <div class="text-danger mt-1">{{ form.feedback_type.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+                    {{ form.category|add_class:"form-select" }}
+                    {% if form.category.errors %}
+                        <div class="text-danger mt-1">{{ form.category.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="{{ form.priority.id_for_label }}">{{ form.priority.label }}</label>
+                    {{ form.priority|add_class:"form-select" }}
+                    {% if form.priority.errors %}
+                        <div class="text-danger mt-1">{{ form.priority.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Aide pour les types -->
+            <div class="type-help" id="typeHelp">
+                <div class="type-help-title">
+                    <i class="bi bi-question-circle"></i>
+                    {% trans "What type of feedback is this?" %}
+                </div>
+                <div class="type-descriptions" id="typeDescriptions">
+                    {% for type_key, description in type_help.items %}
+                        <div class="type-desc" data-type="{{ type_key }}" style="display: none;">
+                            {{ description }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Description détaillée -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="bi bi-card-text"></i>
+                {% trans "Detailed Description" %}
+            </h3>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                {{ form.description|add_class:"form-control" }}
+                {% if form.description.help_text %}
+                    <div class="form-text">{{ form.description.help_text }}</div>
+                {% endif %}
+                {% if form.description.errors %}
+                    <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Champs conditionnels pour les bugs -->
+            <div class="conditional-fields" id="bugFields">
+                <h4>
+                    <i class="bi bi-bug"></i>
+                    {% trans "Bug Report Details" %}
+                </h4>
+
+                <div class="form-group">
+                    <label for="{{ form.steps_to_reproduce.id_for_label }}">{{ form.steps_to_reproduce.label }}</label>
+                    {{ form.steps_to_reproduce|add_class:"form-control" }}
+                    {% if form.steps_to_reproduce.help_text %}
+                        <div class="form-text">{{ form.steps_to_reproduce.help_text }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="{{ form.expected_behavior.id_for_label }}">{{ form.expected_behavior.label }}</label>
+                        {{ form.expected_behavior|add_class:"form-control" }}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="{{ form.actual_behavior.id_for_label }}">{{ form.actual_behavior.label }}</label>
+                        {{ form.actual_behavior|add_class:"form-control" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Informations techniques -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="bi bi-gear"></i>
+                {% trans "Technical Information" %} <small class="text-muted">({% trans "Optional" %})</small>
+            </h3>
+
+            <div class="form-group">
+                <label for="{{ form.page_url.id_for_label }}">{{ form.page_url.label }}</label>
+                {{ form.page_url|add_class:"form-control" }}
+                {% if form.page_url.help_text %}
+                    <div class="form-text">{{ form.page_url.help_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.screenshot.id_for_label }}">{{ form.screenshot.label }}</label>
+                <div class="file-upload-area" onclick="document.getElementById('{{ form.screenshot.id_for_label }}').click();">
+                    <div class="file-upload-icon">
+                        <i class="bi bi-cloud-upload"></i>
+                    </div>
+                    <div>
+                        <strong>{% trans "Click to upload a screenshot" %}</strong><br>
+                        <small class="text-muted">{% trans "PNG, JPG or GIF up to 10MB" %}</small>
+                    </div>
+                    {{ form.screenshot|add_class:"d-none" }}
+                </div>
+                <div id="filePreview" class="mt-2" style="display: none;">
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i>
+                        <span id="fileName"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section de soumission -->
+        <div class="submit-section">
+            <a href="{% url 'authentication:feedback_dashboard' %}" class="btn-cancel">
+                <i class="bi bi-arrow-left"></i>
+                {% trans "Cancel" %}
+            </a>
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-send"></i>
+                {% trans "Submit Feedback" %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.getElementById('{{ form.feedback_type.id_for_label }}');
+    const bugFields = document.getElementById('bugFields');
+    const typeHelp = document.getElementById('typeHelp');
+    const typeDescriptions = document.getElementById('typeDescriptions');
+    const fileInput = document.getElementById('{{ form.screenshot.id_for_label }}');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+
+    // Gestion des champs conditionnels selon le type
+    function toggleConditionalFields() {
+        const selectedType = typeSelect.value;
+
+        // Afficher les champs spécifiques aux bugs
+        if (selectedType === 'bug_report') {
+            bugFields.classList.add('show');
+        } else {
+            bugFields.classList.remove('show');
+        }
+
+        // Afficher la description du type
+        const descriptions = typeDescriptions.querySelectorAll('.type-desc');
+        descriptions.forEach(desc => desc.style.display = 'none');
+
+        const currentDesc = typeDescriptions.querySelector(`[data-type="${selectedType}"]`);
+        if (currentDesc) {
+            currentDesc.style.display = 'block';
+            typeDescriptions.style.display = 'block';
+        } else {
+            typeDescriptions.style.display = 'none';
+        }
+    }
+
+    // Écouter les changements de type
+    typeSelect.addEventListener('change', toggleConditionalFields);
+
+    // Initialiser l'état
+    toggleConditionalFields();
+
+    // Gestion de l'upload de fichier
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                fileName.textContent = file.name;
+                filePreview.style.display = 'block';
+            } else {
+                filePreview.style.display = 'none';
+            }
+        });
+    }
+
+    // Validation du formulaire
+    const form = document.getElementById('feedbackForm');
+    form.addEventListener('submit', function(e) {
+        const title = document.getElementById('{{ form.title.id_for_label }}').value.trim();
+        const description = document.getElementById('{{ form.description.id_for_label }}').value.trim();
+
+        if (!title || !description) {
+            e.preventDefault();
+            alert('{% trans "Please fill in the title and description fields." %}');
+            return false;
+        }
+
+        // Désactiver le bouton de soumission pour éviter les doublons
+        const submitBtn = form.querySelector('.btn-submit');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> {% trans "Submitting..." %}';
+    });
+
+    // Animation d'entrée
+    const formSections = document.querySelectorAll('.form-section');
+    formSections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            section.style.transition = 'all 0.5s ease';
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+});
+</script>
+{% endblock %}

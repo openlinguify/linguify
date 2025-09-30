@@ -6,27 +6,24 @@ from .views.notebook_views import (
     NoteViewSet,
     NoteCategoryViewSet,
     SharedNoteViewSet,
+    get_app_config,
+    NotebookMainView
 )
+
 app_name = 'notebook'
 
 router = DefaultRouter()
 router.register(r'notes', NoteViewSet, basename='note')
 router.register(r'categories', NoteCategoryViewSet, basename='category')
 router.register(r'shared-notes', SharedNoteViewSet, basename='shared-note')
-# Tags are now managed by the global tag system in core
-
 
 urlpatterns = [
+    # Configuration de l'application
+    path('config/', get_app_config, name='config'),
+
     # API REST endpoints
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
+
+    # Interface web moderne (priorité pour dashboard)
+    path('', NotebookMainView.as_view(), name='notebook_app'),
 ]
-
-
-# Endpoints disponibles :
-
-# /api/notes/ - CRUD des notes
-# /api/notes/due_for_review/ - Notes à réviser
-# /api/notes/by_language/ - Notes par langue
-# /api/categories/ - Gestion des catégories
-# /api/v1/core/tags/ - Gestion des tags (système global)
-# /api/shared/ - Gestion des notes partagées

@@ -1,0 +1,664 @@
+/**
+ * Editor.js Custom Styles for Linguify
+ */
+
+/* Variables CSS Linguify */
+:root {
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #017E84;
+    --linguify-gray: #6B7280;
+    --linguify-primary-light: #4F7BD9;
+    --linguify-primary-dark: #1E4A8C;
+    --linguify-secondary-light: #A78BFA;
+    --linguify-secondary-dark: #7C3AED;
+    --linguify-accent-light: #26E4B8;
+    --linguify-accent-dark: #00B894;
+    --linguify-success: #10B981;
+    --linguify-warning: #F59E0B;
+    --linguify-error: #EF4444;
+    --linguify-danger: #DC2626;
+
+    /* Additional colors for consistency */
+    --linguify-white: #ffffff;
+    --linguify-gray-50: #f9fafb;
+    --linguify-gray-100: #f3f4f6;
+    --linguify-gray-200: #e5e7eb;
+    --linguify-gray-300: #d1d5db;
+    --linguify-gray-400: #9ca3af;
+    --linguify-gray-500: #6b7280;
+    --linguify-gray-600: #4b5563;
+    --linguify-gray-700: #374151;
+    --linguify-gray-800: #1f2937;
+    --linguify-gray-900: #111827;
+
+    /* Gray aliases for convenience */
+    --linguify-gray-light: var(--linguify-gray-200);
+    --linguify-gray-dark: var(--linguify-gray-700);
+
+    /* Gradient officiel */
+    --linguify-gradient: linear-gradient(135deg, #2D5BBA 0%, #26E4B8 100%);
+}
+
+/* Editor Container */
+.editorjs-container {
+    background: white;
+    border-radius: 12px;
+    min-height: 500px;
+    max-height: calc(100vh - 200px);
+    padding: 2rem;
+    overflow-y: auto;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+}
+
+.editorjs-container:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Custom scrollbar */
+.editorjs-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.editorjs-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.editorjs-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.editorjs-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Customize Editor.js styles - Pleine largeur */
+.codex-editor {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+.codex-editor__redactor {
+    padding-bottom: 100px !important;
+    max-width: none !important;
+}
+
+.ce-block__content {
+    max-width: none !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.ce-block {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+/* Toolbar customization */
+.ce-toolbar__plus {
+    background: var(--linguify-gradient) !important;
+    border: none !important;
+    color: var(--linguify-white) !important;
+    border-radius: 8px !important;
+    width: 32px !important;
+    height: 32px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+}
+
+.ce-toolbar__plus:hover {
+    background: var(--linguify-primary) !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 8px rgba(45, 91, 186, 0.25) !important;
+}
+
+.ce-toolbar__settings-btn {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.ce-toolbar__settings-btn:hover {
+    background: #f3f4f6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Text selection */
+.ce-paragraph::selection,
+.ce-header::selection {
+    background: var(--linguify-primary-light);
+    color: var(--linguify-white);
+}
+
+/* Inline toolbar - Natural behavior */
+.ce-inline-toolbar {
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 10px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.15) !important;
+    padding: 8px 10px !important;
+    z-index: 9999 !important;
+}
+
+.ce-inline-toolbar__buttons {
+    background: transparent !important;
+    padding: 0 !important;
+    display: flex !important;
+    gap: 4px !important;
+    align-items: center !important;
+}
+
+.ce-inline-tool {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #374151 !important;
+    background: transparent !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+.ce-inline-tool:hover {
+    background: #f3f4f6 !important;
+    color: #1f2937 !important;
+}
+
+.ce-inline-tool--active {
+    background: var(--linguify-primary, #2D5BBA) !important;
+    color: white !important;
+}
+
+/* Toolbox styling */
+.ce-toolbox {
+    /* Positioning */
+    position: absolute !important;
+    top: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin-top: 8px !important;
+    z-index: 1000 !important;
+
+    /* Appearance */
+    background: white !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+
+    /* Size & scroll */
+    padding: 12px !important;
+    max-width: 320px !important;
+    max-height: 420px !important;
+    overflow-y: auto !important;
+
+    /* Hide scrollbar but keep functionality */
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+/* Hide scrollbar for webkit browsers */
+.ce-toolbox::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Hide toolbox when Editor.js sets it to hidden */
+.ce-toolbox[style*="display: none"] {
+    display: none !important;
+}
+
+/* Style toolbox content only when it's visible */
+.ce-toolbox:not([style*="display: none"]) .ce-popover {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+    position: relative !important;
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-height: 350px !important;
+    overflow-y: auto !important;
+}
+
+.ce-toolbox:not([style*="display: none"]) .ce-popover__items {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.ce-toolbox:not([style*="display: none"]) .ce-popover-item {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    padding: 10px 12px !important;
+    margin: 2px 0 !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.ce-toolbox .ce-popover-item:hover {
+    background: #f8fafc !important;
+    transform: translateX(2px) !important;
+}
+
+.ce-toolbox .ce-popover-item__icon {
+    flex-shrink: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #64748b !important;
+}
+
+.ce-toolbox .ce-popover-item__title {
+    flex: 1 !important;
+    font-weight: 500 !important;
+    color: #1e293b !important;
+    font-size: 14px !important;
+}
+
+.ce-toolbox .ce-popover-item__secondary-title {
+    font-size: 12px !important;
+    color: #94a3b8 !important;
+    font-weight: 400 !important;
+}
+
+/* Search field in toolbox when visible */
+.ce-toolbox:not([style*="display: none"]) .cdx-search-field {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-bottom: 12px !important;
+    padding: 10px 12px !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    transition: all 0.2s ease !important;
+}
+
+.ce-toolbox:not([style*="display: none"]) .cdx-search-field:focus-within {
+    background: #ffffff !important;
+    border-color: var(--linguify-primary, #2D5BBA) !important;
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1) !important;
+}
+
+.ce-toolbox:not([style*="display: none"]) .cdx-search-field__input {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    border: none !important;
+    background: transparent !important;
+    outline: none !important;
+}
+
+/* Hide "nothing found" when there are items */
+.ce-toolbox:not([style*="display: none"]) .ce-popover__nothing-found-message {
+    display: none !important;
+}
+
+/* Suppression de tous les tooltips et �l�ments g�nants */
+.ce-toolbar__plus::after,
+.ce-toolbar__settings-btn::after,
+.ce-toolbar__plus[title],
+.ce-tooltip,
+[data-tooltip],
+.ce-hint,
+.ce-inline-toolbar__dropdown,
+.ce-inline-tool--conversion,
+.ce-popover--conversion,
+.ce-conversion-tool,
+.ce-conversion-toolbar,
+.ce-conversion-tool--showed,
+.ce-inline-toolbar__toggler-and-button-wrapper .ce-popover,
+.ce-settings,
+.ce-toolbar__settings-btn,
+.ce-block__content .ce-settings,
+.ce-block-tunes,
+.ce-settings__button,
+span.ce-toolbar__settings-btn,
+.ce-toolbar__actions span:last-child,
+.ce-toolbar__actions span:nth-child(2) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    left: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* CSS pour masquer les tooltips natifs du navigateur */
+.ce-toolbar__plus:hover::before,
+.ce-toolbar__plus:hover::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Garder la toolbar principale visible */
+.ce-toolbar,
+.ce-toolbar__content,
+.ce-toolbar__plus {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Placeholder with slash command hint */
+.ce-paragraph[data-placeholder]:empty::before {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.ce-header[data-placeholder]:empty::before {
+    color: #9ca3af;
+}
+
+/* Custom tool styles */
+.ce-header {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.ce-paragraph {
+    line-height: 1.6;
+    color: #374151;
+}
+
+.cdx-list {
+    color: #374151;
+}
+
+.cdx-checklist__item-checkbox {
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+}
+
+.cdx-checklist__item--checked .cdx-checklist__item-checkbox {
+    background: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.cdx-quote {
+    border-left: 4px solid #3b82f6;
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.cdx-quote__text {
+    color: #1f2937;
+    font-style: italic;
+}
+
+.cdx-quote__caption {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.cdx-code {
+    background: #1e293b;
+    color: #f1f5f9;
+    border-radius: 8px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.cdx-delimiter {
+    line-height: 1.6em;
+    width: 100%;
+    text-align: center;
+}
+
+.cdx-delimiter::before {
+    display: inline-block;
+    content: "* * *";
+    font-size: 30px;
+    line-height: 65px;
+    height: 30px;
+    letter-spacing: 1em;
+}
+
+.cdx-table {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cdx-table__cell {
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem;
+}
+
+.cdx-table__cell--header {
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+.cdx-warning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.cdx-warning__title {
+    color: #d97706;
+    font-weight: 600;
+}
+
+.cdx-warning__message {
+    color: #92400e;
+}
+
+.cdx-marker {
+    background: #fef3c7;
+    padding: 0.125rem 0;
+}
+
+.cdx-inline-code {
+    background: #f3f4f6;
+    color: #dc2626;
+    padding: 0.125rem 0.25rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Button Icon Components - Reusable avec couleurs Linguify */
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--linguify-white);
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+}
+
+.btn-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Color variants avec couleurs Linguify */
+.btn-icon-indigo {
+    color: var(--linguify-primary);
+    border-color: var(--linguify-primary-light);
+}
+
+.btn-icon-indigo:hover {
+    background: var(--linguify-gray-50);
+    color: var(--linguify-primary-dark);
+    border-color: var(--linguify-primary);
+}
+
+.btn-icon-indigo.btn-icon-active {
+    background: var(--linguify-gradient);
+    color: var(--linguify-white);
+    border-color: var(--linguify-primary);
+}
+
+.btn-icon-emerald {
+    color: var(--linguify-success);
+    border-color: var(--linguify-accent-light);
+}
+
+.btn-icon-emerald:hover {
+    background: var(--linguify-gray-50);
+    color: var(--linguify-accent-dark);
+    border-color: var(--linguify-success);
+}
+
+.btn-icon-violet {
+    color: var(--linguify-secondary);
+    border-color: var(--linguify-secondary-light);
+}
+
+.btn-icon-violet:hover {
+    background: var(--linguify-gray-50);
+    color: var(--linguify-secondary-dark);
+    border-color: var(--linguify-secondary);
+}
+
+.btn-icon-red {
+    color: var(--linguify-danger);
+    border-color: var(--linguify-error);
+}
+
+.btn-icon-red:hover {
+    background: var(--linguify-gray-50);
+    color: var(--linguify-danger);
+    border-color: var(--linguify-danger);
+}
+
+/* Custom height for editor area */
+.h-screen-editor {
+    height: calc(100vh - 140px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ce-block__content {
+        padding: 0 10px !important;
+    }
+
+    .editorjs-container {
+        padding: 0.5rem;
+    }
+}
+
+/* Animations */
+.ce-block {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced inline toolbar styles */
+.ce-inline-toolbar {
+    background: white !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 12px !important;
+    padding: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.ce-inline-tool {
+    border-radius: 8px !important;
+    padding: 8px !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease !important;
+}
+
+.ce-inline-tool:hover {
+    background: var(--linguify-gray-100) !important;
+    color: var(--linguify-primary) !important;
+}
+
+.ce-inline-tool--active {
+    background: var(--linguify-primary) !important;
+    color: white !important;
+}
+
+/* Block tunes styles */
+.cdx-block-tunes {
+    background: white !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+    padding: 8px !important;
+}
+
+.cdx-block-tune {
+    border-radius: 8px !important;
+    padding: 8px !important;
+    margin: 2px !important;
+    transition: all 0.2s ease !important;
+}
+
+.cdx-block-tune:hover {
+    background: var(--linguify-gray-100) !important;
+    color: var(--linguify-primary) !important;
+}
+
+.cdx-block-tune--active {
+    background: var(--linguify-primary) !important;
+    color: white !important;
+}
+
+/* Alignment styles */
+.ce-block--align-left {
+    text-align: left !important;
+}
+
+.ce-block--align-center {
+    text-align: center !important;
+}
+
+.ce-block--align-right {
+    text-align: right !important;
+}
+
+.ce-block--align-justify {
+    text-align: justify !important;
+}
+
+/* Text variant styles */
+.cdx-underline {
+    text-decoration: underline;
+}

@@ -1,0 +1,68 @@
+{% extends "saas_web/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Notebook - Notes{% endblock %}
+
+{% block header_content %}
+{% include 'components/header/app_header.html' %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'editor-linguify/editorjs.css' %}">
+<link rel="stylesheet" href="{% static 'notebook/css/notebook.css' %}">
+<link rel="stylesheet" href="{% static 'notebook/css/delete_modal.css' %}">
+{% endblock %}
+
+{% block extra_head %}
+<script src="https://unpkg.com/htmx.org@1.9.6"></script>
+<!-- Alpine.js local pour vitesse ultime -->
+<script src="{% static 'js/alpine.min.js' %}" defer></script>
+
+<!-- Editor.js Core -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2"></script>
+
+<!-- Editor.js Basic Tools -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2.8.1/dist/header.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@2.11.3/dist/paragraph.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/nested-list@1.4.2/dist/nested-list.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@1.6.0/dist/checklist.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@2.6.0/dist/quote.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/code@2.9.0/dist/code.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@1.4.0/dist/delimiter.umd.js"></script>
+
+<!-- Editor.js Advanced Tools -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/table@2.3.0/dist/table.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/warning@1.4.0/dist/warning.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/raw@2.5.0/dist/raw.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@2.7.0/dist/embed.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@1.6.0/dist/simple-image.umd.js"></script>
+
+<!-- Editor.js Inline Tools -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/marker@1.4.0/dist/marker.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/inline-code@1.5.0/dist/inline-code.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/link@2.6.2/dist/link.umd.js"></script>
+
+<!-- Editor.js Text Formatting Tools -->
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<!-- Main notebook app - FAST LOAD -->
+<div class="notebook-app" x-data="notebookApp()" x-init="init(); $nextTick(() => $el.classList.add('alpine-initialized'))">
+    <div>
+    {% include 'components/notebook_navbar.html' %}
+    </div>
+        <div class="conteneur-content">
+            {% include 'components/notebook_sidebar.html' %}
+            {% include 'components/notebook_editor.html' %}
+        </div>
+
+    <!-- Modals -->
+    {% include 'components/delete_confirmation_modal.html' %}
+</div>
+
+<!-- Scripts locaux - Alpine.js déjà chargé dans head -->
+<script src="{% static 'editor-linguify/editor-linguify.js' %}"></script>
+<script src="{% static 'notebook/js/notebook.js' %}"></script>
+{% endblock %}

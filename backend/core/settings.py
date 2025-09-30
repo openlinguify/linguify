@@ -234,6 +234,7 @@ AUTH0_TOKEN_CACHE_TIMEOUT = 3600  # 1 heure en secondes
 AUTH0_USERINFO_CACHE_TIMEOUT = 3600  # 1 heure en secondes 
 
 MIDDLEWARE = [
+    'apps.authentication.middleware.debug_middleware.DebugMiddleware',  # Debug logging - FIRST
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -245,14 +246,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'apps.authentication.middleware.middleware.JWTMiddleware',  # Disabled - using Django sessions
     'apps.authentication.middleware.language_middleware.UserLanguageMiddleware',  # User language preference
     'apps.authentication.middleware.terms_middleware.TermsAcceptanceMiddleware',  # Check terms acceptance
-    # 'core.jobs.middleware.JobsErrorHandlingMiddleware',  # Jobs error handling - moved to portal
-    # SEO Optimization Middleware (simplified version)
-    'core.seo.middleware.simple.SimpleSEOMiddleware',
-    # 'core.seo.middleware.optimization.SEOOptimizationMiddleware',  # Disabled temporarily
-    # 'core.seo.middleware.optimization.PreloadMiddleware',
 ]
 
 CORS_ALLOW_METHODS = [

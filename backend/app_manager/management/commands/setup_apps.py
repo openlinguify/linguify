@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 'description': 'Take notes and organize your language learning journey',
                 'icon_name': 'BookOpen',
                 'color': '#F59E0B',
-                'route_path': '/notebook',
+                'route_path': '/api/v1/notebook/kanban/',
                 'order': 3
             },
             {

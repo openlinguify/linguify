@@ -68,14 +68,22 @@ class WriteStudyMode {
             
             // Load cards for this deck
             const response = await window.revisionMain.revisionAPI.getCards(deck.id);
-            const allCards = response.results || response || [];
-            console.log('Loaded cards:', allCards.length);
-            
+            let allCards = response.results || response || [];
+            console.log('Loaded cards (total):', allCards.length);
+
             if (allCards.length === 0) {
                 window.notificationService.error('Ce deck ne contient aucune carte');
                 return;
             }
-            
+
+            // Apply user's session size limit
+            const userSettings = await this.getUserSettings();
+            const maxCards = userSettings.cards_per_session || 20;
+            if (allCards.length > maxCards) {
+                console.log(`📊 Limiting session to ${maxCards} cards (from ${allCards.length} total)`);
+                allCards = allCards.slice(0, maxCards);
+            }
+
             // Shuffle cards for variety
             this.studyCards = this.shuffleArray([...allCards]);
             
@@ -469,31 +477,80 @@ class WriteStudyMode {
         }
     }
 
-    async updateCardProgress(cardId, isCorrect) {
+    async updateCardProgress(cardId, isCorrect, responseTime = null) {
         /**
-         * Met à jour les statistiques de la carte dans le backend
+         * Met à jour les statistiques de la carte dans le backend avec l'algorithme adaptatif
          */
         try {
+            const requestData = {
+                is_correct: isCorrect,
+                study_mode: 'write',  // Mode d'étude "Écrire"
+                difficulty: isCorrect ? 'medium' : 'wrong'  // Difficulté déduite
+            };
+
+            // Ajouter le temps de réponse si disponible
+            if (responseTime !== null) {
+                requestData.response_time = responseTime;
+            }
+
             const response = await window.apiService.request(
-                `/api/v1/revision/flashcards/${cardId}/update_review_progress/`,
+                `/api/v1/revision/api/flashcards/${cardId}/update_review_progress/`,
                 {
                     method: 'POST',
-                    body: JSON.stringify({
-                        is_correct: isCorrect
-                    }),
+                    body: JSON.stringify(requestData),
                     headers: {
                         'Content-Type': 'application/json',
                     }
                 }
             );
-            
-            console.log(`✅ Stats mises à jour pour la carte ${cardId}: ${isCorrect ? 'correct' : 'incorrect'}`);
+
+            console.log(`✅ Stats mises à jour pour la carte ${cardId}:`, {
+                is_correct: isCorrect,
+                confidence: response.adaptive_learning?.confidence_score,
+                mastery_level: response.adaptive_learning?.mastery_level,
+                confidence_change: response.adaptive_learning?.confidence_change
+            });
+
             return response;
-            
+
         } catch (error) {
             console.error(`❌ Erreur lors de la mise à jour des stats pour la carte ${cardId}:`, error);
             // Ne pas bloquer l'exercice si l'API échoue
             return null;
+        }
+    }
+
+    async getUserSettings() {
+        /**
+         * Récupère les paramètres utilisateur depuis l'API
+         */
+        try {
+            const response = await fetch('/api/v1/revision/api/settings/user/', {
+                headers: {
+                    'X-CSRFToken': window.apiService.getCSRFToken(),
+                }
+            });
+
+            if (!response.ok) {
+                console.warn('[WriteMode] Could not fetch user settings, using defaults');
+                return {
+                    cards_per_session: 20,
+                    default_session_duration: 20,
+                    required_reviews_to_learn: 3
+                };
+            }
+
+            const data = await response.json();
+            console.log('[WriteMode] User settings loaded:', data);
+            return data.settings || data;
+
+        } catch (error) {
+            console.error('[WriteMode] Error fetching user settings:', error);
+            return {
+                cards_per_session: 20,
+                default_session_duration: 20,
+                required_reviews_to_learn: 3
+            };
         }
     }
 }

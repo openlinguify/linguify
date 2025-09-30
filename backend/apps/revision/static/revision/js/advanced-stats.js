@@ -132,7 +132,7 @@ class AdvancedStatsManager {
             });
             
             // Use fetch directly with credentials to fix authentication issue
-            const response = await fetch(`/api/v1/revision/stats/advanced/?${params}`, {
+            const response = await fetch(`/api/v1/revision/api/stats/advanced/?${params}`, {
                 method: 'GET',
                 credentials: 'same-origin',  // Include session cookies
                 headers: {

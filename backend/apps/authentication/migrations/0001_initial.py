@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('deletion_date', models.DateTimeField(blank=True, help_text='When the account will be permanently deleted', null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('profile_picture', models.ImageField(blank=True, null=True, storage=apps.authentication.utils.storage.ProfileStorage(), upload_to='', validators=[apps.authentication.models.models.validate_profile_picture])),
+                ('profile_picture', models.ImageField(blank=True, null=True, storage=apps.authentication.utils.storage.ProfileStorage(), upload_to='', validators=[apps.authentication.utils.validators.validate_profile_picture])),
                 ('bio', models.TextField(blank=True, max_length=500, null=True)),
                 ('native_language', models.CharField(choices=[('EN', 'English'), ('FR', 'French'), ('NL', 'Dutch'), ('DE', 'German'), ('ES', 'Spanish'), ('IT', 'Italian'), ('PT', 'Portuguese')], default='EN', help_text='Your native language', max_length=20)),
                 ('target_language', models.CharField(choices=[('EN', 'English'), ('FR', 'French'), ('NL', 'Dutch'), ('DE', 'German'), ('ES', 'Spanish'), ('IT', 'Italian'), ('PT', 'Portuguese')], default='FR', help_text='The language you want to learn', max_length=20)),

@@ -138,8 +138,8 @@ class TagsManagement {
         console.log('🔍 window.apiService existe:', !!window.apiService);
         
         try {
-            console.log('🌐 Appel API: /api/v1/revision/tags/');
-            const response = await window.apiService.request('/api/v1/revision/tags/', {
+            console.log('🌐 Appel API: /api/v1/revision/api/tags/');
+            const response = await window.apiService.request('/api/v1/revision/api/tags/', {
                 method: 'GET'
             });
 
@@ -496,7 +496,7 @@ class TagsManagement {
                 this.resetFormToCreateMode();
             } else {
                 // MODE CRÉATION
-                const validationResponse = await window.apiService.request('/api/v1/revision/tags/', {
+                const validationResponse = await window.apiService.request('/api/v1/revision/api/tags/', {
                     method: 'POST',
                     body: JSON.stringify({ tag: tagName })
                 });

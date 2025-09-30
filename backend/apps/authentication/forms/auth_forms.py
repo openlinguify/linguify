@@ -7,7 +7,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
-from ..models.models import LANGUAGE_CHOICES, LEVEL_CHOICES, OBJECTIVES_CHOICES
+from django.conf import settings
+from ..models.models import DuplicateEmailError
+from django.utils import timezone
+from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -102,38 +108,37 @@ class RegisterForm(UserCreationForm):
         label=_('Confirm password')
     )
     
-    native_language = forms.ChoiceField(
-        choices=[('', _('Select your native language'))] + LANGUAGE_CHOICES,
+    interface_language = forms.ChoiceField(
+        choices=settings.LANGUAGES,
+        initial='en',
         widget=forms.Select(attrs={
             'class': 'form-select'
         }),
-        label=_('Your native language')
+        label=_('Interface language'),
+        help_text=_('Choose the language for the application interface')
     )
-    
-    target_language = forms.ChoiceField(
-        choices=[('', _('Select the language to learn'))] + LANGUAGE_CHOICES,
+
+    how_did_you_hear = forms.ChoiceField(
+        choices=[
+            ('', _('-- Select an option --')),
+            ('search_engine', _('Search Engine (Google, Bing, etc.)')),
+            ('social_media', _('Social Media')),
+            ('friend_referral', _('Friend or Family')),
+            ('online_ad', _('Online Advertisement')),
+            ('blog_article', _('Blog or Article')),
+            ('app_store', _('App Store')),
+            ('school_university', _('School or University')),
+            ('work_colleague', _('Work or Colleague')),
+            ('other', _('Other')),
+        ],
+        required=True,
         widget=forms.Select(attrs={
             'class': 'form-select'
         }),
-        label=_('Language you want to learn')
+        label=_('How did you hear about us?'),
+        help_text=_('Help us understand how you discovered our platform')
     )
-    
-    language_level = forms.ChoiceField(
-        choices=[('', _('Select your level'))] + LEVEL_CHOICES,
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        }),
-        label=_('Current language level')
-    )
-    
-    objectives = forms.ChoiceField(
-        choices=[('', _('Select your objectives'))] + OBJECTIVES_CHOICES,
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        }),
-        label=_('Learning objectives')
-    )
-    
+
     terms = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={
@@ -146,8 +151,7 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = (
             'first_name', 'last_name', 'username', 'email', 'phone_number',
-            'birthday', 'gender', 'password1', 'password2', 'native_language',
-            'target_language', 'language_level', 'objectives', 'terms'
+            'birthday', 'gender', 'interface_language', 'how_did_you_hear', 'password1', 'password2', 'terms'
         )
     
     def clean_username(self):
@@ -168,20 +172,28 @@ class RegisterForm(UserCreationForm):
             if domain in disposable_domains:
                 raise forms.ValidationError(_("Please use a permanent email address"))
 
-            # Vérifier les emails existants
+            # Vérifier les emails existants avec DuplicateEmailError
             from django.contrib.auth import get_user_model
             User = get_user_model()
-            if User.objects.filter(email=email).exists():
-                raise forms.ValidationError(_("An account with this email already exists"))
+            if User.objects.filter(email__iexact=email).exists():
+                # Utiliser DuplicateEmailError pour une meilleure traçabilité
+                error = DuplicateEmailError(
+                    message=_("An account with this email already exists. You will be redirected to the login page."),
+                    email=email
+                )
+
+                logger.warning(f"Registration attempt with duplicate email: {email}")
+
+                # Marquer pour redirection (sera géré dans la vue)
+                self._redirect_to_login = True
+                self._duplicate_email = email
+
+                # Convertir en ValidationError pour le formulaire
+                raise forms.ValidationError(error.message)
         return email
 
     def clean(self):
         cleaned_data = super().clean()
-        native_language = cleaned_data.get('native_language')
-        target_language = cleaned_data.get('target_language')
-
-        if native_language and target_language and native_language == target_language:
-            raise forms.ValidationError(_("Native language and target language cannot be the same"))
 
         # Validation des termes avec message explicite
         terms_accepted = cleaned_data.get('terms')
@@ -191,8 +203,7 @@ class RegisterForm(UserCreationForm):
         return cleaned_data
     
     def save(self, commit=True):
-        from django.utils import timezone
-        from django.conf import settings
+        
 
         user = super().save(commit=False)
         user.first_name = self.cleaned_data['first_name']
@@ -201,10 +212,10 @@ class RegisterForm(UserCreationForm):
         user.phone_number = self.cleaned_data.get('phone_number', '')
         user.birthday = self.cleaned_data['birthday']
         user.gender = self.cleaned_data['gender']
-        user.native_language = self.cleaned_data['native_language']
-        user.target_language = self.cleaned_data['target_language']
-        user.language_level = self.cleaned_data['language_level']
-        user.objectives = self.cleaned_data['objectives']
+        user.interface_language = self.cleaned_data['interface_language']
+
+        # Enregistrer la source d'acquisition (maintenant obligatoire)
+        user.how_did_you_hear = self.cleaned_data['how_did_you_hear']
 
         # Enregistrer l'acceptation des termes si cochée
         if self.cleaned_data.get('terms'):

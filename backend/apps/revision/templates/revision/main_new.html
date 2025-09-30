@@ -138,15 +138,15 @@
 {% csrf_token %}
 
 <!-- Charger le JavaScript modulaire -->
-<script src="{% static 'revision/js/tags/revision-tags.js' %}?v=20250823-tailwind"></script>
-<script src="{% static 'revision/js/tags/revision-tags-management.js' %}"></script>
-<script src="{% static 'revision/js/revision-main.js' %}?v=20250823-contextual"></script>
-<script src="{% static 'revision/js/study/revision-flashcards.js' %}?v=20250823-debug-v3"></script>
-<script src="{% static 'revision/js/study/revision-quiz.js' %}?v=20250823-layout-fix"></script>
-<script src="{% static 'revision/js/study/revision-matching.js' %}?v=20250823-optimized"></script>
-<script src="{% static 'revision/js/study/revision-spaced.js' %}"></script>
-<script src="{% static 'revision/js/study/revision-write.js' %}"></script>
-<script src="{% static 'revision/js/translation.js' %}"></script>
+<script src="{% static 'revision/js/tags/revision-tags.js' %}?v=20250930-translation-fix"></script>
+<script src="{% static 'revision/js/tags/revision-tags-management.js' %}?v=20250930-translation-fix"></script>
+<script src="{% static 'revision/js/revision-main.js' %}?v=20250930-adaptive-learning"></script>
+<script src="{% static 'revision/js/study/revision-flashcards.js' %}?v=20250930-cards-limit-fix"></script>
+<script src="{% static 'revision/js/study/revision-quiz.js' %}?v=20250930-cards-limit-fix"></script>
+<script src="{% static 'revision/js/study/revision-matching.js' %}?v=20250930-cards-limit-fix"></script>
+<script src="{% static 'revision/js/study/revision-spaced.js' %}?v=20250930-translation-fix"></script>
+<script src="{% static 'revision/js/study/revision-write.js' %}?v=20250930-cards-limit-fix"></script>
+<script src="{% static 'revision/js/translation.js' %}?v=20250930-rename-flipcard"></script>
 
 <script>
 // Le JavaScript principal est maintenant dans revision-main.js

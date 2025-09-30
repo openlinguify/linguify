@@ -1,5 +1,11 @@
 // Revision Main Interface Manager
-// État global de l'application
+
+// Translation helper function
+function _(key, fallback = null) {
+    return (window.translations && window.translations[key]) || fallback || key;
+}
+
+// Global application state
 let appState = {
     decks: [],
     selectedDeck: null,
@@ -21,7 +27,7 @@ let appState = {
     }
 };
 
-// API Service optimisé
+// Optimized API Service
 const revisionAPI = {
     async getDecks(page = 1, filters = {}) {
         const params = new URLSearchParams({
@@ -29,7 +35,7 @@ const revisionAPI = {
             ...filters
         });
         
-        const url = `/api/v1/revision/decks/?${params}`;
+        const url = `/api/v1/revision/api/decks/?${params}`;
         console.log('🌐 API request URL:', url);
         console.log('🌐 Filters being sent:', filters);
         
@@ -38,7 +44,7 @@ const revisionAPI = {
     
     async getDeck(id) {
         console.log(`🔍 Requesting deck with ID: ${id}`);
-        const url = `/api/v1/revision/decks/${id}/`;
+        const url = `/api/v1/revision/api/decks/${id}/`;
         console.log(`🔍 Full URL: ${url}`);
         try {
             const result = await window.apiService.request(url);
@@ -51,33 +57,33 @@ const revisionAPI = {
     },
     
     async createDeck(data) {
-        return await window.apiService.request('/api/v1/revision/decks/', {
+        return await window.apiService.request('/api/v1/revision/api/decks/', {
             method: 'POST',
             body: JSON.stringify(data)
         });
     },
     
     async updateDeck(id, data) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/decks/${id}/`, {
             method: 'PATCH',
             body: JSON.stringify(data)
         });
     },
     
     async deleteDeck(id) {
-        return await window.apiService.request(`/api/v1/revision/decks/${id}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/decks/${id}/`, {
             method: 'DELETE'
         });
     },
     
     async getStats() {
-        return await window.apiService.request('/api/v1/revision/decks/stats/');
+        return await window.apiService.request('/api/v1/revision/api/decks/stats/');
     },
     
     async previewImport(deckId, formData) {
         // Pour FormData, on doit gérer les headers différemment
         const csrfToken = window.apiService.getCSRFToken();
-        return await fetch(`/api/v1/revision/decks/${deckId}/import/`, {
+        return await fetch(`/api/v1/revision/api/decks/${deckId}/import/`, {
             method: 'POST',
             body: formData,
             headers: {
@@ -101,7 +107,7 @@ const revisionAPI = {
     async importDeck(deckId, formData) {
         // Pour FormData, on doit gérer les headers différemment
         const csrfToken = window.apiService.getCSRFToken();
-        return await fetch(`/api/v1/revision/decks/${deckId}/import/`, {
+        return await fetch(`/api/v1/revision/api/decks/${deckId}/import/`, {
             method: 'POST',
             body: formData,
             headers: {
@@ -124,7 +130,7 @@ const revisionAPI = {
     },
     
     async createCard(deckId, cardData) {
-        return await window.apiService.request('/api/v1/revision/flashcards/', {
+        return await window.apiService.request('/api/v1/revision/api/flashcards/', {
             method: 'POST',
             body: JSON.stringify({
                 deck: deckId,
@@ -154,49 +160,62 @@ const revisionAPI = {
             if (options.mixedOrder !== undefined) params.append('mixed_order', options.mixedOrder);
             
             // Use the deck cards endpoint for smart mode
-            return await window.apiService.request(`/api/v1/revision/decks/${deckId}/cards/?${params}`);
+            return await window.apiService.request(`/api/v1/revision/api/decks/${deckId}/cards/?${params}`);
         } else {
             // Normal mode - use flashcards endpoint
             params.append('deck', deckId);
-            return await window.apiService.request(`/api/v1/revision/flashcards/?${params}`);
+            return await window.apiService.request(`/api/v1/revision/api/flashcards/?${params}`);
         }
     },
     
     async updateCard(cardId, cardData) {
-        return await window.apiService.request(`/api/v1/revision/flashcards/${cardId}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/flashcards/${cardId}/`, {
             method: 'PATCH',
             body: JSON.stringify(cardData)
         });
     },
     
     async deleteCard(cardId) {
-        return await window.apiService.request(`/api/v1/revision/flashcards/${cardId}/`, {
+        return await window.apiService.request(`/api/v1/revision/api/flashcards/${cardId}/`, {
             method: 'DELETE'
         });
     },
     
     async getLearningSettings(deckId) {
-        return await window.apiService.request(`/api/v1/revision/decks/${deckId}/learning_settings/`);
+        return await window.apiService.request(`/api/v1/revision/api/decks/${deckId}/learning_settings/`);
     },
     
     async updateLearningSettings(deckId, settings) {
-        return await window.apiService.request(`/api/v1/revision/decks/${deckId}/learning_settings/`, {
+        return await window.apiService.request(`/api/v1/revision/api/decks/${deckId}/learning_settings/`, {
             method: 'PATCH',
             body: JSON.stringify(settings)
         });
     },
     
     async applyPreset(deckId, presetName) {
-        return await window.apiService.request(`/api/v1/revision/decks/${deckId}/apply_preset/`, {
+        return await window.apiService.request(`/api/v1/revision/api/decks/${deckId}/apply_preset/`, {
             method: 'POST',
             body: JSON.stringify({ preset_name: presetName })
         });
     },
     
-    async updateCardProgress(cardId, isCorrect) {
-        return await window.apiService.request(`/api/v1/revision/flashcards/${cardId}/update_review_progress/`, {
+    async updateCardProgress(cardId, isCorrect, studyMode = 'flashcards', difficulty = null) {
+        // Use new adaptive learning endpoint
+        console.log('[AdaptiveLearning] updateCardProgress called:', {
+            cardId,
+            isCorrect,
+            studyMode,
+            difficulty: difficulty || (isCorrect ? 'easy' : 'hard')
+        });
+
+        return await window.apiService.request(`/revision/api/adaptive/card/${cardId}/review/`, {
             method: 'POST',
-            body: JSON.stringify({ is_correct: isCorrect })
+            body: JSON.stringify({
+                study_mode: studyMode,
+                difficulty: difficulty || (isCorrect ? 'easy' : 'hard'),
+                was_correct: isCorrect,
+                response_time_seconds: null
+            })
         });
     }
 };
@@ -243,7 +262,7 @@ function updateShareButtonText() {
             shareIcon.className = 'bi bi-share me-2';
         }
         if (shareTextNode) {
-            shareTextNode.textContent = 'Partager';
+            shareTextNode.textContent = _('Share');
         }
         
         // Show "Rendre privé" option
@@ -256,7 +275,7 @@ function updateShareButtonText() {
             shareIcon.className = 'bi bi-globe2 me-2';
         }
         if (shareTextNode) {
-            shareTextNode.textContent = 'Rendre public';
+            shareTextNode.textContent = _('Make public');
         }
         
         // Hide "Rendre privé" option
@@ -302,7 +321,7 @@ async function loadDecks(reset = true) {
         // Use enhanced error handling with retry
         window.notificationService.handleApiError(
             error, 
-            'Chargement des decks',
+            _('Loading decks'),
             () => loadDecks(reset) // Retry with same parameters
         );
     } finally {
@@ -332,7 +351,7 @@ async function refreshSelectedDeck() {
         
         console.log('✅ Deck sélectionné actualisé');
     } catch (error) {
-        console.error('❌ Erreur lors de l\'actualisation du deck sélectionné:', error);
+        console.error('❌ ' + _('Error') + ' lors de l\'actualisation du deck sélectionné:', error);
         // Don't show error for this, as the main refresh might still succeed
     }
 }
@@ -343,8 +362,8 @@ function updateDeckDetailsDisplay(deck) {
     if (!elements.deckDetails || elements.deckDetails.style.display === 'none') return;
     
     // Update basic deck info
-    if (elements.deckName) elements.deckName.textContent = deck.name || 'Sans nom';
-    if (elements.deckDescription) elements.deckDescription.textContent = deck.description || 'Aucune description';
+    if (elements.deckName) elements.deckName.textContent = deck.name || _('Unnamed');
+    if (elements.deckDescription) elements.deckDescription.textContent = deck.description || _('No description');
     
     // Update progress
     const progress = calculateProgress(deck);
@@ -408,14 +427,14 @@ function renderDecksList() {
                 <span class="deck-card-count">${deck.cards_count || 0}</span>
                 <div class="deck-card-icons">
                     ${deck.is_public ? '<i class="bi bi-globe2 text-linguify-accent" title="Public"></i>' : ''}
-                    ${deck.is_archived ? '<i class="bi bi-archive text-gray-400" title="Archivé"></i>' : ''}
+                    ${deck.is_archived ? `<i class="bi bi-archive text-gray-400" title="${_('Archived')}"></i>` : ''}
                 </div>
-                <h4 class="deck-card-title">${deck.name || 'Sans nom'}</h4>
+                <h4 class="deck-card-title">${deck.name || _('Unnamed')}</h4>
             </div>
-            <div class="deck-card-description">${deck.description || 'Aucune description'}</div>
+            <div class="deck-card-description">${deck.description || _('No description')}</div>
             <div class="deck-card-tags">
-                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ((!deck.tags || deck.tags.length === 0) ? `<span class="no-tags-message">Aucun tag - Cliquez sur <i class="bi bi-tag" onclick="event.stopPropagation(); quickEditTags(${deck.id})" style="cursor: pointer; color: #2d5bba; font-size: 0.875rem;"></i> pour en ajouter</span>` : deck.tags.map(tag => `<span class="tag-linguify tag-linguify-blue">${tag}</span>`).join(''))}</div>
-                <button class="btn-link-linguify text-sm" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="Ajouter des tags">
+                <div class="deck-tags">${window.displayDeckTags ? window.displayDeckTags(deck) : ((!deck.tags || deck.tags.length === 0) ? `<span class="no-tags-message" onclick="event.stopPropagation(); quickEditTags(${deck.id})" style="cursor: pointer;">${_('No tags - Click on 🏷️ to add some')}</span>` : deck.tags.map(tag => `<span class="tag-linguify tag-linguify-blue">${tag}</span>`).join(''))}</div>
+                <button class="btn-link-linguify text-sm" onclick="event.stopPropagation(); quickEditTags(${deck.id})" title="${_('Add tags')}">
                     <i class="bi bi-tag"></i>
                 </button>
             </div>
@@ -503,8 +522,8 @@ async function selectDeck(deckId) {
         elements.deckDetails.style.display = 'block';
         
         // Populate deck details
-        elements.deckName.textContent = deck.name || 'Sans nom';
-        elements.deckDescription.textContent = deck.description || 'Aucune description';
+        elements.deckName.textContent = deck.name || _('Unnamed');
+        elements.deckDescription.textContent = deck.description || _('No description');
         
         // Display deck tags
         const deckTagsDisplay = document.getElementById('deckTagsDisplay');
@@ -565,7 +584,7 @@ async function selectDeck(deckId) {
                 '<a href="/login/" style="color: white; text-decoration: underline;">Se connecter</a>'
             );
         } else {
-            window.notificationService.error(`Erreur lors du chargement du deck: ${error.message}`);
+            window.notificationService.error(`${_('Error loading deck')}: ${error.message}`);
         }
     }
 }
@@ -733,8 +752,8 @@ function toggleFrontLanguageSelector() {
             button.title = 'Confirmer le choix de langue';
         } else {
             selector.style.display = 'none';
-            button.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
-            button.title = 'Modifier la langue pour cette carte';
+            button.innerHTML = `<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">${_('Edit')}</span>`;
+            button.title = _('Edit language for this card');
             updateLanguageDisplay('front');
         }
     }
@@ -751,8 +770,8 @@ function toggleBackLanguageSelector() {
             button.title = 'Confirmer le choix de langue';
         } else {
             selector.style.display = 'none';
-            button.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
-            button.title = 'Modifier la langue pour cette carte';
+            button.innerHTML = `<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">${_('Edit')}</span>`;
+            button.title = _('Edit language for this card');
             updateLanguageDisplay('back');
         }
     }
@@ -765,7 +784,7 @@ function updateLanguageDisplay(side) {
     if (select && display) {
         const selectedOption = select.options[select.selectedIndex];
         if (selectedOption.value === '' || selectedOption.value === null) {
-            display.textContent = 'Langue par défaut du deck';
+            display.textContent = _('Default deck language');
         } else {
             display.textContent = selectedOption.textContent;
         }
@@ -780,10 +799,10 @@ function resetLanguageSelectors() {
     
     if (frontSelector) frontSelector.style.display = 'none';
     if (frontButton) {
-        frontButton.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
-        frontButton.title = 'Modifier la langue pour cette carte';
+        frontButton.innerHTML = `<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">${_('Edit')}</span>`;
+        frontButton.title = _('Edit language for this card');
     }
-    if (frontDisplay) frontDisplay.textContent = 'Langue par défaut du deck';
+    if (frontDisplay) frontDisplay.textContent = _('Default deck language');
     
     // Reset back language selector
     const backSelector = document.getElementById('backLangSelector');
@@ -792,15 +811,15 @@ function resetLanguageSelectors() {
     
     if (backSelector) backSelector.style.display = 'none';
     if (backButton) {
-        backButton.innerHTML = '<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">Modifier</span>';
-        backButton.title = 'Modifier la langue pour cette carte';
+        backButton.innerHTML = `<i class="bi bi-pencil" style="font-size: 0.75rem;"></i><span class="ms-1" style="font-size: 0.75rem;">${_('Edit')}</span>`;
+        backButton.title = _('Edit language for this card');
     }
-    if (backDisplay) backDisplay.textContent = 'Langue par défaut du deck';
+    if (backDisplay) backDisplay.textContent = _('Default deck language');
 }
 
 async function createNewCard() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -845,7 +864,7 @@ async function createNewCard() {
         
     } catch (error) {
         console.error('Error creating card:', error);
-        window.notificationService.error('Erreur lors de la création de la carte');
+        window.notificationService.error(_('Error creating card'));
     }
 }
 
@@ -917,13 +936,13 @@ async function loadDeckCards() {
                     <div class="d-flex gap-2">
                         <button class="btn btn-link p-0" 
                                 onclick="window.revisionMain?.editCard(${cardId})" 
-                                title="Modifier"
+                                title="${_('Edit')}"
                                 style="color: #6c757d; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <button class="btn btn-link p-0" 
                                 onclick="window.revisionMain?.deleteCard(${cardId})" 
-                                title="Supprimer"
+                                title="${_('Delete')}"
                                 style="color: #6c757d; font-size: 0.9rem; border: none; background: none; text-decoration: none;">
                             <i class="bi bi-trash"></i>
                         </button>
@@ -935,12 +954,7 @@ async function loadDeckCards() {
                             <p class="card-text card-front-text mb-0">${card.front_text || ''}</p>
                         </div>
                         <div class="col-md-2 text-center">
-                            <button class="btn btn-link p-0" 
-                                    onclick="window.flipCard(${cardId})" 
-                                    title="Inverser recto/verso"
-                                    style="color: #6c757d; font-size: 1rem; border: none; background: none; text-decoration: none;">
-                                <i class="bi bi-arrow-left-right"></i>
-                            </button>
+                            <i class="bi bi-arrow-left-right" style="color: #6c757d; font-size: 1rem;"></i>
                         </div>
                         <div class="col-md-5">
                             <p class="card-text card-back-text mb-0">${card.back_text || ''}</p>
@@ -949,10 +963,10 @@ async function loadDeckCards() {
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
                             <span class="badge ${card.learned ? 'bg-linguify-accent' : 'bg-secondary'}">
-                                ${card.learned ? 'Apprise' : 'À apprendre'}
+                                ${card.learned ? _('Learned') : _('To learn')}
                             </span>
                             <small class="text-muted ms-2">
-                                Créée le ${formatDate(card.created_at)}
+                                ${_('Created on')} ${formatDate(card.created_at)}
                             </small>
                         </div>
                     </div>
@@ -963,7 +977,7 @@ async function loadDeckCards() {
         
     } catch (error) {
         console.error('Error loading deck cards:', error);
-        window.notificationService.error('Erreur lors du chargement des cartes');
+        window.notificationService.error(_('Error loading cards'));
     } finally {
         appState.isLoadingCards = false;
     }
@@ -1095,7 +1109,7 @@ async function editCard(cardId) {
             window.notificationService.error('Cette carte n\'existe plus');
             await loadDeckCards(); // Refresh view
         } else {
-            window.notificationService.error('Erreur lors du chargement de la carte');
+            window.notificationService.error(_('Error loading card'));
         }
     }
 }
@@ -1156,7 +1170,7 @@ async function submitCardEdit() {
         } else if (error.status === 403) {
             window.notificationService.error('Vous n\'avez pas l\'autorisation de modifier cette carte');
         } else {
-            window.notificationService.error('Erreur lors de la modification de la carte');
+            window.notificationService.error(_('Error editing card'));
         }
     }
 }
@@ -1196,7 +1210,7 @@ async function deleteCard(cardId) {
         } else if (error.status === 403) {
             window.notificationService.error('Vous n\'avez pas l\'autorisation de supprimer cette carte');
         } else {
-            window.notificationService.error('Erreur lors de la suppression de la carte');
+            window.notificationService.error(_('Error deleting card'));
         }
     }
 }
@@ -1242,7 +1256,7 @@ async function createNewDeck() {
         } else if (error.data && error.data.name && error.data.name[0]) {
             window.notificationService.error(error.data.name[0]);
         } else {
-            window.notificationService.error('Erreur lors de la création du deck');
+            window.notificationService.error(_('Error creating deck'));
         }
     }
 }
@@ -1296,7 +1310,7 @@ async function importNewDeck() {
             // Création d'un nouveau deck
             const deckData = {
                 name: name,
-                description: `Deck importé depuis ${file.name}`,
+                description: _('Deck imported from') + ` ${file.name}`,
                 is_public: false
             };
             
@@ -1321,13 +1335,13 @@ async function importNewDeck() {
         showImportPreview(previewResult);
         
     } catch (error) {
-        console.error('Erreur lors du preview:', error);
+        console.error('Error during preview:', error);
         
         // Gérer les erreurs spécifiques
         if (error.status === 400 && error.message.includes('deck with this name already exists')) {
             window.notificationService.error('Un deck avec ce nom existe déjà. Veuillez choisir un autre nom.');
         } else {
-            window.notificationService.error('Erreur lors de la préparation de l\'import: ' + error.message);
+            window.notificationService.error(_('Error preparing import: ') + error.message);
         }
     }
 }
@@ -1408,14 +1422,14 @@ function handleFileSelect(e) {
     const file = e.target.files[0];
     
     if (!file) {
-        console.log('Aucun fichier sélectionné');
+        console.log('No file selected');
         clearSelectedFile();
         return;
     }
     
     console.log('✅ Fichier trouvé:', file.name);
     
-    // Validation du fichier
+    // File validation
     if (!validateFile(file)) {
         console.log('Fichier invalide');
         clearSelectedFile();
@@ -1424,7 +1438,7 @@ function handleFileSelect(e) {
     
     console.log('✅ Fichier valide, affichage des infos');
     
-    // Sauvegarder le fichier dans une variable globale temporaire
+    // Save the file in a temporary global variable
     window.selectedImportFile = file;
     
     // Afficher les informations du fichier
@@ -1665,19 +1679,19 @@ function showImportPreview(previewResult) {
     
     const columns = previewResult.columns || [];
     if (columns.length === 0) {
-        window.notificationService.error('Aucune colonne trouvée dans le fichier');
+        window.notificationService.error(_('No columns found in file'));
         return;
     }
     
     columns.forEach(col => {
         const optionFront = document.createElement('option');
         optionFront.value = col.index;
-        optionFront.textContent = `Colonne ${col.index + 1}: ${col.name || 'Sans nom'}`;
+        optionFront.textContent = `${_('Column')} ${col.index + 1}: ${col.name || _('Unnamed')}`;
         frontSelect.appendChild(optionFront);
         
         const optionBack = document.createElement('option');
         optionBack.value = col.index;
-        optionBack.textContent = `Colonne ${col.index + 1}: ${col.name || 'Sans nom'}`;
+        optionBack.textContent = `${_('Column')} ${col.index + 1}: ${col.name || _('Unnamed')}`;
         backSelect.appendChild(optionBack);
     });
     
@@ -1819,8 +1833,8 @@ async function updatePreview() {
         }, 500);
         
     } catch (error) {
-        console.error('Erreur lors de la mise à jour du preview:', error);
-        window.notificationService.error('Erreur lors de la mise à jour du preview');
+        console.error('Error updating preview:', error);
+        window.notificationService.error(_('Error updating preview'));
         
         // Cacher l'indicateur en cas d'erreur
         const updateIndicator = document.getElementById('previewUpdateIndicator');
@@ -1909,8 +1923,8 @@ async function confirmImport() {
         // Adapter le message selon le contexte
         const isImportToExisting = window.importToExistingDeck && window.targetDeckId;
         const message = isImportToExisting 
-            ? `${importResult.cards_created} cartes ajoutées au deck "${importState.tempDeck.name}" !`
-            : `Import réussi ! ${importResult.cards_created} cartes créées`;
+            ? `${importResult.cards_created} ${window.ngettext('card', 'cards', importResult.cards_created)} ajoutées au deck "${importState.tempDeck.name}" !`
+            : `Import réussi ! ${importResult.cards_created} ${window.ngettext('card', 'cards', importResult.cards_created)} créées`;
             
         window.notificationService.success(message);
         
@@ -1932,13 +1946,13 @@ async function confirmImport() {
         window.targetDeckId = null;
         
     } catch (error) {
-        console.error('Erreur lors de l\'import final:', error);
-        window.notificationService.error('Erreur lors de l\'import: ' + error.message);
+        console.error('Error during final import:', error);
+        window.notificationService.error(_('Import error: ') + error.message);
     }
 }
 
 function cancelImportPreview() {
-    // TODO: Supprimer le deck temporaire créé
+    // TODO: Delete the temporary deck created
     hideImportPreview();
 }
 
@@ -1957,7 +1971,7 @@ function hideImportPreview() {
 
 function showEditDeckForm() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -1996,7 +2010,7 @@ function hideEditDeckForm() {
 
 async function saveEditDeck() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2046,14 +2060,14 @@ async function saveEditDeck() {
         
     } catch (error) {
         console.error('Error updating deck:', error);
-        window.notificationService.error('Erreur lors de la modification du deck');
+        window.notificationService.error(_('Error editing deck'));
     }
 }
 
 // Version de sauvegarde pour auto-save (sans fermer le formulaire)
 async function autoSaveEditDeck() {
     if (!appState.selectedDeck) {
-        console.error('Aucun deck sélectionné pour auto-save');
+        console.error('No deck selected for auto-save');
         return;
     }
     
@@ -2101,7 +2115,7 @@ async function autoSaveEditDeck() {
         }
         const deckDescElement = document.getElementById('deckDescription');
         if (deckDescElement && updatedDeck.description !== undefined) {
-            deckDescElement.textContent = updatedDeck.description || 'Aucune description';
+            deckDescElement.textContent = updatedDeck.description || _('No description');
         }
         
     } catch (error) {
@@ -2166,7 +2180,7 @@ function enableInlineEditDeckName() {
                 window.notificationService.success('Nom du deck modifié avec succès');
             } catch (error) {
                 console.error('Error updating deck name:', error);
-                window.notificationService.error('Erreur lors de la modification du nom');
+                window.notificationService.error(_('Error editing name'));
                 deckNameElement.textContent = originalText;
             }
         } else {
@@ -2255,7 +2269,7 @@ function enableInlineEditDeckDescription() {
                 window.notificationService.success('Description du deck modifiée avec succès');
             } catch (error) {
                 console.error('Error updating deck description:', error);
-                window.notificationService.error('Erreur lors de la modification de la description');
+                window.notificationService.error(_('Error editing description'));
                 deckDescElement.textContent = originalText;
             }
         } else {
@@ -2292,7 +2306,7 @@ function enableInlineEditDeckDescription() {
 function showTagsEditor() {
     if (!appState.selectedDeck) return;
     
-    // Ouvrir le formulaire d'édition existant du deck
+    // Open the existing deck edit form
     // qui contient déjà une interface pour gérer les tags
     showEditDeckForm();
     
@@ -2309,7 +2323,7 @@ function showTagsEditor() {
 
 function showImportCardsForm() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2344,7 +2358,7 @@ function showImportCardsForm() {
         formTitle.textContent = `Importer des cartes dans "${appState.selectedDeck.name}"`;
     }
     
-    // Modifier le texte du bouton de soumission
+    // Modify the submit button text
     if (elements.submitImport) {
         elements.submitImport.textContent = 'Importer les cartes';
     }
@@ -2363,7 +2377,7 @@ function showImportCardsForm() {
 
 async function exportDeck() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2406,11 +2420,11 @@ async function exportDeck() {
         link.click();
         document.body.removeChild(link);
         
-        window.notificationService.success(`Deck exporté : ${cards.length} cartes`);
+        window.notificationService.success(`Deck exporté : ${cards.length} ${window.ngettext('card', 'cards', cards.length)}`);
         
     } catch (error) {
         console.error('Error exporting deck:', error);
-        window.notificationService.error('Erreur lors de l\'exportation du deck');
+        window.notificationService.error(_('Error exporting deck'));
     }
 }
 
@@ -2418,7 +2432,7 @@ async function makePrivate() {
     console.log('makePrivate called, selectedDeck:', appState.selectedDeck);
     
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2457,7 +2471,7 @@ async function makePrivate() {
 
 async function executeMakePrivate() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -2480,7 +2494,7 @@ async function executeMakePrivate() {
         // Re-render the decks list to hide the public icon
         renderDecksList();
         
-        // Fermer le modal
+        // Close the modal
         const makePrivateModalElement = document.getElementById('makePrivateModal');
         if (makePrivateModalElement) {
             hideTailwindModal(makePrivateModalElement);
@@ -2605,7 +2619,7 @@ function setupShareModalEventHandlers() {
     
     // Utiliser la délégation d'événements sur document pour éviter les problèmes de timing
     document.addEventListener('click', async function(e) {
-        // Handler pour le bouton "Rendre public et partager"
+        // Handler pour le bouton "Make public and share"
         if (e.target.id === 'makeDeckPublicBtn' || e.target.closest('#makeDeckPublicBtn')) {
             e.preventDefault();
             const button = e.target.closest('#makeDeckPublicBtn') || e.target;
@@ -2634,7 +2648,7 @@ function setupShareModalEventHandlers() {
                 
                 window.notificationService.success('Jeu de cartes rendu public avec succès !');
                 
-                // Fermer la modal actuelle et afficher la modal de partage
+                // Close current modal and display share modal
                 const makePublicModalElement = document.getElementById('makePublicModal');
                 if (makePublicModalElement) {
                     hideTailwindModal(makePublicModalElement);
@@ -2853,7 +2867,7 @@ function updateCardsCount() {
     if (!cardsCountElement || !appState.selectedDeck) return;
     
     const count = appState.selectedDeck.cards_count || 0;
-    cardsCountElement.textContent = `${count} carte${count > 1 ? 's' : ''}`;
+    cardsCountElement.textContent = `${count} ${window.ngettext('card', 'cards', count)}`;
 }
 
 // === LANGUAGE SETTINGS FOR DECK ===
@@ -2944,7 +2958,7 @@ async function applyLanguagesToAllCards() {
         return;
     }
     
-    const confirmMessage = `Voulez-vous appliquer ces langues à toutes les ${appState.selectedDeck.cards_count} cartes du deck ?\n\n` +
+    const confirmMessage = `Voulez-vous appliquer ces langues à toutes les ${appState.selectedDeck.cards_count} ${window.ngettext('card', 'cards', appState.selectedDeck.cards_count)} du deck ?\n\n` +
                           `Recto: ${frontLang ? getLanguageName(frontLang) : 'Détection automatique'}\n` +
                           `Verso: ${backLang ? getLanguageName(backLang) : 'Détection automatique'}`;
     
@@ -2962,7 +2976,7 @@ async function applyLanguagesToAllCards() {
             await revisionAPI.updateCard(card.id, updateData);
         }
         
-        window.notificationService.success(`Langues appliquées à ${deck.cards_count || 0} cartes`);
+        window.notificationService.success(`Langues appliquées à ${deck.cards_count || 0} ${window.ngettext('card', 'cards', deck.cards_count || 0)}`);
         
         // Reload deck to refresh data
         await selectDeck(appState.selectedDeck.id);
@@ -3078,7 +3092,7 @@ async function saveDeckLanguagePreferences() {
 // Reset Progress functionality
 async function resetDeckProgress() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -3089,64 +3103,19 @@ async function resetDeckProgress() {
 }
 
 function showResetProgressConfirmationModal(deckName, cardsCount) {
-    // Remove any existing modal
-    const existingModal = document.querySelector('.reset-progress-modal');
-    if (existingModal) {
-        existingModal.remove();
-    }
+    // Update modal content with current deck info
+    document.getElementById('resetDeckName').textContent = deckName;
+    document.getElementById('resetCardCount').textContent = cardsCount;
 
-    const modal = document.createElement('div');
-    modal.className = 'reset-progress-modal';
-    modal.innerHTML = `
-        <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header border-0 pb-0">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle p-2 me-3" style="background-color: #fff3cd;">
-                                <i class="bi bi-arrow-clockwise" style="font-size: 1.5rem; color: #856404;"></i>
-                            </div>
-                            <div>
-                                <h5 class="modal-title mb-0" style="color: #856404;">Réinitialiser la progression</h5>
-                                <p class="text-muted mb-0 small">Cette action remettra toutes les cartes à zéro</p>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-close" onclick="document.querySelector('.reset-progress-modal').remove()"></button>
-                    </div>
-                    <div class="modal-body pt-2">
-                        <div class="alert alert-warning border-warning">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <strong>Attention !</strong> Cette action va réinitialiser la progression de toutes les cartes du deck.
-                        </div>
-                        <p class="mb-3">
-                            <strong>Deck :</strong> "${deckName}"<br>
-                            <strong>Cartes concernées :</strong> ${cardsCount} carte(s)
-                        </p>
-                        <p class="mb-0">Après réinitialisation :</p>
-                        <ul class="mb-3">
-                            <li>Toutes les cartes seront marquées comme "non apprises"</li>
-                            <li>Le compteur de révisions sera remis à zéro</li>
-                            <li>L'historique d'apprentissage sera effacé</li>
-                        </ul>
-                        <p class="text-muted">
-                            <i class="bi bi-info-circle me-1"></i>
-                            Cette action est irréversible.
-                        </p>
-                    </div>
-                    <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-secondary" onclick="document.querySelector('.reset-progress-modal').remove()">
-                            <i class="bi bi-x-lg me-1"></i>Annuler
-                        </button>
-                        <button type="button" class="btn btn-warning" onclick="window.confirmResetProgress()">
-                            <i class="bi bi-arrow-clockwise me-1"></i>Réinitialiser
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
+    // Show the modal using Bootstrap
+    const modal = new bootstrap.Modal(document.getElementById('resetProgressModal'));
+    modal.show();
+
+    // Set up the confirm button click handler
+    document.getElementById('confirmResetProgress').onclick = function() {
+        modal.hide();
+        window.confirmResetProgress();
+    };
 }
 
 async function confirmResetProgress() {
@@ -3158,14 +3127,14 @@ async function confirmResetProgress() {
         if (modal) modal.remove();
         
         // Notification de chargement
-        window.notificationService.info('Réinitialisation en cours...', 2000);
+        window.notificationService.info(_('Reset in progress...'), 2000);
         
         // Obtenir le CSRF token
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
                          document.querySelector('meta[name="csrf-token"]')?.content;
         
         // Appeler l'API
-        const response = await fetch(`/api/v1/revision/decks/${appState.selectedDeck.id}/reset_progress/`, {
+        const response = await fetch(`/api/v1/revision/api/decks/${appState.selectedDeck.id}/reset_progress/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -3176,7 +3145,7 @@ async function confirmResetProgress() {
         const data = await response.json();
         
         if (data.success) {
-            window.notificationService.success(data.message || 'Progression réinitialisée avec succès');
+            window.notificationService.success(data.message || _('Progress reset successfully'));
             
             // Recharger les détails du deck pour rafraîchir l'affichage
             await selectDeck(appState.selectedDeck.id);
@@ -3185,17 +3154,17 @@ async function confirmResetProgress() {
             await loadDecks(true);
             
         } else {
-            window.notificationService.error('Erreur lors de la réinitialisation');
+            window.notificationService.error(_('Error during reset'));
         }
     } catch (error) {
-        console.error('Erreur lors de la réinitialisation:', error);
-        window.notificationService.error('Erreur lors de la réinitialisation : ' + error.message);
+        console.error('Error during reset:', error);
+        window.notificationService.error(_('Error during reset') + ': ' + error.message);
     }
 }
 
 async function archiveDeck() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -3282,7 +3251,7 @@ async function executeArchiveDeck(shouldArchive) {
     document.querySelector('.modal')?.remove();
     
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -3327,7 +3296,7 @@ async function executeArchiveDeck(shouldArchive) {
 
 async function deleteDeckConfirm() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Aucun deck sélectionné');
+        window.notificationService.error(_('No deck selected'));
         return;
     }
     
@@ -3544,6 +3513,7 @@ async function loadTagsFilter() {
         const tagsArray = Array.from(tags).sort();
         
         if (tagsArray.length === 0) {
+            const emptyText = dropdown.dataset.emptyText || 'No tags available';
             dropdown.innerHTML = `
                 <div class="tags-filter-empty" style="
                     padding: 24px 16px;
@@ -3552,7 +3522,7 @@ async function loadTagsFilter() {
                     font-size: 14px;
                 ">
                     <i class="bi bi-tags" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
-                    <div>Aucun tag disponible</div>
+                    <div>${emptyText}</div>
                 </div>
             `;
             return;
@@ -3750,7 +3720,7 @@ function updateQuickTagsDisplay(deckId) {
 
 async function loadQuickTagSuggestions() {
     try {
-        const response = await window.apiService.request('/api/v1/revision/tags/');
+        const response = await window.apiService.request('/api/v1/revision/api/tags/');
         const tags = response.tags || [];
         
         const container = document.getElementById('quickSuggestedTags');
@@ -4138,10 +4108,35 @@ function selectSortFilter(value, text) {
 function toggleSidebar() {
     const elements = getElements();
     const isVisible = elements.sidebar.classList.contains('show');
-    
-    // Toggle sidebar visibility
-    elements.sidebar.classList.toggle('show');
-    
+
+    if (isVisible) {
+        // Hide sidebar
+        elements.sidebar.classList.remove('show');
+        elements.sidebar.style.width = '0px';
+        elements.sidebar.style.minWidth = '0px';
+        elements.sidebar.style.maxWidth = '0px';
+        elements.sidebar.style.padding = '0px';
+        elements.sidebar.style.margin = '0px';
+        elements.sidebar.style.border = 'none';
+        elements.sidebar.style.overflow = 'hidden';
+        elements.sidebar.style.flex = '0 0 0px';
+        elements.sidebar.style.opacity = '0';
+        elements.sidebar.style.visibility = 'hidden';
+    } else {
+        // Show sidebar
+        elements.sidebar.classList.add('show');
+        elements.sidebar.style.removeProperty('width');
+        elements.sidebar.style.removeProperty('minWidth');
+        elements.sidebar.style.removeProperty('maxWidth');
+        elements.sidebar.style.removeProperty('padding');
+        elements.sidebar.style.removeProperty('margin');
+        elements.sidebar.style.removeProperty('border');
+        elements.sidebar.style.removeProperty('overflow');
+        elements.sidebar.style.removeProperty('flex');
+        elements.sidebar.style.removeProperty('opacity');
+        elements.sidebar.style.removeProperty('visibility');
+    }
+
     // Update button icon and accessibility attributes based on new state
     const toggleBtn = document.getElementById('toggleSidebar');
     const icon = toggleBtn?.querySelector('i');
@@ -4149,12 +4144,12 @@ function toggleSidebar() {
         if (isVisible) {
             // Sidebar will be hidden - show "expand" icon
             icon.className = 'bi bi-layout-sidebar-inset-reverse';
-            toggleBtn.title = 'Afficher la barre latérale';
+            toggleBtn.title = toggleBtn.dataset.showText || 'Afficher la barre latérale';
             toggleBtn.setAttribute('aria-expanded', 'false');
         } else {
             // Sidebar will be shown - show "collapse" icon
             icon.className = 'bi bi-layout-sidebar-inset';
-            toggleBtn.title = 'Masquer la barre latérale';
+            toggleBtn.title = toggleBtn.dataset.hideText || 'Masquer la barre latérale';
             toggleBtn.setAttribute('aria-expanded', 'true');
         }
     }
@@ -4543,7 +4538,7 @@ function ensureModalsExist() {
                             <i class="bi bi-x-circle mr-2"></i>Annuler
                         </button>
                         <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" id="makeDeckPublicBtn">
-                            <i class="bi bi-globe2 mr-2"></i>Rendre public
+                            <i class="bi bi-globe2 mr-2"></i>${_('Make public')}
                         </button>
                     </div>
                 </div>
@@ -4564,7 +4559,7 @@ function ensureModalsExist() {
                                 <i class="bi bi-globe2 text-green-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-1">Partager ce deck</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1">${_('Share this deck')}</h3>
                                 <p class="text-sm text-gray-500" id="shareModalDeckName">"Nom du jeu de cartes"</p>
                             </div>
                         </div>
@@ -4595,7 +4590,7 @@ function ensureModalsExist() {
                         <div class="mb-4">
                             <h4 class="flex items-center text-sm font-semibold text-gray-900 mb-3">
                                 <i class="bi bi-send text-blue-600 mr-2"></i>
-                                Partager rapidement
+                                ${_('Share quickly')}
                             </h4>
                             <div class="flex flex-wrap gap-2">
                                 <button class="px-3 py-2 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" id="shareByEmailBtn" type="button">

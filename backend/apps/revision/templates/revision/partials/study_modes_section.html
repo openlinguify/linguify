@@ -2,6 +2,20 @@
 <!-- Study Modes -->
 <div class="p-4">
     <div class="study-mode-grid">
+        <!-- 1. Learn (Primary mode) -->
+        <a href="#" class="study-mode-card-linguify study-mode-primary" id="studyLearn">
+            <div class="study-mode-content">
+                <span class="study-mode-icon"><i class="bi bi-bullseye"></i></span>
+                <div class="study-mode-text">
+                    <div class="study-mode-title">{% trans "Learn" %}</div>
+                    <div class="study-mode-description">
+                        {% trans "Interactive multiple choice quizzes." %}
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <!-- 2. Flashcards -->
         <a href="#" class="study-mode-card-linguify" id="studyFlashcards">
             <div class="study-mode-content">
                 <span class="study-mode-icon"><i class="bi bi-arrow-repeat"></i></span>
@@ -13,19 +27,21 @@
                 </div>
             </div>
         </a>
-        
-        <a href="#" class="study-mode-card-linguify" id="studyLearn">
+
+        <!-- 3. Write -->
+        <a href="#" class="study-mode-card-linguify" id="studyWrite">
             <div class="study-mode-content">
-                <span class="study-mode-icon"><i class="bi bi-bullseye"></i></span>
+                <span class="study-mode-icon"><i class="bi bi-pencil-square"></i></span>
                 <div class="study-mode-text">
-                    <div class="study-mode-title">{% trans "Learn" %}</div>
+                    <div class="study-mode-title">{% trans "Writing" %}</div>
                     <div class="study-mode-description">
-                        {% trans "Interactive multiple choice quizzes." %}
+                        {% trans "Writing and translation exercises." %}
                     </div>
                 </div>
             </div>
         </a>
-        
+
+        <!-- 4. Match -->
         <a href="#" class="study-mode-card-linguify" id="studyMatch">
             <div class="study-mode-content">
                 <span class="study-mode-icon"><i class="bi bi-puzzle"></i></span>
@@ -37,7 +53,8 @@
                 </div>
             </div>
         </a>
-        
+
+        <!-- 5. Quick Review -->
         <a href="#" class="study-mode-card-linguify" id="studyReview">
             <div class="study-mode-content">
                 <span class="study-mode-icon"><i class="bi bi-lightning-fill"></i></span>
@@ -45,18 +62,6 @@
                     <div class="study-mode-title">{% trans "Quick Review" %}</div>
                     <div class="study-mode-description">
                         {% trans "Quick review with spaced repetition." %}
-                    </div>
-                </div>
-            </div>
-        </a>
-        
-        <a href="#" class="study-mode-card-linguify" id="studyWrite">
-            <div class="study-mode-content">
-                <span class="study-mode-icon"><i class="bi bi-pencil-square"></i></span>
-                <div class="study-mode-text">
-                    <div class="study-mode-title">{% trans "Writing" %}</div>
-                    <div class="study-mode-description">
-                        {% trans "Writing and translation exercises." %}
                     </div>
                 </div>
             </div>

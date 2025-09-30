@@ -198,7 +198,7 @@ function loadWordStatsIfEnabled() {
 async function loadWordStats(type) {
     console.log(`[Revision Settings] Loading ${type} word statistics`);
     
-    const apiUrl = '/api/v1/revision/word-stats/';
+    const apiUrl = '/api/v1/revision/api/word-stats/';
     const params = new URLSearchParams();
     
     if (type === 'known') {
@@ -237,7 +237,7 @@ function displayWordStats(type, data) {
                 </div>
                 <div class="summary-card">
                     <div class="summary-number">${data.statistics?.total_to_learn || 0}</div>
-                    <div class="summary-label">À apprendre</div>
+                    <div class="summary-label">${_('To learn')}</div>
                 </div>
                 <div class="summary-card">
                     <div class="summary-number">${data.statistics?.total_words || 0}</div>

@@ -358,8 +358,13 @@ class FlashcardDeckViewSet(DeckPermissionMixin, OptimizedQuerysetMixin, viewsets
                 user_prefs = sr_mixin._get_user_preferences(request.user)
                 
                 # Build session config from query parameters
+                max_cards_value = int(request.query_params.get('max_cards', user_prefs.get('max_cards_per_session', 20)))
+                print(f"🔍 [FLASHCARD DEBUG] user_prefs: {user_prefs}")
+                print(f"🔍 [FLASHCARD DEBUG] max_cards_per_session from prefs: {user_prefs.get('max_cards_per_session', 'NOT FOUND')}")
+                print(f"🔍 [FLASHCARD DEBUG] final max_cards value: {max_cards_value}")
+
                 session_config = {
-                    'max_cards': int(request.query_params.get('max_cards', user_prefs.get('session_size', 20))),
+                    'max_cards': max_cards_value,
                     'new_cards_limit': int(request.query_params.get('new_cards', user_prefs.get('new_cards_per_day', 10))),
                     'review_ahead_days': int(request.query_params.get('ahead_days', user_prefs.get('review_ahead_days', 1))),
                     'prioritize_overdue': request.query_params.get('prioritize_overdue', 'true') == 'true',
@@ -792,17 +797,23 @@ class FlashcardViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-    @action(detail=True, methods=['post'], permission_classes=[])
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def update_review_progress(self, request, pk=None):
-        """Mettre à jour le progrès de révision d'une carte."""
-        if not request.user.is_authenticated:
-            return Response(
-                {"detail": "Authentication credentials were not provided."},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-        
+        """
+        Mettre à jour le progrès de révision d'une carte avec l'algorithme adaptatif.
+
+        Paramètres acceptés:
+        - is_correct (bool): Si la réponse était correcte
+        - study_mode (str): Mode d'étude (learn/flashcards/write/match/review)
+        - difficulty (str): Difficulté perçue (easy/medium/hard/wrong)
+        - response_time (float): Temps de réponse en secondes (optionnel)
+        - session_id (str): ID de session pour grouper les performances (optionnel)
+        """
+        from ..services.adaptive_learning import AdaptiveLearningService
+        from ..models import StudyMode, DifficultyLevel
+
         try:
-            # Check if card exists first (bypass queryset filtering for proper 403 vs 404)  
+            # Check if card exists first (bypass queryset filtering for proper 403 vs 404)
             try:
                 card = Flashcard.objects.get(pk=pk)
             except Flashcard.DoesNotExist:
@@ -810,40 +821,70 @@ class FlashcardViewSet(viewsets.ModelViewSet):
                     {"detail": "Not found."},
                     status=status.HTTP_404_NOT_FOUND
                 )
-            
+
             # Vérifier que l'utilisateur est propriétaire de la carte
             if card.user != request.user:
                 return Response(
                     {"detail": "You don't have permission to update this card's progress"},
                     status=status.HTTP_403_FORBIDDEN
                 )
-            
+
             # Vérifier si le deck est archivé
             if card.deck.is_archived:
                 return Response(
                     {"detail": "You cannot update cards in an archived deck"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            
+
+            # Extraire les paramètres
             is_correct = request.data.get('is_correct', True)
-            
-            # Utiliser la méthode update_review_progress du modèle
-            card.update_review_progress(is_correct=is_correct)
-            
+            study_mode = request.data.get('study_mode', StudyMode.WRITE)
+            difficulty = request.data.get('difficulty')
+            response_time = request.data.get('response_time')
+            session_id = request.data.get('session_id')
+
+            # Déduire la difficulté si non fournie
+            if not difficulty:
+                if not is_correct:
+                    difficulty = DifficultyLevel.WRONG
+                else:
+                    difficulty = DifficultyLevel.MEDIUM
+
+            # Valider les choix
+            if study_mode not in dict(StudyMode.choices):
+                study_mode = StudyMode.WRITE
+            if difficulty not in dict(DifficultyLevel.choices):
+                difficulty = DifficultyLevel.MEDIUM if is_correct else DifficultyLevel.WRONG
+
+            # Utiliser le service d'apprentissage adaptatif
+            performance, mastery = AdaptiveLearningService.record_performance(
+                card=card,
+                user=request.user,
+                study_mode=study_mode,
+                difficulty=difficulty,
+                was_correct=is_correct,
+                response_time_seconds=response_time,
+                session_id=session_id
+            )
+
+            # Sérialiser la carte mise à jour
             serializer = self.get_serializer(card)
+
             return Response({
                 "success": True,
                 "message": "Review progress updated successfully",
                 "card": serializer.data,
-                "learning_progress": {
-                    "correct_reviews": card.correct_reviews_count,
-                    "total_reviews": card.total_reviews_count,
-                    "is_learned": card.learned,
-                    "progress_percentage": card.learning_progress_percentage,
-                    "reviews_remaining": card.reviews_remaining_to_learn
+                "adaptive_learning": {
+                    "confidence_score": mastery.confidence_score,
+                    "mastery_level": mastery.mastery_level,
+                    "total_attempts": mastery.total_attempts,
+                    "successful_attempts": mastery.successful_attempts,
+                    "success_rate": round((mastery.successful_attempts / mastery.total_attempts * 100) if mastery.total_attempts > 0 else 0, 1),
+                    "confidence_change": performance.confidence_after - performance.confidence_before if performance.confidence_before else 0,
+                    "recommended_next_mode": AdaptiveLearningService.get_recommended_study_mode(card)
                 }
             })
-            
+
         except Exception as e:
             logger.error(f"Error updating review progress for card {pk}: {str(e)}")
             return Response(
