@@ -1,0 +1,226 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-30 20:31+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: .\apps\language_ai\__manifest__.py:5 .\apps\language_ai\models.py:63
+msgid "AI Conversation"
+msgstr ""
+
+#: .\apps\language_ai\__manifest__.py:8
+msgid ""
+"Practice conversations with our AI to improve your speaking skills and "
+"receive personalized feedback."
+msgstr ""
+
+#: .\apps\language_ai\__manifest__.py:44
+msgid "AI Intelligence"
+msgstr ""
+
+#: .\apps\language_ai\ai_service.py:137
+msgid ""
+"I'm sorry, I'm having trouble understanding. Could you try again or rephrase?"
+msgstr ""
+
+#: .\apps\language_ai\models.py:8
+msgid "English"
+msgstr ""
+
+#: .\apps\language_ai\models.py:9
+msgid "French"
+msgstr ""
+
+#: .\apps\language_ai\models.py:10
+msgid "Spanish"
+msgstr ""
+
+#: .\apps\language_ai\models.py:11
+msgid "German"
+msgstr ""
+
+#: .\apps\language_ai\models.py:12
+msgid "Italian"
+msgstr ""
+
+#: .\apps\language_ai\models.py:13
+msgid "Portuguese"
+msgstr ""
+
+#: .\apps\language_ai\models.py:14
+msgid "Dutch"
+msgstr ""
+
+#: .\apps\language_ai\models.py:15
+msgid "Russian"
+msgstr ""
+
+#: .\apps\language_ai\models.py:16
+msgid "Chinese"
+msgstr ""
+
+#: .\apps\language_ai\models.py:17
+msgid "Japanese"
+msgstr ""
+
+#: .\apps\language_ai\models.py:21
+msgid "Beginner"
+msgstr ""
+
+#: .\apps\language_ai\models.py:22
+msgid "Intermediate"
+msgstr ""
+
+#: .\apps\language_ai\models.py:23
+msgid "Advanced"
+msgstr ""
+
+#: .\apps\language_ai\models.py:30
+msgid "Context information to provide to the AI"
+msgstr ""
+
+#: .\apps\language_ai\models.py:31
+msgid "Example conversation to guide the AI"
+msgstr ""
+
+#: .\apps\language_ai\models.py:37
+msgid "Conversation Topic"
+msgstr ""
+
+#: .\apps\language_ai\models.py:38
+msgid "Conversation Topics"
+msgstr ""
+
+#: .\apps\language_ai\models.py:48
+msgid "Active"
+msgstr ""
+
+#: .\apps\language_ai\models.py:49
+msgid "Completed"
+msgstr ""
+
+#: .\apps\language_ai\models.py:50
+msgid "Paused"
+msgstr ""
+
+#: .\apps\language_ai\models.py:56
+msgid "Persona instruction for the AI"
+msgstr ""
+
+#: .\apps\language_ai\models.py:60
+msgid "Summary of common mistakes and feedback"
+msgstr ""
+
+#: .\apps\language_ai\models.py:64
+msgid "AI Conversations"
+msgstr ""
+
+#: .\apps\language_ai\models.py:88
+msgid "User"
+msgstr ""
+
+#: .\apps\language_ai\models.py:89
+msgid "AI"
+msgstr ""
+
+#: .\apps\language_ai\models.py:90
+msgid "System"
+msgstr ""
+
+#: .\apps\language_ai\models.py:104
+msgid "Conversation Message"
+msgstr ""
+
+#: .\apps\language_ai\models.py:105
+msgid "Conversation Messages"
+msgstr ""
+
+#: .\apps\language_ai\models.py:121
+msgid "Grammar"
+msgstr ""
+
+#: .\apps\language_ai\models.py:122
+msgid "Vocabulary"
+msgstr ""
+
+#: .\apps\language_ai\models.py:123
+msgid "Pronunciation"
+msgstr ""
+
+#: .\apps\language_ai\models.py:124
+msgid "Context"
+msgstr ""
+
+#: .\apps\language_ai\models.py:125
+msgid "Fluency"
+msgstr ""
+
+#: .\apps\language_ai\models.py:136 .\apps\language_ai\models.py:137
+msgid "Conversation Feedback"
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_settings_views.py:60
+msgid "Paramètres IA Linguistique - Linguify"
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_settings_views.py:72
+msgid "Erreur lors de la récupération des paramètres"
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_settings_views.py:75
+msgid "Erreur lors du chargement des paramètres IA"
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_settings_views.py:105
+#: .\apps\language_ai\views\language_ai_settings_views.py:109
+msgid "Paramètres IA linguistique mis à jour avec succès"
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_settings_views.py:115
+msgid "Valeur invalide dans les paramètres"
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_settings_views.py:128
+msgid "Erreur lors de la mise à jour des paramètres IA linguistique"
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_views.py:60
+msgid "This conversation is not active."
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_views.py:68
+msgid "Message content cannot be empty."
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_views.py:106
+msgid "Sorry, there was an error processing your request. Please try again."
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_views.py:109
+msgid "Failed to generate AI response."
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_views.py:120
+msgid "This conversation is already completed."
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_views.py:132
+msgid "Practice summary will be available soon."
+msgstr ""
+
+#: .\apps\language_ai\views\language_ai_views.py:178
+msgid "Message not found or not accessible."
+msgstr ""

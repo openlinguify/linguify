@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify Authentication\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 20:29+0200\n"
+"POT-Creation-Date: 2025-09-30 20:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: Dutch\n"
@@ -151,9 +151,6 @@ msgstr ""
 
 #: .\apps\calendar_app\templates\calendar\calendar_list.html:269
 #: .\apps\calendar_app\templates\calendar\calendar_month.html:655
-#: .\apps\community\templates\community\group\group_manage.html:137
-#: .\apps\community\templates\community\group\groups.html:319
-#: .\apps\community\templates\community\group\groups_new.html:452
 #: .\apps\authentication\templates\authentication\feedback\feedback_detail.html:503
 #: .\apps\authentication\views\feedback_views.py:85
 msgid "Description"
@@ -214,11 +211,6 @@ msgstr ""
 #: .\apps\calendar_app\templates\calendar\calendar_list.html:304
 #: .\apps\calendar_app\templates\calendar\calendar_month.html:690
 #: .\apps\calendar_app\templates\calendar\providers.html:118
-#: .\apps\community\templates\community\feed.html:339
-#: .\apps\community\templates\community\group\groups.html:383
-#: .\apps\community\templates\community\group\groups_new.html:516
-#: .\apps\community\templates\community\main.html:278
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:103
 #: .\apps\authentication\enhanced_admin\templates\admin\send_notification.html:68
 #: .\apps\authentication\templates\authentication\feedback\feedback_create.html:396
 msgid "Cancel"
@@ -231,8 +223,6 @@ msgstr ""
 
 #: .\apps\calendar_app\templates\calendar\calendar_list.html:410
 #: .\apps\calendar_app\templates\calendar\calendar_month.html:724
-#: .\apps\community\templates\community\group\groups.html:480
-#: .\apps\community\templates\community\group\groups_new.html:610
 msgid "Creating..."
 msgstr ""
 
@@ -267,8 +257,6 @@ msgid "Settings"
 msgstr ""
 
 #: .\apps\calendar_app\templates\calendar\components\calendar_header.html:90
-#: .\apps\teaching\templates\teaching\components\navbar.html:26
-#: .\apps\teaching\templates\teaching\components\navbar.html:28
 msgid "Actualiser"
 msgstr ""
 
@@ -305,17 +293,14 @@ msgid "Jour"
 msgstr ""
 
 #: .\apps\calendar_app\templates\calendar\components\calendar_header.html:115
-#: .\apps\documents\templates\components\header\documents_header.html:47
 msgid "Nouveau"
 msgstr ""
 
 #: .\apps\calendar_app\templates\calendar\components\calendar_header.html:203
-#: .\apps\documents\templates\components\header\documents_header.html:12
 msgid "Go to dashboard"
 msgstr ""
 
 #: .\apps\calendar_app\templates\calendar\components\calendar_header.html:205
-#: .\apps\documents\templates\components\header\documents_header.html:14
 #: .\apps\authentication\templates\authentication\interface_settings.html:9
 msgid "Dashboard"
 msgstr ""
@@ -370,1900 +355,6 @@ msgstr ""
 #| msgid "Back to home"
 msgid "Back to Calendar"
 msgstr "Terug naar home"
-
-#: .\apps\chat\__manifest__.py:12
-msgid "Collaborative Chat"
-msgstr ""
-
-#: .\apps\chat\__manifest__.py:15
-msgid "Chat in real time with your friends"
-msgstr ""
-
-#: .\apps\chat\__manifest__.py:79
-#, fuzzy
-#| msgid "Personal Information"
-msgid "Communication"
-msgstr "Persoonlijke informatie"
-
-#: .\apps\community\__manifest__.py:5
-#: .\apps\community\templates\community\main.html:4
-#: .\apps\community\templates\community\main_complex.html:4
-#: .\apps\community\templates\community\main_complex.html:24
-msgid "Community"
-msgstr ""
-
-#: .\apps\community\__manifest__.py:8
-#, fuzzy
-#| msgid "Select the language to learn"
-msgid ""
-"Connect with other learners, find language partners and join study groups."
-msgstr "Selecteer de taal om te leren"
-
-#: .\apps\community\__manifest__.py:47
-msgid "Social"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:11
-#: .\apps\community\templates\community\group\groups_new.html:207
-msgid "Overview"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:16
-#: .\apps\community\templates\community\group\groups_new.html:211
-msgid "Discover"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:21
-#: .\apps\community\templates\community\components\navbar.html:111
-#: .\apps\community\templates\community\group\groups_new.html:215
-#: .\apps\community\templates\community\main_complex.html:51
-#: .\apps\community\templates\community\user_profile.html:71
-#: .\apps\community\templates\community\user_profile.html:88
-msgid "Friends"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:26
-#: .\apps\community\templates\community\components\navbar.html:112
-#: .\apps\community\templates\community\group\groups_new.html:219
-#: .\apps\community\templates\community\main_complex.html:69
-msgid "Groups"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:33
-msgid "Refresh"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:42
-msgid "Search users..."
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:45
-#: .\apps\community\templates\community\components\navbar.html:66
-#: .\apps\community\templates\community\discover.html:41
-#: .\apps\community\templates\community\discover.html:54
-#: .\apps\community\templates\community\discover_complex.html:55
-#: .\apps\community\templates\community\discover_complex.html:68
-#: .\apps\community\templates\community\group\groups_new.html:249
-#, fuzzy
-#| msgid "Native Language"
-msgid "All Languages"
-msgstr "Moedertaal"
-
-#: .\apps\community\templates\community\components\navbar.html:54
-msgid "All Levels"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:55
-#: .\apps\community\templates\community\group\group_manage.html:157
-#: .\apps\language_ai\models.py:21
-#, fuzzy
-#| msgid "Beginner (A1-A2)"
-msgid "Beginner"
-msgstr "Beginner (A1-A2)"
-
-#: .\apps\community\templates\community\components\navbar.html:56
-#: .\apps\community\templates\community\group\group_manage.html:158
-#: .\apps\language_ai\models.py:22
-#, fuzzy
-#| msgid "Intermediate (B1-B2)"
-msgid "Intermediate"
-msgstr "Gemiddeld (B1-B2)"
-
-#: .\apps\community\templates\community\components\navbar.html:57
-#: .\apps\community\templates\community\group\group_manage.html:159
-#: .\apps\language_ai\models.py:23
-#, fuzzy
-#| msgid "Advanced (C1-C2)"
-msgid "Advanced"
-msgstr "Gevorderd (C1-C2)"
-
-#: .\apps\community\templates\community\components\navbar.html:63
-#: .\apps\community\templates\community\group\groups.html:198
-#: .\apps\community\templates\community\group\groups_new.html:351
-msgid "Search groups..."
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:75
-#: .\apps\authentication\templates\authentication\feedback\feedback_list.html:435
-msgid "All Types"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:76
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:84
-msgid "Conversation"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:77
-#: .\apps\language_ai\models.py:121
-#, fuzzy
-#| msgid "Grammar lessons"
-msgid "Grammar"
-msgstr "Grammaticalessen"
-
-#: .\apps\community\templates\community\components\navbar.html:78
-#: .\apps\language_ai\models.py:122
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:60
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:62
-msgid "Vocabulary"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:79
-msgid "Culture"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:85
-msgid "New Group"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:91
-#: .\apps\community\templates\community\friends.html:50
-msgid "Search friends..."
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:94
-#: .\apps\community\templates\community\friends.html:28
-#: .\apps\community\templates\community\friends.html:48
-msgid "All Friends"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:95
-#: .\apps\community\templates\community\friends.html:40
-#: .\apps\community\templates\community\friends.html:68
-#: .\apps\community\templates\community\friends.html:242
-#: .\apps\community\templates\community\group\group_detail.html:176
-#: .\apps\community\templates\community\group\group_detail.html:199
-#: .\apps\community\templates\community\group\group_detail_old.html:121
-#: .\apps\community\templates\community\group\group_manage.html:234
-#: .\apps\community\templates\community\user_profile.html:30
-#: .\apps\authentication\templates\authentication\profile.html:33
-msgid "Online"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:96
-#: .\apps\community\templates\community\friends.html:68
-#: .\apps\community\templates\community\group\group_manage.html:234
-#: .\apps\community\templates\community\user_profile.html:34
-msgid "Offline"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:97
-msgid "Recent"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:103
-#: .\apps\community\templates\community\feed.html:172
-msgid "Find Friends"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:109
-msgid "All Activity"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:110
-msgid "Posts"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:118
-#: .\apps\authentication\templates\authentication\profile.html:375
-msgid "Find Partners"
-msgstr ""
-
-#: .\apps\community\templates\community\components\navbar.html:123
-msgid "New Post"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:4
-#: .\apps\community\templates\community\discover_complex.html:4
-#: .\apps\community\templates\community\discover_complex.html:23
-#: .\apps\community\templates\community\friends_old.html:228
-msgid "Discover Language Partners"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:31
-#: .\apps\community\templates\community\discover_complex.html:42
-msgid "Search by name"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:33
-#: .\apps\community\templates\community\discover_complex.html:46
-msgid "Username or name..."
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:39
-#: .\apps\community\templates\community\discover_complex.html:53
-msgid "Native Language"
-msgstr "Moedertaal"
-
-#: .\apps\community\templates\community\discover.html:52
-#: .\apps\community\templates\community\discover_complex.html:66
-#, fuzzy
-#| msgid "Target Language"
-msgid "Learning Language"
-msgstr "Doeltaal"
-
-#: .\apps\community\templates\community\discover.html:68
-#: .\apps\community\templates\community\discover_complex.html:81
-#: .\apps\authentication\templates\authentication\feedback\feedback_list.html:454
-msgid "Filter"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:74
-#: .\venv\lib\python3.12\site-packages\django\forms\widgets.py:527
-#: .\apps\authentication\templates\authentication\feedback\feedback_list.html:458
-msgid "Clear"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:124
-#: .\apps\community\templates\community\discover_complex.html:175
-#: .\apps\community\templates\community\main.html:176
-#: .\apps\community\templates\community\main_complex.html:157
-#: .\apps\community\templates\community\user_profile.html:104
-msgid "Add Friend"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:128
-#: .\apps\community\templates\community\discover_complex.html:180
-#, fuzzy
-#| msgid "Public profile"
-msgid "View Profile"
-msgstr "Openbaar profiel"
-
-#: .\apps\community\templates\community\discover.html:141
-msgid "Previous"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:146
-msgid "Page"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:146
-msgid "of"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:151
-msgid "Next"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:160
-#: .\apps\community\templates\community\discover_complex.html:192
-msgid "No users found"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:163
-#: .\apps\community\templates\community\discover_complex.html:195
-msgid "Try adjusting your filters to find more language partners."
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:165
-#: .\apps\community\templates\community\discover_complex.html:197
-msgid "No users available at the moment. Check back later!"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:171
-#: .\apps\community\templates\community\discover_complex.html:90
-#: .\apps\community\templates\community\discover_complex.html:203
-msgid "Clear Filters"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:191
-#: .\apps\community\templates\community\discover_complex.html:281
-#: .\apps\community\templates\community\user_profile.html:372
-msgid "Sending..."
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:203
-#: .\apps\community\templates\community\discover_complex.html:293
-#: .\apps\community\templates\community\main.html:305
-#: .\apps\community\templates\community\main_complex.html:262
-#: .\apps\community\templates\community\user_profile.html:384
-msgid "Request Sent"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:211
-#: .\apps\community\templates\community\discover.html:219
-#: .\apps\community\templates\community\discover_complex.html:300
-#: .\apps\community\templates\community\discover_complex.html:307
-#: .\apps\community\templates\community\user_profile.html:390
-#: .\apps\community\templates\community\user_profile.html:397
-msgid "Error sending friend request"
-msgstr ""
-
-#: .\apps\community\templates\community\discover.html:228
-#: .\apps\community\templates\community\discover_complex.html:317
-msgid "Profile viewing coming soon!"
-msgstr ""
-
-#: .\apps\community\templates\community\discover_complex.html:25
-msgid "Find native speakers and learners to practice with"
-msgstr ""
-
-#: .\apps\community\templates\community\discover_complex.html:30
-#: .\apps\community\templates\community\friends_old.html:27
-#, fuzzy
-#| msgid "Back to home"
-msgid "Back to Community"
-msgstr "Terug naar home"
-
-#: .\apps\community\templates\community\discover_complex.html:213
-msgid "Page navigation"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:4
-msgid "Activity Feed"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:15
-msgid "Friend Activity Feed"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:46
-#, fuzzy
-#| msgid "Share my progress"
-msgid "shared a post"
-msgstr "Mijn voortgang delen"
-
-#: .\apps\community\templates\community\feed.html:48
-msgid "commented on a post"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:50
-msgid "liked a post"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:52
-msgid "completed a lesson"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:54
-msgid "made a new friend"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:56
-msgid "joined a study group"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:58
-msgid "earned an achievement"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:60
-msgid "had some activity"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:70
-msgid "Hide this activity"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:71
-msgid "Hide all from this user"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:108
-#: .\apps\community\templates\community\user_profile.html:307
-msgid "Connected with"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:110
-msgid "native speaker"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:121
-msgid "Joined"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:149
-msgid "Encourage"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:162
-#: .\apps\community\templates\community\feed.html:478
-msgid "Load More Activities"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:168
-msgid "No activity yet"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:169
-msgid "Add friends to see their learning activities and progress!"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:187
-#: .\apps\community\templates\community\main_complex.html:85
-msgid "Quick Actions"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:194
-#, fuzzy
-#| msgid "Share my progress"
-msgid "Share Your Progress"
-msgstr "Mijn voortgang delen"
-
-#: .\apps\community\templates\community\feed.html:198
-#: .\apps\community\templates\community\main_complex.html:91
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:31
-msgid "Find Language Partners"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:202
-#: .\apps\community\templates\community\main_complex.html:99
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:43
-msgid "Join Study Groups"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:213
-msgid "Community Activity"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:222
-msgid "Lessons Today"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:229
-#: .\apps\community\templates\community\user_profile.html:184
-#, fuzzy
-#| msgid "Achievement notifications"
-msgid "Achievements"
-msgstr "Prestatiemeldingen"
-
-#: .\apps\community\templates\community\feed.html:236
-msgid "New Connections"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:243
-#: .\apps\community\templates\community\group\group_manage.html:184
-#: .\apps\community\templates\community\main_complex.html:78
-#: .\venv\lib\python3.12\site-packages\django\contrib\messages\apps.py:16
-msgid "Messages"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:255
-msgid "Trending Topics"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:263
-#, fuzzy
-#| msgid "Speaking practice"
-msgid "Tips and practice"
-msgstr "Spreekoefeningen"
-
-#: .\apps\community\templates\community\feed.html:270
-#, fuzzy
-#| msgid "Grammar lessons"
-msgid "Grammar discussions"
-msgstr "Grammaticalessen"
-
-#: .\apps\community\templates\community\feed.html:277
-msgid "Partner matching"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:284
-msgid "Weekly motivation"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:302
-#: .\apps\community\templates\community\main.html:196
-#, fuzzy
-#| msgid "Share my progress"
-msgid "Share Your Learning Progress"
-msgstr "Mijn voortgang delen"
-
-#: .\apps\community\templates\community\feed.html:309
-msgid "What did you learn today?"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:311
-msgid "Share your progress, ask questions, or motivate others..."
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:315
-#: .\apps\community\templates\community\group\group_manage.html:144
-#: .\apps\community\templates\community\group\groups.html:305
-#: .\apps\community\templates\community\group\groups_new.html:438
-#: .\apps\authentication\models\email_models.py:49
-#, fuzzy
-#| msgid "Native Language"
-msgid "Language"
-msgstr "Moedertaal"
-
-#: .\apps\community\templates\community\feed.html:317
-#: .\apps\community\templates\community\main.html:213
-#, fuzzy
-#| msgid "Select the language to learn"
-msgid "Select language (optional)"
-msgstr "Selecteer de taal om te leren"
-
-#: .\apps\community\templates\community\feed.html:327
-msgid "Add tags"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:329
-#, fuzzy
-#| msgid "Share my progress"
-msgid "#progress"
-msgstr "Mijn voortgang delen"
-
-#: .\apps\community\templates\community\feed.html:330
-msgid "#motivation"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:331
-msgid "#question"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:332
-msgid "#achievement"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:333
-msgid "#tip"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:342
-#: .\apps\community\templates\community\feed.html:466
-#: .\apps\community\templates\community\main.html:281
-#: .\apps\community\templates\community\main.html:443
-msgid "Share Post"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:394
-msgid "Comments feature coming soon!"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:403
-msgid "Encouragement sent! (Feature coming soon!)"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:448
-msgid "Please write something to share!"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:458
-#: .\apps\community\templates\community\main.html:429
-msgid "Sharing..."
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:461
-msgid "Post shared successfully! (Feature coming soon!)"
-msgstr ""
-
-#: .\apps\community\templates\community\feed.html:473
-#: .\apps\community\templates\community\main.html:458
-msgid "Loading..."
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:4
-#: .\apps\community\templates\community\friends_old.html:4
-#: .\apps\community\templates\community\main_complex.html:36
-msgid "My Friends"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:32
-#: .\apps\community\templates\community\friends.html:113
-#: .\apps\community\templates\community\main_complex.html:60
-msgid "Friend Requests"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:36
-#: .\apps\community\templates\community\friends.html:173
-#: .\apps\community\templates\community\friends_old.html:57
-msgid "Sent Requests"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:85
-#: .\apps\community\templates\community\friends_old.html:207
-#: .\apps\community\templates\community\user_profile.html:92
-#: .\apps\authentication\templates\authentication\profile.html:114
-msgid "Message"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:89
-msgid "Remove"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:96
-#: .\apps\community\templates\community\friends.html:279
-#: .\apps\community\templates\community\friends_old.html:224
-msgid "No friends yet"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:97
-msgid "Start connecting with language partners!"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:100
-#: .\apps\community\templates\community\friends.html:214
-#: .\apps\community\templates\community\friends.html:283
-#: .\apps\community\templates\community\main.html:119
-#: .\apps\community\templates\community\main_complex.html:32
-msgid "Discover Users"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:149
-#: .\apps\community\templates\community\friends_old.html:115
-msgid "Accept"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:153
-#: .\apps\community\templates\community\friends_old.html:118
-msgid "Decline"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:160
-msgid "No pending requests"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:161
-msgid "You don't have any friend requests at the moment."
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:203
-msgid "Cancel Request"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:210
-msgid "No sent requests"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:211
-msgid "You haven't sent any friend requests yet."
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:227
-msgid "Friends Online"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:242
-msgid "Active now"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:259
-msgid "Start Chat"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:263
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:92
-msgid "Video Call"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:271
-msgid "No friends online"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:272
-#, fuzzy
-#| msgid "Language you are currently learning"
-msgid "None of your friends are currently online."
-msgstr "Taal die je momenteel leert"
-
-#: .\apps\community\templates\community\friends.html:280
-msgid "Add some friends to see who's online!"
-msgstr ""
-
-#: .\apps\community\templates\community\friends.html:316
-#, fuzzy
-#| msgid "I accept the"
-msgid "Accepted"
-msgstr "Ik accepteer de"
-
-#: .\apps\community\templates\community\friends_old.html:15
-#: .\apps\community\templates\community\friends_old.html:134
-msgid "My Language Learning Friends"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:17
-msgid "Connect with your language learning community"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:23
-msgid "Find More Friends"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:39
-msgid "Total Friends"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:48
-msgid "Pending Requests"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:66
-msgid "Active Conversations"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:78
-msgid "Pending Friend Requests"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:190
-msgid "Can teach:"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:197
-#: .\apps\community\templates\community\user_profile.html:56
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:32
-#, fuzzy
-#| msgid "Learning Level"
-msgid "Learning:"
-msgstr "Leerniveau"
-
-#: .\apps\community\templates\community\friends_old.html:210
-#: .\apps\authentication\templates\authentication\profile.html:6
-#: .\apps\authentication\views\views.py:1355
-#, fuzzy
-#| msgid "Public profile"
-msgid "Profile"
-msgstr "Openbaar profiel"
-
-#: .\apps\community\templates\community\friends_old.html:213
-msgid "Study Together"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:225
-msgid ""
-"Start building your language learning community by finding friends to "
-"practice with!"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:265
-msgid "Accepting..."
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:292
-#: .\apps\community\templates\community\friends_old.html:299
-msgid "Error accepting friend request"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:307
-msgid "Are you sure you want to decline this friend request?"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:315
-msgid "Declining..."
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:340
-#: .\apps\community\templates\community\friends_old.html:347
-msgid "Error declining friend request"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:357
-msgid "Messaging feature coming soon!"
-msgstr ""
-
-#: .\apps\community\templates\community\friends_old.html:373
-msgid "Study together feature coming soon!"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:81
-#: .\apps\community\templates\community\group\group_detail_old.html:43
-#: .\apps\community\templates\community\group\group_manage.html:68
-#: .\apps\community\templates\community\user_profile.html:247
-#, fuzzy
-#| msgid "Remember me"
-msgid "members"
-msgstr "Onthoud mij"
-
-#: .\apps\community\templates\community\group\group_detail.html:85
-#: .\apps\community\templates\community\group\group_detail_old.html:44
-msgid "online"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:93
-#: .\apps\community\templates\community\group\group_detail_old.html:47
-#: .\apps\community\templates\community\group\group_manage.html:4
-#: .\apps\community\templates\community\group\groups.html:178
-#: .\apps\community\templates\community\group\groups_new.html:337
-msgid "Manage"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:99
-msgid "Invite"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:111
-#: .\apps\community\templates\community\group\group_detail_old.html:58
-msgid "Group Chat"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:114
-#: .\apps\community\templates\community\group\group_detail_old.html:61
-msgid "Test with Claude AI"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:115
-msgid "AI Test"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:146
-msgid "No messages yet. Be the first to say hello!"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:156
-#: .\apps\community\templates\community\group\group_detail_old.html:105
-msgid "Type your message..."
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:159
-#: .\apps\community\templates\community\group\group_detail_old.html:64
-msgid "Add Photo"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:163
-msgid "Send"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:206
-#: .\apps\community\templates\community\group\group_detail_old.html:134
-msgid "No one online"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail.html:340
-#: .\apps\community\templates\community\group\group_detail.html:377
-#: .\apps\community\templates\community\group\group_detail.html:397
-#: .\apps\community\templates\community\group\group_detail_old.html:249
-#: .\apps\community\templates\community\group\group_detail_old.html:285
-#: .\apps\community\templates\community\main.html:265
-msgid "now"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail_old.html:78
-msgid "2 min ago"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail_old.html:90
-msgid "1 min ago"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail_old.html:188
-#, fuzzy
-#| msgid "Language you want to learn"
-msgid "Language switched to"
-msgstr "Taal die je wilt leren"
-
-#: .\apps\community\templates\community\group\group_detail_old.html:188
-msgid "Practice time!"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail_old.html:195
-msgid "Type your message in French..."
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_detail_old.html:196
-msgid "Type your message in English..."
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:41
-msgid "Management"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:72
-msgid "active"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:79
-#, fuzzy
-#| msgid "Back to home"
-msgid "Back to Chat"
-msgstr "Terug naar home"
-
-#: .\apps\community\templates\community\group\group_manage.html:84
-msgid "Save"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:90
-#: .\venv\lib\python3.12\site-packages\django\forms\formsets.py:499
-#: .\apps\authentication\templates\authentication\profile_picture_management.html:28
-msgid "Delete"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:103
-msgid "Group Settings"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:111
-#, fuzzy
-#| msgid "Personal Information"
-msgid "General Information"
-msgstr "Persoonlijke informatie"
-
-#: .\apps\community\templates\community\group\group_manage.html:115
-msgid "Group Avatar"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:127
-msgid "Recommended size: 200x200 pixels"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:132
-#: .\apps\community\templates\community\group\groups.html:299
-#: .\apps\community\templates\community\group\groups_new.html:432
-msgid "Group Name"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:155
-#: .\apps\community\templates\community\group\groups.html:327
-#: .\apps\community\templates\community\group\groups_new.html:460
-msgid "Level"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:160
-msgid "Mixed"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:170
-msgid "Group Statistics"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:176
-#: .\apps\community\templates\community\group\groups_new.html:237
-msgid "Total Members"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:192
-#: .\apps\community\templates\community\group\groups_new.html:241
-msgid "Active Today"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:206
-msgid "Members"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:227
-#: .\apps\community\templates\community\user_profile.html:240
-msgid "Creator"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:229
-#: .\apps\community\templates\community\user_profile.html:242
-msgid "Moderator"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:240
-msgid "Remove Moderator"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:244
-msgid "Make Moderator"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:248
-#, fuzzy
-#| msgid "Remember me"
-msgid "Remove Member"
-msgstr "Onthoud mij"
-
-#: .\apps\community\templates\community\group\group_manage.html:257
-msgid "No members"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:684
-msgid "Are you sure you want to remove this member?"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:710
-msgid "Make this member a moderator?"
-msgstr ""
-
-#: .\apps\community\templates\community\group\group_manage.html:736
-msgid "Remove moderator rights from this member?"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:4
-#: .\apps\community\templates\community\group\groups_new.html:4
-#: .\apps\community\templates\community\group\groups_new.html:200
-#: .\apps\community\templates\community\user_profile.html:221
-msgid "Study Groups"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:111
-#: .\apps\community\templates\community\group\groups_new.html:229
-#: .\apps\community\templates\community\group\groups_new.html:273
-msgid "My Groups"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:119
-#: .\apps\community\templates\community\group\groups_new.html:285
-#, fuzzy
-#| msgid "Create my account"
-msgid "Create New Group"
-msgstr "Maak mijn account aan"
-
-#: .\apps\community\templates\community\group\groups.html:120
-#: .\apps\community\templates\community\group\groups_new.html:286
-msgid "Start your own study group"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:174
-#: .\apps\community\templates\community\group\groups.html:457
-#: .\apps\community\templates\community\group\groups_new.html:333
-#: .\apps\community\templates\community\group\groups_new.html:589
-#, fuzzy
-#| msgid "Enter your password"
-msgid "Enter Group"
-msgstr "Voer je wachtwoord in"
-
-#: .\apps\community\templates\community\group\groups.html:185
-msgid "No groups yet"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:186
-msgid "Join or create a study group to start learning with others!"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:196
-#: .\apps\community\templates\community\group\groups_new.html:349
-msgid "Discover Groups"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:258
-#: .\apps\community\templates\community\group\groups_new.html:401
-msgid "Join Group"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:262
-#: .\apps\community\templates\community\group\groups_new.html:405
-#: .\apps\authentication\templates\admin\email_campaign_preview.html:12
-msgid "Preview"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:269
-msgid "No groups available"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:270
-msgid "Be the first to create a study group for your language!"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:273
-#: .\apps\community\templates\community\group\groups.html:386
-#: .\apps\community\templates\community\group\groups.html:525
-#: .\apps\community\templates\community\group\groups_new.html:277
-#: .\apps\community\templates\community\group\groups_new.html:519
-#: .\apps\community\templates\community\group\groups_new.html:618
-#, fuzzy
-#| msgid "Create my account"
-msgid "Create Group"
-msgstr "Maak mijn account aan"
-
-#: .\apps\community\templates\community\group\groups.html:290
-#: .\apps\community\templates\community\group\groups_new.html:423
-msgid "Create New Study Group"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:300
-#: .\apps\community\templates\community\group\groups_new.html:433
-msgid "e.g., French Conversation Practice"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:307
-#: .\apps\community\templates\community\group\groups_new.html:440
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:44
-#, fuzzy
-#| msgid "Target language"
-msgid "Select language"
-msgstr "Doeltaal"
-
-#: .\apps\community\templates\community\group\groups.html:321
-#: .\apps\community\templates\community\group\groups_new.html:454
-msgid "Describe what your group is about, what level, meeting schedule, etc."
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:329
-#: .\apps\community\templates\community\group\groups_new.html:462
-msgid "Beginner (A1-A2)"
-msgstr "Beginner (A1-A2)"
-
-#: .\apps\community\templates\community\group\groups.html:330
-#: .\apps\community\templates\community\group\groups_new.html:463
-msgid "Intermediate (B1-B2)"
-msgstr "Gemiddeld (B1-B2)"
-
-#: .\apps\community\templates\community\group\groups.html:331
-#: .\apps\community\templates\community\group\groups_new.html:464
-msgid "Advanced (C1-C2)"
-msgstr "Gevorderd (C1-C2)"
-
-#: .\apps\community\templates\community\group\groups.html:332
-#: .\apps\community\templates\community\group\groups_new.html:465
-msgid "Mixed Levels"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:338
-#: .\apps\community\templates\community\group\groups_new.html:471
-msgid "Focus Area"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:340
-#: .\apps\community\templates\community\group\groups_new.html:473
-#, fuzzy
-#| msgid "Speaking practice"
-msgid "Conversation Practice"
-msgstr "Spreekoefeningen"
-
-#: .\apps\community\templates\community\group\groups.html:341
-#: .\apps\community\templates\community\group\groups_new.html:474
-msgid "Grammar Study"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:342
-#: .\apps\community\templates\community\group\groups_new.html:475
-msgid "Vocabulary Building"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:343
-#: .\apps\community\templates\community\group\groups_new.html:476
-msgid "Reading Club"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:344
-#: .\apps\community\templates\community\group\groups_new.html:477
-#, fuzzy
-#| msgid "Speaking practice"
-msgid "Writing Practice"
-msgstr "Spreekoefeningen"
-
-#: .\apps\community\templates\community\group\groups.html:345
-#: .\apps\community\templates\community\group\groups_new.html:478
-msgid "Culture & Traditions"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:346
-#: .\apps\community\templates\community\group\groups_new.html:479
-#, fuzzy
-#| msgid "Native Language"
-msgid "Business Language"
-msgstr "Moedertaal"
-
-#: .\apps\community\templates\community\group\groups.html:347
-#: .\apps\community\templates\community\group\groups_new.html:480
-msgid "Test Preparation"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:348
-#: .\apps\community\templates\community\group\groups_new.html:481
-msgid "General Study"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:355
-#: .\apps\community\templates\community\group\groups_new.html:488
-msgid "Group Guidelines"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:361
-#: .\apps\community\templates\community\group\groups_new.html:494
-msgid "Members must be respectful and encouraging"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:368
-#: .\apps\community\templates\community\group\groups_new.html:501
-msgid "Members should participate actively"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:375
-#: .\apps\community\templates\community\group\groups_new.html:508
-msgid "Practice target language primarily"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:423
-#: .\apps\community\templates\community\group\groups_new.html:555
-msgid "Group preview coming soon!"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:448
-#: .\apps\community\templates\community\group\groups_new.html:580
-msgid "Joining..."
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:451
-#: .\apps\community\templates\community\group\groups_new.html:583
-msgid "Joined!"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:473
-#: .\apps\community\templates\community\group\groups_new.html:603
-msgid "Please fill in all required fields."
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups.html:515
-#: .\apps\community\templates\community\group\groups.html:520
-msgid "Error creating group"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups_new.html:233
-msgid "Available Groups"
-msgstr ""
-
-#: .\apps\community\templates\community\group\groups_new.html:613
-msgid ""
-"Group created successfully! You can now invite members and start studying "
-"together."
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:42
-msgid "Community Feed"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:46
-#, fuzzy
-#| msgid "Create my account"
-msgid "Create Post"
-msgstr "Maak mijn account aan"
-
-#: .\apps\community\templates\community\main.html:87
-#: .\apps\community\templates\community\main.html:501
-msgid "Share"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:105
-#: .\apps\community\templates\community\main.html:358
-msgid "Write a comment..."
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:106
-#: .\apps\community\templates\community\main.html:359
-msgid "Post"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:115
-msgid "No posts yet"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:116
-msgid "Connect with language partners to see their posts in your feed."
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:128
-#: .\apps\community\templates\community\main.html:463
-msgid "Load More Posts"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:143
-#: .\apps\community\templates\community\main_complex.html:118
-msgid "Suggested Friends"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:145
-#: .\apps\community\templates\community\main_complex.html:120
-msgid "See All"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:203
-msgid "What's on your mind?"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:205
-msgid ""
-"Share your learning progress, ask questions, or celebrate achievements..."
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:211
-msgid "Language Topic"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:228
-msgid "Post Type"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:230
-msgid "Progress Update"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:231
-msgid "Question/Help"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:232
-#, fuzzy
-#| msgid "Achievement notifications"
-msgid "Achievement"
-msgstr "Prestatiemeldingen"
-
-#: .\apps\community\templates\community\main.html:233
-#, fuzzy
-#| msgid "Learning Level"
-msgid "Learning Tip"
-msgstr "Leerniveau"
-
-#: .\apps\community\templates\community\main.html:234
-msgid "Motivation"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:235
-msgid "General Discussion"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:242
-msgid "Tags"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:242
-msgid "optional"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:244
-msgid "e.g., #grammar #vocabulary #pronunciation"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:245
-msgid "Separate tags with spaces or commas"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:252
-msgid "Allow comments on this post"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:258
-msgid "Preview:"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:423
-msgid "Please write something before sharing!"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:433
-msgid "Post shared successfully!"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:461
-msgid "More posts loaded!"
-msgstr ""
-
-#: .\apps\community\templates\community\main.html:482
-msgid "just now"
-msgstr ""
-
-#: .\apps\community\templates\community\main_complex.html:26
-msgid "Connect with language learners around the world"
-msgstr ""
-
-#: .\apps\community\templates\community\main_complex.html:92
-msgid "Connect with learners of your target language"
-msgstr ""
-
-#: .\apps\community\templates\community\main_complex.html:100
-msgid "Practice with groups of learners"
-msgstr ""
-
-#: .\apps\community\templates\community\main_complex.html:107
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:103
-msgid "Start Conversations"
-msgstr ""
-
-#: .\apps\community\templates\community\main_complex.html:108
-msgid "Practice speaking with native speakers"
-msgstr ""
-
-#: .\apps\community\templates\community\main_complex.html:172
-#: .\apps\community\templates\community\user_profile.html:268
-msgid "Recent Activity"
-msgstr ""
-
-#: .\apps\community\templates\community\main_complex.html:221
-#: .\apps\community\templates\community\user_profile.html:328
-msgid "No recent activity"
-msgstr ""
-
-#: .\apps\community\templates\community\main_complex.html:222
-msgid ""
-"No recent activity from your friends. Start by connecting with other "
-"learners!"
-msgstr ""
-
-#: .\apps\community\templates\community\main_complex.html:225
-msgid "Find Friends to Follow Their Activity"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:8
-msgid "Welcome to Linguify Community!"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:11
-msgid "Let's get you connected with language learners around the world"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:19
-msgid "Complete Your Profile"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:20
-msgid "Add your languages and learning goals to get better matches"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:23
-msgid "Update Profile"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:32
-msgid "Connect with native speakers and fellow learners"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:35
-msgid "Discover Friends"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:44
-msgid "Practice with groups focused on your target language"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:47
-msgid "Browse Groups"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:55
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:20
-msgid "Quick Match"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:56
-msgid "We found these perfect language exchange partners for you:"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:84
-msgid "Connect"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:91
-msgid "Complete your profile to see personalized suggestions"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:99
-msgid "New to Language Exchange?"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:104
-msgid "Break the ice with simple greetings in your target language"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:108
-msgid "Schedule Sessions"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:109
-msgid "Set up regular practice sessions with your language partners"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:113
-msgid "Track Progress"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\empty_state_new_user.html:114
-msgid "Celebrate milestones and share achievements with the community"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:10
-msgid "Find Your Perfect Language Partner"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:11
-msgid "Connect with native speakers who want to learn your language"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:16
-msgid "Discover Partners"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:33
-msgid "Quick Language Partner Match"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:39
-#, fuzzy
-#| msgid "Tell us about yourself..."
-msgid "Tell us what you're looking for:"
-msgstr "Vertel iets over jezelf..."
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:42
-#, fuzzy
-#| msgid "Speaking practice"
-msgid "I want to practice:"
-msgstr "Spreekoefeningen"
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:58
-#, fuzzy
-#| msgid "Checking availability..."
-msgid "My availability:"
-msgstr "Beschikbaarheid controleren..."
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:62
-msgid "Available now"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:66
-msgid "Weekdays"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:70
-msgid "Weekends"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:74
-msgid "Flexible"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:80
-msgid "Preferred practice type:"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:88
-msgid "Text Chat"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:96
-#, fuzzy
-#| msgid "Grammar lessons"
-msgid "Grammar Help"
-msgstr "Grammaticalessen"
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:106
-msgid "Find Matches"
-msgstr ""
-
-#: .\apps\community\templates\community\partials\friend_discovery_banner.html:259
-#, fuzzy
-#| msgid "Select the language to learn"
-msgid "Please select a language to practice"
-msgstr "Selecteer de taal om te leren"
-
-#: .\apps\community\templates\community\user_profile.html:49
-msgid "Native:"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:75
-msgid "Exchange Sessions"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:79
-msgid "Study Sessions"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:95
-msgid "Language Exchange"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:100
-msgid "Request Pending"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:109
-#: .\apps\authentication\templates\authentication\profile.html:101
-#, fuzzy
-#| msgid "Public profile"
-msgid "Edit Profile"
-msgstr "Openbaar profiel"
-
-#: .\apps\community\templates\community\user_profile.html:126
-msgid "Language Skills"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:135
-msgid "Can Teach"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:150
-#, fuzzy
-#| msgid "Language you are currently learning"
-msgid "Currently Learning"
-msgstr "Taal die je momenteel leert"
-
-#: .\apps\community\templates\community\user_profile.html:164
-msgid "Language Exchange Match"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:207
-msgid "No achievements yet"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:257
-msgid "Not in any study groups yet"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:303
-msgid "Completed lesson:"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:305
-msgid "Earned achievement:"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:309
-msgid "Joined study group:"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:311
-msgid "Had a language exchange session"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:313
-msgid "Had some activity"
-msgstr ""
-
-#: .\apps\community\templates\community\user_profile.html:415
-#: .\apps\community\templates\community\user_profile.html:420
-#, fuzzy
-#| msgid "Error during verification"
-msgid "Error starting conversation"
-msgstr "Fout tijdens verificatie"
-
-#: .\apps\community\templates\community\user_profile.html:426
-msgid "Language exchange feature coming soon!"
-msgstr ""
-
-#: .\apps\course\__manifest__.py:5
-msgid "Course"
-msgstr ""
-
-#: .\apps\course\__manifest__.py:8
-msgid "Follow and track your language learning courses and progress."
-msgstr ""
-
-#: .\apps\course\__manifest__.py:48 .\apps\teaching\__manifest__.py:24
-#, fuzzy
-#| msgid "Personal Information"
-msgid "Education"
-msgstr "Persoonlijke informatie"
-
-#: .\apps\documents\__manifest__.py:5
-#: .\apps\documents\templates\components\header\documents_header.html:30
-msgid "Documents"
-msgstr ""
-
-#: .\apps\documents\__manifest__.py:8
-msgid "Create and share your documents in real time with your collaborators."
-msgstr ""
-
-#: .\apps\documents\__manifest__.py:47
-msgid "Collaboration"
-msgstr ""
-
-#: .\apps\documents\templates\components\header\documents_header.html:21
-msgid "Documents home"
-msgstr ""
-
-#: .\apps\documents\templates\components\header\documents_header.html:23
-#: .\apps\teaching\templates\teaching\components\navbar.html:11
-msgid "Accueil"
-msgstr ""
-
-#: .\apps\documents\templates\components\header\documents_header.html:28
-msgid "All documents"
-msgstr ""
-
-#: .\apps\documents\templates\components\header\documents_header.html:35
-msgid "Folders"
-msgstr ""
-
-#: .\apps\documents\templates\components\header\documents_header.html:37
-msgid "Dossiers"
-msgstr ""
-
-#: .\apps\documents\templates\components\header\documents_header.html:45
-#, fuzzy
-#| msgid "Create an account"
-msgid "Create new document"
-msgstr "Account aanmaken"
-
-#: .\apps\language_ai\__manifest__.py:5 .\apps\language_ai\models.py:63
-msgid "AI Conversation"
-msgstr ""
-
-#: .\apps\language_ai\__manifest__.py:8
-msgid ""
-"Practice conversations with our AI to improve your speaking skills and "
-"receive personalized feedback."
-msgstr ""
-
-#: .\apps\language_ai\__manifest__.py:44
-msgid "AI Intelligence"
-msgstr ""
-
-#: .\apps\language_ai\ai_service.py:137
-msgid ""
-"I'm sorry, I'm having trouble understanding. Could you try again or rephrase?"
-msgstr ""
-
-#: .\apps\language_ai\models.py:8
-#: .\apps\authentication\models\email_models.py:43
-msgid "English"
-msgstr ""
-
-#: .\apps\language_ai\models.py:9
-#: .\apps\authentication\models\email_models.py:42
-msgid "French"
-msgstr ""
-
-#: .\apps\language_ai\models.py:10
-#: .\apps\authentication\models\email_models.py:44
-msgid "Spanish"
-msgstr ""
-
-#: .\apps\language_ai\models.py:11
-msgid "German"
-msgstr ""
-
-#: .\apps\language_ai\models.py:12
-msgid "Italian"
-msgstr ""
-
-#: .\apps\language_ai\models.py:13
-msgid "Portuguese"
-msgstr ""
-
-#: .\apps\language_ai\models.py:14
-#: .\apps\authentication\models\email_models.py:45
-msgid "Dutch"
-msgstr ""
-
-#: .\apps\language_ai\models.py:15
-msgid "Russian"
-msgstr ""
-
-#: .\apps\language_ai\models.py:16
-msgid "Chinese"
-msgstr ""
-
-#: .\apps\language_ai\models.py:17
-msgid "Japanese"
-msgstr ""
-
-#: .\apps\language_ai\models.py:30
-msgid "Context information to provide to the AI"
-msgstr ""
-
-#: .\apps\language_ai\models.py:31
-msgid "Example conversation to guide the AI"
-msgstr ""
-
-#: .\apps\language_ai\models.py:37
-msgid "Conversation Topic"
-msgstr ""
-
-#: .\apps\language_ai\models.py:38
-msgid "Conversation Topics"
-msgstr ""
-
-#: .\apps\language_ai\models.py:48
-#: .\apps\authentication\models\email_models.py:27
-msgid "Active"
-msgstr ""
-
-#: .\apps\language_ai\models.py:49
-msgid "Completed"
-msgstr ""
-
-#: .\apps\language_ai\models.py:50
-msgid "Paused"
-msgstr ""
-
-#: .\apps\language_ai\models.py:56
-msgid "Persona instruction for the AI"
-msgstr ""
-
-#: .\apps\language_ai\models.py:60
-msgid "Summary of common mistakes and feedback"
-msgstr ""
-
-#: .\apps\language_ai\models.py:64
-msgid "AI Conversations"
-msgstr ""
-
-#: .\apps\language_ai\models.py:88 .\apps\task\models.py:15
-#: .\apps\authentication\templates\authentication\terms_acceptance.html:209
-#, fuzzy
-#| msgid "Username"
-msgid "User"
-msgstr "Gebruikersnaam"
-
-#: .\apps\language_ai\models.py:89
-msgid "AI"
-msgstr ""
-
-#: .\apps\language_ai\models.py:90
-msgid "System"
-msgstr ""
-
-#: .\apps\language_ai\models.py:104
-msgid "Conversation Message"
-msgstr ""
-
-#: .\apps\language_ai\models.py:105
-msgid "Conversation Messages"
-msgstr ""
-
-#: .\apps\language_ai\models.py:123
-#, fuzzy
-#| msgid "Personal Information"
-msgid "Pronunciation"
-msgstr "Persoonlijke informatie"
-
-#: .\apps\language_ai\models.py:124
-msgid "Context"
-msgstr ""
-
-#: .\apps\language_ai\models.py:125
-msgid "Fluency"
-msgstr ""
-
-#: .\apps\language_ai\models.py:136 .\apps\language_ai\models.py:137
-msgid "Conversation Feedback"
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_settings_views.py:60
-msgid "Paramètres IA Linguistique - Linguify"
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_settings_views.py:72
-msgid "Erreur lors de la récupération des paramètres"
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_settings_views.py:75
-msgid "Erreur lors du chargement des paramètres IA"
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_settings_views.py:105
-#: .\apps\language_ai\views\language_ai_settings_views.py:109
-msgid "Paramètres IA linguistique mis à jour avec succès"
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_settings_views.py:115
-msgid "Valeur invalide dans les paramètres"
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_settings_views.py:128
-msgid "Erreur lors de la mise à jour des paramètres IA linguistique"
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_views.py:60
-msgid "This conversation is not active."
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_views.py:68
-#, fuzzy
-#| msgid "Username cannot be empty"
-msgid "Message content cannot be empty."
-msgstr "Gebruikersnaam kan niet leeg zijn"
-
-#: .\apps\language_ai\views\language_ai_views.py:106
-msgid "Sorry, there was an error processing your request. Please try again."
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_views.py:109
-msgid "Failed to generate AI response."
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_views.py:120
-#, fuzzy
-#| msgid "This email is already registered"
-msgid "This conversation is already completed."
-msgstr "Dit e-mailadres is al geregistreerd"
-
-#: .\apps\language_ai\views\language_ai_views.py:132
-msgid "Practice summary will be available soon."
-msgstr ""
-
-#: .\apps\language_ai\views\language_ai_views.py:178
-msgid "Message not found or not accessible."
-msgstr ""
 
 #: .\apps\language_learning\forms.py:37 .\apps\language_learning\forms.py:87
 msgid "Your native language"
@@ -2372,6 +463,12 @@ msgstr ""
 msgid "Progress"
 msgstr ""
 
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:32
+#, fuzzy
+#| msgid "Learning Level"
+msgid "Learning:"
+msgstr "Leerniveau"
+
 #: .\apps\language_learning\templates\language_learning\partials\navbar.html:49
 msgid "Level:"
 msgstr ""
@@ -2382,6 +479,11 @@ msgstr ""
 
 #: .\apps\language_learning\templates\language_learning\partials\navbar.html:57
 msgid "Practice"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:60
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:62
+msgid "Vocabulary"
 msgstr ""
 
 #: .\apps\language_learning\templates\language_learning\partials\navbar.html:65
@@ -2505,6 +607,13 @@ msgstr ""
 msgid "items"
 msgstr ""
 
+#: .\apps\task\models.py:15
+#: .\apps\authentication\templates\authentication\terms_acceptance.html:209
+#, fuzzy
+#| msgid "Username"
+msgid "User"
+msgstr "Gebruikersnaam"
+
 #: .\apps\task\models.py:18
 msgid "Content"
 msgstr ""
@@ -2537,455 +646,6 @@ msgstr ""
 msgid "Items"
 msgstr ""
 
-#: .\apps\teaching\__manifest__.py:9
-msgid "Teaching"
-msgstr ""
-
-#: .\apps\teaching\__manifest__.py:12
-msgid "Book private lessons with professional teachers"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\base_teaching.html:8
-#: .\apps\teaching\templates\teaching\dashboard.html:6
-msgid "Cours Particuliers"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\base_teaching.html:14
-msgid "Réservez des cours particuliers avec des enseignants professionnels"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:16
-msgid "Professeurs"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:21
-#: .\apps\teaching\templates\teaching\dashboard.html:72
-#: .\apps\teaching\templates\teaching\my_lessons.html:5
-msgid "Mes cours"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:37
-msgid "Rechercher un professeur..."
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:44
-#: .\apps\teaching\templates\teaching\components\navbar.html:47
-#: .\apps\teaching\templates\teaching\find_teachers.html:177
-#: .\apps\teaching\templates\teaching\teachers_list.html:177
-#, fuzzy
-#| msgid "Your native language"
-msgid "Toutes langues"
-msgstr "Je moedertaal"
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:48
-msgid "Français"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:49
-msgid "Anglais"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:50
-msgid "Espagnol"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:51
-msgid "Allemand"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:59
-#: .\apps\teaching\templates\teaching\components\navbar.html:62
-#: .\apps\teaching\templates\teaching\find_teachers.html:194
-#: .\apps\teaching\templates\teaching\find_teachers.html:219
-#: .\apps\teaching\templates\teaching\teachers_list.html:194
-#: .\apps\teaching\templates\teaching\teachers_list.html:219
-msgid "Mieux notés"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:63
-#: .\apps\teaching\templates\teaching\find_teachers.html:213
-#: .\apps\teaching\templates\teaching\teachers_list.html:213
-msgid "Prix croissant"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:64
-#: .\apps\teaching\templates\teaching\find_teachers.html:215
-#: .\apps\teaching\templates\teaching\teachers_list.html:215
-msgid "Prix décroissant"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:65
-#: .\apps\teaching\templates\teaching\find_teachers.html:217
-#: .\apps\teaching\templates\teaching\teachers_list.html:217
-msgid "Expérience"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:74
-#: .\apps\teaching\templates\teaching\components\navbar.html:88
-#: .\apps\teaching\templates\teaching\find_teachers.html:5
-#: .\apps\teaching\templates\teaching\find_teachers.html:18
-#: .\apps\teaching\templates\teaching\my_lessons.html:77
-#: .\apps\teaching\templates\teaching\my_teachers.html:118
-msgid "Trouver un professeur"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\components\navbar.html:79
-#: .\apps\teaching\templates\teaching\components\navbar.html:93
-#: .\apps\teaching\templates\teaching\dashboard.html:130
-msgid "Réserver un cours"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:20
-msgid "Prochain cours"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:38
-#: .\apps\teaching\templates\teaching\dashboard.html:97
-#: .\apps\teaching\templates\teaching\my_lessons.html:63
-msgid "Démarrer"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:51
-msgid "Cours prévus"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:55
-msgid "Enseignants"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:59
-#: .\apps\teaching\templates\teaching\my_lessons.html:116
-msgid "En attente"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:63
-#: .\apps\teaching\templates\teaching\my_lessons.html:29
-#: .\apps\authentication\templates\authentication\feedback\feedback_list.html:380
-msgid "Total"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:75
-#: .\apps\teaching\templates\teaching\my_lessons.html:41
-msgid "Voir tout"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:107
-msgid "Aucun cours prévu"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:109
-msgid "Réserver votre premier cours"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:145
-msgid "Trouvez votre enseignant idéal"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:148
-msgid ""
-"Parcourez notre sélection d'enseignants professionnels et réservez votre "
-"cours personnalisé"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:160
-msgid "Parcourir les enseignants"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:163
-msgid "Consultez les profils, évaluations et disponibilités"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:173
-msgid "Réservation rapide"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:176
-msgid "Trouvez rapidement un enseignant disponible maintenant"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:187
-msgid "Paiement sécurisé"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:191
-msgid "Annulation gratuite 24h avant"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:231
-#: .\apps\teaching\templates\teaching\my_lessons.html:134
-msgid "Démarrer ce cours maintenant ?"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:233
-#: .\apps\teaching\templates\teaching\dashboard.html:234
-#: .\apps\teaching\templates\teaching\my_lessons.html:139
-msgid "Cours démarré avec succès !"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:244
-#: .\apps\teaching\templates\teaching\my_lessons.html:154
-msgid "Raison de l\\'annulation (optionnel) :"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:246
-#: .\apps\teaching\templates\teaching\my_lessons.html:156
-msgid "Êtes-vous sûr de vouloir annuler ce cours ?"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\dashboard.html:248
-#: .\apps\teaching\templates\teaching\dashboard.html:249
-#: .\apps\teaching\templates\teaching\my_lessons.html:162
-msgid "Cours annulé avec succès"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:21
-msgid "Découvrez des milliers de professeurs du monde entier"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:27
-#: .\apps\teaching\templates\teaching\teachers_list.html:27
-msgid "professeur"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:27
-#: .\apps\teaching\templates\teaching\teachers_list.html:27
-msgid "disponible"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:70
-#: .\apps\teaching\templates\teaching\teachers_list.html:70
-msgid "cours"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:74
-#: .\apps\teaching\templates\teaching\teachers_list.html:74
-msgid "ans d'expérience"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:81
-#: .\apps\teaching\templates\teaching\teachers_list.html:81
-msgid "Langues enseignées"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:102
-#: .\apps\teaching\templates\teaching\teachers_list.html:102
-msgid "Spécialités"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:122
-#: .\apps\teaching\templates\teaching\teachers_list.html:122
-#, fuzzy
-#| msgid "Public profile"
-msgid "Profil"
-msgstr "Openbaar profiel"
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:127
-#: .\apps\teaching\templates\teaching\my_teachers.html:104
-#: .\apps\teaching\templates\teaching\teachers_list.html:127
-msgid "Réserver"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:139
-#: .\apps\teaching\templates\teaching\teachers_list.html:139
-msgid "Aucun professeur trouvé"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:140
-#: .\apps\teaching\templates\teaching\teachers_list.html:140
-msgid "Essayez de modifier vos critères de recherche"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:146
-#: .\apps\teaching\templates\teaching\teachers_list.html:146
-msgid "Aucun professeur disponible"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\find_teachers.html:147
-#: .\apps\teaching\templates\teaching\teachers_list.html:147
-msgid "Revenez plus tard ou contactez le support"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:17
-msgid "À venir"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:21
-#: .\apps\teaching\templates\teaching\my_lessons.html:117
-msgid "Terminés"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:25
-msgid "Annulés"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:38
-msgid "Mes cours récents"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:73
-msgid "Aucun cours programmé"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:74
-msgid "Réservez votre prochain cours avec un professeur"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:112
-msgid "Tous statuts"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:115
-#, fuzzy
-#| msgid "Confirm password"
-msgid "Confirmés"
-msgstr "Bevestig wachtwoord"
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:148
-msgid "Erreur lors du démarrage du cours"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:168
-msgid "Erreur lors de l\\'annulation"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:180
-msgid "Erreur lors du chargement des détails"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:196
-msgid "Détails du cours"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:202
-msgid "Professeur"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:206
-msgid "Date"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:213
-msgid "Durée"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:217
-msgid "Prix"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:224
-msgid "Langue"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:228
-msgid "Niveau"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:232
-msgid "Sujet"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:233
-msgid "Notes"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:236
-msgid "Fermer"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:258
-msgid "Évaluer ce cours"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:263
-msgid "Note globale"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:269
-msgid "Commentaire (optionnel)"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:270
-msgid "Votre avis sur ce cours..."
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:274
-msgid "Annuler"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:275
-#: .\apps\teaching\templates\teaching\my_lessons.html:343
-msgid "Envoyer"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:319
-msgid "Veuillez sélectionner une note"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:324
-msgid "Envoi..."
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:334
-msgid "Évaluation envoyée avec succès !"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:341
-msgid "Erreur lors de l\\'envoi de l\\'évaluation"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_lessons.html:349
-msgid "Fonctionnalité en développement"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_teachers.html:5
-msgid "Mes professeurs"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_teachers.html:17
-msgid "professeurs"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_teachers.html:21
-msgid "cours au total"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_teachers.html:60
-msgid "cours avec moi"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_teachers.html:61
-msgid "terminés"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_teachers.html:81
-msgid "Prochains cours"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_teachers.html:101
-msgid "Contacter"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_teachers.html:114
-msgid "Aucun professeur pour l'instant"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_teachers.html:115
-msgid "Vous n'avez pas encore de cours avec un professeur"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\my_teachers.html:131
-msgid "Système de messagerie en développement"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\teachers_list.html:5
-#: .\apps\teaching\templates\teaching\teachers_list.html:18
-msgid "Professeurs disponibles"
-msgstr ""
-
-#: .\apps\teaching\templates\teaching\teachers_list.html:21
-msgid "Trouvez le professeur parfait pour vos cours particuliers"
-msgstr ""
-
 #: .\core\templates\admin\core\command_interface.html:4
 #: .\core\templates\admin\core\system_dashboard.html:4
 #: .\core\templates\admin\core\system_info.html:4
@@ -3001,6 +661,10 @@ msgstr ""
 #: .\apps\authentication\enhanced_admin\templates\admin\user_stats_dashboard.html:87
 #: .\apps\authentication\templates\admin\email_campaign_preview.html:8
 msgid "Home"
+msgstr ""
+
+#: .\venv\lib\python3.12\site-packages\django\contrib\messages\apps.py:16
+msgid "Messages"
 msgstr ""
 
 #: .\venv\lib\python3.12\site-packages\django\contrib\sitemaps\apps.py:8
@@ -3641,6 +1305,11 @@ msgstr[1] ""
 msgid "Order"
 msgstr ""
 
+#: .\venv\lib\python3.12\site-packages\django\forms\formsets.py:499
+#: .\apps\authentication\templates\authentication\profile_picture_management.html:28
+msgid "Delete"
+msgstr ""
+
 #: .\venv\lib\python3.12\site-packages\django\forms\models.py:901
 #, python-format
 msgid "Please correct the duplicate data for %(field)s."
@@ -3680,6 +1349,11 @@ msgstr ""
 msgid ""
 "%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
 "may be ambiguous or it may not exist."
+msgstr ""
+
+#: .\venv\lib\python3.12\site-packages\django\forms\widgets.py:527
+#: .\apps\authentication\templates\authentication\feedback\feedback_list.html:458
+msgid "Clear"
 msgstr ""
 
 #: .\venv\lib\python3.12\site-packages\django\forms\widgets.py:528
@@ -4638,6 +2312,10 @@ msgstr ""
 msgid "Email Type"
 msgstr "E-mail"
 
+#: .\apps\authentication\models\email_models.py:27
+msgid "Active"
+msgstr ""
+
 #: .\apps\authentication\models\email_models.py:32
 #: .\apps\authentication\models\email_models.py:104
 msgid "Email Template"
@@ -4648,6 +2326,28 @@ msgstr ""
 #| msgid "Email address"
 msgid "Email Templates"
 msgstr "E-mailadres"
+
+#: .\apps\authentication\models\email_models.py:42
+msgid "French"
+msgstr ""
+
+#: .\apps\authentication\models\email_models.py:43
+msgid "English"
+msgstr ""
+
+#: .\apps\authentication\models\email_models.py:44
+msgid "Spanish"
+msgstr ""
+
+#: .\apps\authentication\models\email_models.py:45
+msgid "Dutch"
+msgstr ""
+
+#: .\apps\authentication\models\email_models.py:49
+#, fuzzy
+#| msgid "Native Language"
+msgid "Language"
+msgstr "Moedertaal"
 
 #: .\apps\authentication\models\email_models.py:50
 #: .\apps\authentication\models\email_models.py:252
@@ -4857,6 +2557,10 @@ msgstr ""
 
 #: .\apps\authentication\templates\admin\email_campaign_preview.html:4
 msgid "Preview Campaign"
+msgstr ""
+
+#: .\apps\authentication\templates\admin\email_campaign_preview.html:12
+msgid "Preview"
 msgstr ""
 
 #: .\apps\authentication\templates\admin\email_campaign_preview.html:17
@@ -5508,6 +3212,10 @@ msgstr ""
 msgid "New Feedback"
 msgstr ""
 
+#: .\apps\authentication\templates\authentication\feedback\feedback_list.html:380
+msgid "Total"
+msgstr ""
+
 #: .\apps\authentication\templates\authentication\feedback\feedback_list.html:396
 msgid "Bugs"
 msgstr ""
@@ -5529,12 +3237,20 @@ msgstr ""
 msgid "All Status"
 msgstr ""
 
+#: .\apps\authentication\templates\authentication\feedback\feedback_list.html:435
+msgid "All Types"
+msgstr ""
+
 #: .\apps\authentication\templates\authentication\feedback\feedback_list.html:444
 msgid "Search"
 msgstr ""
 
 #: .\apps\authentication\templates\authentication\feedback\feedback_list.html:446
 msgid "Search in title and description..."
+msgstr ""
+
+#: .\apps\authentication\templates\authentication\feedback\feedback_list.html:454
+msgid "Filter"
 msgstr ""
 
 #: .\apps\authentication\templates\authentication\feedback\feedback_list.html:561
@@ -5982,6 +3698,17 @@ msgstr ""
 msgid "Password reset for Linguify"
 msgstr ""
 
+#: .\apps\authentication\templates\authentication\profile.html:6
+#: .\apps\authentication\views\views.py:1355
+#, fuzzy
+#| msgid "Public profile"
+msgid "Profile"
+msgstr "Openbaar profiel"
+
+#: .\apps\authentication\templates\authentication\profile.html:33
+msgid "Online"
+msgstr ""
+
 #: .\apps\authentication\templates\authentication\profile.html:43
 msgid "Verified Learner"
 msgstr ""
@@ -6009,12 +3736,22 @@ msgstr "Leerniveau"
 msgid "Target language"
 msgstr "Doeltaal"
 
+#: .\apps\authentication\templates\authentication\profile.html:101
+#, fuzzy
+#| msgid "Public profile"
+msgid "Edit Profile"
+msgstr "Openbaar profiel"
+
 #: .\apps\authentication\templates\authentication\profile.html:105
 msgid "Continue Learning"
 msgstr ""
 
 #: .\apps\authentication\templates\authentication\profile.html:110
 msgid "Follow"
+msgstr ""
+
+#: .\apps\authentication\templates\authentication\profile.html:114
+msgid "Message"
 msgstr ""
 
 #: .\apps\authentication\templates\authentication\profile.html:133
@@ -6099,6 +3836,10 @@ msgstr ""
 
 #: .\apps\authentication\templates\authentication\profile.html:366
 msgid "Reached B1"
+msgstr ""
+
+#: .\apps\authentication\templates\authentication\profile.html:375
+msgid "Find Partners"
 msgstr ""
 
 #: .\apps\authentication\templates\authentication\profile.html:379
@@ -6900,6 +4641,269 @@ msgstr "Huidige profielfoto"
 #| msgid "Change profile picture"
 msgid "Failed to migrate profile picture"
 msgstr "Profielfoto wijzigen"
+
+#, fuzzy
+#~| msgid "Personal Information"
+#~ msgid "Communication"
+#~ msgstr "Persoonlijke informatie"
+
+#, fuzzy
+#~| msgid "Select the language to learn"
+#~ msgid ""
+#~ "Connect with other learners, find language partners and join study groups."
+#~ msgstr "Selecteer de taal om te leren"
+
+#, fuzzy
+#~| msgid "Native Language"
+#~ msgid "All Languages"
+#~ msgstr "Moedertaal"
+
+#, fuzzy
+#~| msgid "Beginner (A1-A2)"
+#~ msgid "Beginner"
+#~ msgstr "Beginner (A1-A2)"
+
+#, fuzzy
+#~| msgid "Intermediate (B1-B2)"
+#~ msgid "Intermediate"
+#~ msgstr "Gemiddeld (B1-B2)"
+
+#, fuzzy
+#~| msgid "Advanced (C1-C2)"
+#~ msgid "Advanced"
+#~ msgstr "Gevorderd (C1-C2)"
+
+#, fuzzy
+#~| msgid "Grammar lessons"
+#~ msgid "Grammar"
+#~ msgstr "Grammaticalessen"
+
+#~ msgid "Native Language"
+#~ msgstr "Moedertaal"
+
+#, fuzzy
+#~| msgid "Target Language"
+#~ msgid "Learning Language"
+#~ msgstr "Doeltaal"
+
+#, fuzzy
+#~| msgid "Public profile"
+#~ msgid "View Profile"
+#~ msgstr "Openbaar profiel"
+
+#, fuzzy
+#~| msgid "Back to home"
+#~ msgid "Back to Community"
+#~ msgstr "Terug naar home"
+
+#, fuzzy
+#~| msgid "Share my progress"
+#~ msgid "shared a post"
+#~ msgstr "Mijn voortgang delen"
+
+#, fuzzy
+#~| msgid "Share my progress"
+#~ msgid "Share Your Progress"
+#~ msgstr "Mijn voortgang delen"
+
+#, fuzzy
+#~| msgid "Achievement notifications"
+#~ msgid "Achievements"
+#~ msgstr "Prestatiemeldingen"
+
+#, fuzzy
+#~| msgid "Speaking practice"
+#~ msgid "Tips and practice"
+#~ msgstr "Spreekoefeningen"
+
+#, fuzzy
+#~| msgid "Grammar lessons"
+#~ msgid "Grammar discussions"
+#~ msgstr "Grammaticalessen"
+
+#, fuzzy
+#~| msgid "Share my progress"
+#~ msgid "Share Your Learning Progress"
+#~ msgstr "Mijn voortgang delen"
+
+#, fuzzy
+#~| msgid "Select the language to learn"
+#~ msgid "Select language (optional)"
+#~ msgstr "Selecteer de taal om te leren"
+
+#, fuzzy
+#~| msgid "Share my progress"
+#~ msgid "#progress"
+#~ msgstr "Mijn voortgang delen"
+
+#, fuzzy
+#~| msgid "Language you are currently learning"
+#~ msgid "None of your friends are currently online."
+#~ msgstr "Taal die je momenteel leert"
+
+#, fuzzy
+#~| msgid "I accept the"
+#~ msgid "Accepted"
+#~ msgstr "Ik accepteer de"
+
+#, fuzzy
+#~| msgid "Remember me"
+#~ msgid "members"
+#~ msgstr "Onthoud mij"
+
+#, fuzzy
+#~| msgid "Language you want to learn"
+#~ msgid "Language switched to"
+#~ msgstr "Taal die je wilt leren"
+
+#, fuzzy
+#~| msgid "Back to home"
+#~ msgid "Back to Chat"
+#~ msgstr "Terug naar home"
+
+#, fuzzy
+#~| msgid "Personal Information"
+#~ msgid "General Information"
+#~ msgstr "Persoonlijke informatie"
+
+#, fuzzy
+#~| msgid "Remember me"
+#~ msgid "Remove Member"
+#~ msgstr "Onthoud mij"
+
+#, fuzzy
+#~| msgid "Create my account"
+#~ msgid "Create New Group"
+#~ msgstr "Maak mijn account aan"
+
+#, fuzzy
+#~| msgid "Enter your password"
+#~ msgid "Enter Group"
+#~ msgstr "Voer je wachtwoord in"
+
+#, fuzzy
+#~| msgid "Create my account"
+#~ msgid "Create Group"
+#~ msgstr "Maak mijn account aan"
+
+#, fuzzy
+#~| msgid "Target language"
+#~ msgid "Select language"
+#~ msgstr "Doeltaal"
+
+#~ msgid "Beginner (A1-A2)"
+#~ msgstr "Beginner (A1-A2)"
+
+#~ msgid "Intermediate (B1-B2)"
+#~ msgstr "Gemiddeld (B1-B2)"
+
+#~ msgid "Advanced (C1-C2)"
+#~ msgstr "Gevorderd (C1-C2)"
+
+#, fuzzy
+#~| msgid "Speaking practice"
+#~ msgid "Conversation Practice"
+#~ msgstr "Spreekoefeningen"
+
+#, fuzzy
+#~| msgid "Speaking practice"
+#~ msgid "Writing Practice"
+#~ msgstr "Spreekoefeningen"
+
+#, fuzzy
+#~| msgid "Native Language"
+#~ msgid "Business Language"
+#~ msgstr "Moedertaal"
+
+#, fuzzy
+#~| msgid "Create my account"
+#~ msgid "Create Post"
+#~ msgstr "Maak mijn account aan"
+
+#, fuzzy
+#~| msgid "Achievement notifications"
+#~ msgid "Achievement"
+#~ msgstr "Prestatiemeldingen"
+
+#, fuzzy
+#~| msgid "Learning Level"
+#~ msgid "Learning Tip"
+#~ msgstr "Leerniveau"
+
+#, fuzzy
+#~| msgid "Tell us about yourself..."
+#~ msgid "Tell us what you're looking for:"
+#~ msgstr "Vertel iets over jezelf..."
+
+#, fuzzy
+#~| msgid "Speaking practice"
+#~ msgid "I want to practice:"
+#~ msgstr "Spreekoefeningen"
+
+#, fuzzy
+#~| msgid "Checking availability..."
+#~ msgid "My availability:"
+#~ msgstr "Beschikbaarheid controleren..."
+
+#, fuzzy
+#~| msgid "Grammar lessons"
+#~ msgid "Grammar Help"
+#~ msgstr "Grammaticalessen"
+
+#, fuzzy
+#~| msgid "Select the language to learn"
+#~ msgid "Please select a language to practice"
+#~ msgstr "Selecteer de taal om te leren"
+
+#, fuzzy
+#~| msgid "Language you are currently learning"
+#~ msgid "Currently Learning"
+#~ msgstr "Taal die je momenteel leert"
+
+#, fuzzy
+#~| msgid "Error during verification"
+#~ msgid "Error starting conversation"
+#~ msgstr "Fout tijdens verificatie"
+
+#, fuzzy
+#~| msgid "Personal Information"
+#~ msgid "Education"
+#~ msgstr "Persoonlijke informatie"
+
+#, fuzzy
+#~| msgid "Create an account"
+#~ msgid "Create new document"
+#~ msgstr "Account aanmaken"
+
+#, fuzzy
+#~| msgid "Personal Information"
+#~ msgid "Pronunciation"
+#~ msgstr "Persoonlijke informatie"
+
+#, fuzzy
+#~| msgid "Username cannot be empty"
+#~ msgid "Message content cannot be empty."
+#~ msgstr "Gebruikersnaam kan niet leeg zijn"
+
+#, fuzzy
+#~| msgid "This email is already registered"
+#~ msgid "This conversation is already completed."
+#~ msgstr "Dit e-mailadres is al geregistreerd"
+
+#, fuzzy
+#~| msgid "Your native language"
+#~ msgid "Toutes langues"
+#~ msgstr "Je moedertaal"
+
+#, fuzzy
+#~| msgid "Public profile"
+#~ msgid "Profil"
+#~ msgstr "Openbaar profiel"
+
+#, fuzzy
+#~| msgid "Confirm password"
+#~ msgid "Confirmés"
+#~ msgstr "Bevestig wachtwoord"
 
 #, fuzzy
 #~| msgid "Share my progress"

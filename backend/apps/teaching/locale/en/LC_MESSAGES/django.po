@@ -1,0 +1,473 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-30 20:31+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: .\apps\teaching\__manifest__.py:9
+msgid "Teaching"
+msgstr ""
+
+#: .\apps\teaching\__manifest__.py:12
+msgid "Book private lessons with professional teachers"
+msgstr ""
+
+#: .\apps\teaching\__manifest__.py:24
+msgid "Education"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\base_teaching.html:8
+#: .\apps\teaching\templates\teaching\dashboard.html:6
+msgid "Cours Particuliers"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\base_teaching.html:14
+msgid "Réservez des cours particuliers avec des enseignants professionnels"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:11
+msgid "Accueil"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:16
+msgid "Professeurs"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:21
+#: .\apps\teaching\templates\teaching\dashboard.html:72
+#: .\apps\teaching\templates\teaching\my_lessons.html:5
+msgid "Mes cours"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:26
+#: .\apps\teaching\templates\teaching\components\navbar.html:28
+msgid "Actualiser"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:37
+msgid "Rechercher un professeur..."
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:44
+#: .\apps\teaching\templates\teaching\components\navbar.html:47
+#: .\apps\teaching\templates\teaching\find_teachers.html:177
+#: .\apps\teaching\templates\teaching\teachers_list.html:177
+msgid "Toutes langues"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:48
+msgid "Français"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:49
+msgid "Anglais"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:50
+msgid "Espagnol"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:51
+msgid "Allemand"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:59
+#: .\apps\teaching\templates\teaching\components\navbar.html:62
+#: .\apps\teaching\templates\teaching\find_teachers.html:194
+#: .\apps\teaching\templates\teaching\find_teachers.html:219
+#: .\apps\teaching\templates\teaching\teachers_list.html:194
+#: .\apps\teaching\templates\teaching\teachers_list.html:219
+msgid "Mieux notés"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:63
+#: .\apps\teaching\templates\teaching\find_teachers.html:213
+#: .\apps\teaching\templates\teaching\teachers_list.html:213
+msgid "Prix croissant"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:64
+#: .\apps\teaching\templates\teaching\find_teachers.html:215
+#: .\apps\teaching\templates\teaching\teachers_list.html:215
+msgid "Prix décroissant"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:65
+#: .\apps\teaching\templates\teaching\find_teachers.html:217
+#: .\apps\teaching\templates\teaching\teachers_list.html:217
+msgid "Expérience"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:74
+#: .\apps\teaching\templates\teaching\components\navbar.html:88
+#: .\apps\teaching\templates\teaching\find_teachers.html:5
+#: .\apps\teaching\templates\teaching\find_teachers.html:18
+#: .\apps\teaching\templates\teaching\my_lessons.html:77
+#: .\apps\teaching\templates\teaching\my_teachers.html:118
+msgid "Trouver un professeur"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\components\navbar.html:79
+#: .\apps\teaching\templates\teaching\components\navbar.html:93
+#: .\apps\teaching\templates\teaching\dashboard.html:130
+msgid "Réserver un cours"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:20
+msgid "Prochain cours"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:38
+#: .\apps\teaching\templates\teaching\dashboard.html:97
+#: .\apps\teaching\templates\teaching\my_lessons.html:63
+msgid "Démarrer"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:51
+msgid "Cours prévus"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:55
+msgid "Enseignants"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:59
+#: .\apps\teaching\templates\teaching\my_lessons.html:116
+msgid "En attente"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:63
+#: .\apps\teaching\templates\teaching\my_lessons.html:29
+msgid "Total"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:75
+#: .\apps\teaching\templates\teaching\my_lessons.html:41
+msgid "Voir tout"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:107
+msgid "Aucun cours prévu"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:109
+msgid "Réserver votre premier cours"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:145
+msgid "Trouvez votre enseignant idéal"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:148
+msgid ""
+"Parcourez notre sélection d'enseignants professionnels et réservez votre "
+"cours personnalisé"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:160
+msgid "Parcourir les enseignants"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:163
+msgid "Consultez les profils, évaluations et disponibilités"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:173
+msgid "Réservation rapide"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:176
+msgid "Trouvez rapidement un enseignant disponible maintenant"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:187
+msgid "Paiement sécurisé"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:191
+msgid "Annulation gratuite 24h avant"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:231
+#: .\apps\teaching\templates\teaching\my_lessons.html:134
+msgid "Démarrer ce cours maintenant ?"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:233
+#: .\apps\teaching\templates\teaching\dashboard.html:234
+#: .\apps\teaching\templates\teaching\my_lessons.html:139
+msgid "Cours démarré avec succès !"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:244
+#: .\apps\teaching\templates\teaching\my_lessons.html:154
+msgid "Raison de l\\'annulation (optionnel) :"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:246
+#: .\apps\teaching\templates\teaching\my_lessons.html:156
+msgid "Êtes-vous sûr de vouloir annuler ce cours ?"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\dashboard.html:248
+#: .\apps\teaching\templates\teaching\dashboard.html:249
+#: .\apps\teaching\templates\teaching\my_lessons.html:162
+msgid "Cours annulé avec succès"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:21
+msgid "Découvrez des milliers de professeurs du monde entier"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:27
+#: .\apps\teaching\templates\teaching\teachers_list.html:27
+msgid "professeur"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:27
+#: .\apps\teaching\templates\teaching\teachers_list.html:27
+msgid "disponible"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:70
+#: .\apps\teaching\templates\teaching\teachers_list.html:70
+msgid "cours"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:74
+#: .\apps\teaching\templates\teaching\teachers_list.html:74
+msgid "ans d'expérience"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:81
+#: .\apps\teaching\templates\teaching\teachers_list.html:81
+msgid "Langues enseignées"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:102
+#: .\apps\teaching\templates\teaching\teachers_list.html:102
+msgid "Spécialités"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:122
+#: .\apps\teaching\templates\teaching\teachers_list.html:122
+msgid "Profil"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:127
+#: .\apps\teaching\templates\teaching\my_teachers.html:104
+#: .\apps\teaching\templates\teaching\teachers_list.html:127
+msgid "Réserver"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:139
+#: .\apps\teaching\templates\teaching\teachers_list.html:139
+msgid "Aucun professeur trouvé"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:140
+#: .\apps\teaching\templates\teaching\teachers_list.html:140
+msgid "Essayez de modifier vos critères de recherche"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:146
+#: .\apps\teaching\templates\teaching\teachers_list.html:146
+msgid "Aucun professeur disponible"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\find_teachers.html:147
+#: .\apps\teaching\templates\teaching\teachers_list.html:147
+msgid "Revenez plus tard ou contactez le support"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:17
+msgid "À venir"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:21
+#: .\apps\teaching\templates\teaching\my_lessons.html:117
+msgid "Terminés"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:25
+msgid "Annulés"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:38
+msgid "Mes cours récents"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:73
+msgid "Aucun cours programmé"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:74
+msgid "Réservez votre prochain cours avec un professeur"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:112
+msgid "Tous statuts"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:115
+msgid "Confirmés"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:148
+msgid "Erreur lors du démarrage du cours"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:168
+msgid "Erreur lors de l\\'annulation"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:180
+msgid "Erreur lors du chargement des détails"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:196
+msgid "Détails du cours"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:202
+msgid "Professeur"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:206
+msgid "Date"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:213
+msgid "Durée"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:217
+msgid "Prix"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:224
+msgid "Langue"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:228
+msgid "Niveau"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:232
+msgid "Sujet"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:233
+msgid "Notes"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:236
+msgid "Fermer"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:258
+msgid "Évaluer ce cours"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:263
+msgid "Note globale"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:269
+msgid "Commentaire (optionnel)"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:270
+msgid "Votre avis sur ce cours..."
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:274
+msgid "Annuler"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:275
+#: .\apps\teaching\templates\teaching\my_lessons.html:343
+msgid "Envoyer"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:319
+msgid "Veuillez sélectionner une note"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:324
+msgid "Envoi..."
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:334
+msgid "Évaluation envoyée avec succès !"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:341
+msgid "Erreur lors de l\\'envoi de l\\'évaluation"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_lessons.html:349
+msgid "Fonctionnalité en développement"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_teachers.html:5
+msgid "Mes professeurs"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_teachers.html:17
+msgid "professeurs"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_teachers.html:21
+msgid "cours au total"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_teachers.html:60
+msgid "cours avec moi"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_teachers.html:61
+msgid "terminés"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_teachers.html:81
+msgid "Prochains cours"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_teachers.html:101
+msgid "Contacter"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_teachers.html:114
+msgid "Aucun professeur pour l'instant"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_teachers.html:115
+msgid "Vous n'avez pas encore de cours avec un professeur"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\my_teachers.html:131
+msgid "Système de messagerie en développement"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\teachers_list.html:5
+#: .\apps\teaching\templates\teaching\teachers_list.html:18
+msgid "Professeurs disponibles"
+msgstr ""
+
+#: .\apps\teaching\templates\teaching\teachers_list.html:21
+msgid "Trouvez le professeur parfait pour vos cours particuliers"
+msgstr ""
