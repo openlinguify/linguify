@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-29 20:30+0200\n"
+"POT-Creation-Date: 2025-09-30 19:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,9 +18,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: apps.py
+#: .\apps\todo\__manifest__.py:12 .\apps\todo\apps.py:8
 msgid "To-do"
 msgstr "Taken"
+
+#: .\apps\todo\__manifest__.py:15
+msgid "Organize your tasks and ideas like in Notion"
+msgstr ""
+
+#: .\apps\todo\__manifest__.py:89
+msgid "Productivity"
+msgstr ""
 
 #: .\apps\todo\templates\components\todo_navbar.html:13
 msgid "New Task"

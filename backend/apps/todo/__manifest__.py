@@ -6,12 +6,13 @@ Advanced task management and productivity workspace like Notion
 Status: Ready for Production
 This module provides comprehensive task management, note-taking, and productivity features
 """
+from django.utils.translation import gettext_lazy as _
 
 __manifest__ = {
-    'name': 'To-do',
+    'name': _('To-do'),
     'version': '1.0.0',
     'category': 'Productivity',
-    'summary': 'Organisez vos tâches et idées comme dans Notion',
+    'summary': _('Organize your tasks and ideas like in Notion'),
     'description': '''
 Todo & Productivity Module for Open Linguify
 ==========================================
@@ -85,7 +86,7 @@ Use Cases:
         'menu_order': 3,
         'sidebar_menu': True,
         'display_category': 'productivity',
-        'category_label': 'Productivité',
+        'category_label': _('Productivity'),
         'category_icon': 'bi-clipboard-check',
     },
     

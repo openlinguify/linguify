@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import gettext_lazy as _
+
 __manifest__ = {
-    'name': 'Notes',
+    'name': _('Notes'),
     'version': '1.0.0',
     'category': 'Productivity',
-    'summary': 'Prenez des notes personnalisées et organisez votre vocabulaire de manière efficace.',
+    'summary': _('Prenez des notes personnalisées et organisez votre vocabulaire de manière efficace.'),
     'description': '''
 Notes Module for Linguify
 ==========================

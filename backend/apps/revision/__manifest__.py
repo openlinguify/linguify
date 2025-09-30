@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import gettext_lazy as _
+
 __manifest__ = {
-    'name': 'Révision',
+    'name': _('Revision'),
     'version': '1.0.0',
     'category': 'Productivity',
-    'summary': 'Mémorisez durablement avec des flashcards intelligentes et la répétition espacée.',
+    'summary': _('Memorize effectively with smart flashcards and spaced repetition.'),
     'description': '''
-Module de Révision pour Linguify
-=================================
+Revision Module for Linguify
+=============================
 
-Système de révision avec répétition espacée et flashcards.
+Revision system with spaced repetition and flashcards.
 
-Fonctionnalités:
-- Algorithmes de répétition espacée pour une mémorisation optimale
-- Création et gestion de decks de flashcards
-- Planification des révisions basée sur la force de mémorisation
-- Suivi des progrès et statistiques
-- Multiples modes de révision (flashcards, apprentissage, association, révision rapide)
-- Intégration avec le vocabulaire des modules d'apprentissage
+Features:
+- Spaced repetition algorithms for optimal memorization
+- Creation and management of flashcard decks
+- Review scheduling based on memory strength
+- Progress tracking and statistics
+- Multiple revision modes (flashcards, learning, matching, quick review)
+- Integration with vocabulary from learning modules
  
 
 Usage:
@@ -41,10 +43,10 @@ Usage:
         'icon': 'bi-arrow-repeat',
         'static_icon': '/static/revision/description/icon.png',
         'menu_order': 2,
-        'display_name': 'Révision',
-        'description': 'Révisez vos connaissances avec des flashcards',
+        'display_name': _('Revision'),
+        'description': _('Review your knowledge with flashcards'),
         'display_category': 'productivity',
-        'category_label': 'Productivité',
+        'category_label': _('Productivity'),
         'category_icon': 'bi-journal-text',
     },
     'api_endpoints': {
@@ -69,24 +71,24 @@ Usage:
     },
     'settings_config': {
         'component_name': 'RevisionSettings',
-        'display_name': 'Configuration Révision',
-        'description': 'Paramètres spécifiques à Révision à développer...',
+        'display_name': _('Revision Settings'),
+        'description': _('Specific Revision settings to be developed...'),
         'icon': 'bi-gear-fill',
         'categories': [
             {
                 'name': 'learning',
-                'label': 'Apprentissage',
-                'description': 'Paramètres d\'apprentissage et révision'
+                'label': _('Learning'),
+                'description': _('Learning and revision settings')
             },
             {
                 'name': 'sessions', 
-                'label': 'Sessions',
-                'description': 'Configuration des sessions de révision'
+                'label': _('Sessions'),
+                'description': _('Revision session configuration')
             },
             {
                 'name': 'notifications',
-                'label': 'Notifications',
-                'description': 'Rappels et notifications'
+                'label': _('Notifications'),
+                'description': _('Reminders and notifications')
             }
         ]
     }

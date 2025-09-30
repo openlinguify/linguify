@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify SaaS Web\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-29 20:30+0200\n"
+"POT-Creation-Date: 2025-09-30 19:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: Dutch\n"
@@ -139,8 +139,8 @@ msgstr "Home"
 msgid "Store"
 msgstr "Winkel"
 
-#: .\saas_web\templates\saas_web\base.html:428
-#: .\saas_web\templates\saas_web\base.html:430
+#: .\saas_web\templates\saas_web\base.html:427
+#: .\saas_web\templates\saas_web\base.html:429
 msgid "An error occurred. Please try again."
 msgstr "Er is een fout opgetreden. Probeer het opnieuw."
 
