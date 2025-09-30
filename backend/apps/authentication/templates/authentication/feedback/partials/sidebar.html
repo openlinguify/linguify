@@ -1,0 +1,105 @@
+{% load i18n %}
+<!-- Sidebar -->
+<div id="feedbackSidebar" class="sidebar-linguify show">
+    <div class="sidebar-content-enhanced">
+        <!-- Sidebar Header -->
+        <div class="sidebar-modern-header">
+            <div class="header-title-group">
+                <div class="sidebar-icon-primary">
+                    <i class="bi bi-bug-fill"></i>
+                </div>
+                <div>
+                    <h2 class="sidebar-title">{% trans "Bugs et commentaires" %}</h2>
+                    <p class="sidebar-subtitle">{% trans "Gérez vos retours" %}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="filter-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="bi bi-bar-chart"></i>
+                    {% trans "Statistiques" %}
+                </h3>
+            </div>
+            <div class="section-content">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-accent-100 flex items-center justify-center">
+                                <i class="bi bi-folder text-linguify-accent text-lg"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-linguify-gray">{% trans "Total" %}</div>
+                                <div class="text-xl font-bold text-gray-900">{{ stats.total }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                                <i class="bi bi-inbox text-linguify-primary text-lg"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-linguify-gray">{% trans "Nouveau" %}</div>
+                                <div class="text-xl font-bold text-gray-900">{{ stats.new }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-warning-100 flex items-center justify-center">
+                                <i class="bi bi-hourglass-split text-linguify-warning text-lg"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-linguify-gray">{% trans "En cours" %}</div>
+                                <div class="text-xl font-bold text-gray-900">{{ stats.in_progress }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                                <i class="bi bi-check-circle text-linguify-success text-lg"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-linguify-gray">{% trans "Résolu" %}</div>
+                                <div class="text-xl font-bold text-gray-900">{{ stats.resolved }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="filter-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="bi bi-lightning-charge"></i>
+                    {% trans "Actions rapides" %}
+                </h3>
+            </div>
+            <div class="section-content">
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <a href="{% url 'authentication:feedback_create' %}" class="btn-linguify w-full justify-center">
+                        <i class="bi bi-plus-circle mr-2"></i>
+                        {% trans "Soumettre un feedback" %}
+                    </a>
+                    <a href="{% url 'authentication:feedback_bug_report' %}" class="btn-linguify-outline w-full justify-center">
+                        <i class="bi bi-bug mr-2"></i>
+                        {% trans "Signaler un bug" %}
+                    </a>
+                    <a href="{% url 'authentication:feedback_feature_request' %}" class="btn-linguify-outline w-full justify-center">
+                        <i class="bi bi-lightbulb mr-2"></i>
+                        {% trans "Demander une fonctionnalité" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
