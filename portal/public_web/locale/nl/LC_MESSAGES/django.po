@@ -1,0 +1,8 @@
+# Translation file for public_web
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: nl\n"
+
+msgid "Open source alternative to Quizlet"
+msgstr "Open source alternatief voor Quizlet"

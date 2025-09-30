@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-29 20:30+0200\n"
+"POT-Creation-Date: 2025-09-30 05:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,944 +17,945 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: .\apps\todo\templates\components\todo_navbar.html:13
+
+#: .\backend\apps\todo\templates\components\todo_navbar.html:13
 msgid "New Task"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:20
-#: .\apps\todo\templates\todo\todo_settings.html:28
+#: .\backend\apps\todo\templates\components\todo_navbar.html:20
+#: .\backend\apps\todo\templates\todo\todo_settings.html:28
 msgid "Kanban"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:25
-#: .\apps\todo\templates\todo\todo_settings.html:27
-#: .\apps\todo\templates\todo\todo_settings.html:37
+#: .\backend\apps\todo\templates\components\todo_navbar.html:25
+#: .\backend\apps\todo\templates\todo\todo_settings.html:27
+#: .\backend\apps\todo\templates\todo\todo_settings.html:37
 msgid "List"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:30
-#: .\apps\todo\templates\todo\todo_settings.html:29
+#: .\backend\apps\todo\templates\components\todo_navbar.html:30
+#: .\backend\apps\todo\templates\todo\todo_settings.html:29
 msgid "Activity"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:37
+#: .\backend\apps\todo\templates\components\todo_navbar.html:37
 msgid "Refresh tasks"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:61
+#: .\backend\apps\todo\templates\components\todo_navbar.html:61
 msgid "Period:"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:69
+#: .\backend\apps\todo\templates\components\todo_navbar.html:69
 msgid "7 days"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:70
+#: .\backend\apps\todo\templates\components\todo_navbar.html:70
 msgid "30 days"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:71
+#: .\backend\apps\todo\templates\components\todo_navbar.html:71
 msgid "3 months"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:80
+#: .\backend\apps\todo\templates\components\todo_navbar.html:80
 msgid "Select All"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:86
+#: .\backend\apps\todo\templates\components\todo_navbar.html:86
 msgid "Search tasks..."
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:93
-#: .\apps\todo\templates\components\todo_navbar.html:96
+#: .\backend\apps\todo\templates\components\todo_navbar.html:93
+#: .\backend\apps\todo\templates\components\todo_navbar.html:96
 msgid "All Projects"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:108
-#: .\apps\todo\templates\components\todo_navbar.html:111
+#: .\backend\apps\todo\templates\components\todo_navbar.html:108
+#: .\backend\apps\todo\templates\components\todo_navbar.html:111
 msgid "All Stages"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:122
-#: .\apps\todo\templates\components\todo_navbar.html:125
+#: .\backend\apps\todo\templates\components\todo_navbar.html:122
+#: .\backend\apps\todo\templates\components\todo_navbar.html:125
 msgid "Recent"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:126
+#: .\backend\apps\todo\templates\components\todo_navbar.html:126
 msgid "A-Z"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:127
-#: .\apps\todo\templates\todo\views\form.html:102
-#: .\apps\todo\templates\todo\views\list.html:28
-#: .\apps\todo\templates\todo\views\list.html:309
+#: .\backend\apps\todo\templates\components\todo_navbar.html:127
+#: .\backend\apps\todo\templates\todo\views\form.html:102
+#: .\backend\apps\todo\templates\todo\views\list.html:28
+#: .\backend\apps\todo\templates\todo\views\list.html:309
 msgid "Priority"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:128
-#: .\apps\todo\templates\todo\views\form.html:140
-#: .\apps\todo\templates\todo\views\kanban.html:333
-#: .\apps\todo\templates\todo\views\list.html:81
-#: .\apps\todo\templates\todo\views\list.html:327
+#: .\backend\apps\todo\templates\components\todo_navbar.html:128
+#: .\backend\apps\todo\templates\todo\views\form.html:140
+#: .\backend\apps\todo\templates\todo\views\kanban.html:333
+#: .\backend\apps\todo\templates\todo\views\list.html:81
+#: .\backend\apps\todo\templates\todo\views\list.html:327
 msgid "Due Date"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:138
-#: .\apps\todo\templates\components\todo_navbar.html:140
+#: .\backend\apps\todo\templates\components\todo_navbar.html:138
+#: .\backend\apps\todo\templates\components\todo_navbar.html:140
 msgid "Bulk Actions"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:144
+#: .\backend\apps\todo\templates\components\todo_navbar.html:144
 msgid "Configure Todo Settings"
 msgstr ""
 
-#: .\apps\todo\templates\components\todo_navbar.html:146
+#: .\backend\apps\todo\templates\components\todo_navbar.html:146
 msgid "Configure"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:22
+#: .\backend\apps\todo\templates\todo\main.html:22
 msgid "No tasks yet"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:23
+#: .\backend\apps\todo\templates\todo\main.html:23
 msgid "Create your first task to start organizing your work"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:29
+#: .\backend\apps\todo\templates\todo\main.html:29
 msgid "Create task"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:37
-#: .\apps\todo\templates\todo\partials\activity_timeline.html:51
+#: .\backend\apps\todo\templates\todo\main.html:37
+#: .\backend\apps\todo\templates\todo\partials\activity_timeline.html:51
 msgid "Load more"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:58
+#: .\backend\apps\todo\templates\todo\main.html:58
 msgid "Your productivity hub awaits"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:60
+#: .\backend\apps\todo\templates\todo\main.html:60
 msgid ""
 "Organize your tasks, track your progress, and achieve your goals with our "
 "intuitive todo system"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:69
+#: .\backend\apps\todo\templates\todo\main.html:69
 msgid "Create your first task"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:73
+#: .\backend\apps\todo\templates\todo\main.html:73
 msgid "Try Kanban view"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:81
+#: .\backend\apps\todo\templates\todo\main.html:81
 msgid "Smart Lists"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:82
+#: .\backend\apps\todo\templates\todo\main.html:82
 msgid "Organize tasks by projects, priorities, and custom stages"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:86
+#: .\backend\apps\todo\templates\todo\main.html:86
 msgid "Kanban Board"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:87
+#: .\backend\apps\todo\templates\todo\main.html:87
 msgid "Visualize your workflow with customizable boards"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:91
+#: .\backend\apps\todo\templates\todo\main.html:91
 msgid "Progress Tracking"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:92
+#: .\backend\apps\todo\templates\todo\main.html:92
 msgid "Monitor your productivity with detailed analytics"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:108
+#: .\backend\apps\todo\templates\todo\main.html:108
 msgid "Task name"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:109
-#: .\apps\todo\templates\todo\views\form.html:73
-#: .\apps\todo\templates\todo\views\kanban.html:324
-#: .\apps\todo\templates\todo\views\list.html:68
-#: .\apps\todo\templates\todo\views\list.html:318
+#: .\backend\apps\todo\templates\todo\main.html:109
+#: .\backend\apps\todo\templates\todo\views\form.html:73
+#: .\backend\apps\todo\templates\todo\views\kanban.html:324
+#: .\backend\apps\todo\templates\todo\views\list.html:68
+#: .\backend\apps\todo\templates\todo\views\list.html:318
 msgid "Project"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:117
+#: .\backend\apps\todo\templates\todo\main.html:117
 msgid "To Do"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:125
+#: .\backend\apps\todo\templates\todo\main.html:125
 msgid "Edit task"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:128
+#: .\backend\apps\todo\templates\todo\main.html:128
 msgid "Mark as done"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:131
+#: .\backend\apps\todo\templates\todo\main.html:131
 msgid "Delete task"
 msgstr ""
 
-#: .\apps\todo\templates\todo\main.html:310
+#: .\backend\apps\todo\templates\todo\main.html:310
 msgid "Back to Dashboard"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:32
-#: .\apps\todo\templates\todo\modals\import_modal.html:219
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:32
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:219
 msgid "Import Tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:35
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:35
 msgid "Upload CSV or JSON files to import your tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:43
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:43
 msgid "Close modal"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:54
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:54
 msgid "Import Instructions"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:56
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:56
 msgid "Supported file formats:"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:58
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:58
 msgid "Comma-separated values with headers"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:59
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:59
 msgid "Array of task objects or exported activity data"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:62
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:62
 msgid ""
 "Required fields: title. Optional: description, priority, state, project, "
 "stage, due_date"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:87
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:87
 msgid "Click to upload"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:88
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:88
 msgid "or drag and drop"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:115
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:115
 msgid "Import Options"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:123
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:123
 msgid "Skip duplicate tasks (based on title)"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:131
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:131
 msgid "Create missing projects automatically"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:139
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:139
 msgid "Create missing stages automatically"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:150
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:150
 msgid "Importing tasks..."
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:165
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:165
 msgid "Import Complete"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:176
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:176
 msgid "Import Warnings"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:199
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:199
 msgid "Download Sample CSV"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:209
-#: .\apps\todo\templates\todo\partials\kanban_column.html:30
-#: .\apps\todo\templates\todo\views\kanban.html:135
-#: .\apps\todo\templates\todo\views\kanban.html:285
-#: .\apps\todo\templates\todo\views\kanban.html:339
-#: .\apps\todo\templates\todo\views\list.html:338
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:209
+#: .\backend\apps\todo\templates\todo\partials\kanban_column.html:30
+#: .\backend\apps\todo\templates\todo\views\kanban.html:135
+#: .\backend\apps\todo\templates\todo\views\kanban.html:285
+#: .\backend\apps\todo\templates\todo\views\kanban.html:339
+#: .\backend\apps\todo\templates\todo\views\list.html:338
 msgid "Cancel"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:228
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:228
 msgid "Done"
 msgstr ""
 
-#: .\apps\todo\templates\todo\modals\import_modal.html:269
+#: .\backend\apps\todo\templates\todo\modals\import_modal.html:269
 msgid "Please select a file to import"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_stats.html:22
+#: .\backend\apps\todo\templates\todo\partials\activity_stats.html:22
 msgid "yesterday"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_stats.html:29
-#: .\apps\todo\templates\todo\views\activity.html:37
+#: .\backend\apps\todo\templates\todo\partials\activity_stats.html:29
+#: .\backend\apps\todo\templates\todo\views\activity.html:37
 msgid "Created Today"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_stats.html:49
+#: .\backend\apps\todo\templates\todo\partials\activity_stats.html:49
 msgid "completion rate"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_stats.html:56
-#: .\apps\todo\templates\todo\views\activity.html:62
+#: .\backend\apps\todo\templates\todo\partials\activity_stats.html:56
+#: .\backend\apps\todo\templates\todo\views\activity.html:62
 msgid "Completed Today"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_stats.html:76
+#: .\backend\apps\todo\templates\todo\partials\activity_stats.html:76
 msgid "this week"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_stats.html:83
-#: .\apps\todo\templates\todo\views\activity.html:87
+#: .\backend\apps\todo\templates\todo\partials\activity_stats.html:83
+#: .\backend\apps\todo\templates\todo\views\activity.html:87
 msgid "Created This Week"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_stats.html:103
+#: .\backend\apps\todo\templates\todo\partials\activity_stats.html:103
 msgid "productivity"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_stats.html:110
-#: .\apps\todo\templates\todo\views\activity.html:112
+#: .\backend\apps\todo\templates\todo\partials\activity_stats.html:110
+#: .\backend\apps\todo\templates\todo\views\activity.html:112
 msgid "Completed This Week"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_timeline.html:14
-#: .\apps\todo\templates\todo\views\activity.html:411
+#: .\backend\apps\todo\templates\todo\partials\activity_timeline.html:14
+#: .\backend\apps\todo\templates\todo\views\activity.html:411
 msgid "Completed"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_timeline.html:16
-#: .\apps\todo\templates\todo\views\activity.html:420
+#: .\backend\apps\todo\templates\todo\partials\activity_timeline.html:16
+#: .\backend\apps\todo\templates\todo\views\activity.html:420
 msgid "Created"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_timeline.html:21
-#: .\apps\todo\templates\todo\views\kanban.html:214
+#: .\backend\apps\todo\templates\todo\partials\activity_timeline.html:21
+#: .\backend\apps\todo\templates\todo\views\kanban.html:214
 msgid "ago"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\activity_timeline.html:59
+#: .\backend\apps\todo\templates\todo\partials\activity_timeline.html:59
 msgid "No recent activity"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\kanban_column.html:20
+#: .\backend\apps\todo\templates\todo\partials\kanban_column.html:20
 msgid "Task title"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\kanban_column.html:27
+#: .\backend\apps\todo\templates\todo\partials\kanban_column.html:27
 msgid "Add"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\kanban_column.html:60
+#: .\backend\apps\todo\templates\todo\partials\kanban_column.html:60
 msgid "Important"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\kanban_column.html:109
+#: .\backend\apps\todo\templates\todo\partials\kanban_column.html:109
 msgid "Mark as incomplete"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\kanban_column.html:109
+#: .\backend\apps\todo\templates\todo\partials\kanban_column.html:109
 msgid "Mark as complete"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\kanban_column.html:121
+#: .\backend\apps\todo\templates\todo\partials\kanban_column.html:121
 msgid "No tasks in this stage"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\kanban_column.html:131
+#: .\backend\apps\todo\templates\todo\partials\kanban_column.html:131
 msgid "Add Task"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\tag_suggestions.html:26
+#: .\backend\apps\todo\templates\todo\partials\tag_suggestions.html:26
 msgid "Create"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\task_list_table.html:102
-#: .\apps\todo\templates\todo\partials\task_row.html:101
-#: .\apps\todo\templates\todo\views\kanban.html:180
-#: .\apps\todo\templates\todo\views\list.html:195
+#: .\backend\apps\todo\templates\todo\partials\task_list_table.html:102
+#: .\backend\apps\todo\templates\todo\partials\task_row.html:101
+#: .\backend\apps\todo\templates\todo\views\kanban.html:180
+#: .\backend\apps\todo\templates\todo\views\list.html:195
 msgid "Today"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\task_list_table.html:149
-#: .\apps\todo\templates\todo\views\list.html:242
+#: .\backend\apps\todo\templates\todo\partials\task_list_table.html:149
+#: .\backend\apps\todo\templates\todo\views\list.html:242
 msgid "No tasks found"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\task_list_table.html:150
-#: .\apps\todo\templates\todo\views\list.html:243
+#: .\backend\apps\todo\templates\todo\partials\task_list_table.html:150
+#: .\backend\apps\todo\templates\todo\views\list.html:243
 msgid "Create your first task or adjust your filters"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\task_list_table.html:155
-#: .\apps\todo\templates\todo\views\kanban.html:340
-#: .\apps\todo\templates\todo\views\list.html:248
-#: .\apps\todo\templates\todo\views\list.html:343
+#: .\backend\apps\todo\templates\todo\partials\task_list_table.html:155
+#: .\backend\apps\todo\templates\todo\views\kanban.html:340
+#: .\backend\apps\todo\templates\todo\views\list.html:248
+#: .\backend\apps\todo\templates\todo\views\list.html:343
 msgid "Create Task"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\task_priority_button.html:9
+#: .\backend\apps\todo\templates\todo\partials\task_priority_button.html:9
 msgid "Toggle Priority"
 msgstr ""
 
-#: .\apps\todo\templates\todo\partials\task_status_button.html:9
-#: .\apps\todo\templates\todo\views\kanban.html:230
+#: .\backend\apps\todo\templates\todo\partials\task_status_button.html:9
+#: .\backend\apps\todo\templates\todo\views\kanban.html:230
 msgid "Toggle Complete"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:10
+#: .\backend\apps\todo\templates\todo\todo_settings.html:10
 msgid "Task Settings"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:25
+#: .\backend\apps\todo\templates\todo\todo_settings.html:25
 msgid "Default project view"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:31
+#: .\backend\apps\todo\templates\todo\todo_settings.html:31
 msgid "Preferred display for your projects"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:35
+#: .\backend\apps\todo\templates\todo\todo_settings.html:35
 msgid "Default task view"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:38
+#: .\backend\apps\todo\templates\todo\todo_settings.html:38
 msgid "By priority"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:39
+#: .\backend\apps\todo\templates\todo\todo_settings.html:39
 msgid "By due date"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:40
+#: .\backend\apps\todo\templates\todo\todo_settings.html:40
 msgid "By project"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:42
+#: .\backend\apps\todo\templates\todo\todo_settings.html:42
 msgid "Preferred display for your tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:48
+#: .\backend\apps\todo\templates\todo\todo_settings.html:48
 msgid "Default priority"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:50
+#: .\backend\apps\todo\templates\todo\todo_settings.html:50
 msgid "Low"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:51
+#: .\backend\apps\todo\templates\todo\todo_settings.html:51
 msgid "Medium"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:52
+#: .\backend\apps\todo\templates\todo\todo_settings.html:52
 msgid "High"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:53
+#: .\backend\apps\todo\templates\todo\todo_settings.html:53
 msgid "Urgent"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:55
+#: .\backend\apps\todo\templates\todo\todo_settings.html:55
 msgid "Priority assigned to new tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:59
+#: .\backend\apps\todo\templates\todo\todo_settings.html:59
 msgid "Default reminder time"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:61
+#: .\backend\apps\todo\templates\todo\todo_settings.html:61
 msgid "Default time for reminders"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:68
-#: .\apps\todo\templates\todo\todo_settings.html:171
-#: .\apps\todo\templates\todo\todo_settings.html:175
+#: .\backend\apps\todo\templates\todo\todo_settings.html:68
+#: .\backend\apps\todo\templates\todo\todo_settings.html:171
+#: .\backend\apps\todo\templates\todo\todo_settings.html:175
 msgid "Automatic archiving"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:70
+#: .\backend\apps\todo\templates\todo\todo_settings.html:70
 msgid "Automatically archive tasks after completion"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:74
+#: .\backend\apps\todo\templates\todo\todo_settings.html:74
 msgid "Automatic archiving delay (days)"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:79
+#: .\backend\apps\todo\templates\todo\todo_settings.html:79
 msgid "Number of days before automatic archiving"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:91
+#: .\backend\apps\todo\templates\todo\todo_settings.html:91
 msgid "Reminders and notifications"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:107
+#: .\backend\apps\todo\templates\todo\todo_settings.html:107
 msgid "Enable reminders"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:109
+#: .\backend\apps\todo\templates\todo\todo_settings.html:109
 msgid "Receive notifications for due tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:114
+#: .\backend\apps\todo\templates\todo\todo_settings.html:114
 msgid "Reminder before due date (minutes)"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:119
+#: .\backend\apps\todo\templates\todo\todo_settings.html:119
 msgid "Lead time for reminders"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:125
+#: .\backend\apps\todo\templates\todo\todo_settings.html:125
 msgid "Daily digest"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:127
+#: .\backend\apps\todo\templates\todo\todo_settings.html:127
 msgid "Receive a daily summary of your tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:133
+#: .\backend\apps\todo\templates\todo\todo_settings.html:133
 msgid "Daily digest time"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:135
+#: .\backend\apps\todo\templates\todo\todo_settings.html:135
 msgid "Time to send daily digest"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:141
+#: .\backend\apps\todo\templates\todo\todo_settings.html:141
 msgid "Overdue notifications"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:143
+#: .\backend\apps\todo\templates\todo\todo_settings.html:143
 msgid "Be notified of overdue tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:157
+#: .\backend\apps\todo\templates\todo\todo_settings.html:157
 msgid "Data management"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:181
+#: .\backend\apps\todo\templates\todo\todo_settings.html:181
 msgid "Enable automatic archiving of completed tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:184
+#: .\backend\apps\todo\templates\todo\todo_settings.html:184
 msgid "Automatically move tasks from Done to Archives after configured delay"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:190
+#: .\backend\apps\todo\templates\todo\todo_settings.html:190
 msgid "Automatic archiving delay"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:195
-#: .\apps\todo\templates\todo\todo_settings.html:198
-#: .\apps\todo\templates\todo\todo_settings.html:227
-#: .\apps\todo\templates\todo\todo_settings.html:230
-#: .\apps\todo\templates\todo\todo_settings.html:714
-#: .\apps\todo\templates\todo\todo_settings.html:716
+#: .\backend\apps\todo\templates\todo\todo_settings.html:195
+#: .\backend\apps\todo\templates\todo\todo_settings.html:198
+#: .\backend\apps\todo\templates\todo\todo_settings.html:227
+#: .\backend\apps\todo\templates\todo\todo_settings.html:230
+#: .\backend\apps\todo\templates\todo\todo_settings.html:714
+#: .\backend\apps\todo\templates\todo\todo_settings.html:716
 msgid "days"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:198
-#: .\apps\todo\templates\todo\todo_settings.html:230
+#: .\backend\apps\todo\templates\todo\todo_settings.html:198
+#: .\backend\apps\todo\templates\todo\todo_settings.html:230
 msgid "Number of"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:198
+#: .\backend\apps\todo\templates\todo\todo_settings.html:198
 msgid "after completion before moving to Archives (maximum 90 days)"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:203
-#: .\apps\todo\templates\todo\todo_settings.html:207
+#: .\backend\apps\todo\templates\todo\todo_settings.html:203
+#: .\backend\apps\todo\templates\todo\todo_settings.html:207
 msgid "Automatic deletion"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:213
+#: .\backend\apps\todo\templates\todo\todo_settings.html:213
 msgid "Enable automatic deletion of old archives"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:216
+#: .\backend\apps\todo\templates\todo\todo_settings.html:216
 msgid "Permanently delete tasks from Archives after configured delay"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:222
+#: .\backend\apps\todo\templates\todo\todo_settings.html:222
 msgid "Archive deletion delay"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:230
+#: .\backend\apps\todo\templates\todo\todo_settings.html:230
 msgid "in Archives before permanent deletion (maximum 90 days)"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:235
-#: .\apps\todo\templates\todo\todo_settings.html:239
+#: .\backend\apps\todo\templates\todo\todo_settings.html:235
+#: .\backend\apps\todo\templates\todo\todo_settings.html:239
 msgid "Manual action"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:244
+#: .\backend\apps\todo\templates\todo\todo_settings.html:244
 msgid "Trigger archiving and cleanup now"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:247
+#: .\backend\apps\todo\templates\todo\todo_settings.html:247
 msgid ""
 "Immediately execute archiving and deletion according to your current settings"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:262
+#: .\backend\apps\todo\templates\todo\todo_settings.html:262
 msgid "Export your data"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:271
+#: .\backend\apps\todo\templates\todo\todo_settings.html:271
 msgid "Export CSV"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:275
+#: .\backend\apps\todo\templates\todo\todo_settings.html:275
 msgid "Export JSON"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:279
+#: .\backend\apps\todo\templates\todo\todo_settings.html:279
 msgid "Export Excel"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:282
+#: .\backend\apps\todo\templates\todo\todo_settings.html:282
 msgid "Download all your tasks and projects"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:286
+#: .\backend\apps\todo\templates\todo\todo_settings.html:286
 msgid "Include completed tasks in exports"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:288
+#: .\backend\apps\todo\templates\todo\todo_settings.html:288
 msgid "Also export tasks marked as completed and archived"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:296
+#: .\backend\apps\todo\templates\todo\todo_settings.html:296
 msgid "Import data"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:305
+#: .\backend\apps\todo\templates\todo\todo_settings.html:305
 msgid "Import file"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:309
+#: .\backend\apps\todo\templates\todo\todo_settings.html:309
 msgid "Sample CSV"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:312
+#: .\backend\apps\todo\templates\todo\todo_settings.html:312
 msgid "Import tasks from CSV or JSON"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:321
+#: .\backend\apps\todo\templates\todo\todo_settings.html:321
 msgid "Save all Todo configuration settings"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:325
-#: .\apps\todo\templates\todo\todo_settings.html:596
-#: .\apps\todo\templates\todo\todo_settings.html:614
+#: .\backend\apps\todo\templates\todo\todo_settings.html:325
+#: .\backend\apps\todo\templates\todo\todo_settings.html:596
+#: .\backend\apps\todo\templates\todo\todo_settings.html:614
 msgid "Save all settings"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:502
+#: .\backend\apps\todo\templates\todo\todo_settings.html:502
 msgid "Archiving in progress..."
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:519
+#: .\backend\apps\todo\templates\todo\todo_settings.html:519
 msgid "Archiving completed!"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:532
-#: .\apps\todo\templates\todo\todo_settings.html:538
-#: .\apps\todo\templates\todo\todo_settings.html:608
-#: .\apps\todo\templates\todo\todo_settings.html:756
+#: .\backend\apps\todo\templates\todo\todo_settings.html:532
+#: .\backend\apps\todo\templates\todo\todo_settings.html:538
+#: .\backend\apps\todo\templates\todo\todo_settings.html:608
+#: .\backend\apps\todo\templates\todo\todo_settings.html:756
 msgid "Error"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:557
+#: .\backend\apps\todo\templates\todo\todo_settings.html:557
 msgid "Saving in progress..."
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:588
-#: .\apps\todo\templates\todo\todo_settings.html:742
+#: .\backend\apps\todo\templates\todo\todo_settings.html:588
+#: .\backend\apps\todo\templates\todo\todo_settings.html:742
 msgid "Saved!"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:590
+#: .\backend\apps\todo\templates\todo\todo_settings.html:590
 msgid "Settings saved successfully"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:602
-#: .\apps\todo\templates\todo\todo_settings.html:610
+#: .\backend\apps\todo\templates\todo\todo_settings.html:602
+#: .\backend\apps\todo\templates\todo\todo_settings.html:610
 msgid "Error while saving"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:728
+#: .\backend\apps\todo\templates\todo\todo_settings.html:728
 msgid "Saving..."
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:750
+#: .\backend\apps\todo\templates\todo\todo_settings.html:750
 msgid "Save error"
 msgstr ""
 
-#: .\apps\todo\templates\todo\todo_settings.html:759
+#: .\backend\apps\todo\templates\todo\todo_settings.html:759
 msgid "Save"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:141
+#: .\backend\apps\todo\templates\todo\views\activity.html:141
 msgid "Overdue Tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:142
+#: .\backend\apps\todo\templates\todo\views\activity.html:142
 msgid "These tasks need immediate attention"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:162
+#: .\backend\apps\todo\templates\todo\views\activity.html:162
 msgid "Mark as Complete"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:182
+#: .\backend\apps\todo\templates\todo\views\activity.html:182
 msgid "overdue"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:194
-#: .\apps\todo\templates\todo\views\activity.html:283
+#: .\backend\apps\todo\templates\todo\views\activity.html:194
+#: .\backend\apps\todo\templates\todo\views\activity.html:283
 msgid "Edit Task"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:207
-#: .\apps\todo\templates\todo\views\activity.html:357
-#: .\apps\todo\templates\todo\views\activity.html:387
+#: .\backend\apps\todo\templates\todo\views\activity.html:207
+#: .\backend\apps\todo\templates\todo\views\activity.html:357
+#: .\backend\apps\todo\templates\todo\views\activity.html:387
 msgid "View all"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:207
+#: .\backend\apps\todo\templates\todo\views\activity.html:207
 msgid "overdue tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:227
+#: .\backend\apps\todo\templates\todo\views\activity.html:227
 msgid "Due Today"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:228
+#: .\backend\apps\todo\templates\todo\views\activity.html:228
 msgid "Focus on these tasks today"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:269
+#: .\backend\apps\todo\templates\todo\views\activity.html:269
 msgid "All day"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:305
+#: .\backend\apps\todo\templates\todo\views\activity.html:305
 msgid "Due This Week"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:306
+#: .\backend\apps\todo\templates\todo\views\activity.html:306
 msgid "Plan ahead for the week"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:357
+#: .\backend\apps\todo\templates\todo\views\activity.html:357
 msgid "tasks this week"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:379
+#: .\backend\apps\todo\templates\todo\views\activity.html:379
 msgid "Recent Activity"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:380
+#: .\backend\apps\todo\templates\todo\views\activity.html:380
 msgid "Latest updates and changes"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:402
+#: .\backend\apps\todo\templates\todo\views\activity.html:402
 msgid "All"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:435
+#: .\backend\apps\todo\templates\todo\views\activity.html:435
 msgid "Loading activity..."
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:444
+#: .\backend\apps\todo\templates\todo\views\activity.html:444
 msgid "Productivity Insights"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:459
+#: .\backend\apps\todo\templates\todo\views\activity.html:459
 msgid "Today's completion rate"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:469
+#: .\backend\apps\todo\templates\todo\views\activity.html:469
 msgid "Week streak"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\activity.html:882
+#: .\backend\apps\todo\templates\todo\views\activity.html:882
 msgid "Task updated!"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:26
-#: .\apps\todo\templates\todo\views\list.html:48
+#: .\backend\apps\todo\templates\todo\views\form.html:26
+#: .\backend\apps\todo\templates\todo\views\list.html:48
 msgid "Title"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:30
-#: .\apps\todo\templates\todo\views\kanban.html:310
+#: .\backend\apps\todo\templates\todo\views\form.html:30
+#: .\backend\apps\todo\templates\todo\views\kanban.html:310
 msgid "Enter task title (max 200 characters)"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:33
-#: .\apps\todo\templates\todo\views\kanban.html:312
+#: .\backend\apps\todo\templates\todo\views\form.html:33
+#: .\backend\apps\todo\templates\todo\views\kanban.html:312
 msgid "characters"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:40
-#: .\apps\todo\templates\todo\views\list.html:332
+#: .\backend\apps\todo\templates\todo\views\form.html:40
+#: .\backend\apps\todo\templates\todo\views\list.html:332
 msgid "Description"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:49
+#: .\backend\apps\todo\templates\todo\views\form.html:49
 msgid "Tip: Type '/' to see available commands"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:66
+#: .\backend\apps\todo\templates\todo\views\form.html:66
 msgid "Configuration"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:76
-#: .\apps\todo\templates\todo\views\kanban.html:326
-#: .\apps\todo\templates\todo\views\list.html:320
+#: .\backend\apps\todo\templates\todo\views\form.html:76
+#: .\backend\apps\todo\templates\todo\views\kanban.html:326
+#: .\backend\apps\todo\templates\todo\views\list.html:320
 msgid "No Project"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:86
-#: .\apps\todo\templates\todo\views\kanban.html:316
-#: .\apps\todo\templates\todo\views\list.html:58
-#: .\apps\todo\templates\todo\views\list.html:301
+#: .\backend\apps\todo\templates\todo\views\form.html:86
+#: .\backend\apps\todo\templates\todo\views\kanban.html:316
+#: .\backend\apps\todo\templates\todo\views\list.html:58
+#: .\backend\apps\todo\templates\todo\views\list.html:301
 msgid "Stage"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:114
+#: .\backend\apps\todo\templates\todo\views\form.html:114
 msgid "Color"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:132
+#: .\backend\apps\todo\templates\todo\views\form.html:132
 msgid "Start Date"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:151
-#: .\apps\todo\templates\todo\views\list.html:77
+#: .\backend\apps\todo\templates\todo\views\form.html:151
+#: .\backend\apps\todo\templates\todo\views\list.html:77
 msgid "Tags"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:172
+#: .\backend\apps\todo\templates\todo\views\form.html:172
 msgid "Type to search or create tags..."
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:191
+#: .\backend\apps\todo\templates\todo\views\form.html:191
 msgid "Information"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:195
+#: .\backend\apps\todo\templates\todo\views\form.html:195
 msgid "Création"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:201
+#: .\backend\apps\todo\templates\todo\views\form.html:201
 msgid "Last Modified"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\form.html:207
-#: .\apps\todo\templates\todo\views\list.html:38
+#: .\backend\apps\todo\templates\todo\views\form.html:207
+#: .\backend\apps\todo\templates\todo\views\list.html:38
 msgid "Status"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:65
+#: .\backend\apps\todo\templates\todo\views\kanban.html:65
 msgid "Add task"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:82
+#: .\backend\apps\todo\templates\todo\views\kanban.html:82
 msgid "Hide"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:94
+#: .\backend\apps\todo\templates\todo\views\kanban.html:94
 msgid "Delete stage"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:118
+#: .\backend\apps\todo\templates\todo\views\kanban.html:118
 msgid "Task title..."
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:218
+#: .\backend\apps\todo\templates\todo\views\kanban.html:218
 msgid "Edit"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:224
+#: .\backend\apps\todo\templates\todo\views\kanban.html:224
 msgid "Archive"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:262
+#: .\backend\apps\todo\templates\todo\views\kanban.html:262
 msgid "Add Stage"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:279
-#: .\apps\todo\templates\todo\views\kanban.html:288
+#: .\backend\apps\todo\templates\todo\views\kanban.html:279
+#: .\backend\apps\todo\templates\todo\views\kanban.html:288
 msgid "Delete"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:281
+#: .\backend\apps\todo\templates\todo\views\kanban.html:281
 msgid "Tasks → Done"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:299
-#: .\apps\todo\templates\todo\views\list.html:289
+#: .\backend\apps\todo\templates\todo\views\kanban.html:299
+#: .\backend\apps\todo\templates\todo\views\list.html:289
 msgid "Create New Task"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:308
-#: .\apps\todo\templates\todo\views\list.html:296
+#: .\backend\apps\todo\templates\todo\views\kanban.html:308
+#: .\backend\apps\todo\templates\todo\views\list.html:296
 msgid "Task Title"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:324
-#: .\apps\todo\templates\todo\views\kanban.html:333
+#: .\backend\apps\todo\templates\todo\views\kanban.html:324
+#: .\backend\apps\todo\templates\todo\views\kanban.html:333
 msgid "Optional"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\kanban.html:1722
+#: .\backend\apps\todo\templates\todo\views\kanban.html:1722
 msgid "Deleting..."
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\list.html:90
+#: .\backend\apps\todo\templates\todo\views\list.html:90
 msgid "Actions"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\list.html:94
+#: .\backend\apps\todo\templates\todo\views\list.html:94
 msgid "Custom"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\list.html:264
+#: .\backend\apps\todo\templates\todo\views\list.html:264
 msgid "Showing"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\list.html:264
+#: .\backend\apps\todo\templates\todo\views\list.html:264
 msgid "tasks"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\list.html:269
+#: .\backend\apps\todo\templates\todo\views\list.html:269
 msgid "Previous"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\list.html:275
+#: .\backend\apps\todo\templates\todo\views\list.html:275
 msgid "Next"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\list.html:311
+#: .\backend\apps\todo\templates\todo\views\list.html:311
 msgid "Normal"
 msgstr ""
 
-#: .\apps\todo\templates\todo\views\list.html:312
+#: .\backend\apps\todo\templates\todo\views\list.html:312
 msgid "Starred"
 msgstr ""

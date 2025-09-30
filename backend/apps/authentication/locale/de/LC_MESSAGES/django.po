@@ -1,16 +1,18 @@
-# SPANISH TRANSLATION FOR AUTHENTICATION
-# Copyright (C) 2025 Open Linguify
-# This file is distributed under the same license as the Open Linguify package.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Open Linguify Authentication\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-30 05:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Open Linguify Team\n"
-"Language-Team: Spanish\n"
-"Language: es\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -103,12 +105,9 @@ msgstr ""
 msgid "No events scheduled for the selected period."
 msgstr ""
 
-# Registration form fields
 #: .\backend\apps\calendar_app\templates\calendar\calendar_agenda.html:190
-#, fuzzy
-#| msgid "Create your free account"
 msgid "Create your first event"
-msgstr "Crea tu cuenta gratuita"
+msgstr ""
 
 #: .\backend\apps\calendar_app\templates\calendar\calendar_list.html:5
 msgid "List View"
@@ -139,10 +138,8 @@ msgstr ""
 #: .\backend\apps\calendar_app\templates\calendar\calendar_list.html:308
 #: .\backend\apps\calendar_app\templates\calendar\calendar_month.html:694
 #: .\backend\apps\calendar_app\templates\calendar\event_form.html:4
-#, fuzzy
-#| msgid "Create my account"
 msgid "Create Event"
-msgstr "Crear mi cuenta"
+msgstr ""
 
 #: .\backend\apps\calendar_app\templates\calendar\calendar_list.html:230
 msgid "Quick Add Event"
@@ -150,10 +147,8 @@ msgstr ""
 
 #: .\backend\apps\calendar_app\templates\calendar\calendar_list.html:242
 #: .\backend\apps\calendar_app\templates\calendar\calendar_month.html:628
-#, fuzzy
-#| msgid "Create my account"
 msgid "Create New Event"
-msgstr "Crear mi cuenta"
+msgstr ""
 
 #: .\backend\apps\calendar_app\templates\calendar\calendar_list.html:244
 #: .\backend\apps\calendar_app\templates\calendar\calendar_month.html:630
@@ -233,10 +228,8 @@ msgstr ""
 
 #: .\backend\apps\calendar_app\templates\calendar\calendar_list.html:286
 #: .\backend\apps\calendar_app\templates\calendar\calendar_month.html:672
-#, fuzzy
-#| msgid "Reminder Time"
 msgid "Reminder"
-msgstr "Hora del recordatorio"
+msgstr ""
 
 #: .\backend\apps\calendar_app\templates\calendar\calendar_list.html:296
 #: .\backend\apps\calendar_app\templates\calendar\calendar_month.html:682
@@ -275,10 +268,8 @@ msgstr ""
 
 #: .\backend\apps\calendar_app\templates\calendar\calendar_month.html:766
 #: .\backend\apps\calendar_app\templates\calendar\calendar_month.html:772
-#, fuzzy
-#| msgid "Error during verification"
 msgid "Error creating event"
-msgstr "Error durante la verificación"
+msgstr ""
 
 #: .\backend\apps\calendar_app\templates\calendar\calendar_settings.html:4
 #: .\backend\apps\calendar_app\templates\calendar\calendar_settings.html:12
@@ -399,10 +390,8 @@ msgid "Sync Now"
 msgstr ""
 
 #: .\backend\apps\calendar_app\templates\calendar\providers.html:158
-#, fuzzy
-#| msgid "Back to home"
 msgid "Back to Calendar"
-msgstr "Volver al inicio"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\components\navbar.html:11
 #: .\backend\apps\community\templates\community\group\groups_new.html:207
@@ -445,10 +434,8 @@ msgstr ""
 #: .\backend\apps\community\templates\community\discover_complex.html:55
 #: .\backend\apps\community\templates\community\discover_complex.html:68
 #: .\backend\apps\community\templates\community\group\groups_new.html:249
-#, fuzzy
-#| msgid "Native Language"
 msgid "All Languages"
-msgstr "Idioma nativo"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\components\navbar.html:54
 msgid "All Levels"
@@ -457,26 +444,20 @@ msgstr ""
 #: .\backend\apps\community\templates\community\components\navbar.html:55
 #: .\backend\apps\community\templates\community\group\group_manage.html:157
 #: .\backend\apps\language_ai\models.py:21
-#, fuzzy
-#| msgid "Beginner (A1-A2)"
 msgid "Beginner"
-msgstr "Principiante (A1-A2)"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\components\navbar.html:56
 #: .\backend\apps\community\templates\community\group\group_manage.html:158
 #: .\backend\apps\language_ai\models.py:22
-#, fuzzy
-#| msgid "Intermediate (B1-B2)"
 msgid "Intermediate"
-msgstr "Intermedio (B1-B2)"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\components\navbar.html:57
 #: .\backend\apps\community\templates\community\group\group_manage.html:159
 #: .\backend\apps\language_ai\models.py:23
-#, fuzzy
-#| msgid "Advanced (C1-C2)"
 msgid "Advanced"
-msgstr "Avanzado (C1-C2)"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\components\navbar.html:63
 #: .\backend\apps\community\templates\community\group\groups.html:198
@@ -497,10 +478,8 @@ msgstr ""
 #: .\backend\apps\community\templates\community\components\navbar.html:77
 #: .\backend\apps\language_ai\models.py:121
 #: .\portal\public_web\templates\public_web\apps\app_notebook.html:78
-#, fuzzy
-#| msgid "Grammar lessons"
 msgid "Grammar"
-msgstr "Lecciones de gramática"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\components\navbar.html:78
 #: .\backend\apps\language_ai\models.py:122
@@ -595,14 +574,12 @@ msgstr ""
 #: .\backend\apps\community\templates\community\discover.html:39
 #: .\backend\apps\community\templates\community\discover_complex.html:53
 msgid "Native Language"
-msgstr "Idioma nativo"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\discover.html:52
 #: .\backend\apps\community\templates\community\discover_complex.html:66
-#, fuzzy
-#| msgid "Target Language"
 msgid "Learning Language"
-msgstr "Idioma objetivo"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\discover.html:68
 #: .\backend\apps\community\templates\community\discover_complex.html:81
@@ -632,10 +609,8 @@ msgstr ""
 
 #: .\backend\apps\community\templates\community\discover.html:128
 #: .\backend\apps\community\templates\community\discover_complex.html:180
-#, fuzzy
-#| msgid "Public profile"
 msgid "View Profile"
-msgstr "Perfil público"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\discover.html:141
 msgid "Previous"
@@ -708,10 +683,8 @@ msgstr ""
 
 #: .\backend\apps\community\templates\community\discover_complex.html:30
 #: .\backend\apps\community\templates\community\friends_old.html:27
-#, fuzzy
-#| msgid "Back to home"
 msgid "Back to Community"
-msgstr "Volver al inicio"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\discover_complex.html:213
 msgid "Page navigation"
@@ -726,10 +699,8 @@ msgid "Friend Activity Feed"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:46
-#, fuzzy
-#| msgid "Share my progress"
 msgid "shared a post"
-msgstr "Compartir mi progreso"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:48
 msgid "commented on a post"
@@ -803,10 +774,8 @@ msgid "Quick Actions"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:194
-#, fuzzy
-#| msgid "Share my progress"
 msgid "Share Your Progress"
-msgstr "Compartir mi progreso"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:198
 #: .\backend\apps\community\templates\community\main_complex.html:91
@@ -830,10 +799,8 @@ msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:229
 #: .\backend\apps\community\templates\community\user_profile.html:184
-#, fuzzy
-#| msgid "Achievement notifications"
 msgid "Achievements"
-msgstr "Notificaciones de logros"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:236
 msgid "New Connections"
@@ -856,16 +823,12 @@ msgid "Trending Topics"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:263
-#, fuzzy
-#| msgid "Speaking practice"
 msgid "Tips and practice"
-msgstr "Práctica oral"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:270
-#, fuzzy
-#| msgid "Grammar lessons"
 msgid "Grammar discussions"
-msgstr "Lecciones de gramática"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:277
 msgid "Partner matching"
@@ -877,10 +840,8 @@ msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:302
 #: .\backend\apps\community\templates\community\main.html:196
-#, fuzzy
-#| msgid "Share my progress"
 msgid "Share Your Learning Progress"
-msgstr "Compartir mi progreso"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:309
 msgid "What did you learn today?"
@@ -898,27 +859,21 @@ msgstr ""
 #: .\backend\apps\notebook\templates\components\notebook_editor.html:33
 #: .\portal\public_web\templates\components\public_header.html:111
 #: .\backend\apps\authentication\models\email_models.py:49
-#, fuzzy
-#| msgid "Native Language"
 msgid "Language"
-msgstr "Idioma nativo"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:317
 #: .\backend\apps\community\templates\community\main.html:213
-#, fuzzy
-#| msgid "Select the language to learn"
 msgid "Select language (optional)"
-msgstr "Selecciona el idioma a aprender"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:327
 msgid "Add tags"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:329
-#, fuzzy
-#| msgid "Share my progress"
 msgid "#progress"
-msgstr "Compartir mi progreso"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\feed.html:330
 msgid "#motivation"
@@ -1069,20 +1024,16 @@ msgid "No friends online"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\friends.html:272
-#, fuzzy
-#| msgid "Language you are currently learning"
 msgid "None of your friends are currently online."
-msgstr "Idioma que estás aprendiendo actualmente"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\friends.html:280
 msgid "Add some friends to see who's online!"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\friends.html:316
-#, fuzzy
-#| msgid "I accept the"
 msgid "Accepted"
-msgstr "Acepto los"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\friends_old.html:15
 #: .\backend\apps\community\templates\community\friends_old.html:134
@@ -1120,18 +1071,14 @@ msgstr ""
 #: .\backend\apps\community\templates\community\friends_old.html:197
 #: .\backend\apps\community\templates\community\user_profile.html:56
 #: .\backend\apps\language_learning\templates\language_learning\partials\navbar.html:32
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Learning:"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\friends_old.html:210
 #: .\backend\apps\authentication\templates\authentication\profile.html:6
 #: .\backend\apps\authentication\views\views.py:1355
-#, fuzzy
-#| msgid "Public profile"
 msgid "Profile"
-msgstr "Perfil público"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\friends_old.html:213
 msgid "Study Together"
@@ -1177,10 +1124,8 @@ msgstr ""
 #: .\backend\apps\community\templates\community\group\group_detail_old.html:43
 #: .\backend\apps\community\templates\community\group\group_manage.html:68
 #: .\backend\apps\community\templates\community\user_profile.html:247
-#, fuzzy
-#| msgid "Remember me"
 msgid "members"
-msgstr "Recordarme"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\group_detail.html:85
 #: .\backend\apps\community\templates\community\group\group_detail_old.html:44
@@ -1254,10 +1199,8 @@ msgid "1 min ago"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\group\group_detail_old.html:188
-#, fuzzy
-#| msgid "Language you want to learn"
 msgid "Language switched to"
-msgstr "Idioma que quieres aprender"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\group_detail_old.html:188
 msgid "Practice time!"
@@ -1280,10 +1223,8 @@ msgid "active"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\group\group_manage.html:79
-#, fuzzy
-#| msgid "Back to home"
 msgid "Back to Chat"
-msgstr "Volver al inicio"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\group_manage.html:84
 msgid "Save"
@@ -1307,10 +1248,8 @@ msgid "Group Settings"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\group\group_manage.html:111
-#, fuzzy
-#| msgid "Personal Information"
 msgid "General Information"
-msgstr "Información personal"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\group_manage.html:115
 msgid "Group Avatar"
@@ -1373,10 +1312,8 @@ msgid "Make Moderator"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\group\group_manage.html:248
-#, fuzzy
-#| msgid "Remember me"
 msgid "Remove Member"
-msgstr "Recordarme"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\group_manage.html:257
 msgid "No members"
@@ -1411,10 +1348,8 @@ msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:119
 #: .\backend\apps\community\templates\community\group\groups_new.html:285
-#, fuzzy
-#| msgid "Create my account"
 msgid "Create New Group"
-msgstr "Crear mi cuenta"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:120
 #: .\backend\apps\community\templates\community\group\groups_new.html:286
@@ -1425,10 +1360,8 @@ msgstr ""
 #: .\backend\apps\community\templates\community\group\groups.html:457
 #: .\backend\apps\community\templates\community\group\groups_new.html:333
 #: .\backend\apps\community\templates\community\group\groups_new.html:589
-#, fuzzy
-#| msgid "Enter your password"
 msgid "Enter Group"
-msgstr "Introduce tu contraseña"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:185
 msgid "No groups yet"
@@ -1468,10 +1401,8 @@ msgstr ""
 #: .\backend\apps\community\templates\community\group\groups_new.html:277
 #: .\backend\apps\community\templates\community\group\groups_new.html:519
 #: .\backend\apps\community\templates\community\group\groups_new.html:618
-#, fuzzy
-#| msgid "Create my account"
 msgid "Create Group"
-msgstr "Crear mi cuenta"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:290
 #: .\backend\apps\community\templates\community\group\groups_new.html:423
@@ -1486,10 +1417,8 @@ msgstr ""
 #: .\backend\apps\community\templates\community\group\groups.html:307
 #: .\backend\apps\community\templates\community\group\groups_new.html:440
 #: .\backend\apps\community\templates\community\partials\friend_discovery_banner.html:44
-#, fuzzy
-#| msgid "Target language"
 msgid "Select language"
-msgstr "Idioma objetivo"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:321
 #: .\backend\apps\community\templates\community\group\groups_new.html:454
@@ -1499,17 +1428,17 @@ msgstr ""
 #: .\backend\apps\community\templates\community\group\groups.html:329
 #: .\backend\apps\community\templates\community\group\groups_new.html:462
 msgid "Beginner (A1-A2)"
-msgstr "Principiante (A1-A2)"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:330
 #: .\backend\apps\community\templates\community\group\groups_new.html:463
 msgid "Intermediate (B1-B2)"
-msgstr "Intermedio (B1-B2)"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:331
 #: .\backend\apps\community\templates\community\group\groups_new.html:464
 msgid "Advanced (C1-C2)"
-msgstr "Avanzado (C1-C2)"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:332
 #: .\backend\apps\community\templates\community\group\groups_new.html:465
@@ -1523,10 +1452,8 @@ msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:340
 #: .\backend\apps\community\templates\community\group\groups_new.html:473
-#, fuzzy
-#| msgid "Speaking practice"
 msgid "Conversation Practice"
-msgstr "Práctica oral"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:341
 #: .\backend\apps\community\templates\community\group\groups_new.html:474
@@ -1546,10 +1473,8 @@ msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:344
 #: .\backend\apps\community\templates\community\group\groups_new.html:477
-#, fuzzy
-#| msgid "Speaking practice"
 msgid "Writing Practice"
-msgstr "Práctica oral"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:345
 #: .\backend\apps\community\templates\community\group\groups_new.html:478
@@ -1558,10 +1483,8 @@ msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:346
 #: .\backend\apps\community\templates\community\group\groups_new.html:479
-#, fuzzy
-#| msgid "Native Language"
 msgid "Business Language"
-msgstr "Idioma nativo"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\group\groups.html:347
 #: .\backend\apps\community\templates\community\group\groups_new.html:480
@@ -1645,10 +1568,8 @@ msgid "Community Feed"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\main.html:46
-#, fuzzy
-#| msgid "Create my account"
 msgid "Create Post"
-msgstr "Crear mi cuenta"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\main.html:87
 #: .\backend\apps\community\templates\community\main.html:501
@@ -1714,16 +1635,12 @@ msgid "Question/Help"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\main.html:232
-#, fuzzy
-#| msgid "Achievement notifications"
 msgid "Achievement"
-msgstr "Notificaciones de logros"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\main.html:233
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Learning Tip"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\main.html:234
 msgid "Motivation"
@@ -1908,22 +1825,16 @@ msgid "Quick Language Partner Match"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\partials\friend_discovery_banner.html:39
-#, fuzzy
-#| msgid "Tell us about yourself..."
 msgid "Tell us what you're looking for:"
-msgstr "Cuéntanos sobre ti..."
+msgstr ""
 
 #: .\backend\apps\community\templates\community\partials\friend_discovery_banner.html:42
-#, fuzzy
-#| msgid "Speaking practice"
 msgid "I want to practice:"
-msgstr "Práctica oral"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\partials\friend_discovery_banner.html:58
-#, fuzzy
-#| msgid "Checking availability..."
 msgid "My availability:"
-msgstr "Verificando disponibilidad..."
+msgstr ""
 
 #: .\backend\apps\community\templates\community\partials\friend_discovery_banner.html:62
 msgid "Available now"
@@ -1950,20 +1861,16 @@ msgid "Text Chat"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\partials\friend_discovery_banner.html:96
-#, fuzzy
-#| msgid "Grammar lessons"
 msgid "Grammar Help"
-msgstr "Lecciones de gramática"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\partials\friend_discovery_banner.html:106
 msgid "Find Matches"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\partials\friend_discovery_banner.html:259
-#, fuzzy
-#| msgid "Select the language to learn"
 msgid "Please select a language to practice"
-msgstr "Selecciona el idioma a aprender"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\user_profile.html:49
 msgid "Native:"
@@ -1987,10 +1894,8 @@ msgstr ""
 
 #: .\backend\apps\community\templates\community\user_profile.html:109
 #: .\backend\apps\authentication\templates\authentication\profile.html:101
-#, fuzzy
-#| msgid "Public profile"
 msgid "Edit Profile"
-msgstr "Perfil público"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\user_profile.html:126
 msgid "Language Skills"
@@ -2001,10 +1906,8 @@ msgid "Can Teach"
 msgstr ""
 
 #: .\backend\apps\community\templates\community\user_profile.html:150
-#, fuzzy
-#| msgid "Language you are currently learning"
 msgid "Currently Learning"
-msgstr "Idioma que estás aprendiendo actualmente"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\user_profile.html:164
 msgid "Language Exchange Match"
@@ -2040,10 +1943,8 @@ msgstr ""
 
 #: .\backend\apps\community\templates\community\user_profile.html:415
 #: .\backend\apps\community\templates\community\user_profile.html:420
-#, fuzzy
-#| msgid "Error during verification"
 msgid "Error starting conversation"
-msgstr "Error durante la verificación"
+msgstr ""
 
 #: .\backend\apps\community\templates\community\user_profile.html:426
 msgid "Language exchange feature coming soon!"
@@ -2078,10 +1979,8 @@ msgid "Dossiers"
 msgstr ""
 
 #: .\backend\apps\documents\templates\components\header\documents_header.html:45
-#, fuzzy
-#| msgid "Create an account"
 msgid "Create new document"
-msgstr "Crear una cuenta"
+msgstr ""
 
 #: .\backend\apps\language_ai\ai_service.py:137
 msgid ""
@@ -2187,10 +2086,8 @@ msgstr ""
 
 #: .\backend\apps\language_ai\models.py:88 .\backend\apps\task\models.py:15
 #: .\backend\apps\authentication\templates\authentication\terms_acceptance.html:209
-#, fuzzy
-#| msgid "Username"
 msgid "User"
-msgstr "Nombre de usuario"
+msgstr ""
 
 #: .\backend\apps\language_ai\models.py:89
 msgid "AI"
@@ -2209,10 +2106,8 @@ msgid "Conversation Messages"
 msgstr ""
 
 #: .\backend\apps\language_ai\models.py:123
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Pronunciation"
-msgstr "Información personal"
+msgstr ""
 
 #: .\backend\apps\language_ai\models.py:124
 msgid "Context"
@@ -2257,10 +2152,8 @@ msgid "This conversation is not active."
 msgstr ""
 
 #: .\backend\apps\language_ai\views\language_ai_views.py:68
-#, fuzzy
-#| msgid "Username cannot be empty"
 msgid "Message content cannot be empty."
-msgstr "El nombre de usuario no puede estar vacío"
+msgstr ""
 
 #: .\backend\apps\language_ai\views\language_ai_views.py:106
 msgid "Sorry, there was an error processing your request. Please try again."
@@ -2271,10 +2164,8 @@ msgid "Failed to generate AI response."
 msgstr ""
 
 #: .\backend\apps\language_ai\views\language_ai_views.py:120
-#, fuzzy
-#| msgid "This email is already registered"
 msgid "This conversation is already completed."
-msgstr "Este email ya está registrado"
+msgstr ""
 
 #: .\backend\apps\language_ai\views\language_ai_views.py:132
 msgid "Practice summary will be available soon."
@@ -2287,55 +2178,41 @@ msgstr ""
 #: .\backend\apps\language_learning\forms.py:37
 #: .\backend\apps\language_learning\forms.py:87
 msgid "Your native language"
-msgstr "Tu idioma nativo"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:38
 #: .\backend\apps\language_learning\forms.py:93
 msgid "Language you want to learn"
-msgstr "Idioma que quieres aprender"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:39
 #: .\backend\apps\language_learning\forms.py:99
-#, fuzzy
-#| msgid "Current language level"
 msgid "Your current level"
-msgstr "Nivel actual del idioma"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:40
-#, fuzzy
-#| msgid "Learning objectives"
 msgid "Your learning objectives"
-msgstr "Objetivos de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:41
-#, fuzzy
-#| msgid "Listening exercises"
 msgid "Include speaking exercises"
-msgstr "Ejercicios de escucha"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:42
-#, fuzzy
-#| msgid "Listening exercises"
 msgid "Include listening exercises"
-msgstr "Ejercicios de escucha"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:43
-#, fuzzy
-#| msgid "Listening exercises"
 msgid "Include reading exercises"
-msgstr "Ejercicios de escucha"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:44
-#, fuzzy
-#| msgid "Listening exercises"
 msgid "Include writing exercises"
-msgstr "Ejercicios de escucha"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:45
-#, fuzzy
-#| msgid "Daily Goal"
 msgid "Daily goal (minutes)"
-msgstr "Objetivo diario"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:46
 msgid "Reminders on weekdays"
@@ -2346,41 +2223,37 @@ msgid "Reminders on weekends"
 msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:48
-#, fuzzy
-#| msgid "Reminder Time"
 msgid "Reminder time"
-msgstr "Hora del recordatorio"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:51
 msgid "How many minutes per day do you want to study?"
 msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:52
-#, fuzzy
-#| msgid "When to receive your daily reminder"
 msgid "What time would you like to receive study reminders?"
-msgstr "Cuándo recibir tu recordatorio diario"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:61
 #: .\backend\apps\language_learning\forms.py:114
 msgid "Native language and target language cannot be the same"
-msgstr "El idioma nativo y el idioma objetivo no pueden ser iguales"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:85
 msgid "Select your native language"
-msgstr "Selecciona tu idioma nativo"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:91
 msgid "Select the language to learn"
-msgstr "Selecciona el idioma a aprender"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:97
 msgid "Select your level"
-msgstr "Selecciona tu nivel"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:103
 msgid "Select your objectives"
-msgstr "Selecciona tus objetivos"
+msgstr ""
 
 #: .\backend\apps\language_learning\forms.py:105
 msgid "Why do you want to learn this language?"
@@ -2413,16 +2286,12 @@ msgid "Language Learning Settings"
 msgstr ""
 
 #: .\backend\apps\language_learning\templates\language_learning\progress.html:25
-#, fuzzy
-#| msgid "Learning Preferences"
 msgid "Your Learning Progress"
-msgstr "Preferencias de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\language_learning\templates\language_learning\progress.html:34
-#, fuzzy
-#| msgid "Current language level"
 msgid "Current Level"
-msgstr "Nivel actual del idioma"
+msgstr ""
 
 #: .\backend\apps\language_learning\templates\language_learning\progress.html:40
 msgid "Total XP"
@@ -2437,10 +2306,8 @@ msgid "Study Time"
 msgstr ""
 
 #: .\backend\apps\language_learning\templates\language_learning\progress.html:59
-#, fuzzy
-#| msgid "Daily Goal"
 msgid "Daily Goals"
-msgstr "Objetivo diario"
+msgstr ""
 
 #: .\backend\apps\language_learning\templates\language_learning\progress.html:64
 msgid "Study Minutes"
@@ -2483,10 +2350,8 @@ msgid "Your learning profile has been configured successfully!"
 msgstr ""
 
 #: .\backend\apps\language_learning\views\setup_views.py:60
-#, fuzzy
-#| msgid "Learning Preferences"
 msgid "Configure your learning preferences"
-msgstr "Preferencias de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\language_learning\views\setup_views.py:61
 msgid ""
@@ -2502,20 +2367,16 @@ msgid "Settings updated successfully!"
 msgstr ""
 
 #: .\backend\apps\language_learning\views\setup_views.py:98
-#, fuzzy
-#| msgid "Learning Methods"
 msgid "Learning Settings"
-msgstr "Métodos de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\language_learning\views\setup_views.py:99
 msgid "Customize your language learning experience"
 msgstr ""
 
 #: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:21
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Delete Confirmation"
-msgstr "Información personal"
+msgstr ""
 
 #: .\backend\apps\notebook\templates\components\delete_confirmation_modal.html:37
 msgid "Are you sure you want to delete this note?"
@@ -2547,10 +2408,8 @@ msgstr ""
 
 #: .\backend\apps\notebook\templates\components\modals_delete_note.html:8
 #: .\backend\apps\notebook\templates\components\notebook_editor.html:8
-#, fuzzy
-#| msgid "Select the language to learn"
 msgid "Select a note to view"
-msgstr "Selecciona el idioma a aprender"
+msgstr ""
 
 #: .\backend\apps\notebook\templates\components\modals_delete_note.html:9
 #: .\backend\apps\notebook\templates\components\notebook_editor.html:9
@@ -2559,10 +2418,8 @@ msgstr ""
 
 #: .\backend\apps\notebook\templates\components\modals_delete_note.html:12
 #: .\backend\apps\notebook\templates\components\notebook_editor.html:12
-#, fuzzy
-#| msgid "Create my account"
 msgid "Create New Note"
-msgstr "Crear mi cuenta"
+msgstr ""
 
 #: .\backend\apps\notebook\templates\components\modals_delete_note.html:24
 #: .\backend\apps\notebook\templates\components\notebook_editor.html:27
@@ -2645,10 +2502,8 @@ msgid "Search in notes..."
 msgstr ""
 
 #: .\backend\apps\notebook\templates\components\notebook_navbar.html:89
-#, fuzzy
-#| msgid "Native language"
 msgid "All languages"
-msgstr "Idioma nativo"
+msgstr ""
 
 #: .\backend\apps\notebook\templates\components\notebook_navbar.html:107
 msgid "Most recent"
@@ -2667,16 +2522,12 @@ msgid "Title Z-A"
 msgstr ""
 
 #: .\backend\apps\notebook\templates\components\notebook_navbar.html:117
-#, fuzzy
-#| msgid "Select your objectives"
 msgid "Select all notes"
-msgstr "Selecciona tus objetivos"
+msgstr ""
 
 #: .\backend\apps\notebook\templates\components\notebook_navbar.html:119
-#, fuzzy
-#| msgid "Select your level"
 msgid "Select All"
-msgstr "Selecciona tu nivel"
+msgstr ""
 
 #: .\backend\apps\notebook\templates\components\notebook_navbar.html:124
 msgid "selected"
@@ -2715,10 +2566,8 @@ msgid "Start by creating your first note!"
 msgstr ""
 
 #: .\backend\apps\notebook\templates\components\notebook_sidebar.html:18
-#, fuzzy
-#| msgid "Create an account"
 msgid "Create a note"
-msgstr "Crear una cuenta"
+msgstr ""
 
 #: .\backend\apps\notebook\templates\components\notebook_sidebar.html:39
 msgid "Untitled"
@@ -2733,10 +2582,8 @@ msgid "Pending"
 msgstr ""
 
 #: .\backend\apps\task\models.py:8
-#, fuzzy
-#| msgid "Share my progress"
 msgid "Work in Progress"
-msgstr "Compartir mi progreso"
+msgstr ""
 
 #: .\backend\apps\task\models.py:9
 #: .\portal\public_web\templates\public_web\apps\app_todo.html:122
@@ -2760,10 +2607,8 @@ msgid "Status"
 msgstr ""
 
 #: .\backend\apps\task\models.py:20
-#, fuzzy
-#| msgid "Create my account"
 msgid "Created at"
-msgstr "Crear mi cuenta"
+msgstr ""
 
 #: .\backend\apps\task\models.py:21
 msgid "Updated at"
@@ -2804,10 +2649,8 @@ msgstr ""
 #: .\backend\apps\teaching\templates\teaching\components\navbar.html:47
 #: .\backend\apps\teaching\templates\teaching\find_teachers.html:177
 #: .\backend\apps\teaching\templates\teaching\teachers_list.html:177
-#, fuzzy
-#| msgid "Your native language"
 msgid "Toutes langues"
-msgstr "Tu idioma nativo"
+msgstr ""
 
 #: .\backend\apps\teaching\templates\teaching\components\navbar.html:48
 msgid "Français"
@@ -3006,10 +2849,8 @@ msgstr ""
 
 #: .\backend\apps\teaching\templates\teaching\find_teachers.html:122
 #: .\backend\apps\teaching\templates\teaching\teachers_list.html:122
-#, fuzzy
-#| msgid "Public profile"
 msgid "Profil"
-msgstr "Perfil público"
+msgstr ""
 
 #: .\backend\apps\teaching\templates\teaching\find_teachers.html:127
 #: .\backend\apps\teaching\templates\teaching\my_teachers.html:104
@@ -3067,10 +2908,8 @@ msgid "Tous statuts"
 msgstr ""
 
 #: .\backend\apps\teaching\templates\teaching\my_lessons.html:115
-#, fuzzy
-#| msgid "Confirm password"
 msgid "Confirmés"
-msgstr "Confirmar contraseña"
+msgstr ""
 
 #: .\backend\apps\teaching\templates\teaching\my_lessons.html:148
 msgid "Erreur lors du démarrage du cours"
@@ -3327,10 +3166,8 @@ msgstr ""
 #: .\portal\venv\lib\python3.12\site-packages\django\core\validators.py:211
 #: .\venv\lib\python3.12\site-packages\django\core\validators.py:211
 #: .\venv\lib\python3.12\site-packages\~jango\core\validators.py:228
-#, fuzzy
-#| msgid "Email address"
 msgid "Enter a valid email address."
-msgstr "Correo electrónico"
+msgstr ""
 
 #. Translators: "letters" means latin letters: a-z and A-Z.
 #: .\backend\venv\lib\python3.12\site-packages\django\core\validators.py:289
@@ -3526,10 +3363,8 @@ msgstr[1] ""
 #: .\venv\lib\python3.12\site-packages\~jango\core\validators.py:536
 #: .\venv\lib\python3.12\site-packages\~jango\forms\fields.py:359
 #: .\venv\lib\python3.12\site-packages\~jango\forms\fields.py:398
-#, fuzzy
-#| msgid "Phone number"
 msgid "Enter a number."
-msgstr "Número de teléfono"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\core\validators.py:516
 #: .\cms\venv\lib\python3.12\site-packages\django\core\validators.py:516
@@ -3602,10 +3437,8 @@ msgstr ""
 #: .\venv\lib\python3.12\site-packages\django\forms\models.py:908
 #: .\venv\lib\python3.12\site-packages\~jango\db\models\base.py:1572
 #: .\venv\lib\python3.12\site-packages\~jango\forms\models.py:908
-#, fuzzy
-#| msgid "and the"
 msgid "and"
-msgstr "y la"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\db\models\base.py:1602
 #: .\cms\venv\lib\python3.12\site-packages\django\db\models\base.py:1602
@@ -3652,10 +3485,8 @@ msgstr ""
 #: .\portal\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:136
 #: .\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:136
 #: .\venv\lib\python3.12\site-packages\~jango\db\models\fields\__init__.py:136
-#, fuzzy
-#| msgid "Email cannot be changed"
 msgid "This field cannot be blank."
-msgstr "El correo no se puede cambiar"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:137
 #: .\cms\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:137
@@ -3835,10 +3666,8 @@ msgstr ""
 #: .\portal\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:1704
 #: .\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:1704
 #: .\venv\lib\python3.12\site-packages\~jango\db\models\fields\__init__.py:1698
-#, fuzzy
-#| msgid "Phone number"
 msgid "Decimal number"
-msgstr "Número de teléfono"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:1864
 #: .\cms\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:1864
@@ -3871,7 +3700,7 @@ msgstr ""
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset.html:79
 #: .\backend\apps\authentication\templates\authentication\register.html:91
 msgid "Email address"
-msgstr "Correo electrónico"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:1945
 #: .\cms\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:1945
@@ -3944,10 +3773,8 @@ msgstr ""
 #: .\portal\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:2188
 #: .\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:2188
 #: .\venv\lib\python3.12\site-packages\~jango\db\models\fields\__init__.py:2183
-#, fuzzy
-#| msgid "Email address"
 msgid "IPv4 address"
-msgstr "Correo electrónico"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:2219
 #: .\cms\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:2219
@@ -3955,10 +3782,8 @@ msgstr "Correo electrónico"
 #: .\portal\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:2219
 #: .\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:2219
 #: .\venv\lib\python3.12\site-packages\~jango\db\models\fields\__init__.py:2214
-#, fuzzy
-#| msgid "Email address"
 msgid "IP address"
-msgstr "Correo electrónico"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:2310
 #: .\backend\venv\lib\python3.12\site-packages\django\db\models\fields\__init__.py:2311
@@ -4210,10 +4035,8 @@ msgstr ""
 #: .\portal\venv\lib\python3.12\site-packages\django\forms\fields.py:95
 #: .\venv\lib\python3.12\site-packages\django\forms\fields.py:95
 #: .\venv\lib\python3.12\site-packages\~jango\forms\fields.py:95
-#, fuzzy
-#| msgid "This email is already registered"
 msgid "This field is required."
-msgstr "Este email ya está registrado"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\forms\fields.py:315
 #: .\cms\venv\lib\python3.12\site-packages\django\forms\fields.py:315
@@ -4221,10 +4044,8 @@ msgstr "Este email ya está registrado"
 #: .\portal\venv\lib\python3.12\site-packages\django\forms\fields.py:315
 #: .\venv\lib\python3.12\site-packages\django\forms\fields.py:315
 #: .\venv\lib\python3.12\site-packages\~jango\forms\fields.py:308
-#, fuzzy
-#| msgid "Phone number"
 msgid "Enter a whole number."
-msgstr "Número de teléfono"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\forms\fields.py:486
 #: .\backend\venv\lib\python3.12\site-packages\django\forms\fields.py:1267
@@ -4954,10 +4775,8 @@ msgstr ""
 #: .\portal\venv\lib\python3.12\site-packages\django\utils\dates.py:33
 #: .\venv\lib\python3.12\site-packages\django\utils\dates.py:33
 #: .\venv\lib\python3.12\site-packages\~jango\utils\dates.py:33
-#, fuzzy
-#| msgid "Remember me"
 msgid "September"
-msgstr "Recordarme"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\utils\dates.py:34
 #: .\cms\venv\lib\python3.12\site-packages\django\utils\dates.py:34
@@ -4974,10 +4793,8 @@ msgstr ""
 #: .\portal\venv\lib\python3.12\site-packages\django\utils\dates.py:35
 #: .\venv\lib\python3.12\site-packages\django\utils\dates.py:35
 #: .\venv\lib\python3.12\site-packages\~jango\utils\dates.py:35
-#, fuzzy
-#| msgid "Phone number"
 msgid "November"
-msgstr "Número de teléfono"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\utils\dates.py:36
 #: .\cms\venv\lib\python3.12\site-packages\django\utils\dates.py:36
@@ -4985,10 +4802,8 @@ msgstr "Número de teléfono"
 #: .\portal\venv\lib\python3.12\site-packages\django\utils\dates.py:36
 #: .\venv\lib\python3.12\site-packages\django\utils\dates.py:36
 #: .\venv\lib\python3.12\site-packages\~jango\utils\dates.py:36
-#, fuzzy
-#| msgid "Remember me"
 msgid "December"
-msgstr "Recordarme"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\utils\dates.py:39
 #: .\cms\venv\lib\python3.12\site-packages\django\utils\dates.py:39
@@ -5304,11 +5119,9 @@ msgstr ""
 #: .\portal\venv\lib\python3.12\site-packages\django\utils\dates.py:75
 #: .\venv\lib\python3.12\site-packages\django\utils\dates.py:75
 #: .\venv\lib\python3.12\site-packages\~jango\utils\dates.py:75
-#, fuzzy
-#| msgid "Remember me"
 msgctxt "alt. month"
 msgid "September"
-msgstr "Recordarme"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\utils\dates.py:76
 #: .\cms\venv\lib\python3.12\site-packages\django\utils\dates.py:76
@@ -5326,11 +5139,9 @@ msgstr ""
 #: .\portal\venv\lib\python3.12\site-packages\django\utils\dates.py:77
 #: .\venv\lib\python3.12\site-packages\django\utils\dates.py:77
 #: .\venv\lib\python3.12\site-packages\~jango\utils\dates.py:77
-#, fuzzy
-#| msgid "Phone number"
 msgctxt "alt. month"
 msgid "November"
-msgstr "Número de teléfono"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\utils\dates.py:78
 #: .\cms\venv\lib\python3.12\site-packages\django\utils\dates.py:78
@@ -5338,11 +5149,9 @@ msgstr "Número de teléfono"
 #: .\portal\venv\lib\python3.12\site-packages\django\utils\dates.py:78
 #: .\venv\lib\python3.12\site-packages\django\utils\dates.py:78
 #: .\venv\lib\python3.12\site-packages\~jango\utils\dates.py:78
-#, fuzzy
-#| msgid "Remember me"
 msgctxt "alt. month"
 msgid "December"
-msgstr "Recordarme"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\utils\ipv6.py:20
 #: .\cms\venv\lib\python3.12\site-packages\django\utils\ipv6.py:20
@@ -5371,7 +5180,7 @@ msgstr ""
 #: .\venv\lib\python3.12\site-packages\django\utils\text.py:287
 #: .\venv\lib\python3.12\site-packages\~jango\utils\text.py:287
 msgid "or"
-msgstr "o"
+msgstr ""
 
 #. Translators: This string is used as a separator between list elements
 #: .\backend\venv\lib\python3.12\site-packages\django\utils\text.py:306
@@ -5577,10 +5386,8 @@ msgstr ""
 #: .\venv\lib\python3.12\site-packages\~jango\views\generic\dates.py:64
 #: .\venv\lib\python3.12\site-packages\~jango\views\generic\dates.py:115
 #: .\venv\lib\python3.12\site-packages\~jango\views\generic\dates.py:214
-#, fuzzy
-#| msgid "Date of birth"
 msgid "Date out of range"
-msgstr "Fecha de nacimiento"
+msgstr ""
 
 #: .\backend\venv\lib\python3.12\site-packages\django\views\generic\dates.py:94
 #: .\cms\venv\lib\python3.12\site-packages\django\views\generic\dates.py:94
@@ -6096,10 +5903,8 @@ msgid "Couldn't detect Bash version, shell completion is not supported."
 msgstr ""
 
 #: .\cms\venv\lib\python3.12\site-packages\click\termui.py:162
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Repeat for confirmation"
-msgstr "Información personal"
+msgstr ""
 
 #: .\cms\venv\lib\python3.12\site-packages\click\termui.py:178
 msgid "Error: The value you entered was invalid."
@@ -6159,10 +5964,8 @@ msgid "{value!r} is not a valid UUID."
 msgstr ""
 
 #: .\cms\venv\lib\python3.12\site-packages\click\types.py:893
-#, fuzzy
-#| msgid "Public profile"
 msgid "file"
-msgstr "Perfil público"
+msgstr ""
 
 #: .\cms\venv\lib\python3.12\site-packages\click\types.py:895
 msgid "directory"
@@ -6212,10 +6015,8 @@ msgid "Courses"
 msgstr ""
 
 #: .\docs\development\developer-guidelines.html:505
-#, fuzzy
-#| msgid "Share my progress"
 msgid "Your Progress"
-msgstr "Compartir mi progreso"
+msgstr ""
 
 #: .\docs\development\developer-guidelines.html:511
 msgid "Lessons"
@@ -6248,10 +6049,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: .\portal\public_web\templates\components\dynamic_apps_dropdown.html:8
-#, fuzzy
-#| msgid "This username is available"
 msgid "No apps available"
-msgstr "Este nombre de usuario está disponible"
+msgstr ""
 
 #: .\portal\public_web\templates\components\public_footer.html:9
 #: .\portal\public_web\templates\public_web\landing.html:142
@@ -6353,10 +6152,8 @@ msgstr ""
 
 #: .\portal\public_web\templates\components\public_footer.html:82
 #: .\backend\apps\authentication\templates\emails\terms_reminder.html:281
-#, fuzzy
-#| msgid "Privacy Policy"
 msgid "Privacy"
-msgstr "Política de Privacidad"
+msgstr ""
 
 #: .\portal\public_web\templates\components\public_footer.html:85
 msgid "Terms"
@@ -6391,10 +6188,8 @@ msgid "View all apps"
 msgstr ""
 
 #: .\portal\public_web\templates\components\public_header.html:49
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Documentation"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\components\public_header.html:64
 msgid "Requests"
@@ -6402,17 +6197,13 @@ msgstr ""
 
 #: .\portal\public_web\templates\components\public_header.html:169
 #: .\portal\public_web\templates\components\public_header.html:214
-#, fuzzy
-#| msgid "Log in"
 msgid "Log In"
-msgstr "Iniciar sesión"
+msgstr ""
 
 #: .\portal\public_web\templates\components\public_header.html:172
 #: .\portal\public_web\templates\components\public_header.html:217
-#, fuzzy
-#| msgid "Sign up"
 msgid "Sign Up"
-msgstr "Registrarse"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\about.html:6
 msgid "About Open Linguify"
@@ -6449,17 +6240,13 @@ msgstr ""
 
 #: .\portal\public_web\templates\public_web\about.html:45
 #: .\portal\public_web\templates\public_web\brand.html:142
-#, fuzzy
-#| msgid "Native Language"
 msgid "Active Learners"
-msgstr "Idioma nativo"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\about.html:49
 #: .\portal\public_web\templates\public_web\brand.html:154
-#, fuzzy
-#| msgid "Language you want to learn"
 msgid "Languages Supported"
-msgstr "Idioma que quieres aprender"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\about.html:53
 #: .\portal\public_web\templates\public_web\about.html:214
@@ -6553,10 +6340,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\about.html:158
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Innovation"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\about.html:160
 msgid ""
@@ -6694,10 +6479,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\about.html:323
-#, fuzzy
-#| msgid "Speaking practice"
 msgid "Completion Rate"
-msgstr "Práctica oral"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\about.html:327
 #: .\portal\public_web\templates\public_web\about.html:400
@@ -6734,10 +6517,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\about.html:376
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Start Learning Free"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\about.html:381
 #: .\portal\public_web\templates\public_web\brand.html:30
@@ -6827,17 +6608,13 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_community.html:25
-#, fuzzy
-#| msgid "Select the language to learn"
 msgid "Connect with fellow learners worldwide"
-msgstr "Selecciona el idioma a aprender"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_community.html:32
 #: .\portal\public_web\templates\public_web\apps\app_community.html:332
-#, fuzzy
-#| msgid "Back to home"
 msgid "Join Community"
-msgstr "Volver al inicio"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_community.html:36
 #: .\portal\public_web\templates\public_web\apps\app_community.html:336
@@ -6851,10 +6628,8 @@ msgstr "Volver al inicio"
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:387
 #: .\portal\public_web\templates\public_web\apps\apps_list.html:29
 #: .\portal\public_web\templates\public_web\apps\apps_list.html:150
-#, fuzzy
-#| msgid "Learning Methods"
 msgid "Go to Dashboard"
-msgstr "Métodos de aprendizaje"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_community.html:67
 msgid "Connect and Learn Together"
@@ -6884,10 +6659,8 @@ msgid "Progress Sharing"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_community.html:109
-#, fuzzy
-#| msgid "Achievement notifications"
 msgid "Showcase achievements"
-msgstr "Notificaciones de logros"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_community.html:121
 msgid "Discover Resources"
@@ -6925,10 +6698,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_community.html:173
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Social Learning"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_community.html:202
 msgid "Community Features"
@@ -6969,10 +6740,8 @@ msgid "Get help from experienced community members"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_community.html:252
-#, fuzzy
-#| msgid "Back to home"
 msgid "Why Join Our Community?"
-msgstr "Volver al inicio"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_community.html:253
 msgid ""
@@ -7074,16 +6843,12 @@ msgid "Step-by-step learning"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_course.html:95
-#, fuzzy
-#| msgid "Listening exercises"
 msgid "Interactive Exercises"
-msgstr "Ejercicios de escucha"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_course.html:96
-#, fuzzy
-#| msgid "Speaking practice"
 msgid "Engaging practice"
-msgstr "Práctica oral"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_course.html:109
 msgid "Monitor your advancement"
@@ -7108,10 +6873,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_course.html:147
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Learning"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_course.html:176
 msgid "Why Choose Our Courses?"
@@ -7130,20 +6893,16 @@ msgid "Carefully organized lessons for optimal learning progression"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_course.html:195
-#, fuzzy
-#| msgid "Share my progress"
 msgid "Personal Progress"
-msgstr "Compartir mi progreso"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_course.html:196
 msgid "Track your advancement and see your improvement over time"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_course.html:204
-#, fuzzy
-#| msgid "Streak notifications"
 msgid "Certifications"
-msgstr "Notificaciones de racha"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_course.html:205
 msgid "Earn certificates as you complete courses and milestones"
@@ -7214,10 +6973,8 @@ msgid "Advanced formatting options"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_documents.html:95
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Real-time Collaboration"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_documents.html:96
 msgid "Live editing with team"
@@ -7240,10 +6997,8 @@ msgid "Customizable permissions"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_documents.html:134
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Organization"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_documents.html:135
 msgid "Folders, tags & categories"
@@ -7366,10 +7121,8 @@ msgstr ""
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:6
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:23
 #: .\portal\public_web\templates\public_web\landing.html:487
-#, fuzzy
-#| msgid "Native Language"
 msgid "Language AI"
-msgstr "Idioma nativo"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:8
 msgid ""
@@ -7384,10 +7137,8 @@ msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:32
 #: .\portal\public_web\templates\public_web\landing.html:164
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Start Learning"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:67
 msgid "AI-Powered Language Learning"
@@ -7419,10 +7170,8 @@ msgid "Advanced pronunciation analysis"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:108
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Real-time Corrections"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:109
 msgid "Instant grammar & vocabulary feedback"
@@ -7437,10 +7186,8 @@ msgid "Native-level AI assistants"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:134
-#, fuzzy
-#| msgid "Language you are currently learning"
 msgid "Personalized Learning"
-msgstr "Idioma que estás aprendiendo actualmente"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:135
 msgid "Adapts to your pace & goals"
@@ -7517,10 +7264,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:276
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Pronunciation Analysis"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:277
 msgid ""
@@ -7529,10 +7274,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:288
-#, fuzzy
-#| msgid "Grammar lessons"
 msgid "Grammar Coaching"
-msgstr "Lecciones de gramática"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:289
 msgid ""
@@ -7547,10 +7290,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:317
-#, fuzzy
-#| msgid "Speaking practice"
 msgid "Diverse Conversation Topics"
-msgstr "Práctica oral"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:318
 msgid ""
@@ -7559,26 +7300,20 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:325
-#, fuzzy
-#| msgid "Native Language"
 msgid "Business & Career"
-msgstr "Idioma nativo"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:331
 msgid "Travel & Culture"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:337
-#, fuzzy
-#| msgid "Daily Goal"
 msgid "Daily Life"
-msgstr "Objetivo diario"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:343
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Education"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:349
 msgid "Arts & Entertainment"
@@ -7599,10 +7334,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_language_ai.html:383
-#, fuzzy
-#| msgid "Error during verification"
 msgid "Start AI Conversation"
-msgstr "Error durante la verificación"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_notebook.html:25
 msgid "Organize your learning intelligently"
@@ -7610,10 +7343,8 @@ msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_notebook.html:36
 #: .\portal\public_web\templates\public_web\apps\app_notebook.html:461
-#, fuzzy
-#| msgid "Create an account"
 msgid "Create my notes"
-msgstr "Crear una cuenta"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_notebook.html:55
 msgid "Notebook - Open Linguify"
@@ -7621,10 +7352,8 @@ msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_notebook.html:73
 #: .\portal\public_web\templates\public_web\apps\app_notebook.html:108
-#, fuzzy
-#| msgid "Grammar lessons"
 msgid "French Grammar"
-msgstr "Lecciones de gramática"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_notebook.html:74
 msgid "French verb tenses and conjugations..."
@@ -7705,7 +7434,7 @@ msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_revision.html:68
 msgid "Flashcards"
-msgstr "Tarjetas de memoria"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_revision.html:81
 msgid "English Vocabulary"
@@ -7739,10 +7468,8 @@ msgid "She has beautiful eyes"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_revision.html:169
-#, fuzzy
-#| msgid "Flashcards"
 msgid "Smart Flashcard System"
-msgstr "Tarjetas de memoria"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_revision.html:173
 msgid ""
@@ -7756,28 +7483,21 @@ msgid "Spaced repetition algorithm"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_revision.html:185
-#, fuzzy
-#| msgid "Error during verification"
 msgid "Optimal memorization"
-msgstr "Error durante la verificación"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_revision.html:197
 msgid "Custom decks"
 msgstr ""
 
-# Registration form fields
 #: .\portal\public_web\templates\public_web\apps\app_revision.html:198
-#, fuzzy
-#| msgid "Create your free account"
 msgid "Create your content"
-msgstr "Crea tu cuenta gratuita"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_revision.html:341
 #: .\portal\public_web\templates\public_web\brand.html:71
-#, fuzzy
-#| msgid "Flashcards"
 msgid "Smart Flashcards"
-msgstr "Tarjetas de memoria"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_revision.html:342
 msgid "Adaptive cards that adjust to your pace"
@@ -7921,10 +7641,8 @@ msgid "Deadline management with intelligent reminders"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_todo.html:349
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Project Organization"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\apps\app_todo.html:360
 msgid "Progress Analytics"
@@ -8052,10 +7770,8 @@ msgstr ""
 
 #: .\portal\public_web\templates\public_web\brand.html:33
 #: .\portal\public_web\templates\public_web\landing.html:166
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Learn More"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\brand.html:46
 msgid "Why Choose OpenLinguify?"
@@ -8104,10 +7820,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\brand.html:107
-#, fuzzy
-#| msgid "Language you are currently learning"
 msgid "Collaborative Learning"
-msgstr "Idioma que estás aprendiendo actualmente"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\brand.html:109
 msgid ""
@@ -8126,10 +7840,8 @@ msgid "Trusted by Learners Worldwide"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\brand.html:148
-#, fuzzy
-#| msgid "Flashcards"
 msgid "Flashcards Created"
-msgstr "Tarjetas de memoria"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\brand.html:160
 msgid "User Satisfaction"
@@ -8175,10 +7887,8 @@ msgid "Built by educators and learners, for educators and learners worldwide"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\brand.html:215
-#, fuzzy
-#| msgid "Privacy Policy"
 msgid "Privacy Focused"
-msgstr "Política de Privacidad"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\brand.html:216
 msgid ""
@@ -8208,16 +7918,12 @@ msgid "Get in touch with our support team"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\contact.html:21
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Contact Information"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\contact.html:24
-#, fuzzy
-#| msgid "Email"
 msgid "Email Support"
-msgstr "Email"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\contact.html:25
 msgid "General inquiries and support"
@@ -8250,7 +7956,7 @@ msgstr ""
 #: .\portal\public_web\templates\public_web\contact.html:63
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:86
 msgid "Email"
-msgstr "Email"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\contact.html:68
 #: .\backend\apps\authentication\models\email_models.py:50
@@ -8260,22 +7966,16 @@ msgid "Subject"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\contact.html:70
-#, fuzzy
-#| msgid "Select the language to learn"
 msgid "Select a topic"
-msgstr "Selecciona el idioma a aprender"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\contact.html:71
-#, fuzzy
-#| msgid "Personal Information"
 msgid "General Inquiry"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\contact.html:72
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Technical Support"
-msgstr "Información personal"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\contact.html:73
 msgid "Bug Report"
@@ -8294,13 +7994,11 @@ msgstr ""
 #: .\backend\apps\authentication\forms\auth_forms.py:86
 #: .\backend\apps\authentication\forms\auth_forms.py:132
 msgid "Other"
-msgstr "Otro"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\contact.html:82
-#, fuzzy
-#| msgid "Tell us about yourself..."
 msgid "Tell us more about your inquiry..."
-msgstr "Cuéntanos sobre ti..."
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\contact.html:85
 msgid "Send Message"
@@ -8378,10 +8076,8 @@ msgid "AI-powered lessons"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\landing.html:41
-#, fuzzy
-#| msgid "Interface Language"
 msgid "Interactive flashcards"
-msgstr "Idioma de la interfaz"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\landing.html:42
 msgid "Speech recognition"
@@ -8462,20 +8158,16 @@ msgid "Productivity"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\landing.html:234
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Spaced Learning"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\landing.html:247
 msgid "Note Taking"
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\landing.html:260
-#, fuzzy
-#| msgid "Language you are currently learning"
 msgid "Structured Learning"
-msgstr "Idioma que estás aprendiendo actualmente"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\landing.html:272
 #: .\portal\public_web\templates\public_web\landing.html:427
@@ -8696,10 +8388,8 @@ msgid ""
 msgstr ""
 
 #: .\portal\public_web\templates\public_web\landing.html:691
-#, fuzzy
-#| msgid "Share my progress"
 msgid "Start Your Learning Journey"
-msgstr "Compartir mi progreso"
+msgstr ""
 
 #: .\portal\public_web\templates\public_web\public_base.html:63
 msgid "OpenLinguify - Open source platform for modern education"
@@ -8818,10 +8508,8 @@ msgid "Translations"
 msgstr ""
 
 #: .\backend\apps\authentication\admin\email_admin.py:66
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Campaign Information"
-msgstr "Información personal"
+msgstr ""
 
 #: .\backend\apps\authentication\admin\email_admin.py:69
 #: .\backend\apps\authentication\models\email_models.py:105
@@ -8872,16 +8560,12 @@ msgid "Duplicate campaign"
 msgstr ""
 
 #: .\backend\apps\authentication\enhanced_admin\templates\admin\send_notification.html:33
-#, fuzzy
-#| msgid "Streak notifications"
 msgid "Send notification"
-msgstr "Notificaciones de racha"
+msgstr ""
 
 #: .\backend\apps\authentication\enhanced_admin\templates\admin\send_notification.html:43
-#, fuzzy
-#| msgid "Notifications & Reminders"
 msgid "Send notification to selected users"
-msgstr "Notificaciones y recordatorios"
+msgstr ""
 
 #: .\backend\apps\authentication\enhanced_admin\templates\admin\send_notification.html:47
 #, python-format
@@ -8891,10 +8575,8 @@ msgid ""
 msgstr ""
 
 #: .\backend\apps\authentication\enhanced_admin\templates\admin\send_notification.html:67
-#, fuzzy
-#| msgid "Streak notifications"
 msgid "Send Notification"
-msgstr "Notificaciones de racha"
+msgstr ""
 
 #: .\backend\apps\authentication\enhanced_admin\templates\admin\user_stats_dashboard.html:88
 #: .\backend\apps\authentication\enhanced_admin\templates\admin\user_stats_dashboard.html:93
@@ -8903,97 +8585,93 @@ msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:31
 msgid "Your first name"
-msgstr "Tu nombre"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:33
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:77
 #: .\backend\apps\authentication\templates\authentication\register.html:57
 msgid "First name"
-msgstr "Nombre"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:40
 msgid "Your last name"
-msgstr "Tu apellido"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:42
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:81
 #: .\backend\apps\authentication\templates\authentication\register.html:66
 msgid "Last name"
-msgstr "Apellido"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:49
 msgid "username"
-msgstr "nombre_usuario"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:51
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:96
 #: .\backend\apps\authentication\templates\authentication\register.html:77
 msgid "Username"
-msgstr "Nombre de usuario"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:57
 msgid "your@email.com"
-msgstr "tu@email.com"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:69
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:91
 msgid "Phone number"
-msgstr "Número de teléfono"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:70
 msgid "Optional - for account recovery"
-msgstr "Opcional - para recuperación de cuenta"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:78
 #: .\backend\apps\authentication\templates\authentication\register.html:116
 msgid "Date of birth"
-msgstr "Fecha de nacimiento"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:83
 msgid "Select your gender"
-msgstr "Selecciona tu género"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:84
 msgid "Male"
-msgstr "Masculino"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:85
 msgid "Female"
-msgstr "Femenino"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:87
 msgid "Prefer not to say"
-msgstr "Prefiero no decirlo"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:92
 #: .\backend\apps\authentication\templates\authentication\register.html:125
 msgid "Gender"
-msgstr "Género"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:98
 #: .\backend\apps\authentication\forms\auth_forms.py:100
 #: .\backend\apps\authentication\templates\authentication\login.html:90
 #: .\backend\apps\authentication\templates\authentication\register.html:136
 msgid "Password"
-msgstr "Contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:106
 #: .\backend\apps\authentication\forms\auth_forms.py:108
 #: .\backend\apps\authentication\templates\authentication\register.html:152
 msgid "Confirm password"
-msgstr "Confirmar contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:117
-#, fuzzy
-#| msgid "Interface Language"
 msgid "Interface language"
-msgstr "Idioma de la interfaz"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:118
-#, fuzzy
-#| msgid "Choose the display language for the Linguify interface"
 msgid "Choose the language for the application interface"
-msgstr "Elige el idioma de visualización para la interfaz de Linguify"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:123
 msgid "-- Select an option --"
@@ -9041,20 +8719,17 @@ msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:147
 msgid "I accept the terms of use and privacy policy"
-msgstr "Acepto los términos de uso y la política de privacidad"
+msgstr ""
 
 #: .\backend\apps\authentication\forms\auth_forms.py:173
 msgid "Please use a permanent email address"
 msgstr ""
 
-# DuplicateEmailError messages
 #: .\backend\apps\authentication\forms\auth_forms.py:181
 msgid ""
 "An account with this email already exists. You will be redirected to the "
 "login page."
 msgstr ""
-"Ya existe una cuenta con este correo electrónico. Serás redirigido a la "
-"página de inicio de sesión."
 
 #: .\backend\apps\authentication\forms\auth_forms.py:201
 msgid "You must accept the terms and conditions to create an account"
@@ -9089,10 +8764,8 @@ msgid "Template Name"
 msgstr ""
 
 #: .\backend\apps\authentication\models\email_models.py:26
-#, fuzzy
-#| msgid "Email"
 msgid "Email Type"
-msgstr "Email"
+msgstr ""
 
 #: .\backend\apps\authentication\models\email_models.py:32
 #: .\backend\apps\authentication\models\email_models.py:104
@@ -9100,10 +8773,8 @@ msgid "Email Template"
 msgstr ""
 
 #: .\backend\apps\authentication\models\email_models.py:33
-#, fuzzy
-#| msgid "Email address"
 msgid "Email Templates"
-msgstr "Correo electrónico"
+msgstr ""
 
 #: .\backend\apps\authentication\models\email_models.py:51
 msgid "Body (Text)"
@@ -9193,10 +8864,8 @@ msgid "Total Recipients"
 msgstr ""
 
 #: .\backend\apps\authentication\models\email_models.py:114
-#, fuzzy
-#| msgid "Email"
 msgid "Emails Sent"
-msgstr "Email"
+msgstr ""
 
 #: .\backend\apps\authentication\models\email_models.py:115
 msgid "Failed Emails"
@@ -9228,16 +8897,12 @@ msgid "Error Message"
 msgstr ""
 
 #: .\backend\apps\authentication\models\email_models.py:262
-#, fuzzy
-#| msgid "Email"
 msgid "Email Log"
-msgstr "Email"
+msgstr ""
 
 #: .\backend\apps\authentication\models\email_models.py:263
-#, fuzzy
-#| msgid "Email"
 msgid "Email Logs"
-msgstr "Email"
+msgstr ""
 
 #: .\backend\apps\authentication\models\models.py:118
 msgid ""
@@ -9251,7 +8916,7 @@ msgstr ""
 #: .\backend\apps\authentication\templates\authentication\register.html:249
 #: .\backend\apps\authentication\utils\validators.py:168
 msgid "This username is already taken"
-msgstr "Este nombre de usuario ya está ocupado"
+msgstr ""
 
 #: .\backend\apps\authentication\models\models.py:159
 msgid ""
@@ -9261,13 +8926,11 @@ msgstr ""
 
 #: .\backend\apps\authentication\models\models.py:266
 msgid "This email address is already associated with an existing account."
-msgstr "Esta dirección de correo ya está asociada con una cuenta existente."
+msgstr ""
 
 #: .\backend\apps\authentication\models\models.py:296
-#, fuzzy
-#| msgid "Native language"
 msgid "language"
-msgstr "Idioma nativo"
+msgstr ""
 
 #: .\backend\apps\authentication\models\models.py:296
 msgid "The language in which the user wants to see the interface."
@@ -9286,16 +8949,12 @@ msgid "Whether the user is a device or a real user."
 msgstr ""
 
 #: .\backend\apps\authentication\models\models.py:301
-#, fuzzy
-#| msgid "Achievement notifications"
 msgid "Receive the notification by emails"
-msgstr "Notificaciones de logros"
+msgstr ""
 
 #: .\backend\apps\authentication\models\models.py:302
-#, fuzzy
-#| msgid "Achievement notifications"
 msgid "Receive the push notification"
-msgstr "Notificaciones de logros"
+msgstr ""
 
 #: .\backend\apps\authentication\models\models.py:303
 msgid "Receive the marketing emails"
@@ -9326,10 +8985,8 @@ msgid "Recipient Type"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\admin\email_campaign_preview.html:108
-#, fuzzy
-#| msgid "Email address"
 msgid "Email Previews"
-msgstr "Correo electrónico"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\admin\email_campaign_preview.html:112
 msgid "No translations found for this template. Please add translations first."
@@ -9344,83 +9001,79 @@ msgid "HTML Body"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\admin\email_campaign_preview.html:148
-#, fuzzy
-#| msgid "Back to home"
 msgid "Back to Campaign"
-msgstr "Volver al inicio"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:12
 #: .\backend\apps\authentication\templates\authentication\profile.html:22
 msgid "Profile picture"
-msgstr "Foto de perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:25
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:34
 msgid "Current profile picture"
-msgstr "Foto de perfil actual"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:46
 #: .\backend\apps\authentication\templates\authentication\profile.html:29
 msgid "Change profile picture"
-msgstr "Cambiar foto de perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:48
 msgid "Accepted formats: JPG, PNG, WEBP. Max size: 5MB"
-msgstr "Formatos aceptados: JPG, PNG, WEBP. Tamaño máx: 5MB"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:60
 msgid "Personal Information"
-msgstr "Información personal"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:88
 msgid "Email cannot be changed"
-msgstr "El correo no se puede cambiar"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:93
 msgid "Optional. Format: +32 123 456 789"
-msgstr "Opcional. Formato: +32 123 456 789"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:100
 msgid "Biography"
-msgstr "Biografía"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:101
 msgid "Tell us about yourself..."
-msgstr "Cuéntanos sobre ti..."
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:105
 msgid "Interface Language"
-msgstr "Idioma de la interfaz"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:106
 msgid "Choose the display language for the Linguify interface"
-msgstr "Elige el idioma de visualización para la interfaz de Linguify"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:131
 msgid "Privacy & Security"
-msgstr "Privacidad y seguridad"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:149
 msgid "Public profile"
-msgstr "Perfil público"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:151
 msgid "Allow other users to see your profile"
-msgstr "Permitir que otros usuarios vean tu perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:156
 msgid "Share my progress"
-msgstr "Compartir mi progreso"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\account_settings.html:158
 msgid "Display your learning stats on your profile"
-msgstr "Mostrar tus estadísticas de aprendizaje en tu perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification.html:8
-#, fuzzy
-#| msgid "Error during verification"
 msgid "Email Verification"
-msgstr "Error durante la verificación"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification.html:31
 msgid "Welcome to"
@@ -9445,10 +9098,8 @@ msgid ""
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification.html:57
-#, fuzzy
-#| msgid "Email address"
 msgid "Verify My Email Address"
-msgstr "Correo electrónico"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification.html:65
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.html:94
@@ -9494,10 +9145,8 @@ msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification.html:129
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification.txt:17
-#, fuzzy
-#| msgid "Select the language to learn"
 msgid "Connect with other language learners"
-msgstr "Selecciona el idioma a aprender"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification.html:143
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification.txt:19
@@ -9531,10 +9180,8 @@ msgid "Verification Link:"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification.txt:26
-#, fuzzy
-#| msgid "This email address is already associated with an existing account."
 msgid "This email was sent because you registered for a Linguify account."
-msgstr "Esta dirección de correo ya está asociada con una cuenta existente."
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification_error.html:8
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification_error.html:185
@@ -9550,7 +9197,7 @@ msgstr ""
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_done.html:40
 #: .\backend\apps\authentication\templates\authentication\register.html:31
 msgid "Back to home"
-msgstr "Volver al inicio"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification_error.html:189
 msgid "This verification link has expired."
@@ -9574,10 +9221,8 @@ msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification_error.html:201
 #: .\backend\apps\authentication\views\auth_views.py:254
-#, fuzzy
-#| msgid "This email is already registered"
 msgid "This verification link has already been used."
-msgstr "Este email ya está registrado"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification_error.html:205
 msgid "Your email may already be verified, or you've already used this link."
@@ -9604,10 +9249,8 @@ msgid ""
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification_error.html:225
-#, fuzzy
-#| msgid "Error during verification"
 msgid "An error occurred during verification."
-msgstr "Error durante la verificación"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification_error.html:229
 msgid "There was a technical issue processing your verification."
@@ -9641,10 +9284,8 @@ msgid "Check Your Email"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification_waiting.html:194
-#, fuzzy
-#| msgid "Select your level"
 msgid "Check your email"
-msgstr "Selecciona tu nivel"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\emails\email_verification_waiting.html:196
 msgid "We've sent a verification link to:"
@@ -9700,10 +9341,8 @@ msgid ""
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\feedback\feedback_create.html:256
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Basic Information"
-msgstr "Información personal"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\feedback\feedback_create.html:298
 msgid "What type of feedback is this?"
@@ -9718,10 +9357,8 @@ msgid "Bug Report Details"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\feedback\feedback_create.html:360
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Technical Information"
-msgstr "Información personal"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\feedback\feedback_create.html:360
 msgid "Optional"
@@ -9863,10 +9500,8 @@ msgid "Responses"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\feedback\feedback_detail.html:620
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Information"
-msgstr "Información personal"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\feedback\feedback_detail.html:624
 msgid "ID"
@@ -9914,10 +9549,8 @@ msgid "Days Open"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\feedback\feedback_detail.html:716
-#, fuzzy
-#| msgid "Reminder Time"
 msgid "Resolution Time"
-msgstr "Hora del recordatorio"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\feedback\feedback_detail.html:733
 msgid "Back to My Feedbacks"
@@ -10096,14 +9729,13 @@ msgstr ""
 msgid "Increase default text size"
 msgstr ""
 
-# Login page
 #: .\backend\apps\authentication\templates\authentication\login.html:8
 msgid "Login"
-msgstr "Iniciar sesión"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\login.html:46
 msgid "Sign in to your account"
-msgstr "Inicia sesión en tu cuenta"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\login.html:52
 #, python-format
@@ -10111,50 +9743,45 @@ msgid ""
 "An account with <strong>%(email)s</strong> already exists. Please sign in "
 "below."
 msgstr ""
-"Ya existe una cuenta con <strong>%(email)s</strong>. Por favor, inicia "
-"sesión a continuación."
 
 #: .\backend\apps\authentication\templates\authentication\login.html:78
 msgid "Email or username"
-msgstr "Email o nombre de usuario"
+msgstr ""
 
-# Login form placeholders
 #: .\backend\apps\authentication\templates\authentication\login.html:79
 msgid "your@email.com or username"
-msgstr "tu@email.com o nombre_usuario"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\login.html:91
 msgid "Enter your password"
-msgstr "Introduce tu contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\login.html:104
 msgid "Remember me"
-msgstr "Recordarme"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\login.html:110
 #: .\backend\apps\authentication\templates\authentication\login.html:158
 #: .\backend\apps\authentication\templates\authentication\register.html:223
 msgid "Log in"
-msgstr "Iniciar sesión"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\login.html:117
 msgid "Forgot password?"
-msgstr "¿Olvidaste tu contraseña?"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\login.html:121
 msgid "Don't have an account?"
-msgstr "¿No tienes una cuenta?"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\login.html:123
 msgid "Create an account"
-msgstr "Crear una cuenta"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset.html:7
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset.html:51
-#, fuzzy
-#| msgid "Password"
 msgid "Reset Password"
-msgstr "Contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset.html:52
 msgid ""
@@ -10168,26 +9795,20 @@ msgid ""
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset.html:86
-#, fuzzy
-#| msgid "Enter your password"
 msgid "Enter your email"
-msgstr "Introduce tu contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset.html:92
 msgid "Send Reset Link"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset.html:98
-#, fuzzy
-#| msgid "Enter your password"
 msgid "Remember your password?"
-msgstr "Introduce tu contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset.html:100
-#, fuzzy
-#| msgid "Back to home"
 msgid "Back to login"
-msgstr "Volver al inicio"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_complete.html:7
 msgid "Password Reset Complete"
@@ -10203,12 +9824,9 @@ msgid ""
 "password."
 msgstr ""
 
-# Login page
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_complete.html:200
-#, fuzzy
-#| msgid "Login"
 msgid "Go to Login"
-msgstr "Iniciar sesión"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_complete.html:206
 msgid "Security Tips:"
@@ -10241,16 +9859,12 @@ msgstr ""
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_confirm.html:7
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_confirm.html:186
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_confirm.html:247
-#, fuzzy
-#| msgid "Password"
 msgid "Set New Password"
-msgstr "Contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_confirm.html:188
-#, fuzzy
-#| msgid "Enter your password"
 msgid "Please enter your new password below"
-msgstr "Introduce tu contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_confirm.html:206
 msgid "Password requirements:"
@@ -10273,16 +9887,12 @@ msgid "Cannot be entirely numeric"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_confirm.html:220
-#, fuzzy
-#| msgid "Password"
 msgid "New password"
-msgstr "Contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_confirm.html:236
-#, fuzzy
-#| msgid "Confirm password"
 msgid "Confirm new password"
-msgstr "Confirmar contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_confirm.html:253
 msgid "Invalid Link"
@@ -10323,13 +9933,11 @@ msgstr ""
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_confirm.html:330
 #: .\backend\apps\authentication\templates\authentication\register.html:246
 msgid "Passwords do not match"
-msgstr "Las contraseñas no coinciden"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_done.html:7
-#, fuzzy
-#| msgid "Email"
 msgid "Email Sent"
-msgstr "Email"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_done.html:61
 msgid "We've sent a password reset link to your email address."
@@ -10357,26 +9965,20 @@ msgid ""
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_done.html:99
-#, fuzzy
-#| msgid "Back to home"
 msgid "Back to Login"
-msgstr "Volver al inicio"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_done.html:105
 msgid "Still having trouble?"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.html:8
-#, fuzzy
-#| msgid "Password"
 msgid "Password Reset"
-msgstr "Contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.html:57
-#, fuzzy
-#| msgid "Enter your password"
 msgid "Reset your password securely"
-msgstr "Introduce tu contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.html:72
 msgid ""
@@ -10386,10 +9988,8 @@ msgid ""
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.html:83
-#, fuzzy
-#| msgid "Password"
 msgid "Reset My Password"
-msgstr "Contraseña"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.html:111
 #, python-format
@@ -10404,10 +10004,8 @@ msgid "Security tips for your new password:"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.html:128
-#, fuzzy
-#| msgid "Username must contain at least 3 characters"
 msgid "Use at least 8 characters"
-msgstr "El nombre de usuario debe contener al menos 3 caracteres"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.html:138
 msgid "Include uppercase and lowercase letters"
@@ -10418,10 +10016,8 @@ msgid "Add numbers and special characters"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.html:158
-#, fuzzy
-#| msgid "Personal Information"
 msgid "Avoid using personal information"
-msgstr "Información personal"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.html:172
 #: .\backend\apps\authentication\templates\authentication\password_reset\password_reset_email.txt:11
@@ -10472,26 +10068,20 @@ msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:61
 #: .\backend\apps\authentication\templates\authentication\profile.html:395
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Learning since"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:71
-#, fuzzy
-#| msgid "Current language level"
 msgid "Current level"
-msgstr "Nivel actual del idioma"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:81
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Learning goal"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:91
 msgid "Target language"
-msgstr "Idioma objetivo"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:105
 msgid "Continue Learning"
@@ -10502,10 +10092,8 @@ msgid "Follow"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:133
-#, fuzzy
-#| msgid "Learning Methods"
 msgid "Learning Dashboard"
-msgstr "Métodos de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:134
 msgid "Track your language learning progress"
@@ -10513,7 +10101,7 @@ msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:148
 msgid "Daily Goal"
-msgstr "Objetivo diario"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:149
 msgid "min"
@@ -10540,20 +10128,16 @@ msgid "12 cards due"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:215
-#, fuzzy
-#| msgid "Language you want to learn"
 msgid "Language Mastery"
-msgstr "Idioma que quieres aprender"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:216
 msgid "Your learning progression"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:280
-#, fuzzy
-#| msgid "Learning Methods"
 msgid "Learning Tools"
-msgstr "Métodos de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:282
 msgid "Browse"
@@ -10564,10 +10148,8 @@ msgid "Community & Achievements"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:355
-#, fuzzy
-#| msgid "Learning Level"
 msgid "Learning Streak"
-msgstr "Nivel de aprendizaje"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:356
 msgid "days in a row"
@@ -10590,28 +10172,20 @@ msgid "This Week"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile.html:399
-#, fuzzy
-#| msgid "Last name"
 msgid "Last active"
-msgstr "Apellido"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile_picture_management.html:5
-#, fuzzy
-#| msgid "Change profile picture"
 msgid "Manage Profile Picture"
-msgstr "Cambiar foto de perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile_picture_management.html:13
-#, fuzzy
-#| msgid "Profile picture"
 msgid "Profile Picture"
-msgstr "Foto de perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile_picture_management.html:18
-#, fuzzy
-#| msgid "Current profile picture"
 msgid "Current Profile Picture"
-msgstr "Foto de perfil actual"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile_picture_management.html:25
 msgid "Are you sure you want to delete your profile picture?"
@@ -10642,30 +10216,24 @@ msgid "Small"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile_picture_management.html:62
-#, fuzzy
-#| msgid "Change profile picture"
 msgid "Small profile picture"
-msgstr "Cambiar foto de perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile_picture_management.html:70
 msgid "Medium"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile_picture_management.html:71
-#, fuzzy
-#| msgid "Change profile picture"
 msgid "Medium profile picture"
-msgstr "Cambiar foto de perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile_picture_management.html:79
 msgid "Large"
 msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile_picture_management.html:80
-#, fuzzy
-#| msgid "Change profile picture"
 msgid "Large profile picture"
-msgstr "Cambiar foto de perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\profile_picture_management.html:91
 msgid "View Original"
@@ -10716,88 +10284,82 @@ msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:8
 msgid "Sign up"
-msgstr "Registrarse"
+msgstr ""
 
-# Registration form fields
 #: .\backend\apps\authentication\templates\authentication\register.html:41
 msgid "Create your free account"
-msgstr "Crea tu cuenta gratuita"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:81
 msgid "Only letters, numbers and @/./+/-/_"
-msgstr "Solo letras, números y @/./+/-/_"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:141
 msgid "Minimum 8 characters with letters and numbers"
-msgstr "Mínimo 8 caracteres con letras y números"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:195
 msgid "I accept the"
-msgstr "Acepto los"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:196
 msgid "Terms and Conditions"
-msgstr "Términos y Condiciones"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:197
 msgid "and the"
-msgstr "y la"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:198
 msgid "Privacy Policy"
-msgstr "Política de Privacidad"
+msgstr ""
 
-# Registration form fields
 #: .\backend\apps\authentication\templates\authentication\register.html:203
-#, fuzzy
-#| msgid "Create your free account"
 msgid "Required to create your account"
-msgstr "Crea tu cuenta gratuita"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:215
 msgid "Create my account"
-msgstr "Crear mi cuenta"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:221
 msgid "Already have an account?"
-msgstr "¿Ya tienes una cuenta?"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:228
 msgid "By registering, you accept our"
-msgstr "Al registrarte, aceptas nuestra"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:229
 msgid "cookies policy"
-msgstr "política de cookies"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:244
 #: .\backend\apps\authentication\utils\validators.py:136
 msgid "Username must contain at least 3 characters"
-msgstr "El nombre de usuario debe contener al menos 3 caracteres"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:245
 #: .\backend\apps\authentication\utils\validators.py:157
 msgid "Username must contain at least one letter or number"
-msgstr "El nombre de usuario debe contener al menos una letra o número"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:247
 msgid "Checking availability..."
-msgstr "Verificando disponibilidad..."
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:248
 msgid "Error during verification"
-msgstr "Error durante la verificación"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:250
 #: .\backend\apps\authentication\utils\validators.py:173
 msgid "This username is available"
-msgstr "Este nombre de usuario está disponible"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:251
-#, fuzzy
-#| msgid "Terms and Conditions"
 msgid "You must accept the terms and conditions"
-msgstr "Términos y Condiciones"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\authentication\register.html:252
 msgid "Account created successfully!"
@@ -10889,10 +10451,9 @@ msgstr ""
 
 #: .\backend\apps\authentication\templates\emails\terms_reminder.html:225
 #: .\backend\apps\authentication\templates\emails\terms_reminder.txt:4
-#, fuzzy, python-format
-#| msgid "Welcome, %(username)s!"
+#, python-format
 msgid "Hello %(name)s,"
-msgstr "¡Bienvenido, %(username)s!"
+msgstr ""
 
 #: .\backend\apps\authentication\templates\emails\terms_reminder.html:229
 #, python-format
@@ -11014,22 +10575,20 @@ msgid ""
 msgstr ""
 
 #: .\backend\apps\authentication\utils\validators.py:22
-#, fuzzy
-#| msgid "Username cannot be empty"
 msgid "The username cannot be empty."
-msgstr "El nombre de usuario no puede estar vacío"
+msgstr ""
 
 #: .\backend\apps\authentication\utils\validators.py:127
 msgid "Username cannot be empty"
-msgstr "El nombre de usuario no puede estar vacío"
+msgstr ""
 
 #: .\backend\apps\authentication\utils\validators.py:143
 msgid "Username cannot exceed 30 characters"
-msgstr "El nombre de usuario no puede exceder 30 caracteres"
+msgstr ""
 
 #: .\backend\apps\authentication\utils\validators.py:150
 msgid "Username can only contain letters, numbers, _ and -"
-msgstr "El nombre de usuario solo puede contener letras, números, _ y -"
+msgstr ""
 
 #: .\backend\apps\authentication\views\auth_views.py:64
 msgid ""
@@ -11046,8 +10605,6 @@ msgid ""
 "An account with this email already exists. Please login with your existing "
 "account."
 msgstr ""
-"Ya existe una cuenta con este correo electrónico. Por favor, inicia sesión "
-"con tu cuenta existente."
 
 #: .\backend\apps\authentication\views\auth_views.py:133
 msgid ""
@@ -11098,10 +10655,8 @@ msgid "Verification email sent successfully. Please check your inbox."
 msgstr ""
 
 #: .\backend\apps\authentication\views\auth_views.py:297
-#, fuzzy
-#| msgid "This email is already registered"
 msgid "This email is already verified."
-msgstr "Este email ya está registrado"
+msgstr ""
 
 #: .\backend\apps\authentication\views\auth_views.py:299
 msgid "Failed to send verification email. Please try again."
@@ -11227,10 +10782,8 @@ msgstr ""
 
 #: .\backend\apps\authentication\views\settings_views.py:141
 #: .\backend\apps\authentication\views\settings_views.py:142
-#, fuzzy
-#| msgid "Profile picture"
 msgid "Profile & Account"
-msgstr "Foto de perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\views\settings_views.py:145
 #: .\backend\apps\authentication\views\settings_views.py:170
@@ -11242,10 +10795,8 @@ msgid "You have already accepted the terms of use."
 msgstr ""
 
 #: .\backend\apps\authentication\views\terms_views.py:219
-#, fuzzy
-#| msgid "This email is already registered"
 msgid "Terms already accepted"
-msgstr "Este email ya está registrado"
+msgstr ""
 
 #: .\backend\apps\authentication\views\terms_views.py:233
 msgid "Terms accepted successfully!"
@@ -11268,10 +10819,8 @@ msgid "Polyglot"
 msgstr ""
 
 #: .\backend\apps\authentication\views\views.py:1415
-#, fuzzy
-#| msgid "Target language"
 msgid "Learn 3+ languages"
-msgstr "Idioma objetivo"
+msgstr ""
 
 #: .\backend\apps\authentication\views\views.py:1416
 msgid "Perfectionist"
@@ -11299,10 +10848,8 @@ msgid "Learn 1000 words"
 msgstr ""
 
 #: .\backend\apps\authentication\views\views.py:1419
-#, fuzzy
-#| msgid "Streak notifications"
 msgid "Streak Champion"
-msgstr "Notificaciones de racha"
+msgstr ""
 
 #: .\backend\apps\authentication\views\views.py:1419
 msgid "30 day streak"
@@ -11339,10 +10886,8 @@ msgstr ""
 
 #: .\backend\apps\authentication\views\views_profile.py:61
 #: .\backend\apps\authentication\views\views_profile.py:249
-#, fuzzy
-#| msgid "Change profile picture"
 msgid "Failed to process profile picture"
-msgstr "Cambiar foto de perfil"
+msgstr ""
 
 #: .\backend\apps\authentication\views\views_profile.py:102
 #: .\backend\apps\authentication\views\views_profile.py:136
@@ -11356,53 +10901,9 @@ msgid "Permission denied"
 msgstr ""
 
 #: .\backend\apps\authentication\views\views_profile.py:144
-#, fuzzy
-#| msgid "Current profile picture"
 msgid "User does not have a legacy profile picture"
-msgstr "Foto de perfil actual"
+msgstr ""
 
 #: .\backend\apps\authentication\views\views_profile.py:153
-#, fuzzy
-#| msgid "Change profile picture"
 msgid "Failed to migrate profile picture"
-msgstr "Cambiar foto de perfil"
-
-#~ msgid "privacy policy"
-#~ msgstr "política de privacidad"
-
-#~ msgid "Invalid username or password."
-#~ msgstr "Nombre de usuario o contraseña incorrectos."
-
-#~ msgid "I agree to the"
-#~ msgstr "Acepto los"
-
-# Error messages
-#~ msgid "Invalid username or password"
-#~ msgstr "Nombre de usuario o contraseña inválidos"
-
-#~ msgid "Your native language for translations"
-#~ msgstr "Tu idioma nativo para traducciones"
-
-#~ msgid "5 minutes (Casual)"
-#~ msgstr "5 minutos (Casual)"
-
-#~ msgid "10 minutes (Regular)"
-#~ msgstr "10 minutos (Regular)"
-
-#~ msgid "15 minutes (Serious)"
-#~ msgstr "15 minutos (Serio)"
-
-#~ msgid "30 minutes (Intense)"
-#~ msgstr "30 minutos (Intenso)"
-
-#~ msgid "Daily study reminder"
-#~ msgstr "Recordatorio de estudio diario"
-
-#~ msgid "Get reminded to practice every day"
-#~ msgstr "Recibe recordatorios para practicar cada día"
-
-#~ msgid "Celebrate your learning streaks"
-#~ msgstr "Celebra tus rachas de aprendizaje"
-
-#~ msgid "Get notified when you reach milestones"
-#~ msgstr "Recibe notificaciones cuando alcances hitos"
+msgstr ""

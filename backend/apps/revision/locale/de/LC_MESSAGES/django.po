@@ -62,7 +62,7 @@ msgstr ""
 #: .\backend\apps\revision\templates\components\revision_header.html:27
 #: .\backend\apps\revision\templates\revision\components\navbar.html:34
 msgid "Statistics"
-msgstr "Statistics"
+msgstr ""
 
 #: .\backend\apps\revision\admin.py:155
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:278
@@ -95,7 +95,7 @@ msgstr ""
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:38
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:51
 msgid "Description"
-msgstr "Description"
+msgstr ""
 
 #: .\backend\apps\revision\admin.py:243 .\backend\apps\revision\admin.py:573
 msgid "User"
@@ -162,7 +162,7 @@ msgstr ""
 #: .\backend\apps\revision\admin.py:557
 #: .\backend\apps\revision\templates\revision\partials\cards_section.html:13
 msgid "Front"
-msgstr "Front"
+msgstr ""
 
 #: .\backend\apps\revision\admin.py:562
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:354
@@ -182,7 +182,7 @@ msgstr ""
 #: .\backend\apps\revision\admin.py:641
 #: .\backend\apps\revision\templates\revision\components\navbar.html:134
 msgid "Progress"
-msgstr "Progress"
+msgstr ""
 
 #: .\backend\apps\revision\admin.py:645
 msgid "No review data available"
@@ -249,10 +249,8 @@ msgid "Review Card"
 msgstr ""
 
 #: .\backend\apps\revision\admin.py:837
-#, fuzzy
-#| msgid "Performance Breakdown"
 msgid "Performance Info"
-msgstr "Performance Breakdown"
+msgstr ""
 
 #: .\backend\apps\revision\admin.py:840
 msgid "Metrics"
@@ -271,10 +269,8 @@ msgid "Card Info"
 msgstr ""
 
 #: .\backend\apps\revision\admin.py:882
-#, fuzzy
-#| msgid "Deck Performance"
 msgid "Overall Performance"
-msgstr "Deck Performance"
+msgstr ""
 
 #: .\backend\apps\revision\admin.py:885
 msgid "Per-Mode Scores"
@@ -293,10 +289,8 @@ msgid "Confidence"
 msgstr ""
 
 #: .\backend\apps\revision\admin.py:916 .\backend\apps\revision\admin.py:920
-#, fuzzy
-#| msgid "Progress Rate"
 msgid "Success Rate"
-msgstr "Progress Rate"
+msgstr ""
 
 #: .\backend\apps\revision\admin.py:935
 msgid "Modes"
@@ -323,10 +317,8 @@ msgid "Stats"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:11
-#, fuzzy
-#| msgid "Import"
 msgid "Import Deck"
-msgstr "Import"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:15
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:147
@@ -343,13 +335,13 @@ msgstr "Import"
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:12
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:98
 msgid "Cancel"
-msgstr "Cancel"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:28
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:23
 #: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:13
 msgid "Deck Name"
-msgstr "Deck Name"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:33
 msgid "Enter the new deck name..."
@@ -361,10 +353,8 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:53
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:181
-#, fuzzy
-#| msgid "Description"
 msgid "Selection"
-msgstr "Description"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:60
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:188
@@ -402,16 +392,14 @@ msgid "Next - Preview"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:164
-#, fuzzy
-#| msgid "Import Cards"
 msgid "Import Preview"
-msgstr "Import Cards"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:195
 #: .\backend\apps\revision\templates\revision\components\navbar.html:153
 #: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:221
 msgid "Import"
-msgstr "Import"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\deck_import.html:208
 msgid "File"
@@ -512,23 +500,19 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:10
 msgid "Hide/Show sidebar"
-msgstr "Hide/Show sidebar"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:11
 msgid "Toggle sidebar"
-msgstr "Toggle sidebar"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:13
-#, fuzzy
-#| msgid "Hide/Show sidebar"
 msgid "Hide sidebar"
-msgstr "Hide/Show sidebar"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:14
-#, fuzzy
-#| msgid "Hide/Show sidebar"
 msgid "Show sidebar"
-msgstr "Hide/Show sidebar"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:24
 msgid "Card List"
@@ -536,7 +520,7 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:29
 msgid "Explore"
-msgstr "Explore"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:40
 msgid "Refresh"
@@ -555,15 +539,13 @@ msgid "3 last months"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:61
-#, fuzzy
-#| msgid "Statistics"
 msgid "Export statistics"
-msgstr "Statistics"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:63
 #: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:58
 msgid "Export"
-msgstr "Export"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:68
 msgid "Research in progress ..."
@@ -572,15 +554,15 @@ msgstr ""
 #: .\backend\apps\revision\templates\revision\components\navbar.html:73
 #: .\backend\apps\revision\templates\revision\components\navbar.html:76
 msgid "All statuses"
-msgstr "All statuses"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:77
 msgid "Recent"
-msgstr "Recent"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:78
 msgid "Popular"
-msgstr "Popular"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:79
 #: .\backend\apps\revision\templates\revision\components\navbar.html:121
@@ -589,7 +571,7 @@ msgstr "Popular"
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:109
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:160
 msgid "Public"
-msgstr "Public"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:86
 #: .\backend\apps\revision\templates\revision\components\navbar.html:89
@@ -599,7 +581,7 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:91
 msgid "Popularity"
-msgstr "Popularity"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:92
 msgid "Number of cards"
@@ -609,7 +591,7 @@ msgstr ""
 #: .\backend\apps\revision\templates\revision\components\navbar.html:103
 #: .\backend\apps\revision\templates\revision\components\navbar.html:141
 msgid "All tags"
-msgstr "All tags"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:102
 #: .\backend\apps\revision\templates\revision\components\navbar.html:144
@@ -618,24 +600,24 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:110
 msgid "Search..."
-msgstr "Search..."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:115
 #: .\backend\apps\revision\templates\revision\components\navbar.html:118
 msgid "All status"
-msgstr "All status"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:119
 msgid "Active"
-msgstr "Active"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:120
 msgid "Archived"
-msgstr "Archived"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:128
 msgid "Filter"
-msgstr "Filter"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:132
 msgid "Less recent"
@@ -643,7 +625,7 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:158
 msgid "New list"
-msgstr "New list"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:168
 msgid "Share"
@@ -655,37 +637,31 @@ msgid "Make public"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:170
-#, fuzzy
-#| msgid "No decks"
 msgid "Loading decks"
-msgstr "No decks"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:171
 msgid "Unnamed"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:172
-#, fuzzy
-#| msgid "Description"
 msgid "No description"
-msgstr "No description"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:173
-#, fuzzy
-#| msgid "All tags"
 msgid "Add tags"
-msgstr "All tags"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:175
 #: .\backend\apps\revision\templates\revision\partials\edit_card_form.html:57
 msgid "Save"
-msgstr "Save"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:177
 #: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:71
 #: .\backend\apps\revision\templates\revision\partials\tags\tag_templates.html:43
 msgid "Delete"
-msgstr "Delete"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:178
 #: .\backend\apps\revision\templates\revision\partials\create_card_form.html:33
@@ -696,10 +672,8 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:179
 #: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:45
-#, fuzzy
-#| msgid "Create Deck"
 msgid "Create"
-msgstr "Create Deck"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:180
 msgid "New"
@@ -730,10 +704,8 @@ msgstr ""
 #: .\backend\apps\revision\templates\revision\components\navbar.html:186
 #: .\backend\apps\revision\templates\revision\components\share_deck.html:167
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:143
-#, fuzzy
-#| msgid "Create deck"
 msgid "Share this deck"
-msgstr "Create deck"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:187
 #: .\backend\apps\revision\templates\revision\components\share_deck.html:198
@@ -746,44 +718,42 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:189
 msgid "To learn"
-msgstr "To learn"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:190
 msgid "Created on"
-msgstr "Created on"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:191
 #: .\backend\apps\revision\templates\revision\partials\tags\tag_templates.html:7
 msgid "No tags - Click on 🏷️ to add some"
-msgstr "No tags - Click on 🏷️ to add some"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:192
 msgid "Deck imported from"
-msgstr "Deck imported from"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:193
 #: .\backend\apps\revision\templates\revision\partials\cards_section.html:56
 msgid "Add a card"
-msgstr "Add a card"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:194
 #: .\backend\apps\revision\templates\revision\partials\cards_section.html:5
-#, fuzzy
-#| msgid "Deck Name"
 msgid "Deck cards"
-msgstr "Deck cards"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:195
 msgid "No cards to review!"
-msgstr "No cards to review!"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:196
 msgid "This deck contains no cards, or all cards are already learned."
-msgstr "This deck contains no cards, or all cards are already learned."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:197
 msgid "Practice with all cards"
-msgstr "Practice with all cards"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:198
 #: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:30
@@ -792,17 +762,17 @@ msgstr "Practice with all cards"
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:12
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:145
 msgid "Back to deck"
-msgstr "Back to deck"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:199
 #: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:4
 msgid "Session completed!"
-msgstr "Session completed!"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:200
 #: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:6
 msgid "Excellent work! You have completed"
-msgstr "Excellent work! You have completed"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:201
 #: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:12
@@ -826,19 +796,19 @@ msgstr ""
 #: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:26
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:141
 msgid "Restart"
-msgstr "Restart"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:205
 #: .\backend\apps\revision\templates\revision\study\flashcards_completion.html:34
 msgid "My decks"
-msgstr "My decks"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\navbar.html:211
 #: .\backend\apps\revision\templates\revision\components\navbar.html:212
 msgid "card"
 msgid_plural "cards"
-msgstr[0] "card"
-msgstr[1] "cards"
+msgstr[0] ""
+msgstr[1] ""
 
 #: .\backend\apps\revision\templates\revision\components\share_deck.html:17
 msgid "Make your list public"
@@ -849,10 +819,8 @@ msgid "Allow other users to discover and use it"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\share_deck.html:34
-#, fuzzy
-#| msgid "Create deck"
 msgid "Currently private deck"
-msgstr "Create deck"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\share_deck.html:35
 msgid ""
@@ -915,10 +883,8 @@ msgid "You can make this deck public again later if you wish."
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\share_deck.html:148
-#, fuzzy
-#| msgid "Private"
 msgid "Make private"
-msgstr "Private"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\components\share_deck.html:168
 msgid "Card set name"
@@ -957,11 +923,8 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:12
 #: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:198
-#, fuzzy
-#| msgid "card"
-#| msgid_plural "cards"
 msgid "cards"
-msgstr "card"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:13
 msgid "users"
@@ -973,42 +936,32 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:27
 #: .\backend\apps\revision\templates\revision\explore\partials\popular_decks.html:64
-#, fuzzy
-#| msgid "Import"
 msgid "Import this deck"
-msgstr "Import"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:46
-#, fuzzy
-#| msgid "No cards to review!"
 msgid "Cards preview"
-msgstr "No cards to review!"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:65
-#, fuzzy
-#| msgid "This deck contains no cards, or all cards are already learned."
 msgid "This deck contains no visible cards."
-msgstr "This deck contains no cards, or all cards are already learned."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:73
 msgid "And"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:73
-#, fuzzy
-#| msgid "Import Cards"
 msgid "more cards..."
-msgstr "Import Cards"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:83
 msgid "Information"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:87
-#, fuzzy
-#| msgid "Create Deck"
 msgid "Created:"
-msgstr "Create Deck"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:92
 msgid "Modified:"
@@ -1028,10 +981,8 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:122
 #: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:59
-#, fuzzy
-#| msgid "Description"
 msgid "Actions"
-msgstr "Description"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\deck_details.html:129
 #: .\backend\apps\revision\templates\revision\explore\partials\popular_decks.html:70
@@ -1044,10 +995,8 @@ msgid "Add to collection"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\popular_decks.html:7
-#, fuzzy
-#| msgid "Popular"
 msgid "Popular decks"
-msgstr "Popular"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:6
 msgid "Discover thousands of decks"
@@ -1070,10 +1019,8 @@ msgid "List view"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:16
-#, fuzzy
-#| msgid "Import Cards"
 msgid "Compact view"
-msgstr "Import Cards"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\explore\partials\search_results.html:33
 msgid "Search by title, subject, creator..."
@@ -1154,7 +1101,7 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:8
 msgid "Create New Deck"
-msgstr "Create New Deck"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:29
 msgid "Ex: English Vocabulary Level B2"
@@ -1167,7 +1114,7 @@ msgstr ""
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:53
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:75
 msgid "Tags"
-msgstr "Tags"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:61
 msgid "No tags - Add them in the field below"
@@ -1180,13 +1127,13 @@ msgstr ""
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:77
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:137
 msgid "Visibility"
-msgstr "Visibility"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:87
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:108
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:147
 msgid "Private"
-msgstr "Private"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:88
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:148
@@ -1200,7 +1147,7 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\create_deck_form.html:120
 msgid "Create Deck"
-msgstr "Create Deck"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:14
 msgid "Deck Description"
@@ -1224,7 +1171,7 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:55
 msgid "Import Cards"
-msgstr "Import Cards"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\deck_details_section.html:61
 msgid "Make Public"
@@ -1271,16 +1218,12 @@ msgid "Back language"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:8
-#, fuzzy
-#| msgid "Create deck"
 msgid "Edit deck"
-msgstr "Create deck"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:24
-#, fuzzy
-#| msgid "Deck Name"
 msgid "Deck name"
-msgstr "Deck Name"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:29
 msgid "Ex: English vocabulary level B2"
@@ -1311,10 +1254,8 @@ msgid "Max 10 tags, press Enter to add"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:119
-#, fuzzy
-#| msgid "Save"
 msgid "Saved"
-msgstr "Save"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\edit_deck_form.html:126
 msgid "0/10 tags"
@@ -1328,51 +1269,50 @@ msgstr ""
 msgid "Public - Visible by all users"
 msgstr ""
 
-# Reset Progress Modal translations
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:43
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:102
 msgid "Reset Progress"
-msgstr "Reset Progress"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:44
 msgid "This action will reset the progress of all cards in the deck."
-msgstr "This action will reset the progress of all cards in the deck."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:57
 msgid "Deck:"
-msgstr "Deck:"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:61
 msgid "Affected cards:"
-msgstr "Affected cards:"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:63
 msgid "card(s)"
-msgstr "card(s)"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:69
 msgid "After reset:"
-msgstr "After reset:"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:73
 msgid "All cards will be marked as 'not learned'"
-msgstr "All cards will be marked as 'not learned'"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:77
 msgid "The review counter will be reset to zero"
-msgstr "The review counter will be reset to zero"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:81
 msgid "Learning history will be erased"
-msgstr "Learning history will be erased"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\reset_progress_modal.html:90
 msgid "This action is irreversible."
-msgstr "This action is irreversible."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\sidebar_section.html:11
 msgid "No decks"
-msgstr "No decks"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\sidebar_section.html:12
 msgid "Create your first flashcard deck to start studying"
@@ -1381,7 +1321,7 @@ msgstr ""
 #: .\backend\apps\revision\templates\revision\partials\sidebar_section.html:15
 #: .\backend\apps\revision\templates\revision\partials\welcome_section.html:12
 msgid "Create deck"
-msgstr "Create deck"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\sidebar_section.html:23
 msgid "Load more"
@@ -1389,59 +1329,55 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:10
 msgid "Learn"
-msgstr "Learn"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:12
 msgid "Interactive multiple choice quizzes."
-msgstr "Interactive multiple choice quizzes."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:23
 msgid "Flashcards"
-msgstr "Flashcards"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:25
 msgid "Traditional cards for memorizing vocabulary."
-msgstr "Traditional cards for memorizing vocabulary."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:36
 msgid "Writing"
-msgstr "Writing"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:38
 msgid "Writing and translation exercises."
-msgstr "Writing and translation exercises."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:49
 msgid "Match"
-msgstr "Match"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:51
 msgid "Match terms and definitions in pairs."
-msgstr "Match terms and definitions in pairs."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:62
 msgid "Quick Review"
-msgstr "Quick Review"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\study_modes_section.html:64
 msgid "Quick review with spaced repetition."
-msgstr "Quick review with spaced repetition."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:15
-#, fuzzy
-#| msgid "All tags"
 msgid "My tags"
-msgstr "All tags"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:16
 msgid "Organize your decks with custom tags"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:29
-#, fuzzy
-#| msgid "Search..."
 msgid "Search for a tag..."
-msgstr "Search..."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:37
 #: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:56
@@ -1453,10 +1389,8 @@ msgid "Usage"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:58
-#, fuzzy
-#| msgid "Create Deck"
 msgid "Created"
-msgstr "Create Deck"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\tags\tags_management.html:71
 msgid "No tags found"
@@ -1472,79 +1406,77 @@ msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\welcome_section.html:5
 msgid "Welcome to your study space"
-msgstr "Welcome to your study space"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\partials\welcome_section.html:7
 msgid ""
 "Select a deck from the list or create a new one to start studying with "
 "flashcards"
 msgstr ""
-"Select a deck from the list or create a new one to start studying with "
-"flashcards"
 
 #: .\backend\apps\revision\templates\revision\partials\welcome_section.html:16
 msgid "Explore public decks"
-msgstr "Explore public decks"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:5
 msgid "Statistics - Revision"
-msgstr "Statistics - Revision"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:97
 msgid "Total Decks"
-msgstr "Total Decks"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:111
 msgid "Total Cards"
-msgstr "Total Cards"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:125
 msgid "Cards Learned"
-msgstr "Cards Learned"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:139
 msgid "Progress Rate"
-msgstr "Progress Rate"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:161
 msgid "Cards Studied"
-msgstr "Cards Studied"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:180
 msgid "Accuracy Rate"
-msgstr "Accuracy Rate"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:199
 msgid "Study Time"
-msgstr "Study Time"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:218
 msgid "Current Streak"
-msgstr "Current Streak"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:236
 msgid "Study Activity"
-msgstr "Study Activity"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:250
 msgid "Performance Breakdown"
-msgstr "Performance Breakdown"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:267
 msgid "Deck Performance"
-msgstr "Deck Performance"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:279
 msgid "Mastered"
-msgstr "Mastered"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:280
 msgid "Accuracy"
-msgstr "Accuracy"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:287
 msgid "Loading deck statistics..."
-msgstr "Loading deck statistics..."
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\stats_dashboard.html:301
 msgid "Recent Activity"
@@ -1630,10 +1562,8 @@ msgid "Remaining"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:6
-#, fuzzy
-#| msgid "Writing"
 msgid "Writing Mode"
-msgstr "Writing"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:24
 msgid "Write the translation of the given word"
@@ -1676,42 +1606,32 @@ msgid "Correct answer:"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:89
-#, fuzzy
-#| msgid "Deck Name"
 msgid "Next card"
-msgstr "Deck cards"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:110
-#, fuzzy
-#| msgid "Session completed!"
 msgid "Writing session completed!"
-msgstr "Session completed!"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:119
 msgid "Correct answers"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:127
-#, fuzzy
-#| msgid "Cards Learned"
 msgid "Points earned"
-msgstr "Cards Learned"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:133
-#, fuzzy
-#| msgid "Total Decks"
 msgid "Total time:"
-msgstr "Total Decks"
+msgstr ""
 
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:134
 msgid "Hints used:"
 msgstr ""
 
 #: .\backend\apps\revision\templates\revision\study\write_embedded.html:135
-#, fuzzy
-#| msgid "Accuracy"
 msgid "Accuracy:"
-msgstr "Accuracy"
+msgstr ""
 
 #: .\backend\apps\revision\views\revision_settings_views.py:118
 msgid "Paramètres Révision - Linguify"
@@ -1737,21 +1657,3 @@ msgstr ""
 #: .\backend\apps\revision\views\revision_settings_views.py:324
 msgid "Erreur lors de la mise à jour des paramètres de révision"
 msgstr ""
-
-#~ msgid "List"
-#~ msgstr "List"
-
-#~ msgid "Board"
-#~ msgstr "Board"
-
-#~ msgid "Warning!"
-#~ msgstr "Warning!"
-
-#~ msgid "Reset in progress..."
-#~ msgstr "Reset in progress..."
-
-#~ msgid "Progress reset successfully"
-#~ msgstr "Progress reset successfully"
-
-#~ msgid "Error during reset"
-#~ msgstr "Error during reset"
