@@ -1,17 +1,25 @@
 {% load i18n %}
 <!-- Navbar -->
 <div class="navbar-linguify">
-    <!-- Left: Main Actions -->
+    <!-- Left: Navigation + Main Actions -->
     <div class="navbar-section">
-        <!-- Sidebar toggle button -->
-        <div>
-            <button id="toggleSidebar"
-                class="btn-navbar-outline"
-                title="{% trans 'Masquer/Afficher la sidebar' %}"
-                aria-label="{% trans 'Basculer la sidebar' %}"
-                aria-expanded="true">
-                <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
-            </button>
+        <!-- Navigation tabs -->
+        <div class="nav-tabs-group">
+            <a href="{% url 'authentication:feedback_dashboard' %}"
+               class="nav-tab {% if request.resolver_match.url_name == 'feedback_dashboard' %}active{% endif %}">
+                <i class="bi bi-house-door"></i>
+                {% trans "Tableau de bord" %}
+            </a>
+            <a href="{% url 'authentication:feedback_list' %}"
+               class="nav-tab {% if request.resolver_match.url_name == 'feedback_list' and not request.GET.user %}active{% endif %}">
+                <i class="bi bi-list-ul"></i>
+                {% trans "Tous les feedbacks" %}
+            </a>
+            <a href="{% url 'authentication:feedback_list' %}?user=me"
+               class="nav-tab {% if request.GET.user == 'me' %}active{% endif %}">
+                <i class="bi bi-person"></i>
+                {% trans "Mes feedbacks" %}
+            </a>
         </div>
 
         <!-- Refresh -->
@@ -22,8 +30,51 @@
         </div>
     </div>
 
-    <!-- Right: Search and Actions -->
+    <!-- Right: Filters, Search and Actions -->
     <div class="navbar-section-right">
+        <!-- Status Filter -->
+        <div class="dropdown">
+            <button id="statusFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 140px; min-width: 120px;" data-bs-toggle="dropdown">
+                <span id="statusFilterText">{% trans "Statut" %}</span>
+            </button>
+            <ul id="statusFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'authentication:feedback_list' %}">{% trans "Tous les statuts" %}</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'authentication:feedback_list' %}?status=new">
+                    <i class="bi bi-inbox text-linguify-primary mr-2"></i>{% trans "Nouveaux" %}
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'authentication:feedback_list' %}?status=in_progress">
+                    <i class="bi bi-hourglass-split text-linguify-warning mr-2"></i>{% trans "En cours" %}
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'authentication:feedback_list' %}?status=resolved">
+                    <i class="bi bi-check-circle text-linguify-success mr-2"></i>{% trans "Résolus" %}
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- Type Filter -->
+        <div class="dropdown">
+            <button id="typeFilterToggle" class="btn btn-outline-linguify dropdown-toggle" style="width: 140px; min-width: 120px;" data-bs-toggle="dropdown">
+                <span id="typeFilterText">{% trans "Type" %}</span>
+            </button>
+            <ul id="typeFilterDropdown" class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'authentication:feedback_list' %}">{% trans "Tous les types" %}</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'authentication:feedback_list' %}?type=bug_report">
+                    <i class="bi bi-bug text-linguify-error mr-2"></i>{% trans "Bugs" %}
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'authentication:feedback_list' %}?type=feature_request">
+                    <i class="bi bi-lightbulb text-linguify-primary mr-2"></i>{% trans "Fonctionnalités" %}
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'authentication:feedback_list' %}?type=improvement">
+                    <i class="bi bi-star text-linguify-success mr-2"></i>{% trans "Améliorations" %}
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'authentication:feedback_list' %}?type=question">
+                    <i class="bi bi-question-circle text-linguify-accent mr-2"></i>{% trans "Questions" %}
+                </a></li>
+            </ul>
+        </div>
+
         <!-- Search -->
         <input type="text" id="searchInput" class="form-control-linguify" placeholder="{% trans 'Rechercher...' %}" style="width: 200px; min-width: 150px;">
 

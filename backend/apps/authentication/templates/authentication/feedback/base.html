@@ -18,8 +18,6 @@
 
 {% block content %}
 <div class="flex" style="height: 100%; min-height: 100%;">
-    {% include 'authentication/feedback/partials/sidebar.html' %}
-
     <!-- Main Content Area -->
     <div class="flex-1 main-content-area" style="overflow-y: auto; height: 100%;">
         <!-- Dashboard Header with Stats -->
@@ -209,55 +207,6 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Sidebar toggle functionality
-    const toggleSidebar = document.getElementById('toggleSidebar');
-    const sidebar = document.getElementById('feedbackSidebar');
-
-    if (toggleSidebar && sidebar) {
-        toggleSidebar.addEventListener('click', function() {
-            const isCurrentlyVisible = sidebar.classList.contains('show');
-
-            if (isCurrentlyVisible) {
-                // Hide sidebar
-                sidebar.classList.remove('show');
-                sidebar.style.width = '0px';
-                sidebar.style.minWidth = '0px';
-                sidebar.style.maxWidth = '0px';
-                sidebar.style.padding = '0px';
-                sidebar.style.margin = '0px';
-                sidebar.style.border = 'none';
-                sidebar.style.overflow = 'hidden';
-                sidebar.style.flex = '0 0 0px';
-                sidebar.style.opacity = '0';
-                sidebar.style.visibility = 'hidden';
-            } else {
-                // Show sidebar
-                sidebar.classList.add('show');
-                sidebar.style.removeProperty('width');
-                sidebar.style.removeProperty('minWidth');
-                sidebar.style.removeProperty('maxWidth');
-                sidebar.style.removeProperty('padding');
-                sidebar.style.removeProperty('margin');
-                sidebar.style.removeProperty('border');
-                sidebar.style.removeProperty('overflow');
-                sidebar.style.removeProperty('flex');
-                sidebar.style.removeProperty('opacity');
-                sidebar.style.removeProperty('visibility');
-            }
-
-            // Update button icon
-            const icon = toggleSidebar.querySelector('i');
-            if (icon) {
-                const nowVisible = sidebar.classList.contains('show');
-                if (nowVisible) {
-                    icon.className = 'bi bi-layout-sidebar-inset';
-                } else {
-                    icon.className = 'bi bi-layout-sidebar-inset-reverse';
-                }
-            }
-        });
-    }
-
     // Search functionality
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
