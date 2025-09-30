@@ -18,6 +18,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: apps.py
+msgid "Revision"
+msgstr "Memory"
+
 #: .\backend\apps\revision\admin.py:32
 msgid "Due for review"
 msgstr ""

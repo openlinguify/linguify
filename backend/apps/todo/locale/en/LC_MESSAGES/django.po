@@ -18,6 +18,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: apps.py
+msgid "To-do"
+msgstr "To-do"
+
 #: .\backend\apps\todo\templates\components\todo_navbar.html:13
 msgid "New Task"
 msgstr ""

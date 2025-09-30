@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 import logging
 
 logger = logging.getLogger(__name__)
@@ -7,7 +8,7 @@ class RevisionConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.revision'
     label = 'revision'
-    verbose_name = 'Révision'
+    verbose_name = _('Revision')
     
     def ready(self):
         """Called when Django starts"""
