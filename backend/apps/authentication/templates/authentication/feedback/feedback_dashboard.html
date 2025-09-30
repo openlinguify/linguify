@@ -1,0 +1,206 @@
+{% extends 'authentication/feedback/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+{% block content %}
+<div class="flex" style="height: 100%; min-height: 100%;">
+    <!-- Main Content Area -->
+    <div class="flex-1 main-content-area" style="overflow-y: auto; height: 100%;">
+        <!-- Dashboard Content -->
+        <div class="p-6 md:p-8 lg:p-10">
+            <!-- Welcome State (when no feedbacks) -->
+            {% if not recent_feedbacks %}
+            <div class="text-center py-12">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Icon -->
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary-100 mb-6">
+                        <i class="bi bi-chat-dots text-linguify-primary" style="font-size: 3rem;"></i>
+                    </div>
+
+                    <!-- Title & Description -->
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{% trans "Aucun feedback pour le moment" %}</h2>
+                    <p class="text-linguify-gray text-base mb-8 max-w-2xl mx-auto">
+                        {% trans "Commencez à contribuer en signalant des bugs, en suggérant des améliorations ou en partageant vos idées" %}
+                    </p>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap gap-3 justify-center items-center mb-10">
+                        <a href="{% url 'authentication:feedback_create' %}" class="btn-linguify btn-lg inline-flex items-center">
+                            <i class="bi bi-plus-circle mr-2"></i>
+                            {% trans "Soumettre un feedback" %}
+                        </a>
+                        <a href="{% url 'authentication:feedback_bug_report' %}" class="btn-linguify-outline btn-lg inline-flex items-center">
+                            <i class="bi bi-bug mr-2"></i>
+                            {% trans "Signaler un bug" %}
+                        </a>
+                        <a href="{% url 'authentication:feedback_feature_request' %}" class="btn-linguify-outline btn-lg inline-flex items-center">
+                            <i class="bi bi-lightbulb mr-2"></i>
+                            {% trans "Nouvelle fonctionnalité" %}
+                        </a>
+                    </div>
+
+                    <!-- Helpful Tips -->
+                    <div class="pt-8 border-t border-gray-200">
+                        <p class="text-sm text-linguify-gray mb-6 font-medium">{% trans "Comment puis-je aider ?" %}</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-left">
+                            <div class="card-linguify hover:shadow-lg transition-shadow cursor-pointer" onclick="window.location.href='{% url 'authentication:feedback_bug_report' %}'">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-error-100 flex items-center justify-center flex-shrink-0">
+                                        <i class="bi bi-bug text-linguify-error text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900 text-sm mb-1">{% trans "Signaler un bug" %}</h3>
+                                        <p class="text-xs text-linguify-gray">{% trans "Aidez-nous à corriger les problèmes" %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-linguify hover:shadow-lg transition-shadow cursor-pointer" onclick="window.location.href='{% url 'authentication:feedback_feature_request' %}'">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
+                                        <i class="bi bi-lightbulb text-linguify-primary text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900 text-sm mb-1">{% trans "Suggérer une idée" %}</h3>
+                                        <p class="text-xs text-linguify-gray">{% trans "Proposez de nouvelles fonctionnalités" %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-linguify hover:shadow-lg transition-shadow cursor-pointer" onclick="window.location.href='{% url 'authentication:feedback_create' %}'">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center flex-shrink-0">
+                                        <i class="bi bi-star text-linguify-success text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900 text-sm mb-1">{% trans "Amélioration" %}</h3>
+                                        <p class="text-xs text-linguify-gray">{% trans "Partagez vos retours d'expérience" %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+        <!-- Feedbacks List -->
+        <div class="px-8 pb-8">
+            <!-- Header -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                        <i class="bi bi-clock-history text-linguify-primary"></i>
+                        {% trans "Feedbacks récents" %}
+                    </h2>
+                    <a href="{% url 'authentication:feedback_list' %}" class="btn-linguify-outline">
+                        {% trans "Voir tout" %}
+                        <i class="bi bi-arrow-right ml-2"></i>
+                    </a>
+                </div>
+
+                {% if pending_feedbacks > 0 %}
+                <div class="bg-primary-50 border-l-4 border-linguify-primary p-4 rounded-lg mb-6">
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-info-circle text-linguify-primary text-xl"></i>
+                        <span class="text-gray-900">
+                            {% blocktrans count counter=pending_feedbacks %}
+                                Vous avez {{ counter }} feedback en attente de réponse.
+                            {% plural %}
+                                Vous avez {{ counter }} feedbacks en attente de réponse.
+                            {% endblocktrans %}
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Feedbacks Grid -->
+            <div class="space-y-3">
+                {% for feedback in recent_feedbacks %}
+                <div class="card-linguify hover:shadow-lg transition-all cursor-pointer"
+                     onclick="window.location.href='{% url 'authentication:feedback_detail' feedback.pk %}'">
+                    <div class="flex items-center gap-4">
+                        <!-- Icon -->
+                        <div class="w-12 h-12 flex items-center justify-center rounded-full text-xl flex-shrink-0
+                            {% if feedback.feedback_type == 'bug_report' %}bg-error-100 text-linguify-error
+                            {% elif feedback.feedback_type == 'feature_request' %}bg-primary-100 text-linguify-primary
+                            {% elif feedback.feedback_type == 'improvement' %}bg-success-100 text-linguify-success
+                            {% elif feedback.feedback_type == 'question' %}bg-accent-100 text-linguify-accent
+                            {% else %}bg-gray-100 text-gray-600{% endif %}">
+                            {% if feedback.feedback_type == 'bug_report' %}
+                                <i class="bi bi-bug-fill"></i>
+                            {% elif feedback.feedback_type == 'feature_request' %}
+                                <i class="bi bi-lightbulb-fill"></i>
+                            {% elif feedback.feedback_type == 'improvement' %}
+                                <i class="bi bi-star-fill"></i>
+                            {% elif feedback.feedback_type == 'question' %}
+                                <i class="bi bi-question-circle-fill"></i>
+                            {% else %}
+                                <i class="bi bi-chat-dots-fill"></i>
+                            {% endif %}
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-900 text-lg mb-1">
+                                {{ feedback.title }}
+                            </div>
+                            <div class="text-sm text-linguify-gray flex items-center gap-2 flex-wrap">
+                                <span>{{ feedback.created_at|naturaltime }}</span>
+                                {% if feedback.responses.count %}
+                                    <span>•</span>
+                                    <span class="flex items-center gap-1">
+                                        <i class="bi bi-chat"></i>
+                                        {{ feedback.responses.count }} response{{ feedback.responses.count|pluralize }}
+                                    </span>
+                                {% endif %}
+                                {% if feedback.attachments.count %}
+                                    <span>•</span>
+                                    <span class="flex items-center gap-1">
+                                        <i class="bi bi-paperclip"></i>
+                                        {{ feedback.attachments.count }} file{{ feedback.attachments.count|pluralize }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Status Badge -->
+                        <div class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0
+                            {% if feedback.status == 'new' %}bg-primary-100 text-linguify-primary
+                            {% elif feedback.status == 'in_progress' %}bg-warning-100 text-linguify-warning
+                            {% elif feedback.status == 'resolved' %}bg-success-100 text-linguify-success
+                            {% else %}bg-gray-100 text-gray-600{% endif %}">
+                            {{ feedback.get_status_display }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            // Filter feedback items in real-time
+            const feedbackItems = document.querySelectorAll('.card-linguify[onclick*="feedback_detail"]');
+            feedbackItems.forEach(item => {
+                const title = item.querySelector('.font-semibold')?.textContent.toLowerCase() || '';
+                if (title.includes(query)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

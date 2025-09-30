@@ -11,12 +11,7 @@
                 {% trans "Tableau de bord" %}
             </a>
             <a href="{% url 'authentication:feedback_list' %}"
-               class="nav-tab {% if request.resolver_match.url_name == 'feedback_list' and not request.GET.user %}active{% endif %}">
-                <i class="bi bi-list-ul"></i>
-                {% trans "Tous les feedbacks" %}
-            </a>
-            <a href="{% url 'authentication:feedback_list' %}?user=me"
-               class="nav-tab {% if request.GET.user == 'me' %}active{% endif %}">
+               class="nav-tab {% if request.resolver_match.url_name == 'feedback_list' %}active{% endif %}">
                 <i class="bi bi-person"></i>
                 {% trans "Mes feedbacks" %}
             </a>

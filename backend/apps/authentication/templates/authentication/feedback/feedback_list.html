@@ -1,4 +1,4 @@
-{% extends 'saas_web/base.html' %}
+{% extends 'authentication/feedback/base.html' %}
 {% load static %}
 {% load i18n %}
 {% load humanize %}
@@ -6,6 +6,7 @@
 {% block title %}{% trans "My Feedbacks" %} | Open Linguify{% endblock %}
 
 {% block extra_css %}
+{{ block.super }}
 <link rel="stylesheet" href="{% static 'authentication/css/feedback.css' %}">
 <style>
 .feedback-list-container {
