@@ -5,6 +5,7 @@
 {% block title %}{{ page_title|default:"Submit Feedback" }} | Open Linguify{% endblock %}
 
 {% block extra_css %}
+{{ block.super }}
 <link rel="stylesheet" href="{% static 'authentication/css/feedback.css' %}">
 <style>
 .feedback-form-container {
@@ -225,6 +226,14 @@ label {
 
 {% block content %}
 <div class="feedback-form-container">
+    <!-- Bouton de retour -->
+    <div class="mb-4">
+        <a href="{% url 'authentication:feedback_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            {% trans "Retour" %}
+        </a>
+    </div>
+
     <!-- En-tête -->
     <div class="form-header">
         <h1>

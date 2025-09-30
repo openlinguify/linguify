@@ -9,8 +9,6 @@ from ..views.feedback_views import (
     FeedbackListView,
     FeedbackDetailView,
     FeedbackCreateView,
-    BugReportCreateView,
-    FeatureRequestCreateView,
     ajax_feedback_status,
     ajax_mark_feedback_seen
 )
@@ -29,8 +27,6 @@ urlpatterns = [
 
     # Création de feedbacks
     path('new/', FeedbackCreateView.as_view(), name='create'),
-    path('bug-report/', BugReportCreateView.as_view(), name='bug_report'),
-    path('feature-request/', FeatureRequestCreateView.as_view(), name='feature_request'),
 
     # APIs AJAX
     path('<int:pk>/status/', ajax_feedback_status, name='ajax_status'),

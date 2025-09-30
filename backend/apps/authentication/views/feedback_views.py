@@ -345,36 +345,3 @@ def ajax_mark_feedback_seen(request, pk):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
-# Vues pour les types de feedback spécifiques (raccourcis)
-@method_decorator(login_required, name='dispatch')
-class BugReportCreateView(FeedbackCreateView):
-    """Vue spécialisée pour les rapports de bugs"""
-
-    def get_initial(self):
-        initial = super().get_initial()
-        initial['feedback_type'] = 'bug_report'
-        initial['priority'] = 'medium'
-        return initial
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = _('Report a Bug')
-        context['form_subtitle'] = _('Help us fix issues by providing detailed information')
-        return context
-
-
-@method_decorator(login_required, name='dispatch')
-class FeatureRequestCreateView(FeedbackCreateView):
-    """Vue spécialisée pour les demandes de fonctionnalités"""
-
-    def get_initial(self):
-        initial = super().get_initial()
-        initial['feedback_type'] = 'feature_request'
-        initial['priority'] = 'medium'
-        return initial
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = _('Request a Feature')
-        context['form_subtitle'] = _('Share your ideas to help us improve the platform')
-        return context
