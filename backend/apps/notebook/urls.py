@@ -9,6 +9,7 @@ from .views.notebook_views import (
     get_app_config,
     NotebookMainView
 )
+from .views.notebook_settings_views import NotebookSettingsView
 
 app_name = 'notebook'
 
@@ -20,6 +21,9 @@ router.register(r'shared-notes', SharedNoteViewSet, basename='shared-note')
 urlpatterns = [
     # Configuration de l'application
     path('config/', get_app_config, name='config'),
+
+    # Settings
+    path('settings/', NotebookSettingsView.as_view(), name='settings'),
 
     # API REST endpoints
     path('api/', include(router.urls)),
