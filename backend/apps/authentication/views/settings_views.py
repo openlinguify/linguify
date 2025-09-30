@@ -21,6 +21,7 @@ from ..serializers.settings_serializers import (
     LearningSettingsSerializer
 )
 from app_manager.services import UserAppService, AppSettingsService
+from app_manager.services import UserAppService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -286,6 +287,9 @@ class UserSettingsView(View):
                     LANGUAGE_SESSION_KEY = settings.LANGUAGE_COOKIE_NAME
                     request.session[LANGUAGE_SESSION_KEY] = interface_language
 
+                    # Activate the new language immediately for cache warming
+                    translation.activate(interface_language)
+
                     # Clear manifest cache to reload translations with new language
                     from app_manager.services.manifest_loader import manifest_loader
                     manifest_loader.clear_cache()
@@ -296,6 +300,16 @@ class UserSettingsView(View):
 
                     # Clear app store cache to reload app store with new language
                     UserAppCacheService.clear_app_store_cache()
+
+                    # Warm up caches with new language (preload data for instant page loads)
+                    try:
+                        
+                        # Preload user apps in new language
+                        fresh_apps = UserAppService.get_user_installed_apps(request.user)
+                        UserAppCacheService.set_user_apps_cache(request.user.id, fresh_apps)
+                        logger.debug(f"Warmed up user apps cache for language {interface_language}")
+                    except Exception as e:
+                        logger.warning(f"Could not warm up cache: {e}")
 
                     if is_ajax:
                         # Check if it's an HTMX request
