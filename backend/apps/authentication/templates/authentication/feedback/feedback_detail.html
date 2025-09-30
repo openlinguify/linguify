@@ -6,37 +6,20 @@
 {% block title %}{{ feedback.title }} | {% trans "Feedback" %} | Open Linguify{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'authentication/css/feedback.css' %}">
+{{ block.super }}
 <style>
 .feedback-detail-container {
-    padding: 2rem 0;
-}
-
-.breadcrumb-nav {
-    margin-bottom: 2rem;
-}
-
-.breadcrumb {
-    background: transparent;
-    padding: 0;
-    margin: 0;
-}
-
-.breadcrumb-item {
-    font-size: 0.9rem;
-}
-
-.breadcrumb-item + .breadcrumb-item::before {
-    content: "›";
-    color: #6c757d;
+    padding: 1.5rem 2rem;
+    background: #f5f5f5;
+    min-height: 100vh;
 }
 
 .feedback-header {
     background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .header-top {
@@ -57,13 +40,13 @@
     flex-shrink: 0;
 }
 
-.type-bug_report { background: #dc354520; color: #dc3545; }
-.type-feature_request { background: #007bff20; color: #007bff; }
-.type-improvement { background: #28a74520; color: #28a745; }
-.type-compliment { background: #17a2b820; color: #17a2b8; }
-.type-complaint { background: #fd7e1420; color: #fd7e14; }
-.type-question { background: #6f42c120; color: #6f42c1; }
-.type-other { background: #6c757d20; color: #6c757d; }
+.type-bug_report { background: #FFEBEE; color: #C62828; }
+.type-feature_request { background: #E3F2FD; color: #1976D2; }
+.type-improvement { background: #E8F5E9; color: #388E3C; }
+.type-compliment { background: #E1F5FE; color: #0277BD; }
+.type-complaint { background: #FFE0B2; color: #E65100; }
+.type-question { background: #F3E5F5; color: #7B1FA2; }
+.type-other { background: #F5F5F5; color: #616161; }
 
 .header-content {
     flex: 1;
@@ -107,12 +90,12 @@
     font-size: 0.9rem;
 }
 
-.status-new { background: #007bff20; color: #007bff; }
-.status-in_progress { background: #ffc10720; color: #ffc107; }
-.status-resolved { background: #28a74520; color: #28a745; }
-.status-closed { background: #6c757d20; color: #6c757d; }
-.status-duplicate { background: #fd7e1420; color: #fd7e14; }
-.status-wont_fix { background: #dc354520; color: #dc3545; }
+.status-new { background: #E3F2FD; color: #1976D2; }
+.status-in_progress { background: #FFF3E0; color: #F57C00; }
+.status-resolved { background: #E8F5E9; color: #388E3C; }
+.status-closed { background: #F5F5F5; color: #616161; }
+.status-duplicate { background: #FFE0B2; color: #E65100; }
+.status-wont_fix { background: #FFEBEE; color: #C62828; }
 
 .priority-badge {
     padding: 0.5rem 1rem;
@@ -121,35 +104,35 @@
     font-size: 0.9rem;
 }
 
-.priority-low { background: #28a74520; color: #28a745; }
-.priority-medium { background: #ffc10720; color: #ffc107; }
-.priority-high { background: #fd7e1420; color: #fd7e14; }
-.priority-critical { background: #dc354520; color: #dc3545; }
+.priority-low { background: #E8F5E9; color: #388E3C; }
+.priority-medium { background: #FFF3E0; color: #F57C00; }
+.priority-high { background: #FFE0B2; color: #E65100; }
+.priority-critical { background: #FFEBEE; color: #C62828; }
 
 .feedback-body {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
     align-items: start;
 }
 
 .main-content {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .sidebar {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .content-section {
     background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .section-title {
@@ -199,9 +182,9 @@
 
 .info-card {
     background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .info-list {
@@ -348,21 +331,6 @@
     font-style: italic;
 }
 
-.back-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.back-button:hover {
-    color: #0056b3;
-    text-decoration: none;
-}
-
 @media (max-width: 968px) {
     .feedback-body {
         grid-template-columns: 1fr;
@@ -387,13 +355,13 @@
 
 @media (max-width: 768px) {
     .feedback-detail-container {
-        padding: 1rem 0;
+        padding: 1rem;
     }
 
     .feedback-header,
     .content-section,
     .info-card {
-        padding: 1.5rem;
+        padding: 1rem;
     }
 
     .status-priority-row {
@@ -410,25 +378,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container feedback-detail-container">
-    <!-- Navigation breadcrumb -->
-    <nav class="breadcrumb-nav">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{% url 'authentication:feedback_dashboard' %}">
-                    {% trans "Bugs & Feedbacks" %}
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'authentication:feedback_list' %}">
-                    {% trans "My Feedbacks" %}
-                </a>
-            </li>
-            <li class="breadcrumb-item active">
-                {{ feedback.get_feedback_type_display }}
-            </li>
-        </ol>
-    </nav>
+<div class="feedback-detail-container">
 
     <!-- En-tête du feedback -->
     <div class="feedback-header">
@@ -726,13 +676,6 @@
         </div>
     </div>
 
-    <!-- Bouton de retour -->
-    <div class="mt-4">
-        <a href="{% url 'authentication:feedback_list' %}" class="back-button">
-            <i class="bi bi-arrow-left"></i>
-            {% trans "Back to My Feedbacks" %}
-        </a>
-    </div>
 </div>
 
 <!-- Modal pour l'image -->
