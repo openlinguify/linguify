@@ -15,7 +15,8 @@ from drf_spectacular.views import (
 from apps.authentication.views.terms_views import accept_terms, terms_status
 from tests.test_settings import test_settings
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
-from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
+# SEO moved to portal
+# from .seo.views import serve_sitemap, serve_robots_txt, sitemap_status
 from rest_framework.routers import DefaultRouter
 from .views.tag_views import TagViewSet, TagRelationViewSet, ObjectTagsViewSet
 
@@ -130,23 +131,23 @@ urlpatterns = [
     path('api/cms-sync/', include('apps.cms_sync.urls', namespace='cms_sync')),
     path('language_learning/', include('apps.language_learning.urls', namespace='language_learning')),
     path('notebook/', include('apps.notebook.urls', namespace='notebook_web')),
-    # SEO URLs - Organized sitemap serving
-    path('robots.txt', serve_robots_txt, name='robots_txt'),
-    path('sitemap.xml', serve_sitemap, {'sitemap_name': 'sitemap'}, name='sitemap_main'),
-    path('sitemap-index.xml', serve_sitemap, {'sitemap_name': 'sitemap-index'}, name='sitemap_index'),
-    path('sitemap-static.xml', serve_sitemap, {'sitemap_name': 'sitemap-static'}, name='sitemap_static'),
-    path('sitemap-courses.xml', serve_sitemap, {'sitemap_name': 'sitemap-courses'}, name='sitemap_courses'),
-    path('sitemap-learning.xml', serve_sitemap, {'sitemap_name': 'sitemap-learning'}, name='sitemap_learning'),
-    path('sitemap-ugc.xml', serve_sitemap, {'sitemap_name': 'sitemap-ugc'}, name='sitemap_ugc'),
-    path('sitemap-images.xml', serve_sitemap, {'sitemap_name': 'sitemap-images'}, name='sitemap_images'),
-    path('sitemap-videos.xml', serve_sitemap, {'sitemap_name': 'sitemap-videos'}, name='sitemap_videos'),
-    path('sitemap-en.xml', serve_sitemap, {'sitemap_name': 'sitemap-en'}, name='sitemap_en'),
-    path('sitemap-fr.xml', serve_sitemap, {'sitemap_name': 'sitemap-fr'}, name='sitemap_fr'),
-    path('sitemap-es.xml', serve_sitemap, {'sitemap_name': 'sitemap-es'}, name='sitemap_es'),
-    path('sitemap-nl.xml', serve_sitemap, {'sitemap_name': 'sitemap-nl'}, name='sitemap_nl'),
-    
-    # SEO Status and Management
-    path('seo/status/', sitemap_status, name='seo_status'),
+    # SEO URLs - Moved to portal
+    # path('robots.txt', serve_robots_txt, name='robots_txt'),
+    # path('sitemap.xml', serve_sitemap, {'sitemap_name': 'sitemap'}, name='sitemap_main'),
+    # path('sitemap-index.xml', serve_sitemap, {'sitemap_name': 'sitemap-index'}, name='sitemap_index'),
+    # path('sitemap-static.xml', serve_sitemap, {'sitemap_name': 'sitemap-static'}, name='sitemap_static'),
+    # path('sitemap-courses.xml', serve_sitemap, {'sitemap_name': 'sitemap-courses'}, name='sitemap_courses'),
+    # path('sitemap-learning.xml', serve_sitemap, {'sitemap_name': 'sitemap-learning'}, name='sitemap_learning'),
+    # path('sitemap-ugc.xml', serve_sitemap, {'sitemap_name': 'sitemap-ugc'}, name='sitemap_ugc'),
+    # path('sitemap-images.xml', serve_sitemap, {'sitemap_name': 'sitemap-images'}, name='sitemap_images'),
+    # path('sitemap-videos.xml', serve_sitemap, {'sitemap_name': 'sitemap-videos'}, name='sitemap_videos'),
+    # path('sitemap-en.xml', serve_sitemap, {'sitemap_name': 'sitemap-en'}, name='sitemap_en'),
+    # path('sitemap-fr.xml', serve_sitemap, {'sitemap_name': 'sitemap-fr'}, name='sitemap_fr'),
+    # path('sitemap-es.xml', serve_sitemap, {'sitemap_name': 'sitemap-es'}, name='sitemap_es'),
+    # path('sitemap-nl.xml', serve_sitemap, {'sitemap_name': 'sitemap-nl'}, name='sitemap_nl'),
+
+    # SEO Status and Management - Moved to portal
+    # path('seo/status/', sitemap_status, name='seo_status'),
     
     # LMS info page  
     # path('lms/', views.lms_info, name='lms_info'),
