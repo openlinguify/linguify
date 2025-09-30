@@ -199,10 +199,23 @@ const revisionAPI = {
         });
     },
     
-    async updateCardProgress(cardId, isCorrect) {
-        return await window.apiService.request(`/api/v1/revision/api/flashcards/${cardId}/update_review_progress/`, {
+    async updateCardProgress(cardId, isCorrect, studyMode = 'flashcards', difficulty = null) {
+        // Use new adaptive learning endpoint
+        console.log('[AdaptiveLearning] updateCardProgress called:', {
+            cardId,
+            isCorrect,
+            studyMode,
+            difficulty: difficulty || (isCorrect ? 'easy' : 'hard')
+        });
+
+        return await window.apiService.request(`/revision/api/adaptive/card/${cardId}/review/`, {
             method: 'POST',
-            body: JSON.stringify({ is_correct: isCorrect })
+            body: JSON.stringify({
+                study_mode: studyMode,
+                difficulty: difficulty || (isCorrect ? 'easy' : 'hard'),
+                was_correct: isCorrect,
+                response_time_seconds: null
+            })
         });
     }
 };

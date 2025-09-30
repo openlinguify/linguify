@@ -309,11 +309,11 @@ class CardMastery(models.Model):
             setattr(mastery, mode_field, performance.created_at)
 
         # Recalculer le score pour ce mode spécifique
-        # Prendre les 10 dernières performances de ce mode
-        recent_performances = CardPerformance.objects.filter(
+        # Exclure la performance actuelle de la requête si elle est déjà sauvegardée
+        recent_performances = list(CardPerformance.objects.filter(
             card=performance.card,
             study_mode=performance.study_mode
-        ).order_by('-created_at')[:10]
+        ).order_by('-created_at')[:10])
 
         if recent_performances:
             correct_count = sum(1 for p in recent_performances if p.was_correct)
@@ -325,13 +325,29 @@ class CardMastery(models.Model):
         # Recalculer le score de confiance global
         mastery.confidence_score = mastery.calculate_confidence_score()
 
-        # Enregistrer le score après
+        # Mettre à jour le niveau de maîtrise (déjà sauvegarde avec update_fields)
+        mastery.update_mastery_level()
+
+        # Sauvegarder toutes les modifications du mastery
+        # (update_mastery_level a déjà sauvegardé mastery_level et updated_at)
+        # On sauvegarde les autres champs modifiés
+        update_fields = [
+            'total_attempts', 'successful_attempts',
+            'confidence_score'
+        ]
+
+        # Ajouter les champs de mode seulement s'ils existent
+        score_field = f"{performance.study_mode}_score"
+        if hasattr(mastery, mode_field):
+            update_fields.append(mode_field)
+        if hasattr(mastery, score_field):
+            update_fields.append(score_field)
+
+        mastery.save(update_fields=update_fields)
+
+        # Enregistrer le score après dans la performance
         performance.confidence_after = mastery.confidence_score
         performance.save(update_fields=['confidence_before', 'confidence_after'])
-
-        # Mettre à jour le niveau de maîtrise
-        mastery.update_mastery_level()
-        mastery.save()
 
         # Mettre à jour le statut "learned" de la carte
         if mastery.should_be_learned() and not performance.card.learned:

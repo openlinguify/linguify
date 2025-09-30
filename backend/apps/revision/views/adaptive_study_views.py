@@ -28,7 +28,6 @@ class AdaptiveReviewCardView(View):
     Enregistre les performances et met à jour automatiquement le CardMastery.
     """
 
-    @require_http_methods(['POST'])
     def post(self, request, card_id):
         """
         Traite la révision d'une carte avec le système adaptatif.
