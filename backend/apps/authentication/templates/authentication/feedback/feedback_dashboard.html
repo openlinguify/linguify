@@ -24,57 +24,38 @@
                         {% trans "Commencez à contribuer en signalant des bugs, en suggérant des améliorations ou en partageant vos idées" %}
                     </p>
 
-                    <!-- Action Buttons -->
-                    <div class="flex flex-wrap gap-3 justify-center items-center mb-10">
-                        <a href="{% url 'authentication:feedback_create' %}" class="btn-linguify btn-lg inline-flex items-center">
-                            <i class="bi bi-plus-circle mr-2"></i>
-                            {% trans "Soumettre un feedback" %}
-                        </a>
-                        <a href="{% url 'authentication:feedback_bug_report' %}" class="btn-linguify-outline btn-lg inline-flex items-center">
-                            <i class="bi bi-bug mr-2"></i>
-                            {% trans "Signaler un bug" %}
-                        </a>
-                        <a href="{% url 'authentication:feedback_feature_request' %}" class="btn-linguify-outline btn-lg inline-flex items-center">
-                            <i class="bi bi-lightbulb mr-2"></i>
-                            {% trans "Nouvelle fonctionnalité" %}
-                        </a>
-                    </div>
-
-                    <!-- Helpful Tips -->
-                    <div class="pt-8 border-t border-gray-200">
-                        <p class="text-sm text-linguify-gray mb-6 font-medium">{% trans "Comment puis-je aider ?" %}</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-left">
-                            <div class="card-linguify hover:shadow-lg transition-shadow cursor-pointer" onclick="window.location.href='{% url 'authentication:feedback_bug_report' %}'">
-                                <div class="flex items-start gap-3">
-                                    <div class="w-10 h-10 rounded-lg bg-error-100 flex items-center justify-center flex-shrink-0">
-                                        <i class="bi bi-bug text-linguify-error text-lg"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900 text-sm mb-1">{% trans "Signaler un bug" %}</h3>
-                                        <p class="text-xs text-linguify-gray">{% trans "Aidez-nous à corriger les problèmes" %}</p>
-                                    </div>
+                    <!-- Quick Actions Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                        <div class="card-linguify hover:shadow-xl transition-all cursor-pointer" onclick="window.location.href='{% url 'authentication:feedback_bug_report' %}'">
+                            <div class="flex flex-col items-center text-center gap-3 py-4">
+                                <div class="w-16 h-16 rounded-full bg-error-100 flex items-center justify-center">
+                                    <i class="bi bi-bug text-linguify-error text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 text-base mb-1">{% trans "Signaler un bug" %}</h3>
+                                    <p class="text-sm text-linguify-gray">{% trans "Aidez-nous à corriger les problèmes" %}</p>
                                 </div>
                             </div>
-                            <div class="card-linguify hover:shadow-lg transition-shadow cursor-pointer" onclick="window.location.href='{% url 'authentication:feedback_feature_request' %}'">
-                                <div class="flex items-start gap-3">
-                                    <div class="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
-                                        <i class="bi bi-lightbulb text-linguify-primary text-lg"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900 text-sm mb-1">{% trans "Suggérer une idée" %}</h3>
-                                        <p class="text-xs text-linguify-gray">{% trans "Proposez de nouvelles fonctionnalités" %}</p>
-                                    </div>
+                        </div>
+                        <div class="card-linguify hover:shadow-xl transition-all cursor-pointer" onclick="window.location.href='{% url 'authentication:feedback_feature_request' %}'">
+                            <div class="flex flex-col items-center text-center gap-3 py-4">
+                                <div class="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center">
+                                    <i class="bi bi-lightbulb text-linguify-primary text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 text-base mb-1">{% trans "Suggérer une idée" %}</h3>
+                                    <p class="text-sm text-linguify-gray">{% trans "Proposez de nouvelles fonctionnalités" %}</p>
                                 </div>
                             </div>
-                            <div class="card-linguify hover:shadow-lg transition-shadow cursor-pointer" onclick="window.location.href='{% url 'authentication:feedback_create' %}'">
-                                <div class="flex items-start gap-3">
-                                    <div class="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center flex-shrink-0">
-                                        <i class="bi bi-star text-linguify-success text-lg"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900 text-sm mb-1">{% trans "Amélioration" %}</h3>
-                                        <p class="text-xs text-linguify-gray">{% trans "Partagez vos retours d'expérience" %}</p>
-                                    </div>
+                        </div>
+                        <div class="card-linguify hover:shadow-xl transition-all cursor-pointer" onclick="window.location.href='{% url 'authentication:feedback_create' %}'">
+                            <div class="flex flex-col items-center text-center gap-3 py-4">
+                                <div class="w-16 h-16 rounded-full bg-success-100 flex items-center justify-center">
+                                    <i class="bi bi-star text-linguify-success text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 text-base mb-1">{% trans "Amélioration" %}</h3>
+                                    <p class="text-sm text-linguify-gray">{% trans "Partagez vos retours d'expérience" %}</p>
                                 </div>
                             </div>
                         </div>

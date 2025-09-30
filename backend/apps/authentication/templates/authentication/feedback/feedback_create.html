@@ -1,7 +1,6 @@
-{% extends 'saas_web/base.html' %}
+{% extends 'authentication/feedback/base.html' %}
 {% load static %}
 {% load i18n %}
-{% load widget_tweaks %}
 
 {% block title %}{{ page_title|default:"Submit Feedback" }} | Open Linguify{% endblock %}
 
@@ -258,7 +257,7 @@ label {
 
             <div class="form-group">
                 <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
-                {{ form.title|add_class:"form-control" }}
+                {{ form.title }}
                 {% if form.title.help_text %}
                     <div class="form-text">{{ form.title.help_text }}</div>
                 {% endif %}
@@ -270,21 +269,21 @@ label {
             <div class="row">
                 <div class="col-md-4 form-group">
                     <label for="{{ form.feedback_type.id_for_label }}">{{ form.feedback_type.label }}</label>
-                    {{ form.feedback_type|add_class:"form-select" }}
+                    {{ form.feedback_type }}
                     {% if form.feedback_type.errors %}
                         <div class="text-danger mt-1">{{ form.feedback_type.errors }}</div>
                     {% endif %}
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
-                    {{ form.category|add_class:"form-select" }}
+                    {{ form.category }}
                     {% if form.category.errors %}
                         <div class="text-danger mt-1">{{ form.category.errors }}</div>
                     {% endif %}
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="{{ form.priority.id_for_label }}">{{ form.priority.label }}</label>
-                    {{ form.priority|add_class:"form-select" }}
+                    {{ form.priority }}
                     {% if form.priority.errors %}
                         <div class="text-danger mt-1">{{ form.priority.errors }}</div>
                     {% endif %}
@@ -316,7 +315,7 @@ label {
 
             <div class="form-group">
                 <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
-                {{ form.description|add_class:"form-control" }}
+                {{ form.description }}
                 {% if form.description.help_text %}
                     <div class="form-text">{{ form.description.help_text }}</div>
                 {% endif %}
@@ -334,7 +333,7 @@ label {
 
                 <div class="form-group">
                     <label for="{{ form.steps_to_reproduce.id_for_label }}">{{ form.steps_to_reproduce.label }}</label>
-                    {{ form.steps_to_reproduce|add_class:"form-control" }}
+                    {{ form.steps_to_reproduce }}
                     {% if form.steps_to_reproduce.help_text %}
                         <div class="form-text">{{ form.steps_to_reproduce.help_text }}</div>
                     {% endif %}
@@ -343,11 +342,11 @@ label {
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label for="{{ form.expected_behavior.id_for_label }}">{{ form.expected_behavior.label }}</label>
-                        {{ form.expected_behavior|add_class:"form-control" }}
+                        {{ form.expected_behavior }}
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="{{ form.actual_behavior.id_for_label }}">{{ form.actual_behavior.label }}</label>
-                        {{ form.actual_behavior|add_class:"form-control" }}
+                        {{ form.actual_behavior }}
                     </div>
                 </div>
             </div>
@@ -362,7 +361,7 @@ label {
 
             <div class="form-group">
                 <label for="{{ form.page_url.id_for_label }}">{{ form.page_url.label }}</label>
-                {{ form.page_url|add_class:"form-control" }}
+                {{ form.page_url }}
                 {% if form.page_url.help_text %}
                     <div class="form-text">{{ form.page_url.help_text }}</div>
                 {% endif %}
@@ -378,7 +377,7 @@ label {
                         <strong>{% trans "Click to upload a screenshot" %}</strong><br>
                         <small class="text-muted">{% trans "PNG, JPG or GIF up to 10MB" %}</small>
                     </div>
-                    {{ form.screenshot|add_class:"d-none" }}
+                    {{ form.screenshot }}
                 </div>
                 <div id="filePreview" class="mt-2" style="display: none;">
                     <div class="alert alert-success">
