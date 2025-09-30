@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import gettext_lazy as _
+
 __manifest__ = {
-    'name': 'Documents',
+    'name': _('Documents'),
     'version': '1.0.0',
     'category': 'Collaboration',
-    'summary': 'Créez et partagez vos documents en temps réel avec vos collaborateurs.',
+    'summary': _('Create and share your documents in real time with your collaborators.'),
     'description': '''
 Documents Module for Linguify
 =============================
@@ -42,7 +44,7 @@ Usage:
         'static_icon': '/static/documents/description/icon.png',
         'menu_order': 4,
         'display_category': 'collaboration',
-        'category_label': 'Collaboration',
+        'category_label': _('Collaboration'),
         'category_icon': 'bi-folder2-open',
     },
     'api_endpoints': {

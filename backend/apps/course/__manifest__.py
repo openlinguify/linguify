@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import gettext_lazy as _
+
 __manifest__ = {
-    'name': 'Course',
+    'name': _('Course'),
     'version': '1.0.0',
     'category': 'Learning',
-    'summary': 'Follow and track your language learning courses and progress.',
+    'summary': _('Follow and track your language learning courses and progress.'),
     'description': '''
 Course Module for Linguify
 ===========================
@@ -43,7 +45,7 @@ Usage:
         'display_name': 'Courses',
         'description': 'Follow and track your language courses',
         'display_category': 'education',
-        'category_label': 'Education',
+        'category_label': _('Education'),
         'category_icon': 'bi-mortarboard',
     },
     'api_endpoints': {

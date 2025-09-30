@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import gettext_lazy as _
+
 __manifest__ = {
-    'name': 'Conversation AI',
+    'name': _('AI Conversation'),
     'version': '1.0.0',
     'category': 'Intelligence IA',
-    'summary': 'Pratiquez des conversations avec notre IA pour améliorer votre expression orale et recevoir des corrections personnalisées.',
+    'summary': _('Practice conversations with our AI to improve your speaking skills and receive personalized feedback.'),
     'description': '''
 Conversation AI Module for Linguify
 ==================================
@@ -39,7 +41,7 @@ Usage:
         'static_icon': '/static/language_ai/description/icon.png',
         'menu_order': 4,
         'display_category': 'ai',
-        'category_label': 'Intelligence IA',
+        'category_label': _('AI Intelligence'),
         'category_icon': 'bi-robot',
     },
     'api_endpoints': {

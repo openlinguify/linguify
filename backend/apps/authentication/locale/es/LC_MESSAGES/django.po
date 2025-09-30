@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify Authentication\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 20:20+0200\n"
+"POT-Creation-Date: 2025-09-30 20:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: Spanish\n"
@@ -370,6 +370,40 @@ msgstr ""
 #| msgid "Back to home"
 msgid "Back to Calendar"
 msgstr "Volver al inicio"
+
+#: .\apps\chat\__manifest__.py:12
+#, fuzzy
+#| msgid "Language you are currently learning"
+msgid "Collaborative Chat"
+msgstr "Idioma que estás aprendiendo actualmente"
+
+#: .\apps\chat\__manifest__.py:15
+msgid "Chat in real time with your friends"
+msgstr ""
+
+#: .\apps\chat\__manifest__.py:79
+#, fuzzy
+#| msgid "Personal Information"
+msgid "Communication"
+msgstr "Información personal"
+
+#: .\apps\community\__manifest__.py:5
+#: .\apps\community\templates\community\main.html:4
+#: .\apps\community\templates\community\main_complex.html:4
+#: .\apps\community\templates\community\main_complex.html:24
+msgid "Community"
+msgstr ""
+
+#: .\apps\community\__manifest__.py:8
+#, fuzzy
+#| msgid "Select the language to learn"
+msgid ""
+"Connect with other learners, find language partners and join study groups."
+msgstr "Selecciona el idioma a aprender"
+
+#: .\apps\community\__manifest__.py:47
+msgid "Social"
+msgstr ""
 
 #: .\apps\community\templates\community\components\navbar.html:11
 #: .\apps\community\templates\community\group\groups_new.html:207
@@ -1568,12 +1602,6 @@ msgid ""
 "together."
 msgstr ""
 
-#: .\apps\community\templates\community\main.html:4
-#: .\apps\community\templates\community\main_complex.html:4
-#: .\apps\community\templates\community\main_complex.html:24
-msgid "Community"
-msgstr ""
-
 #: .\apps\community\templates\community\main.html:42
 msgid "Community Feed"
 msgstr ""
@@ -1983,6 +2011,35 @@ msgstr "Error durante la verificación"
 msgid "Language exchange feature coming soon!"
 msgstr ""
 
+#: .\apps\course\__manifest__.py:5
+msgid "Course"
+msgstr ""
+
+#: .\apps\course\__manifest__.py:8
+msgid "Follow and track your language learning courses and progress."
+msgstr ""
+
+#: .\apps\course\__manifest__.py:48 .\apps\teaching\__manifest__.py:24
+#, fuzzy
+#| msgid "Personal Information"
+msgid "Education"
+msgstr "Información personal"
+
+#: .\apps\documents\__manifest__.py:5
+#: .\apps\documents\templates\components\header\documents_header.html:30
+msgid "Documents"
+msgstr ""
+
+#: .\apps\documents\__manifest__.py:8
+msgid "Create and share your documents in real time with your collaborators."
+msgstr ""
+
+#: .\apps\documents\__manifest__.py:47
+#, fuzzy
+#| msgid "Personal Information"
+msgid "Collaboration"
+msgstr "Información personal"
+
 #: .\apps\documents\templates\components\header\documents_header.html:21
 msgid "Documents home"
 msgstr ""
@@ -1994,10 +2051,6 @@ msgstr ""
 
 #: .\apps\documents\templates\components\header\documents_header.html:28
 msgid "All documents"
-msgstr ""
-
-#: .\apps\documents\templates\components\header\documents_header.html:30
-msgid "Documents"
 msgstr ""
 
 #: .\apps\documents\templates\components\header\documents_header.html:35
@@ -2013,6 +2066,20 @@ msgstr ""
 #| msgid "Create an account"
 msgid "Create new document"
 msgstr "Crear una cuenta"
+
+#: .\apps\language_ai\__manifest__.py:5 .\apps\language_ai\models.py:63
+msgid "AI Conversation"
+msgstr ""
+
+#: .\apps\language_ai\__manifest__.py:8
+msgid ""
+"Practice conversations with our AI to improve your speaking skills and "
+"receive personalized feedback."
+msgstr ""
+
+#: .\apps\language_ai\__manifest__.py:44
+msgid "AI Intelligence"
+msgstr ""
 
 #: .\apps\language_ai\ai_service.py:137
 msgid ""
@@ -2098,10 +2165,6 @@ msgstr ""
 
 #: .\apps\language_ai\models.py:60
 msgid "Summary of common mistakes and feedback"
-msgstr ""
-
-#: .\apps\language_ai\models.py:63
-msgid "AI Conversation"
 msgstr ""
 
 #: .\apps\language_ai\models.py:64
@@ -2476,6 +2539,14 @@ msgstr ""
 
 #: .\apps\task\models.py:25
 msgid "Items"
+msgstr ""
+
+#: .\apps\teaching\__manifest__.py:9
+msgid "Teaching"
+msgstr ""
+
+#: .\apps\teaching\__manifest__.py:12
+msgid "Book private lessons with professional teachers"
 msgstr ""
 
 #: .\apps\teaching\templates\teaching\base_teaching.html:8
@@ -6979,11 +7050,6 @@ msgstr "Cambiar foto de perfil"
 
 #, fuzzy
 #~| msgid "Personal Information"
-#~ msgid "Real-time Collaboration"
-#~ msgstr "Información personal"
-
-#, fuzzy
-#~| msgid "Personal Information"
 #~ msgid "Organization"
 #~ msgstr "Información personal"
 
@@ -7080,11 +7146,6 @@ msgstr "Cambiar foto de perfil"
 #~| msgid "Learning Level"
 #~ msgid "Learn More"
 #~ msgstr "Nivel de aprendizaje"
-
-#, fuzzy
-#~| msgid "Language you are currently learning"
-#~ msgid "Collaborative Learning"
-#~ msgstr "Idioma que estás aprendiendo actualmente"
 
 #, fuzzy
 #~| msgid "Flashcards"

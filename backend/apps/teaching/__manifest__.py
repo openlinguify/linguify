@@ -3,12 +3,13 @@
 Teaching app manifest for private lesson bookings.
 Connects students with teachers for individual sessions.
 """
+from django.utils.translation import gettext_lazy as _
 
 __manifest__ = {
-    'name': 'Teaching',
+    'name': _('Teaching'),
     'version': '1.0.0',
     'category': 'Education',
-    'summary': 'Réservez des cours particuliers avec des enseignants professionnels',
+    'summary': _('Book private lessons with professional teachers'),
     'description': 'Système de réservation de leçons privées et de gestion d\'enseignement',
     'author': 'Linguify Team',
     'installable': True,
@@ -20,7 +21,7 @@ __manifest__ = {
         'static_icon': '/static/teaching/description/icon.png',
         'menu_order': 9,
         'display_category': 'education',
-        'category_label': 'Éducation',
+        'category_label': _('Education'),
     },
     'routes': [
         {

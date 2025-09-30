@@ -6,12 +6,13 @@ Real-time collaborative chat and communication features
 Status: In Development - Not ready for production
 This module will provide real-time chat functionality for collaborative learning
 """
+from django.utils.translation import gettext_lazy as _
 
 __manifest__ = {
-    'name': 'Collaborative Chat',  # Changed from 'Conversation AI' to avoid confusion
+    'name': _('Collaborative Chat'),  # Changed from 'Conversation AI' to avoid confusion
     'version': '0.5.0',  # Version indicates development status
     'category': 'Communication',
-    'summary': 'Chattez en temps réel avec vos amis',
+    'summary': _('Chat in real time with your friends'),
     'description': '''
 Collaborative Chat Module for Open Linguify
 ==========================================
@@ -75,7 +76,7 @@ Usage (when ready):
         'menu_order': 6,
         'sidebar_menu': True,
         'display_category': 'communication',
-        'category_label': 'Communication',
+        'category_label': _('Communication'),
         'category_icon': 'bi-chat-dots',
     },
     

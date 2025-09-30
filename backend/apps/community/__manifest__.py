@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import gettext_lazy as _
+
 __manifest__ = {
-    'name': 'Community',
+    'name': _('Community'),
     'version': '1.0.0',
     'category': 'Social',
-    'summary': 'Connectez-vous avec d\'autres apprenants, trouvez des partenaires linguistiques et rejoignez des groupes d\'étude.',
+    'summary': _('Connect with other learners, find language partners and join study groups.'),
     'description': '''
 Community Module for Linguify
 =============================
@@ -42,7 +44,7 @@ Usage:
         'static_icon': '/static/community/description/icon.png',
         'menu_order': 4,
         'display_category': 'social',
-        'category_label': 'Social',
+        'category_label': _('Social'),
         'category_icon': 'bi-people',
     },
     'api_endpoints': {
