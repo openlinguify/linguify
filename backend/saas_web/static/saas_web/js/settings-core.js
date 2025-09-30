@@ -25,21 +25,18 @@ class SettingsManager {
     }
 
     init() {
-        console.log('[Settings Core] Initializing settings navigation...');
-        console.log('[Settings Core] JavaScript navigation completely disabled for normal URL navigation');
-        
+        console.log('[Settings Core] Initializing settings navigation with AJAX...');
+
         // Clear any saved tab state to prevent interference
         localStorage.removeItem('settings-current-tab');
-        
-        // Only setup non-interfering features
-        this.setupNavigation(); // This only adds hover effects now
+
+        // Setup all features
+        this.setupNavigation(); // AJAX navigation enabled
         this.setupSearch();
         this.setupAutoSave();
         this.setupKeyboardShortcuts();
-        
-        // DO NOT load saved tab or call switchTab() - let normal navigation work
-        
-        console.log('[Settings Core] Navigation initialized successfully');
+
+        console.log('[Settings Core] ✅ AJAX navigation initialized successfully');
     }
 
     setupNavigation() {
@@ -82,10 +79,19 @@ class SettingsManager {
     async loadSettingsContent(url) {
         const mainContent = document.querySelector('.main-content-body');
         const headerContent = document.querySelector('.main-content-header');
-        if (!mainContent) return;
+        if (!mainContent) {
+            console.error('[Settings Core] ❌ No .main-content-body found!');
+            return;
+        }
 
         console.log(`[Settings Core] 🚀 Loading content via AJAX: ${url}`);
         const startTime = performance.now();
+
+        // Créer un indicateur de chargement visible
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px; border-radius: 8px; z-index: 9999; font-size: 16px;';
+        loadingIndicator.textContent = '⏳ Chargement...';
+        document.body.appendChild(loadingIndicator);
 
         try {
             // Afficher un loader avec animation
@@ -95,7 +101,8 @@ class SettingsManager {
 
             const response = await fetch(url, {
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    // Ne PAS envoyer X-Requested-With pour que Django renvoie le HTML complet
+                    // 'X-Requested-With': 'XMLHttpRequest'
                 }
             });
 
@@ -134,11 +141,20 @@ class SettingsManager {
             mainContent.style.opacity = '1';
             mainContent.style.pointerEvents = 'auto';
 
+            // Retirer l'indicateur de chargement
+            document.body.removeChild(loadingIndicator);
+
             const loadTime = (performance.now() - startTime).toFixed(2);
             console.log(`[Settings Core] ✅ Content loaded in ${loadTime}ms`);
 
         } catch (error) {
             console.error('[Settings Core] ❌ Error loading content:', error);
+
+            // Retirer l'indicateur de chargement
+            if (loadingIndicator && loadingIndicator.parentNode) {
+                document.body.removeChild(loadingIndicator);
+            }
+
             // Fallback: recharger la page normalement
             console.log('[Settings Core] Falling back to normal navigation');
             window.location.href = url;

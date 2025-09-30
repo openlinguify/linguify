@@ -162,6 +162,11 @@
 
 {% block extra_js %}
 <!-- Load settings scripts for AJAX navigation -->
-<script src="{% static 'saas_web/js/settings-utils.js' %}?v=2025.5"></script>
-<script src="{% static 'saas_web/js/settings-core.js' %}?v=2025.5"></script>
+<script src="{% static 'saas_web/js/settings-utils.js' %}?v=20250930.1730"></script>
+<script src="{% static 'saas_web/js/settings-core.js' %}?v=20250930.1730"></script>
+<script>
+// Debug: Vérifier que le nouveau script est chargé
+console.log('[Settings] Script version: 20250930.1730 loaded - AJAX headers removed');
+console.log('[Settings] settingsManager exists:', typeof window.settingsManager !== 'undefined');
+</script>
 {% endblock %}
