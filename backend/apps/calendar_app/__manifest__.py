@@ -5,12 +5,13 @@ Complete calendar application with event management, recurring events, attendees
 
 Based on Open Linguify calendar module architecture
 """
+from django.utils.translation import gettext_lazy as _
 
 __manifest__ = {
-    'name': 'Calendar',
+    'name': _('Calendar'),
     'version': '1.0.0',
     'category': 'Productivity',
-    'summary': 'Gérez vos événements, réunions et rendez-vous avec un calendrier complet',
+    'summary': _('Manage your events, meetings and appointments with a complete calendar'),
     'description': '''
 Calendar Module for Linguify
 ============================
@@ -89,7 +90,7 @@ Technical Implementation:
         'menu_order': 4,
         'sidebar_menu': True,
         'display_category': 'productivity',
-        'category_label': 'Productivité',
+        'category_label': _('Productivity'),
         'category_icon': 'bi-calendar-event',
     },
     

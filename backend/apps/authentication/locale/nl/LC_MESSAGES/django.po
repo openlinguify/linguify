@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify Authentication\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 20:31+0200\n"
+"POT-Creation-Date: 2025-09-30 20:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: Dutch\n"
@@ -15,579 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:5
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:5
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:7
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:5
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:7
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:68
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:214
-#: .\apps\calendar_app\templates\calendar\event_detail.html:4
-#: .\apps\calendar_app\templates\calendar\event_form.html:4
-#: .\apps\calendar_app\templates\calendar\providers.html:5
-msgid "Calendar"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:5
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:18
-msgid "Agenda View"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:20
-msgid "Upcoming events in chronological order"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:40
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:107
-msgid "Month"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:43
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:111
-msgid "Week"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:46
-msgid "New Event"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:62
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:143
-#: .\apps\authentication\templates\authentication\profile.html:398
-msgid "Today"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:72
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:168
-msgid "All day"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:187
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:218
-msgid "No events found"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:188
-msgid "No events scheduled for the selected period."
-msgstr ""
-
-# Registration form fields
-#: .\apps\calendar_app\templates\calendar\calendar_agenda.html:190
-#, fuzzy
-#| msgid "Create your free account"
-msgid "Create your first event"
-msgstr "Maak je gratis account aan"
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:5
-msgid "List View"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:115
-msgid "Day"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:119
-msgid "List"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:131
-msgid "Next 30 days"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:200
-msgid "participants"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:219
-msgid "There are no events in the next 30 days."
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:222
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:308
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:694
-#: .\apps\calendar_app\templates\calendar\event_form.html:4
-#, fuzzy
-#| msgid "Create my account"
-msgid "Create Event"
-msgstr "Maak mijn account aan"
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:230
-msgid "Quick Add Event"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:242
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:628
-#, fuzzy
-#| msgid "Create my account"
-msgid "Create New Event"
-msgstr "Maak mijn account aan"
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:244
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:630
-#: .\apps\calendar_app\templates\calendar\providers.html:147
-msgid "Close"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:251
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:637
-msgid "Event Title"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:252
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:638
-msgid "Enter event title..."
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:258
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:644
-msgid "Start Date & Time"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:262
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:648
-msgid "End Date & Time"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:269
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:655
-#: .\apps\authentication\templates\authentication\feedback\feedback_detail.html:503
-#: .\apps\authentication\views\feedback_views.py:85
-msgid "Description"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:270
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:656
-msgid "Event description (optional)..."
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:276
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:662
-msgid "Location"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:277
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:663
-msgid "Event location (optional)..."
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:280
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:666
-msgid "Event Type"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:282
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:668
-msgid "Select type..."
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:283
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:669
-msgid "Meeting"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:284
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:670
-msgid "Personal"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:285
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:671
-msgid "Work"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:286
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:672
-#, fuzzy
-#| msgid "Reminder Time"
-msgid "Reminder"
-msgstr "Herinneringstijd"
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:296
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:682
-msgid "All day event"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:304
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:690
-#: .\apps\calendar_app\templates\calendar\providers.html:118
-#: .\apps\authentication\enhanced_admin\templates\admin\send_notification.html:68
-#: .\apps\authentication\templates\authentication\feedback\feedback_create.html:396
-msgid "Cancel"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:312
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:698
-msgid "Advanced Options"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_list.html:410
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:724
-msgid "Creating..."
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:752
-msgid "Event created successfully!"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:766
-#: .\apps\calendar_app\templates\calendar\calendar_month.html:772
-#, fuzzy
-#| msgid "Error during verification"
-msgid "Error creating event"
-msgstr "Fout tijdens verificatie"
-
-#: .\apps\calendar_app\templates\calendar\calendar_settings.html:4
-#: .\apps\calendar_app\templates\calendar\calendar_settings.html:12
-msgid "Calendar Settings"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:73
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:109
-msgid "Agenda"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:78
-msgid "Providers"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:83
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:67
-msgid "Settings"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:90
-msgid "Actualiser"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:96
-msgid "Rechercher événements..."
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:99
-msgid "Tous les calendriers"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:100
-msgid "Personnel"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:101
-msgid "Travail"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:102
-msgid "Partagé"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:106
-msgid "Mois"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:107
-msgid "Semaine"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:108
-msgid "Jour"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:115
-msgid "Nouveau"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:203
-msgid "Go to dashboard"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:205
-#: .\apps\authentication\templates\authentication\interface_settings.html:9
-msgid "Dashboard"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\components\calendar_header.html:212
-msgid "Calendar app"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\event_form.html:4
-msgid "Edit Event"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\providers.html:5
-msgid "Calendar Providers"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\providers.html:32
-msgid "Connected Providers"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\providers.html:33
-msgid "Manage your external calendar connections"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\providers.html:37
-msgid "Sync All"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\providers.html:40
-#: .\apps\calendar_app\templates\calendar\providers.html:115
-msgid "Add Provider"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\providers.html:58
-msgid "Add Calendar Provider"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\providers.html:59
-msgid "Connect Google, Outlook, or CalDAV"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\providers.html:67
-msgid "Add New Provider"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\providers.html:149
-msgid "Sync Now"
-msgstr ""
-
-#: .\apps\calendar_app\templates\calendar\providers.html:158
-#, fuzzy
-#| msgid "Back to home"
-msgid "Back to Calendar"
-msgstr "Terug naar home"
-
-#: .\apps\language_learning\forms.py:37 .\apps\language_learning\forms.py:87
-msgid "Your native language"
-msgstr "Je moedertaal"
-
-#: .\apps\language_learning\forms.py:38 .\apps\language_learning\forms.py:93
-msgid "Language you want to learn"
-msgstr "Taal die je wilt leren"
-
-#: .\apps\language_learning\forms.py:39 .\apps\language_learning\forms.py:99
-#, fuzzy
-#| msgid "Current language level"
-msgid "Your current level"
-msgstr "Huidig taalniveau"
-
-#: .\apps\language_learning\forms.py:40
-#, fuzzy
-#| msgid "Learning objectives"
-msgid "Your learning objectives"
-msgstr "Leerdoelen"
-
-#: .\apps\language_learning\forms.py:41
-#, fuzzy
-#| msgid "Listening exercises"
-msgid "Include speaking exercises"
-msgstr "Luisteroefeningen"
-
-#: .\apps\language_learning\forms.py:42
-#, fuzzy
-#| msgid "Listening exercises"
-msgid "Include listening exercises"
-msgstr "Luisteroefeningen"
-
-#: .\apps\language_learning\forms.py:43
-#, fuzzy
-#| msgid "Listening exercises"
-msgid "Include reading exercises"
-msgstr "Luisteroefeningen"
-
-#: .\apps\language_learning\forms.py:44
-#, fuzzy
-#| msgid "Listening exercises"
-msgid "Include writing exercises"
-msgstr "Luisteroefeningen"
-
-#: .\apps\language_learning\forms.py:45
-#, fuzzy
-#| msgid "Daily Goal"
-msgid "Daily goal (minutes)"
-msgstr "Dagelijks doel"
-
-#: .\apps\language_learning\forms.py:46
-msgid "Reminders on weekdays"
-msgstr ""
-
-#: .\apps\language_learning\forms.py:47
-msgid "Reminders on weekends"
-msgstr ""
-
-#: .\apps\language_learning\forms.py:48
-#, fuzzy
-#| msgid "Reminder Time"
-msgid "Reminder time"
-msgstr "Herinneringstijd"
-
-#: .\apps\language_learning\forms.py:51
-msgid "How many minutes per day do you want to study?"
-msgstr ""
-
-#: .\apps\language_learning\forms.py:52
-#, fuzzy
-#| msgid "When to receive your daily reminder"
-msgid "What time would you like to receive study reminders?"
-msgstr "Wanneer je dagelijkse herinnering ontvangen"
-
-#: .\apps\language_learning\forms.py:61 .\apps\language_learning\forms.py:114
-msgid "Native language and target language cannot be the same"
-msgstr "Moedertaal en doeltaal kunnen niet hetzelfde zijn"
-
-#: .\apps\language_learning\forms.py:85
-msgid "Select your native language"
-msgstr "Selecteer je moedertaal"
-
-#: .\apps\language_learning\forms.py:91
-msgid "Select the language to learn"
-msgstr "Selecteer de taal om te leren"
-
-#: .\apps\language_learning\forms.py:97
-msgid "Select your level"
-msgstr "Selecteer je niveau"
-
-#: .\apps\language_learning\forms.py:103
-msgid "Select your objectives"
-msgstr "Selecteer je doelen"
-
-#: .\apps\language_learning\forms.py:105
-msgid "Why do you want to learn this language?"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:17
-msgid "Cours"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:22
-#: .\apps\language_learning\templates\language_learning\progress.html:5
-msgid "Progress"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:32
-#, fuzzy
-#| msgid "Learning Level"
-msgid "Learning:"
-msgstr "Leerniveau"
-
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:49
-msgid "Level:"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:55
-msgid "Quick Practice"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:57
-msgid "Practice"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:60
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:62
-msgid "Vocabulary"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\partials\navbar.html:65
-msgid "Language Learning Settings"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:25
-#, fuzzy
-#| msgid "Learning Preferences"
-msgid "Your Learning Progress"
-msgstr "Leervoorkeuren"
-
-#: .\apps\language_learning\templates\language_learning\progress.html:34
-#, fuzzy
-#| msgid "Current language level"
-msgid "Current Level"
-msgstr "Huidig taalniveau"
-
-#: .\apps\language_learning\templates\language_learning\progress.html:40
-msgid "Total XP"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:46
-msgid "Day Streak"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:52
-msgid "Study Time"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:59
-#, fuzzy
-#| msgid "Daily Goal"
-msgid "Daily Goals"
-msgstr "Dagelijks doel"
-
-#: .\apps\language_learning\templates\language_learning\progress.html:64
-msgid "Study Minutes"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:75
-msgid "Modules"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:86
-msgid "XP Earned"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:100
-msgid "Languages Progress"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:110
-msgid "modules completed"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:126
-msgid "Recent Achievements"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:143
-msgid "No achievements yet. Keep learning!"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:153
-msgid "Recent Activities"
-msgstr ""
-
-#: .\apps\language_learning\templates\language_learning\progress.html:172
-msgid "No recent activities. Start a lesson!"
-msgstr ""
-
-#: .\apps\language_learning\views\setup_views.py:44
-msgid "Your learning profile has been configured successfully!"
-msgstr ""
-
-#: .\apps\language_learning\views\setup_views.py:60
-#, fuzzy
-#| msgid "Learning Preferences"
-msgid "Configure your learning preferences"
-msgstr "Leervoorkeuren"
-
-#: .\apps\language_learning\views\setup_views.py:61
-msgid ""
-"Tell us about your language learning goals to personalize your experience"
-msgstr ""
-
-#: .\apps\language_learning\views\setup_views.py:85
-msgid "Your learning settings have been updated successfully!"
-msgstr ""
-
-#: .\apps\language_learning\views\setup_views.py:89
-msgid "Settings updated successfully!"
-msgstr ""
-
-#: .\apps\language_learning\views\setup_views.py:98
-#, fuzzy
-#| msgid "Learning Methods"
-msgid "Learning Settings"
-msgstr "Leermethoden"
-
-#: .\apps\language_learning\views\setup_views.py:99
-msgid "Customize your language learning experience"
-msgstr ""
 
 #: .\apps\task\models.py:7
 msgid "Pending"
@@ -2109,6 +1536,11 @@ msgstr ""
 msgid "Send Notification"
 msgstr "Reeksmeldingen"
 
+#: .\apps\authentication\enhanced_admin\templates\admin\send_notification.html:68
+#: .\apps\authentication\templates\authentication\feedback\feedback_create.html:396
+msgid "Cancel"
+msgstr ""
+
 #: .\apps\authentication\enhanced_admin\templates\admin\user_stats_dashboard.html:88
 #: .\apps\authentication\enhanced_admin\templates\admin\user_stats_dashboard.html:93
 msgid "User Statistics Dashboard"
@@ -3101,6 +2533,11 @@ msgstr ""
 msgid "Updated"
 msgstr ""
 
+#: .\apps\authentication\templates\authentication\feedback\feedback_detail.html:503
+#: .\apps\authentication\views\feedback_views.py:85
+msgid "Description"
+msgstr ""
+
 #: .\apps\authentication\templates\authentication\feedback\feedback_detail.html:513
 msgid "Bug Details"
 msgstr ""
@@ -3271,6 +2708,10 @@ msgstr ""
 
 #: .\apps\authentication\templates\authentication\feedback\feedback_list.html:638
 msgid "Hide Filters"
+msgstr ""
+
+#: .\apps\authentication\templates\authentication\interface_settings.html:9
+msgid "Dashboard"
 msgstr ""
 
 #: .\apps\authentication\templates\authentication\interface_settings.html:21
@@ -3848,6 +3289,10 @@ msgstr ""
 
 #: .\apps\authentication\templates\authentication\profile.html:388
 msgid "This Week"
+msgstr ""
+
+#: .\apps\authentication\templates\authentication\profile.html:398
+msgid "Today"
 msgstr ""
 
 #: .\apps\authentication\templates\authentication\profile.html:399
@@ -4641,6 +4086,133 @@ msgstr "Huidige profielfoto"
 #| msgid "Change profile picture"
 msgid "Failed to migrate profile picture"
 msgstr "Profielfoto wijzigen"
+
+# Registration form fields
+#, fuzzy
+#~| msgid "Create your free account"
+#~ msgid "Create your first event"
+#~ msgstr "Maak je gratis account aan"
+
+#, fuzzy
+#~| msgid "Create my account"
+#~ msgid "Create Event"
+#~ msgstr "Maak mijn account aan"
+
+#, fuzzy
+#~| msgid "Create my account"
+#~ msgid "Create New Event"
+#~ msgstr "Maak mijn account aan"
+
+#, fuzzy
+#~| msgid "Reminder Time"
+#~ msgid "Reminder"
+#~ msgstr "Herinneringstijd"
+
+#, fuzzy
+#~| msgid "Error during verification"
+#~ msgid "Error creating event"
+#~ msgstr "Fout tijdens verificatie"
+
+#, fuzzy
+#~| msgid "Back to home"
+#~ msgid "Back to Calendar"
+#~ msgstr "Terug naar home"
+
+#~ msgid "Your native language"
+#~ msgstr "Je moedertaal"
+
+#~ msgid "Language you want to learn"
+#~ msgstr "Taal die je wilt leren"
+
+#, fuzzy
+#~| msgid "Current language level"
+#~ msgid "Your current level"
+#~ msgstr "Huidig taalniveau"
+
+#, fuzzy
+#~| msgid "Learning objectives"
+#~ msgid "Your learning objectives"
+#~ msgstr "Leerdoelen"
+
+#, fuzzy
+#~| msgid "Listening exercises"
+#~ msgid "Include speaking exercises"
+#~ msgstr "Luisteroefeningen"
+
+#, fuzzy
+#~| msgid "Listening exercises"
+#~ msgid "Include listening exercises"
+#~ msgstr "Luisteroefeningen"
+
+#, fuzzy
+#~| msgid "Listening exercises"
+#~ msgid "Include reading exercises"
+#~ msgstr "Luisteroefeningen"
+
+#, fuzzy
+#~| msgid "Listening exercises"
+#~ msgid "Include writing exercises"
+#~ msgstr "Luisteroefeningen"
+
+#, fuzzy
+#~| msgid "Daily Goal"
+#~ msgid "Daily goal (minutes)"
+#~ msgstr "Dagelijks doel"
+
+#, fuzzy
+#~| msgid "Reminder Time"
+#~ msgid "Reminder time"
+#~ msgstr "Herinneringstijd"
+
+#, fuzzy
+#~| msgid "When to receive your daily reminder"
+#~ msgid "What time would you like to receive study reminders?"
+#~ msgstr "Wanneer je dagelijkse herinnering ontvangen"
+
+#~ msgid "Native language and target language cannot be the same"
+#~ msgstr "Moedertaal en doeltaal kunnen niet hetzelfde zijn"
+
+#~ msgid "Select your native language"
+#~ msgstr "Selecteer je moedertaal"
+
+#~ msgid "Select the language to learn"
+#~ msgstr "Selecteer de taal om te leren"
+
+#~ msgid "Select your level"
+#~ msgstr "Selecteer je niveau"
+
+#~ msgid "Select your objectives"
+#~ msgstr "Selecteer je doelen"
+
+#, fuzzy
+#~| msgid "Learning Level"
+#~ msgid "Learning:"
+#~ msgstr "Leerniveau"
+
+#, fuzzy
+#~| msgid "Learning Preferences"
+#~ msgid "Your Learning Progress"
+#~ msgstr "Leervoorkeuren"
+
+#, fuzzy
+#~| msgid "Current language level"
+#~ msgid "Current Level"
+#~ msgstr "Huidig taalniveau"
+
+#, fuzzy
+#~| msgid "Daily Goal"
+#~ msgid "Daily Goals"
+#~ msgstr "Dagelijks doel"
+
+#, fuzzy
+#~| msgid "Learning Preferences"
+#~ msgid "Configure your learning preferences"
+#~ msgstr "Leervoorkeuren"
+
+#, fuzzy
+#~| msgid "Learning Methods"
+#~ msgid "Learning Settings"
+#~ msgstr "Leermethoden"
 
 #, fuzzy
 #~| msgid "Personal Information"

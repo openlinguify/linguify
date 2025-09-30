@@ -1,0 +1,245 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-30 20:45+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+#: .\apps\language_learning\__manifest__.py:9
+msgid "Language Learning"
+msgstr ""
+
+#: .\apps\language_learning\__manifest__.py:14
+msgid ""
+"Learn languages with interactive lessons, personalized exercises and "
+"advanced progress tracking."
+msgstr ""
+
+#: .\apps\language_learning\__manifest__.py:15
+msgid ""
+"Your complete language learning platform - Compete with Duolingo and Babbel"
+msgstr ""
+
+#: .\apps\language_learning\__manifest__.py:39
+msgid "Education"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:37 .\apps\language_learning\forms.py:87
+msgid "Your native language"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:38 .\apps\language_learning\forms.py:93
+msgid "Language you want to learn"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:39 .\apps\language_learning\forms.py:99
+msgid "Your current level"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:40
+msgid "Your learning objectives"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:41
+msgid "Include speaking exercises"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:42
+msgid "Include listening exercises"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:43
+msgid "Include reading exercises"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:44
+msgid "Include writing exercises"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:45
+msgid "Daily goal (minutes)"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:46
+msgid "Reminders on weekdays"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:47
+msgid "Reminders on weekends"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:48
+msgid "Reminder time"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:51
+msgid "How many minutes per day do you want to study?"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:52
+msgid "What time would you like to receive study reminders?"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:61 .\apps\language_learning\forms.py:114
+msgid "Native language and target language cannot be the same"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:85
+msgid "Select your native language"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:91
+msgid "Select the language to learn"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:97
+msgid "Select your level"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:103
+msgid "Select your objectives"
+msgstr ""
+
+#: .\apps\language_learning\forms.py:105
+msgid "Why do you want to learn this language?"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:17
+msgid "Cours"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:22
+#: .\apps\language_learning\templates\language_learning\progress.html:5
+msgid "Progress"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:32
+msgid "Learning:"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:49
+msgid "Level:"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:55
+msgid "Quick Practice"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:57
+msgid "Practice"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:60
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:62
+msgid "Vocabulary"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:65
+msgid "Language Learning Settings"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\partials\navbar.html:67
+msgid "Settings"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:25
+msgid "Your Learning Progress"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:34
+msgid "Current Level"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:40
+msgid "Total XP"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:46
+msgid "Day Streak"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:52
+msgid "Study Time"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:59
+msgid "Daily Goals"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:64
+msgid "Study Minutes"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:75
+msgid "Modules"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:86
+msgid "XP Earned"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:100
+msgid "Languages Progress"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:110
+msgid "modules completed"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:126
+msgid "Recent Achievements"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:143
+msgid "No achievements yet. Keep learning!"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:153
+msgid "Recent Activities"
+msgstr ""
+
+#: .\apps\language_learning\templates\language_learning\progress.html:172
+msgid "No recent activities. Start a lesson!"
+msgstr ""
+
+#: .\apps\language_learning\views\setup_views.py:44
+msgid "Your learning profile has been configured successfully!"
+msgstr ""
+
+#: .\apps\language_learning\views\setup_views.py:60
+msgid "Configure your learning preferences"
+msgstr ""
+
+#: .\apps\language_learning\views\setup_views.py:61
+msgid ""
+"Tell us about your language learning goals to personalize your experience"
+msgstr ""
+
+#: .\apps\language_learning\views\setup_views.py:85
+msgid "Your learning settings have been updated successfully!"
+msgstr ""
+
+#: .\apps\language_learning\views\setup_views.py:89
+msgid "Settings updated successfully!"
+msgstr ""
+
+#: .\apps\language_learning\views\setup_views.py:98
+msgid "Learning Settings"
+msgstr ""
+
+#: .\apps\language_learning\views\setup_views.py:99
+msgid "Customize your language learning experience"
+msgstr ""
