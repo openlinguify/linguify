@@ -5,7 +5,7 @@ import os
 import json
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from blog.models import ProfanityWord
+from core.blog.models import ProfanityWord
 
 
 class Command(BaseCommand):
@@ -39,7 +39,7 @@ class Command(BaseCommand):
             self.load_minimal_words()
 
         # Clear cache after update
-        from blog.profanity_filter import profanity_filter
+        from core.blog.profanity_filter import profanity_filter
         profanity_filter.clear_cache()
         
         self.stdout.write(self.style.SUCCESS('Profanity database populated successfully.'))

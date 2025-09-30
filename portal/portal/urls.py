@@ -24,7 +24,7 @@ urlpatterns = [
     # Health check endpoint
     path('health/', health_check, name='health_check'),
     # API endpoints (no language prefix)
-    path('api/v1/jobs/', include('jobs.urls')),
+    path('api/v1/jobs/', include('core.jobs.urls')),
     # Redirection intelligente basée sur la langue du navigateur
     path('', LanguageRedirectView.as_view(), name='root_redirect'),
 ]
@@ -34,9 +34,9 @@ urlpatterns += i18n_patterns(
     # Pages publiques seulement - pas d'auth dans le portal
     path('', include('public_web.urls')),
     # Apps déplacées du backend
-    path('blog/', include('blog.urls')),
-    path('jobs/', include('jobs.urls_web', namespace='jobs_web')),  # Web interface for jobs
-    path('careers/', include('jobs.urls_web', namespace='careers_web')),  # Alternative URL for careers
+    path('blog/', include('core.blog.urls')),
+    path('jobs/', include('core.jobs.urls_web', namespace='jobs_web')),  # Web interface for jobs
+    path('careers/', include('core.jobs.urls_web', namespace='careers_web')),  # Alternative URL for careers
     prefix_default_language=True,
 )
 

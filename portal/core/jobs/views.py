@@ -6,9 +6,9 @@ from django.http import HttpResponseRedirect, Http404
 from django.db.models import Q
 from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
-from jobs.models import Department, JobPosition, JobApplication
-from jobs.serializers import (
-    DepartmentSerializer, JobPositionListSerializer, 
+from core.jobs.models import Department, JobPosition, JobApplication
+from core.jobs.serializers import (
+    DepartmentSerializer, JobPositionListSerializer,
     JobPositionDetailSerializer, JobApplicationCreateSerializer,
     JobApplicationSerializer
 )

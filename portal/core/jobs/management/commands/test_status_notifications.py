@@ -5,7 +5,7 @@ Management command to test job application status change notifications
 from django.core.management.base import BaseCommand
 from django.core import mail
 from django.utils import timezone
-from jobs.models import Department, JobPosition, JobApplication
+from core.jobs.models import Department, JobPosition, JobApplication
 
 
 class Command(BaseCommand):

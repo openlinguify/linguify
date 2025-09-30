@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.management.base import BaseCommand
-from blog.profanity_filter import validate_comment_content
+from core.blog.profanity_filter import validate_comment_content
 
 
 class Command(BaseCommand):

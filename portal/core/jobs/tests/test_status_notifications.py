@@ -12,8 +12,8 @@ from django.contrib.admin.sites import site
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 
-from jobs.models import Department, JobPosition, JobApplication
-from jobs.admin import JobApplicationAdmin
+from core.jobs.models import Department, JobPosition, JobApplication
+from core.jobs.admin import JobApplicationAdmin
 
 User = get_user_model()
 

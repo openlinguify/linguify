@@ -47,8 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'public_web',  # Notre app principale pour le portail
-    'blog',       # App blog déplacée du backend
-    'jobs',       # App jobs déplacée du backend
+    'core.blog',       # App blog déplacée du backend
+    'core.jobs',       # App jobs déplacée du backend
 ]
 
 MIDDLEWARE = [

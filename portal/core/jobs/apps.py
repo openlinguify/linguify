@@ -3,8 +3,8 @@ from django.apps import AppConfig
 
 class JobsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'jobs'
+    name = 'core.jobs'
     verbose_name = 'Jobs and Careers'
-    
+
     def ready(self):
-        import jobs.signals
+        import core.jobs.signals

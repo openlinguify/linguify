@@ -8,8 +8,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from jobs.models import Department, JobPosition, JobApplication
-from jobs.admin import JobPositionAdmin, JobApplicationAdmin, DepartmentAdmin
+from core.jobs.models import Department, JobPosition, JobApplication
+from core.jobs.admin import JobPositionAdmin, JobApplicationAdmin, DepartmentAdmin
 
 User = get_user_model()
 
