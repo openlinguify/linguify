@@ -257,8 +257,10 @@ function getNotificationIcon(type) {
     return mapping[type] || 'bi-info-circle';
 }
 
-// Fonction simple pour inverser une carte
-window.flipCard = async function(cardId, event) {
+// Fonction pour inverser front/back d'une carte (swap translation)
+// Note: Cette fonction n'est plus utilisée dans l'interface actuelle
+// Elle est conservée pour compatibilité mais ne devrait plus être appelée
+window.flipCardTranslation = async function(cardId, event) {
     console.log('Inversion carte:', cardId, 'Event:', event);
 
     // Si cardId n'est pas valide, essayer de le trouver depuis l'élément cliqué

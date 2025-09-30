@@ -284,17 +284,24 @@ class FlashcardStudyMode {
 
     flipCard() {
         if (this.studyCards.length === 0) return;
-        
+
         const flashcard = document.getElementById('flashcard');
-        
+
         if (!this.isFlipped) {
             // Flip to back
             flashcard.classList.add('flipped');
             this.isFlipped = true;
-            
+
             // Show action buttons
             document.getElementById('studyActions').style.display = 'flex';
             document.getElementById('studyInstructions').style.display = 'none';
+        } else {
+            // Flip back to front
+            flashcard.classList.remove('flipped');
+            this.isFlipped = false;
+
+            // Keep action buttons visible (user can still flip back and forth before answering)
+            // Instructions stay hidden once the card has been flipped once
         }
     }
 
