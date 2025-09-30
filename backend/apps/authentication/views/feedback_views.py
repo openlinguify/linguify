@@ -265,12 +265,33 @@ class FeedbackDashboardView(View):
             'closed': user_feedbacks.filter(status='closed').count(),
         }
 
-        # Feedbacks récents
-        recent_feedbacks = user_feedbacks.select_related(
+        # Filtrage
+        filtered_feedbacks = user_feedbacks
+
+        # Filtrage par statut
+        status_filter = request.GET.get('status')
+        if status_filter:
+            filtered_feedbacks = filtered_feedbacks.filter(status=status_filter)
+
+        # Filtrage par type
+        type_filter = request.GET.get('type')
+        if type_filter:
+            filtered_feedbacks = filtered_feedbacks.filter(feedback_type=type_filter)
+
+        # Recherche
+        search = request.GET.get('search')
+        if search:
+            filtered_feedbacks = filtered_feedbacks.filter(
+                Q(title__icontains=search) |
+                Q(description__icontains=search)
+            )
+
+        # Tous les feedbacks
+        recent_feedbacks = filtered_feedbacks.select_related(
             'assigned_to'
         ).prefetch_related(
             'responses', 'attachments'
-        ).order_by('-created_at')[:5]
+        ).order_by('-created_at')
 
         # Distribution par type
         type_distribution = {}
