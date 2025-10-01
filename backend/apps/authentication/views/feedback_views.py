@@ -102,6 +102,8 @@ class FeedbackForm(ModelForm):
 
     def clean_screenshot(self):
         """Valider et sécuriser l'image uploadée"""
+        from django.utils.translation import gettext_lazy
+
         screenshot = self.cleaned_data.get('screenshot')
 
         if not screenshot:
@@ -110,19 +112,19 @@ class FeedbackForm(ModelForm):
         # 1. Valider la taille du fichier (max 5MB)
         max_size = 5 * 1024 * 1024  # 5MB
         if screenshot.size > max_size:
-            raise ValidationError(_('Image file size must be less than 5MB.'))
+            raise ValidationError(gettext_lazy('Image file size must be less than 5MB.'))
 
         # 2. Valider l'extension du fichier
         allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
         file_name = screenshot.name.lower()
         if not any(file_name.endswith(ext) for ext in allowed_extensions):
-            raise ValidationError(_('Only JPG, PNG, GIF, and WebP images are allowed.'))
+            raise ValidationError(gettext_lazy('Only JPG, PNG, GIF, and WebP images are allowed.'))
 
         # 3. Valider le type MIME
         mime_type, _ = mimetypes.guess_type(screenshot.name)
         allowed_mime_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
         if mime_type not in allowed_mime_types:
-            raise ValidationError(_('Invalid image format.'))
+            raise ValidationError(gettext_lazy('Invalid image format.'))
 
         # 4. Vérifier que c'est vraiment une image et la ré-encoder pour enlever les métadonnées malveillantes
         try:
@@ -131,12 +133,19 @@ class FeedbackForm(ModelForm):
 
             # Vérifier le format
             if img.format not in ['JPEG', 'PNG', 'GIF', 'WEBP']:
-                raise ValidationError(_('Invalid image format.'))
+                raise ValidationError(gettext_lazy('Invalid image format.'))
 
-            # Vérifier les dimensions (max 4096x4096)
+            # Vérifier et redimensionner si nécessaire (max 4096x4096)
             max_dimension = 4096
             if img.width > max_dimension or img.height > max_dimension:
-                raise ValidationError(_('Image dimensions must be less than 4096x4096 pixels.'))
+                # Calculer le ratio pour garder les proportions
+                ratio = min(max_dimension / img.width, max_dimension / img.height)
+                new_width = int(img.width * ratio)
+                new_height = int(img.height * ratio)
+
+                # Redimensionner l'image
+                img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                logger.info(f"Image resized from {img.width}x{img.height} to {new_width}x{new_height}")
 
             # Ré-encoder l'image pour enlever les métadonnées et potentiel code malveillant
             img_io = BytesIO()
@@ -162,9 +171,12 @@ class FeedbackForm(ModelForm):
 
             return cleaned_file
 
+        except ValidationError:
+            # Re-raise ValidationErrors as-is
+            raise
         except Exception as e:
             logger.error(f"Image validation error: {str(e)}")
-            raise ValidationError(_('Invalid or corrupted image file.'))
+            raise ValidationError(gettext_lazy('Invalid or corrupted image file.'))
 
 
 @method_decorator(login_required, name='dispatch')

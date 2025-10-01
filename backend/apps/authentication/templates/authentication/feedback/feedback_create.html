@@ -236,6 +236,25 @@ label {
     <form method="post" enctype="multipart/form-data" class="feedback-form" id="feedbackForm">
         {% csrf_token %}
 
+        {% if form.errors %}
+            <div class="alert alert-danger" role="alert" style="margin-bottom: 1rem;">
+                <h5 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> {% trans "Please correct the following errors:" %}</h5>
+                <ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem;">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>
+                                {% if field == '__all__' %}
+                                    {{ error }}
+                                {% else %}
+                                    <strong>{{ field }}:</strong> {{ error }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
         <!-- Section 1: Informations de base -->
         <div class="form-section">
             <h3 class="section-title">
@@ -362,6 +381,9 @@ label {
                     <small>{% trans "Click to upload a screenshot" %}</small>
                     {{ form.screenshot }}
                 </div>
+                {% if form.screenshot.errors %}
+                    <div class="text-danger mt-1">{{ form.screenshot.errors }}</div>
+                {% endif %}
                 <div id="filePreview" style="display: none; font-size: 0.8rem; margin-top: 0.25rem;">
                     <i class="bi bi-check-circle text-success"></i>
                     <span id="fileName"></span>
