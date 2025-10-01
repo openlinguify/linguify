@@ -5,14 +5,21 @@
 
 {% block title %}{% trans "Bugs & Feedbacks" %} | Open Linguify{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'authentication/css/feedback.css' %}">
+{% endblock %}
+
 {% block header_content %}
 {% include 'components/header/app_header.html' with page_title="Bugs et commentaires" brand_url="/auth/feedback/" show_feedback_only=True %}
 {% endblock %}
 
-{% block extra_css %}
-{% include 'authentication/feedback/partials/navbar.html' %}
-{% endblock %}
-
 {% block content %}
-{# Le contenu sera défini dans les templates enfants (dashboard, list, etc.) #}
+<div>
+    {% include 'authentication/feedback/partials/navbar.html' %}
+</div>
+
+<div class="feedback-content-wrapper">
+    {% block feedback_content %}
+    {% endblock %}
+</div>
 {% endblock %}

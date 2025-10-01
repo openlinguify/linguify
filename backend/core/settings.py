@@ -499,6 +499,12 @@ STATICFILES_FINDERS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# File upload security settings
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB in bytes
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB in bytes
+FILE_UPLOAD_PERMISSIONS = 0o644  # rw-r--r--
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755  # rwxr-xr-x
+
 # Django Compressor settings (disabled for now)
 # COMPRESS_ENABLED = True
 # COMPRESS_CSS_FILTERS = [

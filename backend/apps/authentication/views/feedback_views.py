@@ -9,15 +9,19 @@ from django.views.generic import View, ListView, CreateView, DetailView
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.urls import reverse_lazy
 from django.forms import ModelForm, FileInput, Textarea, Select, TextInput
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.utils import timezone
+from django.core.files.uploadedfile import InMemoryUploadedFile
 import logging
 import json
+import mimetypes
+from io import BytesIO
+from PIL import Image
 
 from ..models import UserFeedback, FeedbackAttachment, FeedbackResponse
 from ..models import FEEDBACK_TYPE_CHOICES, FEEDBACK_PRIORITY_CHOICES, FEEDBACK_CATEGORY_CHOICES
@@ -95,6 +99,72 @@ class FeedbackForm(ModelForm):
         self.fields['actual_behavior'].required = False
         self.fields['page_url'].required = False
         self.fields['screenshot'].required = False
+
+    def clean_screenshot(self):
+        """Valider et sécuriser l'image uploadée"""
+        screenshot = self.cleaned_data.get('screenshot')
+
+        if not screenshot:
+            return screenshot
+
+        # 1. Valider la taille du fichier (max 5MB)
+        max_size = 5 * 1024 * 1024  # 5MB
+        if screenshot.size > max_size:
+            raise ValidationError(_('Image file size must be less than 5MB.'))
+
+        # 2. Valider l'extension du fichier
+        allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+        file_name = screenshot.name.lower()
+        if not any(file_name.endswith(ext) for ext in allowed_extensions):
+            raise ValidationError(_('Only JPG, PNG, GIF, and WebP images are allowed.'))
+
+        # 3. Valider le type MIME
+        mime_type, _ = mimetypes.guess_type(screenshot.name)
+        allowed_mime_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+        if mime_type not in allowed_mime_types:
+            raise ValidationError(_('Invalid image format.'))
+
+        # 4. Vérifier que c'est vraiment une image et la ré-encoder pour enlever les métadonnées malveillantes
+        try:
+            # Ouvrir l'image avec Pillow
+            img = Image.open(screenshot)
+
+            # Vérifier le format
+            if img.format not in ['JPEG', 'PNG', 'GIF', 'WEBP']:
+                raise ValidationError(_('Invalid image format.'))
+
+            # Vérifier les dimensions (max 4096x4096)
+            max_dimension = 4096
+            if img.width > max_dimension or img.height > max_dimension:
+                raise ValidationError(_('Image dimensions must be less than 4096x4096 pixels.'))
+
+            # Ré-encoder l'image pour enlever les métadonnées et potentiel code malveillant
+            img_io = BytesIO()
+
+            # Convertir RGBA en RGB pour JPEG
+            if img.format == 'JPEG' and img.mode in ('RGBA', 'LA', 'P'):
+                img = img.convert('RGB')
+
+            # Sauvegarder l'image ré-encodée
+            img_format = img.format if img.format in ['PNG', 'GIF', 'WEBP'] else 'JPEG'
+            img.save(img_io, format=img_format, quality=85, optimize=True)
+            img_io.seek(0)
+
+            # Créer un nouveau fichier uploadé avec l'image nettoyée
+            cleaned_file = InMemoryUploadedFile(
+                img_io,
+                'ImageField',
+                screenshot.name,
+                f'image/{img_format.lower()}',
+                img_io.getbuffer().nbytes,
+                None
+            )
+
+            return cleaned_file
+
+        except Exception as e:
+            logger.error(f"Image validation error: {str(e)}")
+            raise ValidationError(_('Invalid or corrupted image file.'))
 
 
 @method_decorator(login_required, name='dispatch')
