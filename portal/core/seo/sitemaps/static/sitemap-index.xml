@@ -3,53 +3,53 @@
   
   <!-- Main sitemap with all pages -->
   <sitemap>
-    <loc>https://openlinguify.com/sitemap.xml</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/sitemap.xml</loc>
+    <lastmod>2025-10-01</lastmod>
   </sitemap>
   
   <!-- Static pages sitemap -->
   <sitemap>
-    <loc>https://openlinguify.com/sitemap-static.xml</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/sitemap-static.xml</loc>
+    <lastmod>2025-10-01</lastmod>
   </sitemap>
   
   <!-- Learning modules sitemap -->
   <sitemap>
-    <loc>https://openlinguify.com/sitemap-learning.xml</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/sitemap-learning.xml</loc>
+    <lastmod>2025-10-01</lastmod>
   </sitemap>
   
   <!-- Course content sitemap (dynamic) -->
   <sitemap>
-    <loc>https://openlinguify.com/sitemap-courses.xml</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/sitemap-courses.xml</loc>
+    <lastmod>2025-10-01</lastmod>
   </sitemap>
   
   <!-- User generated content sitemap (if public) -->
   <sitemap>
-    <loc>https://openlinguify.com/sitemap-ugc.xml</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/sitemap-ugc.xml</loc>
+    <lastmod>2025-10-01</lastmod>
   </sitemap>
   
   <!-- Multi-language sitemaps -->
   <sitemap>
-    <loc>https://openlinguify.com/sitemap-en.xml</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/sitemap-en.xml</loc>
+    <lastmod>2025-10-01</lastmod>
   </sitemap>
   
   <sitemap>
-    <loc>https://openlinguify.com/sitemap-fr.xml</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/sitemap-fr.xml</loc>
+    <lastmod>2025-10-01</lastmod>
   </sitemap>
   
   <sitemap>
-    <loc>https://openlinguify.com/sitemap-es.xml</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/sitemap-es.xml</loc>
+    <lastmod>2025-10-01</lastmod>
   </sitemap>
   
   <sitemap>
-    <loc>https://openlinguify.com/sitemap-nl.xml</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/sitemap-nl.xml</loc>
+    <lastmod>2025-10-01</lastmod>
   </sitemap>
   
 </sitemapindex>

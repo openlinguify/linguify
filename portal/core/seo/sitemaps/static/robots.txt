@@ -153,5 +153,5 @@ User-agent: Claude-Web
 Disallow: /
 
 # Sitemap files
-Sitemap: https://openlinguify.com/sitemap.xml
-Sitemap: https://openlinguify.com/sitemap-index.xml
+Sitemap: https://www.openlinguify.com/sitemap.xml
+Sitemap: https://www.openlinguify.com/sitemap-index.xml

@@ -16,7 +16,7 @@
 
     <!-- SEO Meta Tags -->
     <meta name="description"
-        content="{% block meta_description %}{% trans 'OpenLinguify is an open source educational apps platform: memorization system, flashcards, note-taking, quizzes, collaborative chat, classrooms and much more. Discover our tools to revolutionize learning.' %}{% endblock %}">
+        content="{% block meta_description %}{% trans 'OpenLinguify: Free open-source platform for language learning with AI flashcards, spaced repetition, quizzes & collaborative tools. Start learning now!' %}{% endblock %}">
 
 
     <meta name="keywords" content="{% block meta_keywords %}
@@ -52,23 +52,42 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
         content="{% block og_title %}{% trans 'OpenLinguify - Open source educational apps platform' %}{% endblock %}">
     <meta property="og:description"
         content="{% block og_description %}{% trans 'Discover OpenLinguify, a complete suite of open source educational apps: smart memorization, flashcards, note-taking, interactive quizzes, collaborative chat, virtual classrooms and much more. Revolutionize the way you learn.' %}{% endblock %}">
-
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:image" content="{% load static %}{% static 'public_web/images/og-image.png' %}">
+    <meta property="og:image" content="https://www.openlinguify.com{% static 'public_web/images/og-image.png' %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="OpenLinguify - Open Source Educational Platform">
+    <meta property="og:locale" content="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}_{% if LANGUAGE_CODE == 'en' %}US{% elif LANGUAGE_CODE == 'fr' %}FR{% elif LANGUAGE_CODE == 'es' %}ES{% elif LANGUAGE_CODE == 'nl' %}NL{% endif %}">
+    <meta property="og:locale:alternate" content="en_US">
+    <meta property="og:locale:alternate" content="fr_FR">
+    <meta property="og:locale:alternate" content="es_ES">
+    <meta property="og:locale:alternate" content="nl_NL">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@openlinguify">
+    <meta name="twitter:creator" content="@openlinguify">
     <meta name="twitter:title"
         content="{% block twitter_title %}{% trans 'OpenLinguify - Open source platform for modern education' %}{% endblock %}">
     <meta name="twitter:description"
         content="{% block twitter_description %}{% trans 'OpenLinguify: Complete suite of open source educational apps: memorization, flashcards, notes, quizzes, collaborative chat and much more.' %}{% endblock %}">
-    <meta name="twitter:image" content="{% static 'public_web/images/og-image.png' %}">
+    <meta name="twitter:image" content="https://www.openlinguify.com{% static 'public_web/images/og-image.png' %}">
+    <meta name="twitter:image:alt" content="OpenLinguify Educational Platform">
 
     <!-- Additional SEO -->
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#349ea3">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <!-- Hreflang for multilingual SEO -->
+    {% get_current_language as CURRENT_LANG %}
+    {% get_available_languages as AVAILABLE_LANGS %}
+    <link rel="alternate" hreflang="en" href="https://www.openlinguify.com/en{{ request.path|slice:'3:' }}">
+    <link rel="alternate" hreflang="fr" href="https://www.openlinguify.com/fr{{ request.path|slice:'3:' }}">
+    <link rel="alternate" hreflang="es" href="https://www.openlinguify.com/es{{ request.path|slice:'3:' }}">
+    <link rel="alternate" hreflang="nl" href="https://www.openlinguify.com/nl{{ request.path|slice:'3:' }}">
+    <link rel="alternate" hreflang="x-default" href="https://www.openlinguify.com/en{{ request.path|slice:'3:' }}">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -145,6 +164,21 @@ nauka, edukacja online, narzędzia edukacyjne, fiszki, quizy, powtórka, pamię�
             "query-input": "required name=search_term_string"
         },
         "inLanguage": ["en", "fr", "es", "nl"]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.openlinguify.com/"
+            }
+        ]
     }
     </script>
 

@@ -8,60 +8,60 @@
   
   <!-- Homepage -->
   <url>
-    <loc>https://openlinguify.com/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://openlinguify.com/en/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://openlinguify.com/fr/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://openlinguify.com/es/"/>
-    <xhtml:link rel="alternate" hreflang="nl" href="https://openlinguify.com/nl/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://openlinguify.com/"/>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.openlinguify.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.openlinguify.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.openlinguify.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.openlinguify.com/nl/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.openlinguify.com/"/>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   
   <!-- Authentication Pages -->
   <url>
-    <loc>https://openlinguify.com/auth/login/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://openlinguify.com/en/auth/login/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://openlinguify.com/fr/auth/login/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://openlinguify.com/es/auth/login/"/>
-    <xhtml:link rel="alternate" hreflang="nl" href="https://openlinguify.com/nl/auth/login/"/>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/auth/login/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.openlinguify.com/en/auth/login/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.openlinguify.com/fr/auth/login/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.openlinguify.com/es/auth/login/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.openlinguify.com/nl/auth/login/"/>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
-    <loc>https://openlinguify.com/auth/register/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://openlinguify.com/en/auth/register/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://openlinguify.com/fr/auth/register/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://openlinguify.com/es/auth/register/"/>
-    <xhtml:link rel="alternate" hreflang="nl" href="https://openlinguify.com/nl/auth/register/"/>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/auth/register/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.openlinguify.com/en/auth/register/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.openlinguify.com/fr/auth/register/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.openlinguify.com/es/auth/register/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.openlinguify.com/nl/auth/register/"/>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <!-- Feature Pages -->
   <url>
-    <loc>https://openlinguify.com/features/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://openlinguify.com/en/features/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://openlinguify.com/fr/features/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://openlinguify.com/es/features/"/>
-    <xhtml:link rel="alternate" hreflang="nl" href="https://openlinguify.com/nl/features/"/>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/features/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.openlinguify.com/en/features/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.openlinguify.com/fr/features/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.openlinguify.com/es/features/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.openlinguify.com/nl/features/"/>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Terms of Service -->
   <url>
-    <loc>https://openlinguify.com/annexes/terms/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://openlinguify.com/en/annexes/terms/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://openlinguify.com/fr/annexes/terms/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://openlinguify.com/es/annexes/terms/"/>
-    <xhtml:link rel="alternate" hreflang="nl" href="https://openlinguify.com/nl/annexes/terms/"/>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/annexes/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.openlinguify.com/en/annexes/terms/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.openlinguify.com/fr/annexes/terms/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.openlinguify.com/es/annexes/terms/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.openlinguify.com/nl/annexes/terms/"/>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

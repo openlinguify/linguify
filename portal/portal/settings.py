@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',  # For SEO sitemap generation
+    'core.seo',        # SEO management system
     'public_web',  # Notre app principale pour le portail
     'core.blog',       # App blog déplacée du backend
     'core.jobs',       # App jobs déplacée du backend

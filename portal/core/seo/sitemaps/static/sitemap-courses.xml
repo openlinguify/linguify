@@ -6,44 +6,44 @@
   
   <!-- Learning Module Pages -->
   <url>
-    <loc>https://openlinguify.com/course/</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/course/</loc>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://openlinguify.com/notebook/</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/notebook/</loc>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://openlinguify.com/revision/</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/revision/</loc>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <!-- Sample Course Content - Will be populated dynamically -->
   <url>
-    <loc>https://openlinguify.com/course/french-basics/</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/course/french-basics/</loc>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://openlinguify.com/course/spanish-beginners/</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/course/spanish-beginners/</loc>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://openlinguify.com/course/dutch-fundamentals/</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://www.openlinguify.com/course/dutch-fundamentals/</loc>
+    <lastmod>2025-10-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>

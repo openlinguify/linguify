@@ -50,9 +50,8 @@ urlpatterns = [
     # Dynamic app detail (MUST be after legacy redirects)
     path('apps/<slug:app_slug>/', views.DynamicAppDetailView.as_view(), name='dynamic_app_detail'),
     
-    # SEO and technical files
-    path('robots.txt', views.RobotsTxtView.as_view(), name='robots_txt'),
-    path('sitemap.xml', views.SitemapXmlView.as_view(), name='sitemap_xml'),
+    # SEO files are now handled at root level in portal/urls.py
+    # Removed duplicate robots.txt and sitemap.xml URLs
     
     # Health and monitoring endpoints
     path('health/', views.HealthCheckView.as_view(), name='health_check'),

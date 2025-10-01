@@ -9,6 +9,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.views.generic import RedirectView
 from django.http import JsonResponse
 from public_web.views import LanguageRedirectView
+from core.seo import views as seo_views
 
 def health_check(request):
     """Health check endpoint for monitoring"""
@@ -21,6 +22,19 @@ def health_check(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
+    # SEO files - using core.seo system
+    path('robots.txt', seo_views.serve_robots_txt, name='robots_txt'),
+    path('sitemap.xml', seo_views.serve_sitemap, {'sitemap_name': 'sitemap'}, name='sitemap_main'),
+    path('sitemap-index.xml', seo_views.serve_sitemap, {'sitemap_name': 'sitemap-index'}, name='sitemap_index'),
+    path('sitemap-static.xml', seo_views.serve_sitemap, {'sitemap_name': 'sitemap-static'}, name='sitemap_static'),
+    path('sitemap-courses.xml', seo_views.serve_sitemap, {'sitemap_name': 'sitemap-courses'}, name='sitemap_courses'),
+    path('sitemap-images.xml', seo_views.serve_sitemap, {'sitemap_name': 'sitemap-images'}, name='sitemap_images'),
+    path('sitemap-videos.xml', seo_views.serve_sitemap, {'sitemap_name': 'sitemap-videos'}, name='sitemap_videos'),
+    path('sitemap-en.xml', seo_views.serve_sitemap, {'sitemap_name': 'sitemap-en'}, name='sitemap_en'),
+    path('sitemap-fr.xml', seo_views.serve_sitemap, {'sitemap_name': 'sitemap-fr'}, name='sitemap_fr'),
+    path('sitemap-es.xml', seo_views.serve_sitemap, {'sitemap_name': 'sitemap-es'}, name='sitemap_es'),
+    path('sitemap-nl.xml', seo_views.serve_sitemap, {'sitemap_name': 'sitemap-nl'}, name='sitemap_nl'),
+    path('seo/status/', seo_views.sitemap_status, name='seo_status'),
     # Health check endpoint
     path('health/', health_check, name='health_check'),
     # API endpoints (no language prefix)
