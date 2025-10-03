@@ -48,18 +48,18 @@
 
         <!-- Navigation tabs -->
         <div class="nav-tabs-group">
-            <button @click="archiveStatus = 'active'; currentNote = null; loadNotes()"
-                    :class="{ 'active': archiveStatus === 'active' }"
-                    class="nav-tab">
+            <a href="#" @click.prevent="archiveStatus = 'active'; currentNote = null; loadNotes()"
+               :class="{ 'active': archiveStatus === 'active' }"
+               class="nav-tab">
                 <i class="bi bi-journal-text"></i>
                 {% trans 'Notes' %}
-            </button>
-            <button @click="archiveStatus = 'archived'; currentNote = null; loadNotes()"
-                    :class="{ 'active': archiveStatus === 'archived' }"
-                    class="nav-tab">
+            </a>
+            <a href="#" @click.prevent="archiveStatus = 'archived'; currentNote = null; loadNotes()"
+               :class="{ 'active': archiveStatus === 'archived' }"
+               class="nav-tab">
                 <i class="bi bi-archive"></i>
                 {% trans 'Archives' %}
-            </button>
+            </a>
         </div>
 
     </div>

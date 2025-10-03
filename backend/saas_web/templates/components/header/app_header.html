@@ -183,6 +183,12 @@
                         </li>
                         {% endcomment %}
                         <li>
+                            <a class="dropdown-item" href="{{ PORTAL_URL }}">
+                                <i class="bi bi-globe me-2" aria-hidden="true"></i>
+                                Portal
+                            </a>
+                        </li>
+                        <li>
                             <a class="dropdown-item" href="{% url 'saas_web:settings' %}">
                                 <i class="bi bi-gear me-2" aria-hidden="true"></i>
                                 {% trans "Settings" %}
