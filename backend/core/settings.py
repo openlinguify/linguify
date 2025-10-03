@@ -48,10 +48,10 @@ if not DEBUG:
 
 # Paramètres de base - URLs principales
 if DEBUG:
-    # Développement local
-    BACKEND_URL = env.str('BACKEND_URL', default='http://localhost:8081')
+    # Développement local - Utiliser 127.0.0.1 au lieu de localhost pour partager les cookies
+    BACKEND_URL = env.str('BACKEND_URL', default='http://127.0.0.1:8081')
     BASE_URL = BACKEND_URL
-    PORTAL_URL = env.str('PORTAL_URL', default='http://localhost:8080')
+    PORTAL_URL = env.str('PORTAL_URL', default='http://127.0.0.1:8080')
 else:
     # Production
     BACKEND_URL = env.str('BACKEND_URL', default='https://www.openlinguify.com')
