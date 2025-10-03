@@ -257,17 +257,20 @@ function notebookApp() {
             if (this.selectedNotes.length === 0) return;
 
             try {
-                for (let noteId of this.selectedNotes) {
-                    await fetch(`/notebook/api/notes/${noteId}/`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': this.getCsrfToken()
-                        },
-                        credentials: 'same-origin',
-                        body: JSON.stringify({ is_archived: true })
-                    });
-                }
+                // Execute all archive requests in parallel for better performance
+                await Promise.all(
+                    this.selectedNotes.map(noteId =>
+                        fetch(`/notebook/api/notes/${noteId}/`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': this.getCsrfToken()
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({ is_archived: true })
+                        })
+                    )
+                );
 
                 await this.loadNotes();
                 this.selectedNotes = [];
@@ -281,17 +284,20 @@ function notebookApp() {
             if (this.selectedNotes.length === 0) return;
 
             try {
-                for (let noteId of this.selectedNotes) {
-                    await fetch(`/notebook/api/notes/${noteId}/`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': this.getCsrfToken()
-                        },
-                        credentials: 'same-origin',
-                        body: JSON.stringify({ is_archived: false })
-                    });
-                }
+                // Execute all unarchive requests in parallel for better performance
+                await Promise.all(
+                    this.selectedNotes.map(noteId =>
+                        fetch(`/notebook/api/notes/${noteId}/`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': this.getCsrfToken()
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({ is_archived: false })
+                        })
+                    )
+                );
 
                 await this.loadNotes();
                 this.selectedNotes = [];
@@ -310,15 +316,18 @@ function notebookApp() {
                 async () => {
                     try {
                         const deletedCount = this.selectedNotes.length;
-                        for (let noteId of this.selectedNotes) {
-                            await fetch(`/notebook/api/notes/${noteId}/`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'X-CSRFToken': this.getCsrfToken()
-                                },
-                                credentials: 'same-origin'
-                            });
-                        }
+                        // Execute all delete requests in parallel for better performance
+                        await Promise.all(
+                            this.selectedNotes.map(noteId =>
+                                fetch(`/notebook/api/notes/${noteId}/`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRFToken': this.getCsrfToken()
+                                    },
+                                    credentials: 'same-origin'
+                                })
+                            )
+                        );
 
                         await this.loadNotes();
                         this.selectedNotes = [];

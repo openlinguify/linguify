@@ -38,7 +38,7 @@
 }
 
 /* Sidebar */
-#revisionSidebar.sidebar-linguify {
+#notebookSidebar.sidebar-linguify {
     position: relative !important;
     top: 0 !important;
     height: 100% !important;

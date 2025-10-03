@@ -5,40 +5,15 @@
     <!-- Gauche: Navigation + Actions principales -->
     <div class="navbar-section">
         <!-- Bouton toggle sidebar -->
-        <div>
-            <button id="toggleSidebar"
-                class="btn-navbar-outline"
-                title="{% trans 'Hide/Show sidebar' %}"
-                aria-label="{% trans 'Toggle sidebar' %}"
-                aria-expanded="true"
-                onclick="
-                // Toggle sidebar for notebook
-                const sidebar = document.getElementById('notebookSidebar');
-
-                if (sidebar) {
-                    // Simply toggle the show class
-                    sidebar.classList.toggle('show');
-
-                    // Update button icon
-                    const toggleBtn = document.getElementById('toggleSidebar');
-                    const icon = toggleBtn?.querySelector('i');
-                    if (icon) {
-                        const isVisible = sidebar.classList.contains('show');
-                        if (isVisible) {
-                            icon.className = 'bi bi-layout-sidebar-inset';
-                            toggleBtn.title = '{% trans "Hide sidebar" %}';
-                        } else {
-                            icon.className = 'bi bi-layout-sidebar-inset-reverse';
-                            toggleBtn.title = '{% trans "Show sidebar" %}';
-                        }
-                    }
-                } else {
-                    console.error('Sidebar not found');
-                }
-                ">
+        <button id="toggleSidebar"
+            class="btn-navbar-outline"
+            title="{% trans 'Hide/Show sidebar' %}"
+            aria-label="{% trans 'Toggle sidebar' %}"
+            aria-expanded="true"
+            data-hide-text="{% trans 'Hide sidebar' %}"
+            data-show-text="{% trans 'Show sidebar' %}">
             <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
-            </button>
-        </div>
+        </button>
 
         <!-- New Note Button -->
         <button @click="createNewNote()" class="btn-navbar btn-navbar-primary">
@@ -62,6 +37,12 @@
             </a>
         </div>
 
+        <!-- Container extra actions -->
+        <div class="container-extra">
+            <button class="btn-sb" title="{% trans 'Refresh' %}" onclick="location.reload()">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Droite: Actions et filtres contextuels -->
@@ -79,11 +60,11 @@
         <!-- Language Filter -->
         <div class="dropdown">
             <button class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span x-text="selectedLanguage === '' ? 'All languages' :
-                    (selectedLanguage === 'fr' ? 'French' :
-                     selectedLanguage === 'en' ? 'English' :
-                     selectedLanguage === 'es' ? 'Spanish' :
-                     selectedLanguage === 'nl' ? 'Dutch' : selectedLanguage)">All languages</span>
+                <span x-text="selectedLanguage === '' ? translations.allLanguages :
+                    (selectedLanguage === 'fr' ? translations.french :
+                     selectedLanguage === 'en' ? translations.english :
+                     selectedLanguage === 'es' ? translations.spanish :
+                     selectedLanguage === 'nl' ? translations.dutch : selectedLanguage)">{% trans 'All languages' %}</span>
             </button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#" @click.prevent="selectedLanguage = ''; loadNotes()">{% trans 'All languages' %}</a></li>
@@ -98,10 +79,10 @@
         <!-- Sort Filter Dropdown -->
         <div class="dropdown">
             <button class="btn btn-outline-linguify dropdown-toggle" style="width: 110px; min-width: 90px;" data-bs-toggle="dropdown">
-                <span x-text="sortBy === 'updated_desc' ? 'Most recent' :
-                    (sortBy === 'updated_asc' ? 'Oldest' :
-                     sortBy === 'title_asc' ? 'Title A-Z' :
-                     sortBy === 'title_desc' ? 'Title Z-A' : sortBy)">Most recent</span>
+                <span x-text="sortBy === 'updated_desc' ? translations.mostRecent :
+                    (sortBy === 'updated_asc' ? translations.oldest :
+                     sortBy === 'title_asc' ? translations.titleAZ :
+                     sortBy === 'title_desc' ? translations.titleZA : sortBy)">{% trans 'Most recent' %}</span>
             </button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#" @click.prevent="sortBy = 'updated_desc'; loadNotes()">{% trans 'Most recent' %}</a></li>
@@ -151,3 +132,44 @@
         </div>
     </div>
 </div>
+
+<script>
+// Global translations for JavaScript
+window.translations = {
+    allLanguages: "{% trans 'All languages' %}",
+    french: "{% trans 'French' %}",
+    english: "{% trans 'English' %}",
+    spanish: "{% trans 'Spanish' %}",
+    dutch: "{% trans 'Dutch' %}",
+    mostRecent: "{% trans 'Most recent' %}",
+    oldest: "{% trans 'Oldest' %}",
+    titleAZ: "{% trans 'Title A-Z' %}",
+    titleZA: "{% trans 'Title Z-A' %}"
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle sidebar toggle for notebook
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const notebookSidebar = document.getElementById('notebookSidebar');
+
+    if (toggleSidebar && notebookSidebar) {
+        toggleSidebar.addEventListener('click', function() {
+            // Simply toggle the show class
+            notebookSidebar.classList.toggle('show');
+
+            // Update button icon and title
+            const icon = toggleSidebar.querySelector('i');
+            if (icon) {
+                const isVisible = notebookSidebar.classList.contains('show');
+                if (isVisible) {
+                    icon.className = 'bi bi-layout-sidebar-inset';
+                    toggleSidebar.title = toggleSidebar.dataset.hideText;
+                } else {
+                    icon.className = 'bi bi-layout-sidebar-inset-reverse';
+                    toggleSidebar.title = toggleSidebar.dataset.showText;
+                }
+            }
+        });
+    }
+});
+</script>
