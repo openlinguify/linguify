@@ -35,6 +35,7 @@ from ..views.settings_views import (
 from django.conf import settings
 from .debug_views import cors_debug, test_token_verification, debug_auth_headers, debug_apps_system, test_token
 from ..views.terms_views import accept_terms, terms_status, terms_acceptance_view, accept_terms_ajax
+from ..views.session_api import check_user_session
 
 urlpatterns = [
     # Django authentication endpoints
@@ -76,6 +77,9 @@ urlpatterns = [
     # User management endpoints
     path('export-data/', export_user_data, name='export_user_data'),
     path('logout-all/', logout_all_devices, name='logout_all_devices'),
+
+    # Session verification (for portal)
+    path('check-session/', check_user_session, name='check_session'),
 ]
 
 if settings.DEBUG:

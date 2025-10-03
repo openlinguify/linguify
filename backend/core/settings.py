@@ -228,7 +228,10 @@ SESSION_COOKIE_AGE = 86400  # 1 jour en secondes
 SESSION_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
-
+# Share cookies across all openlinguify.com subdomains (app, www, etc.)
+if not DEBUG:
+    SESSION_COOKIE_DOMAIN = '.openlinguify.com'
+    CSRF_COOKIE_DOMAIN = '.openlinguify.com'
 # Configuration de cache pour Auth0
 AUTH0_TOKEN_CACHE_TIMEOUT = 3600  # 1 heure en secondes
 AUTH0_USERINFO_CACHE_TIMEOUT = 3600  # 1 heure en secondes 

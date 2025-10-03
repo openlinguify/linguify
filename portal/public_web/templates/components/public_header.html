@@ -128,33 +128,33 @@
 
                 <!-- Auth buttons -->
                 <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
-                    {% if user.is_authenticated %}
-                    <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
+                    {% if backend_user %}
+                    <!-- Si l'utilisateur est connecté sur le backend, afficher son profil -->
                     <a href="{% backend_url '/dashboard/' %}" class="btn btn-outline-primary">
                         <i class="bi bi-speedometer2 me-2"></i>Dashboard
                     </a>
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            {% if user.get_profile_picture_url %}
-                            <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil"
+                            {% if backend_user.profile_picture %}
+                            <img src="{{ backend_user.profile_picture }}" alt="Photo de profil"
                                 style="width: 20px; height: 20px; object-fit: cover; border-radius: 50%; margin-right: 8px;">
                             {% else %}
                             <i class="bi bi-person-circle me-2"></i>
                             {% endif %}
-                            {{ user.username|default:"Utilisateur" }}
+                            {{ backend_user.username|default:"Utilisateur" }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/profile/">
-                                    <i class="bi bi-person me-2"></i>Mon profil
+                            <li><a class="dropdown-item" href="{% backend_url '/profile/' %}">
+                                    <i class="bi bi-person me-2"></i>{% trans "My Profile" %}
                                 </a></li>
                             <li><a class="dropdown-item" href="{% backend_url '/settings/' %}">
-                                    <i class="bi bi-gear me-2"></i>Paramètres
+                                    <i class="bi bi-gear me-2"></i>{% trans "Settings" %}
                                 </a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item text-danger" href="{% backend_url_with_lang '/auth/logout/' %}">
-                                    <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
+                                    <i class="bi bi-box-arrow-right me-2"></i>{% trans "Logout" %}
                                 </a></li>
                         </ul>
                     </div>
@@ -171,34 +171,34 @@
 
                 <!-- Mobile Auth buttons -->
                 <div class="auth-buttons-mobile d-lg-none">
-                    {% if user.is_authenticated %}
-                    <!-- Si l'utilisateur est connecté, bouton vers le dashboard -->
+                    {% if backend_user %}
+                    <!-- Si l'utilisateur est connecté sur le backend, afficher son profil -->
                     <a href="{% backend_url '/dashboard/' %}" class="btn btn-outline-primary">
                         <i class="bi bi-speedometer2 me-2"></i>Dashboard
                     </a>
                     <div class="user-menu-mobile">
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-                                {% if user.get_profile_picture_url %}
-                                <img src="{{ user.get_profile_picture_url }}" alt="Photo de profil"
+                                {% if backend_user.profile_picture %}
+                                <img src="{{ backend_user.profile_picture }}" alt="Photo de profil"
                                     style="width: 20px; height: 20px; object-fit: cover; border-radius: 50%; margin-right: 8px;">
                                 {% else %}
                                 <i class="bi bi-person-circle me-2"></i>
                                 {% endif %}
-                                {{ user.username|default:"Utilisateur" }}
+                                {{ backend_user.username|default:"Utilisateur" }}
                             </button>
                             <ul class="dropdown-menu w-100">
-                                <li><a class="dropdown-item" href="/profile/">
-                                        <i class="bi bi-person me-2"></i>Mon profil
+                                <li><a class="dropdown-item" href="{% backend_url '/profile/' %}">
+                                        <i class="bi bi-person me-2"></i>{% trans "My Profile" %}
                                     </a></li>
                                 <li><a class="dropdown-item" href="{% backend_url '/settings/' %}">
-                                        <i class="bi bi-gear me-2"></i>Paramètres
+                                        <i class="bi bi-gear me-2"></i>{% trans "Settings" %}
                                     </a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item text-danger" href="{% backend_url '/fr/auth/logout/' %}">
-                                        <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
+                                <li><a class="dropdown-item text-danger" href="{% backend_url_with_lang '/auth/logout/' %}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>{% trans "Logout" %}
                                     </a></li>
                             </ul>
                         </div>

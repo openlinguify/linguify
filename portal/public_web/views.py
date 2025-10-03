@@ -566,3 +566,18 @@ def custom_500(request):
         'title': 'Server Error - Open Linguify',
         'meta_description': 'An internal server error occurred.',
     }, status=500)
+
+
+# Test views (development only)
+def test_backend_session(request):
+    """
+    Page de test pour vérifier si le backend_user est détecté
+    URL: /test/backend-session/
+    ⚠️ Cette vue est pour le développement uniquement
+    """
+    context = {
+        'session_key': request.COOKIES.get(settings.SESSION_COOKIE_NAME),
+        'backend_user': getattr(request, 'backend_user', None),
+        'debug': settings.DEBUG,
+    }
+    return render(request, 'test_session.html', context)

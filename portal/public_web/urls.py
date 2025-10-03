@@ -56,6 +56,9 @@ urlpatterns = [
     # Health and monitoring endpoints
     path('health/', views.HealthCheckView.as_view(), name='health_check'),
     path('admin/clear-cache/', views.ClearCacheView.as_view(), name='clear_cache'),
+
+    # Test endpoints (development only)
+    path('test/backend-session/', views.test_backend_session, name='test_backend_session'),
 ]
 
 # Additional SEO-friendly URL patterns

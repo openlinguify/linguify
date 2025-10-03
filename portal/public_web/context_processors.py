@@ -20,3 +20,16 @@ def app_urls(request):
         'BACKEND_URL': backend_url,
         'LMS_URL': lms_url,
     }
+
+
+def backend_user(request):
+    """
+    Rend l'utilisateur du backend disponible dans tous les templates
+    via {{ backend_user }}
+
+    Si l'utilisateur est connecté sur app.openlinguify.com, ses informations
+    seront automatiquement disponibles sur openlinguify.com
+    """
+    return {
+        'backend_user': getattr(request, 'backend_user', None),
+    }

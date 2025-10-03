@@ -6,8 +6,6 @@ import os
 from pathlib import Path
 import environ
 
-print("🌐 Loading Portal Settings...")
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -66,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'public_web.middleware.BackendSessionMiddleware',  # Détection session backend
 ]
 
 ROOT_URLCONF = 'portal.urls'
@@ -83,6 +82,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.i18n',
                 'public_web.context_processors.app_urls',
+                'public_web.context_processors.backend_user',
             ],
         },
     },
@@ -99,7 +99,6 @@ if database_url:
     DATABASES = {
         'default': dj_database_url.parse(database_url)
     }
-    print("📊 Using Render PostgreSQL (Portal)")
 else:
     # Development - Local PostgreSQL
     DATABASES = {
@@ -112,7 +111,6 @@ else:
             'PORT': env('DB_PORT'),
         }
     }
-    print("📊 Using local PostgreSQL (Portal)")
 
 # Internationalization
 LANGUAGE_CODE = 'en'
@@ -179,6 +177,15 @@ CACHE_MIDDLEWARE_KEY_PREFIX = 'portal'
 # Session optimization
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_AGE = 86400  # 1 jour
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+# Share cookies across all openlinguify.com subdomains (app, www, etc.)
+if not DEBUG:
+    SESSION_COOKIE_DOMAIN = '.openlinguify.com'
+    CSRF_COOKIE_DOMAIN = '.openlinguify.com'
 
 # URLs des différents produits Linguify
 LINGUIFY_PRODUCTS = {

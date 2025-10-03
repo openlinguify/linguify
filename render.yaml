@@ -38,6 +38,10 @@ services:
         value: https://app.openlinguify.com
       - key: DJANGO_SETTINGS_MODULE
         value: portal.settings
+      - key: SESSION_COOKIE_DOMAIN
+        value: .openlinguify.com
+      - key: CSRF_COOKIE_DOMAIN
+        value: .openlinguify.com
       - key: POETRY_VERSION
         value: "1.7.1"
       - key: PIP_DISABLE_PIP_VERSION_CHECK
@@ -74,28 +78,12 @@ services:
         value: app.openlinguify.com,backend.openlinguify.com
       - key: SECRET_KEY
         sync: false
-      - key: USE_SUPABASE_DB
-        value: True
-      - key: SUPABASE_DB_NAME
+      - key: DATABASE_URL
         sync: false
-      - key: SUPABASE_DB_USER
-        sync: false
-      - key: SUPABASE_DB_PASSWORD
-        sync: false
-      - key: SUPABASE_DB_HOST
-        sync: false
-      - key: SUPABASE_DB_PORT
-        value: 5432
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_ANON_KEY
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: SUPABASE_PROJECT_ID
-        sync: false
-      - key: SUPABASE_JWT_SECRET
-        sync: false
+      - key: SESSION_COOKIE_DOMAIN
+        value: .openlinguify.com
+      - key: CSRF_COOKIE_DOMAIN
+        value: .openlinguify.com
       - key: REDIS_URL
         sync: false
       - key: BACKEND_URL

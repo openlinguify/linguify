@@ -1,0 +1,97 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Backend Session Detection</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .status {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Test Backend Session Detection</h1>
+
+    <div class="info">
+        <h3>📋 Configuration</h3>
+        <ul>
+            <li><strong>DEBUG Mode:</strong> {{ debug }}</li>
+            <li><strong>Session Cookie:</strong> {{ session_key|default:"Not found" }}</li>
+        </ul>
+    </div>
+
+    {% if backend_user %}
+    <div class="status success">
+        <h3>✅ Backend User Detected!</h3>
+        <p>L'utilisateur du backend a été détecté avec succès.</p>
+
+        <h4>User Information:</h4>
+        <ul>
+            <li><strong>ID:</strong> {{ backend_user.id }}</li>
+            <li><strong>Username:</strong> {{ backend_user.username }}</li>
+            <li><strong>Email:</strong> {{ backend_user.email }}</li>
+            <li><strong>First Name:</strong> {{ backend_user.first_name|default:"N/A" }}</li>
+            <li><strong>Last Name:</strong> {{ backend_user.last_name|default:"N/A" }}</li>
+            <li><strong>Profile Picture:</strong> {{ backend_user.profile_picture|default:"N/A" }}</li>
+        </ul>
+
+        <h4>Raw Data:</h4>
+        <pre>{{ backend_user }}</pre>
+    </div>
+    {% else %}
+    <div class="status error">
+        <h3>❌ No Backend User Detected</h3>
+        <p>Aucun utilisateur du backend n'a été détecté.</p>
+
+        <h4>Causes possibles:</h4>
+        <ul>
+            <li>Vous n'êtes pas connecté sur <code>app.openlinguify.com</code></li>
+            <li>Le cookie de session n'existe pas ou a expiré</li>
+            <li>Le backend ne répond pas à l'API <code>/api/auth/check-session/</code></li>
+            <li>Les SECRET_KEY ne sont pas identiques entre backend et portal</li>
+        </ul>
+
+        <h4>Pour tester:</h4>
+        <ol>
+            <li>Connectez-vous sur <a href="http://127.0.0.1:8000/en/auth/login/" target="_blank">http://127.0.0.1:8000/en/auth/login/</a></li>
+            <li>Revenez sur cette page et actualisez</li>
+        </ol>
+    </div>
+    {% endif %}
+
+    <hr>
+    <p><a href="/">← Retour à l'accueil</a></p>
+</body>
+</html>
