@@ -127,6 +127,13 @@
     gap: 1rem;
 }
 
+.title-input-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 .note-title-input {
     flex: 1;
     font-size: 1.875rem;
@@ -135,18 +142,46 @@
     border: none;
     outline: none;
     background: transparent;
-    padding: 0.25rem 0;
+    padding: 0.5rem 0.75rem;
+    padding-right: 3rem;
     border-bottom: 2px solid transparent;
-    transition: border-color 0.2s ease;
+    border-radius: 6px;
+    transition: all 0.2s ease;
     min-width: 0;
+    cursor: text;
+}
+
+.note-title-input:hover {
+    background: #f9fafb;
+    border-bottom-color: #d1d5db;
 }
 
 .note-title-input:focus {
+    background: #ffffff;
     border-bottom-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .note-title-input::placeholder {
     color: #9ca3af;
+    font-style: italic;
+}
+
+.title-edit-icon {
+    position: absolute;
+    right: 1rem;
+    color: #9ca3af;
+    font-size: 1.25rem;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.title-input-wrapper:hover .title-edit-icon {
+    color: #6b7280;
+}
+
+.note-title-input:focus ~ .title-edit-icon {
+    color: #3b82f6;
 }
 
 /* Language Selector */

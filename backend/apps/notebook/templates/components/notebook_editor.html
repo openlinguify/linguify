@@ -19,13 +19,17 @@
         <div class="note-header-modern">
             <div class="note-title-section">
                 <div class="title-row">
-                    <input x-show="currentNote"
-                           :value="currentNote ? currentNote.title : ''"
-                           @input="currentNote.title = $event.target.value; debouncedSave()"
-                           @blur="updateNote()"
-                           type="text"
-                           placeholder="{% trans 'Note title' %}"
-                           class="note-title-input">
+                    <div class="title-input-wrapper">
+                        <input x-show="currentNote"
+                               :value="currentNote ? currentNote.title : ''"
+                               @input="currentNote.title = $event.target.value; debouncedSave()"
+                               @blur="updateNote()"
+                               type="text"
+                               placeholder="{% trans 'Click to edit title...' %}"
+                               class="note-title-input"
+                               title="{% trans 'Click to edit note title' %}">
+                        <i class="bi bi-pencil-square title-edit-icon"></i>
+                    </div>
                     <select x-show="currentNote"
                             :value="currentNote ? currentNote.language : ''"
                             @change="currentNote.language = $event.target.value; debouncedSave()"
