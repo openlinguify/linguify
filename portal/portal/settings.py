@@ -3,8 +3,16 @@ Django settings for portal project.
 """
 
 import os
+import sys
 from pathlib import Path
 import environ
+
+# Add backend to Python path to access authentication app
+BACKEND_DIR = Path(__file__).resolve().parent.parent.parent / 'backend'
+if BACKEND_DIR.exists():
+    sys.path.insert(0, str(BACKEND_DIR))
+    # Also add backend/apps to access authentication directly
+    sys.path.insert(0, str(BACKEND_DIR / 'apps'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',  # For SEO sitemap generation
+    'authentication',  # Custom User model from backend (read-only access)
     'core.seo',        # SEO management system
     'public_web',  # Notre app principale pour le portail
     'core.blog',       # App blog déplacée du backend
@@ -111,6 +120,9 @@ else:
             'PORT': env('DB_PORT'),
         }
     }
+
+# Authentication - Use same custom User model as backend
+AUTH_USER_MODEL = 'authentication.User'
 
 # Internationalization
 LANGUAGE_CODE = 'en'
