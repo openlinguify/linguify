@@ -52,28 +52,8 @@
 }
 
 .editorjs-container:hover {
-    border-color: #e2e8f0;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-/* Custom scrollbar */
-.editorjs-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.editorjs-container::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 4px;
-}
-
-.editorjs-container::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-    transition: background 0.2s ease;
-}
-
-.editorjs-container::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    border-color: var(--linguify-gray-300, #d1d5db);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 /* Customize Editor.js styles - Pleine largeur */

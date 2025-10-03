@@ -175,15 +175,17 @@
     color: #9ca3af;
     font-size: 1rem;
     pointer-events: none;
-    transition: color 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .title-input-wrapper:hover .title-edit-icon {
     color: #6b7280;
+    transform: scale(1.1);
 }
 
 .note-title-input:focus ~ .title-edit-icon {
     color: var(--linguify-primary, #2D5BBA);
+    transform: rotate(-15deg) scale(1.15);
 }
 
 /* Language Selector */
@@ -301,28 +303,46 @@
 .note-list-item {
     background: white;
     border: 1px solid #e5e7eb;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 0.75rem;
     margin-bottom: 0.5rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     position: relative;
 }
 
 .note-list-item:hover {
-    background: #f3f4f6;
+    background: #f9fafb;
     border-color: #d1d5db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .note-list-item.selected {
     background: #EFF3FB;
-    border-color: var(--linguify-primary, #2D5BBA);
+    border: 2px solid var(--linguify-primary, #2D5BBA);
+    box-shadow: 0 4px 6px -1px rgba(45, 91, 186, 0.2), 0 2px 4px -1px rgba(45, 91, 186, 0.1);
+    position: relative;
+}
+
+.note-list-item.selected::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%);
+    opacity: 0.2;
+    border-radius: 8px;
+    z-index: -1;
 }
 
 .note-list-item.pinned {
-    border-left: 3px solid #f59e0b;
+    border-left: 4px solid #f59e0b;
+    background: linear-gradient(90deg, #fef3c7 0%, #ffffff 100%);
 }
 
 .note-list-item.bulk-selected {
@@ -564,6 +584,26 @@
     justify-content: center;
     align-items: center;
     height: 100%;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: var(--linguify-gray-700, #374151);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--linguify-gray-500, #6b7280);
+    font-size: 0.875rem;
+    max-width: 400px;
 }
 
 .loading-state i,
