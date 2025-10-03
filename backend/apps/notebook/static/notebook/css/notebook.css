@@ -110,8 +110,8 @@
 .note-header-modern {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    padding: 1.5rem 2rem 1rem 2rem;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
     border-bottom: 1px solid #f3f4f6;
     background: white;
 }
@@ -123,7 +123,7 @@
 
 .title-row {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 1rem;
 }
 
@@ -136,13 +136,13 @@
 
 .note-title-input {
     flex: 1;
-    font-size: 1.875rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #1f2937;
     border: none;
     outline: none;
     background: transparent;
-    padding: 0.5rem 0.75rem;
+    padding: 0.375rem 0.75rem;
     padding-right: 3rem;
     border-bottom: 2px solid transparent;
     border-radius: 6px;
@@ -158,8 +158,8 @@
 
 .note-title-input:focus {
     background: #ffffff;
-    border-bottom-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-bottom-color: var(--linguify-primary, #2D5BBA);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
 }
 
 .note-title-input::placeholder {
@@ -171,7 +171,7 @@
     position: absolute;
     right: 1rem;
     color: #9ca3af;
-    font-size: 1.25rem;
+    font-size: 1rem;
     pointer-events: none;
     transition: color 0.2s ease;
 }
@@ -181,12 +181,12 @@
 }
 
 .note-title-input:focus ~ .title-edit-icon {
-    color: #3b82f6;
+    color: var(--linguify-primary, #2D5BBA);
 }
 
 /* Language Selector */
 .language-select-inline {
-    padding: 0.5rem 0.75rem;
+    padding: 0.375rem 0.75rem;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     background: white;
@@ -196,12 +196,14 @@
     transition: all 0.2s ease;
     flex-shrink: 0;
     min-width: 140px;
+    height: 2.25rem;
+    margin-right: 1rem;
 }
 
 .language-select-inline:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--linguify-primary, #2D5BBA);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
 }
 
 .language-select-inline:hover {
@@ -213,15 +215,15 @@
 .note-actions {
     display: flex;
     gap: 0.5rem;
-    margin-top: 0.25rem;
+    align-items: center;
 }
 
 .action-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2.25rem;
+    height: 2.25rem;
     border: 2px solid #d1d5db;
     border-radius: 8px;
     background: #f8fafc;
@@ -313,8 +315,8 @@
 }
 
 .note-list-item.selected {
-    background: #eff6ff;
-    border-color: #3b82f6;
+    background: #EFF3FB;
+    border-color: var(--linguify-primary, #2D5BBA);
 }
 
 .note-list-item.pinned {
@@ -472,7 +474,7 @@
 }
 
 .note-tag.language {
-    background: #3b82f6;
+    background: var(--linguify-primary, #2D5BBA);
     color: white;
 }
 
@@ -537,13 +539,13 @@
 }
 
 .status-badge.reviews {
-    background: #dbeafe;
-    color: #2563eb;
+    background: #EFF3FB;
+    color: var(--linguify-primary, #2D5BBA);
 }
 
 .note-card.selected {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    border-color: var(--linguify-primary, #2D5BBA);
+    box-shadow: 0 0 0 2px rgba(45, 91, 186, 0.1);
 }
 
 .note-card.pinned {
@@ -617,8 +619,8 @@
 .form-select:focus,
 .form-textarea:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--linguify-primary, #2D5BBA);
+    box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
 }
 
 .form-textarea {
@@ -693,12 +695,12 @@
 }
 
 .btn-primary {
-    background: #3b82f6;
+    background: var(--linguify-primary, #2D5BBA);
     color: white;
 }
 
 .btn-primary:hover {
-    background: #2563eb;
+    background: var(--linguify-primary-dark, #1E4A8C);
 }
 
 .btn-secondary {
