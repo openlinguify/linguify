@@ -46,8 +46,8 @@ def enhance_user_admin(UserAdmin):
         from apps.language_learning.admin import UserLearningProfileInline
         if UserLearningProfileInline not in UserAdmin.inlines:
             UserAdmin.inlines = list(UserAdmin.inlines) + [UserLearningProfileInline]
-    except ImportError:
-        # Language learning app not available, skip adding the inline
+    except (ImportError, RuntimeError):
+        # Language learning app not available or not in INSTALLED_APPS, skip adding the inline
         pass
     
     # Add readonly fields

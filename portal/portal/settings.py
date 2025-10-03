@@ -17,6 +17,9 @@ if BACKEND_DIR.exists():
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Add portal base directory to Python path for core apps
+sys.path.insert(0, str(BASE_DIR))
+
 # Initialize environ
 env = environ.Env(
     DEBUG=(bool, False),

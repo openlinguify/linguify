@@ -1,5 +1,6 @@
 Django>=5.0,<6.0
 django-environ>=0.11.0
+django-timezone-field>=7.1
 dj-database-url>=2.1.0
 psycopg2-binary>=2.9.0
 Pillow>=10.0.0
