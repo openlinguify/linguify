@@ -67,6 +67,10 @@ services:
     domains:
       - app.openlinguify.com
       - backend.openlinguify.com
+    disk:
+      name: backend-media
+      mountPath: /opt/render/project/src/backend/media
+      sizeGB: 1
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0
