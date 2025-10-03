@@ -1,0 +1,21 @@
+/* Feedback App Styles */
+
+/* Override main-content padding for feedback pages */
+.main-content {
+    padding-top: 0 !important;
+}
+
+.navbar-linguify {
+    position: fixed !important;
+    top: 64px;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--linguify-white, #ffffff);
+    border-bottom: 1px solid var(--linguify-gray-200, #e5e7eb);
+}
+
+/* Content wrapper - ajouter du padding pour compenser la navbar fixe */
+.feedback-content-wrapper {
+    padding-top: 64px; /* Hauteur de la navbar */
+}

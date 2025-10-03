@@ -573,24 +573,16 @@
   padding: 0 !important;
 }
 
-/* Override any Bootstrap container restrictions */
-.blog-page .container,
-.blog-page .container-fluid,
-body .container,
-body .container-fluid {
+/* Don't override header container - only override blog specific containers */
+.blog-page .blog-container {
   max-width: 100vw !important;
   width: 100vw !important;
   margin: 0 !important;
   padding: 0 !important;
 }
 
-/* Force body and html to use full width */
-html,
-body {
-  width: 100vw !important;
-  max-width: 100vw !important;
-  margin: 0 !important;
-  padding: 0 !important;
+/* Prevent horizontal scroll on blog pages */
+.blog-page {
   overflow-x: hidden;
 }
 
