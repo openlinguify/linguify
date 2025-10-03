@@ -43,9 +43,7 @@
 /* Editor Container */
 .editorjs-container {
     background: white;
-    border-radius: 12px;
-    min-height: 500px;
-    max-height: calc(100vh - 200px);
+    height: 100%;
     padding: 2rem;
     overflow-y: auto;
     border: 1px solid #f1f5f9;
