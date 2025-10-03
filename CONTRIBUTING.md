@@ -63,7 +63,7 @@ make loaddata
 make all
 
 # Or start individual services:
-make backend    # http://localhost:8000
+make backend    # http://localhost:8081
 make portal     # http://localhost:8080  
 make lms        # http://localhost:8001
 make cms        # http://localhost:8002
@@ -71,7 +71,7 @@ make cms        # http://localhost:8002
 
 ### 5. Verify Installation
 
-Visit http://localhost:8000 to access the main backend API and admin interface.
+Visit http://localhost:8081 to access the main backend API and admin interface.
 
 ## 🏗️ Project Structure
 

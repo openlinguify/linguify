@@ -192,7 +192,7 @@ LINGUIFY_PRODUCTS = {
     'backend': {
         'name': 'Linguify Particulier',
         'description': 'For all students',
-        'dev_url': 'http://127.0.0.1:8000',
+        'dev_url': 'http://127.0.0.1:8081',
         'prod_url': 'https://app.openlinguify.com',
         'icon': 'fas fa-user',
     },

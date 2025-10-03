@@ -463,7 +463,7 @@ window.documentsHelpers = {
             if (notification.parentNode) {
                 notification.remove();
             }
-        }, 8000);
+        }, 8081);
     },
     
     // Format file size

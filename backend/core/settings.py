@@ -49,7 +49,7 @@ if not DEBUG:
 # Paramètres de base - URLs principales
 if DEBUG:
     # Développement local
-    BACKEND_URL = env.str('BACKEND_URL', default='http://localhost:8000')
+    BACKEND_URL = env.str('BACKEND_URL', default='http://localhost:8081')
     BASE_URL = BACKEND_URL
     PORTAL_URL = env.str('PORTAL_URL', default='http://localhost:8080')
 else:
@@ -169,7 +169,7 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
-    "http://localhost:8000",
+    "http://localhost:8081",
     "https://openlinguify.com",
     "https://www.openlinguify.com"
 ])
@@ -182,8 +182,8 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
     "https://openlinguify.com",
     "https://www.openlinguify.com",
 ])

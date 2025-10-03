@@ -26,7 +26,7 @@ class CalendarEmailService:
     
     def __init__(self):
         self.from_email = getattr(settings, 'CALENDAR_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL)
-        self.base_url = getattr(settings, 'CALENDAR_BASE_URL', 'http://localhost:8000')
+        self.base_url = getattr(settings, 'CALENDAR_BASE_URL', 'http://localhost:8081')
     
     def send_invitation(self, event: CalendarEvent, attendee: CalendarAttendee, 
                        language='en', custom_message=''):

@@ -39,7 +39,7 @@ The candidate has been hired! Please initiate:
 - Documentation and contract finalization
 {% endif %}
 
-View Application: http://localhost:8000/admin/core/jobs/jobapplication/{{ application.id }}/change/
+View Application: http://localhost:8081/admin/core/jobs/jobapplication/{{ application.id }}/change/
 
 ---
 This is an automated notification from the Linguify recruitment system.

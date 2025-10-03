@@ -45,7 +45,7 @@ os.environ.setdefault('EMAIL_HOST_PASSWORD', 'test-password')
 os.environ.setdefault('EMAIL_USE_TLS', 'True')
 os.environ.setdefault('DEFAULT_FROM_EMAIL', 'noreply@test.com')
 os.environ.setdefault('FRONTEND_URL', 'http://localhost:3000')
-os.environ.setdefault('BACKEND_URL', 'http://localhost:8000')
+os.environ.setdefault('BACKEND_URL', 'http://localhost:8081')
 
 from .settings import *
 

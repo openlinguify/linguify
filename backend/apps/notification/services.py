@@ -244,7 +244,7 @@ class NotificationDeliveryService:
                 'user': notification.user,
                 'notification': notification,
                 'action_url': notification.data.get('action_url') if notification.data else None,
-                'site_url': settings.SITE_URL if hasattr(settings, 'SITE_URL') else 'http://localhost:8000',
+                'site_url': settings.SITE_URL if hasattr(settings, 'SITE_URL') else 'http://localhost:8081',
             }
 
             # Render email templates
@@ -535,11 +535,11 @@ def send_terms_acceptance_email_and_notification(user):
             notification_type=NotificationType.ACTION_REQUIRED,
             priority=NotificationPriority.HIGH,
             data={'action': 'accept_terms'},
-            action_url=f"{getattr(settings, 'SITE_URL', 'http://localhost:8000')}/api/auth/terms/accept-page/"
+            action_url=f"{getattr(settings, 'SITE_URL', 'http://localhost:8081')}/api/auth/terms/accept-page/"
         )
 
         # Envoyer l'email localisé
-        backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+        backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8081')
         terms_acceptance_url = f"{backend_url}/api/auth/terms/accept-page/"
         portal_url = getattr(settings, 'PORTAL_URL', 'http://localhost:8080')
         context = {

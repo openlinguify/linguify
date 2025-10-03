@@ -3157,7 +3157,7 @@ files = [
     {file = "pyobjc_framework_classkit-11.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:1cb2a2b68fb4c773e9ff250f2ab87c41b7464778d4c7e0174600de3cf5f7b52e"},
     {file = "pyobjc_framework_classkit-11.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:018da363d06f3615c07a8623cbdb024a31b1f8b96a933ff2656c0e903063842c"},
     {file = "pyobjc_framework_classkit-11.1-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:161dcb9b718649e6331a5eab5a76c2b43a9b322b15b37b3f8f9c5faad12ee6d1"},
-    {file = "pyobjc_framework_classkit-11.1-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:08000deb43004d16fb39ccd83b3de30e1e3b72639a79d05206d7d5c15f005b3a"},
+    {file = "pyobjc_framework_classkit-11.1-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:08081deb43004d16fb39ccd83b3de30e1e3b72639a79d05206d7d5c15f005b3a"},
     {file = "pyobjc_framework_classkit-11.1-cp313-cp313t-macosx_10_13_universal2.whl", hash = "sha256:ef28d042964b0f757569e72df737bb049b531c33b7d06a705ce2dcfa4e6e45d8"},
     {file = "pyobjc_framework_classkit-11.1-cp314-cp314-macosx_11_0_universal2.whl", hash = "sha256:be279d91f10d68ad9a256e96d26d8975e35b9b1bb304c82491766d29ad252b0d"},
     {file = "pyobjc_framework_classkit-11.1-cp314-cp314t-macosx_11_0_universal2.whl", hash = "sha256:9a1b9d31f9b23e05b92769bbdb4ef2167a59b3b24aefa6af86448f5087a2e105"},

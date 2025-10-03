@@ -86,7 +86,7 @@ class Command(BaseCommand):
                     self.stdout.write('     python manage.py runserver')
                     self.stdout.write('\n  2. Testez les URLs multilingues :')
                     for lang in options['languages']:
-                        self.stdout.write(f'     http://127.0.0.1:8000/set-language/{lang}/')
+                        self.stdout.write(f'     http://127.0.0.1:8081/set-language/{lang}/')
                     self.stdout.write('\n✨ Le site devrait maintenant s\'afficher dans la langue sélectionnée !')
                 else:
                     self.stdout.write(

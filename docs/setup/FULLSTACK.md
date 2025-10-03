@@ -81,7 +81,7 @@ urlpatterns = [
 ### **1.5. Tests avec Postman ou CURL :**
 - **GET** :
 ```
-curl -X GET http://127.0.0.1:8000/api/v1/course/units/?level=A1
+curl -X GET http://127.0.0.1:8081/api/v1/course/units/?level=A1
 ```
 ---
 
@@ -132,7 +132,7 @@ const UnitsGrid: React.FC = () => {
     const fetchUnits = async () => {
       try {
         const response = await axios.get<PaginatedResponse<Unit>>(
-          'http://127.0.0.1:8000/api/v1/course/units/'
+          'http://127.0.0.1:8081/api/v1/course/units/'
         );
         setUnits(response.data.results);
       } catch (err) {
@@ -182,7 +182,7 @@ http://localhost:3000/course/units
 ```json
 {
   "count": 12,
-  "next": "http://127.0.0.1:8000/api/v1/course/units/?page=2",
+  "next": "http://127.0.0.1:8081/api/v1/course/units/?page=2",
   "previous": null,
   "results": [
     {

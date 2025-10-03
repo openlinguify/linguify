@@ -10,13 +10,13 @@
 ### 2. Accès aux Interfaces
 
 #### Interface Admin Django
-- **URL**: http://localhost:8000/admin/
+- **URL**: http://localhost:8081/admin/
 - **Compte Admin**:
   - Username: `admin`
   - Password: `admin123`
 
 #### Interface Professeurs
-- **URL**: http://localhost:8000/teachers/
+- **URL**: http://localhost:8081/teachers/
 - **Comptes Professeurs**:
   - **Marie Dupont**: `prof1` / `prof123`
   - **Jean Martin**: `prof2` / `prof123`

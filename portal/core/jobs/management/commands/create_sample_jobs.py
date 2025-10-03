@@ -102,7 +102,7 @@ class Command(BaseCommand):
                 'responsibilities': '• Identify and pursue new business opportunities\n• Build relationships with potential partners\n• Negotiate contracts and agreements\n• Collaborate with product and marketing teams\n• Analyze market trends and competition\n• Represent Linguify at industry events',
                 'benefits': 'Competitive salary, health insurance, travel budget, commission structure, professional development',
                 'salary_min': 42000,
-                'salary_max': 58000,
+                'salary_max': 58081,
                 'application_email': 'jobs@linguify.com',
                 'is_featured': False,
             },

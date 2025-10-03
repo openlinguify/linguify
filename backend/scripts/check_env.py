@@ -23,7 +23,7 @@ def check_environment():
     db_name = os.getenv('DATABASE_NAME', os.getenv('DEV_DB_NAME', 'db_linguify_dev'))
     
     # URL du backend
-    backend_url = os.getenv('BACKEND_URL', 'http://localhost:8000')
+    backend_url = os.getenv('BACKEND_URL', 'http://localhost:8081')
     
     print(f"📊 DJANGO_ENV: {django_env}")
     print(f"🐛 DEBUG: {debug}")

@@ -832,15 +832,15 @@ python manage.py createsuperuser
 
 ```bash
 # Tester les endpoints
-curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:8000/api/v1/bibliotheque/categories/
-curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:8000/api/v1/bibliotheque/resources/
+curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:8081/api/v1/bibliotheque/categories/
+curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:8081/api/v1/bibliotheque/resources/
 ```
 
 ### 3. Accès à l'interface
 
 - **Frontend** : http://localhost:3000/bibliotheque
-- **API** : http://localhost:8000/api/v1/bibliotheque/
-- **Admin** : http://localhost:8000/admin
+- **API** : http://localhost:8081/api/v1/bibliotheque/
+- **Admin** : http://localhost:8081/admin
 
 ## 📊 Fonctionnalités avancées
 

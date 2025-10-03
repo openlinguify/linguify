@@ -25,7 +25,7 @@ def get_backend_user(session_key):
         if is_production:
             backend_url = "https://app.openlinguify.com"
         else:
-            backend_url = "http://127.0.0.1:8000"
+            backend_url = "http://127.0.0.1:8081"
 
         # Appeler l'API de vérification de session
         response = requests.get(

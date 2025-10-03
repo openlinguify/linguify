@@ -166,7 +166,7 @@ class JobApplicationCreateView(generics.CreateAPIView):
                 
                 <div class="footer">
                     <p>📧 Cet email a été généré automatiquement par le système de candidatures Linguify</p>
-                    <p>Pour voir tous les détails dans l'admin: <a href="http://localhost:8000/admin/jobs/jobapplication/{application.id}/change/">Voir la candidature</a></p>
+                    <p>Pour voir tous les détails dans l'admin: <a href="http://localhost:8081/admin/jobs/jobapplication/{application.id}/change/">Voir la candidature</a></p>
                 </div>
             </body>
             </html>
@@ -195,7 +195,7 @@ LinkedIn: {application.linkedin_url or 'Non fourni'}
 Date de candidature: {application.applied_at.strftime('%d/%m/%Y à %H:%M')}
 CV fourni: {'Oui (stocké de manière sécurisée)' if application.has_resume() else 'Non'}
 
-Admin: http://localhost:8000/admin/jobs/jobapplication/{application.id}/change/
+Admin: http://localhost:8081/admin/jobs/jobapplication/{application.id}/change/
             """
             
             # Create email message

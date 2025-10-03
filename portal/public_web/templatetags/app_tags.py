@@ -168,16 +168,16 @@ def backend_url(path=""):
     # Detect production environment
     django_env = getattr(settings, 'DJANGO_ENV', 'development')
     is_production = django_env == 'production' or not getattr(settings, 'DEBUG', True)
-    
+
     if is_production:
         base_url = "https://app.openlinguify.com"
     else:
-        base_url = "http://127.0.0.1:8000"
-    
+        base_url = "http://127.0.0.1:8081"
+
     # Clean path
     if path and not path.startswith('/'):
         path = '/' + path
-    
+
     return base_url + path
 
 
@@ -198,7 +198,7 @@ def backend_url_with_lang(context, path=""):
         if backend_url_with_lang._is_production:
             backend_url_with_lang._base_url = "https://app.openlinguify.com"
         else:
-            backend_url_with_lang._base_url = "http://127.0.0.1:8000"
+            backend_url_with_lang._base_url = "http://127.0.0.1:8081"
 
     # Clean path and add language prefix
     if path and not path.startswith('/'):
@@ -213,18 +213,18 @@ def backend_url_with_lang(context, path=""):
     return f"{backend_url_with_lang._base_url}/{current_lang}{path}"
 
 
-@register.simple_tag 
+@register.simple_tag
 def cms_url(path=""):
     """Get CMS URL based on environment"""
     django_env = getattr(settings, 'DJANGO_ENV', 'development')
     is_production = django_env == 'production' or not getattr(settings, 'DEBUG', True)
-    
+
     if is_production:
         base_url = "https://cms.openlinguify.com"
     else:
         base_url = "http://127.0.0.1:8002"
-    
+
     if path and not path.startswith('/'):
         path = '/' + path
-    
+
     return base_url + path

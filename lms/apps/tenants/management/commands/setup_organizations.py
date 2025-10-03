@@ -91,7 +91,7 @@ class Command(BaseCommand):
         )
         self.stdout.write("\nYou can now access:")
         for org_data in organizations:
-            self.stdout.write(f"- http://127.0.0.1:8000/org/{org_data['slug']}/")
+            self.stdout.write(f"- http://127.0.0.1:8081/org/{org_data['slug']}/")
         
         self.stdout.write(
             self.style.SUCCESS(f"\nUser {user.username} is now owner of all organizations!")

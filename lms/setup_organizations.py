@@ -81,7 +81,7 @@ def setup_organizations():
     print("\n--- Setup complete! ---")
     print("\nYou can now access:")
     for org_data in organizations:
-        print(f"- http://127.0.0.1:8000/org/{org_data['slug']}/")
+        print(f"- http://127.0.0.1:8081/org/{org_data['slug']}/")
 
 if __name__ == "__main__":
     setup_organizations()

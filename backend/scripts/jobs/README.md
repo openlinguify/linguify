@@ -19,7 +19,7 @@ python scripts/jobs/check_applications.py
 # Pour accéder aux CVs via admin
 # 1. Changez DJANGO_ENV="production" dans .env
 # 2. python manage.py runserver
-# 3. http://localhost:8000/admin/jobs/jobapplication/
+# 3. http://localhost:8081/admin/jobs/jobapplication/
 ```
 
 ## 📊 Informations Affichées

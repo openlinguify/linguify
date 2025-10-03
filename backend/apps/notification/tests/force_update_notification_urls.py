@@ -26,7 +26,7 @@ def force_update_notification_urls():
     print("=" * 70)
 
     # Nouvelle URL d'acceptation
-    backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+    backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8081')
     new_terms_url = f"{backend_url}/authentication/terms/accept/"
 
     # Récupérer toutes les notifications de type terms/action_required

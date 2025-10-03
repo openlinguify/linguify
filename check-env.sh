@@ -41,7 +41,7 @@ fi
 cd ..
 echo ""
 
-echo "⚙️ BACKEND (port 8000):"
+echo "⚙️ BACKEND (port 8081):"
 cd backend 2>/dev/null
 if command -v poetry >/dev/null 2>&1; then
     poetry run python -c "

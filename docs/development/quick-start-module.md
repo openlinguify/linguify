@@ -71,9 +71,9 @@ python manage.py migrate
 ## 🎯 Accès rapide
 
 Une fois intégré, votre module sera accessible à :
-- **API** : `http://localhost:8000/api/v1/mon_module/`
+- **API** : `http://localhost:8081/api/v1/mon_module/`
 - **Frontend** : `http://localhost:3000/mon_module`
-- **Admin** : `http://localhost:8000/admin`
+- **Admin** : `http://localhost:8081/admin`
 
 ## 🛠️ Développement
 

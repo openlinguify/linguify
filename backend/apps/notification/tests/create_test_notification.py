@@ -36,7 +36,7 @@ def create_test_notification():
     print("=" * 70)
 
     # Créer une nouvelle notification
-    backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+    backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8081')
     terms_url = f"{backend_url}/authentication/terms/accept/"
 
     # Déterminer le message selon la langue

@@ -6,7 +6,7 @@
 # Port configuration
 PORTAL_PORT = 8080
 LMS_PORT = 8001
-BACKEND_PORT = 8000
+BACKEND_PORT = 8081
 CMS_PORT = 8002
 DOCS_PORT = 8003
 
@@ -66,7 +66,7 @@ lms: ## Start LMS server (port 8001)
 	fi
 	$(MANAGE_LMS) runserver $(LMS_PORT)
 
-backend: ## Start Backend server (port 8000)
+backend: ## Start Backend server (port 8081)
 	@echo "$(BLUE)⚙️ Starting Linguify Backend...$(NC)"
 	@echo "$(GREEN)🌐 Access server at: http://localhost:$(BACKEND_PORT)/$(NC)"
 	@echo ""
@@ -244,7 +244,7 @@ check-env: ## Check development/production environment for all projects
 	@echo "$(YELLOW)🎓 LMS (port 8001):$(NC)"
 	@./lms/venv/bin/python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings'); import django; django.setup(); from django.conf import settings; print('  Mode:', 'Development' if settings.DEBUG else 'Production'); print('  Hosts:', settings.ALLOWED_HOSTS[:3])" 2>/dev/null || echo "  $(RED)❌ Configuration error$(NC)"
 	@echo ""  
-	@echo "$(YELLOW)⚙️ BACKEND (port 8000):$(NC)"
+	@echo "$(YELLOW)⚙️ BACKEND (port 8081):$(NC)"
 	@cd backend && poetry run python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings'); import django; django.setup(); from django.conf import settings; print('  Mode:', 'Development' if settings.DEBUG else 'Production'); print('  Hosts:', settings.ALLOWED_HOSTS[:3])" 2>/dev/null || echo "  $(RED)❌ Configuration error$(NC)"
 	@echo ""
 	@echo "$(YELLOW)👨‍🏫 CMS (port 8002):$(NC)"  

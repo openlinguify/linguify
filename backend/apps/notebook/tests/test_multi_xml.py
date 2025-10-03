@@ -96,7 +96,7 @@ def main():
     print("   🌐 Toutes les vues kanban:")
     kanban_views = parser.get_views_by_type('kanban')
     for view_id in list(kanban_views.keys())[:3]:
-        print(f"      http://localhost:8000/api/v1/notebook/xml/views/{view_id}/html/")
+        print(f"      http://localhost:8081/api/v1/notebook/xml/views/{view_id}/html/")
 
     print()
     print("   📊 Vues pour le modèle notebook.note:")

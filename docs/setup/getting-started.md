@@ -130,7 +130,7 @@ EMAIL_HOST_PASSWORD=your-email-password
 DEFAULT_FROM_EMAIL=linguify.info@gmail.com
 
 # Backend and Frontend URLs
-BACKEND_URL=http://localhost:8000
+BACKEND_URL=http://localhost:8081
 FRONTEND_URL=http://localhost:3000
 ```
 
@@ -147,7 +147,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-API will be available at: http://localhost:8000
+API will be available at: http://localhost:8081
 
 ### 4. Frontend Setup (Next.js)
 
@@ -165,7 +165,7 @@ Edit the `.env.local` file with your actual settings:
 
 ```env
 # Base URLs
-NEXT_PUBLIC_API_URL=http://localhost:8000/api
+NEXT_PUBLIC_API_URL=http://localhost:8081/api
 
 # Auth0 configuration
 NEXT_PUBLIC_AUTH0_DOMAIN=your-auth0-domain
@@ -251,7 +251,7 @@ pnpm test
 | Start frontend | `pnpm dev` |
 | Run backend tests | `pytest` |
 | Run frontend tests | `pnpm test` |
-| Access Django admin | Visit `http://localhost:8000/admin/` |
+| Access Django admin | Visit `http://localhost:8081/admin/` |
 | Generate migration | `python manage.py makemigrations` |
 | Apply migration | `python manage.py migrate` |
 | Check poetry dependencies | `poetry show --tree` |

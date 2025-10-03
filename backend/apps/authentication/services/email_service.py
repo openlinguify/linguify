@@ -94,7 +94,7 @@ class EmailVerificationService:
             return request.build_absolute_uri(verification_path)
         else:
             # Fallback to settings-based URL
-            base_url = getattr(settings, 'BASE_URL', 'http://localhost:8000')
+            base_url = getattr(settings, 'BASE_URL', 'http://localhost:8081')
             return f"{base_url}{verification_path}"
     
     @staticmethod

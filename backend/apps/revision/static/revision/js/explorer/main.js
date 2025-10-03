@@ -3214,7 +3214,7 @@ function startNotificationPolling() {
             intervalMs = 86400000; // 24 hours
             break;
         case 'weekly':
-            intervalMs = 604800000; // 7 days
+            intervalMs = 604808100; // 7 days
             break;
         default:
             intervalMs = 86400000;

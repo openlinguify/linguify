@@ -6,7 +6,7 @@ import requests
 import json
 
 # Configuration
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8081"
 SESSION = requests.Session()
 
 def test_login():

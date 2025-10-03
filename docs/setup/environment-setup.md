@@ -86,7 +86,7 @@ AUTH0_AUDIENCE=https://linguify-api
 AUTH0_ALGORITHM=RS256
 
 # Application configuration
-BACKEND_URL=http://localhost:8000
+BACKEND_URL=http://localhost:8081
 FRONTEND_URL=http://localhost:3000
 
 # Email (optional for development)
@@ -135,14 +135,14 @@ Create a `.env.local` file in the `frontend/` folder based on `.env.local.exampl
 ```
 # Application configuration
 NODE_ENV=development
-NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_API_URL=http://localhost:8081
 
 # Auth0 configuration
 NEXT_PUBLIC_AUTH0_DOMAIN=your-tenant.region.auth0.com
 NEXT_PUBLIC_AUTH0_CLIENT_ID=your_client_id
 NEXT_PUBLIC_AUTH0_REDIRECT_URI=http://localhost:3000/callback
 NEXT_PUBLIC_FRONTEND_URL=http://localhost:3000
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8081
 NEXT_PUBLIC_AUTH0_AUDIENCE=https://linguify-api
 ```
 
@@ -170,7 +170,7 @@ The frontend will be accessible at `http://localhost:3000`.
 
 ## Installation Verification
 
-1. Visit the Django admin panel: `http://localhost:8000/admin/`
+1. Visit the Django admin panel: `http://localhost:8081/admin/`
 2. Visit the frontend application: `http://localhost:3000`
 3. Test authentication and check that the backend and frontend communicate properly
 

@@ -112,6 +112,6 @@ class Command(BaseCommand):
         self.stdout.write("\n📝 Pour accéder aux CVs via l'admin:")
         self.stdout.write("  1. Changez DJANGO_ENV=\"production\" dans .env")
         self.stdout.write("  2. python manage.py runserver")
-        self.stdout.write("  3. Allez sur http://localhost:8000/admin/jobs/jobapplication/")
+        self.stdout.write("  3. Allez sur http://localhost:8081/admin/jobs/jobapplication/")
         
         self.stdout.write("\n⚠️  BE CAREFUL: You're in PRODUCTION!")

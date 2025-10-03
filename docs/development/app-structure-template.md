@@ -399,7 +399,7 @@ python manage.py createsuperuser
 
 # 4. Tester l'API
 python manage.py runserver
-# Aller sur http://localhost:8000/api/custom/mon-app/items/
+# Aller sur http://localhost:8081/api/custom/mon-app/items/
 ```
 
 ## ✅ Checklist de Validation

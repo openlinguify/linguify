@@ -84,7 +84,7 @@
 
   The sidebar should now display correctly across all device sizes with intuitive mobile navigation.
 
-> '/mnt/c/Users/louis/WebstormProjects/linguify/screen' http://127.0.0.1:8000/documents/folders/ c'est ici que la sidebar
+> '/mnt/c/Users/louis/WebstormProjects/linguify/screen' http://127.0.0.1:8081/documents/folders/ c'est ici que la sidebar
 
 ● I'll take a screenshot to see the current sidebar display issue on the folders page.
 

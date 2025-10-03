@@ -37,7 +37,7 @@ def test_view_type(view_type, sample_data=None):
             html = render_xml_view_as_html(view_id, sample_data)
             length = len(html)
             print(f"      ✅ Rendu: {length} caractères")
-            print(f"      🌐 URL: http://localhost:8000/api/v1/notebook/xml/views/{view_id}/html/")
+            print(f"      🌐 URL: http://localhost:8081/api/v1/notebook/xml/views/{view_id}/html/")
         except Exception as e:
             print(f"      ❌ Erreur: {e}")
         print()
@@ -134,10 +134,10 @@ def main():
     for view_type, views in examples.items():
         if views:
             view_id = list(views.keys())[0]
-            print(f"   🎨 {view_type.title()}: http://localhost:8000/api/v1/notebook/xml/views/{view_id}/html/")
+            print(f"   🎨 {view_type.title()}: http://localhost:8081/api/v1/notebook/xml/views/{view_id}/html/")
 
     print()
-    print("💡 CONSEIL: Visitez http://localhost:8000/api/v1/notebook/xml/ pour voir toutes les options !")
+    print("💡 CONSEIL: Visitez http://localhost:8081/api/v1/notebook/xml/ pour voir toutes les options !")
 
 
 if __name__ == '__main__':

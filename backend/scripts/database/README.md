@@ -183,7 +183,7 @@ Pour consulter les CVs réels des candidatures :
 
 3. **Accéder à l'admin** :
    ```
-   http://localhost:8000/admin/jobs/jobapplication/
+   http://localhost:8081/admin/jobs/jobapplication/
    ```
 
 4. **Revenir en développement** :

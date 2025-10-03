@@ -277,7 +277,7 @@ def main():
 
     print("💡 Exemples d'utilisation:")
     for view_id in views.keys():
-        print(f"  - http://localhost:8000/api/v1/notebook/xml/views/{view_id}/html/")
+        print(f"  - http://localhost:8081/api/v1/notebook/xml/views/{view_id}/html/")
 
 
 if __name__ == '__main__':

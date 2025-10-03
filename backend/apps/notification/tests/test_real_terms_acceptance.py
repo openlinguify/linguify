@@ -104,7 +104,7 @@ def test_real_terms_acceptance():
                 portal_url = getattr(settings, 'PORTAL_URL', 'http://localhost:8080')
                 expected_url = f"{portal_url}/annexes/terms"
 
-                backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+                backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8081')
                 expected_url_new = f"{backend_url}/authentication/terms/accept/"
 
                 if action_url == expected_url_new:
@@ -121,14 +121,14 @@ def test_real_terms_acceptance():
     print(f"\n🧪 ÉTAPES DE TEST MANUEL")
     print("=" * 70)
     print(f"\n1️⃣ CONNEXION:")
-    print(f"   • URL: http://localhost:8000/")
+    print(f"   • URL: http://localhost:8081/")
     print(f"   • Email: {user.email}")
     print(f"   • Mot de passe: TestPassword123!")
 
     print(f"\n2️⃣ CLIQUER SUR LA NOTIFICATION:")
     print(f"   • Cliquez sur l'icône cloche 🔔")
     print(f"   • Cliquez sur: '{latest_notification.title if latest_notification else 'Notification des conditions'}'")
-    backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+    backend_url = getattr(settings, 'SITE_URL', 'http://localhost:8081')
     print(f"   • Vous devriez être redirigé vers: {backend_url}/authentication/terms/accept/")
 
     print(f"\n3️⃣ ACCEPTER LES CONDITIONS:")

@@ -130,7 +130,7 @@ GET  /api/sync/status/          # Statut sync
 ## 🔗 Intégration Backend
 
 Le CMS communique avec le Backend étudiant via API REST :
-- **Endpoint Backend :** `http://127.0.0.1:8000/api/`
+- **Endpoint Backend :** `http://127.0.0.1:8081/api/`
 - **Authentification :** Token-based
 - **Format :** JSON
 
@@ -150,7 +150,7 @@ Le CMS communique avec le Backend étudiant via API REST :
 **Sync failed:**
 ```bash
 # Vérifier la connectivité Backend
-curl http://127.0.0.1:8000/api/
+curl http://127.0.0.1:8081/api/
 ```
 
 **Base de données:**

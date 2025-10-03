@@ -66,7 +66,7 @@ try:
     print("   python manage.py createsuperuser")
     print("3. Lancez le serveur:")
     print("   python manage.py runserver")
-    print("4. Accédez à l'admin: http://localhost:8000/admin/")
+    print("4. Accédez à l'admin: http://localhost:8081/admin/")
     
     print("\n💡 Pour accéder aux CVs de production:")
     print("   Changez temporairement DJANGO_ENV='production' dans .env")

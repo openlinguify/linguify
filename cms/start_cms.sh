@@ -24,8 +24,8 @@ echo ""
 echo "=" * 60
 echo "📋 CMS LINGUIFY - INFORMATIONS D'ACCÈS"
 echo "=" * 60
-echo "🌐 URL Admin: http://localhost:8000/admin/"
-echo "👨‍🏫 URL Teachers: http://localhost:8000/teachers/"
+echo "🌐 URL Admin: http://localhost:8081/admin/"
+echo "👨‍🏫 URL Teachers: http://localhost:8081/teachers/"
 echo ""
 echo "🔑 COMPTES DE TEST:"
 echo "   Admin (Superuser):"
@@ -50,7 +50,7 @@ echo "=" * 60
 # Démarrer le serveur de développement
 echo ""
 echo "🚀 Démarrage du serveur Django..."
-echo "   Le CMS sera accessible sur: http://localhost:8000/"
+echo "   Le CMS sera accessible sur: http://localhost:8081/"
 echo "   Appuyez sur Ctrl+C pour arrêter"
 echo ""
 

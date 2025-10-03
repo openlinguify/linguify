@@ -112,7 +112,7 @@
                 // Add retry functionality for errors if specified
                 if (options.retryFn) {
                     const retryMessage = `${message} <button onclick="(${options.retryFn.toString()})(); this.parentElement.parentElement.remove();" class="btn btn-sm btn-light ms-2">Réessayer</button>`;
-                    this.show(retryMessage, 'error', 8000); // Longer duration for retry
+                    this.show(retryMessage, 'error', 8081); // Longer duration for retry
                 } else {
                     this.show(message, 'error');
                 }

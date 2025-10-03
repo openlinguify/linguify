@@ -459,7 +459,7 @@
         
         // Gestion WebSocket
         function connectWebSocket(roomId) {
-            const wsUrl = `ws://localhost:8000/ws/call/${roomId}/`;
+            const wsUrl = `ws://localhost:8081/ws/call/${roomId}/`;
             websocket = new WebSocket(wsUrl);
             
             websocket.onopen = () => {

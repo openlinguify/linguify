@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Test simple pour vérifier le partage de session
-Requires: Backend running on port 8000, Portal running on port 8080
+Requires: Backend running on port 8081, Portal running on port 8080
 """
 import requests
 
@@ -10,7 +10,7 @@ def test():
     print("BACKEND -> PORTAL SESSION DETECTION TEST (SIMPLE)")
     print("=" * 60)
     print("\nPrerequisites:")
-    print("1. Backend running on http://127.0.0.1:8000")
+    print("1. Backend running on http://127.0.0.1:8081")
     print("2. Portal running on http://127.0.0.1:8080")
     print()
 
@@ -51,7 +51,7 @@ def test():
     # 2. Tester l'API backend
     print("\nStep 2: Testing backend API...")
     try:
-        url = f"http://127.0.0.1:8000/api/auth/check-session/?session_key={session.session_key}"
+        url = f"http://127.0.0.1:8081/api/auth/check-session/?session_key={session.session_key}"
         response = requests.get(url, timeout=5)
 
         if response.status_code == 200:
@@ -67,7 +67,7 @@ def test():
             return False
     except Exception as e:
         print(f"  FAIL: {e}")
-        print("  Make sure backend is running on port 8000")
+        print("  Make sure backend is running on port 8081")
         return False
 
     # 3. Tester le portal
@@ -99,7 +99,7 @@ def test():
     print("ALL TESTS PASSED!")
     print("=" * 60)
     print("\nManual test:")
-    print("1. Go to http://127.0.0.1:8000/en/auth/login/")
+    print("1. Go to http://127.0.0.1:8081/en/auth/login/")
     print("2. Login: louisphilippelalou@outlook.com / Chon@728596")
     print("3. Go to http://127.0.0.1:8080/")
     print("4. Header should show your profile!")

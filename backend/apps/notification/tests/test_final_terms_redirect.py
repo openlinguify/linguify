@@ -85,7 +85,7 @@ def test_final_redirect():
     print("-" * 50)
     print("\n📱 Étapes de test:")
     print("\n1. Connectez-vous:")
-    print(f"   • URL: http://localhost:8000/")
+    print(f"   • URL: http://localhost:8081/")
     print(f"   • Email: {user.email}")
     print(f"   • Mot de passe: TestPassword123!")
 

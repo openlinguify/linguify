@@ -16,7 +16,7 @@ def print_help():
     print("  • portal           - Linguify Portal (main entry point)")
     
     print("\nUsage examples:")
-    print("  python manage.py backend runserver        # Run backend on port 8000")
+    print("  python manage.py backend runserver        # Run backend on port 8081")
     print("  python manage.py lms runserver 8001       # Run LMS on port 8001")
     print("  python manage.py portal runserver 8080    # Run portal on port 8080")
     
@@ -26,7 +26,7 @@ def print_help():
     print("  python manage.py portal collectstatic     # Collect portal static files")
     
     print("\nRecommended ports:")
-    print("  • Backend: 8000")
+    print("  • Backend: 8081")
     print("  • LMS:     8001")
     print("  • Portal:  8080")
     print("\n" + "="*60 + "\n")

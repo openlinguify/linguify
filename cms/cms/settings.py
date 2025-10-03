@@ -137,12 +137,12 @@ REST_FRAMEWORK = {
 
 # CORS settings for API communication with backend
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:8000",  # Backend API
-    "http://localhost:8000",
+    "http://127.0.0.1:8081",  # Backend API
+    "http://localhost:8081",
 ]
 
 # Backend API configuration
-BACKEND_API_URL = 'http://127.0.0.1:8000/api/'
+BACKEND_API_URL = 'http://127.0.0.1:8081/api/'
 BACKEND_API_TOKEN = 'your-backend-api-token-here'
 
 # Teacher CMS specific settings

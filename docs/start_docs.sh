@@ -19,8 +19,8 @@ echo "🔄 Applying migrations..."
 $PYTHON_PATH manage.py migrate
 
 # Start the server
-echo "🌐 Starting development server on http://127.0.0.1:8000"
-echo "📖 Visit the documentation at http://127.0.0.1:8000"
+echo "🌐 Starting development server on http://127.0.0.1:8081"
+echo "📖 Visit the documentation at http://127.0.0.1:8081"
 echo ""
 echo "To stop the server, press Ctrl+C"
 $PYTHON_PATH manage.py runserver

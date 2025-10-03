@@ -1174,7 +1174,7 @@ if __name__ == '__main__':
         print("✅ App ajoutée au dashboard des utilisateurs")
         print()
         print("🌐 Votre app est maintenant disponible à:")
-        print(f"   👉 http://localhost:8000/{app_name.replace('_', '-')}/")
+        print(f"   👉 http://localhost:8081/{app_name.replace('_', '-')}/")
         print()
         print("📱 Elle apparaît aussi dans:")
         print("   👉 App Store (pour installation)")

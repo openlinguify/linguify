@@ -28,7 +28,7 @@
    NEXT_PUBLIC_AUTH0_CLIENT_ID=your-client-id
    NEXT_PUBLIC_AUTH0_AUDIENCE=your-api-identifier
    NEXT_PUBLIC_FRONTEND_URL=http://localhost:3000
-   NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+   NEXT_PUBLIC_BACKEND_URL=http://localhost:8081
    ```
 
 ## Key Points to Check

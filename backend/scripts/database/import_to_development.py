@@ -138,7 +138,7 @@ try:
     print(f"2. Lancer le serveur:")
     print(f"   python manage.py runserver")
     print(f"3. Accéder à l'admin:")
-    print(f"   http://localhost:8000/admin/")
+    print(f"   http://localhost:8081/admin/")
     
     print(f"\n💡 Pour accéder aux CVs de production:")
     print(f"   Changez temporairement DJANGO_ENV='production'")

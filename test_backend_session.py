@@ -8,11 +8,11 @@ import requests
 import sys
 import signal
 
-def start_server(port, directory, timeout=30):
+def start_server(port, directory, timeout=30, host="127.0.0.1"):
     """Démarre un serveur Django"""
     print(f"  Starting server on port {port}...")
     proc = subprocess.Popen(
-        [sys.executable, "manage.py", "runserver", f"{port}", "--noreload"],
+        [sys.executable, "manage.py", "runserver", f"{host}:{port}", "--noreload"],
         cwd=directory,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -71,7 +71,7 @@ def test_backend_api(session_key):
     """Teste l'API backend"""
     print("\n3. Testing backend API...")
 
-    url = f"http://127.0.0.1:8000/api/auth/check-session/?session_key={session_key}"
+    url = f"http://127.0.0.1:8081/api/auth/check-session/?session_key={session_key}"
 
     try:
         response = requests.get(url, timeout=5)
@@ -130,7 +130,7 @@ def main():
 
         # 1. Démarrer les serveurs
         print("\n1. Starting servers...")
-        backend_proc = start_server(8000, "backend")
+        backend_proc = start_server(8081, "backend", host="0.0.0.0")
         if not backend_proc:
             print("\nFAIL FAILED: Backend server didn't start")
             return False
@@ -162,7 +162,7 @@ def main():
         print("ALL TESTS PASSED!")
         print("=" * 60)
         print("\nManual test:")
-        print(f"1. Go to http://127.0.0.1:8000/en/auth/login/")
+        print(f"1. Go to http://127.0.0.1:8081/en/auth/login/")
         print(f"2. Login with louisphilippelalou@outlook.com / Chon@728596")
         print(f"3. Go to http://127.0.0.1:8080/")
         print(f"4. Header should show your profile!")
