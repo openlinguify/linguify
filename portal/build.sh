@@ -70,8 +70,9 @@ else
     echo "❌ main.css not found in staticfiles"
 fi
 
-# Skip migrations - database is managed by backend service
-echo "==> Skipping database migrations (managed by backend service)..."
+# Run database migrations for portal-specific apps
+echo "==> Running database migrations for portal apps..."
+python3 manage.py migrate --verbosity=1
 
 # Verify the build worked
 echo "==> Final verification..."
