@@ -138,7 +138,7 @@
     flex: 1;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--linguify-primary, #2D5BBA);
     border: none;
     outline: none;
     background: transparent;
