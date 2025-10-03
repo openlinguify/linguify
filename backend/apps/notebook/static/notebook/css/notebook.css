@@ -158,7 +158,9 @@
 
 .note-title-input:focus {
     background: #ffffff;
-    border-bottom-color: var(--linguify-primary, #2D5BBA);
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(135deg, #1E4A8C 0%, #00B894 100%) 1;
+    border-radius: 6px 6px 0 0;
     box-shadow: 0 0 0 3px rgba(45, 91, 186, 0.1);
 }
 
