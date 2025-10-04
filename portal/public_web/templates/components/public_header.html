@@ -5,8 +5,8 @@
 
 <header class="public-header">
     <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'public_web:landing' %}">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="{% url 'public_web:landing' %}" style="display: inline-block; min-width: 220px;">
 {% if request.resolver_match.app_name == 'blog' %}Open Linguify <span style="color: var(--linguify-accent, #00D4AA); font-weight: 600;">Blog</span>{% else %}Open Linguify{% endif %}
             </a>
 
@@ -17,7 +17,7 @@
 
             <!-- Navigation -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav mx-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">
                             <i class="bi bi-grid-3x3-gap me-2"></i>{% trans "Apps" %}
