@@ -51,24 +51,28 @@
   margin-bottom: 1rem;
 }
 
-/* Boutons primaires */
-.blog-page .btn-primary {
+/* Boutons primaires - Only apply to blog content, not header */
+.blog-page .container .btn-primary,
+.blog-page .blog-container .btn-primary {
   background: var(--linguify-primary) !important;
   border-color: var(--linguify-primary) !important;
   color: white !important;
 }
 
-.blog-page .btn-primary:hover {
+.blog-page .container .btn-primary:hover,
+.blog-page .blog-container .btn-primary:hover {
   background: var(--linguify-primary-dark) !important;
   border-color: var(--linguify-primary-dark) !important;
 }
 
-.blog-page .btn-outline-primary {
+.blog-page .container .btn-outline-primary,
+.blog-page .blog-container .btn-outline-primary {
   color: var(--linguify-primary) !important;
   border-color: var(--linguify-primary) !important;
 }
 
-.blog-page .btn-outline-primary:hover {
+.blog-page .container .btn-outline-primary:hover,
+.blog-page .blog-container .btn-outline-primary:hover {
   background: var(--linguify-primary) !important;
   border-color: var(--linguify-primary) !important;
   color: white !important;
