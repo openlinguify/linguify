@@ -128,13 +128,13 @@ class AppToggleAPI(View):
                 # Uninstall the app
                 user_settings.enabled_apps.remove(app)
                 is_enabled = False
-                message = f"{app.display_name} a été désinstallée avec succès"
+                message = _("%(app_name)s uninstalled successfully") % {'app_name': app.display_name}
                 logger.info(f"User {request.user.id} uninstalled app {app.code}")
             else:
                 # Install the app
                 user_settings.enabled_apps.add(app)
                 is_enabled = True
-                message = f"{app.display_name} a été installée avec succès"
+                message = _("%(app_name)s installed successfully") % {'app_name': app.display_name}
                 logger.info(f"User {request.user.id} installed app {app.code}")
             # Clear the dashboard cache for this user
             from ..services.cache_service import UserAppCacheService

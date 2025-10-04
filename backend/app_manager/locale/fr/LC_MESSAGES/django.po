@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 20:20+0200\n"
+"POT-Creation-Date: 2025-10-04 04:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -123,6 +123,20 @@ msgstr "Annuler"
 msgid "Uninstall"
 msgstr "Désinstaller"
 
+#: .\app_manager\templates\app_manager\app_store.html:189
+msgid "Your data will be kept for 30 days."
+msgstr "Vos données seront conservées pendant 30 jours."
+
 #: .\app_manager\views\app_manager_views.py:97
 msgid "App Store - Open Linguify"
 msgstr "App Store - Open Linguify"
+
+#: .\app_manager\views\app_manager_views.py:131
+#, python-format
+msgid "%(app_name)s uninstalled successfully"
+msgstr "%(app_name)s a été désinstallée avec succès"
+
+#: .\app_manager\views\app_manager_views.py:137
+#, python-format
+msgid "%(app_name)s installed successfully"
+msgstr "%(app_name)s a été installée avec succès"

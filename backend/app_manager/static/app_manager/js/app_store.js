@@ -207,8 +207,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Show success message with data retention info for uninstall
                 let message = data.message;
-                if (!isInstalling) {
-                    message += '. Vos données seront conservées 30 jours.';
+                if (!isInstalling && window.appStoreTranslations) {
+                    message += '. ' + window.appStoreTranslations.dataRetentionMessage;
                 }
                 
                 showToast(message, 'success');
