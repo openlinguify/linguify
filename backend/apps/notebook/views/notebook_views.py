@@ -830,6 +830,50 @@ class NoteViewSet(viewsets.ModelViewSet):
         # For other actions, use the default behavior
         return super().get_object()
 
+    @action(detail=True, methods=['post'])
+    def convert_to_tasks(self, request, pk=None):
+        """
+        Convert note content to tasks
+        POST /notebook/api/notes/{id}/convert_to_tasks/
+        Body: {
+            "project_id": "uuid-optional"
+        }
+        """
+        note = self.get_object()
+        project_id = request.data.get('project_id')
+
+        project = None
+        if project_id:
+            from apps.todo.models import Project
+            try:
+                project = Project.objects.get(id=project_id, user=request.user)
+            except Project.DoesNotExist:
+                return Response(
+                    {'error': 'Project not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+        # Convert note to tasks
+        try:
+            tasks = note.convert_to_tasks(project=project)
+
+            # Serialize tasks for response
+            from apps.todo.serializers import TaskDetailSerializer
+            task_data = TaskDetailSerializer(tasks, many=True).data
+
+            return Response({
+                'success': True,
+                'message': f'{len(tasks)} task(s) created from note',
+                'tasks': task_data,
+                'note_id': note.id
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
 class SharedNoteViewSet(viewsets.ModelViewSet):
     serializer_class = SharedNoteSerializer
     permission_classes = [IsAuthenticated]

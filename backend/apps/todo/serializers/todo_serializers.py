@@ -161,20 +161,22 @@ class TaskDetailSerializer(serializers.ModelSerializer):
     is_overdue = serializers.ReadOnlyField()
     is_closed = serializers.ReadOnlyField()
     name_with_subtask_count = serializers.ReadOnlyField()
-    
+    source_note_title = serializers.CharField(source='source_note.title', read_only=True)
+
     class Meta:
         model = Task
         fields = [
             'id', 'title', 'description', 'status', 'state', 'priority', 'color',
-            'sequence', 'progress_percentage', 'project', 'project_id', 
+            'sequence', 'progress_percentage', 'project', 'project_id',
             'parent_task', 'parent_task_id', 'personal_stage_type', 'personal_stage_type_id',
             'tags', 'tag_ids', 'order', 'due_date', 'start_date',
             'estimated_time', 'actual_time', 'is_important', 'is_recurring',
-            'reminder_set', 'active', 'is_overdue', 'is_closed', 'subtasks', 
+            'reminder_set', 'active', 'is_overdue', 'is_closed', 'subtasks',
             'subtask_count', 'completed_subtask_count', 'name_with_subtask_count',
+            'source_note', 'source_note_title',
             'created_at', 'updated_at', 'completed_at'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'source_note']
     
     def validate_title(self, value):
         """Validate title length with custom error message"""

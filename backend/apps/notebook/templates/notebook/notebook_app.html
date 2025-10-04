@@ -16,8 +16,6 @@
 
 {% block extra_head %}
 <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-<!-- Alpine.js local pour vitesse ultime -->
-<script src="{% static 'js/alpine.min.js' %}" defer></script>
 
 <!-- Editor.js Core -->
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2"></script>
@@ -44,6 +42,13 @@
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@2.6.2/dist/link.umd.js"></script>
 
 <!-- Editor.js Text Formatting Tools -->
+
+<!-- Notebook scripts - LOAD BEFORE Alpine.js -->
+<script src="{% static 'editor-linguify/editor-linguify.js' %}?v=2025.10.04.3"></script>
+<script src="{% static 'notebook/js/notebook.js' %}?v=2025.10.04.3"></script>
+
+<!-- Alpine.js local - MUST load after notebook.js -->
+<script src="{% static 'js/alpine.min.js' %}" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -60,9 +65,6 @@
 
     <!-- Modals -->
     {% include 'components/delete_confirmation_modal.html' %}
+    {% include 'components/convert_to_tasks_modal.html' %}
 </div>
-
-<!-- Scripts locaux - Alpine.js déjà chargé dans head -->
-<script src="{% static 'editor-linguify/editor-linguify.js' %}"></script>
-<script src="{% static 'notebook/js/notebook.js' %}"></script>
 {% endblock %}

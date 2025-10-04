@@ -152,13 +152,68 @@ class Note(models.Model):
     def needs_review(self):
         """Détermine si la note doit être révisée basé sur la dernière révision"""
         from django.utils import timezone
-        
+
         if not self.last_reviewed_at:
             return True
-            
+
         next_review = self._calculate_next_review_date(self.last_reviewed_at)
         return timezone.now() >= next_review
-    
+
+    def convert_to_tasks(self, project=None):
+        """
+        Convert note content into tasks
+        Parses content and creates tasks from:
+        - Checkbox items: [ ] task or [x] completed task
+        - Numbered lists: 1. task
+        - Bullet points: - task or * task
+        Returns list of created tasks
+        """
+        import re
+
+        tasks = []
+        lines = self.content.split('\n')
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            task_title = None
+            is_completed = False
+
+            # Check for checkbox format: [ ] or [x]
+            checkbox_match = re.match(r'^\[([ xX])\]\s*(.+)$', line)
+            if checkbox_match:
+                is_completed = checkbox_match.group(1).lower() == 'x'
+                task_title = checkbox_match.group(2).strip()
+
+            # Check for numbered list: 1. task
+            elif re.match(r'^\d+\.\s+(.+)$', line):
+                numbered_match = re.match(r'^\d+\.\s+(.+)$', line)
+                task_title = numbered_match.group(1).strip()
+
+            # Check for bullet points: - task or * task
+            elif re.match(r'^[-*]\s+(.+)$', line):
+                bullet_match = re.match(r'^[-*]\s+(.+)$', line)
+                task_title = bullet_match.group(1).strip()
+
+            # Create task if we found a valid format
+            if task_title:
+                from apps.todo.models import Task
+
+                task = Task.objects.create(
+                    user=self.user,
+                    title=task_title,
+                    description=f"Created from note: {self.title}",
+                    source_note=self,
+                    project=project,
+                    state='1_done' if is_completed else '1_todo',
+                    status='completed' if is_completed else 'todo'
+                )
+                tasks.append(task)
+
+        return tasks
+
 class SharedNote(models.Model):
     """Modèle pour le partage de notes entre utilisateurs"""
     note = models.ForeignKey(Note, on_delete=models.CASCADE)

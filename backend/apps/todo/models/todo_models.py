@@ -165,12 +165,12 @@ class Task(models.Model):
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
     ]
-    
+
     PRIORITY_CHOICES = [
         ('0', 'Normal'),
         ('1', 'Starred'),  # Open Linguify-style priority (0=normal, 1=starred)
     ]
-    
+
     STATE_CHOICES = [
         ('1_draft', 'Draft'),
         ('1_todo', 'To Do'),
@@ -178,11 +178,14 @@ class Task(models.Model):
         ('1_done', 'Done'),
         ('1_canceled', 'Canceled'),
     ]
-    
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='todo_tasks')
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks', null=True, blank=True)
     parent_task = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks')
+
+    # Link to notebook app - for tasks created from notes
+    source_note = models.ForeignKey('notebook.Note', on_delete=models.SET_NULL, null=True, blank=True, related_name='generated_tasks')
     
     # Personal stages - Open Linguify inspired
     personal_stage_type = models.ForeignKey(

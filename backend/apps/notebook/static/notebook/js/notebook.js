@@ -28,6 +28,13 @@ function notebookApp() {
         deleteModalTitle: 'Delete Confirmation',
         deleteModalCallback: null, // Fonction à exécuter lors de la confirmation
 
+        // Convert to Tasks modal
+        showConvertModal: false,
+        selectedProjectId: '',
+        todoProjects: [],
+        convertPreview: [],
+        isConverting: false,
+
 
         // Méthodes
         init() {
@@ -623,6 +630,160 @@ function notebookApp() {
             this.showDeleteModal = false;
             this.deleteModalData = null;
             this.deleteModalCallback = null;
+        },
+
+        // Convert to Tasks functionality
+        async showConvertToTasksModal() {
+            if (!this.currentNote) {
+                this.showAlert('No note selected', 'error');
+                return;
+            }
+
+            // Load TODO projects
+            await this.loadTodoProjects();
+
+            // Generate preview
+            this.convertPreview = this.parseNoteForTasks();
+
+            // Show modal
+            this.showConvertModal = true;
+        },
+
+        async loadTodoProjects() {
+            try {
+                const response = await fetch('/api/v1/todo/projects/', {
+                    headers: {
+                        'X-CSRFToken': this.getCsrfToken()
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    this.todoProjects = data.results || data;
+                } else {
+                    this.todoProjects = [];
+                }
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                this.todoProjects = [];
+            }
+        },
+
+        parseNoteForTasks() {
+            if (!this.currentNote || !this.currentNote.content) {
+                return [];
+            }
+
+            const tasks = [];
+            let contentData;
+
+            try {
+                contentData = JSON.parse(this.currentNote.content);
+            } catch (e) {
+                // If content is not JSON, treat as plain text
+                contentData = { blocks: [{ type: 'paragraph', data: { text: this.currentNote.content } }] };
+            }
+
+            if (!contentData.blocks) {
+                return [];
+            }
+
+            // Parse blocks for tasks
+            contentData.blocks.forEach(block => {
+                if (block.type === 'checklist' && block.data && block.data.items) {
+                    // Checklist blocks
+                    block.data.items.forEach(item => {
+                        tasks.push({
+                            title: this.stripHtml(item.text),
+                            completed: item.checked || false
+                        });
+                    });
+                } else if (block.type === 'list' && block.data && block.data.items) {
+                    // List blocks (ordered or unordered)
+                    block.data.items.forEach(item => {
+                        const text = this.stripHtml(item);
+                        if (text.trim()) {
+                            tasks.push({
+                                title: text,
+                                completed: false
+                            });
+                        }
+                    });
+                } else if (block.type === 'paragraph' && block.data && block.data.text) {
+                    // Check for checkbox patterns in paragraph text
+                    const text = block.data.text;
+                    const checkboxRegex = /\[([ xX])\]\s*(.+)/g;
+                    let match;
+
+                    while ((match = checkboxRegex.exec(text)) !== null) {
+                        tasks.push({
+                            title: this.stripHtml(match[2]),
+                            completed: match[1].toLowerCase() === 'x'
+                        });
+                    }
+                }
+            });
+
+            return tasks;
+        },
+
+        stripHtml(html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+        },
+
+        async convertNoteToTasks() {
+            if (!this.currentNote || this.convertPreview.length === 0) {
+                return;
+            }
+
+            this.isConverting = true;
+
+            try {
+                const response = await fetch(`/notebook/api/notes/${this.currentNote.id}/convert_to_tasks/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCsrfToken()
+                    },
+                    body: JSON.stringify({
+                        project_id: this.selectedProjectId || null
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    this.showAlert(`${data.message}`, 'success');
+                    this.showConvertModal = false;
+                    this.selectedProjectId = '';
+                    this.convertPreview = [];
+
+                    // Optional: redirect to todo app
+                    setTimeout(() => {
+                        if (confirm('Tasks created! Do you want to view them in the Todo app?')) {
+                            window.location.href = '/todo/';
+                        }
+                    }, 1000);
+                } else {
+                    const error = await response.json();
+                    this.showAlert(error.error || 'Failed to convert note to tasks', 'error');
+                }
+            } catch (error) {
+                console.error('Error converting note to tasks:', error);
+                this.showAlert('An error occurred while converting the note', 'error');
+            } finally {
+                this.isConverting = false;
+            }
+        },
+
+        showAlert(message, type = 'info') {
+            // Simple alert for now - you can enhance this with a toast notification
+            if (type === 'error') {
+                alert('Error: ' + message);
+            } else {
+                alert(message);
+            }
         }
     }
 }

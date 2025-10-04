@@ -50,8 +50,12 @@
                         title="{% trans 'Pin note' %}">
                     <i class="bi bi-pin-angle"></i>
                 </button>
+
                 <button @click="copyNoteContent()" class="action-btn" title="{% trans 'Copy content' %}">
                     <i class="bi bi-clipboard"></i>
+                </button>
+                <button @click="showConvertToTasksModal()" class="action-btn" title="{% trans 'Convert to tasks' %}">
+                    <i class="bi bi-check2-square"></i>
                 </button>
                 <button @click="exportNote()" class="action-btn" title="{% trans 'Export note' %}">
                     <i class="bi bi-download"></i>

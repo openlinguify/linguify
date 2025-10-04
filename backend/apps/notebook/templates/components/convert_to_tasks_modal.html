@@ -1,0 +1,239 @@
+{% load i18n %}
+<!-- Convert to Tasks Modal -->
+<div x-show="showConvertModal"
+     x-cloak
+     @click.away="showConvertModal = false"
+     class="modal-overlay"
+     style="display: none;"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0">
+
+    <div class="modal-content convert-modal"
+         @click.stop
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform scale-90"
+         x-transition:enter-end="opacity-100 transform scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 transform scale-100"
+         x-transition:leave-end="opacity-0 transform scale-90">
+
+        <div class="modal-header">
+            <h3>
+                <i class="bi bi-check2-square"></i>
+                {% trans 'Convert Note to Tasks' %}
+            </h3>
+            <button @click="showConvertModal = false" class="close-btn">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <div class="info-box">
+                <i class="bi bi-info-circle"></i>
+                <p>{% trans 'This will convert checkboxes, bullet points, and numbered lists in your note into tasks.' %}</p>
+            </div>
+
+            <div class="form-group">
+                <label for="project-select">
+                    <i class="bi bi-folder"></i>
+                    {% trans 'Add to Project (optional)' %}
+                </label>
+                <select id="project-select" x-model="selectedProjectId" class="form-control">
+                    <option value="">{% trans 'No project - Create standalone tasks' %}</option>
+                    <template x-for="project in todoProjects" :key="project.id">
+                        <option :value="project.id" x-text="project.name"></option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="preview-section" x-show="convertPreview.length > 0">
+                <h4>{% trans 'Preview' %} (<span x-text="convertPreview.length"></span> {% trans 'tasks will be created' %})</h4>
+                <div class="task-preview-list">
+                    <template x-for="(task, index) in convertPreview.slice(0, 5)" :key="index">
+                        <div class="task-preview-item">
+                            <i class="bi bi-check-circle" :class="task.completed ? 'text-success' : 'text-muted'"></i>
+                            <span x-text="task.title"></span>
+                        </div>
+                    </template>
+                    <div x-show="convertPreview.length > 5" class="more-tasks">
+                        <i class="bi bi-three-dots"></i>
+                        <span x-text="`+ ${convertPreview.length - 5} more tasks`"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="convertPreview.length === 0" class="empty-preview">
+                <i class="bi bi-exclamation-circle"></i>
+                <p>{% trans 'No tasks detected in this note. Add checkboxes [ ], bullet points, or numbered lists.' %}</p>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button @click="showConvertModal = false" class="btn-secondary">
+                {% trans 'Cancel' %}
+            </button>
+            <button @click="convertNoteToTasks()"
+                    :disabled="convertPreview.length === 0 || isConverting"
+                    class="btn-primary"
+                    :class="{'loading': isConverting}">
+                <span x-show="!isConverting">
+                    <i class="bi bi-check2-square"></i>
+                    {% trans 'Create Tasks' %}
+                </span>
+                <span x-show="isConverting">
+                    <i class="bi bi-arrow-repeat spin"></i>
+                    {% trans 'Converting...' %}
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.convert-modal {
+    max-width: 600px;
+    width: 90%;
+}
+
+.info-box {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: start;
+    gap: 12px;
+    border-radius: 4px;
+}
+
+.info-box i {
+    color: #2196f3;
+    font-size: 1.2rem;
+    margin-top: 2px;
+}
+
+.info-box p {
+    margin: 0;
+    color: #1565c0;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.preview-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.preview-section h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 12px;
+}
+
+.task-preview-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #f9f9f9;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.task-preview-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: white;
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+
+.task-preview-item:last-child {
+    margin-bottom: 0;
+}
+
+.task-preview-item i {
+    font-size: 1.1rem;
+}
+
+.more-tasks {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    color: #666;
+    font-style: italic;
+    justify-content: center;
+}
+
+.empty-preview {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+}
+
+.empty-preview i {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary.loading {
+    pointer-events: none;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.text-success {
+    color: #28a745;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+</style>
