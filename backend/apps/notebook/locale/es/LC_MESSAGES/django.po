@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 20:20+0200\n"
+"POT-Creation-Date: 2025-10-04 04:25+0200\n"
 "PO-Revision-Date: 2025-09-30 19:15+0200\n"
 "Last-Translator: Linguify Team\n"
 "Language-Team: Spanish\n"
@@ -15,7 +15,7 @@ msgstr ""
 "1 : 2;\n"
 
 #: .\apps\notebook\__manifest__.py:5 .\apps\notebook\apps.py:11
-#: .\apps\notebook\templates\components\notebook_navbar.html:55
+#: .\apps\notebook\templates\components\notebook_navbar.html:30
 msgid "Notes"
 msgstr "Notas"
 
@@ -26,6 +26,51 @@ msgstr "Toma notas personalizadas para tus cursos y organiza tus ideas."
 #: .\apps\notebook\__manifest__.py:44
 msgid "Productivity"
 msgstr "Productividad"
+
+#: .\apps\notebook\templates\components\convert_to_tasks_modal.html:27
+msgid "Convert Note to Tasks"
+msgstr ""
+
+#: .\apps\notebook\templates\components\convert_to_tasks_modal.html:37
+msgid ""
+"This will convert checkboxes, bullet points, and numbered lists in your note "
+"into tasks."
+msgstr ""
+
+#: .\apps\notebook\templates\components\convert_to_tasks_modal.html:43
+msgid "Add to Project (optional)"
+msgstr ""
+
+#: .\apps\notebook\templates\components\convert_to_tasks_modal.html:46
+msgid "No project - Create standalone tasks"
+msgstr ""
+
+#: .\apps\notebook\templates\components\convert_to_tasks_modal.html:54
+msgid "Preview"
+msgstr ""
+
+#: .\apps\notebook\templates\components\convert_to_tasks_modal.html:54
+msgid "tasks will be created"
+msgstr ""
+
+#: .\apps\notebook\templates\components\convert_to_tasks_modal.html:71
+msgid ""
+"No tasks detected in this note. Add checkboxes [ ], bullet points, or "
+"numbered lists."
+msgstr ""
+
+#: .\apps\notebook\templates\components\convert_to_tasks_modal.html:77
+#: .\apps\notebook\templates\components\delete_confirmation_modal.html:68
+msgid "Cancel"
+msgstr ""
+
+#: .\apps\notebook\templates\components\convert_to_tasks_modal.html:85
+msgid "Create Tasks"
+msgstr ""
+
+#: .\apps\notebook\templates\components\convert_to_tasks_modal.html:89
+msgid "Converting..."
+msgstr ""
 
 #: .\apps\notebook\templates\components\delete_confirmation_modal.html:21
 msgid "Delete Confirmation"
@@ -51,12 +96,8 @@ msgstr ""
 msgid "This action is permanent and cannot be reversed."
 msgstr ""
 
-#: .\apps\notebook\templates\components\delete_confirmation_modal.html:68
-msgid "Cancel"
-msgstr ""
-
 #: .\apps\notebook\templates\components\delete_confirmation_modal.html:74
-#: .\apps\notebook\templates\components\notebook_navbar.html:149
+#: .\apps\notebook\templates\components\notebook_navbar.html:130
 msgid "Delete"
 msgstr ""
 
@@ -86,7 +127,6 @@ msgid "Create New Note"
 msgstr ""
 
 #: .\apps\notebook\templates\components\modals_delete_note.html:24
-#: .\apps\notebook\templates\components\notebook_editor.html:27
 msgid "Note title"
 msgstr ""
 
@@ -99,28 +139,32 @@ msgid "Pin"
 msgstr ""
 
 #: .\apps\notebook\templates\components\modals_delete_note.html:40
-#: .\apps\notebook\templates\components\notebook_editor.html:33
+#: .\apps\notebook\templates\components\notebook_editor.html:37
 #: .\apps\notebook\templates\notebook\notebook_settings.html:171
 msgid "Language"
 msgstr ""
 
 #: .\apps\notebook\templates\components\modals_delete_note.html:41
-#: .\apps\notebook\templates\components\notebook_navbar.html:90
+#: .\apps\notebook\templates\components\notebook_navbar.html:71
+#: .\apps\notebook\templates\components\notebook_navbar.html:140
 msgid "French"
 msgstr ""
 
 #: .\apps\notebook\templates\components\modals_delete_note.html:42
-#: .\apps\notebook\templates\components\notebook_navbar.html:91
+#: .\apps\notebook\templates\components\notebook_navbar.html:72
+#: .\apps\notebook\templates\components\notebook_navbar.html:141
 msgid "English"
 msgstr ""
 
 #: .\apps\notebook\templates\components\modals_delete_note.html:43
-#: .\apps\notebook\templates\components\notebook_navbar.html:92
+#: .\apps\notebook\templates\components\notebook_navbar.html:73
+#: .\apps\notebook\templates\components\notebook_navbar.html:142
 msgid "Spanish"
 msgstr ""
 
 #: .\apps\notebook\templates\components\modals_delete_note.html:44
-#: .\apps\notebook\templates\components\notebook_navbar.html:93
+#: .\apps\notebook\templates\components\notebook_navbar.html:74
+#: .\apps\notebook\templates\components\notebook_navbar.html:143
 msgid "Dutch"
 msgstr ""
 
@@ -140,109 +184,132 @@ msgstr ""
 msgid "You have no archived notes yet"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_editor.html:46
+#: .\apps\notebook\templates\components\notebook_editor.html:28
+msgid "Click to edit title..."
+msgstr ""
+
+#: .\apps\notebook\templates\components\notebook_editor.html:30
+msgid "Click to edit note title"
+msgstr ""
+
+#: .\apps\notebook\templates\components\notebook_editor.html:50
 msgid "Pin note"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_editor.html:49
+#: .\apps\notebook\templates\components\notebook_editor.html:54
 msgid "Copy content"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_editor.html:52
+#: .\apps\notebook\templates\components\notebook_editor.html:57
+msgid "Convert to tasks"
+msgstr ""
+
+#: .\apps\notebook\templates\components\notebook_editor.html:60
 msgid "Export note"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_editor.html:55
+#: .\apps\notebook\templates\components\notebook_editor.html:63
 msgid "Delete note"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:11
+#: .\apps\notebook\templates\components\notebook_navbar.html:10
 msgid "Hide/Show sidebar"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:12
+#: .\apps\notebook\templates\components\notebook_navbar.html:11
 msgid "Toggle sidebar"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:29
+#: .\apps\notebook\templates\components\notebook_navbar.html:13
 msgid "Hide sidebar"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:32
+#: .\apps\notebook\templates\components\notebook_navbar.html:14
 msgid "Show sidebar"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:46
+#: .\apps\notebook\templates\components\notebook_navbar.html:21
 #, fuzzy
 #| msgid "Notes"
 msgid "New Note"
 msgstr "Notas"
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:61
+#: .\apps\notebook\templates\components\notebook_navbar.html:36
 msgid "Archives"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:72
+#: .\apps\notebook\templates\components\notebook_navbar.html:42
+msgid "Refresh"
+msgstr ""
+
+#: .\apps\notebook\templates\components\notebook_navbar.html:53
 msgid "Search in notes..."
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:89
+#: .\apps\notebook\templates\components\notebook_navbar.html:67
+#: .\apps\notebook\templates\components\notebook_navbar.html:70
+#: .\apps\notebook\templates\components\notebook_navbar.html:139
 msgid "All languages"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:107
+#: .\apps\notebook\templates\components\notebook_navbar.html:85
+#: .\apps\notebook\templates\components\notebook_navbar.html:88
+#: .\apps\notebook\templates\components\notebook_navbar.html:144
 msgid "Most recent"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:108
+#: .\apps\notebook\templates\components\notebook_navbar.html:89
+#: .\apps\notebook\templates\components\notebook_navbar.html:145
 msgid "Oldest"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:109
+#: .\apps\notebook\templates\components\notebook_navbar.html:90
+#: .\apps\notebook\templates\components\notebook_navbar.html:146
 msgid "Title A-Z"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:110
+#: .\apps\notebook\templates\components\notebook_navbar.html:91
+#: .\apps\notebook\templates\components\notebook_navbar.html:147
 msgid "Title Z-A"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:117
+#: .\apps\notebook\templates\components\notebook_navbar.html:98
 msgid "Select all notes"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:119
+#: .\apps\notebook\templates\components\notebook_navbar.html:100
 msgid "Select All"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:124
+#: .\apps\notebook\templates\components\notebook_navbar.html:105
 msgid "selected"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:128
+#: .\apps\notebook\templates\components\notebook_navbar.html:109
 msgid "Clear selection"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:130
+#: .\apps\notebook\templates\components\notebook_navbar.html:111
 msgid "Clear"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:135
+#: .\apps\notebook\templates\components\notebook_navbar.html:116
 msgid "Archive selection"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:137
+#: .\apps\notebook\templates\components\notebook_navbar.html:118
 msgid "Archive"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:141
+#: .\apps\notebook\templates\components\notebook_navbar.html:122
 msgid "Unarchive selection"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:143
+#: .\apps\notebook\templates\components\notebook_navbar.html:124
 msgid "Unarchive"
 msgstr ""
 
-#: .\apps\notebook\templates\components\notebook_navbar.html:147
+#: .\apps\notebook\templates\components\notebook_navbar.html:128
 msgid "Delete selection"
 msgstr ""
 
