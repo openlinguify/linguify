@@ -17,6 +17,8 @@ class FlashcardStudyMode {
         this.speechSynthesis = window.speechSynthesis;
         this.currentUtterance = null;
         this.voices = [];
+        // Session milestone manager
+        this.milestoneManager = window.SessionMilestoneManager ? new window.SessionMilestoneManager() : null;
         this.setupEventListeners();
         this.initializeSpeechSynthesis();
     }
@@ -133,11 +135,16 @@ class FlashcardStudyMode {
             this.currentCardIndex = 0;
             this.isFlipped = false;
             this.resetStats();
-            
+
+            // Initialize milestone session
+            if (this.milestoneManager) {
+                await this.milestoneManager.initSession(deck.id, 'flashcards');
+            }
+
             // Show study interface
             console.log('Showing study interface');
             this.showStudyInterface();
-            
+
             // Load first card
             console.log('Loading first card');
             this.loadCurrentCard();
@@ -385,6 +392,11 @@ class FlashcardStudyMode {
             console.log(`  Confidence: ${result.confidence_before}% → ${result.confidence_after}%`);
             console.log(`  Mastery level: ${result.mastery_level}`);
             console.log(`  Recommended next mode: ${result.recommended_next_mode}`);
+
+            // Record milestone progress
+            if (this.milestoneManager) {
+                await this.milestoneManager.recordCardAttempt(wasCorrect);
+            }
 
             // Move to next card
             this.currentCardIndex++;

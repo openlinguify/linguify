@@ -18,7 +18,8 @@ from .views.adaptive_study_views import (
     AdaptiveReviewCardView,
     AdaptiveDeckStatsView,
     AdaptiveCardsToReviewView,
-    CardMasteryDetailView
+    CardMasteryDetailView,
+    StudySessionMilestoneView
 )
 
 app_name = 'revision'
@@ -162,4 +163,14 @@ urlpatterns = [
 
     # Get detailed mastery info for a card
     path('api/adaptive/card/<int:card_id>/mastery/', CardMasteryDetailView.as_view(), name='adaptive-card-mastery'),
+
+    # ==========================================
+    # === STUDY SESSION MILESTONES ============
+    # ==========================================
+
+    # Create or get active session
+    path('api/session/milestone/', StudySessionMilestoneView.as_view(), name='session-milestone-create'),
+
+    # Update session progress
+    path('api/session/milestone/<uuid:session_id>/', StudySessionMilestoneView.as_view(), name='session-milestone-update'),
 ]

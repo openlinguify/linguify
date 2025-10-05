@@ -15,6 +15,8 @@ class SpacedRepetitionMode {
             again: 0
         };
         this.startTime = null;
+        // Session milestone manager
+        this.milestoneManager = window.SessionMilestoneManager ? new window.SessionMilestoneManager() : null;
         this.setupEventListeners();
     }
 
@@ -76,10 +78,15 @@ class SpacedRepetitionMode {
             this.currentCardIndex = 0;
             this.isRevealed = false;
             this.resetSessionStats();
-            
+
+            // Initialize milestone session
+            if (this.milestoneManager) {
+                await this.milestoneManager.initSession(deck.id, 'learn');
+            }
+
             // Show spaced repetition interface
             this.showSpacedInterface();
-            
+
             // Load first card
             this.loadCurrentCard();
             
@@ -288,17 +295,22 @@ class SpacedRepetitionMode {
                 'learn',  // Study mode = learn
                 adaptiveDifficulty
             );
-            
+
+            // Record milestone progress
+            if (this.milestoneManager) {
+                await this.milestoneManager.recordCardAttempt(isCorrect);
+            }
+
             // Update session stats
             this.sessionStats[difficulty]++;
             this.sessionStats.reviewed++;
-            
+
             // Move to next card
             this.currentCardIndex++;
-            
+
             // Update UI
             this.updateSessionStats();
-            
+
             // Load next card or show completion
             if (this.currentCardIndex < this.reviewCards.length) {
                 this.loadCurrentCard();

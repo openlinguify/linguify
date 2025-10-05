@@ -15,7 +15,7 @@ import json
 import logging
 import uuid
 
-from ..models import FlashcardDeck, Flashcard, StudyMode, DifficultyLevel
+from ..models import FlashcardDeck, Flashcard, StudyMode, DifficultyLevel, RevisionSession
 from ..services.adaptive_learning import adaptive
 
 logger = logging.getLogger(__name__)
@@ -430,3 +430,100 @@ def convert_old_difficulty_to_new(old_response_quality):
         'easy': DifficultyLevel.EASY
     }
     return mapping.get(old_response_quality, DifficultyLevel.MEDIUM)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class StudySessionMilestoneView(View):
+    """
+    Vue pour gérer les jalons dans une session d'étude.
+    """
+
+    def post(self, request):
+        """Créer ou récupérer une session active"""
+        if not request.user.is_authenticated:
+            return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401)
+
+        try:
+            data = json.loads(request.body)
+            deck_id = data.get('deck_id')
+            study_mode = data.get('study_mode', 'flashcards')
+
+            deck = get_object_or_404(FlashcardDeck, id=deck_id, user=request.user)
+
+            # Chercher une session active ou en créer une nouvelle
+            session = RevisionSession.objects.filter(
+                user=request.user,
+                status='PENDING'
+            ).first()
+
+            if not session:
+                session = RevisionSession.objects.create(
+                    user=request.user,
+                    scheduled_date=timezone.now(),
+                    total_cards=deck.flashcards.count()
+                )
+                session.flashcards.set(deck.flashcards.all())
+
+            return JsonResponse({
+                'success': True,
+                'session_id': str(session.session_id),
+                'total_cards': session.total_cards,
+                'cards_completed': session.cards_completed,
+                'cards_correct': session.cards_correct,
+                'progress_percentage': session.progress_percentage,
+                'accuracy_rate': session.accuracy_rate,
+                'cards_until_next_milestone': session.cards_until_next_milestone,
+                'should_show_milestone': session.should_show_milestone
+            })
+
+        except Exception as e:
+            logger.error(f"Error creating/getting study session: {str(e)}", exc_info=True)
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+    def put(self, request, session_id):
+        """Mettre à jour la progression de la session"""
+        if not request.user.is_authenticated:
+            return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401)
+
+        try:
+            session = get_object_or_404(RevisionSession, session_id=session_id, user=request.user)
+            data = json.loads(request.body)
+
+            is_correct = data.get('is_correct', False)
+            session.record_card_attempt(is_correct)
+
+            # Recharger pour obtenir les propriétés à jour
+            session.refresh_from_db()
+
+            return JsonResponse({
+                'success': True,
+                'cards_completed': session.cards_completed,
+                'cards_correct': session.cards_correct,
+                'progress_percentage': session.progress_percentage,
+                'accuracy_rate': session.accuracy_rate,
+                'cards_until_next_milestone': session.cards_until_next_milestone,
+                'should_show_milestone': session.should_show_milestone
+            })
+
+        except Exception as e:
+            logger.error(f"Error updating study session: {str(e)}", exc_info=True)
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+    def patch(self, request, session_id):
+        """Marquer un jalon comme affiché"""
+        if not request.user.is_authenticated:
+            return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401)
+
+        try:
+            session = get_object_or_404(RevisionSession, session_id=session_id, user=request.user)
+            session.mark_milestone_shown()
+
+            return JsonResponse({
+                'success': True,
+                'last_milestone': session.last_milestone,
+                'cards_until_next_milestone': session.cards_until_next_milestone
+            })
+
+        except Exception as e:
+            logger.error(f"Error marking milestone: {str(e)}", exc_info=True)
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)

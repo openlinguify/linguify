@@ -1,0 +1,140 @@
+{% load i18n %}
+
+<!-- Milestone Modal -->
+<div id="milestoneModal" class="fixed inset-0 bg-black bg-opacity-50 z-50" style="display: none; align-items: center; justify-content: center;">
+    <div class="bg-white rounded-2xl p-6 shadow-2xl transform transition-all" style="width: 90%; max-width: 480px;">
+        <!-- Icon and Title -->
+        <div class="text-center mb-4">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #2D5BBA 0%, #4F7BD9 100%);">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold mb-1" style="color: #2D5BBA;" id="milestoneTitle">
+                {% trans "Heureux de vous revoir !" %}
+            </h3>
+            <p class="text-sm text-gray-600" id="milestoneSubtitle">
+                {% trans "Prêt à bosser dur aujourd'hui ?" %}
+            </p>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-medium text-gray-700">{% trans "Progression pour cette liste" %}</span>
+                <span class="text-xs font-bold" style="color: #2D5BBA;" id="milestoneProgressPercent">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="rounded-full h-2 transition-all duration-300" style="background: #2D5BBA; width: 0%;" id="milestoneProgressBar"></div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="rounded-lg p-3 text-center" style="background: #E8F4F8;">
+                <div class="text-2xl font-bold mb-0.5" style="color: #2D5BBA;" id="milestoneCompleted">0</div>
+                <div class="text-xs text-gray-600">{% trans "Questions terminées" %}</div>
+            </div>
+            <div class="rounded-lg p-3 text-center" style="background: #F0F4FF;">
+                <div class="text-2xl font-bold mb-0.5" style="color: #4F7BD9;" id="milestoneRemaining">0</div>
+                <div class="text-xs text-gray-600">{% trans "Questions restantes jusqu'au prochain rapport d'étape" %}</div>
+            </div>
+        </div>
+
+        <!-- Accuracy Stats (optional) -->
+        <div class="rounded-lg p-3 mb-4 hidden" style="background: #F8F9FA;" id="milestoneAccuracySection">
+            <div class="flex justify-between items-center">
+                <span class="text-xs text-gray-600">{% trans "Taux de réussite" %}</span>
+                <span class="text-base font-bold" style="color: #2D5BBA;" id="milestoneAccuracy">0%</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+            <button id="milestoneRestart" class="flex-1 px-4 py-3 border text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium" style="border-color: #D1D5DB;">
+                {% trans "Redémarrer le mode Apprendre" %}
+            </button>
+            <button id="milestoneContinue" class="flex-1 px-4 py-3 text-white rounded-lg transition-colors font-medium" style="background: #2D5BBA;" onmouseover="this.style.background='#1E4A8C'" onmouseout="this.style.background='#2D5BBA'">
+                {% trans "Continuer à vous exercer" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+class MilestoneModal {
+    constructor() {
+        this.modal = document.getElementById('milestoneModal');
+        this.title = document.getElementById('milestoneTitle');
+        this.subtitle = document.getElementById('milestoneSubtitle');
+        this.progressPercent = document.getElementById('milestoneProgressPercent');
+        this.progressBar = document.getElementById('milestoneProgressBar');
+        this.completed = document.getElementById('milestoneCompleted');
+        this.remaining = document.getElementById('milestoneRemaining');
+        this.accuracy = document.getElementById('milestoneAccuracy');
+        this.accuracySection = document.getElementById('milestoneAccuracySection');
+        this.continueBtn = document.getElementById('milestoneContinue');
+        this.restartBtn = document.getElementById('milestoneRestart');
+
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        this.continueBtn?.addEventListener('click', () => this.hide());
+        this.restartBtn?.addEventListener('click', () => {
+            this.hide();
+            // Trigger restart event that parent can listen to
+            window.dispatchEvent(new CustomEvent('milestone:restart'));
+        });
+    }
+
+    show(data) {
+        const {
+            title = "{% trans 'Heureux de vous revoir !' %}",
+            subtitle = "{% trans "Prêt à bosser dur aujourd'hui ?" %}",
+            progressPercent = 0,
+            completed = 0,
+            remaining = 0,
+            accuracy = null,
+            showRestart = true
+        } = data;
+
+        // Update content
+        if (this.title) this.title.textContent = title;
+        if (this.subtitle) this.subtitle.textContent = subtitle;
+        if (this.progressPercent) this.progressPercent.textContent = `${progressPercent}%`;
+        if (this.progressBar) this.progressBar.style.width = `${progressPercent}%`;
+        if (this.completed) this.completed.textContent = completed;
+        if (this.remaining) this.remaining.textContent = remaining;
+
+        // Show accuracy if provided
+        if (accuracy !== null && this.accuracy && this.accuracySection) {
+            this.accuracy.textContent = `${accuracy}%`;
+            this.accuracySection.classList.remove('hidden');
+        } else if (this.accuracySection) {
+            this.accuracySection.classList.add('hidden');
+        }
+
+        // Show/hide restart button
+        if (this.restartBtn) {
+            this.restartBtn.style.display = showRestart ? 'block' : 'none';
+        }
+
+        // Show modal
+        if (this.modal) {
+            this.modal.classList.remove('hidden');
+            this.modal.style.display = 'flex';
+        }
+    }
+
+    hide() {
+        if (this.modal) {
+            this.modal.classList.add('hidden');
+            this.modal.style.display = 'none';
+        }
+    }
+}
+
+// Initialize global milestone modal
+window.milestoneModal = new MilestoneModal();
+</script>
