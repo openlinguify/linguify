@@ -433,7 +433,7 @@ class AdvancedStatsManager {
         return `
             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-semibold text-linguify-primary">📈 Success Rate Trend</h3>
+                    <h3 class="text-sm font-semibold text-linguify-primary">Success Rate Trend</h3>
                     <span class="text-xs bg-white px-2 py-1 rounded-full border border-gray-200">
                         Average: <strong class="text-linguify-primary">${avgRate.toFixed(1)}%</strong>
                     </span>
@@ -495,7 +495,7 @@ class AdvancedStatsManager {
         return `
             <div class="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-semibold text-linguify-primary">📊 Daily Study Activity</h3>
+                    <h3 class="text-sm font-semibold text-linguify-primary">Daily Study Activity</h3>
                     <span class="text-xs bg-white px-2 py-1 rounded-full border border-gray-200">
                         Total: <strong class="text-linguify-primary">${totalCards} cards</strong>
                     </span>
@@ -534,7 +534,7 @@ class AdvancedStatsManager {
         
         return `
             <div style="padding: 16px; background: linear-gradient(135deg, #eff6ff, #e0e7ff); border-radius: 8px; border: 1px solid #d1d5db; margin: 8px 0;">
-                <div style="font-size: 14px; font-weight: bold; color: #374151; margin-bottom: 12px;">📈 Success Rate Trend</div>
+                <div style="font-size: 14px; font-weight: bold; color: #374151; margin-bottom: 12px;">Success Rate Trend</div>
                 <div style="display: flex; align-items: flex-end; gap: 2px; height: 96px; background: white; border-radius: 4px; padding: 8px;">
                     ${dataWithActivity.map((point, index) => {
                         const successPercent = point.avg_success_rate * 100;
@@ -582,7 +582,7 @@ class AdvancedStatsManager {
         
         return `
             <div class="p-4 bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg border">
-                <div class="text-sm font-bold text-gray-800 mb-3">📊 Study Activity</div>
+                <div class="text-sm font-bold text-gray-800 mb-3">Study Activity</div>
                 <div class="flex items-end gap-1 h-20 bg-white rounded p-2">
                     ${data.map((point, index) => {
                         const height = Math.max((point.cards_studied / maxCards * 60), 1); // Min 1px, max 60px
@@ -725,7 +725,7 @@ class AdvancedStatsManager {
             
             forecastElement.innerHTML = `
                 <div class="bg-purple-50 p-4 rounded-lg">
-                    <h3 class="font-semibold text-purple-800 mb-3">📈 Review Forecast</h3>
+                    <h3 class="font-semibold text-purple-800 mb-3">Review Forecast</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <div class="text-2xl font-bold text-purple-600">${avgDaily}</div>

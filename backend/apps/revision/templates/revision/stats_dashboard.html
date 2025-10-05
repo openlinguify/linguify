@@ -157,7 +157,7 @@
         <div class="w-full mb-4">
             <div class="card-linguify">
                 <div class="p-2 border-b border-gray-200">
-                    <h5 class="text-sm font-semibold text-linguify-primary mb-0">🎯 {% trans "Card Maturity" %}</h5>
+                    <h5 class="text-sm font-semibold text-linguify-primary mb-0">{% trans "Card Maturity" %}</h5>
                 </div>
                 <div class="p-2">
                     <div id="maturity-breakdown" class="space-y-1 text-xs">
@@ -176,10 +176,10 @@
             <div>
                 <div class="card-linguify">
                     <div class="p-2 border-b border-gray-200">
-                        <h5 class="text-sm font-semibold text-linguify-primary mb-0">📊 {% trans "Activity Trend" %}</h5>
+                        <h5 class="text-sm font-semibold text-linguify-primary mb-0">{% trans "Activity Trend" %}</h5>
                     </div>
-                    <div class="p-2">
-                        <div class="w-full" style="height: 160px;">
+                    <div class="p-4">
+                        <div class="w-full" style="height: 300px;">
                             <canvas id="activityTrendChart"></canvas>
                         </div>
                     </div>
@@ -190,10 +190,10 @@
             <div>
                 <div class="card-linguify">
                     <div class="p-2 border-b border-gray-200">
-                        <h5 class="text-sm font-semibold text-linguify-primary mb-0">📈 {% trans "Performance Trend" %}</h5>
+                        <h5 class="text-sm font-semibold text-linguify-primary mb-0">{% trans "Performance Trend" %}</h5>
                     </div>
-                    <div class="p-2">
-                        <div class="w-full" style="height: 160px;">
+                    <div class="p-4">
+                        <div class="w-full" style="height: 300px;">
                             <canvas id="performanceTrendChart"></canvas>
                         </div>
                     </div>
@@ -255,7 +255,7 @@
 
 {% block extra_js %}
 <!-- Load Statistics Dashboard JavaScript -->
-<script src="{% static 'revision/js/revision-stats.js' %}?v=20251005o"></script>
+<script src="{% static 'revision/js/revision-stats.js' %}"></script>
 <!-- Load Advanced Statistics JavaScript (Inspired by Anki) -->
-<script src="{% static 'revision/js/advanced-stats.js' %}?v=20251005o"></script>
+<script src="{% static 'revision/js/advanced-stats.js' %}"></script>
 {% endblock %}
