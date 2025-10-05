@@ -1,0 +1,132 @@
+{% load i18n %}
+<!-- Universal Study Completion Screen -->
+<div id="studyCompletionState" class="study-completion-container" style="max-width: 600px; margin: 0 auto; padding: 2rem; text-align: center; display: none;">
+    <!-- Success Icon with Animation -->
+    <div style="margin-bottom: 2rem;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #2D5BBA 0%, #4F7BD9 100%); box-shadow: 0 10px 40px rgba(45, 91, 186, 0.3); animation: scaleIn 0.5s ease-out;">
+            <i class="bi bi-trophy-fill" style="font-size: 4rem; color: white;"></i>
+        </div>
+    </div>
+
+    <!-- Title -->
+    <h2 style="font-size: 2rem; font-weight: bold; color: #2D5BBA; margin-bottom: 0.75rem;">
+        <span id="completionTitle">{% trans "Session completed!" %}</span>
+    </h2>
+
+    <!-- Subtitle -->
+    <p style="font-size: 1.125rem; color: #666; margin-bottom: 2.5rem;">
+        <span id="completionMessage">{% trans "Excellent work! You have completed" %}</span>
+        <span id="completionCardCount" style="font-weight: 600; color: #2D5BBA;"></span>
+    </p>
+
+    <!-- Stats Cards - Dynamic based on mode -->
+    <div id="completionStatsGrid" style="display: grid; gap: 1rem; margin-bottom: 2.5rem;">
+        <!-- Stats will be injected here based on mode -->
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <button id="completionRestartBtn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: white; border: 2px solid #2D5BBA; color: #2D5BBA; border-radius: 0.75rem; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);" onmouseover="this.style.background='#2D5BBA'; this.style.color='white'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(45, 91, 186, 0.3)'" onmouseout="this.style.background='white'; this.style.color='#2D5BBA'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.1)'">
+            <i class="bi bi-arrow-clockwise"></i>
+            {% trans "Restart" %}
+        </button>
+
+        <button id="completionBackToDeckBtn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: white; border: 2px solid #6B7280; color: #6B7280; border-radius: 0.75rem; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);" onmouseover="this.style.background='#6B7280'; this.style.color='white'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(107, 114, 128, 0.3)'" onmouseout="this.style.background='white'; this.style.color='#6B7280'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.1)'">
+            <i class="bi bi-arrow-left"></i>
+            {% trans "Back to deck" %}
+        </button>
+
+        <button id="completionExitBtn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #2D5BBA 0%, #4F7BD9 100%); border: none; color: white; border-radius: 0.75rem; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(45, 91, 186, 0.4);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(45, 91, 186, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(45, 91, 186, 0.4)'">
+            <i class="bi bi-house-fill"></i>
+            {% trans "My decks" %}
+        </button>
+    </div>
+</div>
+
+<style>
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+</style>
+
+<script>
+// Universal Study Completion Manager
+class StudyCompletionManager {
+    constructor() {
+        this.container = document.getElementById('studyCompletionState');
+        this.title = document.getElementById('completionTitle');
+        this.message = document.getElementById('completionMessage');
+        this.cardCount = document.getElementById('completionCardCount');
+        this.statsGrid = document.getElementById('completionStatsGrid');
+        this.restartBtn = document.getElementById('completionRestartBtn');
+        this.backBtn = document.getElementById('completionBackToDeckBtn');
+        this.exitBtn = document.getElementById('completionExitBtn');
+    }
+
+    show(config) {
+        const {
+            title = "{% trans 'Session completed!' %}",
+            message = "{% trans 'Excellent work! You have completed' %}",
+            cardCount = 0,
+            stats = [],
+            onRestart = null,
+            onBack = null,
+            onExit = null
+        } = config;
+
+        // Update text
+        if (this.title) this.title.textContent = title;
+        if (this.message) this.message.textContent = message;
+        if (this.cardCount) this.cardCount.textContent = ` ${cardCount} {% trans "cards" %}.`;
+
+        // Build stats grid
+        this.buildStatsGrid(stats);
+
+        // Setup button handlers
+        this.restartBtn.onclick = onRestart;
+        this.backBtn.onclick = onBack;
+        this.exitBtn.onclick = onExit;
+
+        // Show container
+        if (this.container) {
+            this.container.style.display = 'block';
+        }
+    }
+
+    buildStatsGrid(stats) {
+        if (!this.statsGrid || !stats || stats.length === 0) return;
+
+        const columns = stats.length === 3 ? 'repeat(3, 1fr)' : stats.length === 2 ? 'repeat(2, 1fr)' : '1fr';
+        this.statsGrid.style.gridTemplateColumns = columns;
+
+        this.statsGrid.innerHTML = stats.map(stat => `
+            <div style="background: linear-gradient(135deg, ${stat.color} 0%, ${stat.colorDark} 100%); border-radius: 1rem; padding: 1.5rem; color: white; box-shadow: 0 4px 12px ${stat.shadow}; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">${stat.value}</div>
+                <div style="font-size: 0.875rem; opacity: 0.9; font-weight: 500;">
+                    <i class="bi ${stat.icon}" style="margin-right: 0.25rem;"></i>
+                    ${stat.label}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    hide() {
+        if (this.container) {
+            this.container.style.display = 'none';
+        }
+    }
+}
+
+// Create global instance
+window.studyCompletion = new StudyCompletionManager();
+</script>

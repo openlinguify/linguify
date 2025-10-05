@@ -338,12 +338,11 @@ class QuizStudyMode {
 
     updateStats() {
         this.quizStats.total = this.quizStats.correct + this.quizStats.incorrect;
-        this.quizStats.score = this.quizStats.total > 0 ? 
+        this.quizStats.score = this.quizStats.total > 0 ?
             Math.round((this.quizStats.correct / this.quizStats.total) * 100) : 0;
-        
-        document.getElementById('quizCorrect').textContent = this.quizStats.correct;
-        document.getElementById('quizIncorrect').textContent = this.quizStats.incorrect;
-        document.getElementById('quizScore').textContent = `${this.quizStats.score}%`;
+
+        // Les stats ne sont affichées que dans l'écran de completion final
+        // On ne met plus à jour les éléments du DOM ici
     }
 
     resetStats() {
@@ -357,62 +356,37 @@ class QuizStudyMode {
     }
 
     showQuizCompletion() {
+        // Hide quiz area
         const quizArea = document.getElementById('quizArea');
-        
-        let performanceMessage = '';
-        let performanceClass = '';
-        
-        if (this.quizStats.score >= 80) {
-            performanceMessage = 'Excellent travail !';
-            performanceClass = 'text-linguify-accent';
-        } else if (this.quizStats.score >= 60) {
-            performanceMessage = 'Bon travail !';
-            performanceClass = 'text-warning';
-        } else {
-            performanceMessage = 'Continuez à vous entraîner !';
-            performanceClass = 'text-danger';
-        }
-        
-        quizArea.innerHTML = `
-            <div class="empty-state">
-                <i class="bi bi-trophy ${performanceClass}" style="font-size: 4rem;"></i>
-                <h4 class="mt-3 ${performanceClass}">${performanceMessage}</h4>
-                <p class="text-muted">Quiz terminé ! Voici vos résultats :</p>
-                
-                <div class="row text-center mt-4 mb-4">
-                    <div class="col">
-                        <div class="stat-value text-linguify-accent">${this.quizStats.correct}</div>
-                        <div class="stat-label">Correctes</div>
-                    </div>
-                    <div class="col">
-                        <div class="stat-value text-danger">${this.quizStats.incorrect}</div>
-                        <div class="stat-label">Incorrectes</div>
-                    </div>
-                    <div class="col">
-                        <div class="stat-value ${performanceClass}">${this.quizStats.score}%</div>
-                        <div class="stat-label">Score</div>
-                    </div>
-                    <div class="col">
-                        <div class="stat-value text-primary">${this.quizStats.total}</div>
-                        <div class="stat-label">Total</div>
-                    </div>
-                </div>
-                
-                <div class="d-flex gap-2 justify-content-center">
-                    <button class="btn btn-outline-custom" onclick="window.quizMode.restartQuiz()">
-                        <i class="bi bi-arrow-clockwise me-1"></i>
-                        Recommencer
-                    </button>
-                    <button class="btn btn-gradient" onclick="window.quizMode.exitQuizMode()">
-                        <i class="bi bi-arrow-left me-1"></i>
-                        Retour au deck
-                    </button>
-                </div>
-            </div>
-        `;
+        if (quizArea) quizArea.style.display = 'none';
+
+        // Show completion screen
+        const completionContainer = document.getElementById('quizCompletionContainer');
+        const completionState = document.getElementById('quizCompletionState');
+
+        if (completionContainer) completionContainer.style.display = 'block';
+        if (completionState) completionState.style.display = 'block';
+
+        // Update stats
+        document.getElementById('quizCompletionTotal').textContent = this.quizStats.total;
+        document.getElementById('quizCompletionCorrect').textContent = this.quizStats.correct;
+        document.getElementById('quizCompletionWrong').textContent = this.quizStats.incorrect;
+        document.getElementById('quizCompletionScore').textContent = `${this.quizStats.score}%`;
+
+        // Setup button handlers
+        document.getElementById('restartQuizBtn').onclick = () => this.restartQuiz();
+        document.getElementById('backToQuizDeckBtn').onclick = () => this.exitQuizMode();
+        document.getElementById('exitQuizToDecksListBtn').onclick = () => window.revisionMain.exitStudyMode();
     }
 
     async restartQuiz() {
+        // Hide completion screen
+        const completionContainer = document.getElementById('quizCompletionContainer');
+        const completionState = document.getElementById('quizCompletionState');
+        if (completionContainer) completionContainer.style.display = 'none';
+        if (completionState) completionState.style.display = 'none';
+
+        // Restart quiz
         if (this.currentDeck) {
             await this.startQuiz(this.currentDeck);
         }

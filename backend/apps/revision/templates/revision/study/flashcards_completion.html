@@ -1,37 +1,84 @@
 {% load i18n %}
-<div class="empty-state" id="flashcardCompletionState">
-    <i class="bi bi-trophy text-warning" style="font-size: 4rem;"></i>
-    <h4 class="mt-3">{% trans "Session completed!" %}</h4>
-    <p class="text-muted">
-        <span id="completionMessage">{% trans "Excellent work! You have completed" %}</span>
-        <span id="completionCardCount"></span>
-    </p>
-    <div class="row text-center mt-4 mb-4">
-        <div class="col">
-            <div class="stat-value text-linguify-accent" id="completionCorrect">0</div>
-            <div class="stat-label">{% trans "Easy" %}</div>
-        </div>
-        <div class="col">
-            <div class="stat-value text-warning" id="completionMedium">0</div>
-            <div class="stat-label">{% trans "Medium" %}</div>
-        </div>
-        <div class="col">
-            <div class="stat-value text-danger" id="completionDifficult">0</div>
-            <div class="stat-label">{% trans "Hard" %}</div>
+<div id="flashcardCompletionState" style="max-width: 600px; margin: 0 auto; padding: 2rem; text-align: center;">
+    <!-- Success Icon with Animation -->
+    <div style="margin-bottom: 2rem;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #2D5BBA 0%, #4F7BD9 100%); box-shadow: 0 10px 40px rgba(45, 91, 186, 0.3); animation: scaleIn 0.5s ease-out;">
+            <i class="bi bi-trophy-fill" style="font-size: 4rem; color: white;"></i>
         </div>
     </div>
-    <div class="d-flex gap-2 justify-content-center">
-        <button class="btn btn-outline-custom" id="restartStudyBtn">
-            <i class="bi bi-arrow-clockwise me-1"></i>
+
+    <!-- Title -->
+    <h2 style="font-size: 2rem; font-weight: bold; color: #2D5BBA; margin-bottom: 0.75rem;">
+        {% trans "Session completed!" %}
+    </h2>
+
+    <!-- Subtitle -->
+    <p style="font-size: 1.125rem; color: #666; margin-bottom: 2.5rem;">
+        <span id="completionMessage">{% trans "Excellent work! You have completed" %}</span>
+        <span id="completionCardCount" style="font-weight: 600; color: #2D5BBA;"></span>
+    </p>
+
+    <!-- Stats Cards -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem;">
+        <!-- Easy -->
+        <div style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: 1rem; padding: 1.5rem; color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;" id="completionCorrect">0</div>
+            <div style="font-size: 0.875rem; opacity: 0.9; font-weight: 500;">
+                <i class="bi bi-check-circle-fill" style="margin-right: 0.25rem;"></i>
+                {% trans "Easy" %}
+            </div>
+        </div>
+
+        <!-- Medium -->
+        <div style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border-radius: 1rem; padding: 1.5rem; color: white; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;" id="completionMedium">0</div>
+            <div style="font-size: 0.875rem; opacity: 0.9; font-weight: 500;">
+                <i class="bi bi-dash-circle-fill" style="margin-right: 0.25rem;"></i>
+                {% trans "Medium" %}
+            </div>
+        </div>
+
+        <!-- Hard -->
+        <div style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); border-radius: 1rem; padding: 1.5rem; color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;" id="completionDifficult">0</div>
+            <div style="font-size: 0.875rem; opacity: 0.9; font-weight: 500;">
+                <i class="bi bi-x-circle-fill" style="margin-right: 0.25rem;"></i>
+                {% trans "Hard" %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <button id="restartStudyBtn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: white; border: 2px solid #2D5BBA; color: #2D5BBA; border-radius: 0.75rem; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);" onmouseover="this.style.background='#2D5BBA'; this.style.color='white'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(45, 91, 186, 0.3)'" onmouseout="this.style.background='white'; this.style.color='#2D5BBA'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.1)'">
+            <i class="bi bi-arrow-clockwise"></i>
             {% trans "Restart" %}
         </button>
-        <button class="btn btn-outline-custom" id="backToDeckBtn">
-            <i class="bi bi-arrow-left me-1"></i>
+
+        <button id="backToDeckBtn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: white; border: 2px solid #6B7280; color: #6B7280; border-radius: 0.75rem; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);" onmouseover="this.style.background='#6B7280'; this.style.color='white'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(107, 114, 128, 0.3)'" onmouseout="this.style.background='white'; this.style.color='#6B7280'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.1)'">
+            <i class="bi bi-arrow-left"></i>
             {% trans "Back to deck" %}
         </button>
-        <button class="btn btn-gradient" id="exitToDecksListBtn">
-            <i class="bi bi-house me-1"></i>
+
+        <button id="exitToDecksListBtn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #2D5BBA 0%, #4F7BD9 100%); border: none; color: white; border-radius: 0.75rem; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(45, 91, 186, 0.4);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(45, 91, 186, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(45, 91, 186, 0.4)'">
+            <i class="bi bi-house-fill"></i>
             {% trans "My decks" %}
         </button>
     </div>
 </div>
+
+<style>
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+</style>

@@ -55,23 +55,10 @@
                 Retour au deck
             </button>
         </div>
-        
-        <!-- Quiz Stats -->
-        <div class="study-stats">
-            <div class="row text-center">
-                <div class="col">
-                    <div class="stat-value text-linguify-success" id="quizCorrect">0</div>
-                    <div class="stat-label">Correctes</div>
-                </div>
-                <div class="col">
-                    <div class="stat-value text-danger" id="quizIncorrect">0</div>
-                    <div class="stat-label">Incorrectes</div>
-                </div>
-                <div class="col">
-                    <div class="stat-value text-linguify-primary" id="quizScore">0%</div>
-                    <div class="stat-label">Score</div>
-                </div>
-            </div>
+
+        <!-- Completion Screen (hidden by default) -->
+        <div id="quizCompletionContainer" style="display: none;">
+            {% include 'revision/study/learn_completion.html' %}
         </div>
     </div>
 </div>
