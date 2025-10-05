@@ -133,6 +133,32 @@
         opacity: 1;
     }
 }
+
+/* Bouton d'aide pour les raccourcis clavier */
+.flashcard-btn-help {
+    background: transparent;
+    border: 2px solid #2D5BBA;
+    color: #2D5BBA;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flashcard-btn-help:hover {
+    background: #2D5BBA;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45, 91, 186, 0.3);
+}
+
+.flashcard-btn-help i {
+    font-size: 1.25rem;
+}
 </style>
 {% endblock %}
 

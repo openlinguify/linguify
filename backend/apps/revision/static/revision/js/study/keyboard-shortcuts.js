@@ -81,13 +81,16 @@ class KeyboardShortcutsManager {
             // Normaliser la touche pour comparaison
             const normalizedKey = this.normalizeKey(key, keyCode);
 
+            // Debug: log des touches pressées
+            console.log(`[Keyboard] Key pressed: ${key}, Code: ${keyCode}, Normalized: ${normalizedKey}`);
+
             // Trouver l'action correspondante
             for (const [action, shortcut] of Object.entries(this.shortcuts)) {
                 if (normalizedKey === shortcut.toLowerCase() || keyCode === shortcut) {
                     if (this.handlers[action]) {
                         e.preventDefault();
                         this.handlers[action](e);
-                        console.log(`[Keyboard] Action: ${action} (${shortcut})`);
+                        console.log(`[Keyboard] Action executed: ${action} (${shortcut})`);
                     }
                     break;
                 }

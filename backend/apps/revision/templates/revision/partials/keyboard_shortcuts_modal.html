@@ -1,0 +1,120 @@
+{% load i18n %}
+<!-- Keyboard Shortcuts Help Modal -->
+<div id="keyboardShortcutsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 1rem; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25); width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+        <!-- Header -->
+        <div style="background: #2D5BBA; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; border-radius: 1rem 1rem 0 0;">
+            <h3 style="font-size: 1.25rem; font-weight: bold; color: white; margin: 0;">
+                <i class="bi bi-keyboard" style="margin-right: 0.5rem;"></i>
+                {% trans "Keyboard Shortcuts" %}
+            </h3>
+            <button id="closeShortcutsModal" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div style="padding: 1.5rem;">
+            <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 0.5rem;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #333;">{% trans "Flip card" %}</span>
+                    <kbd style="padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600; background: #f5f5f5; border: 1px solid #ccc; border-radius: 0.5rem; color: #555;">Espace</kbd>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 0.5rem;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #333;">{% trans "Previous card" %}</span>
+                    <kbd style="padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600; background: #f5f5f5; border: 1px solid #ccc; border-radius: 0.5rem; color: #555;">←</kbd>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 0.5rem;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #333;">{% trans "Next card" %}</span>
+                    <kbd style="padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600; background: #f5f5f5; border: 1px solid #ccc; border-radius: 0.5rem; color: #555;">→</kbd>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 0.5rem;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #333;">{% trans "Mark as Easy" %}</span>
+                    <kbd style="padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600; background: #f5f5f5; border: 1px solid #ccc; border-radius: 0.5rem; color: #555;">1</kbd>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 0.5rem;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #333;">{% trans "Mark as Medium" %}</span>
+                    <kbd style="padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600; background: #f5f5f5; border: 1px solid #ccc; border-radius: 0.5rem; color: #555;">2</kbd>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 0.5rem;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #333;">{% trans "Mark as Difficult" %}</span>
+                    <kbd style="padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600; background: #f5f5f5; border: 1px solid #ccc; border-radius: 0.5rem; color: #555;">3</kbd>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 0.5rem;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #333;">{% trans "Play audio" %}</span>
+                    <kbd style="padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600; background: #f5f5f5; border: 1px solid #ccc; border-radius: 0.5rem; color: #555;">A</kbd>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 0.5rem;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #333;">{% trans "Edit card" %}</span>
+                    <kbd style="padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600; background: #f5f5f5; border: 1px solid #ccc; border-radius: 0.5rem; color: #555;">E</kbd>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 0.5rem;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #333;">{% trans "Shuffle cards" %}</span>
+                    <kbd style="padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600; background: #f5f5f5; border: 1px solid #ccc; border-radius: 0.5rem; color: #555;">H</kbd>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 0.5rem;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #333;">{% trans "Star card" %}</span>
+                    <kbd style="padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600; background: #f5f5f5; border: 1px solid #ccc; border-radius: 0.5rem; color: #555;">S</kbd>
+                </div>
+            </div>
+
+            <p style="font-size: 0.75rem; margin-top: 1rem; padding: 0.75rem; border-radius: 0.5rem; color: #666; background: #f8f9fa;">
+                <i class="bi bi-info-circle" style="color: #2D5BBA; margin-right: 0.25rem;"></i>
+                {% trans "Keyboard shortcuts work when you're studying flashcards and are not typing in a text field." %}
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="background: #f8f9fa; border-top: 1px solid #ddd; padding: 1rem 1.5rem; display: flex; justify-content: flex-end; border-radius: 0 0 1rem 1rem;">
+            <button id="closeShortcutsModalBtn" style="background: #2D5BBA; color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#1E4A8C'" onmouseout="this.style.background='#2D5BBA'">
+                {% trans "Got it" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Keyboard Shortcuts Modal Management
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('keyboardShortcutsModal');
+    const showBtn = document.getElementById('showKeyboardShortcuts');
+    const closeBtn = document.getElementById('closeShortcutsModal');
+    const closeFooterBtn = document.getElementById('closeShortcutsModalBtn');
+
+    // Open modal
+    showBtn?.addEventListener('click', () => {
+        modal.style.display = 'flex';
+    });
+
+    // Close modal
+    const closeModal = () => {
+        modal.style.display = 'none';
+    };
+
+    closeBtn?.addEventListener('click', closeModal);
+    closeFooterBtn?.addEventListener('click', closeModal);
+
+    // Close on outside click
+    modal?.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            closeModal();
+        }
+    });
+});
+</script>

@@ -706,21 +706,27 @@ class FlashcardStudyMode {
 
         // Marquer comme facile
         window.keyboardShortcuts.on('easy', () => {
-            if (this.isFlipped && this.currentCardIndex < this.studyCards.length) {
+            const actionsVisible = document.getElementById('studyActions')?.style.display === 'flex';
+            if (actionsVisible && this.currentCardIndex < this.studyCards.length) {
+                console.log('[Keyboard] Marking card as easy');
                 this.markCard('easy');
             }
         });
 
         // Marquer comme moyen
         window.keyboardShortcuts.on('medium', () => {
-            if (this.isFlipped && this.currentCardIndex < this.studyCards.length) {
+            const actionsVisible = document.getElementById('studyActions')?.style.display === 'flex';
+            if (actionsVisible && this.currentCardIndex < this.studyCards.length) {
+                console.log('[Keyboard] Marking card as medium');
                 this.markCard('medium');
             }
         });
 
         // Marquer comme difficile
         window.keyboardShortcuts.on('difficult', () => {
-            if (this.isFlipped && this.currentCardIndex < this.studyCards.length) {
+            const actionsVisible = document.getElementById('studyActions')?.style.display === 'flex';
+            if (actionsVisible && this.currentCardIndex < this.studyCards.length) {
+                console.log('[Keyboard] Marking card as difficult');
                 this.markCard('difficult');
             }
         });

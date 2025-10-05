@@ -6,6 +6,9 @@
             <h5 class="mb-0 text-linguify-primary font-weight-600">{% trans "Flashcards Mode" %} - <span id="studyDeckName"></span></h5>
             <div class="d-flex align-items-center gap-2">
                 <span id="studyProgress" class="badge bg-linguify-gradient text-white px-3 py-2 rounded-lg">0/0</span>
+                <button id="showKeyboardShortcuts" class="flashcard-btn-help" title="{% trans 'Keyboard shortcuts' %}">
+                    <i class="bi bi-question-circle"></i>
+                </button>
                 <button id="exitStudyMode" class="flashcard-btn-return">
                     <i class="bi bi-arrow-left"></i>
                     {% trans "Back to deck" %}
@@ -77,7 +80,10 @@
                 {% include 'revision/study/flashcards_completion.html' %}
             </div>
         </div>
-        
+
+        <!-- Keyboard Shortcuts Help Modal -->
+        {% include 'revision/partials/keyboard_shortcuts_modal.html' %}
+
         <!-- Study Stats -->
         <div class="study-stats">
             <div class="row text-center">
