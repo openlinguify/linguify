@@ -344,7 +344,7 @@ class FlashcardStudyMode {
             });
 
             // Use new adaptive learning API
-            const response = await fetch(`/revision/api/adaptive/card/${card.id}/review/`, {
+            const response = await fetch(`/api/v1/revision/api/adaptive/card/${card.id}/review/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

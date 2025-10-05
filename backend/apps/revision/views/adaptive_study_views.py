@@ -5,10 +5,9 @@ Remplace progressivement study_session_views.py avec l'algorithme cross-modal.
 
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_http_methods
-from django.utils.decorators import method_decorator
 from django.views.generic import View
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.db import transaction
 from django.db.models import Q
@@ -22,7 +21,6 @@ from ..services.adaptive_learning import adaptive
 logger = logging.getLogger(__name__)
 
 
-@method_decorator(login_required, name='dispatch')
 class AdaptiveReviewCardView(View):
     """
     Nouvelle vue pour réviser une carte avec le système adaptatif.
@@ -30,6 +28,12 @@ class AdaptiveReviewCardView(View):
     """
 
     def post(self, request, card_id):
+        # Check authentication
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'success': False,
+                'error': 'Authentication required'
+            }, status=401)
         """
         Traite la révision d'une carte avec le système adaptatif.
 
@@ -144,13 +148,19 @@ class AdaptiveReviewCardView(View):
             }, status=500)
 
 
-@method_decorator(login_required, name='dispatch')
 class AdaptiveDeckStatsView(View):
     """
     Vue pour obtenir les statistiques adaptatives d'un deck.
     """
 
     def get(self, request, deck_id):
+        # Check authentication
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'success': False,
+                'error': 'Authentication required'
+            }, status=401)
+
         """
         Retourne les statistiques d'apprentissage adaptatif pour un deck.
 
@@ -203,13 +213,19 @@ class AdaptiveDeckStatsView(View):
             }, status=500)
 
 
-@method_decorator(login_required, name='dispatch')
 class AdaptiveCardsToReviewView(View):
     """
     Vue pour obtenir les cartes prioritaires à réviser.
     """
 
     def get(self, request, deck_id):
+        # Check authentication
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'success': False,
+                'error': 'Authentication required'
+            }, status=401)
+
         """
         Retourne les cartes qui nécessitent une révision prioritaire.
 
@@ -302,13 +318,19 @@ class AdaptiveCardsToReviewView(View):
             }, status=500)
 
 
-@method_decorator(login_required, name='dispatch')
 class CardMasteryDetailView(View):
     """
     Vue pour obtenir les détails de maîtrise d'une carte spécifique.
     """
 
     def get(self, request, card_id):
+        # Check authentication
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'success': False,
+                'error': 'Authentication required'
+            }, status=401)
+
         """
         Retourne les détails complets de maîtrise pour une carte.
 
