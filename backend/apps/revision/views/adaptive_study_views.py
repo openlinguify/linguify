@@ -57,7 +57,7 @@ class AdaptiveReviewCardView(View):
         # Allow access to own cards or cards from public decks
         card = get_object_or_404(
             Flashcard.objects.select_related('deck'),
-            Q(id=card_id) & (Q(user=request.user) | Q(deck__is_public=True))
+            Q(id=card_id) & (Q(deck__user=request.user) | Q(deck__is_public=True))
         )
 
         try:
@@ -334,7 +334,7 @@ class CardMasteryDetailView(View):
         # Allow access to own cards or cards from public decks
         card = get_object_or_404(
             Flashcard.objects.select_related('deck'),
-            Q(id=card_id) & (Q(user=request.user) | Q(deck__is_public=True))
+            Q(id=card_id) & (Q(deck__user=request.user) | Q(deck__is_public=True))
         )
 
         try:
