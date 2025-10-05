@@ -21,48 +21,43 @@ from ..services.adaptive_learning import adaptive
 logger = logging.getLogger(__name__)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class AdaptiveReviewCardView(View):
     """
     Nouvelle vue pour réviser une carte avec le système adaptatif.
     Enregistre les performances et met à jour automatiquement le CardMastery.
+    Note: CSRF exempt because this is an API endpoint with manual authentication.
     """
 
     def post(self, request, card_id):
         # Check authentication
         if not request.user.is_authenticated:
+            logger.warning(f"Unauthenticated request to review card {card_id}")
             return JsonResponse({
                 'success': False,
                 'error': 'Authentication required'
             }, status=401)
-        """
-        Traite la révision d'une carte avec le système adaptatif.
 
-        Body JSON attendu:
-        {
-            "study_mode": "flashcards",  // learn | flashcards | write | match | review
-            "difficulty": "medium",       // easy | medium | hard | wrong
-            "was_correct": true,          // boolean
-            "response_time_seconds": 3.5, // float (optionnel)
-            "session_id": "uuid"          // string (optionnel, généré auto si absent)
-        }
+        logger.info(f"User {request.user.username} attempting to review card {card_id}")
 
-        Retourne:
-        {
-            "success": true,
-            "card_id": 123,
-            "confidence_before": 65,
-            "confidence_after": 72,
-            "mastery_level": "reviewing",
-            "is_learned": false,
-            "performance_impact": +7,
-            "recommended_next_mode": "write"
-        }
-        """
         # Allow access to own cards or cards from public decks
-        card = get_object_or_404(
-            Flashcard.objects.select_related('deck'),
-            Q(id=card_id) & (Q(deck__user=request.user) | Q(deck__is_public=True))
-        )
+        try:
+            card = Flashcard.objects.select_related('deck').get(id=card_id)
+            logger.info(f"Card {card_id} found: deck_user={card.deck.user.username}, is_public={card.deck.is_public}, request_user={request.user.username}")
+
+            # Check permissions
+            if card.deck.user != request.user and not card.deck.is_public:
+                logger.warning(f"Permission denied: User {request.user.username} cannot access card {card_id}")
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Permission denied'
+                }, status=403)
+        except Flashcard.DoesNotExist:
+            logger.warning(f"Card {card_id} not found")
+            return JsonResponse({
+                'success': False,
+                'error': 'Card not found'
+            }, status=404)
 
         try:
             data = json.loads(request.body)
@@ -148,9 +143,11 @@ class AdaptiveReviewCardView(View):
             }, status=500)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class AdaptiveDeckStatsView(View):
     """
     Vue pour obtenir les statistiques adaptatives d'un deck.
+    Note: CSRF exempt because this is an API endpoint with manual authentication.
     """
 
     def get(self, request, deck_id):
@@ -213,9 +210,11 @@ class AdaptiveDeckStatsView(View):
             }, status=500)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class AdaptiveCardsToReviewView(View):
     """
     Vue pour obtenir les cartes prioritaires à réviser.
+    Note: CSRF exempt because this is an API endpoint with manual authentication.
     """
 
     def get(self, request, deck_id):
@@ -318,9 +317,11 @@ class AdaptiveCardsToReviewView(View):
             }, status=500)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CardMasteryDetailView(View):
     """
     Vue pour obtenir les détails de maîtrise d'une carte spécifique.
+    Note: CSRF exempt because this is an API endpoint with manual authentication.
     """
 
     def get(self, request, card_id):
