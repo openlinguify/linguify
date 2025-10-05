@@ -31,22 +31,19 @@
             </div>
         </div>
         
-        <!-- Completion Screen -->
-        <div id="matchingCompletion" class="empty-state empty-state-hidden">
-            <div id="matchingCompletionMessage">
-                <!-- Completion message will be generated dynamically -->
-            </div>
-            
-            <div class="flex gap-2 justify-center mt-4">
-                <button class="flashcard-btn-medium" onclick="window.matchingMode.restartMatching()">
-                    <i class="bi bi-arrow-clockwise mr-1"></i>
-                    Rejouer
-                </button>
-                <button class="flashcard-btn-easy" onclick="window.matchingMode.exitMatchingMode()">
-                    <i class="bi bi-arrow-left mr-1"></i>
-                    Retour au deck
-                </button>
-            </div>
+        <!-- Completion Screen (hidden by default) -->
+        <div id="matchCompletionContainer" style="display: none;">
+            {% include 'revision/study/match_completion.html' %}
+        </div>
+
+        <!-- No Cards Message -->
+        <div id="noMatchCards" class="empty-state empty-state-hidden">
+            <i class="bi bi-puzzle text-muted font-size-4rem"></i>
+            <h4 class="mt-3 text-linguify-primary">Pas assez de cartes</h4>
+            <p class="text-gray-600">Ce deck doit contenir au moins 3 cartes pour le mode association.</p>
+            <button class="flashcard-btn-return" onclick="window.matchingMode.exitMatchingMode()">
+                Retour au deck
+            </button>
         </div>
         
         <!-- Game Stats -->

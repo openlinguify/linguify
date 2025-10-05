@@ -100,52 +100,8 @@
         
     </div>
 
-    <!-- Modal de fin -->
-    <div class="modal fade" id="writeCompletionModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">
-                        <i class="bi bi-trophy-fill me-2"></i>
-                        {% trans "Writing session completed!" %}
-                    </h5>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card border-success">
-                                <div class="card-body">
-                                    <h4 id="writeCorrectCount" class="text-success">0</h4>
-                                    <small class="text-muted">{% trans "Correct answers" %}</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card border-warning">
-                                <div class="card-body">
-                                    <h4 id="writeTotalScore" class="text-warning">0</h4>
-                                    <small class="text-muted">{% trans "Points earned" %}</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <p class="mb-1"><strong>{% trans "Total time:" %}</strong> <span id="writeTotalTime">0:00</span></p>
-                        <p class="mb-1"><strong>{% trans "Hints used:" %}</strong> <span id="writeHintsUsed">0</span></p>
-                        <p class="mb-0"><strong>{% trans "Accuracy:" %}</strong> <span id="writeAccuracy">0%</span></p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="window.writeMode.restart()">
-                        <i class="bi bi-arrow-repeat me-2"></i>
-                        {% trans "Restart" %}
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="window.writeMode.exitWriteMode()">
-                        <i class="bi bi-arrow-left me-2"></i>
-                        {% trans "Back to deck" %}
-                    </button>
-                </div>
-            </div>
-        </div>
+    <!-- Completion Screen (hidden by default) -->
+    <div id="writeCompletionContainer" style="display: none;">
+        {% include 'revision/study/write_completion.html' %}
     </div>
 </div>

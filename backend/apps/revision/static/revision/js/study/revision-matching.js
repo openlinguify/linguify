@@ -144,28 +144,14 @@ class MatchingStudyMode {
 
     showNoCardsMessage() {
         this.showMatchingInterface();
-        
+
         // Hide game area and show no cards message
         document.getElementById('matchingGameArea').style.display = 'none';
-        document.getElementById('matchingCompletion').style.display = 'block';
-        
-        // Update the message to be more helpful
-        document.getElementById('matchingCompletionMessage').innerHTML = `
-            <div class="text-center">
-                <i class="bi bi-puzzle text-muted" style="font-size: 4rem;"></i>
-                <h4 class="mt-3">Pas assez de cartes ou toutes apprises</h4>
-                <p class="text-muted">Ce deck doit contenir au moins 3 cartes pour le mode association.</p>
-                <div class="d-flex gap-2 justify-content-center">
-                    <button class="btn btn-outline-custom" onclick="window.matchingMode.practiceAllCards()">
-                        <i class="bi bi-arrow-clockwise me-1"></i>
-                        S'entraîner avec toutes les cartes
-                    </button>
-                    <button class="btn btn-gradient" onclick="window.matchingMode.exitMatchingMode()">
-                        Retour au deck
-                    </button>
-                </div>
-            </div>
-        `;
+        const noCardsElement = document.getElementById('noMatchCards');
+        if (noCardsElement) {
+            noCardsElement.classList.remove('empty-state-hidden');
+            noCardsElement.style.display = 'block';
+        }
     }
 
     startNewGame() {
@@ -206,7 +192,15 @@ class MatchingStudyMode {
         
         // Show game area
         document.getElementById('matchingGameArea').style.display = 'block';
-        document.getElementById('matchingCompletion').style.display = 'none';
+
+        // Hide completion screen and no cards message
+        const completionContainer = document.getElementById('matchCompletionContainer');
+        const noCardsElement = document.getElementById('noMatchCards');
+        if (completionContainer) completionContainer.style.display = 'none';
+        if (noCardsElement) {
+            noCardsElement.style.display = 'none';
+            noCardsElement.classList.add('empty-state-hidden');
+        }
     }
 
     shuffleArray(array) {
@@ -373,56 +367,35 @@ class MatchingStudyMode {
         this.gameCompleted = true;
         const endTime = Date.now();
         const timeElapsed = Math.round((endTime - this.startTime) / 1000);
-        
+
         // Calculate performance
         const accuracy = Math.round((this.matchedPairs.length / this.attempts) * 100);
-        let performanceMessage = '';
-        let performanceClass = '';
-        
-        if (accuracy >= 90 && timeElapsed <= 60) {
-            performanceMessage = 'Excellent';
-            performanceClass = 'text-linguify-accent';
-        } else if (accuracy >= 70) {
-            performanceMessage = 'Bon travail !';
-            performanceClass = 'text-warning';
-        } else {
-            performanceMessage = 'Continuez à vous entraîner !';
-            performanceClass = 'text-danger';
-        }
-        
+
         // Show completion screen
         setTimeout(() => {
+            // Hide game area
             document.getElementById('matchingGameArea').style.display = 'none';
-            document.getElementById('matchingCompletion').style.display = 'block';
-            
-            document.getElementById('matchingCompletionMessage').innerHTML = `
-                <div class="text-center">
-                    <i class="bi bi-trophy ${performanceClass}" style="font-size: 4rem;"></i>
-                    <h4 class="mt-3 ${performanceClass}">${performanceMessage}</h4>
-                    <p class="text-muted">Jeu d'association terminé !</p>
-                    
-                    <div class="row text-center mt-4 mb-4">
-                        <div class="col">
-                            <div class="stat-value text-linguify-accent">${this.matchedPairs.length}</div>
-                            <div class="stat-label">Paires trouvées</div>
-                        </div>
-                        <div class="col">
-                            <div class="stat-value text-primary">${this.attempts}</div>
-                            <div class="stat-label">Tentatives</div>
-                        </div>
-                        <div class="col">
-                            <div class="stat-value ${performanceClass}">${accuracy}%</div>
-                            <div class="stat-label">Précision</div>
-                        </div>
-                        <div class="col">
-                            <div class="stat-value text-info">${timeElapsed}s</div>
-                            <div class="stat-label">Temps</div>
-                        </div>
-                    </div>
-                </div>
-            `;
+
+            // Show completion screen
+            const completionContainer = document.getElementById('matchCompletionContainer');
+            const completionState = document.getElementById('matchCompletionState');
+
+            if (completionContainer) completionContainer.style.display = 'block';
+            if (completionState) completionState.style.display = 'block';
+
+            // Update stats
+            document.getElementById('matchCompletionPairs').textContent = `${this.matchedPairs.length}`;
+            document.getElementById('matchCompletionPairsCount').textContent = this.matchedPairs.length;
+            document.getElementById('matchCompletionAttempts').textContent = this.attempts;
+            document.getElementById('matchCompletionAccuracy').textContent = `${accuracy}%`;
+            document.getElementById('matchCompletionTime').textContent = `${timeElapsed}s`;
+
+            // Setup button handlers
+            document.getElementById('restartMatchBtn').onclick = () => this.restartMatching();
+            document.getElementById('backToMatchDeckBtn').onclick = () => this.exitMatchingMode();
+            document.getElementById('exitMatchToDecksListBtn').onclick = () => window.revisionMain.exitStudyMode();
         }, 1000);
-        
+
         // Update cards as learned
         this.updateCardsLearned();
     }

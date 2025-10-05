@@ -426,26 +426,34 @@ class WriteStudyMode {
 
     completeWriteStudy() {
         this.stopTimer();
-        
+
         const totalTime = Math.round((Date.now() - this.startTime) / 1000);
         const accuracy = this.totalAnswers > 0 ? Math.round((this.correctAnswers / this.totalAnswers) * 100) : 0;
-        
-        // Update modal with results
-        document.getElementById('writeCorrectCount').textContent = this.correctAnswers;
-        document.getElementById('writeTotalScore').textContent = this.score;
-        document.getElementById('writeHintsUsed').textContent = this.hintsUsed;
-        document.getElementById('writeAccuracy').textContent = `${accuracy}%`;
-        
-        const minutes = Math.floor(totalTime / 60);
-        const seconds = totalTime % 60;
-        document.getElementById('writeTotalTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
-        // Show completion modal
-        if (typeof bootstrap !== 'undefined') {
-            const modal = new bootstrap.Modal(document.getElementById('writeCompletionModal'));
-            modal.show();
-        }
-        
+        const wrongAnswers = this.totalAnswers - this.correctAnswers;
+
+        // Hide write study area
+        const writeArea = document.getElementById('writeStudyArea');
+        if (writeArea) writeArea.style.display = 'none';
+
+        // Show completion screen
+        const completionContainer = document.getElementById('writeCompletionContainer');
+        const completionState = document.getElementById('writeCompletionState');
+
+        if (completionContainer) completionContainer.style.display = 'block';
+        if (completionState) completionState.style.display = 'block';
+
+        // Update stats
+        document.getElementById('writeCompletionTotal').textContent = this.totalAnswers;
+        document.getElementById('writeCompletionCorrect').textContent = this.correctAnswers;
+        document.getElementById('writeCompletionWrong').textContent = wrongAnswers;
+        document.getElementById('writeCompletionHints').textContent = this.hintsUsed;
+        document.getElementById('writeCompletionScore').textContent = this.score;
+
+        // Setup button handlers
+        document.getElementById('restartWriteBtn').onclick = () => this.restart();
+        document.getElementById('backToWriteDeckBtn').onclick = () => this.exitWriteMode();
+        document.getElementById('exitWriteToDecksListBtn').onclick = () => window.revisionMain.exitStudyMode();
+
         console.log(`Write study completed! Score: ${this.score}, Accuracy: ${accuracy}%`);
     }
 
@@ -472,6 +480,17 @@ class WriteStudyMode {
     }
 
     restart() {
+        // Hide completion screen
+        const completionContainer = document.getElementById('writeCompletionContainer');
+        const completionState = document.getElementById('writeCompletionState');
+        if (completionContainer) completionContainer.style.display = 'none';
+        if (completionState) completionState.style.display = 'none';
+
+        // Show write study area
+        const writeArea = document.getElementById('writeStudyArea');
+        if (writeArea) writeArea.style.display = 'flex';
+
+        // Restart the study
         if (this.currentDeck) {
             this.startWriteStudy(this.currentDeck);
         }
