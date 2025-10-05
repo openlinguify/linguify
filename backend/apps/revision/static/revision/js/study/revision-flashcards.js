@@ -22,21 +22,35 @@ class FlashcardStudyMode {
     }
 
     setupEventListeners() {
+        console.log('[SETUP DEBUG] Setting up event listeners...');
+
         // Exit study mode
         document.getElementById('exitStudyMode')?.addEventListener('click', () => {
             this.exitStudyMode();
         });
-        
+
         // Study difficulty buttons
-        document.getElementById('studyKnown')?.addEventListener('click', () => {
+        const knownBtn = document.getElementById('studyKnown');
+        const easyBtn = document.getElementById('studyEasy');
+        const difficultBtn = document.getElementById('studyDifficult');
+
+        console.log('[SETUP DEBUG] Button elements found:');
+        console.log('  studyKnown:', knownBtn, 'text:', knownBtn?.textContent.trim());
+        console.log('  studyEasy:', easyBtn, 'text:', easyBtn?.textContent.trim());
+        console.log('  studyDifficult:', difficultBtn, 'text:', difficultBtn?.textContent.trim());
+
+        knownBtn?.addEventListener('click', () => {
+            console.log('[BUTTON DEBUG] studyKnown clicked (initial listener) - calling markCard("easy")');
             this.markCard('easy');
         });
-        
-        document.getElementById('studyEasy')?.addEventListener('click', () => {
+
+        easyBtn?.addEventListener('click', () => {
+            console.log('[BUTTON DEBUG] studyEasy clicked (initial listener) - calling markCard("medium")');
             this.markCard('medium');
         });
-        
-        document.getElementById('studyDifficult')?.addEventListener('click', () => {
+
+        difficultBtn?.addEventListener('click', () => {
+            console.log('[BUTTON DEBUG] studyDifficult clicked (initial listener) - calling markCard("difficult")');
             this.markCard('difficult');
         });
     }
@@ -277,10 +291,14 @@ class FlashcardStudyMode {
 
         // Hide action buttons initially
         if (actionsElement) actionsElement.style.display = 'none';
-        
+
         // Show instructions
         if (instructionsElement) instructionsElement.style.display = 'block';
-        
+
+        // Re-attach difficulty button event listeners
+        // (necessary because buttons might have been cloned/replaced)
+        this.reattachDifficultyButtons();
+
         // Update progress
         this.updateProgress();
     }
@@ -716,41 +734,43 @@ class FlashcardStudyMode {
     }
     
     reattachDifficultyButtons() {
-        console.log('Reattaching difficulty button event listeners...');
-        
         // Remove existing listeners by cloning the buttons
         const knownBtn = document.getElementById('studyKnown');
-        const easyBtn = document.getElementById('studyEasy');  
+        const easyBtn = document.getElementById('studyEasy');
         const difficultBtn = document.getElementById('studyDifficult');
-        
+
+        console.log('[REATTACH] Buttons found:', {
+            studyKnown: !!knownBtn,
+            studyEasy: !!easyBtn,
+            studyDifficult: !!difficultBtn
+        });
+
         if (knownBtn) {
             const newKnownBtn = knownBtn.cloneNode(true);
             knownBtn.parentNode.replaceChild(newKnownBtn, knownBtn);
             newKnownBtn.addEventListener('click', () => {
-                console.log('Known/Easy button clicked');
+                console.log('[BUTTON] studyKnown → markCard("easy")');
                 this.markCard('easy');
             });
         }
-        
+
         if (easyBtn) {
             const newEasyBtn = easyBtn.cloneNode(true);
             easyBtn.parentNode.replaceChild(newEasyBtn, easyBtn);
             newEasyBtn.addEventListener('click', () => {
-                console.log('Medium button clicked');
+                console.log('[BUTTON] studyEasy → markCard("medium")');
                 this.markCard('medium');
             });
         }
-        
+
         if (difficultBtn) {
             const newDifficultBtn = difficultBtn.cloneNode(true);
             difficultBtn.parentNode.replaceChild(newDifficultBtn, difficultBtn);
             newDifficultBtn.addEventListener('click', () => {
-                console.log('Difficult button clicked');
+                console.log('[BUTTON] studyDifficult → markCard("difficult")');
                 this.markCard('difficult');
             });
         }
-        
-        console.log('Difficulty button event listeners reattached');
     }
 
     // ===== MÉTHODES POUR LA SYNTHÈSE VOCALE =====

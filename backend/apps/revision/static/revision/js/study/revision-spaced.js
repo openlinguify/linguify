@@ -274,7 +274,20 @@ class SpacedRepetitionMode {
             
             // Update card progress using new API
             const isCorrect = difficulty !== 'again'; // 'again' means incorrect, others are correct
-            await window.revisionMain.revisionAPI.updateCardProgress(card.id, isCorrect);
+
+            // Map difficulty to adaptive learning difficulty levels
+            let adaptiveDifficulty = 'medium';
+            if (difficulty === 'again') adaptiveDifficulty = 'wrong';
+            else if (difficulty === 'hard') adaptiveDifficulty = 'hard';
+            else if (difficulty === 'good') adaptiveDifficulty = 'medium';
+            else if (difficulty === 'easy') adaptiveDifficulty = 'easy';
+
+            await window.revisionMain.revisionAPI.updateCardProgress(
+                card.id,
+                isCorrect,
+                'learn',  // Study mode = learn
+                adaptiveDifficulty
+            );
             
             // Update session stats
             this.sessionStats[difficulty]++;

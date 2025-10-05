@@ -197,12 +197,12 @@ class CardMastery(models.Model):
         Calcule le score de confiance basé sur les performances dans tous les modes.
 
         Algorithme:
-        - Prend en compte les scores de tous les modes avec pondération
-        - Le mode "Learn" a plus de poids car c'est le mode d'apprentissage initial
+        - Prend en compte les scores de tous les modes avec pondération dynamique
+        - Les modes pratiqués se partagent le poids total (plutôt qu'un poids fixe)
         - Les performances récentes ont plus de poids que les anciennes
         """
-        # Pondération par mode (total = 1.0)
-        weights = {
+        # Poids par défaut de chaque mode
+        default_weights = {
             'learn': 0.35,        # Mode d'apprentissage principal
             'flashcards': 0.25,   # Important pour la mémorisation
             'write': 0.20,        # Test actif de rappel
@@ -210,13 +210,35 @@ class CardMastery(models.Model):
             'review': 0.10        # Révision espacée
         }
 
+        # Identifier les modes pratiqués (score > 0)
+        practiced_modes = []
+        scores_map = {
+            'learn': self.learn_score,
+            'flashcards': self.flashcards_score,
+            'write': self.write_score,
+            'match': self.match_score,
+            'review': self.review_score
+        }
+
+        for mode, score in scores_map.items():
+            if score > 0:
+                practiced_modes.append(mode)
+
+        # Si aucun mode n'est pratiqué, retourner 0
+        if not practiced_modes:
+            return 0
+
+        # Redistribuer les poids: les modes pratiqués se partagent 100% du poids
+        # en gardant leurs proportions relatives
+        total_default_weight = sum(default_weights[mode] for mode in practiced_modes)
+        adjusted_weights = {}
+        for mode in practiced_modes:
+            adjusted_weights[mode] = default_weights[mode] / total_default_weight
+
         # Calculer le score pondéré
-        weighted_score = (
-            self.learn_score * weights['learn'] +
-            self.flashcards_score * weights['flashcards'] +
-            self.write_score * weights['write'] +
-            self.match_score * weights['match'] +
-            self.review_score * weights['review']
+        weighted_score = sum(
+            scores_map[mode] * adjusted_weights[mode]
+            for mode in practiced_modes
         ) * 100
 
         # Ajuster en fonction du nombre total de tentatives
@@ -315,15 +337,26 @@ class CardMastery(models.Model):
             study_mode=performance.study_mode
         ).order_by('-created_at')[:10])
 
+        print(f"\n[MASTERY] Card {performance.card.id}, Mode: {performance.study_mode}")
+        print(f"[MASTERY] Recent performances count: {len(recent_performances)}")
+        print(f"[MASTERY] Current performance was_correct: {performance.was_correct}")
+
         if recent_performances:
             correct_count = sum(1 for p in recent_performances if p.was_correct)
             mode_score = correct_count / len(recent_performances)
             score_field = f"{performance.study_mode}_score"
+
+            print(f"[MASTERY] Correct count: {correct_count}/{len(recent_performances)} = {mode_score}")
+
             if hasattr(mastery, score_field):
+                old_score = getattr(mastery, score_field, None)
                 setattr(mastery, score_field, mode_score)
+                print(f"[MASTERY] {score_field}: {old_score} → {mode_score}")
 
         # Recalculer le score de confiance global
+        old_confidence = mastery.confidence_score
         mastery.confidence_score = mastery.calculate_confidence_score()
+        print(f"[MASTERY] Confidence score: {old_confidence} → {mastery.confidence_score}\n")
 
         # Mettre à jour le niveau de maîtrise (déjà sauvegarde avec update_fields)
         mastery.update_mastery_level()
