@@ -457,12 +457,18 @@ class StudySessionMilestoneView(View):
             ).first()
 
             if not session:
+                total_cards = deck.flashcards.count()
                 session = RevisionSession.objects.create(
                     user=request.user,
                     scheduled_date=timezone.now(),
-                    total_cards=deck.flashcards.count()
+                    total_cards=total_cards,
+                    milestone_interval=min(7, max(3, total_cards // 3))  # Jalon adaptatif
                 )
                 session.flashcards.set(deck.flashcards.all())
+            elif session.total_cards == 0:
+                # Fix pour les sessions existantes sans total_cards
+                session.total_cards = deck.flashcards.count()
+                session.save(update_fields=['total_cards'])
 
             return JsonResponse({
                 'success': True,

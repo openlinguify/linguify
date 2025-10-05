@@ -52,10 +52,18 @@ class RevisionSession(models.Model):
 
     @property
     def progress_percentage(self):
-        """Calcule le pourcentage de progression"""
+        """Calcule le pourcentage de progression basé sur les cartes uniques étudiées"""
         if self.total_cards == 0:
             return 0
-        return int((self.cards_completed / self.total_cards) * 100)
+        # Compter les cartes uniques étudiées via les performances
+        from .card_performance import CardPerformance
+        unique_cards_studied = CardPerformance.objects.filter(
+            user=self.user,
+            card__in=self.flashcards.all(),
+            created_at__gte=self.scheduled_date
+        ).values('card').distinct().count()
+
+        return int((unique_cards_studied / self.total_cards) * 100) if self.total_cards > 0 else 0
 
     @property
     def accuracy_rate(self):
@@ -68,6 +76,7 @@ class RevisionSession(models.Model):
     def cards_until_next_milestone(self):
         """Nombre de cartes restantes jusqu'au prochain jalon"""
         next_milestone = self.last_milestone + self.milestone_interval
+        # Utiliser cards_completed (nombre de tentatives) pour les jalons
         remaining = next_milestone - self.cards_completed
         return max(0, remaining)
 
@@ -77,7 +86,8 @@ class RevisionSession(models.Model):
         if self.cards_completed == 0:
             return False
         next_milestone = self.last_milestone + self.milestone_interval
-        return self.cards_completed >= next_milestone
+        # Afficher jalon basé sur le nombre de tentatives, pas cartes uniques
+        return self.cards_completed >= next_milestone and self.cards_completed > self.last_milestone
 
     def record_card_attempt(self, is_correct):
         """Enregistre une tentative de carte"""
