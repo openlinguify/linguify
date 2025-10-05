@@ -266,8 +266,11 @@ class CardMastery(models.Model):
 
         if not non_zero_scores:
             self.mastery_level = 'learning'
-        elif score >= 85 and len(non_zero_scores) >= 3:
-            # Maîtrisé si score élevé et testé dans plusieurs modes
+        elif score >= 95:
+            # Maîtrisé si score très élevé (même en un seul mode)
+            self.mastery_level = 'mastered'
+        elif score >= 85 and len(non_zero_scores) >= 2:
+            # Maîtrisé si score élevé et testé dans au moins 2 modes
             self.mastery_level = 'mastered'
         elif score >= 70:
             # En révision si score correct
@@ -290,7 +293,6 @@ class CardMastery(models.Model):
         """
         return (
             self.confidence_score >= 85 and
-            self.mastery_level == 'mastered' and
             self.total_attempts >= 5
         )
 
@@ -337,26 +339,16 @@ class CardMastery(models.Model):
             study_mode=performance.study_mode
         ).order_by('-created_at')[:10])
 
-        print(f"\n[MASTERY] Card {performance.card.id}, Mode: {performance.study_mode}")
-        print(f"[MASTERY] Recent performances count: {len(recent_performances)}")
-        print(f"[MASTERY] Current performance was_correct: {performance.was_correct}")
-
         if recent_performances:
             correct_count = sum(1 for p in recent_performances if p.was_correct)
             mode_score = correct_count / len(recent_performances)
             score_field = f"{performance.study_mode}_score"
 
-            print(f"[MASTERY] Correct count: {correct_count}/{len(recent_performances)} = {mode_score}")
-
             if hasattr(mastery, score_field):
-                old_score = getattr(mastery, score_field, None)
                 setattr(mastery, score_field, mode_score)
-                print(f"[MASTERY] {score_field}: {old_score} → {mode_score}")
 
         # Recalculer le score de confiance global
-        old_confidence = mastery.confidence_score
         mastery.confidence_score = mastery.calculate_confidence_score()
-        print(f"[MASTERY] Confidence score: {old_confidence} → {mastery.confidence_score}\n")
 
         # Mettre à jour le niveau de maîtrise (déjà sauvegarde avec update_fields)
         mastery.update_mastery_level()
@@ -383,10 +375,13 @@ class CardMastery(models.Model):
         performance.save(update_fields=['confidence_before', 'confidence_after'])
 
         # Mettre à jour le statut "learned" de la carte
-        if mastery.should_be_learned() and not performance.card.learned:
+        should_learn = mastery.should_be_learned()
+        should_review = mastery.should_be_reviewed()
+
+        if should_learn and not performance.card.learned:
             performance.card.learned = True
             performance.card.save(update_fields=['learned'])
-        elif mastery.should_be_reviewed() and performance.card.learned:
+        elif should_review and performance.card.learned:
             performance.card.learned = False
             performance.card.save(update_fields=['learned'])
 
