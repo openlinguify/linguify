@@ -202,7 +202,68 @@ class RevisionSettings(models.Model):
         default=True,
         help_text="Activer les raccourcis clavier"
     )
-    
+
+    # Raccourcis clavier personnalisables (valeurs par défaut style Quizlet)
+    shortcut_previous = models.CharField(
+        max_length=10,
+        default='ArrowLeft',
+        help_text="Raccourci pour carte précédente (défaut: ←)"
+    )
+
+    shortcut_next = models.CharField(
+        max_length=10,
+        default='ArrowRight',
+        help_text="Raccourci pour carte suivante (défaut: →)"
+    )
+
+    shortcut_flip = models.CharField(
+        max_length=10,
+        default='Space',
+        help_text="Raccourci pour retourner la carte (défaut: Espace)"
+    )
+
+    shortcut_easy = models.CharField(
+        max_length=10,
+        default='1',
+        help_text="Raccourci pour marquer comme facile (défaut: 1)"
+    )
+
+    shortcut_medium = models.CharField(
+        max_length=10,
+        default='2',
+        help_text="Raccourci pour marquer comme moyen (défaut: 2)"
+    )
+
+    shortcut_difficult = models.CharField(
+        max_length=10,
+        default='3',
+        help_text="Raccourci pour marquer comme difficile (défaut: 3)"
+    )
+
+    shortcut_audio = models.CharField(
+        max_length=10,
+        default='a',
+        help_text="Raccourci pour lecture audio (défaut: A)"
+    )
+
+    shortcut_edit = models.CharField(
+        max_length=10,
+        default='e',
+        help_text="Raccourci pour éditer (défaut: E)"
+    )
+
+    shortcut_shuffle = models.CharField(
+        max_length=10,
+        default='h',
+        help_text="Raccourci pour mélanger (défaut: H)"
+    )
+
+    shortcut_star = models.CharField(
+        max_length=10,
+        default='s',
+        help_text="Raccourci pour marquer d'une étoile (défaut: S)"
+    )
+
     # Paramètres de statistiques de mots
     show_word_stats = models.BooleanField(
         default=True,

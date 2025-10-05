@@ -43,6 +43,14 @@
             </button>
         </div>
 
+        <!-- Settings Button -->
+        <div class="container-extra">
+            <a href="{% url 'settings' %}?tab=revision" class="btn-sb" title="{% trans 'Revision Settings' %}">
+                <i class="bi bi-gear"></i>
+                <span class="d-none d-xl-inline">{% trans "Settings" %}</span>
+            </a>
+        </div>
+
     </div>
     
     <!-- Right: Actions and contextual filters -->

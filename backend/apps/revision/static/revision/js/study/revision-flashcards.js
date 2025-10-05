@@ -141,6 +141,9 @@ class FlashcardStudyMode {
                 await this.milestoneManager.initSession(deck.id, 'flashcards');
             }
 
+            // Initialize keyboard shortcuts
+            this.setupKeyboardShortcuts();
+
             // Show study interface
             console.log('Showing study interface');
             this.showStudyInterface();
@@ -680,17 +683,81 @@ class FlashcardStudyMode {
         }
     }
 
+    setupKeyboardShortcuts() {
+        if (!window.keyboardShortcuts) return;
+
+        // Initialiser le gestionnaire
+        window.keyboardShortcuts.init();
+
+        // Retourner la carte
+        window.keyboardShortcuts.on('flip', () => {
+            if (this.currentCardIndex < this.studyCards.length) {
+                this.flipCard();
+            }
+        });
+
+        // Carte suivante
+        window.keyboardShortcuts.on('next', () => {
+            // Navigation seulement si pas en train de marquer la carte
+            if (this.isFlipped && this.currentCardIndex < this.studyCards.length) {
+                // Passer à la suivante ne marque pas
+            }
+        });
+
+        // Marquer comme facile
+        window.keyboardShortcuts.on('easy', () => {
+            if (this.isFlipped && this.currentCardIndex < this.studyCards.length) {
+                this.markCard('easy');
+            }
+        });
+
+        // Marquer comme moyen
+        window.keyboardShortcuts.on('medium', () => {
+            if (this.isFlipped && this.currentCardIndex < this.studyCards.length) {
+                this.markCard('medium');
+            }
+        });
+
+        // Marquer comme difficile
+        window.keyboardShortcuts.on('difficult', () => {
+            if (this.isFlipped && this.currentCardIndex < this.studyCards.length) {
+                this.markCard('difficult');
+            }
+        });
+
+        // Lecture audio
+        window.keyboardShortcuts.on('audio', () => {
+            if (this.currentCardIndex < this.studyCards.length) {
+                this.speakText(this.isFlipped ? 'back' : 'front');
+            }
+        });
+    }
+
+    cleanupKeyboardShortcuts() {
+        if (!window.keyboardShortcuts) return;
+
+        window.keyboardShortcuts.off('flip');
+        window.keyboardShortcuts.off('next');
+        window.keyboardShortcuts.off('easy');
+        window.keyboardShortcuts.off('medium');
+        window.keyboardShortcuts.off('difficult');
+        window.keyboardShortcuts.off('audio');
+    }
+
     exitStudyMode() {
         // Stop any ongoing speech
         this.stopSpeech();
-        
+
+        // Cleanup keyboard shortcuts
+        this.cleanupKeyboardShortcuts();
+
         // Hide study mode
         const flashcardElement = document.getElementById('flashcardStudyMode');
         if (flashcardElement) {
             flashcardElement.style.display = 'none';
             flashcardElement.classList.add('study-mode-hidden');
         }
-        
+
         // Show deck details using centralized function
         if (window.revisionMain.appState.selectedDeck) {
             window.revisionMain.selectDeck(window.revisionMain.appState.selectedDeck.id);
