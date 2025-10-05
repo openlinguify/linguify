@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View
 from django.utils import timezone
 from django.db import transaction
+from django.db.models import Q
 import json
 import logging
 import uuid
@@ -53,7 +54,11 @@ class AdaptiveReviewCardView(View):
             "recommended_next_mode": "write"
         }
         """
-        card = get_object_or_404(Flashcard, id=card_id, user=request.user)
+        # Allow access to own cards or cards from public decks
+        card = get_object_or_404(
+            Flashcard.objects.select_related('deck'),
+            Q(id=card_id) & (Q(user=request.user) | Q(deck__is_public=True))
+        )
 
         try:
             data = json.loads(request.body)
@@ -174,7 +179,11 @@ class AdaptiveDeckStatsView(View):
             }
         }
         """
-        deck = get_object_or_404(FlashcardDeck, id=deck_id, user=request.user)
+        # Allow access to own decks or public decks
+        deck = get_object_or_404(
+            FlashcardDeck,
+            Q(id=deck_id) & (Q(user=request.user) | Q(is_public=True))
+        )
 
         try:
             stats = adaptive.get_learning_stats(user=request.user, deck=deck)
@@ -227,7 +236,11 @@ class AdaptiveCardsToReviewView(View):
             "total_count": 10
         }
         """
-        deck = get_object_or_404(FlashcardDeck, id=deck_id, user=request.user)
+        # Allow access to own decks or public decks
+        deck = get_object_or_404(
+            FlashcardDeck,
+            Q(id=deck_id) & (Q(user=request.user) | Q(is_public=True))
+        )
 
         try:
             limit = int(request.GET.get('limit', 20))
@@ -318,7 +331,11 @@ class CardMasteryDetailView(View):
             "recent_performances": [...]
         }
         """
-        card = get_object_or_404(Flashcard, id=card_id, user=request.user)
+        # Allow access to own cards or cards from public decks
+        card = get_object_or_404(
+            Flashcard.objects.select_related('deck'),
+            Q(id=card_id) & (Q(user=request.user) | Q(deck__is_public=True))
+        )
 
         try:
             # Obtenir ou créer le mastery
