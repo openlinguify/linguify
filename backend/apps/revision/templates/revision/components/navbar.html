@@ -43,14 +43,6 @@
             </button>
         </div>
 
-        <!-- Settings Button -->
-        <div class="container-extra">
-            <a href="{% url 'settings' %}?tab=revision" class="btn-sb" title="{% trans 'Revision Settings' %}">
-                <i class="bi bi-gear"></i>
-                <span class="d-none d-xl-inline">{% trans "Settings" %}</span>
-            </a>
-        </div>
-
     </div>
     
     <!-- Right: Actions and contextual filters -->
@@ -160,11 +152,15 @@
                 <i class="bi bi-upload"></i>
                 <span class="d-none d-xxl-inline">{% trans "Import" %}</span>
             </button>
-            
+
             <button id="createDeck" class="btn-navbar btn-navbar-primary">
                 <i class="bi bi-plus-lg"></i>
                 <span class="d-none d-xxl-inline">{% trans "New list" %}</span>
             </button>
+
+            <a href="{% url 'saas_web:revision_settings' %}" class="btn-navbar btn-navbar-outline" title="{% trans 'Revision Settings' %}">
+                <i class="bi bi-gear"></i>
+            </a>
         </div>
         {% endif %}
     </div>
