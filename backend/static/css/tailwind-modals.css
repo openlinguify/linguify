@@ -3961,9 +3961,19 @@ button.bg-linguify-gradient:hover,
 }
 
 /* Hide other study mode sections by default */
-#spacedStudyMode,
-#writeStudyMode {
+#spacedStudyMode {
   display: none;
+}
+
+/* Write Mode Layout - Same as Quiz/Flashcards */
+#writeStudyMode {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#writeStudyMode.study-mode-hidden {
+  display: none !important;
 }
 
 /* Hide deck creation/editing elements */

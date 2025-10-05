@@ -5,32 +5,31 @@
         <div class="d-flex align-items-center justify-content-between">
             <h5 class="mb-0 text-linguify-primary font-weight-600">{% trans "Writing Mode" %} - <span id="writeStudyDeckName"></span></h5>
             <div class="d-flex align-items-center gap-2">
-                <span id="writeStudyProgress" class="badge bg-primary">0/0</span>
-                <span id="writeTimer" class="badge bg-info">30s</span>
-                <button id="exitWriteStudyMode" class="btn btn-outline-custom btn-sm">
+                <span id="writeStudyProgress" class="badge bg-linguify-gradient text-white px-3 py-2 rounded-lg">0/0</span>
+                <span id="writeTimer" class="badge bg-info px-3 py-2 rounded-lg">30s</span>
+                <button id="exitWriteStudyMode" class="flashcard-btn-return">
                     <i class="bi bi-arrow-left"></i>
                     {% trans "Back to deck" %}
                 </button>
             </div>
         </div>
+
+        <!-- Progress Bar -->
+        <div class="quiz-progress-container mt-2">
+            <div id="writeProgressBar" class="quiz-progress-bar w-0"></div>
+        </div>
     </div>
-    
+
     <div class="study-content">
-        <div id="writeStudyArea" class="d-flex flex-column align-items-center justify-content-center p-4 study-area">
-            
-            <!-- Instructions -->
-            <div class="alert alert-info mb-4 text-center">
-                <i class="bi bi-pencil-square me-2"></i>
-                {% trans "Write the translation of the given word" %}
-            </div>
-            
-            <!-- Affichage du mot -->
-            <div class="write-word-display mb-4">
-                <div class="card border-primary">
-                    <div class="card-body text-center p-4">
-                        <h3 id="writeWordToTranslate" class="mb-2 text-primary">---</h3>
+        <div id="writeStudyArea" class="study-area quiz-study-area">
+
+            <!-- Word to translate -->
+            <div class="quiz-question-container mb-4">
+                <div class="text-center mb-3">
+                    <h2 id="writeWordToTranslate" class="quiz-question-linguify p-4 mb-0">---</h2>
+                    <div class="mt-2">
                         <small id="writeSourceLanguage" class="text-muted">{% trans "Source language" %}</small>
-                        <button id="speakWriteWordBtn" class="speak-btn ms-2" 
+                        <button id="speakWriteWordBtn" class="btn btn-sm btn-outline-linguify ms-2"
                                 aria-label="{% trans 'Read the word aloud' %}"
                                 title="{% trans 'Read aloud' %}">
                             <i class="bi bi-volume-up" aria-hidden="true"></i>
@@ -38,66 +37,66 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Zone de réponse -->
-            <div class="write-answer-zone mb-4 w-100" style="max-width: 400px;">
-                <div class="input-group">
-                    <input type="text" 
-                           id="writeAnswerInput" 
-                           class="form-control form-control-lg text-center" 
-                           placeholder="{% trans 'Type your answer...' %}" 
+
+            <!-- Answer Zone -->
+            <div class="write-answer-zone mb-4">
+                <div class="input-group input-group-lg">
+                    <input type="text"
+                           id="writeAnswerInput"
+                           class="form-control text-center"
+                           placeholder="{% trans 'Type your answer...' %}"
                            autocomplete="off"
                            autocorrect="off"
-                           spellcheck="false">
-                    <button id="submitWriteAnswerBtn" class="btn btn-primary" type="button">
-                        <i class="bi bi-check-lg"></i>
+                           spellcheck="false"
+                           style="border-radius: 0.75rem 0 0 0.75rem; border: 2px solid #2D5BBA; font-size: 1.25rem; padding: 1rem;">
+                    <button id="submitWriteAnswerBtn" class="btn btn-linguify" type="button" style="border-radius: 0 0.75rem 0.75rem 0; padding: 1rem 2rem;">
+                        <i class="bi bi-check-lg me-1"></i>
                         {% trans "Submit" %}
                     </button>
                 </div>
             </div>
-            
-            <!-- Boutons d'action -->
-            <div class="write-actions d-flex gap-2 mb-4">
-                <button id="writeHintBtn" class="btn btn-outline-warning btn-sm" title="{% trans 'Show hint (-2 points)' %}">
-                    <i class="bi bi-lightbulb"></i>
-                    {% trans "Hint (-2 pts)" %}
+
+            <!-- Action Buttons -->
+            <div class="write-actions d-flex gap-2 justify-content-center mb-4">
+                <button id="writeHintBtn" class="btn btn-outline-warning" title="{% trans 'Show hint (-2 points)' %}">
+                    <i class="bi bi-lightbulb me-1"></i>
+                    {% trans "Hint" %} (-2 pts)
                 </button>
-                <button id="writeSkipBtn" class="btn btn-outline-secondary btn-sm" title="{% trans 'Skip this card (-5 points)' %}">
-                    <i class="bi bi-skip-forward"></i>
-                    {% trans "Skip (-5 pts)" %}
+                <button id="writeSkipBtn" class="btn btn-outline-secondary" title="{% trans 'Skip this card (-5 points)' %}">
+                    <i class="bi bi-skip-forward me-1"></i>
+                    {% trans "Skip" %} (-5 pts)
                 </button>
             </div>
-            
-            <!-- Affichage de l'indice -->
+
+            <!-- Hint Display -->
             <div id="writeHintDisplay" class="alert alert-warning d-none">
                 <i class="bi bi-lightbulb-fill me-2"></i>
                 <span id="writeHintText"></span>
             </div>
-            
+
             <!-- Feedback -->
             <div id="writeFeedbackDisplay" class="write-feedback d-none">
-                <div class="alert" id="writeFeedbackAlert">
+                <div class="alert mb-3" id="writeFeedbackAlert">
                     <div class="d-flex align-items-center">
-                        <i id="writeFeedbackIcon" class="me-2"></i>
-                        <span id="writeFeedbackMessage"></span>
-                    </div>
-                    <div id="writeCorrectAnswer" class="mt-2 d-none">
-                        <strong>{% trans "Correct answer:" %}</strong> <span id="writeCorrectAnswerText"></span>
+                        <i id="writeFeedbackIcon" class="me-2" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <strong id="writeFeedbackMessage"></strong>
+                            <div id="writeCorrectAnswer" class="mt-2 d-none">
+                                <span class="text-muted">{% trans "Correct answer:" %}</span> <strong id="writeCorrectAnswerText" class="text-dark"></strong>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button id="writeNextBtn" class="btn btn-primary">
-                    {% trans "Next card" %}
-                    <i class="bi bi-arrow-right ms-1"></i>
-                </button>
+                <div class="text-center">
+                    <button id="writeNextBtn" class="btn btn-linguify px-4">
+                        {% trans "Next card" %}
+                        <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+                </div>
             </div>
-            
+
         </div>
-        
-        <!-- Barre de progression -->
-        <div class="progress mt-3" style="height: 6px;">
-            <div id="writeProgressBar" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
-        </div>
-        
+
     </div>
 
     <!-- Completion Screen (hidden by default) -->

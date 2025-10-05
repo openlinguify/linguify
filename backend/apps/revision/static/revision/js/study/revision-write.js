@@ -121,12 +121,12 @@ class WriteStudyMode {
         if (window.revisionMain && window.revisionMain.hideAllSections) {
             window.revisionMain.hideAllSections();
         }
-        
-        // Show write study mode
+
+        // Show write study mode with proper flex layout (same as flashcards/quiz)
         const writeElement = document.getElementById('writeStudyMode');
         if (writeElement) {
-            writeElement.style.display = 'block';
             writeElement.classList.remove('study-mode-hidden');
+            writeElement.style.display = 'flex';
         } else {
             console.error('Element writeStudyMode not found');
         }
@@ -401,15 +401,15 @@ class WriteStudyMode {
     updateProgress() {
         const progressElement = document.getElementById('writeStudyProgress');
         const progressBar = document.getElementById('writeProgressBar');
-        
+
         const current = this.currentCardIndex + 1;
         const total = this.studyCards.length;
-        const percentage = (current / total) * 100;
-        
+        const percentage = (this.currentCardIndex / total) * 100;
+
         if (progressElement) {
             progressElement.textContent = `${Math.min(current, total)}/${total}`;
         }
-        
+
         if (progressBar) {
             progressBar.style.width = `${percentage}%`;
         }
