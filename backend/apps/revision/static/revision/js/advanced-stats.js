@@ -359,59 +359,29 @@ class AdvancedStatsManager {
         }
         
         // Remove any existing charts first to avoid duplicates
-        document.querySelectorAll('.performance-trend-chart, .activity-trend-chart').forEach(chart => {
-            chart.remove();
-        });
-        
-        console.log('🔍 Searching for chart sections...');
-        
-        // More direct approach - find exact text and inject after it
-        const walker = document.createTreeWalker(
-            document.body,
-            NodeFilter.SHOW_TEXT,
-            null,
-            false
-        );
-        
-        let performanceFound = false;
-        let activityFound = false;
-        let textNode;
-        
-        while (textNode = walker.nextNode()) {
-            const text = textNode.textContent.trim();
-            
-            // Performance Trend Chart
-            if (!performanceFound && text === '📈 Performance Trend') {
-                console.log('📈 Found Performance Trend text node, injecting chart directly');
-                
-                const chartHTML = this.createSimplePerformanceChart(data.historical_data?.data_points || []);
-                
-                // Insert after the parent element
-                const parentElement = textNode.parentElement;
-                if (parentElement) {
-                    parentElement.insertAdjacentHTML('afterend', chartHTML);
-                    console.log('✅ Performance Trend chart injected after text');
-                    performanceFound = true;
-                }
+        console.log('🔍 Replacing canvas charts with HTML charts...');
+
+        // Replace canvas elements with HTML charts
+        const performanceCanvas = document.getElementById('performanceTrendChart');
+        if (performanceCanvas) {
+            console.log('📈 Found Performance Trend canvas, replacing with chart');
+            const chartHTML = this.createSimplePerformanceChart(data.historical_data?.data_points || []);
+            const container = performanceCanvas.parentElement;
+            if (container) {
+                container.innerHTML = chartHTML;
+                console.log('✅ Performance Trend chart replaced');
             }
-            
-            // Activity Trend Chart
-            if (!activityFound && text === '📊 Activity Trend') {
-                console.log('📊 Found Activity Trend text node, injecting chart directly');
-                
-                const chartHTML = this.createSimpleActivityChart(data.historical_data?.data_points || []);
-                
-                // Insert after the parent element
-                const parentElement = textNode.parentElement;
-                if (parentElement) {
-                    parentElement.insertAdjacentHTML('afterend', chartHTML);
-                    console.log('✅ Activity Trend chart injected after text');
-                    activityFound = true;
-                }
+        }
+
+        const activityCanvas = document.getElementById('activityTrendChart');
+        if (activityCanvas) {
+            console.log('📊 Found Activity Trend canvas, replacing with chart');
+            const chartHTML = this.createSimpleActivityChart(data.historical_data?.data_points || []);
+            const container = activityCanvas.parentElement;
+            if (container) {
+                container.innerHTML = chartHTML;
+                console.log('✅ Activity Trend chart replaced');
             }
-            
-            // Stop if both found
-            if (performanceFound && activityFound) break;
         }
         
         this.chartsRendered = true;
@@ -423,59 +393,58 @@ class AdvancedStatsManager {
      */
     createSimplePerformanceChart(data) {
         const dataWithActivity = data.filter(d => d.avg_success_rate > 0);
-        
+
         if (dataWithActivity.length === 0) {
             return `
-                <div style="background: #ffcccc; border: 2px solid #ff0000; padding: 15px; margin: 15px 0; border-radius: 8px; text-align: center;">
-                    <strong>No performance data available</strong>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center text-red-600">
+                    <i class="bi bi-exclamation-circle mr-2"></i>No performance data available
                 </div>
             `;
         }
-        
-        const maxRate = Math.max(...dataWithActivity.map(d => d.avg_success_rate * 100), 1);
-        
+
+        const avgRate = (dataWithActivity.reduce((sum, p) => sum + p.avg_success_rate * 100, 0) / dataWithActivity.length);
+
         let barsHTML = '';
         dataWithActivity.forEach((point, index) => {
             const successPercent = point.avg_success_rate * 100;
-            // Make bars much taller and more visible
-            const height = Math.max((successPercent / maxRate * 150), 20); // Min 20px, max 150px
-            
-            // Use very simple, solid colors
-            let color = '#ff4444'; // Red for low performance
-            if (successPercent >= 80) color = '#44ff44'; // Green for high performance  
-            else if (successPercent >= 60) color = '#ffaa00'; // Orange for medium performance
-            
+            // Scale height from 0-100%
+            const height = Math.max(successPercent, 2);
+
+            // Clean color scheme
+            let color = '#EF4444'; // Red for low performance
+            if (successPercent >= 80) color = '#10B981'; // Green for high performance
+            else if (successPercent >= 60) color = '#F59E0B'; // Orange for medium performance
+
             // Better date formatting
-            let dateLabel = 'N/A';
-            if (point.label) {
-                dateLabel = point.label;
-            } else if (point.date) {
-                const dateParts = point.date.split('-');
-                dateLabel = dateParts.length >= 3 ? dateParts[2] + '/' + dateParts[1] : point.date;
-            }
-            
-            // Ultra simple bars - no fancy CSS, just solid colors and basic styling
+            let dateLabel = point.label || 'N/A';
+
             barsHTML += `
-                <div style="display: inline-block; margin: 0 8px; text-align: center; vertical-align: bottom;">
-                    <div style="background-color: ${color}; width: 30px; height: ${height}px; margin-bottom: 10px; border: 2px solid #333333; display: block;" 
-                         title="${successPercent.toFixed(1)}% success on ${dateLabel}"></div>
-                    <div style="font-size: 12px; color: #000000; font-weight: bold;">${dateLabel}</div>
+                <div class="flex flex-col items-center gap-1" style="flex: 1; min-width: 40px;">
+                    <div class="text-xs font-semibold text-gray-700">${successPercent.toFixed(0)}%</div>
+                    <div class="w-full bg-gray-100 rounded-t" style="height: 120px; display: flex; flex-direction: column; justify-content: flex-end;">
+                        <div class="rounded-t transition-all" style="background-color: ${color}; height: ${height}%; min-height: 2px;"
+                             title="${successPercent.toFixed(1)}% on ${dateLabel}"></div>
+                    </div>
+                    <div class="text-xs text-gray-600 mt-1">${dateLabel}</div>
                 </div>
             `;
         });
-        
+
         return `
-            <div style="background: #f0f8ff; border: 3px solid #0066cc; padding: 20px; margin: 20px 0; border-radius: 10px;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h3 style="color: #0066cc; margin: 0; font-size: 18px; font-weight: bold;">📈 SUCCESS RATE TREND</h3>
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold text-linguify-primary">📈 Success Rate Trend</h3>
+                    <span class="text-xs bg-white px-2 py-1 rounded-full border border-gray-200">
+                        Average: <strong class="text-linguify-primary">${avgRate.toFixed(1)}%</strong>
+                    </span>
                 </div>
-                <div style="background: white; padding: 20px; border: 2px solid #cccccc; text-align: center; min-height: 200px; display: flex; align-items: flex-end; justify-content: center;">
-                    <div style="display: flex; align-items: flex-end; justify-content: center;">
+                <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <div class="flex items-end gap-2 justify-center">
                         ${barsHTML}
                     </div>
                 </div>
-                <div style="margin-top: 15px; text-align: center; font-size: 14px; color: #333333;">
-                    <strong>📊 ${dataWithActivity.length} days with activity | Average: ${(dataWithActivity.reduce((sum, p) => sum + p.avg_success_rate * 100, 0) / dataWithActivity.length).toFixed(1)}%</strong>
+                <div class="mt-3 text-xs text-center text-gray-600">
+                    ${dataWithActivity.length} days with activity
                 </div>
             </div>
         `;
@@ -487,57 +456,57 @@ class AdvancedStatsManager {
     createSimpleActivityChart(data) {
         if (!data || data.length === 0) {
             return `
-                <div style="background: #ffcccc; border: 2px solid #ff0000; padding: 15px; margin: 15px 0; border-radius: 8px; text-align: center;">
-                    <strong>No activity data available</strong>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center text-red-600">
+                    <i class="bi bi-exclamation-circle mr-2"></i>No activity data available
                 </div>
             `;
         }
-        
-        const maxCards = Math.max(...data.map(d => d.cards_studied), 1);
-        const totalCards = data.reduce((sum, p) => sum + p.cards_studied, 0);
-        
+
+        const dataSlice = data.slice(-14); // Show last 14 days
+        const maxCards = Math.max(...dataSlice.map(d => d.cards_studied), 1);
+        const totalCards = dataSlice.reduce((sum, p) => sum + p.cards_studied, 0);
+
         let barsHTML = '';
-        data.slice(-14).forEach((point, index) => { // Show only last 14 days for clarity
-            // Make bars much taller and more visible
-            const height = Math.max((point.cards_studied / maxCards * 120), 5); // Min 5px, max 120px
-            
-            // Use very simple, solid colors based on activity level
-            let color = '#cccccc'; // Gray for no activity
-            if (point.cards_studied > 10) color = '#0066cc'; // Blue for high activity
-            else if (point.cards_studied > 5) color = '#4499ff'; // Light blue for medium activity  
-            else if (point.cards_studied > 0) color = '#88ccff'; // Very light blue for low activity
-            
-            // Better date formatting
-            let dateLabel = 'N/A';
-            if (point.label) {
-                dateLabel = point.label;
-            } else if (point.date) {
-                const dateParts = point.date.split('-');
-                dateLabel = dateParts.length >= 3 ? dateParts[2] + '/' + dateParts[1] : point.date;
-            }
-            
-            // Ultra simple bars - no fancy CSS, just solid colors and basic styling
+        dataSlice.forEach((point, index) => {
+            const cardsCount = point.cards_studied;
+            // Scale height as percentage
+            const height = Math.max((cardsCount / maxCards * 100), 0);
+
+            // Color based on activity level
+            let color = '#E5E7EB'; // Gray for no activity
+            if (cardsCount > 10) color = '#2D5BBA'; // Linguify blue for high activity
+            else if (cardsCount > 5) color = '#60A5FA'; // Light blue for medium activity
+            else if (cardsCount > 0) color = '#93C5FD'; // Very light blue for low activity
+
+            let dateLabel = point.label || 'N/A';
+
             barsHTML += `
-                <div style="display: inline-block; margin: 0 4px; text-align: center; vertical-align: bottom;">
-                    <div style="background-color: ${color}; width: 25px; height: ${height}px; margin-bottom: 8px; border: 2px solid #333333; display: block;" 
-                         title="${dateLabel}: ${point.cards_studied} cards studied"></div>
-                    <div style="font-size: 10px; color: #000000; font-weight: bold;">${dateLabel}</div>
+                <div class="flex flex-col items-center gap-1" style="flex: 1; min-width: 35px;">
+                    <div class="text-xs font-semibold text-gray-700">${cardsCount}</div>
+                    <div class="w-full bg-gray-100 rounded-t" style="height: 100px; display: flex; flex-direction: column; justify-content: flex-end;">
+                        <div class="rounded-t transition-all" style="background-color: ${color}; height: ${height}%; min-height: ${cardsCount > 0 ? '3px' : '0px'};"
+                             title="${dateLabel}: ${cardsCount} cards"></div>
+                    </div>
+                    <div class="text-xs text-gray-600 mt-1">${dateLabel}</div>
                 </div>
             `;
         });
-        
+
         return `
-            <div style="background: #f0fff0; border: 3px solid #00aa00; padding: 20px; margin: 20px 0; border-radius: 10px;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h3 style="color: #00aa00; margin: 0; font-size: 18px; font-weight: bold;">📊 DAILY STUDY ACTIVITY</h3>
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold text-linguify-primary">📊 Daily Study Activity</h3>
+                    <span class="text-xs bg-white px-2 py-1 rounded-full border border-gray-200">
+                        Total: <strong class="text-linguify-primary">${totalCards} cards</strong>
+                    </span>
                 </div>
-                <div style="background: white; padding: 20px; border: 2px solid #cccccc; text-align: center; min-height: 180px; display: flex; align-items: flex-end; justify-content: center; overflow-x: auto;">
-                    <div style="display: flex; align-items: flex-end; justify-content: center;">
+                <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <div class="flex items-end gap-2 justify-center overflow-x-auto">
                         ${barsHTML}
                     </div>
                 </div>
-                <div style="margin-top: 15px; text-align: center; font-size: 14px; color: #333333;">
-                    <strong>📅 Last 14 days | Total cards studied: ${totalCards}</strong>
+                <div class="mt-3 text-xs text-center text-gray-600">
+                    Last 14 days
                 </div>
             </div>
         `;

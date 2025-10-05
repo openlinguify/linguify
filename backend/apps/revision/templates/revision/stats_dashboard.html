@@ -310,40 +310,20 @@
             </div>
         </div>
 
-        <!-- Advanced Statistics Section (Inspired by Anki) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-            <!-- Card Maturity Analysis -->
-            <div>
-                <div class="card-linguify">
-                    <div class="p-4 border-b border-gray-200">
-                        <h5 class="text-base font-semibold text-linguify-primary mb-0">🎯 Card Maturity</h5>
+        <!-- Card Maturity Analysis -->
+        <div class="w-full mb-6">
+            <div class="card-linguify">
+                <div class="p-4 border-b border-gray-200">
+                    <h5 class="text-base font-semibold text-linguify-primary mb-0">🎯 Card Maturity</h5>
+                </div>
+                <div class="p-4">
+                    <div id="maturity-breakdown" class="space-y-2">
+                        <!-- Enhanced basic stats with maturity -->
                     </div>
-                    <div class="p-4">
-                        <div id="maturity-breakdown" class="space-y-2">
-                            <!-- Enhanced basic stats with maturity -->
-                        </div>
-                        <div id="maturity-details" class="mt-4 space-y-1">
-                            <!-- Detailed maturity breakdown will be populated -->
-                        </div>
+                    <div id="maturity-details" class="mt-4 space-y-1">
+                        <!-- Detailed maturity breakdown will be populated -->
                     </div>
                 </div>
-            </div>
-            
-            <!-- Forecast Section -->
-            <div id="forecast-section">
-                <!-- Forecast data will be populated here -->
-            </div>
-            
-            <!-- Hourly Performance -->
-            <div id="hourly-performance">
-                <!-- Hourly analysis will be populated here -->
-            </div>
-        </div>
-
-        <!-- Smart Insights Section -->
-        <div class="w-full mb-6">
-            <div id="smart-insights">
-                <!-- Smart insights will be populated here -->
             </div>
         </div>
 
@@ -436,7 +416,7 @@
 
 {% block extra_js %}
 <!-- Load Statistics Dashboard JavaScript -->
-<script src="{% static 'revision/js/revision-stats.js' %}?v=20251005"></script>
+<script src="{% static 'revision/js/revision-stats.js' %}?v=20251005e"></script>
 <!-- Load Advanced Statistics JavaScript (Inspired by Anki) -->
-<script src="{% static 'revision/js/advanced-stats.js' %}?v=20251005"></script>
+<script src="{% static 'revision/js/advanced-stats.js' %}?v=20251005e"></script>
 {% endblock %}

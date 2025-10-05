@@ -251,38 +251,37 @@ class AdvancedStatsAPIView(APIView):
         """Predict future revision workload like Anki's due graph"""
         # For now, we'll create a simple prediction based on current learning patterns
         # In a real implementation, this would use spaced repetition intervals
-        
+
         now = timezone.now().date()
         forecast = []
-        
-        # Get average daily reviews from last 7 days
-        week_ago = now - timedelta(days=7)
-        recent_sessions = RevisionSession.objects.filter(
+
+        # Get average daily reviews from last 7 days using CardPerformance
+        week_ago = timezone.now() - timedelta(days=7)
+        recent_performances = CardPerformance.objects.filter(
             user=user,
-            status='COMPLETED',
-            completed_date__date__gte=week_ago
-        ).prefetch_related('flashcards')
-        
+            created_at__gte=week_ago
+        ).values('card').distinct()
+
         avg_daily_reviews = 0
-        if recent_sessions.exists():
-            total_cards = sum(session.flashcards.count() for session in recent_sessions)
+        if recent_performances.exists():
+            total_cards = recent_performances.count()
             avg_daily_reviews = total_cards / 7
-        
+
         # Simple prediction: maintain average with some variation
         import random
         for i in range(days_ahead):
             future_date = now + timedelta(days=i+1)
-            
+
             # Add some realistic variation (±30%)
             variation = random.uniform(0.7, 1.3)
             predicted_reviews = max(0, int(avg_daily_reviews * variation))
-            
+
             forecast.append({
                 'date': future_date.isoformat(),
                 'predicted_reviews': predicted_reviews,
                 'confidence': 'medium' if i < 7 else 'low' if i < 14 else 'very_low'
             })
-        
+
         return {
             'days_ahead': days_ahead,
             'forecast': forecast,
@@ -291,28 +290,33 @@ class AdvancedStatsAPIView(APIView):
     
     def _get_hourly_performance(self, user):
         """Analyze performance by hour of day like Anki"""
-        # Get sessions with hourly data
-        sessions = RevisionSession.objects.filter(
+        # Get performances with hourly data
+        performances = CardPerformance.objects.filter(
             user=user,
-            status='COMPLETED',
-            completed_date__isnull=False
+            created_at__isnull=False
         ).annotate(
-            hour=Extract('completed_date', 'hour')
+            hour=Extract('created_at', 'hour')
         ).values('hour').annotate(
-            avg_success_rate=Avg('success_rate'),
-            session_count=Count('id')
-        ).filter(session_count__gte=2)  # Only include hours with meaningful data (lowered threshold)
-        
+            total_attempts=Count('id'),
+            correct_attempts=Count('id', filter=Q(was_correct=True)),
+            cards_count=Count('card', distinct=True)
+        ).filter(total_attempts__gte=2)  # Only include hours with meaningful data
+
         hourly_data = {}
-        for session_data in sessions:
-            hour = session_data['hour']
+        for perf_data in performances:
+            hour = perf_data['hour']
+            total = perf_data['total_attempts']
+            correct = perf_data['correct_attempts']
+            # Return rate as decimal (0-1) not percentage
+            avg_success_rate = (correct / total) if total > 0 else 0
+
             hourly_data[hour] = {
                 'hour': hour,
-                'avg_success_rate': round(session_data['avg_success_rate'] or 0, 1),
-                'session_count': session_data['session_count'],
-                'total_cards': 0  # TODO: Calculate total cards per hour when needed
+                'avg_success_rate': round(avg_success_rate, 3),
+                'session_count': perf_data['total_attempts'],
+                'total_cards': perf_data['cards_count']
             }
-        
+
         # Fill in missing hours with None
         complete_hourly = []
         for hour in range(24):
@@ -325,7 +329,7 @@ class AdvancedStatsAPIView(APIView):
                     'session_count': 0,
                     'total_cards': 0
                 })
-        
+
         # Find best performance hours
         valid_hours = [h for h in complete_hourly if h['avg_success_rate'] is not None]
         best_hour = max(valid_hours, key=lambda x: x['avg_success_rate']) if valid_hours else None
@@ -339,29 +343,34 @@ class AdvancedStatsAPIView(APIView):
     def _get_historical_data(self, period_type, user):
         """Get historical performance data for graphs"""
         chunks = StatsPeriodHelper.get_time_chunks(period_type, user)
-        
+
         historical_data = []
         for chunk in chunks:
-            # Get sessions in this time chunk
-            chunk_sessions = RevisionSession.objects.filter(
+            # Get performances in this time chunk
+            chunk_performances = CardPerformance.objects.filter(
                 user=user,
-                status='COMPLETED',
-                completed_date__range=[chunk['start'], chunk['end']]
-            ).prefetch_related('flashcards')
-            
+                created_at__range=[chunk['start'], chunk['end']]
+            ).select_related('card')
+
             # Calculate metrics for this chunk
-            total_cards = sum(session.flashcards.count() for session in chunk_sessions)
-            avg_success_rate = chunk_sessions.aggregate(Avg('success_rate'))['success_rate__avg'] or 0
-            session_count = chunk_sessions.count()
-            
+            total_cards = chunk_performances.values('card').distinct().count()
+            total_attempts = chunk_performances.count()
+            correct_attempts = chunk_performances.filter(was_correct=True).count()
+            # Return rate as decimal (0-1) not percentage, JS will multiply by 100
+            avg_success_rate = (correct_attempts / total_attempts) if total_attempts > 0 else 0
+
+            # Count unique sessions (by session_id or by date if no session_id)
+            session_count = chunk_performances.values('session_id').distinct().count()
+
             historical_data.append({
                 'date': chunk['date'].isoformat(),
                 'label': chunk['label'],
                 'cards_studied': total_cards,
-                'avg_success_rate': round(avg_success_rate, 1),
-                'session_count': session_count
+                'avg_success_rate': round(avg_success_rate, 3),
+                'session_count': session_count,
+                'total_attempts': total_attempts
             })
-        
+
         return {
             'period_type': period_type,
             'data_points': historical_data,
