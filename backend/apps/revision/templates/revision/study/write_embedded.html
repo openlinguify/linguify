@@ -68,30 +68,33 @@
                 </button>
             </div>
 
-            <!-- Hint Display -->
-            <div id="writeHintDisplay" class="alert alert-warning d-none">
-                <i class="bi bi-lightbulb-fill me-2"></i>
-                <span id="writeHintText"></span>
-            </div>
+            <!-- Feedback Area - Fixed height to prevent layout shift -->
+            <div class="write-feedback-area">
+                <!-- Hint Display -->
+                <div id="writeHintDisplay" class="alert alert-warning d-none">
+                    <i class="bi bi-lightbulb-fill me-2"></i>
+                    <span id="writeHintText"></span>
+                </div>
 
-            <!-- Feedback -->
-            <div id="writeFeedbackDisplay" class="write-feedback d-none">
-                <div class="alert mb-3" id="writeFeedbackAlert">
-                    <div class="d-flex align-items-center">
-                        <i id="writeFeedbackIcon" class="me-2" style="font-size: 1.5rem;"></i>
-                        <div>
-                            <strong id="writeFeedbackMessage"></strong>
-                            <div id="writeCorrectAnswer" class="mt-2 d-none">
-                                <span class="text-muted">{% trans "Correct answer:" %}</span> <strong id="writeCorrectAnswerText" class="text-dark"></strong>
+                <!-- Feedback -->
+                <div id="writeFeedbackDisplay" class="write-feedback d-none">
+                    <div class="alert mb-3" id="writeFeedbackAlert">
+                        <div class="d-flex align-items-center">
+                            <i id="writeFeedbackIcon" class="me-2" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <strong id="writeFeedbackMessage"></strong>
+                                <div id="writeCorrectAnswer" class="mt-2 d-none">
+                                    <span class="text-muted">{% trans "Correct answer:" %}</span> <strong id="writeCorrectAnswerText" class="text-dark"></strong>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="text-center">
-                    <button id="writeNextBtn" class="btn btn-linguify px-4">
-                        {% trans "Next card" %}
-                        <i class="bi bi-arrow-right ms-1"></i>
-                    </button>
+                    <div class="text-center">
+                        <button id="writeNextBtn" class="btn btn-linguify px-4">
+                            {% trans "Next card" %}
+                            <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 

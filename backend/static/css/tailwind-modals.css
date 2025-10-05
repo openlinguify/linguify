@@ -3976,6 +3976,24 @@ button.bg-linguify-gradient:hover,
   display: none !important;
 }
 
+/* Write Feedback Area - Positioned to prevent layout shift */
+.write-feedback-area {
+  position: relative;
+  min-height: 200px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.write-feedback-area #writeHintDisplay,
+.write-feedback-area #writeFeedbackDisplay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
 /* Hide deck creation/editing elements */
 .create-deck-form-hidden,
 .create-card-form-hidden,
