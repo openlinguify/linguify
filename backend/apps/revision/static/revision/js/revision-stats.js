@@ -11,41 +11,70 @@ let performanceChart = null;
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Stats dashboard DOM loaded, initializing...');
-    
+
     // Test if DOM elements exist
     const testElement = document.getElementById('totalDecks');
     console.log('totalDecks element found:', !!testElement);
-    
-    // Initialize Chart.js
-    initializeChartJS();
-    
-    // Load all statistics data
-    loadCollectionOverview();
-    loadStatistics();
-    initializeCharts();
-    loadDeckStats();
-    loadRecentActivity();
-    loadStudyGoals();
-    
+
+    // Initialize Chart.js first, then load data
+    initializeChartJS().then(() => {
+        // Load all statistics data after Chart.js is loaded
+        loadCollectionOverview();
+        loadStatistics();
+        initializeCharts();
+        loadDeckStats();
+        loadRecentActivity();
+        loadStudyGoals();
+    }).catch(() => {
+        // Load data even if Chart.js fails (charts will show fallback message)
+        loadCollectionOverview();
+        loadStatistics();
+        initializeCharts();  // This will show "Chart unavailable" message
+        loadDeckStats();
+        loadRecentActivity();
+        loadStudyGoals();
+    });
+
     // Set up event listeners
     setupEventListeners();
 });
 
 // ===== CHART.JS INITIALIZATION =====
 /**
- * Try to load Chart.js from CDN, but continue without it if it fails
+ * Try to load Chart.js - first try local, then CDN fallback
  */
 function initializeChartJS() {
+    // If Chart.js is already loaded, resolve immediately
+    if (typeof Chart !== 'undefined') {
+        console.log('✅ Chart.js already loaded');
+        return Promise.resolve();
+    }
+
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-        script.onload = resolve;
-        script.onerror = reject;
+        // Try local version first (should be loaded from template)
+        // If not available, this function will be called and load it
+        script.src = '/static/revision/js/chart.min.js';
+        script.onload = () => {
+            console.log('✅ Chart.js loaded successfully (local)');
+            resolve();
+        };
+        script.onerror = () => {
+            console.log('⚠️ Local Chart.js failed, trying CDN...');
+            // Fallback to CDN
+            const cdnScript = document.createElement('script');
+            cdnScript.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+            cdnScript.onload = () => {
+                console.log('✅ Chart.js loaded successfully (CDN)');
+                resolve();
+            };
+            cdnScript.onerror = () => {
+                console.log('⚠️ Chart.js failed to load from both sources');
+                reject();
+            };
+            document.head.appendChild(cdnScript);
+        };
         document.head.appendChild(script);
-    }).then(() => {
-        console.log('✅ Chart.js loaded successfully');
-    }).catch(() => {
-        console.log('⚠️ Chart.js failed to load, continuing without charts');
     });
 }
 
@@ -221,7 +250,7 @@ function loadDeckStats() {
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3">
                                 <div class="text-xs font-medium text-gray-900">${deck.name}</div>
-                                <div class="text-xs text-gray-500">${deck.description || _('No description')}</div>
+                                <div class="text-xs text-gray-500">${deck.description || 'No description'}</div>
                             </td>
                             <td class="px-4 py-3 text-xs text-gray-900">${deck.cards_count}</td>
                             <td class="px-4 py-3">
@@ -412,21 +441,61 @@ function initializeCharts() {
                     data: [],
                     borderColor: '#2D5BBA',
                     backgroundColor: 'rgba(45, 91, 186, 0.1)',
-                    tension: 0.4
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    pointHoverRadius: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        padding: 8,
+                        bodyFont: {
+                            size: 12
+                        }
+                    }
+                },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            font: {
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            drawBorder: false,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 10
+                            },
+                            maxRotation: 45,
+                            minRotation: 0
+                        },
+                        grid: {
+                            display: false
+                        }
                     }
                 }
             }
         });
     }
-    
+
     // Performance Chart
     const performanceCtx = document.getElementById('performanceChart');
     if (performanceCtx) {
@@ -436,15 +505,31 @@ function initializeCharts() {
                 labels: ['Correct', 'Incorrect', 'Skipped'],
                 datasets: [{
                     data: [0, 0, 0],
-                    backgroundColor: ['#10B981', '#EF4444', '#6B7280']
+                    backgroundColor: ['#10B981', '#EF4444', '#6B7280'],
+                    borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '65%',
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            padding: 12,
+                            font: {
+                                size: 11
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        padding: 8,
+                        bodyFont: {
+                            size: 12
+                        }
                     }
                 }
             }

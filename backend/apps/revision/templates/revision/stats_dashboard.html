@@ -236,13 +236,13 @@
                         <h5 class="text-base font-semibold text-linguify-primary mb-0">{% trans "Study Activity" %}</h5>
                     </div>
                     <div class="p-4">
-                        <div class="w-full h-48">
-                            <canvas id="studyActivityChart" class="w-full h-full"></canvas>
+                        <div class="w-full" style="height: 200px;">
+                            <canvas id="studyActivityChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Performance Breakdown -->
             <div>
                 <div class="card-linguify">
@@ -250,8 +250,8 @@
                         <h5 class="text-base font-semibold text-linguify-primary mb-0">{% trans "Performance Breakdown" %}</h5>
                     </div>
                     <div class="p-4">
-                        <div class="w-full h-48">
-                            <canvas id="performanceChart" class="w-full h-full"></canvas>
+                        <div class="w-full" style="height: 200px;">
+                            <canvas id="performanceChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -356,13 +356,13 @@
                         <h5 class="text-base font-semibold text-linguify-primary mb-0">📊 Activity Trend</h5>
                     </div>
                     <div class="p-4">
-                        <div class="w-full h-64">
-                            <canvas id="activityTrendChart" class="w-full h-full"></canvas>
+                        <div class="w-full" style="height: 220px;">
+                            <canvas id="activityTrendChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Performance Trend Chart -->
             <div>
                 <div class="card-linguify">
@@ -370,8 +370,8 @@
                         <h5 class="text-base font-semibold text-linguify-primary mb-0">📈 Performance Trend</h5>
                     </div>
                     <div class="p-4">
-                        <div class="w-full h-64">
-                            <canvas id="performanceTrendChart" class="w-full h-full"></canvas>
+                        <div class="w-full" style="height: 220px;">
+                            <canvas id="performanceTrendChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -436,7 +436,7 @@
 
 {% block extra_js %}
 <!-- Load Statistics Dashboard JavaScript -->
-<script src="{% static 'revision/js/revision-stats.js' %}?v=20250824"></script>
+<script src="{% static 'revision/js/revision-stats.js' %}?v=20251005"></script>
 <!-- Load Advanced Statistics JavaScript (Inspired by Anki) -->
-<script src="{% static 'revision/js/advanced-stats.js' %}?v=20250824"></script>
+<script src="{% static 'revision/js/advanced-stats.js' %}?v=20251005"></script>
 {% endblock %}

@@ -29,20 +29,17 @@ class AdvancedStatsManager {
      */
     async init() {
         console.log('🚀 Initializing Advanced Statistics Manager');
-        
-        // Add a visible indicator that JavaScript is running
-        this.addDebugIndicator();
-        
+
         try {
             // Load initial data
             await this.loadAdvancedStats();
-            
+
             // Setup event listeners
             this.setupEventListeners();
-            
+
             // Initialize charts
             this.initializeCharts();
-            
+
             console.log('✅ Advanced Statistics Manager initialized');
         } catch (error) {
             console.error('❌ Failed to initialize Advanced Statistics:', error);
