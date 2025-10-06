@@ -12,7 +12,9 @@ class WriteStudyMode {
         this.timer = null;
         this.timeLimit = 30;
         this.remainingTime = this.timeLimit;
-        
+        this.timerPaused = false;
+        this.inputListenersSetup = false;
+
         this.setupEventListeners();
     }
 
@@ -21,38 +23,59 @@ class WriteStudyMode {
         document.getElementById('exitWriteStudyMode')?.addEventListener('click', () => {
             this.exitWriteMode();
         });
-        
+
         // Submit answer
         document.getElementById('submitWriteAnswerBtn')?.addEventListener('click', () => {
             this.submitAnswer();
         });
-        
-        // Enter key to submit
-        document.getElementById('writeAnswerInput')?.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.submitAnswer();
-            }
-        });
-        
+
         // Hint button
         document.getElementById('writeHintBtn')?.addEventListener('click', () => {
             this.showHint();
         });
-        
+
         // Skip button
         document.getElementById('writeSkipBtn')?.addEventListener('click', () => {
             this.skipCard();
         });
-        
+
         // Next card button
         document.getElementById('writeNextBtn')?.addEventListener('click', () => {
             this.nextCard();
         });
-        
+
         // Speak button
         document.getElementById('speakWriteWordBtn')?.addEventListener('click', () => {
             this.speakWord();
         });
+    }
+
+    setupInputListeners() {
+        // Only set up once
+        if (this.inputListenersSetup) {
+            console.log('[WriteMode] Input listeners already set up, skipping');
+            return;
+        }
+
+        // Use event delegation on document to catch input events
+        document.addEventListener('input', (e) => {
+            if (e.target && e.target.id === 'writeAnswerInput') {
+                console.log('[WriteMode] User typing detected via delegation - pausing timer');
+                if (this.timer && !this.timerPaused) {
+                    console.log('[WriteMode] Calling pauseTimer()');
+                    this.pauseTimer();
+                }
+            }
+        });
+
+        document.addEventListener('keypress', (e) => {
+            if (e.target && e.target.id === 'writeAnswerInput' && e.key === 'Enter') {
+                this.submitAnswer();
+            }
+        });
+
+        this.inputListenersSetup = true;
+        console.log('[WriteMode] Input listeners set up via delegation');
     }
 
     async startWriteStudy(deck) {
@@ -147,20 +170,23 @@ class WriteStudyMode {
         }
 
         const currentCard = this.studyCards[this.currentCardIndex];
-        
+
         // Display the word to translate
         document.getElementById('writeWordToTranslate').textContent = currentCard.front_text;
         document.getElementById('writeSourceLanguage').textContent = currentCard.source_language || 'Français';
-        
+
         // Reset UI for new card
         this.hideHint();
         this.hideFeedback();
         this.clearInput();
         this.resetTimer();
-        
+
+        // Setup input listeners (do this AFTER clearing input)
+        this.setupInputListeners();
+
         // Focus on input
         document.getElementById('writeAnswerInput')?.focus();
-        
+
         this.updateProgress();
     }
 
@@ -356,17 +382,26 @@ class WriteStudyMode {
 
     startTimer() {
         this.remainingTime = this.timeLimit;
+        this.timerPaused = false;
         this.updateTimerDisplay();
-        
+
         this.timer = setInterval(() => {
-            this.remainingTime--;
-            this.updateTimerDisplay();
-            
-            if (this.remainingTime <= 0) {
-                this.stopTimer();
-                this.skipCard();
+            if (!this.timerPaused) {
+                this.remainingTime--;
+                this.updateTimerDisplay();
+
+                if (this.remainingTime <= 0) {
+                    this.stopTimer();
+                    this.skipCard();
+                }
             }
         }, 1000);
+    }
+
+    pauseTimer() {
+        console.log('[WriteMode] pauseTimer() called - setting timerPaused to true');
+        this.timerPaused = true;
+        this.updateTimerDisplay();
     }
 
     stopTimer() {
@@ -374,6 +409,7 @@ class WriteStudyMode {
             clearInterval(this.timer);
             this.timer = null;
         }
+        this.timerPaused = false;
     }
 
     resetTimer() {
@@ -384,16 +420,23 @@ class WriteStudyMode {
     updateTimerDisplay() {
         const timerElement = document.getElementById('writeTimer');
         if (timerElement) {
-            timerElement.textContent = `${this.remainingTime}s`;
-            
-            // Change color based on remaining time
-            timerElement.classList.remove('bg-info', 'bg-warning', 'bg-danger');
-            if (this.remainingTime > 15) {
-                timerElement.classList.add('bg-info');
-            } else if (this.remainingTime > 5) {
-                timerElement.classList.add('bg-warning');
+            // Show paused indicator
+            if (this.timerPaused) {
+                timerElement.textContent = `⏸ ${this.remainingTime}s`;
+                timerElement.classList.remove('bg-info', 'bg-warning', 'bg-danger');
+                timerElement.classList.add('bg-secondary');
             } else {
-                timerElement.classList.add('bg-danger');
+                timerElement.textContent = `${this.remainingTime}s`;
+
+                // Change color based on remaining time
+                timerElement.classList.remove('bg-info', 'bg-warning', 'bg-danger', 'bg-secondary');
+                if (this.remainingTime > 15) {
+                    timerElement.classList.add('bg-info');
+                } else if (this.remainingTime > 5) {
+                    timerElement.classList.add('bg-warning');
+                } else {
+                    timerElement.classList.add('bg-danger');
+                }
             }
         }
     }

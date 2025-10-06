@@ -32,7 +32,7 @@ class EmailTemplateAdmin(admin.ModelAdmin):
     """Admin pour les templates d'email"""
     list_display = ['name', 'email_type', 'is_active', 'translation_count', 'created_at', 'updated_at']
     list_filter = ['email_type', 'is_active', 'created_at']
-    search_fields = ['name']
+    search_fields = ['name', 'email_type']
     inlines = [EmailTemplateTranslationInline]
     ordering = ['-created_at']
 
@@ -57,17 +57,27 @@ class EmailCampaignAdmin(admin.ModelAdmin):
     ]
     list_filter = ['status', 'recipient_type', 'created_at', 'sent_at']
     search_fields = ['name', 'template__name']
+    autocomplete_fields = ['template']
+    filter_horizontal = ['selected_users']
     readonly_fields = [
         'status', 'sent_at', 'total_recipients',
         'sent_count', 'failed_count', 'created_by',
         'created_at', 'updated_at'
     ]
+
+    class Media:
+        js = ('authentication/js/email_campaign_admin.js',)
+
     fieldsets = (
         (_('Campaign Information'), {
             'fields': ('name', 'template', 'status')
         }),
         (_('Recipients'), {
-            'fields': ('recipient_type', 'custom_recipients', 'total_recipients')
+            'fields': ('recipient_type',
+                       'selected_users',
+                       'custom_recipients',
+                       'total_recipients'
+                       )
         }),
         (_('Testing'), {
             'fields': ('test_email',),

@@ -97,12 +97,14 @@ class EmailCampaign(models.Model):
         ('all', _('All Users')),
         ('active', _('Active Users Only')),
         ('premium', _('Premium Users')),
+        ('selected', _('Selected Users')),
         ('custom', _('Custom List')),
     ]
 
     name = models.CharField(max_length=100, verbose_name=_('Campaign Name'))
     template = models.ForeignKey(EmailTemplate, on_delete=models.PROTECT, verbose_name=_('Email Template'))
     recipient_type = models.CharField(max_length=20, choices=RECIPIENT_CHOICES, default='all', verbose_name=_('Recipients'))
+    selected_users = models.ManyToManyField(User, blank=True, related_name='email_campaigns_received', verbose_name=_('Selected Users'))
     custom_recipients = models.TextField(blank=True, help_text=_('Email addresses separated by commas (for custom list)'))
     test_email = models.EmailField(blank=True, help_text=_('Send test email to this address before campaign'))
 
@@ -146,6 +148,8 @@ class EmailCampaign(models.Model):
                 is_active=True,
                 # subscription__is_premium=True  # Exemple
             ).values_list('email', flat=True)
+        elif self.recipient_type == 'selected':
+            return self.selected_users.filter(is_active=True).values_list('email', flat=True)
         elif self.recipient_type == 'custom':
             if self.custom_recipients:
                 return [email.strip() for email in self.custom_recipients.split(',') if email.strip()]
