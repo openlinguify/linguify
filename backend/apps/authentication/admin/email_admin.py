@@ -57,7 +57,6 @@ class EmailCampaignAdmin(admin.ModelAdmin):
     ]
     list_filter = ['status', 'recipient_type', 'created_at', 'sent_at']
     search_fields = ['name', 'template__name']
-    autocomplete_fields = ['template']
     filter_horizontal = ['selected_users']
     readonly_fields = [
         'status', 'sent_at', 'total_recipients',
@@ -67,6 +66,15 @@ class EmailCampaignAdmin(admin.ModelAdmin):
 
     class Media:
         js = ('authentication/js/email_campaign_admin.js',)
+
+    def get_form(self, request, obj=None, **kwargs):
+        """Personnaliser le formulaire pour le template"""
+        form = super().get_form(request, obj, **kwargs)
+        # S'assurer que le widget a les bons attributs pour le popup
+        if 'template' in form.base_fields:
+            form.base_fields['template'].widget.can_add_related = True
+            form.base_fields['template'].widget.can_change_related = True
+        return form
 
     fieldsets = (
         (_('Campaign Information'), {
