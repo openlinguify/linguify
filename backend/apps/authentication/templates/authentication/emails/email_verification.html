@@ -26,11 +26,11 @@
                     
                     <!-- Header -->
                     <tr>
-                        <td align="center" style="background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%); padding: 40px 30px; color: #ffffff;">
-                            <h1 style="margin: 0 0 10px 0; font-size: 28px; font-weight: 700; line-height: 1.2;">
-                                {% trans "Welcome to" %} <span style="font-weight: 800;">Linguify</span>!
+                        <td bgcolor="#2D5BBA" align="center" style="padding: 40px 30px; color: #ffffff;">
+                            <h1 style="margin: 0 0 10px 0; font-size: 28px; font-weight: 700; line-height: 1.2; color: #ffffff;">
+                                {% trans "Welcome to" %} <span style="font-weight: 800;">Open Linguify</span>!
                             </h1>
-                            <p style="margin: 0; font-size: 16px; opacity: 0.9; line-height: 1.4;">
+                            <p style="margin: 0; font-size: 16px; line-height: 1.4; color: #ffffff;">
                                 {% trans "Your language learning journey starts here" %}
                             </p>
                         </td>
@@ -53,9 +53,15 @@
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
                                     <td align="center" style="padding: 20px 0 30px 0;">
-                                        <a href="{{ verification_url }}" style="display: inline-block; background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%); color: #ffffff; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3); text-align: center;">
-                                            ✉️ {% trans "Verify My Email Address" %}
-                                        </a>
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <td bgcolor="#2D5BBA" align="center" style="border-radius: 12px;">
+                                                    <a href="{{ verification_url }}" style="display: inline-block; padding: 16px 40px; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px; text-align: center;">
+                                                        ✉️ {% trans "Verify My Email Address" %}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
                             </table>
@@ -77,7 +83,7 @@
                             <!-- Warning box -->
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td style="background: linear-gradient(135deg, #fff3cd 0%, rgba(221, 107, 32, 0.05) 100%); border: 1px solid #00D4AA; border-radius: 12px; padding: 20px; margin: 25px 0;">
+                                    <td bgcolor="#fff3cd" style="border: 1px solid #00D4AA; border-radius: 12px; padding: 20px; margin: 25px 0;">
                                         <p style="margin: 0; font-size: 14px; color: #1a202c; line-height: 1.5; text-align: center;">
                                             <strong>{% trans "Important:" %}</strong> {% blocktrans with hours=24 %}This verification link will expire in {{ hours }} hours. If you don't verify your email within this time, you'll need to request a new verification email.{% endblocktrans %}
                                         </p>

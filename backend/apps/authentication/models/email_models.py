@@ -172,6 +172,14 @@ class EmailCampaign(models.Model):
             context = self.context_data or {}
             context['is_test'] = True
 
+            # Ajouter des données utilisateur de test
+            context['user'] = {
+                'email': self.test_email,
+                'username': 'test_user',
+                'first_name': 'Test',
+                'last_name': 'User',
+            }
+
             send_mail(
                 subject=f"[TEST] {translation.render_subject(context)}",
                 message=translation.render_body_text(context),

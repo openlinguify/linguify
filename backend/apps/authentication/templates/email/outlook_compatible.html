@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+</head>
+<body style="margin: 0; padding: 0; background-color: #f7fafc; font-family: Arial, sans-serif;">
+    <!-- Wrapper principal -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f7fafc;">
+        <tr>
+            <td align="center" style="padding: 20px 15px;">
+                <!-- Container de l'email -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width: 600px; background-color: #ffffff; border-radius: 15px;">
+
+                    <!-- HEADER avec couleur solide -->
+                    <tr>
+                        <td bgcolor="#2D5BBA" align="center" style="padding: 40px 30px; color: #ffffff; border-radius: 15px 15px 0 0;">
+                            <h1 style="margin: 0 0 10px 0; font-size: 28px; font-weight: 700; color: #ffffff; font-family: Arial, sans-serif;">
+                                🎉 Nouvelle fonctionnalité Linguify !
+                            </h1>
+                            <p style="margin: 0; font-size: 16px; color: #ffffff; font-family: Arial, sans-serif;">
+                                Découvrez ce qui vous attend
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- CONTENU -->
+                    <tr>
+                        <td style="padding: 40px 30px; background-color: #ffffff;">
+
+                            <!-- Salutation -->
+                            <p style="margin: 0 0 20px 0; font-size: 18px; color: #718096; text-align: center; font-family: Arial, sans-serif;">
+                                Bonjour <strong style="color: #1a202c;">{{ user.first_name|default:user.username }}</strong>,
+                            </p>
+
+                            <!-- Message principal -->
+                            <p style="margin: 0 0 30px 0; font-size: 16px; color: #718096; line-height: 1.7; font-family: Arial, sans-serif; text-align: left;">
+                                Nous sommes ravis de vous annoncer le lancement d'une nouvelle fonctionnalité sur Linguify qui va transformer votre expérience d'apprentissage !
+                            </p>
+
+                            <!-- BOX avec les nouveautés -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td bgcolor="#f0f4ff" style="border-left: 4px solid #00D4AA; border-radius: 8px; padding: 25px;">
+                                        <h2 style="margin: 0 0 15px 0; color: #2D5BBA; font-size: 20px; font-weight: 700; font-family: Arial, sans-serif;">
+                                            ✨ Ce qui est nouveau :
+                                        </h2>
+
+                                        <!-- Liste des features -->
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                            <tr>
+                                                <td style="padding: 8px 0;">
+                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                        <tr>
+                                                            <td width="30" valign="top" style="color: #00D4AA; font-size: 16px; font-family: Arial, sans-serif;">✓</td>
+                                                            <td style="color: #718096; font-size: 15px; font-family: Arial, sans-serif; line-height: 1.5;">Interface améliorée et plus intuitive</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0;">
+                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                        <tr>
+                                                            <td width="30" valign="top" style="color: #00D4AA; font-size: 16px; font-family: Arial, sans-serif;">✓</td>
+                                                            <td style="color: #718096; font-size: 15px; font-family: Arial, sans-serif; line-height: 1.5;">Nouveaux exercices interactifs</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0;">
+                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                        <tr>
+                                                            <td width="30" valign="top" style="color: #00D4AA; font-size: 16px; font-family: Arial, sans-serif;">✓</td>
+                                                            <td style="color: #718096; font-size: 15px; font-family: Arial, sans-serif; line-height: 1.5;">Système de révision optimisé</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0;">
+                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                        <tr>
+                                                            <td width="30" valign="top" style="color: #00D4AA; font-size: 16px; font-family: Arial, sans-serif;">✓</td>
+                                                            <td style="color: #718096; font-size: 15px; font-family: Arial, sans-serif; line-height: 1.5;">Statistiques détaillées de progression</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- BOUTON CTA -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center" style="padding: 30px 0;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <td bgcolor="#2D5BBA" align="center" style="border-radius: 12px; padding: 16px 40px;">
+                                                    <a href="https://linguify.app/dashboard" style="display: inline-block; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px; font-family: Arial, sans-serif;">
+                                                        🚀 Découvrir maintenant
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Message de fin -->
+                            <p style="margin: 20px 0 0 0; font-size: 15px; color: #718096; text-align: center; font-family: Arial, sans-serif;">
+                                Merci de faire partie de la communauté Linguify !
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- FOOTER -->
+                    <tr>
+                        <td bgcolor="#f7fafc" style="padding: 30px; text-align: center; border-top: 1px solid #e2e8f0; border-radius: 0 0 15px 15px;">
+                            <p style="margin: 0 0 10px 0; font-size: 14px; color: #718096; font-family: Arial, sans-serif;">
+                                Vous recevez cet email car vous avez un compte Linguify.
+                            </p>
+                            <p style="margin: 0; font-size: 14px; font-family: Arial, sans-serif;">
+                                <span style="color: #2D5BBA; font-weight: 700;">L'équipe Linguify</span>
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

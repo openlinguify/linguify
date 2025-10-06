@@ -44,8 +44,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
         }
         .header {
-            background: #2D5BBA;
-            background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%);
+            background-color: #2D5BBA;
             padding: 48px 40px;
             text-align: center;
         }
@@ -135,16 +134,6 @@
             text-decoration: none !important;
             -webkit-text-size-adjust: none;
             mso-hide: all;
-        }
-        /* Gradient overlay for supporting clients */
-        @media screen and (-webkit-min-device-pixel-ratio: 0) {
-            .button-td {
-                background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%) !important;
-            }
-            .button-a {
-                background: linear-gradient(135deg, #2D5BBA 0%, #017E84 100%) !important;
-                border: none !important;
-            }
         }
         .alternative-link {
             margin-top: 20px;
@@ -277,9 +266,9 @@
                 </div>
 
                 <div class="footer-links">
-                    <a href="{{ terms_url }}">{% trans "Terms of Use" %}</a>
-                    <a href="{{ portal_url }}/privacy/">{% trans "Privacy" %}</a>
-                    <a href="{{ portal_url }}/contact/">{% trans "Contact" %}</a>
+                    <a href="https://openlinguify.com/terms">{% trans "Terms of Use" %}</a>
+                    <a href="https://openlinguify.com/privacy">{% trans "Privacy" %}</a>
+                    <a href="https://openlinguify.com/contact">{% trans "Contact" %}</a>
                 </div>
 
                 <div class="footer-text">
