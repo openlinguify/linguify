@@ -30,14 +30,17 @@ LOCAL_APPS = [
     'apps.teachers',
     # 'apps.course_builder',  # Replaced completely by contentstore
     'apps.contentstore',
+    'apps.cours',  # NEW: Ultra-modular course management (Udemy/Superprof style)
     'apps.monetization',
-    'apps.scheduling',
+    'apps.scheduling',  # Enhanced with HTMX and advanced features
     'apps.sync',
+    'apps.saas_web',  # SaaS web interface
 ]
 
 THIRD_PARTY_APPS = [
     'rest_framework',
     'corsheaders',
+    'django_htmx',  # HTMX support for async interactions
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
@@ -51,6 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',  # HTMX middleware for request.htmx
+    'apps.saas_web.middleware.SubdomainMiddleware',  # Subdomain routing (optional)
 ]
 
 ROOT_URLCONF = 'cms.urls'
