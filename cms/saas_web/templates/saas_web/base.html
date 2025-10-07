@@ -1,0 +1,569 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Open Linguify{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    {% load static %}
+    
+    <!-- Tailwind CSS Modals (compatible with Bootstrap) -->
+    <link rel="stylesheet" href="{% static 'css/tailwind-modals.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tailwind-settings.css' %}">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'saas_web/css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'saas_web/css/app_header.css' %}">
+    {% block extra_css %}{% endblock %}
+    
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    
+    <!-- Favicon - High quality PNG -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/favicon.png' %}">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    
+    <style>
+        :root {
+            --header-height: 64px;
+            --linguify-primary: #2D5BBA;
+            --linguify-secondary: #8B5CF6;
+            --linguify-accent: #00D4AA;
+            --primary-color: var(--linguify-primary);
+            --primary-dark: #1E3A8A;
+            --secondary-color: var(--linguify-secondary);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            padding-top: var(--header-height, 64px); /* Pour le header fixe - utilise la variable CSS */
+            min-height: 100vh;
+            scrollbar-gutter: stable; /* Réserve l'espace pour la scrollbar pour éviter les décalages */
+        }
+        
+        /* Load dashboard background early to prevent flash */
+        body.dashboard-bg-loaded {
+            transition: background-color 0.3s ease;
+        }
+        
+        /* Background-specific text adaptations */
+        
+        /* Dark backgrounds - White text */
+        body.bg-dark,
+        body.bg-dark-blue {
+            color: #f1f5f9;
+        }
+        
+        body.bg-dark .page-title,
+        body.bg-dark .section-title,
+        body.bg-dark h1, body.bg-dark h2, body.bg-dark h3, 
+        body.bg-dark h4, body.bg-dark h5, body.bg-dark h6,
+        body.bg-dark-blue .page-title,
+        body.bg-dark-blue .section-title,
+        body.bg-dark-blue h1, body.bg-dark-blue h2, body.bg-dark-blue h3, 
+        body.bg-dark-blue h4, body.bg-dark-blue h5, body.bg-dark-blue h6 {
+            color: #f1f5f9 !important;
+        }
+        
+        body.bg-dark .app-name-simple,
+        body.bg-dark-blue .app-name-simple {
+            color: #e2e8f0 !important;
+        }
+        
+        /* Light backgrounds with color tints - Darker text for better contrast */
+        body.bg-linguify-light,
+        body.bg-linguify-accent,
+        body.bg-linguify-purple,
+        body.bg-warm,
+        body.bg-cool,
+        body.bg-nature {
+            color: #1f2937;
+        }
+        
+        body.bg-linguify-light .page-title,
+        body.bg-linguify-light .section-title,
+        body.bg-linguify-light h1, body.bg-linguify-light h2, body.bg-linguify-light h3,
+        body.bg-linguify-light h4, body.bg-linguify-light h5, body.bg-linguify-light h6,
+        body.bg-linguify-accent .page-title,
+        body.bg-linguify-accent .section-title,
+        body.bg-linguify-accent h1, body.bg-linguify-accent h2, body.bg-linguify-accent h3,
+        body.bg-linguify-accent h4, body.bg-linguify-accent h5, body.bg-linguify-accent h6,
+        body.bg-linguify-purple .page-title,
+        body.bg-linguify-purple .section-title,
+        body.bg-linguify-purple h1, body.bg-linguify-purple h2, body.bg-linguify-purple h3,
+        body.bg-linguify-purple h4, body.bg-linguify-purple h5, body.bg-linguify-purple h6,
+        body.bg-warm .page-title,
+        body.bg-warm .section-title,
+        body.bg-warm h1, body.bg-warm h2, body.bg-warm h3,
+        body.bg-warm h4, body.bg-warm h5, body.bg-warm h6,
+        body.bg-cool .page-title,
+        body.bg-cool .section-title,
+        body.bg-cool h1, body.bg-cool h2, body.bg-cool h3,
+        body.bg-cool h4, body.bg-cool h5, body.bg-cool h6,
+        body.bg-nature .page-title,
+        body.bg-nature .section-title,
+        body.bg-nature h1, body.bg-nature h2, body.bg-nature h3,
+        body.bg-nature h4, body.bg-nature h5, body.bg-nature h6 {
+            color: #111827 !important;
+        }
+        
+        body.bg-linguify-light .app-name-simple,
+        body.bg-linguify-accent .app-name-simple,
+        body.bg-linguify-purple .app-name-simple,
+        body.bg-warm .app-name-simple,
+        body.bg-cool .app-name-simple,
+        body.bg-nature .app-name-simple {
+            color: #374151 !important;
+        }
+        
+        /* Neutral backgrounds - Standard dark text */
+        body.bg-default,
+        body.bg-white,
+        body.bg-gray-light,
+        body.bg-gray {
+            color: #374151;
+        }
+        
+        body.bg-default .page-title,
+        body.bg-default .section-title,
+        body.bg-default h1, body.bg-default h2, body.bg-default h3,
+        body.bg-default h4, body.bg-default h5, body.bg-default h6,
+        body.bg-white .page-title,
+        body.bg-white .section-title,
+        body.bg-white h1, body.bg-white h2, body.bg-white h3,
+        body.bg-white h4, body.bg-white h5, body.bg-white h6,
+        body.bg-gray-light .page-title,
+        body.bg-gray-light .section-title,
+        body.bg-gray-light h1, body.bg-gray-light h2, body.bg-gray-light h3,
+        body.bg-gray-light h4, body.bg-gray-light h5, body.bg-gray-light h6,
+        body.bg-gray .page-title,
+        body.bg-gray .section-title,
+        body.bg-gray h1, body.bg-gray h2, body.bg-gray h3,
+        body.bg-gray h4, body.bg-gray h5, body.bg-gray h6 {
+            color: #111827 !important;
+        }
+        
+        body.bg-default .app-name-simple,
+        body.bg-white .app-name-simple,
+        body.bg-gray-light .app-name-simple,
+        body.bg-gray .app-name-simple {
+            color: #1e293b !important;
+        }
+        
+        /* Card adjustments for all backgrounds */
+        
+        /* Pure white background - Invisible cards */
+        body.bg-white .app-card-simple,
+        body.bg-white .app-card-simple:hover,
+        body.bg-white .app-card-simple:focus,
+        body.bg-white .app-card-simple:active {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            border-radius: 12px;
+        }
+        
+        
+        /* Colored backgrounds */
+        body.bg-linguify-light .app-card-simple,
+        body.bg-linguify-accent .app-card-simple,
+        body.bg-linguify-purple .app-card-simple,
+        body.bg-warm .app-card-simple,
+        body.bg-cool .app-card-simple,
+        body.bg-nature .app-card-simple {
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Dark backgrounds */
+        body.bg-dark .app-card-simple,
+        body.bg-dark-blue .app-card-simple {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .main-content {
+            min-height: calc(100vh - var(--header-height, 64px));
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+        
+        /* Page specific styles */
+        .content-area {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+        }
+        
+        /* Cards */
+        .app-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .settings-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Form elements */
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Alerts */
+        .alert {
+            border: none;
+            border-radius: 12px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 1rem;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Load dashboard background immediately to prevent flash -->
+    <script>
+    (function() {
+        const savedBackground = localStorage.getItem('dashboard_background') || 'default';
+        const backgroundColors = {
+            // Neutral colors
+            'default': '#f8fafc',
+            'white': '#ffffff',
+            'gray-light': '#f9fafb',
+            'gray': '#f3f4f6',
+            
+            // Linguify colors
+            'linguify-light': 'linear-gradient(135deg, #f0f4ff 0%, #e0f2fe 100%)',
+            'linguify-accent': 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+            'linguify-purple': 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)',
+            
+            // Premium colors
+            'warm': 'linear-gradient(135deg, #fefbf3 0%, #fef7ed 100%)',
+            'cool': 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+            'nature': 'linear-gradient(135deg, #f7fee7 0%, #ecfccb 100%)',
+            
+            // Dark mode
+            'dark': '#1f2937',
+            'dark-blue': 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+            
+            // Old version compatibility
+            'blue': '#eff6ff',
+            'green': '#f0fdf4',
+            'purple': '#faf5ff'
+        };
+        
+        const color = backgroundColors[savedBackground] || backgroundColors['default'];
+        document.body.style.setProperty('background', color, 'important');
+        document.body.classList.add('dashboard-bg-loaded');
+        
+        // Remove all background classes first
+        document.body.classList.remove(
+            'bg-default', 'bg-white', 'bg-gray-light', 'bg-gray',
+            'bg-linguify-light', 'bg-linguify-accent', 'bg-linguify-purple',
+            'bg-warm', 'bg-cool', 'bg-nature', 
+            'bg-dark', 'bg-dark-blue',
+            'bg-blue', 'bg-green', 'bg-purple', // compatibility
+            'dark-background' // old class
+        );
+        
+        // Apply specific background class for text adaptation
+        document.body.classList.add('bg-' + savedBackground);
+    })();
+    </script>
+    
+    <!-- Include SaaS header -->
+    {% block header_content %}
+    {% include 'components/header/app_header.html' %}
+    {% endblock %}
+    
+    <!-- Main content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- HTMX Global Integration -->
+    <script src="https://unpkg.com/htmx.org@2.0.3/dist/htmx.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notification System -->
+    <script src="{% static 'js/notification/notification-header.js' %}?v=2025.8.1.4"></script>
+    
+    <!-- Custom JS -->
+    <script src="{% static 'saas_web/js/main.js' %}"></script>
+    
+    <!-- HTMX Global Configuration -->
+    <script>
+        // Configure HTMX globally for Linguify
+        document.addEventListener('DOMContentLoaded', function() {
+            // CSRF Token configuration for HTMX
+            htmx.config.getCacheBusterParam = false;
+            
+            // Add CSRF token to all HTMX requests
+            document.body.addEventListener('htmx:configRequest', function(evt) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                if (csrfToken) {
+                    evt.detail.headers['X-CSRFToken'] = csrfToken;
+                }
+            });
+            
+            // Global loading states
+            document.body.addEventListener('htmx:beforeRequest', function(evt) {
+                const target = evt.detail.elt;
+                // Add loading class
+                target.classList.add('htmx-loading');
+                
+                // Show loading indicator if element has loading target
+                const loadingTarget = target.getAttribute('hx-indicator') || target.querySelector('.htmx-indicator');
+                if (loadingTarget) {
+                    if (typeof loadingTarget === 'string') {
+                        const indicator = document.querySelector(loadingTarget);
+                        if (indicator) indicator.style.display = 'block';
+                    } else {
+                        loadingTarget.style.display = 'block';
+                    }
+                }
+            });
+            
+            document.body.addEventListener('htmx:afterRequest', function(evt) {
+                const target = evt.detail.elt;
+                // Remove loading class
+                target.classList.remove('htmx-loading');
+                
+                // Hide loading indicator
+                const loadingTarget = target.getAttribute('hx-indicator') || target.querySelector('.htmx-indicator');
+                if (loadingTarget) {
+                    if (typeof loadingTarget === 'string') {
+                        const indicator = document.querySelector(loadingTarget);
+                        if (indicator) indicator.style.display = 'none';
+                    } else {
+                        loadingTarget.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Error handling
+            document.body.addEventListener('htmx:responseError', function(evt) {
+                console.error('HTMX Error:', evt.detail);
+                
+                // Show user-friendly error message
+                if (window.notificationService) {
+                    window.notificationService.error('{% trans "An error occurred. Please try again." %}');
+                } else {
+                    alert('{% trans "An error occurred. Please try again." %}');
+                }
+            });
+            
+            // Success notifications for common actions
+            document.body.addEventListener('htmx:afterSwap', function(evt) {
+                // Check if the response contains a success message
+                const response = evt.detail.xhr.response;
+                if (response && response.includes('success-message')) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(response, 'text/html');
+                    const successMsg = doc.querySelector('.success-message');
+                    if (successMsg && window.notificationService) {
+                        window.notificationService.success(successMsg.textContent);
+                    }
+                }
+            });
+        });
+    </script>
+    
+    <!-- Language switching -->
+    <script>
+    function setLanguage(lang) {
+        // Create form to submit language change
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/i18n/setlang/';
+        
+        // Add CSRF token
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = '{{ csrf_token }}';
+        form.appendChild(csrfInput);
+        
+        // Add language
+        const langInput = document.createElement('input');
+        langInput.type = 'hidden';
+        langInput.name = 'language';
+        langInput.value = lang;
+        form.appendChild(langInput);
+        
+        // Add next URL
+        const nextInput = document.createElement('input');
+        nextInput.type = 'hidden';
+        nextInput.name = 'next';
+        nextInput.value = window.location.pathname;
+        form.appendChild(nextInput);
+        
+        // Submit form
+        document.body.appendChild(form);
+        form.submit();
+    }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Bouton chat flottant global (désactivé car app chat non activée) -->
+    {% comment %}
+    <!-- Widget Messenger désactivé car l'app Chat n'est pas activée -->
+    {% if user.is_authenticated and request.resolver_match.url_name != 'chat_home' %}
+        <style>
+            .global-chat-btn {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1040;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                font-size: 24px;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+                border: none !important; /* Supprimer toute bordure */
+                outline: none !important; /* Supprimer l'outline */
+                cursor: pointer;
+            }
+
+            .global-chat-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+                color: white;
+                border: none !important;
+                outline: none !important;
+            }
+            
+            .global-chat-btn:focus,
+            .global-chat-btn:active {
+                border: none !important;
+                outline: none !important;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            }
+            
+            .global-chat-btn .chat-badge {
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                background: #ff4757;
+                color: white;
+                border-radius: 50%;
+                min-width: 20px;
+                height: 20px;
+                font-size: 12px;
+                font-weight: bold;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                border: 2px solid white;
+            }
+            
+            .global-chat-btn .chat-badge.visible {
+                display: flex;
+            }
+
+            @media (max-width: 768px) {
+                .global-chat-btn {
+                    width: 50px;
+                    height: 50px;
+                    bottom: 15px;
+                    right: 15px;
+                    font-size: 20px;
+                }
+            }
+        </style>
+        
+        <button class="global-chat-btn" id="global-chat-toggle" title="{% trans 'Open chat' %}">
+            <i class="bi bi-chat-dots-fill"></i>
+            <span class="chat-badge" id="global-chat-badge">0</span>
+        </button>
+        <!-- Widget chat popup -->
+        {% include 'chat/messenger_widget.html' %}
+    {% endif %}
+    {% endcomment %}
+</body>
+</html>

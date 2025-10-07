@@ -1,0 +1,258 @@
+# DUTCH TRANSLATION FOR SAAS_WEB
+# Copyright (C) 2025 Open Linguify
+# This file is distributed under the same license as the Open Linguify package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Open Linguify SaaS Web\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-04 04:25+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Open Linguify Team\n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Navigation
+#: .\saas_web\templates\components\header\app_header.html:18
+msgid "Return to dashboard"
+msgstr "Terug naar dashboard"
+
+#: .\saas_web\templates\components\header\app_header.html:36
+#: .\saas_web\templates\components\header\app_header.html:48
+msgid "Go to dashboard"
+msgstr "Ga naar dashboard"
+
+# Dashboard
+#: .\saas_web\templates\components\header\app_header.html:37
+#: .\saas_web\templates\components\header\app_header.html:49
+#: .\saas_web\templates\components\header\app_header.html:221
+#: .\saas_web\templates\components\header\app_header.html:230
+#: .\saas_web\templates\saas_web\dashboard.html:5
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: .\saas_web\templates\components\header\app_header.html:42
+#: .\saas_web\templates\components\header\app_header.html:54
+msgid "Browse app store"
+msgstr "Blader door de winkel"
+
+# App Store
+#: .\saas_web\templates\components\header\app_header.html:43
+#: .\saas_web\templates\components\header\app_header.html:55
+#: .\saas_web\templates\components\header\app_header.html:225
+#: .\saas_web\templates\components\header\app_header.html:234
+#: .\saas_web\templates\saas_web\dashboard.html:52
+#: .\saas_web\templates\saas_web\dashboard.html:54
+#: .\saas_web\templates\saas_web\dashboard.html:75
+#: .\saas_web\templates\saas_web\dashboard.html:77
+msgid "App Store"
+msgstr "App Store"
+
+#: .\saas_web\templates\components\header\app_header.html:68
+msgid "Toggle navigation menu"
+msgstr "Navigatiemenu schakelen"
+
+#: .\saas_web\templates\components\header\app_header.html:80
+msgid "Select language"
+msgstr "Taal selecteren"
+
+#: .\saas_web\templates\components\header\app_header.html:83
+#: .\saas_web\templates\components\header\app_header.html:104
+msgid "French"
+msgstr "Frans"
+
+#: .\saas_web\templates\components\header\app_header.html:85
+#: .\saas_web\templates\components\header\app_header.html:91
+#: .\saas_web\templates\components\header\app_header.html:98
+#: .\saas_web\templates\components\header\app_header.html:99
+msgid "English"
+msgstr "Engels"
+
+#: .\saas_web\templates\components\header\app_header.html:87
+#: .\saas_web\templates\components\header\app_header.html:110
+msgid "Spanish"
+msgstr "Spaans"
+
+#: .\saas_web\templates\components\header\app_header.html:89
+#: .\saas_web\templates\components\header\app_header.html:116
+msgid "Dutch"
+msgstr "Nederlands"
+
+# Notifications
+#: .\saas_web\templates\components\header\app_header.html:130
+msgid "View notifications"
+msgstr "Bekijk meldingen"
+
+#: .\saas_web\templates\components\header\app_header.html:135
+msgid "Unread notifications count"
+msgstr "Aantal ongelezen meldingen"
+
+#: .\saas_web\templates\components\header\app_header.html:142
+msgid "Notifications"
+msgstr "Meldingen"
+
+#: .\saas_web\templates\components\header\app_header.html:146
+msgid "Mark all notifications as read"
+msgstr "Markeer alle meldingen als gelezen"
+
+#: .\saas_web\templates\components\header\app_header.html:147
+msgid "Mark all as read"
+msgstr "Alles als gelezen markeren"
+
+#: .\saas_web\templates\components\header\app_header.html:153
+msgid "No new notifications"
+msgstr "Geen nieuwe meldingen"
+
+# User Menu
+#: .\saas_web\templates\components\header\app_header.html:165
+msgid "User menu"
+msgstr "Gebruikersmenu"
+
+#: .\saas_web\templates\components\header\app_header.html:168
+msgid "Profile picture"
+msgstr "Profielfoto"
+
+# Settings
+#: .\saas_web\templates\components\header\app_header.html:195
+#: .\saas_web\templates\saas_web\dashboard.html:62
+#: .\saas_web\templates\saas_web\dashboard.html:64
+#: .\saas_web\templates\saas_web\dashboard.html:85
+#: .\saas_web\templates\saas_web\dashboard.html:87
+#: .\saas_web\templates\saas_web\settings\settings.html:6
+#: .\saas_web\templates\saas_web\settings\settings.html:16
+msgid "Settings"
+msgstr "Instellingen"
+
+#: .\saas_web\templates\components\header\app_header.html:201
+#: .\saas_web\templates\components\header\app_header.html:239
+msgid "Bugs & Feedbacks"
+msgstr "Bugs en feedback"
+
+#: .\saas_web\templates\components\header\app_header.html:208
+msgid "Logout"
+msgstr "Uitloggen"
+
+# Mobile Navigation
+#: .\saas_web\templates\components\header\app_header.html:222
+#: .\saas_web\templates\components\header\app_header.html:231
+msgid "Home"
+msgstr "Home"
+
+#: .\saas_web\templates\components\header\app_header.html:226
+#: .\saas_web\templates\components\header\app_header.html:235
+msgid "Store"
+msgstr "Winkel"
+
+#: .\saas_web\templates\saas_web\base.html:427
+#: .\saas_web\templates\saas_web\base.html:429
+msgid "An error occurred. Please try again."
+msgstr "Er is een fout opgetreden. Probeer het opnieuw."
+
+#: .\saas_web\templates\saas_web\settings\settings.html:17
+msgid "Customize your Linguify experience"
+msgstr "Pas je Linguify-ervaring aan"
+
+#: .\saas_web\templates\saas_web\settings\settings.html:22
+msgid "Search settings..."
+msgstr "Zoek instellingen..."
+
+#: .\saas_web\templates\saas_web\settings\settings.html:67
+msgid "App Manager"
+msgstr "App-beheer"
+
+#: .\saas_web\templates\saas_web\settings\settings.html:83
+#: .\saas_web\templates\saas_web\settings\settings.html:85
+msgid "Profile & Account"
+msgstr "Profiel & Account"
+
+#: .\saas_web\templates\saas_web\settings\settings.html:86
+msgid "Manage your personal information and account settings"
+msgstr "Beheer je persoonlijke informatie en accountinstellingen"
+
+#: .\saas_web\templates\saas_web\settings\settings.html:144
+#, python-format
+msgid "%(name)s settings coming soon..."
+msgstr ""
+
+#: .\saas_web\views\admin.py:18
+msgid "Fix Apps - Administration"
+msgstr ""
+
+#: .\saas_web\views\dashboard.py:31
+msgid "Dashboard - Open Linguify"
+msgstr ""
+
+#~ msgid "Welcome back"
+#~ msgstr "Welkom terug"
+
+#~ msgid "Your Apps"
+#~ msgstr "Jouw apps"
+
+#~ msgid "Recent Activity"
+#~ msgstr "Recente activiteit"
+
+#~ msgid "Statistics"
+#~ msgstr "Statistieken"
+
+#~ msgid "No applications installed"
+#~ msgstr "Geen applicaties geïnstalleerd"
+
+#~ msgid "Explore the App Store to discover and install learning applications."
+#~ msgstr ""
+#~ "Verken de App Store om leerapplicaties te ontdekken en te installeren."
+
+#~ msgid "Explore App Store"
+#~ msgstr "Verken App Store"
+
+#~ msgid "All Apps"
+#~ msgstr "Alle apps"
+
+#~ msgid "Installed"
+#~ msgstr "Geïnstalleerd"
+
+#~ msgid "Install"
+#~ msgstr "Installeren"
+
+#~ msgid "Uninstall"
+#~ msgstr "Verwijderen"
+
+#~ msgid "Free"
+#~ msgstr "Gratis"
+
+#~ msgid "Premium"
+#~ msgstr "Premium"
+
+#~ msgid "Profile"
+#~ msgstr "Profiel"
+
+#~ msgid "Account"
+#~ msgstr "Account"
+
+#~ msgid "Preferences"
+#~ msgstr "Voorkeuren"
+
+#~ msgid "Language"
+#~ msgstr "Taal"
+
+#~ msgid "Theme"
+#~ msgstr "Thema"
+
+#~ msgid "Save changes"
+#~ msgstr "Wijzigingen opslaan"
+
+# Common
+#~ msgid "Search"
+#~ msgstr "Zoeken"
+
+#~ msgid "Help"
+#~ msgstr "Hulp"
+
+#~ msgid "Support"
+#~ msgstr "Ondersteuning"
+
+#~ msgid "Open chat"
+#~ msgstr "Chat openen"

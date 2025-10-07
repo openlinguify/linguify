@@ -1,0 +1,393 @@
+/* Critical CSS for header - loaded inline for performance */
+:root {
+    --header-height: 64px;
+    --primary-color: #007ACC;
+    --border-color: #e2e8f0;
+    --shadow-light: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition-fast: 0.15s ease;
+    --transition-medium: 0.3s ease;
+}
+
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030; /* Bootstrap z-index for fixed elements */
+    background: rgba(255, 255, 255);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    height: var(--header-height);
+    transition: box-shadow var(--transition-medium);
+}
+
+.fixed-header .navbar {
+    padding: 0;
+    min-height: var(--header-height);
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+}
+
+.fixed-header .navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity var(--transition-fast);
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.fixed-header .navbar-brand:not(.app-brand-gradient) {
+    color: #007ACC !important;
+}
+
+.fixed-header .navbar-brand:hover:not(.app-brand-gradient) {
+    opacity: 0.9;
+}
+
+/* Improved button styles */
+.header-btn {
+    border-radius: 8px;
+    transition: all var(--transition-fast);
+    font-weight: 500;
+}
+
+.header-btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Notification badge improvements */
+.notification-badge {
+    font-size: 0.75rem;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Profile picture improvements */
+.profile-picture {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    transition: border-color var(--transition-fast);
+}
+
+.profile-picture:hover {
+    border-color: var(--primary-color);
+}
+
+/* Force hide navbar-toggler on large screens */
+@media (min-width: 992px) {
+    .navbar-toggler {
+        display: none !important;
+    }
+}
+
+/* Mobile optimizations */
+@media (max-width: 991px) {
+    .navbar-toggler {
+        border: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+    }
+    
+    .navbar-collapse {
+        background: white;
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-medium);
+        border: 1px solid var(--border-color);
+    }
+    
+    .mobile-nav-item {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        transition: background-color var(--transition-fast);
+    }
+    
+    .mobile-nav-item:hover {
+        background-color: #f8fafc;
+    }
+}
+
+/* Language dropdown improvements */
+.language-dropdown {
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #6c757d #f8f9fa;
+    border-radius: 8px !important;
+}
+
+.language-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.language-dropdown::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 3px;
+}
+
+.language-dropdown::-webkit-scrollbar-thumb {
+    background: #6c757d;
+    border-radius: 3px;
+}
+
+.language-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #495057;
+}
+
+.language-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    transition: background-color var(--transition-fast);
+}
+
+.language-item:hover {
+    background-color: #f8fafc;
+}
+
+/* Notification dropdown improvements */
+.notification-dropdown {
+    min-width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Loading states */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Add space for fixed header - Only apply if not already set */
+body:not(.app-body-layout) {
+    padding-top: var(--header-height);
+}
+
+/* Unified button styles - prevent app-specific CSS from overriding */
+.fixed-header .header-btn,
+.fixed-header .btn.header-btn,
+header .header-btn,
+header .btn.header-btn,
+#mainHeader .header-btn,
+#mainHeader .btn.header-btn {
+    border-radius: 8px !important;
+    transition: all var(--transition-fast) !important;
+    font-weight: 500 !important;
+    border: 1px solid var(--border-color) !important;
+    background: white !important;
+    color: #6c757d !important;
+    /* Force uniform button size */
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    min-height: 31px !important;
+    box-sizing: border-box !important;
+}
+
+.fixed-header .header-btn:hover,
+.fixed-header .btn.header-btn:hover,
+header .header-btn:hover,
+header .btn.header-btn:hover,
+#mainHeader .header-btn:hover,
+#mainHeader .btn.header-btn:hover {
+    transform: translateY(-1px) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Specific button variants */
+.fixed-header .btn-outline-primary.header-btn,
+header .btn-outline-primary.header-btn,
+#mainHeader .btn-outline-primary.header-btn {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.fixed-header .btn-outline-primary.header-btn:hover,
+header .btn-outline-primary.header-btn:hover,
+#mainHeader .btn-outline-primary.header-btn:hover {
+    background: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Override any btn-sm or other size variations */
+.fixed-header .header-btn.btn-sm,
+.fixed-header .btn.header-btn.btn-sm,
+.fixed-header .header-btn.btn-lg,
+.fixed-header .btn.header-btn.btn-lg,
+header .header-btn.btn-sm,
+header .btn.header-btn.btn-sm,
+header .header-btn.btn-lg,
+header .btn.header-btn.btn-lg,
+#mainHeader .header-btn.btn-sm,
+#mainHeader .btn.header-btn.btn-sm,
+#mainHeader .header-btn.btn-lg,
+#mainHeader .btn.header-btn.btn-lg {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    min-height: 31px !important;
+}
+
+/* App brand gradient styling */
+.app-brand-gradient {
+    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+    transition: all var(--transition-medium);
+}
+
+.app-brand-gradient:hover {
+    background: linear-gradient(135deg, #3d6bca 0%, #00e4ba 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: scale(1.05);
+    text-decoration: none;
+}
+
+/* Fallback pour les navigateurs qui ne supportent pas background-clip: text */
+@supports not (-webkit-background-clip: text) {
+    .app-brand-gradient {
+        color: #2D5BBA;
+    }
+    .app-brand-gradient:hover {
+        color: #00D4AA;
+    }
+}
+
+/* App icon styling in header */
+.app-brand-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-medium);
+    height: var(--header-height);
+}
+
+/* Header specific app icon styling - override other app-icon styles */
+.fixed-header .app-icon {
+    width: 32px !important;
+    height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    transition: all var(--transition-medium) !important;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)) !important;
+    border-radius: 0 !important;
+    border: none !important;
+    clip-path: none !important;
+    mask: none !important;
+    display: block !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+}
+
+.app-brand-icon:hover .app-icon {
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+}
+
+/* Keep gradient for Linguify text when not in an app */
+.app-brand-icon .app-brand-gradient {
+    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.app-brand-icon:hover .app-brand-gradient {
+    background: linear-gradient(135deg, #3d6bca 0%, #00e4ba 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: scale(1.05);
+}
+
+/* Fix icon alignment in header */
+.fixed-header .bi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+/* Ensure buttons with icons are properly aligned */
+.header-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.header-btn .bi {
+    vertical-align: baseline;
+    line-height: inherit;
+}
+
+/* Fix dropdown toggle alignment */
+.fixed-header .dropdown-toggle,
+header .dropdown-toggle,
+#mainHeader .dropdown-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    min-height: 31px !important;
+    box-sizing: border-box !important;
+}
+
+/* Profile picture and user menu alignment */
+.profile-picture {
+    vertical-align: middle;
+}
+
+/* Navigation mobile items alignment */
+.mobile-nav-item {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.mobile-nav-item .bi {
+    vertical-align: baseline;
+}

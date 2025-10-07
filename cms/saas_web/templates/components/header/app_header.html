@@ -1,0 +1,340 @@
+<!-- Header fixe réutilisable pour les applications Open Linguify -->
+{% load static %}
+{% load i18n %}
+
+<style>
+    /* Force hide navbar-toggler on desktop */
+    @media (min-width: 992px) {
+        .navbar-toggler {
+            display: none !important;
+        }
+    }
+</style>
+
+<header class="fixed-header" id="mainHeader">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <!-- Brand -->
+            <a class="navbar-brand app-brand-icon" href="{% url 'saas_web:dashboard' %}" aria-label="{% trans 'Return to dashboard' %}">
+                {% if show_feedback_only %}
+                    <i class="bi bi-bug" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                {% elif current_app.static_icon %}
+                    <img src="{{ current_app.static_icon }}" alt="{{ current_app.display_name|default:current_app.name }}" class="app-icon">
+                {% else %}
+                    <span class="app-brand-gradient">{{ current_app.display_name|default:current_app.name|default:"Linguify" }}</span>
+                {% endif %}
+            </a>
+            
+            <div class="ms-auto d-flex align-items-center gap-2 ps-3 pe-2">
+                <!-- App-specific navigation items (can be extended by individual apps) -->
+                {% block app_navigation %}
+                <!-- Desktop Navigation -->
+                <div class="d-flex align-items-center gap-2">
+                    {% if show_feedback_only %}
+                    <a href="{% url 'saas_web:dashboard' %}"
+                       class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
+                       aria-label="{% trans 'Go to dashboard' %}">
+                        <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
+                    </a>
+
+                    <a href="{% url 'saas_web:app_store' %}"
+                       class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
+                       aria-label="{% trans 'Browse app store' %}">
+                        <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
+                    </a>
+                    {% else %}
+                    <a href="{% url 'saas_web:dashboard' %}"
+                       class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
+                       aria-label="{% trans 'Go to dashboard' %}">
+                        <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
+                    </a>
+
+                    <a href="{% url 'saas_web:app_store' %}"
+                       class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
+                       aria-label="{% trans 'Browse app store' %}">
+                        <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
+                    </a>
+                    {% endif %}
+                </div>
+                {% endblock %}
+                
+                <!-- Mobile menu toggle -->
+                <button class="navbar-toggler d-lg-none header-btn"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav"
+                        aria-controls="navbarNav"
+                        aria-expanded="false"
+                        aria-label="{% trans 'Toggle navigation menu' %}">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <!-- Chat accessible via bouton flottant -->
+                
+                <!-- Language Selector -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle header-btn" 
+                            type="button" 
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            aria-label="{% trans 'Select language' %}">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% if LANGUAGE_CODE == 'fr' %}
+                            <img src="{% static 'img/country_flags/fr.png' %}" alt="{% trans 'French' %}" class="me-1" style="width: 18px; height: auto;">
+                        {% elif LANGUAGE_CODE == 'en' %}
+                            <img src="{% static 'img/country_flags/gb.png' %}" alt="{% trans 'English' %}" class="me-1" style="width: 18px; height: auto;">
+                        {% elif LANGUAGE_CODE == 'es' %}
+                            <img src="{% static 'img/country_flags/es.png' %}" alt="{% trans 'Spanish' %}" class="me-1" style="width: 18px; height: auto;">
+                        {% elif LANGUAGE_CODE == 'nl' %}
+                            <img src="{% static 'img/country_flags/nl.png' %}" alt="{% trans 'Dutch' %}" class="me-1" style="width: 18px; height: auto;">
+                        {% else %}
+                            <img src="{% static 'img/country_flags/gb.png' %}" alt="{% trans 'English' %}" class="me-1" style="width: 18px; height: auto;">
+                        {% endif %}
+                        <span class="d-none d-md-inline">{{ LANGUAGE_CODE|upper }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end language-dropdown">
+                        <li>
+                            <a class="dropdown-item language-item" href="#" onclick="setLanguage('en')" data-lang="en">
+                                <img src="{% static 'img/country_flags/gb.png' %}" alt="{% trans 'English' %}" style="width: 20px; height: auto;" class="me-2">
+                                {% trans 'English' %}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item language-item" href="#" onclick="setLanguage('fr')" data-lang="fr">
+                                <img src="{% static 'img/country_flags/fr.png' %}" alt="{% trans 'French' %}" style="width: 20px; height: auto;" class="me-2">
+                                Français
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item language-item" href="#" onclick="setLanguage('es')" data-lang="es">
+                                <img src="{% static 'img/country_flags/es.png' %}" alt="{% trans 'Spanish' %}" style="width: 20px; height: auto;" class="me-2">
+                                Español
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item language-item" href="#" onclick="setLanguage('nl')" data-lang="nl">
+                                <img src="{% static 'img/country_flags/nl.png' %}" alt="{% trans 'Dutch' %}" style="width: 20px; height: auto;" class="me-2">
+                                Nederlands
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Notifications app -->
+                <div class="dropdown" id="notificationDropdown">
+                    <button class="btn btn-outline-secondary position-relative btn-sm header-btn" 
+                            type="button" 
+                            data-bs-toggle="dropdown" 
+                            id="notificationButton"
+                            aria-expanded="false"
+                            aria-label="{% trans 'View notifications' %}">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge" 
+                              id="notificationBadge" 
+                              style="display: none;"
+                              aria-label="{% trans 'Unread notifications count' %}">
+                            0
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end notification-dropdown" id="notificationsList">
+                        <li class="px-3 py-2 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">{% trans "Notifications" %}</h6>
+                                <button class="btn btn-sm btn-outline-primary" 
+                                        id="markAllReadBtn" 
+                                        style="display: none;"
+                                        aria-label="{% trans 'Mark all notifications as read' %}">
+                                    {% trans "Mark all as read" %}
+                                </button>
+                            </div>
+                        </li>
+                        <li id="noNotifications" class="px-3 py-4 text-center text-muted">
+                            <i class="bi bi-bell-slash mb-2" style="font-size: 2rem; opacity: 0.5;" aria-hidden="true"></i>
+                            <div>{% trans "No new notifications" %}</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                
+                <!-- User Menu -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle btn-sm header-btn" 
+                            type="button" 
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            aria-label="{% trans 'User menu' %}">
+                        {% if user.get_profile_picture_url %}
+                            <img src="{{ user.get_profile_picture_url }}" 
+                                 alt="{% trans 'Profile picture' %}" 
+                                 class="profile-picture me-1">
+                        {% else %}
+                            <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
+                        {% endif %}
+                        <span class="d-inline">{{ user.username|default:"Utilisateur"|truncatechars:12 }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <!-- Profile is unabled for the moment and will be activated when the community app will be ready -->
+                        {% comment %}
+                        <li>
+                            <a class="dropdown-item" href="/profile/">
+                                <i class="bi bi-person me-2" aria-hidden="true"></i>
+                                {% trans "Profile" %}
+                            </a>
+                        </li>
+                        {% endcomment %}
+                        <li>
+                            <a class="dropdown-item" href="{{ PORTAL_URL }}">
+                                <i class="bi bi-globe me-2" aria-hidden="true"></i>
+                                Portal
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'saas_web:settings' %}">
+                                <i class="bi bi-gear me-2" aria-hidden="true"></i>
+                                {% trans "Settings" %}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'authentication:feedback_dashboard' %}">
+                                <i class="bi bi-bug me-2" aria-hidden="true"></i>
+                                {% trans "Bugs & Feedbacks" %}
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="{% url 'auth:logout' %}">
+                                <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>
+                                {% trans "Logout" %}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto d-lg-none">
+                {% if show_feedback_only %}
+                <a class="nav-link mobile-nav-item" href="{% url 'saas_web:dashboard' %}">
+                    <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
+                    {% trans "Home" %}
+                </a>
+                <a class="nav-link mobile-nav-item" href="{% url 'saas_web:app_store' %}">
+                    <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
+                    {% trans "Store" %}
+                </a>
+                {% else %}
+                <a class="nav-link mobile-nav-item" href="{% url 'saas_web:dashboard' %}">
+                    <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
+                    {% trans "Home" %}
+                </a>
+                <a class="nav-link mobile-nav-item" href="{% url 'saas_web:app_store' %}">
+                    <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
+                    {% trans "Store" %}
+                </a>
+                <a class="nav-link mobile-nav-item" href="{% url 'authentication:feedback_dashboard' %}">
+                    <i class="bi bi-bug me-2" aria-hidden="true"></i>
+                    {% trans "Bugs & Feedbacks" %}
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+</header>
+
+
+<!-- Enhanced JavaScript for header functionality -->
+<script>
+(function() {
+    'use strict';
+    
+    // Header scroll effect
+    const header = document.getElementById('mainHeader');
+    let lastScrollY = window.scrollY;
+    
+    function updateHeaderOnScroll() {
+        const currentScrollY = window.scrollY;
+        
+        if (currentScrollY > 10) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+        
+        lastScrollY = currentScrollY;
+    }
+    
+    // Throttled scroll listener for better performance
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
+        }
+        scrollTimeout = setTimeout(updateHeaderOnScroll, 10);
+    }, { passive: true });
+    
+    // Language selection with loading state
+    window.setLanguage = function(langCode) {
+        const languageItems = document.querySelectorAll('[data-lang]');
+        const clickedItem = document.querySelector(`[data-lang="${langCode}"]`);
+        
+        if (clickedItem) {
+            clickedItem.classList.add('btn-loading');
+        }
+        
+        // Create form and submit for language change
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{% url "set_language" %}';
+        form.style.display = 'none';
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = '{{ csrf_token }}';
+        
+        const langInput = document.createElement('input');
+        langInput.type = 'hidden';
+        langInput.name = 'language';
+        langInput.value = langCode;
+        
+        const nextInput = document.createElement('input');
+        nextInput.type = 'hidden';
+        nextInput.name = 'next';
+        nextInput.value = window.location.pathname;
+        
+        form.appendChild(csrfInput);
+        form.appendChild(langInput);
+        form.appendChild(nextInput);
+        document.body.appendChild(form);
+        form.submit();
+    };
+    
+    // Keyboard navigation support
+    document.addEventListener('keydown', function(e) {
+        // Escape key closes dropdowns
+        if (e.key === 'Escape') {
+            const openDropdowns = document.querySelectorAll('.dropdown-menu.show');
+            openDropdowns.forEach(dropdown => {
+                const toggle = dropdown.previousElementSibling;
+                if (toggle) {
+                    bootstrap.Dropdown.getInstance(toggle)?.hide();
+                }
+            });
+        }
+    });
+    
+    // Initialize tooltips if Bootstrap is available
+    if (typeof bootstrap !== 'undefined') {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+})();
+</script>
+
+<!-- Notification System Script -->
+<script src="{% static 'js/notification/notifications.js' %}" defer></script>
+
