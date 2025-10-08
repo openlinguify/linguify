@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import uuid
 
-from apps.core.models import TimestampedModel
+from cms.core.models import TimestampedModel
 from apps.teachers.models import Teacher
 from .availability import TimeSlot
 

@@ -3,7 +3,7 @@ Scheduling models for teacher availability and bookings.
 """
 from django.db import models
 from django.utils import timezone
-from apps.core.models import TimestampedModel
+from cms.core.models import TimestampedModel
 from apps.teachers.models import Teacher
 
 class PrivateLesson(TimestampedModel):

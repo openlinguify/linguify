@@ -23,13 +23,20 @@ urlpatterns = [
     # Redirect root to dashboard
     path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
 
+    # === SYSTEM APPS (Infrastructure) ===
+
     # Core CMS (Dashboard)
-    path('dashboard/', include('apps.core.urls')),
+    path('dashboard/', include('cms.core.urls')),
+
+    # Sync API
+    path('api/sync/', include('cms.sync.urls')),
+
+    # === BUSINESS APPS (Teacher-facing) ===
 
     # Teacher management
     path('teachers/', include('apps.teachers.urls')),
 
-    # Course management (NEW - Ultra-modular like Udemy/Superprof)
+    # Course management (Ultra-modular like Udemy/Superprof)
     path('cours/', include('apps.cours.urls')),
 
     # Content store (Legacy course content)
@@ -40,9 +47,6 @@ urlpatterns = [
 
     # Monetization
     path('monetization/', include('apps.monetization.urls')),
-
-    # Sync API
-    path('api/sync/', include('apps.sync.urls')),
 ]
 
 # Serve media files in development

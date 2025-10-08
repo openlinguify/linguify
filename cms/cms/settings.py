@@ -25,18 +25,23 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 
-LOCAL_APPS = [
-    'apps.core',
-    'apps.teachers',
-    # 'apps.course_builder',  # Replaced completely by contentstore
-    'apps.contentstore',
-    'apps.cours',  # NEW: Ultra-modular course management (Udemy/Superprof style)
-    'apps.monetization',
-    'apps.scheduling',  # Enhanced with HTMX and advanced features
-    'apps.sync',
-    # 'app_manager',  # App manager (disabled - too many dependencies)
-    # 'saas_web',  # SaaS web interface (disabled - too many dependencies)
+# Apps système (infrastructure CMS)
+SYSTEM_APPS = [
+    'cms.core',           # Core CMS (dashboard, auth)
+    'cms.maintenance',    # Maintenance tools
+    'cms.sync',          # Backend synchronization
 ]
+
+# Apps métier (utilisées par les teachers)
+BUSINESS_APPS = [
+    'apps.teachers',      # Gestion des professeurs
+    'apps.cours',        # Gestion des cours (Udemy/Superprof style)
+    'apps.scheduling',   # Planning et rendez-vous
+    'apps.monetization', # Paiements et revenus
+    'apps.contentstore', # Legacy course content
+]
+
+LOCAL_APPS = SYSTEM_APPS + BUSINESS_APPS
 
 THIRD_PARTY_APPS = [
     'rest_framework',

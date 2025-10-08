@@ -5,7 +5,7 @@ Manages teacher profiles, qualifications, and settings.
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
-from apps.core.models import TimestampedModel, SyncableModel
+from cms.core.models import TimestampedModel, SyncableModel
 
 class Teacher(SyncableModel):
     """Teacher profile with qualifications and settings."""

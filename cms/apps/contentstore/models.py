@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 import uuid
 
-from apps.core.models import TimestampedModel, SyncableModel, MultilingualMixin
+from cms.core.models import TimestampedModel, SyncableModel, MultilingualMixin
 from apps.teachers.models import Teacher
 
 

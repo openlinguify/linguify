@@ -3,7 +3,7 @@ Monetization models for teacher earnings and payouts.
 """
 from django.db import models
 from django.utils import timezone
-from apps.core.models import TimestampedModel
+from cms.core.models import TimestampedModel
 from apps.teachers.models import Teacher
 from apps.contentstore.models import CMSUnit
 

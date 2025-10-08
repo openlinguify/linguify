@@ -7,7 +7,7 @@ from django.db import models
 from django.core.validators import FileExtensionValidator
 import uuid
 
-from apps.core.models import SyncableModel, MultilingualMixin
+from cms.core.models import SyncableModel, MultilingualMixin
 from .course import Course
 from .section import CourseSection
 

@@ -6,7 +6,7 @@ Sections organize lessons into logical groups (like chapters/modules)
 from django.db import models
 from django.utils.text import slugify
 
-from apps.core.models import SyncableModel, MultilingualMixin
+from cms.core.models import SyncableModel, MultilingualMixin
 from .course import Course
 
 
