@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class SaasWebConfig(AppConfig):
+class DashboardConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'saas_web'
-    verbose_name = 'SaaS Web Application'
+    name = 'cms.core.dashboard'
+    verbose_name = 'Dashboard'

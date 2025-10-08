@@ -92,6 +92,6 @@ LOGGING['loggers'] = {
     }
 }
 
-print("🔧 Mode DÉVELOPPEMENT activé")
-print(f"📁 BASE_DIR: {BASE_DIR}")
-print(f"🗄️  Database: SQLite (db.sqlite3)")
+print("Mode DEVELOPPEMENT active")
+print(f"BASE_DIR: {BASE_DIR}")
+print(f"Database: SQLite (db.sqlite3)")

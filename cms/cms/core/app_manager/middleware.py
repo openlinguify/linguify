@@ -1,7 +1,7 @@
 # app_manager/middleware.py
 from django.urls import resolve
 from django.core.exceptions import PermissionDenied
-from app_manager.models import AppModule
+from cms.core.app_manager.models import AppModule
 
 class AppAccessMiddleware:
     def __init__(self, get_response):

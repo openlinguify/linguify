@@ -25,11 +25,11 @@ urlpatterns = [
 
     # === SYSTEM APPS (Infrastructure) ===
 
-    # SaaS Web (Dashboard)
-    path('', include('saas_web.urls')),
+    # Dashboard
+    path('dashboard/', include('cms.core.dashboard.urls')),
 
     # Sync API
-    path('api/sync/', include('cms.sync.urls')),
+    path('api/sync/', include('cms.core.sync.urls')),
 
     # === BUSINESS APPS (Teacher-facing) ===
 

@@ -19,17 +19,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Third party
     'rest_framework',
     'corsheaders',
-    
-    # Local apps
-    'core.dashboard',
-    'apps.users',
-    'apps.courses',
-    'apps.lessons',
-    'apps.exercises',
+
+    # Core apps (inside cms package)
+    'cms.core.dashboard',
+    'cms.core.app_manager',
+    'cms.core.sync',
+    'cms.core.maintenance',
+
+    # Business apps (at project root)
+    'apps.teachers',
+    'apps.cours',
+    'apps.contentstore',
+    'apps.scheduling',
+    'apps.monetization',
 ]
 
 MIDDLEWARE = [
@@ -43,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = 'cms.config.urls'
 
 TEMPLATES = [
     {
@@ -61,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = 'cms.config.wsgi.application'
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -96,8 +102,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Custom user model (si vous en avez un)
-AUTH_USER_MODEL = 'users.User'
+# Using Django's default User model
+# AUTH_USER_MODEL = 'users.User'  # Disabled - using default User model
 
 # REST Framework (configuration commune)
 REST_FRAMEWORK = {
