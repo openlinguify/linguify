@@ -15,7 +15,7 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <!-- Brand -->
-            <a class="navbar-brand app-brand-icon" href="{% url 'saas_web:dashboard' %}" aria-label="{% trans 'Return to dashboard' %}">
+            <a class="navbar-brand app-brand-icon" href="{% url 'dashboard:dashboard' %}" aria-label="{% trans 'Return to dashboard' %}">
                 {% if show_feedback_only %}
                     <i class="bi bi-bug" style="font-size: 1.5rem;" aria-hidden="true"></i>
                 {% elif current_app and current_app.static_icon %}
@@ -33,7 +33,7 @@
                 <!-- Desktop Navigation -->
                 <div class="d-flex align-items-center gap-2">
                     {% if show_feedback_only %}
-                    <a href="{% url 'saas_web:dashboard' %}"
+                    <a href="{% url 'dashboard:dashboard' %}"
                        class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
                        aria-label="{% trans 'Go to dashboard' %}">
                         <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
@@ -41,7 +41,7 @@
 
                     {% comment %} App Store not available in CMS {% endcomment %}
                     {% else %}
-                    <a href="{% url 'saas_web:dashboard' %}"
+                    <a href="{% url 'dashboard:dashboard' %}"
                        class="btn btn-outline-secondary btn-sm header-btn d-flex justify-content-center align-items-center"
                        aria-label="{% trans 'Go to dashboard' %}">
                         <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 18px; height: 18px; object-fit: contain;" aria-hidden="true">
@@ -200,13 +200,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="navbar-nav ms-auto d-lg-none">
                 {% if show_feedback_only %}
-                <a class="nav-link mobile-nav-item" href="{% url 'saas_web:dashboard' %}">
+                <a class="nav-link mobile-nav-item" href="{% url 'dashboard:dashboard' %}">
                     <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
                     {% trans "Home" %}
                 </a>
                 {% comment %} App Store not available in CMS {% endcomment %}
                 {% else %}
-                <a class="nav-link mobile-nav-item" href="{% url 'saas_web:dashboard' %}">
+                <a class="nav-link mobile-nav-item" href="{% url 'dashboard:dashboard' %}">
                     <img src="{% static 'img/dashboard.png' %}" alt="{% trans 'Dashboard' %}" style="width: 16px; height: 16px; object-fit: contain;" class="me-2" aria-hidden="true">
                     {% trans "Home" %}
                 </a>

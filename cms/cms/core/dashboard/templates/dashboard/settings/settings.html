@@ -1,4 +1,4 @@
-{% extends 'saas_web/base.html' %}
+{% extends 'dashboard/base.html' %}
 {% load static %}
 {% load i18n %}
 {% load dict_filters %}
@@ -60,7 +60,7 @@
                 
                 <!-- Force ajout de Gestionnaire d'Apps dans Interface -->
                 {% if category_id == 'interface' %}
-                <a href="{% url 'saas_web:app_manager_settings' %}" class="nav-item" data-tab="app_manager">
+                <a href="{% url 'dashboard:app_manager_settings' %}" class="nav-item" data-tab="app_manager">
                     <div class="nav-item-text">
                         <i class="bi bi-grid-3x3-gap"></i>
                         {% trans "App Manager" %}
@@ -162,8 +162,8 @@
 
 {% block extra_js %}
 <!-- Load settings scripts for AJAX navigation -->
-<script src="{% static 'saas_web/js/settings-utils.js' %}"></script>
-<script src="{% static 'saas_web/js/settings-core.js' %}"></script>
+<script src="{% static 'dashboard/js/settings-utils.js' %}"></script>
+<script src="{% static 'dashboard/js/settings-core.js' %}"></script>
 <script src="{% static 'authentication/js/settings.js' %}"></script>
 <script>
 console.log('[Settings] Script version: 20250930.2110 loaded - Dashboard background reinit added');

@@ -69,7 +69,7 @@ class DashboardView(View):
             'show_feedback_only': False,
         }
 
-        return render(request, 'saas_web/dashboard.html', context)
+        return render(request, 'dashboard/dashboard.html', context)
 
 
 def test_drag_drop(request):
