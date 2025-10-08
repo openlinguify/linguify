@@ -28,6 +28,9 @@ urlpatterns = [
     # Dashboard
     path('dashboard/', include('cms.core.dashboard.urls')),
 
+    # App Manager (App Store)
+    path('apps/', include('cms.core.app_manager.urls')),
+
     # Sync API
     path('api/sync/', include('cms.core.sync.urls')),
 

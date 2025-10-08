@@ -46,7 +46,7 @@
         {% endfor %}
 
         <!-- App Store System App -->
-        <a href="{% url 'dashboard:app_store' %}" class="text-decoration-none app-link system-app">
+        <a href="{% url 'app_manager:app_store' %}" class="text-decoration-none app-link system-app">
             <div class="app-card-simple">
                 <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
                     <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 48px; height: 48px; object-fit: contain;">
@@ -56,7 +56,7 @@
         </a>
 
         <!-- Settings System App -->
-        <a href="{% url 'dashboard:settings' %}" class="text-decoration-none app-link system-app">
+        <a href="{% url 'app_manager:app_settings' %}" class="text-decoration-none app-link system-app">
             <div class="app-card-simple">
                 <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
                     <img src="{% static 'img/settings.png' %}" alt="{% trans 'Settings' %}" style="width: 48px; height: 48px; object-fit: contain;">
@@ -69,7 +69,7 @@
     <!-- Show system apps when no user apps are installed -->
     <div class="apps-grid-container" id="systemApps">
         <!-- App Store System App -->
-        <a href="{% url 'dashboard:app_store' %}" class="text-decoration-none app-link system-app">
+        <a href="{% url 'app_manager:app_store' %}" class="text-decoration-none app-link system-app">
             <div class="app-card-simple">
                 <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
                     <img src="{% static 'img/app-store.png' %}" alt="{% trans 'App Store' %}" style="width: 48px; height: 48px; object-fit: contain;">
@@ -79,7 +79,7 @@
         </a>
 
         <!-- Settings System App -->
-        <a href="{% url 'dashboard:settings' %}" class="text-decoration-none app-link system-app">
+        <a href="{% url 'app_manager:app_settings' %}" class="text-decoration-none app-link system-app">
             <div class="app-card-simple">
                 <div class="app-icon-simple" style="background: transparent; border: 1px solid #e2e8f0;">
                     <img src="{% static 'img/settings.png' %}" alt="{% trans 'Settings' %}" style="width: 48px; height: 48px; object-fit: contain;">
