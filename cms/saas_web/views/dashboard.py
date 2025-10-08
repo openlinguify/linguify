@@ -65,6 +65,8 @@ class DashboardView(View):
         context = {
             'title': _('Dashboard - Linguify CMS'),
             'installed_apps': cms_apps,
+            'current_app': None,  # Dashboard doesn't represent a specific app
+            'show_feedback_only': False,
         }
 
         return render(request, 'saas_web/dashboard.html', context)

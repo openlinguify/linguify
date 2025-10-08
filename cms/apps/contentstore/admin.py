@@ -38,11 +38,11 @@ class CourseAssetAdmin(admin.ModelAdmin):
         'uploaded_by__username'
     ]
     readonly_fields = [
-        'asset_key', 
-        'file_size', 
-        'content_type', 
-        'backend_id', 
-        'last_sync',
+        'asset_key',
+        'file_size',
+        'content_type',
+        'backend_id',
+        'last_sync_success',
         'created_at',
         'updated_at',
         'preview_image'
@@ -60,7 +60,7 @@ class CourseAssetAdmin(admin.ModelAdmin):
             'fields': ('course_id', 'usage_locations', 'uploaded_by')
         }),
         ('Sync Information', {
-            'fields': ('sync_status', 'backend_id', 'last_sync', 'sync_error'),
+            'fields': ('sync_status', 'backend_id', 'last_sync_success', 'sync_error'),
             'classes': ('collapse',)
         }),
         ('Timestamps', {
@@ -115,7 +115,7 @@ class CourseContentAdmin(admin.ModelAdmin):
     readonly_fields = [
         'content_id',
         'backend_id',
-        'last_sync', 
+        'last_sync_success',
         'created_at',
         'updated_at'
     ]
@@ -135,7 +135,7 @@ class CourseContentAdmin(admin.ModelAdmin):
             'fields': ('is_draft', 'visibility', 'start_date', 'end_date', 'version')
         }),
         ('Sync Information', {
-            'fields': ('sync_status', 'backend_id', 'last_sync', 'sync_error'),
+            'fields': ('sync_status', 'backend_id', 'last_sync_success', 'sync_error'),
             'classes': ('collapse',)
         }),
         ('Timestamps', {
@@ -218,7 +218,7 @@ class ContentLibraryAdmin(admin.ModelAdmin):
     readonly_fields = [
         'bundle_uuid',
         'backend_id',
-        'last_sync',
+        'last_sync_success',
         'created_at',
         'updated_at'
     ]
@@ -234,7 +234,7 @@ class ContentLibraryAdmin(admin.ModelAdmin):
             'fields': ('version', 'bundle_uuid')
         }),
         ('Sync Information', {
-            'fields': ('sync_status', 'backend_id', 'last_sync', 'sync_error'),
+            'fields': ('sync_status', 'backend_id', 'last_sync_success', 'sync_error'),
             'classes': ('collapse',)
         }),
         ('Timestamps', {

@@ -6,7 +6,7 @@ class TeacherAdmin(admin.ModelAdmin):
     list_display = ['user', 'status', 'hourly_rate', 'years_experience', 'sync_status', 'created_at']
     list_filter = ['status', 'sync_status', 'years_experience']
     search_fields = ['user__username', 'user__email', 'user__first_name', 'user__last_name']
-    readonly_fields = ['backend_id', 'last_sync', 'total_earnings']
+    readonly_fields = ['backend_id', 'last_sync_success', 'total_earnings']
     
     fieldsets = (
         ('Basic Info', {
@@ -30,7 +30,7 @@ class TeacherAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Sync', {
-            'fields': ('sync_status', 'backend_id', 'last_sync', 'sync_error'),
+            'fields': ('sync_status', 'backend_id', 'last_sync_success', 'sync_error'),
             'classes': ('collapse',)
         }),
     )

@@ -33,7 +33,7 @@ VENV_PATH = $(shell if [ -d "./backend/venv" ]; then echo "./backend/venv"; elif
 MANAGE_BACKEND = cd backend && poetry run python manage.py
 MANAGE_PORTAL = cd portal && ./venv/bin/python manage.py  
 MANAGE_LMS = cd lms && ./venv/bin/python manage.py
-MANAGE_CMS = cd cms && ./venv/bin/python manage.py
+MANAGE_CMS = cd cms && PYTHONPATH="$$(pwd)/venv/lib/python3.12/site-packages:$$PYTHONPATH" python.exe manage.py
 MANAGE_DOCS = cd docs && $(DOCS_PYTHON) manage.py
 
 # Colors for display
