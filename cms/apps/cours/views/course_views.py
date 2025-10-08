@@ -28,7 +28,7 @@ class HTMXMixin:
 class CourseListView(LoginRequiredMixin, HTMXMixin, ListView):
     """List all courses for the logged-in teacher."""
     model = Course
-    template_name = 'cours/course_list.html'
+    template_name = 'cms_dashboard/course_list.html'
     htmx_template_name = 'cours/partials/course_list_partial.html'
     context_object_name = 'courses'
     paginate_by = 12

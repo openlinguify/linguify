@@ -34,7 +34,8 @@ LOCAL_APPS = [
     'apps.monetization',
     'apps.scheduling',  # Enhanced with HTMX and advanced features
     'apps.sync',
-    'apps.saas_web',  # SaaS web interface
+    # 'app_manager',  # App manager (disabled - too many dependencies)
+    # 'saas_web',  # SaaS web interface (disabled - too many dependencies)
 ]
 
 THIRD_PARTY_APPS = [
@@ -55,7 +56,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_htmx.middleware.HtmxMiddleware',  # HTMX middleware for request.htmx
-    'apps.saas_web.middleware.SubdomainMiddleware',  # Subdomain routing (optional)
 ]
 
 ROOT_URLCONF = 'cms.urls'

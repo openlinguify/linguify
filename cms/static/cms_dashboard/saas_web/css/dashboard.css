@@ -1,0 +1,465 @@
+/* 🎨 Linguify Dashboard Styles - Clean Version */
+
+/* === GLOBAL DASHBOARD STYLES === */
+.content-area {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* === LINGUIFY COLOR OVERRIDES === */
+.btn-primary {
+    background: #2D5BBA !important;
+    border-color: #2D5BBA !important;
+}
+
+.btn-primary:hover {
+    background: #1E3A8A !important;
+    border-color: #1E3A8A !important;
+}
+
+.text-primary {
+    color: #2D5BBA !important;
+}
+
+/* === WELCOME BANNER === */
+.welcome-banner {
+    background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important;
+    border-radius: 16px;
+    color: white;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(50px, -50px);
+}
+
+/* === APP GRID LAYOUT === */
+.apps-grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 0;
+    justify-items: center;
+}
+
+/* === APP CARDS === */
+.app-card-simple {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    border-radius: 0 !important;
+    transition: all 0.2s ease;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 120px;
+    min-height: 100px;
+}
+
+/* ULTIMATE OVERRIDE - Remove any background whatsoever */
+.app-card-simple,
+.app-card-simple * {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    border-radius: 0 !important;
+}
+
+.app-card-simple:hover {
+    transform: translateY(-3px);
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.app-card-simple,
+.app-card-simple:hover,
+.app-card-simple:focus,
+.app-card-simple:active {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.app-icon-simple {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white;
+    margin: 0 auto 1rem;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Force remove any inline borders on app icons */
+.app-icon-simple[style*="border"] {
+    border: none !important;
+    background: transparent !important;
+}
+
+/* System apps icons - override the transparent background */
+.app-icon-simple[style*="linear-gradient"] {
+    background: initial !important;
+}
+
+/* System app specific styling */
+.system-app .app-icon-simple {
+    background: initial !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.app-name-simple {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.3;
+    text-align: center;
+    max-width: 100px;
+    word-wrap: break-word;
+}
+
+/* === EMPTY STATE === */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+/* Force gray color for empty state text */
+.empty-state h5,
+.empty-state .mb-3,
+div.empty-state h5,
+div.empty-state .mb-3,
+.content-area .empty-state h5,
+.content-area .empty-state .mb-3 {
+    color: #6b7280 !important;
+    font-weight: 600 !important;
+}
+
+.empty-state p,
+.empty-state .mb-4,
+div.empty-state p,
+div.empty-state .mb-4,
+.content-area .empty-state p,
+.content-area .empty-state .mb-4 {
+    color: #6b7280 !important;
+}
+
+/* Nuclear option - override ANY text in empty state */
+.empty-state * {
+    color: #6b7280 !important;
+}
+
+/* Linguify gradient button for empty state */
+.empty-state .linguify-gradient-btn {
+    background: linear-gradient(135deg, #2D5BBA 0%, #26E4B8 100%);
+    color: #ffffff !important;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.empty-state .linguify-gradient-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(45, 91, 186, 0.3);
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    .content-area {
+        padding: 1rem;
+    }
+
+    .apps-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        max-width: 400px;
+        padding: 1.5rem 0;
+    }
+
+    .app-card-simple {
+        width: 100px;
+        padding: 0.75rem;
+    }
+
+    .app-icon-simple {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 0.75rem;
+    }
+
+    .app-name-simple {
+        font-size: 0.8rem;
+        max-width: 90px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .apps-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        max-width: 300px;
+    }
+
+    .app-card-simple {
+        width: 90px;
+        padding: 0.5rem;
+    }
+
+    .app-icon-simple {
+        width: 45px;
+        height: 45px;
+        font-size: 1.4rem;
+    }
+
+    .app-name-simple {
+        font-size: 0.75rem;
+        max-width: 80px;
+    }
+}
+
+/* === BACKGROUND ADAPTATIONS === */
+
+/* All backgrounds - NO card backgrounds EVER - NUCLEAR OPTION */
+body.bg-white .app-card-simple,
+body.bg-white .app-card-simple:hover,
+body.bg-white .app-card-simple:focus,
+body.bg-white .app-card-simple:active,
+body.bg-default .app-card-simple,
+body.bg-default .app-card-simple:hover,
+body.bg-default .app-card-simple:focus,
+body.bg-default .app-card-simple:active,
+body.bg-gray-light .app-card-simple,
+body.bg-gray-light .app-card-simple:hover,
+body.bg-gray-light .app-card-simple:focus,
+body.bg-gray-light .app-card-simple:active,
+body.bg-gray .app-card-simple,
+body.bg-gray .app-card-simple:hover,
+body.bg-gray .app-card-simple:focus,
+body.bg-gray .app-card-simple:active,
+body.bg-linguify-light .app-card-simple,
+body.bg-linguify-accent .app-card-simple,
+body.bg-linguify-purple .app-card-simple,
+body.bg-warm .app-card-simple,
+body.bg-cool .app-card-simple,
+body.bg-nature .app-card-simple,
+body.bg-dark .app-card-simple,
+body.bg-dark-blue .app-card-simple {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    border-radius: 0 !important;
+}
+
+/* Text adaptations for different backgrounds */
+body.bg-dark .section-title,
+body.bg-dark-blue .section-title {
+    color: #f1f5f9 !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+body.bg-linguify-light .section-title,
+body.bg-linguify-accent .section-title,
+body.bg-linguify-purple .section-title,
+body.bg-warm .section-title,
+body.bg-cool .section-title,
+body.bg-nature .section-title {
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+    font-weight: 700;
+}
+
+/* Welcome banner adaptations */
+body.bg-dark .welcome-banner,
+body.bg-dark-blue .welcome-banner {
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.9) 0%, rgba(0, 212, 170, 0.9) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.bg-linguify-light .welcome-banner,
+body.bg-linguify-accent .welcome-banner,
+body.bg-linguify-purple .welcome-banner {
+    background: linear-gradient(135deg, rgba(45, 91, 186, 0.95) 0%, rgba(0, 212, 170, 0.95) 100%) !important;
+    box-shadow: 0 8px 32px rgba(45, 91, 186, 0.2);
+}
+
+/* Empty state text adaptations */
+body.bg-dark .empty-state,
+body.bg-dark-blue .empty-state {
+    color: #e2e8f0;
+}
+
+body.bg-dark .empty-state *,
+body.bg-dark-blue .empty-state * {
+    color: #e2e8f0 !important;
+}
+
+/* But preserve button colors in empty state */
+body.bg-dark .empty-state .linguify-gradient-btn,
+body.bg-dark .empty-state .linguify-gradient-btn *,
+body.bg-dark-blue .empty-state .linguify-gradient-btn,
+body.bg-dark-blue .empty-state .linguify-gradient-btn * {
+    color: #ffffff !important;
+}
+
+/* === BEAUTIFUL DRAG & DROP EFFECTS === */
+
+/* Draggable cursor and initial state */
+.app-link[draggable="true"] {
+    cursor: grab;
+    user-select: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.app-link[draggable="true"]:hover {
+    transform: translateY(-2px);
+}
+
+.app-link[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+.app-link[draggable="true"] .app-card-simple {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    cursor: grab;
+}
+
+/* Subtle hover effect only */
+.app-link[draggable="true"]:hover .app-icon-simple {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
+}
+
+/* Simple dragging state */
+.app-card-simple.dragging {
+    opacity: 0.7;
+    transform: scale(0.95);
+    z-index: 1000;
+    cursor: grabbing !important;
+}
+
+/* Simple drop zone highlighting */
+.app-link.drag-over {
+    position: relative;
+}
+
+.app-link.drag-over::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border: 2px solid #26E4B8;
+    border-radius: 12px;
+    z-index: 1;
+    transition: all 0.2s ease;
+}
+
+/* Grid container during drag - removed for cleaner look */
+
+/* Smooth reordering animations */
+.app-link {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Visual feedback for drag start */
+.app-link[draggable="true"]:active .app-icon-simple {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+/* Mobile and touch improvements */
+@media (max-width: 768px) {
+    .app-link.drag-over::before {
+        top: -12px;
+        left: -12px;
+        right: -12px;
+        bottom: -12px;
+        border-width: 2px;
+    }
+
+    .app-card-simple.dragging {
+        transform: rotate(3deg) scale(1.05);
+    }
+
+    .app-link[draggable="true"]:hover .app-icon-simple::after {
+        width: 16px;
+        height: 16px;
+        font-size: 8px;
+    }
+}
+
+/* Touch device adaptations */
+@media (pointer: coarse) {
+    .app-card-simple[draggable="true"] {
+        cursor: default;
+    }
+
+    .app-link.drag-over::before {
+        border-width: 4px;
+        animation-duration: 0.8s;
+    }
+
+    .app-card-simple.dragging {
+        transform: rotate(2deg) scale(1.08);
+    }
+}

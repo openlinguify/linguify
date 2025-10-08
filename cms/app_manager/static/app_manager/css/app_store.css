@@ -1,0 +1,402 @@
+/* App Store Styles for Open Linguify */
+
+:root {
+    --primary-color: #2D5BBA;
+    --primary-dark: #1E3A8A;
+    --secondary-color: #8B5CF6;
+    --accent-color: #00D4AA;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+
+    /* Couleurs Linguify */
+    --linguify-primary: #2D5BBA;
+    --linguify-secondary: #8B5CF6;
+    --linguify-accent: #00D4AA;
+    --linguify-gray-50: #f9fafb;
+    --linguify-gray-100: #f3f4f6;
+    --linguify-gray-200: #e5e7eb;
+    --linguify-gray-300: #d1d5db;
+    --linguify-gray-500: #6b7280;
+    --linguify-gray-600: #4b5563;
+    --linguify-gray-800: #1f2937;
+    --linguify-gray-900: #111827;
+}
+
+/* Layout App Store */
+.app-store-container {
+    display: flex;
+    margin: 0 auto;
+    gap: 2rem;
+    padding: 2rem;
+    background: var(--linguify-gray-50);
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.app-store-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.category-list {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--linguify-gray-200);
+    padding: 1rem;
+}
+
+.category-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    margin: 0.25rem 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.category-item:hover {
+    background: var(--linguify-gray-50);
+}
+
+.category-item.active {
+    background: linear-gradient(135deg, var(--linguify-primary), var(--linguify-accent));
+    color: white;
+}
+
+.category-icon {
+    margin-right: 0.75rem;
+}
+
+.category-count {
+    background: var(--linguify-gray-100);
+    color: var(--linguify-gray-500);
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.category-item.active .category-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Main content */
+.app-store-main {
+    flex: 1;
+}
+
+.search-bar {
+    background: white;
+    border: 1px solid var(--linguify-gray-200);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 1rem;
+}
+
+.search-bar i {
+    color: var(--linguify-gray-500);
+}
+
+/* Apps grid */
+.apps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.app-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--linguify-gray-200);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.app-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(45, 91, 186, 0.15);
+    border-color: var(--linguify-primary);
+}
+
+.app-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.app-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.app-icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.app-info {
+    flex: 1;
+}
+
+.app-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--linguify-gray-900);
+}
+
+.app-category {
+    font-size: 0.875rem;
+    color: var(--linguify-gray-500);
+}
+
+.app-description {
+    color: var(--linguify-gray-600);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.app-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Install toggle */
+.install-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+}
+
+.install-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.install-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--linguify-gray-300);
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.install-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.install-toggle input:checked + .install-toggle-slider {
+    background-color: var(--primary-color);
+}
+
+.install-toggle input:checked + .install-toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* Install status */
+.install-status {
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    color: var(--linguify-gray-500);
+}
+
+.install-status.installed {
+    color: var(--success-color);
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--linguify-gray-500);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    opacity: 0.3;
+    margin-bottom: 1rem;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 16px;
+}
+
+/* Toast notifications */
+.toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.toast {
+    min-width: 300px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .app-store-container {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .app-store-sidebar {
+        width: 100%;
+    }
+
+    .apps-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Modal styles */
+.modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.app-icon-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.modal-header h5 {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.modal-footer .btn {
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+}
+
+.modal-footer .btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: none;
+}
+
+.modal-footer .btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.modal-footer .btn-outline-secondary:hover {
+    transform: translateY(-1px);
+}
+
+/* Animation keyframes */
+@keyframes slideIn {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.app-card {
+    animation: slideIn 0.3s ease-out;
+}
+
+.app-card.installing .install-toggle {
+    pointer-events: none;
+}
+
+.app-card.installing {
+    opacity: 0.7;
+}
+
+/* Styles pour les boutons avec couleurs Linguify */
+.app-store-container .btn {
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.app-store-container .btn-primary {
+    color: white !important;
+    background: linear-gradient(135deg, var(--linguify-primary), var(--linguify-accent)) !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(45, 91, 186, 0.2);
+}
+
+.app-store-container .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(45, 91, 186, 0.3);
+    color: white !important;
+}

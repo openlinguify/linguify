@@ -1,0 +1,169 @@
+{% extends 'cms_dashboard/base.html' %}
+
+{% block title %}Mes cours - Linguify CMS{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="h2 fw-bold mb-1">Mes cours</h1>
+        <p class="text-muted">Gérez et créez vos cours en ligne</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'cours:course_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>
+            Créer un nouveau cours
+        </a>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stats-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="h4 mb-0">{{ courses|length }}</h3>
+                    <p class="text-muted small mb-0">Total cours</p>
+                </div>
+                <i class="bi bi-journal-text" style="font-size: 32px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stats-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="h4 mb-0">{{ courses|selectattr:"is_published"|list|length|default:0 }}</h3>
+                    <p class="text-muted small mb-0">Publiés</p>
+                </div>
+                <i class="bi bi-check-circle-fill" style="font-size: 32px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stats-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="h4 mb-0">{{ courses|rejectattr:"is_published"|list|length|default:0 }}</h3>
+                    <p class="text-muted small mb-0">Brouillons</p>
+                </div>
+                <i class="bi bi-file-earmark-text" style="font-size: 32px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stats-card info">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="h4 mb-0">0</h3>
+                    <p class="text-muted small mb-0">Synchronisés</p>
+                </div>
+                <i class="bi bi-cloud-check-fill" style="font-size: 32px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Courses Grid -->
+<div class="row g-3">
+    {% for course in courses %}
+    <div class="col-md-4">
+        <div class="course-card">
+            {% if course.thumbnail %}
+            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="w-100" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-image text-muted" style="font-size: 48px;"></i>
+            </div>
+            {% endif %}
+
+            <div class="p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-secondary">{{ course.get_level_display }}</span>
+                    {% if course.status == 'published' %}
+                    <span class="badge bg-success">Publié</span>
+                    {% elif course.status == 'draft' %}
+                    <span class="badge bg-warning">Brouillon</span>
+                    {% endif %}
+                </div>
+
+                <h5 class="mb-2">{{ course.title }}</h5>
+                <p class="text-muted small mb-3">{{ course.subtitle|truncatewords:15|default:"Aucune description" }}</p>
+
+                <div class="row text-center text-muted small mb-3 g-0">
+                    <div class="col-4">
+                        <i class="bi bi-book d-block mb-1"></i>
+                        <small>{{ course.sections.count }} Chapitres</small>
+                    </div>
+                    <div class="col-4">
+                        <i class="bi bi-list-ul d-block mb-1"></i>
+                        <small>{{ course.lessons.count }} Leçons</small>
+                    </div>
+                    <div class="col-4">
+                        <i class="bi bi-currency-euro d-block mb-1"></i>
+                        <small>{{ course.pricing.price|default:"0,00" }}€</small>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'cours:course_detail' course.slug %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye me-1"></i> Voir les détails
+                    </a>
+                    <a href="{% url 'cours:course_update' course.slug %}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-pencil me-1"></i> Éditer le cours
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="text-center py-5">
+            <i class="bi bi-journal-x text-muted" style="font-size: 96px;"></i>
+            <h3 class="mt-4">Aucun cours créé</h3>
+            <p class="text-muted mb-4">Commencez par créer votre premier cours dès maintenant</p>
+            <a href="{% url 'cours:course_create' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>
+                Créer un nouveau cours
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="row mt-4">
+    <div class="col-12">
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">Première</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Dernière</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

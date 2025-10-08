@@ -1,0 +1,50 @@
+/* App Manager specific styles */
+.app-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.app-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.app-icon {
+  font-size: 32px;
+  color: #3b82f6;
+  margin-bottom: 12px;
+}
+
+/* Styles spécifiques pour les icônes d'app dans les paramètres */
+.app-icon-default {
+  background: linear-gradient(135deg, #2D5BBA 0%, #00D4AA 100%) !important;
+  color: white !important;
+}
+
+.app-icon-custom {
+  background: transparent !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.app-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #1f2937;
+}
+
+.app-version {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0 0 12px 0;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}

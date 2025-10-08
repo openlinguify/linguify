@@ -1,0 +1,143 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-04 04:25+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+
+#: .\app_manager\templates\admin\app_manager\app\change_list.html:18
+#, python-format
+msgid "Add %(name)s"
+msgstr "Agregar %(name)s"
+
+#: .\app_manager\templates\admin\app_manager\fix_apps.html:4
+msgid "Django site admin"
+msgstr "Administración del sitio Django"
+
+#: .\app_manager\templates\admin\app_manager\fix_apps.html:8
+msgid "Home"
+msgstr "Inicio"
+
+#: .\app_manager\templates\app_manager\app_store.html:31
+msgid "Categories"
+msgstr "Categorías"
+
+#: .\app_manager\templates\app_manager\app_store.html:36
+msgid "All apps"
+msgstr "Todas las aplicaciones"
+
+#: .\app_manager\templates\app_manager\app_store.html:63
+msgid "Search for an application..."
+msgstr "Buscar una aplicación..."
+
+#: .\app_manager\templates\app_manager\app_store.html:90
+msgid "Application description."
+msgstr "Descripción de la aplicación."
+
+#: .\app_manager\templates\app_manager\app_store.html:96
+msgid "Installed"
+msgstr "Instalada"
+
+#: .\app_manager\templates\app_manager\app_store.html:98
+msgid "Not installed"
+msgstr "No instalada"
+
+#: .\app_manager\templates\app_manager\app_store.html:103
+msgid "Open"
+msgstr "Abrir"
+
+#: .\app_manager\templates\app_manager\app_store.html:111
+msgid "Loading..."
+msgstr "Cargando..."
+
+#: .\app_manager\templates\app_manager\app_store.html:118
+msgid "No applications available"
+msgstr "No hay aplicaciones disponibles"
+
+#: .\app_manager\templates\app_manager\app_store.html:119
+msgid "Applications will be available soon."
+msgstr "Las aplicaciones estarán disponibles pronto."
+
+#: .\app_manager\templates\app_manager\app_store.html:127
+msgid "No applications found"
+msgstr "No se encontraron aplicaciones"
+
+#: .\app_manager\templates\app_manager\app_store.html:128
+msgid "Try with other keywords"
+msgstr "Intente con otras palabras clave"
+
+#: .\app_manager\templates\app_manager\app_store.html:143
+msgid "Uninstall application"
+msgstr "Desinstalar aplicación"
+
+#: .\app_manager\templates\app_manager\app_store.html:145
+msgid "Close"
+msgstr "Cerrar"
+
+#: .\app_manager\templates\app_manager\app_store.html:152
+msgid "Application name"
+msgstr "Nombre de la aplicación"
+
+#: .\app_manager\templates\app_manager\app_store.html:159
+msgid "What happens during uninstallation?"
+msgstr "¿Qué sucede durante la desinstalación?"
+
+#: .\app_manager\templates\app_manager\app_store.html:161
+msgid "The application will disappear from your dashboard"
+msgstr "La aplicación desaparecerá de su panel de control"
+
+#: .\app_manager\templates\app_manager\app_store.html:162
+msgid "Your data will be kept for"
+msgstr "Sus datos se conservarán durante"
+
+#: .\app_manager\templates\app_manager\app_store.html:162
+msgid "30 days"
+msgstr "30 días"
+
+#: .\app_manager\templates\app_manager\app_store.html:163
+msgid "You can reinstall at any time"
+msgstr "Puede reinstalar en cualquier momento"
+
+#: .\app_manager\templates\app_manager\app_store.html:164
+msgid "Automatic deletion after 30 days of inactivity"
+msgstr "Eliminación automática después de 30 días de inactividad"
+
+#: .\app_manager\templates\app_manager\app_store.html:172
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: .\app_manager\templates\app_manager\app_store.html:175
+msgid "Uninstall"
+msgstr "Desinstalar"
+
+#: .\app_manager\templates\app_manager\app_store.html:189
+msgid "Your data will be kept for 30 days."
+msgstr "Sus datos se conservarán durante 30 días."
+
+#: .\app_manager\views\app_manager_views.py:97
+msgid "App Store - Open Linguify"
+msgstr "App Store - Open Linguify"
+
+#: .\app_manager\views\app_manager_views.py:131
+#, python-format
+msgid "%(app_name)s uninstalled successfully"
+msgstr "%(app_name)s ha sido desinstalada con éxito"
+
+#: .\app_manager\views\app_manager_views.py:137
+#, python-format
+msgid "%(app_name)s installed successfully"
+msgstr "%(app_name)s ha sido instalada con éxito"

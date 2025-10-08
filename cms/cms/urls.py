@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 urlpatterns = [
     # Admin
@@ -14,8 +15,11 @@ urlpatterns = [
     # Authentication
     path('accounts/', include('django.contrib.auth.urls')),
 
-    # Core CMS
-    path('', include('apps.core.urls')),
+    # Redirect root to dashboard
+    path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
+
+    # Core CMS (Dashboard)
+    path('dashboard/', include('apps.core.urls')),
 
     # Teacher management
     path('teachers/', include('apps.teachers.urls')),
@@ -34,9 +38,6 @@ urlpatterns = [
 
     # Sync API
     path('api/sync/', include('apps.sync.urls')),
-
-    # SaaS Web Interface
-    path('saas/', include('apps.saas_web.urls')),
 ]
 
 # Serve media files in development

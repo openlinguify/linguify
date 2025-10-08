@@ -1,0 +1,88 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'app_manager/css/app_manager_settings.css' %}">
+
+<!-- App Manager Settings Content -->
+<div class="content-section">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="bi bi-check-circle"></i>
+            Applications Installées ({{ total_installed|default:0 }})
+        </h3>
+    </div>
+    <div class="section-content">
+        {% if installed_apps %}
+        <div class="installed-apps-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+            {% for app in installed_apps %}
+            <div class="app-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+                <div class="app-icon {% if not app.static_icon %}app-icon-default{% else %}app-icon-custom{% endif %}" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    {% if app.static_icon %}
+                        <img src="{{ app.static_icon }}" alt="{{ app.display_name }} icon" style="width: 40px; height: 40px; object-fit: contain; border-radius: 8px;">
+                    {% else %}
+                        <i class="bi bi-app" style="font-size: 1.25rem;"></i>
+                    {% endif %}
+                </div>
+                <div class="app-info" style="flex: 1;">
+                    <h4 style="margin: 0 0 0.25rem 0; font-size: 1rem; font-weight: 600;">{{ app.display_name }}</h4>
+                    <p style="margin: 0; font-size: 0.875rem; color: #64748b;">v{{ app.version }} • {{ app.category }}</p>
+                </div>
+                <div class="app-actions">
+                    <button class="btn btn-sm btn-outline-primary" onclick="configureApp('{{ app.code }}', '{{ app.display_name }}')">
+                        <i class="bi bi-gear"></i>
+                        Configurer
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="bi bi-app-indicator" style="font-size: 3rem; color: #cbd5e1;"></i>
+            <h5 class="mt-3">Aucune application installée</h5>
+            <p>Visitez l'App Store pour installer des applications.</p>
+            <a href="{% url 'saas_web:app_store' %}" class="btn btn-primary">
+                <i class="bi bi-shop"></i>
+                Ouvrir l'App Store
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="content-section">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="bi bi-shop"></i>
+            Boutique d'Applications
+        </h3>
+    </div>
+    <div class="section-content">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="setting_type" value="app_store">
+            
+            <div class="form-group mb-3">
+                <label class="form-check-label d-flex align-items-center">
+                    <input type="checkbox" name="auto_updates" checked class="form-check-input me-2">
+                    Mises à jour automatiques
+                </label>
+                <div class="form-text">Mettre à jour automatiquement les applications installées</div>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label class="form-check-label d-flex align-items-center">
+                    <input type="checkbox" name="community_apps" checked class="form-check-input me-2">
+                    Applications communautaires
+                </label>
+                <div class="form-text">Afficher les applications développées par la communauté</div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i>
+                Enregistrer
+            </button>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'app_manager/js/app_manager_settings.js' %}?v=2"></script>
+
