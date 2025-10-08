@@ -25,8 +25,8 @@ urlpatterns = [
 
     # === SYSTEM APPS (Infrastructure) ===
 
-    # Core CMS (Dashboard)
-    path('dashboard/', include('cms.core.urls')),
+    # SaaS Web (Dashboard)
+    path('', include('saas_web.urls')),
 
     # Sync API
     path('api/sync/', include('cms.sync.urls')),

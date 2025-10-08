@@ -27,7 +27,8 @@ DJANGO_APPS = [
 
 # Apps système (infrastructure CMS)
 SYSTEM_APPS = [
-    'cms.core',           # Core CMS (dashboard, auth)
+    'cms.core',          # Core models (TimestampedModel, SyncableModel)
+    'saas_web',          # SaaS Web Interface (dashboard, UI)
     'cms.maintenance',    # Maintenance tools
     'cms.sync',          # Backend synchronization
 ]

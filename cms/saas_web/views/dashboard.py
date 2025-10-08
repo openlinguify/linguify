@@ -15,23 +15,58 @@ from app_manager.services import UserAppService
 
 @method_decorator(login_required, name='dispatch')
 class DashboardView(View):
-    """Dashboard principal de l'application SaaS"""
-    
+    """Dashboard principal pour le CMS Teacher"""
+
     def get(self, request):
-        # Optimisation: Use service with caching
-        from app_manager.services.cache_service import UserAppCacheService
+        # CMS Apps - Modular teacher-facing applications
+        cms_apps = [
+            {
+                'name': 'cours',
+                'display_name': _('Courses'),
+                'url': '/cours/',
+                'icon': 'bi-book',
+                'color_gradient': 'linear-gradient(135deg, #2D5BBA 0%, #4F7CFF 100%)',
+                'description': _('Manage your courses'),
+            },
+            {
+                'name': 'teachers',
+                'display_name': _('Teachers'),
+                'url': '/teachers/',
+                'icon': 'bi-person-workspace',
+                'color_gradient': 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)',
+                'description': _('Manage teacher profiles'),
+            },
+            {
+                'name': 'scheduling',
+                'display_name': _('Schedule'),
+                'url': '/scheduling/',
+                'icon': 'bi-calendar-check',
+                'color_gradient': 'linear-gradient(135deg, #00D4AA 0%, #10B981 100%)',
+                'description': _('Manage appointments'),
+            },
+            {
+                'name': 'monetization',
+                'display_name': _('Earnings'),
+                'url': '/monetization/',
+                'icon': 'bi-cash-coin',
+                'color_gradient': 'linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%)',
+                'description': _('View your earnings'),
+            },
+            {
+                'name': 'contentstore',
+                'display_name': _('Content Store'),
+                'url': '/courses/',
+                'icon': 'bi-box-seam',
+                'color_gradient': 'linear-gradient(135deg, #6366F1 0%, #818CF8 100%)',
+                'description': _('Legacy course content'),
+            },
+        ]
 
-        installed_apps = UserAppCacheService.get_user_apps_cache(request.user.id)
-
-        if installed_apps is None:
-            installed_apps = UserAppService.get_user_installed_apps(request.user)
-            UserAppCacheService.set_user_apps_cache(request.user.id, installed_apps)  # Use default timeout
-        
         context = {
-            'title': _('Dashboard - Open Linguify'),
-            'installed_apps': installed_apps,
+            'title': _('Dashboard - Linguify CMS'),
+            'installed_apps': cms_apps,
         }
-        
+
         return render(request, 'saas_web/dashboard.html', context)
 
 
