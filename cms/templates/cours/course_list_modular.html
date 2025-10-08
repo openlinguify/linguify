@@ -1,0 +1,173 @@
+{% extends 'cms_dashboard/base_modular.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "My Courses" %} - Linguify CMS{% endblock %}
+
+{% block page_header %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="h2 fw-bold mb-1">{% trans "My Courses" %}</h1>
+        <p class="text-muted">{% trans "Manage and create your online courses" %}</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'cours:course_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>
+            {% trans "Create New Course" %}
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stats-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="h4 mb-0">{{ courses|length }}</h3>
+                    <p class="text-muted small mb-0">{% trans "Total Courses" %}</p>
+                </div>
+                <i class="bi bi-journal-text" style="font-size: 32px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stats-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="h4 mb-0">{{ courses|selectattr:"is_published"|list|length|default:0 }}</h3>
+                    <p class="text-muted small mb-0">{% trans "Published" %}</p>
+                </div>
+                <i class="bi bi-check-circle-fill" style="font-size: 32px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stats-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="h4 mb-0">{{ courses|rejectattr:"is_published"|list|length|default:0 }}</h3>
+                    <p class="text-muted small mb-0">{% trans "Drafts" %}</p>
+                </div>
+                <i class="bi bi-file-earmark-text" style="font-size: 32px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stats-card info">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="h4 mb-0">0</h3>
+                    <p class="text-muted small mb-0">{% trans "Synchronized" %}</p>
+                </div>
+                <i class="bi bi-cloud-check-fill" style="font-size: 32px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Courses Grid -->
+<div class="row g-3">
+    {% for course in courses %}
+    <div class="col-md-4">
+        <div class="course-card">
+            {% if course.thumbnail %}
+            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="w-100" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-image text-muted" style="font-size: 48px;"></i>
+            </div>
+            {% endif %}
+
+            <div class="p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-secondary">{{ course.get_level_display }}</span>
+                    {% if course.status == 'published' %}
+                    <span class="badge bg-success">{% trans "Published" %}</span>
+                    {% elif course.status == 'draft' %}
+                    <span class="badge bg-warning">{% trans "Draft" %}</span>
+                    {% endif %}
+                </div>
+
+                <h5 class="mb-2">{{ course.title }}</h5>
+                <p class="text-muted small mb-3">{{ course.subtitle|truncatewords:15|default:"No description" }}</p>
+
+                <div class="row text-center text-muted small mb-3 g-0">
+                    <div class="col-4">
+                        <i class="bi bi-book d-block mb-1"></i>
+                        <small>{{ course.sections.count }} {% trans "Chapters" %}</small>
+                    </div>
+                    <div class="col-4">
+                        <i class="bi bi-list-ul d-block mb-1"></i>
+                        <small>{{ course.lessons.count }} {% trans "Lessons" %}</small>
+                    </div>
+                    <div class="col-4">
+                        <i class="bi bi-currency-euro d-block mb-1"></i>
+                        <small>{{ course.pricing.price|default:"0,00" }}€</small>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'cours:course_detail' course.slug %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye me-1"></i> {% trans "View Details" %}
+                    </a>
+                    <a href="{% url 'cours:course_update' course.slug %}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-pencil me-1"></i> {% trans "Edit Course" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="text-center py-5">
+            <i class="bi bi-journal-x text-muted" style="font-size: 96px;"></i>
+            <h3 class="mt-4">{% trans "No courses created" %}</h3>
+            <p class="text-muted mb-4">{% trans "Start by creating your first course now" %}</p>
+            <a href="{% url 'cours:course_create' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>
+                {% trans "Create New Course" %}
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="row mt-4">
+    <div class="col-12">
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">{% trans "First" %}</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">{% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{% trans "Last" %}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

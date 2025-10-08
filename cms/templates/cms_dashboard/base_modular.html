@@ -1,0 +1,84 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'fr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}Linguify CMS - Teacher Content Management System{% endblock %}">
+    <title>{% block title %}Linguify CMS{% endblock %}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Core CMS Styles (Modular) -->
+    <link rel="stylesheet" href="{% static 'cms/css/core.css' %}">
+
+    <!-- Additional Component Styles (loaded via components) -->
+    {% block extra_css %}{% endblock %}
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    {% block head_scripts %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+    <!-- MODULAR COMPONENTS -->
+
+    {% block layout_type %}
+    <!-- Default: Sidebar + Header Layout -->
+
+    <!-- Sidebar Navigation (Modular) -->
+    {% include 'components/navigation/sidebar.html' %}
+
+    <!-- Top Header (Modular - Optional, can be disabled per page) -->
+    {% block header %}
+        {% include 'components/header/cms_header.html' with app_name="Linguify CMS" %}
+    {% endblock %}
+
+    <!-- Messages Component (Modular) -->
+    {% include 'components/common/messages.html' %}
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        {% block content_wrapper %}
+        <div class="container-fluid">
+            {% block page_header %}
+            <!-- Page header can be overridden per page -->
+            {% endblock %}
+
+            {% block content %}
+            <!-- Main content goes here -->
+            {% endblock %}
+        </div>
+        {% endblock %}
+    </main>
+
+    {% endblock layout_type %}
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Additional Scripts -->
+    {% block extra_js %}{% endblock %}
+
+    <!-- HTMX Extensions -->
+    <script>
+        // HTMX Configuration
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+        });
+    </script>
+
+    {% block footer_scripts %}{% endblock %}
+</body>
+</html>
