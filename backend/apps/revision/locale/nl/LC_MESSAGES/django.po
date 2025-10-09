@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-09 15:46+0200\n"
+"POT-Creation-Date: 2025-10-09 16:02+0200\n"
 "PO-Revision-Date: 2025-09-29 20:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -212,6 +212,7 @@ msgstr "Beoordelingsinformatie"
 #: .\apps\revision\admin.py:558
 #: .\apps\revision\templates\revision\components\navbar.html:237
 #: .\apps\revision\templates\revision\partials\cards_section.html:13
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:26
 msgid "Front"
 msgstr "Voorkant"
 
@@ -219,6 +220,7 @@ msgstr "Voorkant"
 #: .\apps\revision\templates\revision\components\deck_import.html:496
 #: .\apps\revision\templates\revision\components\navbar.html:238
 #: .\apps\revision\templates\revision\partials\cards_section.html:23
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:30
 msgid "Back"
 msgstr "Achterkant"
 
@@ -432,6 +434,7 @@ msgstr "Importeren"
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:9
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:53
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:12
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:41
 #: .\apps\revision\templates\revision\partials\reset_progress_modal.html:98
 msgid "Cancel"
 msgstr "Annuleren"
@@ -744,7 +747,7 @@ msgid "Export statistics"
 msgstr "Statistieken exporteren"
 
 #: .\apps\revision\templates\revision\components\navbar.html:63
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:58
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:53
 msgid "Export"
 msgstr "Exporteren"
 
@@ -859,7 +862,7 @@ msgid "Save"
 msgstr "Opslaan"
 
 #: .\apps\revision\templates\revision\components\navbar.html:181
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:71
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:66
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:43
 msgid "Delete"
 msgstr "Verwijderen"
@@ -1133,22 +1136,27 @@ msgid "Flashcards mode not available"
 msgstr "Flashcards Modus"
 
 #: .\apps\revision\templates\revision\components\navbar.html:233
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:12
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:45
 #, fuzzy
 #| msgid "Delete"
 msgid "Delete card"
 msgstr "Verwijderen"
 
 #: .\apps\revision\templates\revision\components\navbar.html:234
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:13
 #, fuzzy
 #| msgid "This action is irreversible."
 msgid "This action is irreversible"
 msgstr "Deze actie is onomkeerbaar."
 
 #: .\apps\revision\templates\revision\components\navbar.html:235
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:23
 msgid "Warning!"
 msgstr "Waarschuwing!"
 
 #: .\apps\revision\templates\revision\components\navbar.html:236
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:23
 msgid "You are about to permanently delete this card:"
 msgstr ""
 
@@ -1420,6 +1428,7 @@ msgid "Start by adding some cards to review!"
 msgstr "Begin met het toevoegen van kaarten om te bestuderen!"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:8
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:32
 #, fuzzy
 #| msgid "Add Card"
 msgid "Add a new card"
@@ -1526,35 +1535,27 @@ msgstr "Lijst maken"
 msgid "Deck Description"
 msgstr "Lijst Beschrijving"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:32
-msgid "Add Card"
-msgstr "Kaart toevoegen"
-
 #: .\apps\revision\templates\revision\partials\deck_details_section.html:37
-msgid "Review Difficult"
-msgstr "Moeilijke Beoordelen"
-
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:42
 msgid "Reset"
 msgstr "Resetten"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:52
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:47
 msgid "Edit Deck"
 msgstr "Lijst bewerken"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:55
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:50
 msgid "Import Cards"
 msgstr "Kaarten importeren"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:61
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:56
 msgid "Make Public"
 msgstr "Openbaar maken"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:64
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:59
 msgid "Make Private"
 msgstr "Privé maken"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:68
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:63
 msgid "Archive"
 msgstr "Archiveren"
 
@@ -2174,6 +2175,12 @@ msgstr "Ongeldige waarde in instellingen"
 #: .\apps\revision\views\revision_settings_views.py:324
 msgid "Erreur lors de la mise à jour des paramètres de révision"
 msgstr "Fout bij het bijwerken van revisie-instellingen"
+
+#~ msgid "Add Card"
+#~ msgstr "Kaart toevoegen"
+
+#~ msgid "Review Difficult"
+#~ msgstr "Moeilijke Beoordelen"
 
 #~ msgid "Total Decks"
 #~ msgstr "Totaal Lijsten"

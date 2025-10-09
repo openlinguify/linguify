@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-09 15:46+0200\n"
+"POT-Creation-Date: 2025-10-09 16:02+0200\n"
 "PO-Revision-Date: 2025-09-29 20:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -213,6 +213,7 @@ msgstr "Información de repaso"
 #: .\apps\revision\admin.py:558
 #: .\apps\revision\templates\revision\components\navbar.html:237
 #: .\apps\revision\templates\revision\partials\cards_section.html:13
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:26
 msgid "Front"
 msgstr "Frente"
 
@@ -220,6 +221,7 @@ msgstr "Frente"
 #: .\apps\revision\templates\revision\components\deck_import.html:496
 #: .\apps\revision\templates\revision\components\navbar.html:238
 #: .\apps\revision\templates\revision\partials\cards_section.html:23
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:30
 msgid "Back"
 msgstr "Reverso"
 
@@ -431,6 +433,7 @@ msgstr "Importar"
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:9
 #: .\apps\revision\templates\revision\partials\edit_card_form.html:53
 #: .\apps\revision\templates\revision\partials\edit_deck_form.html:12
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:41
 #: .\apps\revision\templates\revision\partials\reset_progress_modal.html:98
 msgid "Cancel"
 msgstr "Cancelar"
@@ -751,7 +754,7 @@ msgid "Export statistics"
 msgstr "Estadísticas"
 
 #: .\apps\revision\templates\revision\components\navbar.html:63
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:58
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:53
 msgid "Export"
 msgstr "Exportar"
 
@@ -874,7 +877,7 @@ msgid "Save"
 msgstr "Guardar"
 
 #: .\apps\revision\templates\revision\components\navbar.html:181
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:71
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:66
 #: .\apps\revision\templates\revision\partials\tags\tag_templates.html:43
 msgid "Delete"
 msgstr "Eliminar"
@@ -1157,22 +1160,27 @@ msgid "Flashcards mode not available"
 msgstr "Modo Tarjetas"
 
 #: .\apps\revision\templates\revision\components\navbar.html:233
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:12
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:45
 #, fuzzy
 #| msgid "Delete"
 msgid "Delete card"
 msgstr "Eliminar"
 
 #: .\apps\revision\templates\revision\components\navbar.html:234
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:13
 #, fuzzy
 #| msgid "This action is irreversible."
 msgid "This action is irreversible"
 msgstr "Esta acción es irreversible."
 
 #: .\apps\revision\templates\revision\components\navbar.html:235
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:23
 msgid "Warning!"
 msgstr "¡Advertencia!"
 
 #: .\apps\revision\templates\revision\components\navbar.html:236
+#: .\apps\revision\templates\revision\partials\modals\delete_card_modal.html:23
 msgid "You are about to permanently delete this card:"
 msgstr ""
 
@@ -1455,6 +1463,7 @@ msgid "Start by adding some cards to review!"
 msgstr "¡Empieza añadiendo algunas cartas para repasar!"
 
 #: .\apps\revision\templates\revision\partials\create_card_form.html:8
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:32
 #, fuzzy
 #| msgid "Add Card"
 msgid "Add a new card"
@@ -1561,35 +1570,27 @@ msgstr "Crear lista"
 msgid "Deck Description"
 msgstr "Descripción del mazo"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:32
-msgid "Add Card"
-msgstr "Añadir carta"
-
 #: .\apps\revision\templates\revision\partials\deck_details_section.html:37
-msgid "Review Difficult"
-msgstr "Repasar Difíciles"
-
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:42
 msgid "Reset"
 msgstr "Reiniciar"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:52
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:47
 msgid "Edit Deck"
 msgstr "Editar lista"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:55
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:50
 msgid "Import Cards"
 msgstr "Importar cartas"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:61
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:56
 msgid "Make Public"
 msgstr "Hacer público"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:64
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:59
 msgid "Make Private"
 msgstr "Hacer privado"
 
-#: .\apps\revision\templates\revision\partials\deck_details_section.html:68
+#: .\apps\revision\templates\revision\partials\deck_details_section.html:63
 msgid "Archive"
 msgstr "Archivar"
 
@@ -2218,6 +2219,12 @@ msgstr "Valor inválido en la configuración"
 #: .\apps\revision\views\revision_settings_views.py:324
 msgid "Erreur lors de la mise à jour des paramètres de révision"
 msgstr "Error al actualizar la configuración de revisión"
+
+#~ msgid "Add Card"
+#~ msgstr "Añadir carta"
+
+#~ msgid "Review Difficult"
+#~ msgstr "Repasar Difíciles"
 
 #~ msgid "Total Decks"
 #~ msgstr "Total de Mazos"
