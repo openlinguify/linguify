@@ -959,9 +959,9 @@ async function loadDeckCards() {
                             <p class="card-text card-front-text mb-0">${card.front_text || ''}</p>
                         </div>
                         <div class="col-md-2 text-center">
-                            <button class="btn btn-link p-0"
+                            <button class="btn btn-link p-0 card-flip-btn"
                                     onclick="window.flipCardTranslation(${cardId}, event)"
-                                    title="Inverser recto/verso"
+                                    title="${_('Flip card')}"
                                     style="color: #6c757d; font-size: 1rem; border: none; background: none; text-decoration: none; cursor: pointer;">
                                 <i class="bi bi-arrow-left-right"></i>
                             </button>

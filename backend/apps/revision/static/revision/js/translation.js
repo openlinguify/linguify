@@ -388,7 +388,7 @@ window.flipCardTranslation = async function(cardId, event) {
     }
 
     // Add loading animation on the button
-    const button = cardElement.querySelector('button[title="Inverser recto/verso"]');
+    const button = cardElement.querySelector('button.card-flip-btn');
 
     if (!button) {
         console.error('Flip button not found for card:', cardId);
