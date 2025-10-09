@@ -1,0 +1,83 @@
+{% if success %}
+<div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; padding: 1rem; margin-bottom: 1.5rem;">
+    <h3 style="margin: 0 0 0.5rem 0; color: #155724;">✅ Flashcards générées avec succès!</h3>
+    <p style="margin: 0; color: #155724;">
+        {{ flashcards|length }} flashcard(s) créée(s)
+        {% if deck %}dans le deck "<strong>{{ deck.name }}</strong>"{% endif %}
+    </p>
+    {% if document %}
+    <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #155724;">
+        <strong>Méthode d'extraction:</strong> {{ document.text_extraction_method }}
+    </p>
+    {% endif %}
+</div>
+
+<div style="margin-top: 1.5rem;">
+    <h3 style="color: #333; margin-bottom: 1rem;">📋 Flashcards générées</h3>
+
+    {% for card in flashcards %}
+    <div style="background: white; border: 1px solid #ddd; border-radius: 6px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+            <span style="font-weight: 600; color: #0066cc; font-size: 0.9rem;">Carte #{{ forloop.counter }}</span>
+            <span style="padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; font-weight: 500;
+                {% if card.difficulty == 'easy' %}
+                    background: #d4edda; color: #155724;
+                {% elif card.difficulty == 'medium' %}
+                    background: #fff3cd; color: #856404;
+                {% elif card.difficulty == 'hard' %}
+                    background: #f8d7da; color: #721c24;
+                {% endif %}">
+                {% if card.difficulty == 'easy' %}
+                    Facile
+                {% elif card.difficulty == 'medium' %}
+                    Moyen
+                {% elif card.difficulty == 'hard' %}
+                    Difficile
+                {% endif %}
+            </span>
+        </div>
+
+        <div style="margin-bottom: 0.75rem;">
+            <div style="font-weight: 600; color: #495057; margin-bottom: 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                ❓ Question
+            </div>
+            <div style="color: #212529; line-height: 1.5;">
+                {{ card.question }}
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid #e9ecef; padding-top: 0.75rem;">
+            <div style="font-weight: 600; color: #495057; margin-bottom: 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                ✅ Réponse
+            </div>
+            <div style="color: #212529; line-height: 1.5;">
+                {{ card.answer }}
+            </div>
+        </div>
+
+        {% if card.relevance_score %}
+        <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #e9ecef;">
+            <span style="font-size: 0.85rem; color: #6c757d;">
+                Score de pertinence: <strong>{{ card.relevance_score }}</strong>
+            </span>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {% if deck %}
+    <div style="margin-top: 2rem; text-align: center;">
+        <a href="{% url 'revision:flashcard_decks' %}"
+           style="display: inline-block; padding: 0.75rem 1.5rem; background: #0066cc; color: white; text-decoration: none; border-radius: 4px; font-weight: 500;">
+            Voir mes decks →
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% else %}
+<div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 1rem; color: #721c24;">
+    <h3 style="margin: 0 0 0.5rem 0;">❌ Erreur lors de la génération</h3>
+    <p style="margin: 0;">Une erreur s'est produite lors du traitement du document.</p>
+</div>
+{% endif %}

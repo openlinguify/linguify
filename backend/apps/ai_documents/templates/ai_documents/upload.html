@@ -1,0 +1,230 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générer des Flashcards depuis un Document</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/dropzone@6/dist/dropzone-min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@6/dist/dropzone.css" type="text/css" />
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .upload-section {
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .dropzone {
+            border: 2px dashed #0066cc;
+            border-radius: 8px;
+            background: #f8f9fa;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .dropzone:hover {
+            border-color: #0052a3;
+            background: #e9ecef;
+        }
+        .dropzone .dz-message {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #666;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #0066cc;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0052a3;
+        }
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 2rem;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0066cc;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        #new-deck-group {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Générer des Flashcards Intelligentes</h1>
+        <p class="subtitle">Uploadez un document (PDF, image, texte) et générez automatiquement des flashcards avec NLP open-source (scikit-learn, spaCy, Naive Bayes)</p>
+
+        <div class="upload-section">
+            <form id="upload-form"
+                  hx-post="{% url 'ai_documents:process_document' %}"
+                  hx-target="#result"
+                  hx-indicator="#loading"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Document à analyser</label>
+                    <input type="file"
+                           name="document"
+                           accept=".pdf,.png,.jpg,.jpeg,.txt,.doc,.docx"
+                           required>
+                    <small style="color: #666; display: block; margin-top: 0.5rem;">
+                        Formats supportés: PDF, images (PNG, JPG), texte (TXT)
+                    </small>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox"
+                           id="create_new_deck"
+                           name="create_new_deck"
+                           onchange="toggleNewDeckField()">
+                    <label for="create_new_deck" style="margin: 0;">Créer un nouveau deck</label>
+                </div>
+
+                <div id="new-deck-group" style="display: none;">
+                    <label for="new_deck_name">Nom du nouveau deck</label>
+                    <input type="text"
+                           id="new_deck_name"
+                           name="new_deck_name"
+                           placeholder="Ex: Histoire - Révolution française">
+                </div>
+
+                <div class="form-group" id="existing-deck-group">
+                    <label for="deck_id">Ou sélectionner un deck existant</label>
+                    <select name="deck_id" id="deck_id">
+                        <option value="">-- Sélectionner un deck --</option>
+                        {% for deck in decks %}
+                        <option value="{{ deck.id }}">{{ deck.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="max_cards">Nombre maximum de flashcards à générer</label>
+                    <input type="number"
+                           name="max_cards"
+                           id="max_cards"
+                           value="10"
+                           min="1"
+                           max="50">
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    🚀 Générer les Flashcards
+                </button>
+            </form>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Traitement en cours... Extraction du texte et génération des flashcards (NLP, TF-IDF, Naive Bayes).</p>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function toggleNewDeckField() {
+            const checkbox = document.getElementById('create_new_deck');
+            const newDeckGroup = document.getElementById('new-deck-group');
+            const existingDeckGroup = document.getElementById('existing-deck-group');
+            const newDeckInput = document.getElementById('new_deck_name');
+            const deckSelect = document.getElementById('deck_id');
+
+            if (checkbox.checked) {
+                newDeckGroup.style.display = 'block';
+                existingDeckGroup.style.display = 'none';
+                newDeckInput.required = true;
+                deckSelect.required = false;
+                deckSelect.value = '';
+            } else {
+                newDeckGroup.style.display = 'none';
+                existingDeckGroup.style.display = 'block';
+                newDeckInput.required = false;
+                deckSelect.required = false;
+            }
+        }
+
+        // Configuration HTMX pour les formulaires multipart
+        document.body.addEventListener('htmx:configRequest', function(evt) {
+            if (evt.detail.path === "{% url 'ai_documents:process_document' %}") {
+                evt.detail.headers['X-Requested-With'] = 'XMLHttpRequest';
+            }
+        });
+    </script>
+</body>
+</html>
