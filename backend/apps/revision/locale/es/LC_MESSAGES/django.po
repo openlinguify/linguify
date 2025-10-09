@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-09 15:38+0200\n"
+"POT-Creation-Date: 2025-10-09 15:46+0200\n"
 "PO-Revision-Date: 2025-09-29 20:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -211,12 +211,14 @@ msgid "Review Information"
 msgstr "Información de repaso"
 
 #: .\apps\revision\admin.py:558
+#: .\apps\revision\templates\revision\components\navbar.html:237
 #: .\apps\revision\templates\revision\partials\cards_section.html:13
 msgid "Front"
 msgstr "Frente"
 
 #: .\apps\revision\admin.py:563
 #: .\apps\revision\templates\revision\components\deck_import.html:496
+#: .\apps\revision\templates\revision\components\navbar.html:238
 #: .\apps\revision\templates\revision\partials\cards_section.html:23
 msgid "Back"
 msgstr "Reverso"
@@ -1154,8 +1156,28 @@ msgstr "Por favor seleccione un mazo existente."
 msgid "Flashcards mode not available"
 msgstr "Modo Tarjetas"
 
-#: .\apps\revision\templates\revision\components\navbar.html:238
-#: .\apps\revision\templates\revision\components\navbar.html:239
+#: .\apps\revision\templates\revision\components\navbar.html:233
+#, fuzzy
+#| msgid "Delete"
+msgid "Delete card"
+msgstr "Eliminar"
+
+#: .\apps\revision\templates\revision\components\navbar.html:234
+#, fuzzy
+#| msgid "This action is irreversible."
+msgid "This action is irreversible"
+msgstr "Esta acción es irreversible."
+
+#: .\apps\revision\templates\revision\components\navbar.html:235
+msgid "Warning!"
+msgstr "¡Advertencia!"
+
+#: .\apps\revision\templates\revision\components\navbar.html:236
+msgid "You are about to permanently delete this card:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\components\navbar.html:244
+#: .\apps\revision\templates\revision\components\navbar.html:245
 msgid "card"
 msgid_plural "cards"
 msgstr[0] "tarjeta"
@@ -2253,9 +2275,6 @@ msgstr "Error al actualizar la configuración de revisión"
 
 #~ msgid "Board"
 #~ msgstr "Tablero"
-
-#~ msgid "Warning!"
-#~ msgstr "¡Advertencia!"
 
 #~ msgid "Reset in progress..."
 #~ msgstr "Reinicio en progreso..."

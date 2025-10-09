@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-09 15:38+0200\n"
+"POT-Creation-Date: 2025-10-09 15:46+0200\n"
 "PO-Revision-Date: 2025-09-29 20:30+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -210,12 +210,14 @@ msgid "Review Information"
 msgstr "Beoordelingsinformatie"
 
 #: .\apps\revision\admin.py:558
+#: .\apps\revision\templates\revision\components\navbar.html:237
 #: .\apps\revision\templates\revision\partials\cards_section.html:13
 msgid "Front"
 msgstr "Voorkant"
 
 #: .\apps\revision\admin.py:563
 #: .\apps\revision\templates\revision\components\deck_import.html:496
+#: .\apps\revision\templates\revision\components\navbar.html:238
 #: .\apps\revision\templates\revision\partials\cards_section.html:23
 msgid "Back"
 msgstr "Achterkant"
@@ -1130,8 +1132,28 @@ msgstr "Selecteer een bestaande lijst."
 msgid "Flashcards mode not available"
 msgstr "Flashcards Modus"
 
-#: .\apps\revision\templates\revision\components\navbar.html:238
-#: .\apps\revision\templates\revision\components\navbar.html:239
+#: .\apps\revision\templates\revision\components\navbar.html:233
+#, fuzzy
+#| msgid "Delete"
+msgid "Delete card"
+msgstr "Verwijderen"
+
+#: .\apps\revision\templates\revision\components\navbar.html:234
+#, fuzzy
+#| msgid "This action is irreversible."
+msgid "This action is irreversible"
+msgstr "Deze actie is onomkeerbaar."
+
+#: .\apps\revision\templates\revision\components\navbar.html:235
+msgid "Warning!"
+msgstr "Waarschuwing!"
+
+#: .\apps\revision\templates\revision\components\navbar.html:236
+msgid "You are about to permanently delete this card:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\components\navbar.html:244
+#: .\apps\revision\templates\revision\components\navbar.html:245
 msgid "card"
 msgid_plural "cards"
 msgstr[0] "kaart"
@@ -2209,9 +2231,6 @@ msgstr "Fout bij het bijwerken van revisie-instellingen"
 
 #~ msgid "Board"
 #~ msgstr "Bord"
-
-#~ msgid "Warning!"
-#~ msgstr "Waarschuwing!"
 
 #~ msgid "Reset in progress..."
 #~ msgstr "Reset bezig..."

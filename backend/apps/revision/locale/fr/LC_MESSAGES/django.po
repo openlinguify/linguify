@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-09 15:38+0200\n"
+"POT-Creation-Date: 2025-10-09 15:46+0200\n"
 "PO-Revision-Date: 2025-09-29 20:30+0200\n"
 "Last-Translator: Claude Code\n"
 "Language-Team: French\n"
@@ -212,12 +212,14 @@ msgid "Review Information"
 msgstr "Informations de révision"
 
 #: .\apps\revision\admin.py:558
+#: .\apps\revision\templates\revision\components\navbar.html:237
 #: .\apps\revision\templates\revision\partials\cards_section.html:13
 msgid "Front"
 msgstr "Recto"
 
 #: .\apps\revision\admin.py:563
 #: .\apps\revision\templates\revision\components\deck_import.html:496
+#: .\apps\revision\templates\revision\components\navbar.html:238
 #: .\apps\revision\templates\revision\partials\cards_section.html:23
 msgid "Back"
 msgstr "Verso"
@@ -1142,8 +1144,28 @@ msgstr "Utiliser la langue par défaut du deck"
 msgid "Flashcards mode not available"
 msgstr ""
 
-#: .\apps\revision\templates\revision\components\navbar.html:238
-#: .\apps\revision\templates\revision\components\navbar.html:239
+#: .\apps\revision\templates\revision\components\navbar.html:233
+#, fuzzy
+#| msgid "Delete"
+msgid "Delete card"
+msgstr "Supprimer"
+
+#: .\apps\revision\templates\revision\components\navbar.html:234
+#, fuzzy
+#| msgid "This action is irreversible."
+msgid "This action is irreversible"
+msgstr "Cette action est irréversible."
+
+#: .\apps\revision\templates\revision\components\navbar.html:235
+msgid "Warning!"
+msgstr "Attention !"
+
+#: .\apps\revision\templates\revision\components\navbar.html:236
+msgid "You are about to permanently delete this card:"
+msgstr ""
+
+#: .\apps\revision\templates\revision\components\navbar.html:244
+#: .\apps\revision\templates\revision\components\navbar.html:245
 msgid "card"
 msgid_plural "cards"
 msgstr[0] "carte"
@@ -2181,9 +2203,6 @@ msgstr ""
 
 #~ msgid "Board"
 #~ msgstr "Tableau"
-
-#~ msgid "Warning!"
-#~ msgstr "Attention !"
 
 #~ msgid "Reset in progress..."
 #~ msgstr "Réinitialisation en cours..."

@@ -1185,9 +1185,39 @@ async function submitCardEdit() {
     }
 }
 
-async function deleteCard(cardId) {
-    if (!confirm(_('Are you sure you want to delete this card?'))) return;
+function deleteCard(cardId) {
+    showDeleteCardConfirmationModal(cardId);
+}
 
+function showDeleteCardConfirmationModal(cardId) {
+    // Get card info for display
+    const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+    const frontText = cardElement?.querySelector('.card-front-text')?.textContent || '';
+    const backText = cardElement?.querySelector('.card-back-text')?.textContent || '';
+
+    // Truncate text if too long
+    const truncate = (text, maxLength = 50) => {
+        return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    };
+
+    // Populate modal with card data
+    document.getElementById('deleteCardFrontText').textContent = truncate(frontText);
+    document.getElementById('deleteCardBackText').textContent = truncate(backText);
+
+    // Show modal using Bootstrap
+    const modalElement = document.getElementById('deleteCardModal');
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+
+    // Set up confirm button handler
+    const confirmBtn = document.getElementById('confirmDeleteCardBtn');
+    confirmBtn.onclick = () => {
+        modal.hide();
+        executeDeleteCard(cardId);
+    };
+}
+
+async function executeDeleteCard(cardId) {
     try {
         await revisionAPI.deleteCard(cardId);
 
