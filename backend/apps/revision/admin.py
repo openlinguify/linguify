@@ -22,6 +22,7 @@ from .models import (
     Flashcard,
     CardPerformance,
     CardMastery,
+    DocumentUpload,
 )
 
 from django.conf import settings
@@ -936,3 +937,97 @@ class CardMasteryAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('card')
+
+
+@admin.register(DocumentUpload)
+class DocumentUploadAdmin(admin.ModelAdmin):
+    """Admin interface for document uploads and flashcard generation"""
+    list_display = [
+        'original_filename',
+        'user',
+        'deck_link',
+        'document_type',
+        'status',
+        'flashcards_generated_count',
+        'created_at',
+        'file_size_display',
+    ]
+    list_filter = [
+        'status',
+        'document_type',
+        'created_at',
+    ]
+    search_fields = [
+        'original_filename',
+        'user__username',
+        'user__email',
+        'deck__name',
+    ]
+    readonly_fields = [
+        'created_at',
+        'updated_at',
+        'processed_at',
+        'file_size_display',
+        'processing_duration_display',
+    ]
+    fieldsets = (
+        (_('General Information'), {
+            'fields': ('user', 'deck', 'status')
+        }),
+        (_('File'), {
+            'fields': (
+                'file',
+                'original_filename',
+                'file_size',
+                'file_size_display',
+                'document_type',
+                'mime_type',
+            )
+        }),
+        (_('Extraction'), {
+            'fields': (
+                'extracted_text',
+                'text_extraction_method',
+            )
+        }),
+        (_('Results'), {
+            'fields': (
+                'flashcards_generated_count',
+                'generation_params',
+            )
+        }),
+        (_('Errors'), {
+            'fields': ('error_message',),
+            'classes': ('collapse',)
+        }),
+        (_('Metadata'), {
+            'fields': (
+                'created_at',
+                'updated_at',
+                'processed_at',
+                'processing_duration_display',
+            )
+        }),
+    )
+
+    def deck_link(self, obj):
+        if obj.deck:
+            url = reverse('admin:revision_flashcarddeck_change', args=[obj.deck.id])
+            return format_html('<a href="{}">{}</a>', url, escape(obj.deck.name))
+        return '—'
+    deck_link.short_description = _('Deck')
+    deck_link.admin_order_field = 'deck__name'
+
+    def file_size_display(self, obj):
+        return f"{obj.file_size_mb} Mo"
+    file_size_display.short_description = _("File Size")
+
+    def processing_duration_display(self, obj):
+        duration = obj.processing_duration
+        if duration:
+            return f"{duration:.2f}s"
+        return '—'
+    processing_duration_display.short_description = _("Processing Duration")
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'deck')

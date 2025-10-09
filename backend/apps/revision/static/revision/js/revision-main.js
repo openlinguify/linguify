@@ -1272,13 +1272,26 @@ let importState = {
 
 async function importNewDeck() {
     const elements = getElements();
+
+    // Check import type
+    const importType = window.getCurrentImportType?.() || 'excel';
+
+    console.log('🚀 Import type:', importType);
+
+    if (importType === 'document') {
+        // Handle document import (PDF/Image)
+        await handleDocumentImport();
+        return;
+    }
+
+    // Excel/CSV import (existing logic)
     const file = elements.importFile.files[0] || window.selectedImportFile;
     const name = elements.importDeckName.value.trim();
-    
+
     console.log('🚀 Import deck - file from input:', elements.importFile.files[0]);
     console.log('🚀 Import deck - file from global:', window.selectedImportFile);
     console.log('🚀 Import deck - using file:', file);
-    
+
     if (!file) {
         window.notificationService.error('Fichier requis !', 'Veuillez sélectionner un fichier Excel ou CSV avant de continuer.');
         return;
@@ -1343,6 +1356,66 @@ async function importNewDeck() {
         } else {
             window.notificationService.error(_('Error preparing import: ') + error.message);
         }
+    }
+}
+
+// Handle document import (PDF/Image)
+async function handleDocumentImport() {
+    const elements = getElements();
+    const name = elements.importDeckName.value.trim();
+
+    // Check if importing to existing deck or creating new
+    const isImportToExisting = window.importToExistingDeck && window.targetDeckId;
+
+    let targetDeck;
+
+    try {
+        if (isImportToExisting) {
+            // Import to existing deck
+            targetDeck = appState.selectedDeck;
+            console.log('📄 Document import to existing deck:', targetDeck.name);
+        } else {
+            // Create new deck
+            if (!name) {
+                window.notificationService.error('Nom requis', 'Veuillez saisir un nom pour votre liste');
+                elements.importDeckName.focus();
+                return;
+            }
+
+            const deckData = {
+                name: name,
+                description: 'Deck généré depuis document',
+                is_public: false
+            };
+
+            targetDeck = await revisionAPI.createDeck(deckData);
+            console.log('✨ New deck created for document import:', targetDeck.name);
+        }
+
+        // Process document import
+        const result = await window.processDocumentImport(targetDeck.id);
+
+        if (result && result.success) {
+            // Success - close modal and refresh
+            hideImportForm();
+            await loadDecks();
+
+            if (targetDeck) {
+                selectDeck(targetDeck.id);
+            }
+
+            window.notificationService.success(
+                _('Success!', 'Succès !'),
+                `${result.cards_created} ${_('flashcards generated successfully', 'flashcards générées avec succès')}`
+            );
+        }
+
+    } catch (error) {
+        console.error('❌ Document import error:', error);
+        window.notificationService.error(
+            _('Error', 'Erreur'),
+            _('Error generating flashcards', 'Erreur lors de la génération') + ': ' + error.message
+        );
     }
 }
 

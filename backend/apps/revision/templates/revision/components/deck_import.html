@@ -44,6 +44,28 @@
                 <div class="invalid-feedback" style="display: none;" id="deckNameError"></div>
             </div>
 
+            <!-- Import Type Selector -->
+            <div class="mb-4" id="importTypeSelector">
+                <label class="form-label small fw-semibold text-linguify-primary mb-3">
+                    <i class="bi bi-file-earmark me-2"></i>
+                    {% trans "Import Type" %}
+                </label>
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="importType" id="importTypeExcel" value="excel" checked>
+                    <label class="btn btn-outline-primary" for="importTypeExcel">
+                        <i class="bi bi-file-earmark-excel me-2"></i>
+                        {% trans "Excel / CSV" %}
+                    </label>
+
+                    <input type="radio" class="btn-check" name="importType" id="importTypeDocument" value="document">
+                    <label class="btn btn-outline-primary" for="importTypeDocument">
+                        <i class="bi bi-file-earmark-pdf me-2"></i>
+                        {% trans "Document / PDF / Image" %}
+                        <span class="badge bg-success ms-1" style="font-size: 0.65rem;">NLP</span>
+                    </label>
+                </div>
+            </div>
+
             <!-- Enhanced steps indicator -->
             <div class="d-flex align-items-center justify-content-center mb-4">
                 <div class="d-flex align-items-center me-3">
@@ -68,6 +90,8 @@
                 </div>
             </div>
 
+            <!-- EXCEL/CSV IMPORT SECTION -->
+            <div id="excelImportSection">
             <!-- Enhanced file drop zone with Tailwind -->
             <div class="card-linguify border border-dashed border-primary border-opacity-25 p-4 text-center cursor-pointer" id="fileDropZone">
                 <div class="drop-zone-content">
@@ -136,7 +160,87 @@
                     </span>
                 </div>
             </div>
-            
+            </div>
+            <!-- END EXCEL/CSV SECTION -->
+
+            <!-- DOCUMENT/PDF IMPORT SECTION -->
+            <div id="documentImportSection" class="d-none">
+                <div class="card-linguify border border-dashed border-success border-opacity-25 p-4 text-center cursor-pointer" id="documentDropZone">
+                    <div class="text-center mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-success rounded-circle shadow-sm" style="width: 64px; height: 64px;">
+                            <i class="bi bi-file-earmark-pdf text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-linguify-primary mb-2">{% trans "Drop your document here" %}</h6>
+                        <p class="small text-muted mb-0">{% trans "or click to select a file" %}</p>
+                    </div>
+                    <input type="file" id="documentFile" class="d-none" accept=".pdf,.png,.jpg,.jpeg,.txt">
+                    <button class="btn btn-success" onclick="document.getElementById('documentFile').click();" type="button">
+                        <i class="bi bi-folder2-open me-2"></i>
+                        {% trans "Browse files" %}
+                    </button>
+                </div>
+
+                <!-- Document file info display -->
+                <div class="selected-file-info d-none" id="selectedDocumentInfo">
+                    <div class="alert-box alert-success rounded p-3 mb-4 mt-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-success rounded me-3" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-file-earmark-check text-white"></i>
+                                </div>
+                                <div>
+                                    <p id="selectedDocumentName" class="fw-semibold text-linguify-primary small mb-1"></p>
+                                    <p id="selectedDocumentSize" class="text-muted" style="font-size: 0.75rem;"></p>
+                                </div>
+                            </div>
+                            <button class="btn btn-light btn-sm rounded-circle" style="width: 32px; height: 32px;" onclick="clearSelectedDocument()" type="button">
+                                <i class="bi bi-x text-muted"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generation parameters -->
+                <div class="card-linguify p-3 mb-3 mt-3">
+                    <label class="form-label small fw-semibold text-linguify-primary mb-2">
+                        <i class="bi bi-sliders me-2"></i>
+                        {% trans "Number of flashcards to generate" %}
+                    </label>
+                    <input type="number" id="maxCardsInput" class="form-control rounded" value="10" min="1" max="50">
+                    <small class="text-muted mt-2 d-block">
+                        <i class="bi bi-info-circle me-1"></i>
+                        {% trans "AI will extract key concepts and automatically generate questions/answers" %}
+                    </small>
+                </div>
+
+                <!-- Supported formats info -->
+                <div class="card-linguify p-3 mb-4">
+                    <div class="d-flex align-items-center flex-wrap mb-2">
+                        <span class="small fw-medium text-linguify-accent me-3">{% trans "Supported formats:" %}</span>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill">
+                                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                            </span>
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill">
+                                <i class="bi bi-file-earmark-image me-1"></i>PNG, JPG
+                            </span>
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill">
+                                <i class="bi bi-file-earmark-text me-1"></i>TXT
+                            </span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mt-2">
+                        <i class="bi bi-cpu text-success me-2"></i>
+                        <span class="text-muted" style="font-size: 0.75rem;">
+                            <strong>{% trans "NLP Techniques:" %}</strong> TF-IDF, spaCy, Naive Bayes, Pattern Matching
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <!-- END DOCUMENT/PDF SECTION -->
+
 
         </div>
         
