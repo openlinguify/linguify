@@ -202,8 +202,46 @@
                     </div>
                 </div>
 
-                <!-- Generation parameters -->
+                <!-- Generation Mode Selector -->
                 <div class="card-linguify p-3 mb-3 mt-3">
+                    <label class="form-label small fw-semibold text-linguify-primary mb-3">
+                        <i class="bi bi-gear me-2"></i>
+                        {% trans "Generation Mode" %}
+                    </label>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="generationMode" id="modeComprehension" value="comprehension" checked>
+                        <label class="form-check-label" for="modeComprehension">
+                            <strong>📖 {% trans "Text Comprehension" %}</strong>
+                            <small class="d-block text-muted ms-3">
+                                {% trans "Questions/answers about the text content" %}
+                            </small>
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="generationMode" id="modeVocabulary" value="vocabulary">
+                        <label class="form-check-label" for="modeVocabulary">
+                            <strong>🌍 {% trans "Vocabulary & Translation" %}</strong>
+                            <small class="d-block text-muted ms-3">
+                                {% trans "Extract important words with translations" %}
+                            </small>
+                        </label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="generationMode" id="modeDefinitions" value="definitions">
+                        <label class="form-check-label" for="modeDefinitions">
+                            <strong>📝 {% trans "Definitions Only" %}</strong>
+                            <small class="d-block text-muted ms-3">
+                                {% trans "Extract term definitions from the text" %}
+                            </small>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Generation parameters -->
+                <div class="card-linguify p-3 mb-3">
                     <label class="form-label small fw-semibold text-linguify-primary mb-2">
                         <i class="bi bi-sliders me-2"></i>
                         {% trans "Number of flashcards to generate" %}
@@ -211,7 +249,7 @@
                     <input type="number" id="maxCardsInput" class="form-control rounded" value="10" min="1" max="50">
                     <small class="text-muted mt-2 d-block">
                         <i class="bi bi-info-circle me-1"></i>
-                        {% trans "AI will extract key concepts and automatically generate questions/answers" %}
+                        <span id="generationModeHint">{% trans "AI will extract key concepts and automatically generate questions/answers" %}</span>
                     </small>
                 </div>
 

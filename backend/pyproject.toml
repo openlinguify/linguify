@@ -41,6 +41,10 @@ supabase = "^2.17.0"
 cryptography = "^45.0.6"
 stripe = "11.1.0"
 django-timezone-field = "^7.1"
+pymupdf = "^1.26.4"
+scikit-learn = "^1.7.2"
+pytesseract = "^0.3.13"
+spacy = {version = ">=3.7,<4.0", python = ">=3.11,<3.14"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"

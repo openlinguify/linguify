@@ -222,15 +222,21 @@
 
         const maxCards = parseInt(document.getElementById('maxCardsInput')?.value || 10);
 
+        // Get selected generation mode
+        const generationModeRadio = document.querySelector('input[name="generationMode"]:checked');
+        const generationMode = generationModeRadio ? generationModeRadio.value : 'comprehension';
+
         console.log('🚀 Processing document import:', {
             file: selectedDocument.name,
             deckId: deckId,
-            maxCards: maxCards
+            maxCards: maxCards,
+            generationMode: generationMode
         });
 
         const formData = new FormData();
         formData.append('document', selectedDocument);
         formData.append('max_cards', maxCards);
+        formData.append('generation_mode', generationMode);
 
         try {
             // Show loading

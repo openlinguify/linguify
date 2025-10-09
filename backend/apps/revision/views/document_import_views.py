@@ -39,6 +39,7 @@ class DocumentImportAPIView(APIView):
             # Récupérer le fichier et paramètres
             uploaded_file = request.FILES.get('document')
             max_cards = int(request.data.get('max_cards', 10))
+            generation_mode = request.data.get('generation_mode', 'comprehension')
 
             if not uploaded_file:
                 return Response(
@@ -111,7 +112,8 @@ class DocumentImportAPIView(APIView):
                     text=clean_text,
                     max_cards=max_cards,
                     difficulty_levels=True,
-                    language=detected_lang
+                    language=detected_lang,
+                    mode=generation_mode
                 )
 
                 # Créer les flashcards dans le deck
@@ -139,6 +141,7 @@ class DocumentImportAPIView(APIView):
                 # Sauvegarder les paramètres
                 document.generation_params = {
                     'max_cards': max_cards,
+                    'generation_mode': generation_mode,
                     'generator': 'scikit-learn + spaCy',
                     'detected_language': detected_lang,
                     'extraction_method': extraction_method,

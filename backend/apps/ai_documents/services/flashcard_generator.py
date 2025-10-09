@@ -54,7 +54,8 @@ class FlashcardGeneratorService:
         text: str,
         max_cards: int = 10,
         difficulty_levels: bool = True,
-        language: Optional[str] = None
+        language: Optional[str] = None,
+        mode: str = 'comprehension'
     ) -> List[Dict[str, str]]:
         """
         Génère des flashcards à partir d'un texte en utilisant des méthodes NLP
@@ -64,6 +65,7 @@ class FlashcardGeneratorService:
             max_cards: Nombre maximum de flashcards à générer
             difficulty_levels: Inclure les niveaux de difficulté
             language: Langue du contenu (utilise self.language si None)
+            mode: Mode de génération ('comprehension', 'vocabulary', 'definitions')
 
         Returns:
             Liste de dictionnaires avec les flashcards
@@ -72,6 +74,21 @@ class FlashcardGeneratorService:
         if language:
             self.language = language
 
+        # Router vers la méthode appropriée selon le mode
+        if mode == 'vocabulary':
+            return self._generate_vocabulary_cards(text, max_cards, difficulty_levels)
+        elif mode == 'definitions':
+            return self._generate_definition_cards(text, max_cards, difficulty_levels)
+        else:  # comprehension (default)
+            return self._generate_comprehension_cards(text, max_cards, difficulty_levels)
+
+    def _generate_comprehension_cards(
+        self,
+        text: str,
+        max_cards: int = 10,
+        difficulty_levels: bool = True
+    ) -> List[Dict[str, str]]:
+        """Génère des flashcards de compréhension de texte (mode par défaut)"""
         # Prétraiter le texte
         sentences = self._split_into_sentences(text)
 
@@ -429,3 +446,140 @@ class FlashcardGeneratorService:
                 card['difficulty'] = 'hard'
 
         return flashcards
+
+    def _generate_vocabulary_cards(
+        self,
+        text: str,
+        max_cards: int = 10,
+        difficulty_levels: bool = True
+    ) -> List[Dict[str, str]]:
+        """
+        Génère des flashcards de vocabulaire (mots importants avec contexte)
+        Mode optimisé pour l'apprentissage de vocabulaire
+        """
+        flashcards = []
+
+        if not self.nlp:
+            return flashcards
+
+        # Traiter le texte avec spaCy
+        doc = self.nlp(text[:self.MAX_TEXT_LENGTH])
+
+        # Extraire les mots importants (noms, verbes, adjectifs)
+        important_words = {}
+        for token in doc:
+            # Filtrer les mots pertinents
+            if (token.pos_ in ['NOUN', 'VERB', 'ADJ', 'PROPN'] and
+                not token.is_stop and
+                not token.is_punct and
+                len(token.text) > 3 and
+                token.text.lower() not in ['être', 'avoir', 'faire', 'dire', 'aller', 'voir', 'pouvoir']):
+
+                word = token.text
+                lemma = token.lemma_
+                pos = token.pos_
+
+                # Stocker avec contexte
+                if lemma not in important_words:
+                    # Trouver la phrase contenant ce mot
+                    sentence = token.sent.text.strip()
+                    important_words[lemma] = {
+                        'word': word,
+                        'lemma': lemma,
+                        'pos': pos,
+                        'sentence': sentence,
+                        'count': 1
+                    }
+                else:
+                    important_words[lemma]['count'] += 1
+
+        # Trier par fréquence
+        sorted_words = sorted(important_words.values(), key=lambda x: x['count'], reverse=True)
+
+        # Créer les flashcards
+        for word_info in sorted_words[:max_cards]:
+            # Format: Mot → Contexte/Définition
+            flashcard = {
+                'question': word_info['word'],
+                'answer': word_info['sentence'],
+                'type': 'vocabulary',
+                'relevance_score': min(word_info['count'] * 0.1, 1.0)
+            }
+
+            if difficulty_levels:
+                # Difficulté basée sur longueur et fréquence
+                if word_info['count'] > 3:
+                    flashcard['difficulty'] = 'easy'
+                elif word_info['count'] > 1:
+                    flashcard['difficulty'] = 'medium'
+                else:
+                    flashcard['difficulty'] = 'hard'
+
+            flashcards.append(flashcard)
+
+        return flashcards
+
+    def _generate_definition_cards(
+        self,
+        text: str,
+        max_cards: int = 10,
+        difficulty_levels: bool = True
+    ) -> List[Dict[str, str]]:
+        """
+        Génère des flashcards uniquement à partir des définitions trouvées dans le texte
+        Mode optimisé pour extraire les définitions
+        """
+        sentences = self._split_into_sentences(text)
+        flashcards = []
+
+        # Patterns pour détecter les définitions
+        definition_patterns = [
+            r'(.+?)\s+est\s+(.+)',
+            r'(.+?)\s+désigne\s+(.+)',
+            r'(.+?)\s+se\s+définit\s+comme\s+(.+)',
+            r'On\s+appelle\s+(.+?)\s+(.+)',
+            r'(.+?)\s*:\s*(.+)',
+            r'(.+?)\s+signifie\s+(.+)',
+            r'(.+?)\s+représente\s+(.+)',
+        ]
+
+        for sentence in sentences:
+            for pattern in definition_patterns:
+                match = re.match(pattern, sentence, re.IGNORECASE)
+                if match:
+                    term = match.group(1).strip()
+                    definition = match.group(2).strip()
+
+                    # Valider que c'est une vraie définition
+                    if (5 < len(term) < 100 and
+                        20 < len(definition) < 300 and
+                        not term.lower().startswith(('si', 'quand', 'lorsque', 'alors'))):
+
+                        flashcard = {
+                            'question': f"Qu'est-ce que {term} ?",
+                            'answer': definition,
+                            'type': 'definition',
+                            'relevance_score': 0.9
+                        }
+
+                        if difficulty_levels:
+                            # Difficulté basée sur longueur de la définition
+                            if len(definition) < 50:
+                                flashcard['difficulty'] = 'easy'
+                            elif len(definition) < 100:
+                                flashcard['difficulty'] = 'medium'
+                            else:
+                                flashcard['difficulty'] = 'hard'
+
+                        flashcards.append(flashcard)
+
+                        if len(flashcards) >= max_cards:
+                            return flashcards
+                        break
+
+        # Si pas assez de définitions, compléter avec des concepts importants
+        if len(flashcards) < max_cards // 2:
+            concept_cards = self._extract_concept_cards(text, sentences)
+            flashcards.extend(concept_cards[:(max_cards - len(flashcards))])
+
+        return flashcards[:max_cards]
