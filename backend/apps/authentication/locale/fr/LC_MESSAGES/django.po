@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Linguify Authentication\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-04 04:25+0200\n"
+"POT-Creation-Date: 2025-10-09 15:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Open Linguify Team\n"
 "Language-Team: French\n"
@@ -45,10 +45,10 @@ msgstr "Nom d'utilisateur"
 msgid "Content"
 msgstr ""
 
-#: .\apps\task\models.py:19 .\apps\authentication\admin\email_admin.py:116
-#: .\apps\authentication\admin\email_admin.py:239
-#: .\apps\authentication\models\email_models.py:109
-#: .\apps\authentication\models\email_models.py:257
+#: .\apps\task\models.py:19 .\apps\authentication\admin\email_admin.py:134
+#: .\apps\authentication\admin\email_admin.py:257
+#: .\apps\authentication\models\email_models.py:111
+#: .\apps\authentication\models\email_models.py:269
 #: .\apps\authentication\templates\admin\email_campaign_preview.html:25
 #: .\apps\authentication\templates\authentication\feedback\feedback_detail.html:594
 msgid "Status"
@@ -93,57 +93,57 @@ msgstr ""
 msgid "Translations"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:66
+#: .\apps\authentication\admin\email_admin.py:80
 #, fuzzy
 #| msgid "Personal Information"
 msgid "Campaign Information"
 msgstr "Informations personnelles"
 
-#: .\apps\authentication\admin\email_admin.py:69
-#: .\apps\authentication\models\email_models.py:105
+#: .\apps\authentication\admin\email_admin.py:83
+#: .\apps\authentication\models\email_models.py:106
 msgid "Recipients"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:72
+#: .\apps\authentication\admin\email_admin.py:90
 msgid "Testing"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:74
+#: .\apps\authentication\admin\email_admin.py:92
 msgid "Send a test email before launching the campaign"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:76
+#: .\apps\authentication\admin\email_admin.py:94
 msgid "Scheduling"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:79
+#: .\apps\authentication\admin\email_admin.py:97
 #: .\apps\authentication\templates\admin\email_campaign_preview.html:27
 msgid "Template Variables"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:82
+#: .\apps\authentication\admin\email_admin.py:100
 msgid ""
 "JSON data to use as template variables (e.g., {\"company_name\": "
 "\"MyCompany\"})"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:84
+#: .\apps\authentication\admin\email_admin.py:102
 msgid "Statistics"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:88
+#: .\apps\authentication\admin\email_admin.py:106
 msgid "Metadata"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:139
+#: .\apps\authentication\admin\email_admin.py:157
 msgid "Send test email"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:149
+#: .\apps\authentication\admin\email_admin.py:167
 msgid "Send campaign now"
 msgstr ""
 
-#: .\apps\authentication\admin\email_admin.py:169
+#: .\apps\authentication\admin\email_admin.py:187
 msgid "Duplicate campaign"
 msgstr ""
 
@@ -392,7 +392,7 @@ msgid "Active"
 msgstr ""
 
 #: .\apps\authentication\models\email_models.py:32
-#: .\apps\authentication\models\email_models.py:104
+#: .\apps\authentication\models\email_models.py:105
 msgid "Email Template"
 msgstr ""
 
@@ -425,7 +425,7 @@ msgid "Language"
 msgstr "Langue maternelle"
 
 #: .\apps\authentication\models\email_models.py:50
-#: .\apps\authentication\models\email_models.py:252
+#: .\apps\authentication\models\email_models.py:264
 #: .\apps\authentication\templates\admin\email_campaign_preview.html:126
 msgid "Subject"
 msgstr ""
@@ -467,12 +467,12 @@ msgid "Sending"
 msgstr ""
 
 #: .\apps\authentication\models\email_models.py:92
-#: .\apps\authentication\models\email_models.py:254
+#: .\apps\authentication\models\email_models.py:266
 msgid "Sent"
 msgstr ""
 
 #: .\apps\authentication\models\email_models.py:93
-#: .\apps\authentication\models\email_models.py:255
+#: .\apps\authentication\models\email_models.py:267
 msgid "Failed"
 msgstr ""
 
@@ -489,76 +489,83 @@ msgid "Premium Users"
 msgstr ""
 
 #: .\apps\authentication\models\email_models.py:100
+#: .\apps\authentication\models\email_models.py:107
+#, fuzzy
+#| msgid "Select your gender"
+msgid "Selected Users"
+msgstr "Sélectionnez votre genre"
+
+#: .\apps\authentication\models\email_models.py:101
 msgid "Custom List"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:103
+#: .\apps\authentication\models\email_models.py:104
 msgid "Campaign Name"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:106
+#: .\apps\authentication\models\email_models.py:108
 msgid "Email addresses separated by commas (for custom list)"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:107
+#: .\apps\authentication\models\email_models.py:109
 msgid "Send test email to this address before campaign"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:110
+#: .\apps\authentication\models\email_models.py:112
 msgid "Schedule Send"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:111
-#: .\apps\authentication\models\email_models.py:259
+#: .\apps\authentication\models\email_models.py:113
+#: .\apps\authentication\models\email_models.py:271
 msgid "Sent At"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:113
+#: .\apps\authentication\models\email_models.py:115
 msgid "Total Recipients"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:114
+#: .\apps\authentication\models\email_models.py:116
 #, fuzzy
 #| msgid "Email"
 msgid "Emails Sent"
 msgstr "Email"
 
-#: .\apps\authentication\models\email_models.py:115
+#: .\apps\authentication\models\email_models.py:117
 msgid "Failed Emails"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:117
+#: .\apps\authentication\models\email_models.py:119
 msgid "JSON data for template variables"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:124
+#: .\apps\authentication\models\email_models.py:126
 msgid "Email Campaign"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:125
+#: .\apps\authentication\models\email_models.py:127
 #: .\apps\authentication\templates\admin\email_campaign_preview.html:10
 msgid "Email Campaigns"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:251
+#: .\apps\authentication\models\email_models.py:263
 msgid "Recipient"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:256
+#: .\apps\authentication\models\email_models.py:268
 msgid "Bounced"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:258
+#: .\apps\authentication\models\email_models.py:270
 msgid "Error Message"
 msgstr ""
 
-#: .\apps\authentication\models\email_models.py:262
+#: .\apps\authentication\models\email_models.py:274
 #, fuzzy
 #| msgid "Email"
 msgid "Email Log"
 msgstr "Email"
 
-#: .\apps\authentication\models\email_models.py:263
+#: .\apps\authentication\models\email_models.py:275
 #, fuzzy
 #| msgid "Email"
 msgid "Email Logs"
@@ -777,27 +784,27 @@ msgid ""
 "clicking the button below:"
 msgstr ""
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:57
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:60
 #, fuzzy
 #| msgid "Email address"
 msgid "Verify My Email Address"
 msgstr "Adresse email"
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:65
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:71
 #: .\apps\authentication\templates\authentication\password_reset\password_reset_email.html:94
 msgid ""
 "If the button doesn't work, you can copy and paste this link into your "
 "browser:"
 msgstr ""
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:82
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:88
 #: .\apps\authentication\templates\authentication\emails\email_verification.txt:11
 #: .\apps\authentication\templates\authentication\password_reset\password_reset_email.html:111
-#: .\apps\authentication\templates\emails\terms_reminder.html:262
+#: .\apps\authentication\templates\emails\terms_reminder.html:251
 msgid "Important:"
 msgstr ""
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:82
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:88
 #: .\apps\authentication\templates\authentication\emails\email_verification.txt:11
 #, python-format
 msgid ""
@@ -805,44 +812,44 @@ msgid ""
 "your email within this time, you'll need to request a new verification email."
 msgstr ""
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:90
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:96
 #: .\apps\authentication\templates\authentication\emails\email_verification.txt:13
 msgid "Once your email is verified, you'll be able to:"
 msgstr ""
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:99
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:105
 #: .\apps\authentication\templates\authentication\emails\email_verification.txt:14
 msgid "Access your personalized dashboard"
 msgstr ""
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:109
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:115
 #: .\apps\authentication\templates\authentication\emails\email_verification.txt:15
 msgid "Start learning with our interactive lessons"
 msgstr ""
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:119
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:125
 #: .\apps\authentication\templates\authentication\emails\email_verification.txt:16
 msgid "Track your progress and achievements"
 msgstr ""
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:129
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:135
 #: .\apps\authentication\templates\authentication\emails\email_verification.txt:17
 #, fuzzy
 #| msgid "Select the language to learn"
 msgid "Connect with other language learners"
 msgstr "Sélectionnez la langue à apprendre"
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:143
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:149
 #: .\apps\authentication\templates\authentication\emails\email_verification.txt:19
 msgid "If you didn't create this account, please ignore this email."
 msgstr ""
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:146
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:152
 #: .\apps\authentication\templates\authentication\emails\email_verification.txt:21
 msgid "Happy learning!"
 msgstr ""
 
-#: .\apps\authentication\templates\authentication\emails\email_verification.html:147
+#: .\apps\authentication\templates\authentication\emails\email_verification.html:153
 #: .\apps\authentication\templates\authentication\emails\email_verification.txt:22
 #: .\apps\authentication\templates\authentication\password_reset\password_reset_email.txt:14
 msgid "The Linguify Team"
@@ -1755,13 +1762,13 @@ msgid "This link will expire in 24 hours for security reasons."
 msgstr ""
 
 #: .\apps\authentication\templates\authentication\password_reset\password_reset_email.txt:13
-#: .\apps\authentication\templates\emails\terms_reminder.html:266
+#: .\apps\authentication\templates\emails\terms_reminder.html:255
 #: .\apps\authentication\templates\emails\terms_reminder.txt:27
 msgid "Best regards,"
 msgstr ""
 
 #: .\apps\authentication\templates\authentication\password_reset\password_reset_email.txt:17
-#: .\apps\authentication\templates\emails\terms_reminder.html:290
+#: .\apps\authentication\templates\emails\terms_reminder.html:279
 #: .\apps\authentication\templates\emails\terms_reminder.txt:32
 msgid "All rights reserved."
 msgstr ""
@@ -2260,103 +2267,103 @@ msgstr ""
 msgid "Action Required: Accept Terms of Use"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:219
+#: .\apps\authentication\templates\emails\terms_reminder.html:208
 msgid "Action Required: Terms of Use"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:225
+#: .\apps\authentication\templates\emails\terms_reminder.html:214
 #: .\apps\authentication\templates\emails\terms_reminder.txt:4
 #, fuzzy, python-format
 #| msgid "Welcome, %(username)s!"
 msgid "Hello %(name)s,"
 msgstr "Bienvenue, %(username)s !"
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:229
+#: .\apps\authentication\templates\emails\terms_reminder.html:218
 #, python-format
 msgid ""
 "We have updated our <strong>Terms of Use</strong> to improve your experience "
 "on %(app_name)s."
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:230
+#: .\apps\authentication\templates\emails\terms_reminder.html:219
 #: .\apps\authentication\templates\emails\terms_reminder.txt:8
 msgid ""
 "To continue enjoying our language learning platform, we need your agreement "
 "on these new terms."
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:234
+#: .\apps\authentication\templates\emails\terms_reminder.html:223
 msgid "Key Updates:"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:236
+#: .\apps\authentication\templates\emails\terms_reminder.html:225
 #: .\apps\authentication\templates\emails\terms_reminder.txt:12
 msgid "Clarification of personal data usage"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:237
+#: .\apps\authentication\templates\emails\terms_reminder.html:226
 #: .\apps\authentication\templates\emails\terms_reminder.txt:13
 msgid "New collaboration features"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:238
+#: .\apps\authentication\templates\emails\terms_reminder.html:227
 #: .\apps\authentication\templates\emails\terms_reminder.txt:14
 msgid "Enhanced security and privacy"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:239
+#: .\apps\authentication\templates\emails\terms_reminder.html:228
 #: .\apps\authentication\templates\emails\terms_reminder.txt:15
 msgid "Updated rights and responsibilities"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:249
+#: .\apps\authentication\templates\emails\terms_reminder.html:238
 msgid "Review and Accept Terms"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:256
+#: .\apps\authentication\templates\emails\terms_reminder.html:245
 msgid "You can also copy this link to your browser:"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:262
+#: .\apps\authentication\templates\emails\terms_reminder.html:251
 #, python-format
 msgid "Accepting these terms is necessary to continue using %(app_name)s."
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:263
+#: .\apps\authentication\templates\emails\terms_reminder.html:252
 msgid ""
 "If you have any questions about these changes, feel free to contact us at"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:264
+#: .\apps\authentication\templates\emails\terms_reminder.html:253
 #: .\apps\authentication\templates\emails\terms_reminder.txt:25
 msgid "Thank you for being part of our learning community!"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:267
+#: .\apps\authentication\templates\emails\terms_reminder.html:256
 #: .\apps\authentication\templates\emails\terms_reminder.txt:28
 #, python-format
 msgid "The %(app_name)s Team"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:276
+#: .\apps\authentication\templates\emails\terms_reminder.html:265
 msgid "Your language learning platform"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:280
+#: .\apps\authentication\templates\emails\terms_reminder.html:269
 msgid "Terms of Use"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:281
+#: .\apps\authentication\templates\emails\terms_reminder.html:270
 #, fuzzy
 #| msgid "Privacy Policy"
 msgid "Privacy"
 msgstr "Politique de confidentialité"
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:282
+#: .\apps\authentication\templates\emails\terms_reminder.html:271
 msgid "Contact"
 msgstr ""
 
-#: .\apps\authentication\templates\emails\terms_reminder.html:286
+#: .\apps\authentication\templates\emails\terms_reminder.html:275
 #: .\apps\authentication\templates\emails\terms_reminder.txt:31
 #, python-format
 msgid "This email was sent to %(email)s"

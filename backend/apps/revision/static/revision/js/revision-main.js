@@ -701,7 +701,7 @@ function hideImportForm() {
 
 function showCreateCardForm() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Veuillez sélectionner un deck d\'abord');
+        window.notificationService.error(_('Please select a deck first'));
         return;
     }
     
@@ -835,17 +835,17 @@ async function createNewCard() {
     const backLang = document.getElementById('newCardBackLang').value;
     
     if (!frontText) {
-        window.notificationService.error('Le texte recto est requis');
+        window.notificationService.error(_('Front text is required'));
         elements.newCardFront.focus();
         return;
     }
-    
+
     if (!backText) {
-        window.notificationService.error('Le texte verso est requis');
+        window.notificationService.error(_('Back text is required'));
         elements.newCardBack.focus();
         return;
     }
-    
+
     try {
         const cardData = {
             front_text: frontText,
@@ -853,10 +853,10 @@ async function createNewCard() {
             front_language: frontLang || null,
             back_language: backLang || null
         };
-        
+
         const newCard = await revisionAPI.createCard(appState.selectedDeck.id, cardData);
-        
-        window.notificationService.success('Carte créée avec succès');
+
+        window.notificationService.success(_('Card created successfully'));
         
         // Close form first
         hideCreateCardForm();
@@ -1013,7 +1013,7 @@ function startFlashcardsMode() {
     console.log('🔧 window.flashcardMode exists:', !!window.flashcardMode);
     
     if (!appState.selectedDeck) {
-        window.notificationService.error('Veuillez sélectionner un deck d\'abord');
+        window.notificationService.error(_('Please select a deck first'));
         return;
     }
     
@@ -1022,13 +1022,13 @@ function startFlashcardsMode() {
         window.flashcardMode.startStudy(appState.selectedDeck);
     } else {
         console.error('❌ window.flashcardMode is not available');
-        window.notificationService.error('Mode Flashcards non disponible');
+        window.notificationService.error(_('Flashcards mode not available'));
     }
 }
 
 function startLearnMode() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Veuillez sélectionner un deck d\'abord');
+        window.notificationService.error(_('Please select a deck first'));
         return;
     }
     
@@ -1041,7 +1041,7 @@ function startLearnMode() {
 
 function startMatchMode() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Veuillez sélectionner un deck d\'abord');
+        window.notificationService.error(_('Please select a deck first'));
         return;
     }
     
@@ -1054,7 +1054,7 @@ function startMatchMode() {
 
 function startReviewMode() {
     if (!appState.selectedDeck) {
-        window.notificationService.error('Veuillez sélectionner un deck d\'abord');
+        window.notificationService.error(_('Please select a deck first'));
         return;
     }
     
@@ -1071,7 +1071,7 @@ function startWriteMode() {
     console.log('window.writeMode:', window.writeMode);
     
     if (!appState.selectedDeck) {
-        window.notificationService.error('Veuillez sélectionner un deck d\'abord');
+        window.notificationService.error(_('Please select a deck first'));
         return;
     }
     
@@ -1093,7 +1093,7 @@ async function editCard(cardId) {
         const card = cards.find(c => c.id === cardId);
         
         if (!card) {
-            window.notificationService.error('Carte introuvable - elle a peut-être été supprimée');
+            window.notificationService.error(_('Card not found - it may have been deleted'));
             // Refresh the cards view
             await loadDeckCards();
             return;
@@ -1116,7 +1116,7 @@ async function editCard(cardId) {
         console.error('Error loading card for edit:', error);
         
         if (error.status === 404) {
-            window.notificationService.error('Cette carte n\'existe plus');
+            window.notificationService.error(_('This card no longer exists'));
             await loadDeckCards(); // Refresh view
         } else {
             window.notificationService.error(_('Error loading card'));
@@ -1146,25 +1146,25 @@ async function submitCardEdit() {
     const backText = elements.editCardBack.value.trim();
     
     if (!frontText) {
-        window.notificationService.error('Le texte recto est requis');
+        window.notificationService.error(_('Front text is required'));
         elements.editCardFront.focus();
         return;
     }
-    
+
     if (!backText) {
-        window.notificationService.error('Le texte verso est requis');
+        window.notificationService.error(_('Back text is required'));
         elements.editCardBack.focus();
         return;
     }
-    
+
     try {
         // Update card
         await revisionAPI.updateCard(cardId, {
             front_text: frontText,
             back_text: backText
         });
-        
-        window.notificationService.success('Carte modifiée avec succès');
+
+        window.notificationService.success(_('Card updated successfully'));
         
         // Hide form and reload cards
         hideEditCardForm();
@@ -1174,11 +1174,11 @@ async function submitCardEdit() {
         console.error('Error updating card:', error);
         
         if (error.status === 404) {
-            window.notificationService.error('Cette carte n\'existe plus et ne peut pas être modifiée');
+            window.notificationService.error(_('This card no longer exists'));
             hideEditCardForm();
             await loadDeckCards(); // Refresh view
         } else if (error.status === 403) {
-            window.notificationService.error('Vous n\'avez pas l\'autorisation de modifier cette carte');
+            window.notificationService.error(_('You do not have permission to edit this card'));
         } else {
             window.notificationService.error(_('Error editing card'));
         }
@@ -1186,12 +1186,12 @@ async function submitCardEdit() {
 }
 
 async function deleteCard(cardId) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette carte ?')) return;
-    
+    if (!confirm(_('Are you sure you want to delete this card?'))) return;
+
     try {
         await revisionAPI.deleteCard(cardId);
-        
-        window.notificationService.success('Carte supprimée avec succès');
+
+        window.notificationService.success(_('Card deleted successfully'));
         
         // Sequential reload to avoid conflicts
         await loadDeckCards(); // Reload cards view first
@@ -1213,12 +1213,12 @@ async function deleteCard(cardId) {
         
         // Handle specific error cases
         if (error.status === 404) {
-            window.notificationService.warning('Cette carte a déjà été supprimée');
+            window.notificationService.warning(_('This card has already been deleted'));
             // Reload the view to reflect current state
             await loadDeckCards();
             await loadDecks();
         } else if (error.status === 403) {
-            window.notificationService.error('Vous n\'avez pas l\'autorisation de supprimer cette carte');
+            window.notificationService.error(_('You do not have permission to delete this card'));
         } else {
             window.notificationService.error(_('Error deleting card'));
         }
@@ -1232,7 +1232,7 @@ async function createNewDeck() {
     const isPublic = elements.newDeckVisibility.value === 'public';
     
     if (!name) {
-        window.notificationService.error('Le nom du deck est requis');
+        window.notificationService.error(_('Deck name is required'));
         return;
     }
     
@@ -1250,7 +1250,7 @@ async function createNewDeck() {
         
         const newDeck = await revisionAPI.createDeck(deckData);
         
-        window.notificationService.success('Deck créé avec succès');
+        window.notificationService.success(_('Deck created successfully'));
         
         // Reload decks and select the new one
         await loadDecks();
@@ -2103,7 +2103,7 @@ async function saveEditDeck() {
     const isPublic = elements.editDeckVisibility.value === 'public';
     
     if (!name) {
-        window.notificationService.error('Le nom du deck est requis');
+        window.notificationService.error(_('Deck name is required'));
         elements.editDeckName.focus();
         return;
     }
@@ -2118,7 +2118,7 @@ async function saveEditDeck() {
         
         const updatedDeck = await revisionAPI.updateDeck(appState.selectedDeck.id, deckData);
         
-        window.notificationService.success('Deck modifié avec succès');
+        window.notificationService.success(_('Deck updated successfully'));
         
         // Mettre à jour l'état local
         appState.selectedDeck = updatedDeck;
@@ -2260,7 +2260,7 @@ function enableInlineEditDeckName() {
                 // Rafraîchir la sidebar
                 renderDecksList();
                 
-                window.notificationService.success('Nom du deck modifié avec succès');
+                window.notificationService.success(_('Deck name updated successfully'));
             } catch (error) {
                 console.error('Error updating deck name:', error);
                 window.notificationService.error(_('Error editing name'));
@@ -2349,7 +2349,7 @@ function enableInlineEditDeckDescription() {
                 // Rafraîchir la sidebar
                 renderDecksList();
                 
-                window.notificationService.success('Description du deck modifiée avec succès');
+                window.notificationService.success(_('Deck description updated successfully'));
             } catch (error) {
                 console.error('Error updating deck description:', error);
                 window.notificationService.error(_('Error editing description'));
@@ -2797,7 +2797,7 @@ function setupShareModalEventHandlers() {
                     button.style.borderColor = 'var(--linguify-primary, #2D5BBA)';
                 }, 2000);
                 
-                window.notificationService.success('Lien copié dans le presse-papiers !');
+                window.notificationService.success(_('Link copied to clipboard!'));
             } catch (err) {
                 window.notificationService.error('Impossible de copier le lien');
                 console.error('Copy failed:', err);
@@ -3037,7 +3037,7 @@ async function applyLanguagesToAllCards() {
     const backLang = document.getElementById('deckBackLanguage').value;
     
     if (!frontLang && !backLang) {
-        window.notificationService.error('Veuillez sélectionner au moins une langue');
+        window.notificationService.error(_('Please select at least one language'));
         return;
     }
     
@@ -3093,7 +3093,7 @@ function setDefaultLanguagesForNewCards() {
                    `Recto: ${frontLang ? getLanguageName(frontLang) : 'Détection automatique'}\n` +
                    `Verso: ${backLang ? getLanguageName(backLang) : 'Détection automatique'}`;
     
-    window.notificationService.success('Paramètres appliqués aux nouvelles cartes');
+    window.notificationService.success(_('Settings applied to new cards'));
 }
 
 function getLanguageName(code) {
@@ -3156,7 +3156,7 @@ async function saveDeckLanguagePreferences() {
         
         // Show a subtle notification
         if (window.notificationService) {
-            window.notificationService.success('Préférences de langue sauvegardées');
+            window.notificationService.success(_('Language preferences saved'));
         }
         
     } catch (error) {
