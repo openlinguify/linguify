@@ -973,12 +973,19 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+/* Better hover effect for secondary buttons */
 .btn-linguify-secondary:hover {
-    background-color: var(--linguify-primary);
-    border-color: var(--linguify-primary);
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(45, 91, 186, 0.2);
+    background-color: #f3f4f6;
+    border-color: var(--linguify-gray-400);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure button content is always visible */
+.btn-linguify-secondary i,
+.btn-linguify-secondary span {
+    display: inline !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* Tasks Container */
