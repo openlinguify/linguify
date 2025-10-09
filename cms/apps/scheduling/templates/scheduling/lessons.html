@@ -1,0 +1,230 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Lessons" %} - Linguify CMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 fw-bold mb-1">{% trans "My Lessons" %}</h1>
+            <p class="text-muted">{% trans "View and manage all your scheduled lessons" %}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'scheduling:calendar' %}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-calendar me-2"></i>{% trans "Calendar View" %}
+            </a>
+            <a href="{% url 'scheduling:availability' %}" class="btn btn-primary">
+                <i class="bi bi-clock me-2"></i>{% trans "Set Availability" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <ul class="nav nav-pills mb-4">
+        <li class="nav-item">
+            <a class="nav-link active" href="?status=all">
+                <i class="bi bi-list-ul me-2"></i>{% trans "All" %}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="?status=scheduled">
+                <i class="bi bi-calendar-check me-2"></i>{% trans "Scheduled" %}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="?status=confirmed">
+                <i class="bi bi-check-circle me-2"></i>{% trans "Confirmed" %}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="?status=completed">
+                <i class="bi bi-check-all me-2"></i>{% trans "Completed" %}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="?status=cancelled">
+                <i class="bi bi-x-circle me-2"></i>{% trans "Cancelled" %}
+            </a>
+        </li>
+    </ul>
+
+    <!-- Lessons List -->
+    {% if object_list %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>{% trans "Date & Time" %}</th>
+                            <th>{% trans "Student" %}</th>
+                            <th>{% trans "Subject" %}</th>
+                            <th>{% trans "Duration" %}</th>
+                            <th>{% trans "Price" %}</th>
+                            <th>{% trans "Status" %}</th>
+                            <th class="text-end">{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lesson in object_list %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-calendar3 me-2 text-muted"></i>
+                                    <div>
+                                        <div class="fw-medium">{{ lesson.scheduled_date|date:"M d, Y" }}</div>
+                                        <div class="small text-muted">{{ lesson.scheduled_date|time:"g:i A" }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-2">
+                                        {{ lesson.student.first_name.0|default:lesson.student.username.0|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">{{ lesson.student.get_full_name|default:lesson.student.username }}</div>
+                                        <div class="small text-muted">{{ lesson.student.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">{{ lesson.subject|default:"General" }}</span>
+                            </td>
+                            <td>
+                                <i class="bi bi-clock me-1"></i>
+                                {{ lesson.duration|default:"60" }} {% trans "min" %}
+                            </td>
+                            <td>
+                                <strong>${{ lesson.total_price|floatformat:2|default:"0.00" }}</strong>
+                            </td>
+                            <td>
+                                {% if lesson.status == 'scheduled' %}
+                                <span class="badge bg-info">{% trans "Scheduled" %}</span>
+                                {% elif lesson.status == 'confirmed' %}
+                                <span class="badge bg-success">{% trans "Confirmed" %}</span>
+                                {% elif lesson.status == 'completed' %}
+                                <span class="badge bg-secondary">{% trans "Completed" %}</span>
+                                {% elif lesson.status == 'cancelled' %}
+                                <span class="badge bg-danger">{% trans "Cancelled" %}</span>
+                                {% else %}
+                                <span class="badge bg-warning">{{ lesson.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary" title="{% trans 'View Details' %}">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    {% if lesson.status == 'scheduled' or lesson.status == 'confirmed' %}
+                                    <button type="button" class="btn btn-outline-success" title="{% trans 'Mark as Complete' %}">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" title="{% trans 'Cancel' %}">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Lessons pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">
+                    <i class="bi bi-chevron-left"></i> {% trans "Previous" %}
+                </a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">
+                    {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}
+                </span>
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">
+                    {% trans "Next" %} <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-calendar-x" style="font-size: 4rem; color: #e2e8f0;"></i>
+            <h4 class="mt-4 mb-2">{% trans "No Lessons Found" %}</h4>
+            <p class="text-muted mb-4">
+                {% if request.GET.status %}
+                    {% trans "No lessons match the selected filter" %}
+                {% else %}
+                    {% trans "You don't have any scheduled lessons yet" %}
+                {% endif %}
+            </p>
+            <div class="d-flex gap-2 justify-content-center">
+                <a href="{% url 'scheduling:calendar' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-calendar me-2"></i>{% trans "View Calendar" %}
+                </a>
+                <a href="{% url 'scheduling:availability' %}" class="btn btn-primary">
+                    <i class="bi bi-clock me-2"></i>{% trans "Set Your Availability" %}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.nav-pills .nav-link {
+    color: #64748b;
+    border-radius: 8px;
+}
+
+.nav-pills .nav-link.active {
+    background: #3b82f6;
+}
+
+.nav-pills .nav-link:hover:not(.active) {
+    background: #f1f5f9;
+}
+
+.table > :not(caption) > * > * {
+    padding: 1rem 0.75rem;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+</style>
+{% endblock %}
