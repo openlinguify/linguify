@@ -258,8 +258,7 @@ function getNotificationIcon(type) {
 }
 
 // Fonction pour inverser front/back d'une carte (swap translation)
-// Note: Cette fonction n'est plus utilisée dans l'interface actuelle
-// Elle est conservée pour compatibilité mais ne devrait plus être appelée
+// Cette fonction est appelée lorsque l'utilisateur clique sur le bouton de swap (⇄) dans la liste des cartes
 window.flipCardTranslation = async function(cardId, event) {
     console.log('Inversion carte:', cardId, 'Event:', event);
 
@@ -297,6 +296,13 @@ window.flipCardTranslation = async function(cardId, event) {
     
     // Ajouter animation de chargement sur le bon bouton (celui avec l'icône arrow-left-right)
     const button = cardElement.querySelector('button[title="Inverser recto/verso"]');
+
+    if (!button) {
+        console.error('Bouton d\'inversion introuvable pour la carte:', cardId);
+        showNotification('Impossible de trouver le bouton d\'inversion', 'error');
+        return;
+    }
+
     const originalContent = button.innerHTML;
     button.disabled = true;
     button.innerHTML = '<i class="spinner-border spinner-border-sm"></i>';
