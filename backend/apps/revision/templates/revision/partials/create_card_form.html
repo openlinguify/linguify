@@ -7,10 +7,6 @@
                 <i class="bi bi-plus-circle text-linguify-primary me-2" style="font-size: 1.5rem;"></i>
                 <h4 class="mb-0 text-linguify-primary">{% trans "Add a new card" %}</h4>
             </div>
-            <button id="cancelCardCreate" class="btn btn-outline-custom btn-sm">
-                <i class="bi bi-x-lg"></i>
-                {% trans "Cancel" %}
-            </button>
         </div>
     </div>
     
@@ -101,13 +97,14 @@
             </div>
         </div>
         
-        <div class="mt-4">
-            <button id="submitCardCreate" class="btn btn-gradient me-2">
+        <div class="mt-4 d-flex justify-content-end gap-2">
+            <button id="cancelCardCreateAlt" class="btn-linguify-secondary">
+                <i class="bi bi-x-lg me-1"></i>
+                {% trans "Cancel" %}
+            </button>
+            <button id="submitCardCreate" class="btn-linguify">
                 <i class="bi bi-plus-lg me-1"></i>
                 {% trans "Add the card" %}
-            </button>
-            <button id="cancelCardCreateAlt" class="btn btn-outline-custom">
-                {% trans "Cancel" %}
             </button>
         </div>
     </div>
