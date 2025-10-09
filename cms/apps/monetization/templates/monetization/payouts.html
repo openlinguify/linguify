@@ -1,0 +1,114 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Payouts" %} - Linguify CMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 fw-bold mb-1">{% trans "Payout History" %}</h1>
+            <p class="text-muted">{% trans "Track your payout requests and payments" %}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'monetization:dashboard' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Back to Dashboard" %}
+            </a>
+        </div>
+    </div>
+
+    {% if object_list %}
+    <!-- Payouts Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Request Date" %}</th>
+                            <th>{% trans "Amount" %}</th>
+                            <th>{% trans "Method" %}</th>
+                            <th>{% trans "Status" %}</th>
+                            <th>{% trans "Processed Date" %}</th>
+                            <th>{% trans "Transaction ID" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payout in object_list %}
+                        <tr>
+                            <td>{{ payout.requested_at|date:"M d, Y" }}</td>
+                            <td><strong>${{ payout.amount|floatformat:2 }}</strong></td>
+                            <td>{{ payout.payment_method }}</td>
+                            <td>
+                                {% if payout.status == 'completed' %}
+                                <span class="badge bg-success">{% trans "Completed" %}</span>
+                                {% elif payout.status == 'processing' %}
+                                <span class="badge bg-warning">{% trans "Processing" %}</span>
+                                {% elif payout.status == 'pending' %}
+                                <span class="badge bg-info">{% trans "Pending" %}</span>
+                                {% else %}
+                                <span class="badge bg-danger">{{ payout.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if payout.processed_at %}
+                                {{ payout.processed_at|date:"M d, Y" }}
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if payout.transaction_id %}
+                                <code>{{ payout.transaction_id }}</code>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Payouts pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <!-- No Payouts Yet -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-cash-stack" style="font-size: 4rem; color: #e2e8f0;"></i>
+            <h4 class="mt-4 mb-2">{% trans "No Payouts Yet" %}</h4>
+            <p class="text-muted mb-4">{% trans "Your payout history will appear here once you request payouts" %}</p>
+            <a href="{% url 'monetization:dashboard' %}" class="btn btn-primary">
+                <i class="bi bi-wallet2 me-2"></i>{% trans "View Earnings Dashboard" %}
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

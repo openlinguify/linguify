@@ -72,6 +72,13 @@ class CourseListView(LoginRequiredMixin, HTMXMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['status_filter'] = self.request.GET.get('status', '')
         context['search_query'] = self.request.GET.get('search', '')
+
+        # Get all courses for stats (without pagination)
+        all_courses = self.get_queryset().all()
+        context['total_courses'] = all_courses.count()
+        context['published_courses'] = all_courses.filter(is_published=True).count()
+        context['draft_courses'] = all_courses.filter(is_published=False).count()
+
         return context
 
 

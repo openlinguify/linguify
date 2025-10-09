@@ -1,0 +1,135 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Earnings" %} - Linguify CMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 fw-bold mb-1">{% trans "Earnings & Monetization" %}</h1>
+            <p class="text-muted">{% trans "Track your revenue, sales, and payouts" %}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'monetization:payouts' %}" class="btn btn-outline-primary">
+                <i class="bi bi-cash-stack me-2"></i>
+                {% trans "View Payouts" %}
+            </a>
+        </div>
+    </div>
+
+    {% if earnings %}
+    <!-- Earnings Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-2" style="font-size: 0.75rem;">{% trans "Total Earnings" %}</h6>
+                            <h3 class="mb-0">${{ earnings.total_earnings|floatformat:2 }}</h3>
+                        </div>
+                        <i class="bi bi-wallet2 text-primary" style="font-size: 2rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-2" style="font-size: 0.75rem;">{% trans "Available" %}</h6>
+                            <h3 class="mb-0">${{ earnings.available_balance|floatformat:2 }}</h3>
+                        </div>
+                        <i class="bi bi-cash-coin text-success" style="font-size: 2rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-2" style="font-size: 0.75rem;">{% trans "Pending" %}</h6>
+                            <h3 class="mb-0">${{ earnings.pending_balance|floatformat:2 }}</h3>
+                        </div>
+                        <i class="bi bi-clock-history text-warning" style="font-size: 2rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-2" style="font-size: 0.75rem;">{% trans "Paid Out" %}</h6>
+                            <h3 class="mb-0">${{ earnings.total_paid_out|floatformat:2 }}</h3>
+                        </div>
+                        <i class="bi bi-check-circle text-info" style="font-size: 2rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">{% trans "Quick Actions" %}</h5>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'monetization:sales' %}" class="btn btn-primary">
+                            <i class="bi bi-cart3 me-2"></i>{% trans "View Sales" %}
+                        </a>
+                        <a href="{% url 'monetization:payouts' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-down-circle me-2"></i>{% trans "Request Payout" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earnings Chart Placeholder -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">{% trans "Earnings Overview" %}</h5>
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-graph-up" style="font-size: 3rem;"></i>
+                        <p class="mt-3">{% trans "Earnings chart will be displayed here" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No Earnings Yet -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-wallet2" style="font-size: 4rem; color: #e2e8f0;"></i>
+                    <h4 class="mt-4 mb-2">{% trans "No Earnings Yet" %}</h4>
+                    <p class="text-muted mb-4">{% trans "Start selling courses to track your earnings here" %}</p>
+                    <a href="{% url 'cours:course_create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>{% trans "Create Your First Course" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

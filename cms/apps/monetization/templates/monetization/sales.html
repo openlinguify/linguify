@@ -1,0 +1,96 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Sales" %} - Linguify CMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 fw-bold mb-1">{% trans "Sales History" %}</h1>
+            <p class="text-muted">{% trans "Track all your course sales and revenue" %}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'monetization:dashboard' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Back to Dashboard" %}
+            </a>
+        </div>
+    </div>
+
+    {% if object_list %}
+    <!-- Sales Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Date" %}</th>
+                            <th>{% trans "Course" %}</th>
+                            <th>{% trans "Student" %}</th>
+                            <th>{% trans "Amount" %}</th>
+                            <th>{% trans "Commission" %}</th>
+                            <th>{% trans "Net Earnings" %}</th>
+                            <th>{% trans "Status" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in object_list %}
+                        <tr>
+                            <td>{{ sale.created_at|date:"M d, Y" }}</td>
+                            <td>{{ sale.course.title }}</td>
+                            <td>{{ sale.student.username }}</td>
+                            <td>${{ sale.amount|floatformat:2 }}</td>
+                            <td>${{ sale.commission|floatformat:2 }}</td>
+                            <td><strong>${{ sale.net_earnings|floatformat:2 }}</strong></td>
+                            <td>
+                                <span class="badge bg-success">{{ sale.status }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Sales pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <!-- No Sales Yet -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-cart3" style="font-size: 4rem; color: #e2e8f0;"></i>
+            <h4 class="mt-4 mb-2">{% trans "No Sales Yet" %}</h4>
+            <p class="text-muted mb-4">{% trans "Your sales history will appear here once students purchase your courses" %}</p>
+            <a href="{% url 'cours:course_list' %}" class="btn btn-primary">
+                <i class="bi bi-journal-text me-2"></i>{% trans "View My Courses" %}
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

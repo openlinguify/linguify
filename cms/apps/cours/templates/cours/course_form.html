@@ -1,0 +1,348 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+{% if form.instance.pk %}
+    {% trans "Edit Course" %} - {{ form.instance.title_en|default:form.instance.title_fr }}
+{% else %}
+    {% trans "Create New Course" %}
+{% endif %}
+ - Linguify CMS
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 fw-bold mb-1">
+                {% if form.instance.pk %}
+                    {% trans "Edit Course" %}
+                {% else %}
+                    {% trans "Create New Course" %}
+                {% endif %}
+            </h1>
+            <p class="text-muted">
+                {% if form.instance.pk %}
+                    {% trans "Update your course information" %}
+                {% else %}
+                    {% trans "Fill in the details to create your course" %}
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'cours:course_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Back to Courses" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Course Form -->
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle me-2"></i>{% trans "Please correct the errors below:" %}
+                    </h5>
+                    <ul class="mb-0">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ field }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+
+                <!-- Basic Information -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle me-2"></i>{% trans "Basic Information" %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Title French -->
+                        <div class="mb-3">
+                            <label for="{{ form.title_fr.id_for_label }}" class="form-label">
+                                {{ form.title_fr.label }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form.title_fr }}
+                            {% if form.title_fr.help_text %}
+                                <div class="form-text">{{ form.title_fr.help_text }}</div>
+                            {% endif %}
+                            {% if form.title_fr.errors %}
+                                <div class="invalid-feedback d-block">{{ form.title_fr.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Subtitle French -->
+                        <div class="mb-3">
+                            <label for="{{ form.subtitle_fr.id_for_label }}" class="form-label">
+                                {{ form.subtitle_fr.label }}
+                            </label>
+                            {{ form.subtitle_fr }}
+                            {% if form.subtitle_fr.help_text %}
+                                <div class="form-text">{{ form.subtitle_fr.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description French -->
+                        <div class="mb-3">
+                            <label for="{{ form.description_fr.id_for_label }}" class="form-label">
+                                {{ form.description_fr.label }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form.description_fr }}
+                            {% if form.description_fr.help_text %}
+                                <div class="form-text">{{ form.description_fr.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Title English -->
+                        <div class="mb-3">
+                            <label for="{{ form.title_en.id_for_label }}" class="form-label">
+                                {{ form.title_en.label }}
+                            </label>
+                            {{ form.title_en }}
+                            {% if form.title_en.help_text %}
+                                <div class="form-text">{{ form.title_en.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Subtitle English -->
+                        <div class="mb-3">
+                            <label for="{{ form.subtitle_en.id_for_label }}" class="form-label">
+                                {{ form.subtitle_en.label }}
+                            </label>
+                            {{ form.subtitle_en }}
+                        </div>
+
+                        <!-- Description English -->
+                        <div class="mb-3">
+                            <label for="{{ form.description_en.id_for_label }}" class="form-label">
+                                {{ form.description_en.label }}
+                            </label>
+                            {{ form.description_en }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Details -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-gear me-2"></i>{% trans "Course Details" %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Category -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">
+                                    {{ form.category.label }}
+                                </label>
+                                {{ form.category }}
+                            </div>
+
+                            <!-- Level -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.level.id_for_label }}" class="form-label">
+                                    {{ form.level.label }}
+                                </label>
+                                {{ form.level }}
+                            </div>
+
+                            <!-- Language -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.language.id_for_label }}" class="form-label">
+                                    {{ form.language.label }}
+                                </label>
+                                {{ form.language }}
+                            </div>
+
+                            <!-- Tags -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.tags.id_for_label }}" class="form-label">
+                                    {{ form.tags.label }}
+                                </label>
+                                {{ form.tags }}
+                                {% if form.tags.help_text %}
+                                    <div class="form-text">{{ form.tags.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Learning Objectives -->
+                        <div class="mb-3">
+                            <label for="{{ form.learning_objectives.id_for_label }}" class="form-label">
+                                {{ form.learning_objectives.label }}
+                            </label>
+                            {{ form.learning_objectives }}
+                            {% if form.learning_objectives.help_text %}
+                                <div class="form-text">{{ form.learning_objectives.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Requirements -->
+                        <div class="mb-3">
+                            <label for="{{ form.requirements.id_for_label }}" class="form-label">
+                                {{ form.requirements.label }}
+                            </label>
+                            {{ form.requirements }}
+                        </div>
+
+                        <!-- Target Audience -->
+                        <div class="mb-3">
+                            <label for="{{ form.target_audience.id_for_label }}" class="form-label">
+                                {{ form.target_audience.label }}
+                            </label>
+                            {{ form.target_audience }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-image me-2"></i>{% trans "Media" %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Thumbnail -->
+                        <div class="mb-3">
+                            <label for="{{ form.thumbnail.id_for_label }}" class="form-label">
+                                {{ form.thumbnail.label }}
+                            </label>
+                            {{ form.thumbnail }}
+                            {% if form.thumbnail.help_text %}
+                                <div class="form-text">{{ form.thumbnail.help_text }}</div>
+                            {% endif %}
+                            {% if form.instance.thumbnail %}
+                                <div class="mt-2">
+                                    <img src="{{ form.instance.thumbnail.url }}" alt="Current thumbnail" class="img-thumbnail" style="max-width: 200px;">
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Promo Video -->
+                        <div class="mb-3">
+                            <label for="{{ form.promo_video.id_for_label }}" class="form-label">
+                                {{ form.promo_video.label }}
+                            </label>
+                            {{ form.promo_video }}
+                            {% if form.promo_video.help_text %}
+                                <div class="form-text">{{ form.promo_video.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="d-flex gap-2 mb-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-2"></i>
+                        {% if form.instance.pk %}
+                            {% trans "Update Course" %}
+                        {% else %}
+                            {% trans "Create Course" %}
+                        {% endif %}
+                    </button>
+                    <a href="{% url 'cours:course_list' %}" class="btn btn-outline-secondary">
+                        {% trans "Cancel" %}
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sidebar Help -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 1rem;">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-lightbulb me-2"></i>{% trans "Tips" %}
+                    </h5>
+                    <ul class="small">
+                        <li>{% trans "Write a clear, compelling title that describes what students will learn" %}</li>
+                        <li>{% trans "Your description should highlight the main benefits and outcomes" %}</li>
+                        <li>{% trans "Choose the appropriate level for your target audience" %}</li>
+                        <li>{% trans "Add relevant tags to help students find your course" %}</li>
+                        <li>{% trans "Upload a high-quality thumbnail image (1280x720 recommended)" %}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Add Bootstrap form control classes to Django form fields */
+.form-control, .form-select {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    appearance: none;
+    border-radius: 0.375rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+textarea.form-control {
+    min-height: calc(1.5em + 0.75rem + 2px);
+}
+
+.form-control:focus, .form-select:focus {
+    color: #212529;
+    background-color: #fff;
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+}
+</style>
+
+<script>
+// Add Bootstrap classes to Django form fields
+document.addEventListener('DOMContentLoaded', function() {
+    // Add form-control class to text inputs and textareas
+    document.querySelectorAll('input[type="text"], input[type="email"], input[type="url"], input[type="number"], textarea').forEach(function(input) {
+        input.classList.add('form-control');
+    });
+
+    // Add form-select class to select elements
+    document.querySelectorAll('select').forEach(function(select) {
+        select.classList.add('form-select');
+    });
+
+    // Add form-check class to checkboxes
+    document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
+        checkbox.classList.add('form-check-input');
+    });
+
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
+{% endblock %}

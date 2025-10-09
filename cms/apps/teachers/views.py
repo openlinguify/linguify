@@ -29,23 +29,26 @@ class TeacherDashboardView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         teacher = self.get_object()
         
-        # Upcoming lessons
-        upcoming_lessons = PrivateLesson.objects.filter(
+        # Upcoming lessons queryset (without slicing for stats)
+        upcoming_lessons_qs = PrivateLesson.objects.filter(
             teacher=teacher,
             scheduled_date__gte=timezone.now(),
             status__in=['scheduled', 'confirmed']
-        ).order_by('scheduled_date')[:5]
-        
+        ).order_by('scheduled_date')
+
+        # Sliced upcoming lessons for display
+        upcoming_lessons = upcoming_lessons_qs[:5]
+
         # Recent lessons for quick access
         recent_lessons = PrivateLesson.objects.filter(
             teacher=teacher
         ).order_by('-scheduled_date')[:10]
-        
+
         # Statistics
         today = timezone.now().date()
         week_start = today - timedelta(days=today.weekday())
         month_start = today.replace(day=1)
-        
+
         stats = {
             'total_lessons': PrivateLesson.objects.filter(teacher=teacher).count(),
             'completed_lessons': PrivateLesson.objects.filter(
@@ -61,7 +64,7 @@ class TeacherDashboardView(LoginRequiredMixin, DetailView):
                 scheduled_date__date__gte=month_start,
                 status='completed'
             ).aggregate(total=Sum('total_price'))['total'] or 0,
-            'pending_lessons': upcoming_lessons.filter(status='scheduled').count(),
+            'pending_lessons': upcoming_lessons_qs.filter(status='scheduled').count(),
         }
         
         context.update({

@@ -1,4 +1,4 @@
-{% extends 'cms_dashboard/base_modular.html' %}
+{% extends 'dashboard/base.html' %}
 {% load static %}
 {% load i18n %}
 
@@ -26,7 +26,7 @@
         <div class="stats-card primary">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h3 class="h4 mb-0">{{ courses|length }}</h3>
+                    <h3 class="h4 mb-0">{{ total_courses|default:0 }}</h3>
                     <p class="text-muted small mb-0">{% trans "Total Courses" %}</p>
                 </div>
                 <i class="bi bi-journal-text" style="font-size: 32px; opacity: 0.3;"></i>
@@ -38,7 +38,7 @@
         <div class="stats-card success">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h3 class="h4 mb-0">{{ courses|selectattr:"is_published"|list|length|default:0 }}</h3>
+                    <h3 class="h4 mb-0">{{ published_courses|default:0 }}</h3>
                     <p class="text-muted small mb-0">{% trans "Published" %}</p>
                 </div>
                 <i class="bi bi-check-circle-fill" style="font-size: 32px; opacity: 0.3;"></i>
@@ -50,7 +50,7 @@
         <div class="stats-card warning">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h3 class="h4 mb-0">{{ courses|rejectattr:"is_published"|list|length|default:0 }}</h3>
+                    <h3 class="h4 mb-0">{{ draft_courses|default:0 }}</h3>
                     <p class="text-muted small mb-0">{% trans "Drafts" %}</p>
                 </div>
                 <i class="bi bi-file-earmark-text" style="font-size: 32px; opacity: 0.3;"></i>
